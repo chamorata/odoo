@@ -3,10 +3,10 @@ from datetime import datetime
 
 from freezegun import freeze_time
 from lxml import etree
-from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+from odoo.tools import file_open, cleanup_xml_node
 from odoo.tests import tagged
-from odoo.tools import file_open
 
 NS_MAP = {
     'cac': 'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2',
@@ -35,8 +35,7 @@ class L10nMyEDITestFileGeneration(AccountTestInvoicingCommon):
         cls.company_data['company'].write({
             'vat': 'C2584563200',
             'l10n_my_edi_mode': 'test',
-            'l10n_my_edi_industrial_classification': cls.env['l10n_my_edi.industry_classification'].search(
-                [('code', '=', '01111')]).id,
+            'l10n_my_edi_industrial_classification': cls.env['l10n_my_edi.industry_classification'].search([('code', '=', '01111')]).id,
             'l10n_my_identification_type': 'BRN',
             'l10n_my_identification_number': '202001234567',
             'state_id': cls.env.ref('base.state_my_jhr').id,
@@ -162,8 +161,7 @@ class L10nMyEDITestFileGeneration(AccountTestInvoicingCommon):
         Simply ensure that in a multi currency environment, the rate is found in the file and is the expected one.
         """
         basic_invoice = self.init_invoice(
-            'out_invoice', currency=self.other_currency, taxes=self.company_data['default_tax_sale'],
-            products=self.product_a
+            'out_invoice', currency=self.other_currency, taxes=self.company_data['default_tax_sale'], products=self.product_a
         )
         basic_invoice.action_post()
 
@@ -497,6 +495,26 @@ class L10nMyEDITestFileGeneration(AccountTestInvoicingCommon):
         with file_open('l10n_my_edi/tests/expected_xmls/invoice_import.xml', 'rb') as f:
             expected_xml = etree.fromstring(f.read())
         self.assertXmlTreeEqual(root, expected_xml)
+
+    def test_10_prepaid_amount_present(self):
+        """
+        Ensure the prepaid amount is present in the UBL XML under <cac:PrepaidPayment>.
+        """
+        invoice = self.init_invoice('out_invoice', currency=self.other_currency, products=self.product_a)
+        invoice.action_post()
+        vals = self.env['account.edi.xml.ubl_myinvois_my'].with_context(
+            convert_fixed_taxes=True)._export_invoice_vals(invoice.with_context(lang=invoice.partner_id.lang)
+        )
+        vals['vals']['prepaid_payment_vals'].update({
+            'amount': 2200.00,
+            'currency': self.other_currency,
+            'currency_dp': self.other_currency.decimal_places,
+        })
+        xml_content = self.env['ir.qweb']._render(vals['main_template'], vals)
+        file = etree.tostring(cleanup_xml_node(xml_content), xml_declaration=True, encoding='UTF-8')
+        root = etree.fromstring(file)
+        prepaid_node = root.xpath('cac:PrepaidPayment/cbc:PaidAmount', namespaces=NS_MAP)
+        self.assertEqual(prepaid_node[0].text, '2200.00')
 
     def _assert_node_values(self, root, node_path, text, attributes=None):
         node = root.xpath(node_path, namespaces=NS_MAP)

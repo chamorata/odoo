@@ -1,18 +1,17 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import time
 from datetime import datetime, date, timedelta
-
+import time
 from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
-from odoo.addons.hr_holidays.tests.common import TestHrHolidaysCommon
 from pytz import timezone
 
 from odoo import fields, Command
 from odoo.exceptions import UserError, ValidationError
-from odoo.tests import Form, tagged
 from odoo.tools import date_utils, mute_logger
+from odoo.tests import Form, tagged
 
+from odoo.addons.hr_holidays.tests.common import TestHrHolidaysCommon
 
 @tagged('leave_requests')
 class TestLeaveRequests(TestHrHolidaysCommon):
@@ -220,8 +219,7 @@ class TestLeaveRequests(TestHrHolidaysCommon):
         leave_wizard = leave_wizard_form.save()
         leave_wizard.action_generate_time_off()
         member_ids = self.hr_dept.member_ids.ids
-        self.assertEqual(self.env['hr.leave'].search_count([('employee_id', 'in', member_ids)]), len(member_ids),
-                         "Time Off should be created for members of department")
+        self.assertEqual(self.env['hr.leave'].search_count([('employee_id', 'in', member_ids)]), len(member_ids), "Time Off should be created for members of department")
 
     @mute_logger('odoo.models.unlink', 'odoo.addons.mail.models.mail_mail')
     def test_allocation_request(self):
@@ -280,10 +278,8 @@ class TestLeaveRequests(TestHrHolidaysCommon):
             'request_hour_from': 8,  # 8:00 AM in the employee's timezone
             'request_hour_to': 17,  # 5:00 PM in the employee's timezone
         })
-        self.assertEqual(leave.date_from, datetime(2019, 5, 5, 20, 0, 0),
-                         "It should have been localized before saving in UTC")
-        self.assertEqual(leave.date_to, datetime(2019, 5, 6, 5, 0, 0),
-                         "It should have been localized before saving in UTC")
+        self.assertEqual(leave.date_from, datetime(2019, 5, 5, 20, 0, 0), "It should have been localized before saving in UTC")
+        self.assertEqual(leave.date_to, datetime(2019, 5, 6, 5, 0, 0), "It should have been localized before saving in UTC")
 
     @mute_logger('odoo.models.unlink', 'odoo.addons.mail.models.mail_mail')
     def test_timezone_company_leave_request(self):
@@ -300,15 +296,13 @@ class TestLeaveRequests(TestHrHolidaysCommon):
             'request_hour_from': 8,  # 8:00 AM in the company's timezone
             'request_hour_to': 17,  # 5:00 PM in the company's timezone
         })
-        self.assertEqual(leave.date_from, datetime(2019, 5, 6, 6, 0, 0),
-                         "It should have been localized in the Employee timezone")
-        self.assertEqual(leave.date_to, datetime(2019, 5, 6, 15, 0, 0),
-                         "It should have been localized in the Employee timezone")
+        self.assertEqual(leave.date_from, datetime(2019, 5, 6, 6, 0, 0), "It should have been localized in the Employee timezone")
+        self.assertEqual(leave.date_to, datetime(2019, 5, 6, 15, 0, 0), "It should have been localized in the Employee timezone")
 
     @mute_logger('odoo.models.unlink', 'odoo.addons.mail.models.mail_mail')
     def test_timezone_company_validated(self):
         """ Create a leave request for a company in another timezone and validate it """
-        self.env.user.tz = 'Australia/Sydney'  # GMT+12
+        self.env.user.tz = 'Australia/Sydney' # GMT+12
         company = self.env['res.company'].create({'name': "Hergé"})
         employee = self.env['hr.employee'].create({'name': "Remi", 'company_id': company.id})
         leave_wizard_form = Form(self.env['hr.leave.generate.multi.wizard'])
@@ -333,32 +327,19 @@ class TestLeaveRequests(TestHrHolidaysCommon):
             'name': 'Monday Morning Else Full Time 38h/week',
             'hours_per_day': 7.6,
             'attendance_ids': [
-                (0, 0, {'name': 'Monday Morning', 'dayofweek': '0', 'hour_from': 8.5, 'hour_to': 12.5,
-                        'day_period': 'morning'}),
-                (0, 0, {'name': 'Tuesday Morning', 'dayofweek': '1', 'hour_from': 8.5, 'hour_to': 12.5,
-                        'day_period': 'morning'}),
-                (0, 0,
-                 {'name': 'Tuesday Lunch', 'dayofweek': '1', 'hour_from': 12.5, 'hour_to': 13, 'day_period': 'lunch'}),
-                (0, 0, {'name': 'Tuesday Afternoon', 'dayofweek': '1', 'hour_from': 13, 'hour_to': 17.5,
-                        'day_period': 'afternoon'}),
-                (0, 0, {'name': 'Wednesday Morning', 'dayofweek': '2', 'hour_from': 8.5, 'hour_to': 12.5,
-                        'day_period': 'morning'}),
-                (0, 0, {'name': 'Wednesday Lunch', 'dayofweek': '2', 'hour_from': 12.5, 'hour_to': 13,
-                        'day_period': 'lunch'}),
-                (0, 0, {'name': 'Wednesday Afternoon', 'dayofweek': '2', 'hour_from': 13, 'hour_to': 17.5,
-                        'day_period': 'afternoon'}),
-                (0, 0, {'name': 'Thursday Morning', 'dayofweek': '3', 'hour_from': 8.5, 'hour_to': 12.5,
-                        'day_period': 'morning'}),
-                (0, 0,
-                 {'name': 'Thursday Lunch', 'dayofweek': '3', 'hour_from': 12.5, 'hour_to': 13, 'day_period': 'lunch'}),
-                (0, 0, {'name': 'Thursday Afternoon', 'dayofweek': '3', 'hour_from': 13, 'hour_to': 17.5,
-                        'day_period': 'afternoon'}),
-                (0, 0, {'name': 'Friday Morning', 'dayofweek': '4', 'hour_from': 8.5, 'hour_to': 12.5,
-                        'day_period': 'morning'}),
-                (0, 0,
-                 {'name': 'Friday Lunch', 'dayofweek': '4', 'hour_from': 12.5, 'hour_to': 13, 'day_period': 'lunch'}),
-                (0, 0, {'name': 'Friday Afternoon', 'dayofweek': '4', 'hour_from': 13, 'hour_to': 17.5,
-                        'day_period': 'afternoon'})
+                (0, 0, {'name': 'Monday Morning', 'dayofweek': '0', 'hour_from': 8.5, 'hour_to': 12.5, 'day_period': 'morning'}),
+                (0, 0, {'name': 'Tuesday Morning', 'dayofweek': '1', 'hour_from': 8.5, 'hour_to': 12.5, 'day_period': 'morning'}),
+                (0, 0, {'name': 'Tuesday Lunch', 'dayofweek': '1', 'hour_from': 12.5, 'hour_to': 13, 'day_period': 'lunch'}),
+                (0, 0, {'name': 'Tuesday Afternoon', 'dayofweek': '1', 'hour_from': 13, 'hour_to': 17.5, 'day_period': 'afternoon'}),
+                (0, 0, {'name': 'Wednesday Morning', 'dayofweek': '2', 'hour_from': 8.5, 'hour_to': 12.5, 'day_period': 'morning'}),
+                (0, 0, {'name': 'Wednesday Lunch', 'dayofweek': '2', 'hour_from': 12.5, 'hour_to': 13, 'day_period': 'lunch'}),
+                (0, 0, {'name': 'Wednesday Afternoon', 'dayofweek': '2', 'hour_from': 13, 'hour_to': 17.5, 'day_period': 'afternoon'}),
+                (0, 0, {'name': 'Thursday Morning', 'dayofweek': '3', 'hour_from': 8.5, 'hour_to': 12.5, 'day_period': 'morning'}),
+                (0, 0, {'name': 'Thursday Lunch', 'dayofweek': '3', 'hour_from': 12.5, 'hour_to': 13, 'day_period': 'lunch'}),
+                (0, 0, {'name': 'Thursday Afternoon', 'dayofweek': '3', 'hour_from': 13, 'hour_to': 17.5, 'day_period': 'afternoon'}),
+                (0, 0, {'name': 'Friday Morning', 'dayofweek': '4', 'hour_from': 8.5, 'hour_to': 12.5, 'day_period': 'morning'}),
+                (0, 0, {'name': 'Friday Lunch', 'dayofweek': '4', 'hour_from': 12.5, 'hour_to': 13, 'day_period': 'lunch'}),
+                (0, 0, {'name': 'Friday Afternoon', 'dayofweek': '4', 'hour_from': 13, 'hour_to': 17.5, 'day_period': 'afternoon'})
             ],
         })
         employee = self.employee_emp
@@ -377,7 +358,7 @@ class TestLeaveRequests(TestHrHolidaysCommon):
             'state': 'confirm',
             'date_from': time.strftime('2018-1-1'),
             'date_to': time.strftime('%Y-1-1'),
-        })
+        }).action_validate()
 
         leave1 = self.env['hr.leave'].create({
             'name': 'Holiday 1 week',
@@ -413,26 +394,16 @@ class TestLeaveRequests(TestHrHolidaysCommon):
             'name': 'Full Time 24h/8day',
             'hours_per_day': 24,
             'attendance_ids': [
-                (0, 0,
-                 {'name': 'Monday Morning', 'dayofweek': '0', 'hour_from': 0, 'hour_to': 12, 'day_period': 'morning'}),
-                (0, 0, {'name': 'Monday Afternoon', 'dayofweek': '0', 'hour_from': 12, 'hour_to': 24,
-                        'day_period': 'afternoon'}),
-                (0, 0,
-                 {'name': 'Tuesday Morning', 'dayofweek': '1', 'hour_from': 0, 'hour_to': 12, 'day_period': 'morning'}),
-                (0, 0, {'name': 'Tuesday Afternoon', 'dayofweek': '1', 'hour_from': 12, 'hour_to': 24,
-                        'day_period': 'afternoon'}),
-                (0, 0, {'name': 'Wednesday Morning', 'dayofweek': '2', 'hour_from': 0, 'hour_to': 12,
-                        'day_period': 'morning'}),
-                (0, 0, {'name': 'Wednesday Afternoon', 'dayofweek': '2', 'hour_from': 12, 'hour_to': 24,
-                        'day_period': 'afternoon'}),
-                (0, 0, {'name': 'Thursday Morning', 'dayofweek': '3', 'hour_from': 0, 'hour_to': 12,
-                        'day_period': 'morning'}),
-                (0, 0, {'name': 'Thursday Afternoon', 'dayofweek': '3', 'hour_from': 12, 'hour_to': 24,
-                        'day_period': 'afternoon'}),
-                (0, 0,
-                 {'name': 'Friday Morning', 'dayofweek': '4', 'hour_from': 0, 'hour_to': 12, 'day_period': 'morning'}),
-                (0, 0, {'name': 'Friday Afternoon', 'dayofweek': '4', 'hour_from': 12, 'hour_to': 24,
-                        'day_period': 'afternoon'})
+                (0, 0, {'name': 'Monday Morning', 'dayofweek': '0', 'hour_from': 0, 'hour_to': 12, 'day_period': 'morning'}),
+                (0, 0, {'name': 'Monday Afternoon', 'dayofweek': '0', 'hour_from': 12, 'hour_to': 24, 'day_period': 'afternoon'}),
+                (0, 0, {'name': 'Tuesday Morning', 'dayofweek': '1', 'hour_from': 0, 'hour_to': 12, 'day_period': 'morning'}),
+                (0, 0, {'name': 'Tuesday Afternoon', 'dayofweek': '1', 'hour_from': 12, 'hour_to': 24, 'day_period': 'afternoon'}),
+                (0, 0, {'name': 'Wednesday Morning', 'dayofweek': '2', 'hour_from': 0, 'hour_to': 12, 'day_period': 'morning'}),
+                (0, 0, {'name': 'Wednesday Afternoon', 'dayofweek': '2', 'hour_from': 12, 'hour_to': 24, 'day_period': 'afternoon'}),
+                (0, 0, {'name': 'Thursday Morning', 'dayofweek': '3', 'hour_from': 0, 'hour_to': 12, 'day_period': 'morning'}),
+                (0, 0, {'name': 'Thursday Afternoon', 'dayofweek': '3', 'hour_from': 12, 'hour_to': 24, 'day_period': 'afternoon'}),
+                (0, 0, {'name': 'Friday Morning', 'dayofweek': '4', 'hour_from': 0, 'hour_to': 12, 'day_period': 'morning'}),
+                (0, 0, {'name': 'Friday Afternoon', 'dayofweek': '4', 'hour_from': 12, 'hour_to': 24, 'day_period': 'afternoon'})
             ],
         })
         employee = self.employee_emp
@@ -451,7 +422,7 @@ class TestLeaveRequests(TestHrHolidaysCommon):
             'state': 'confirm',
             'date_from': time.strftime('2018-1-1'),
             'date_to': time.strftime('%Y-1-1'),
-        })
+        }).action_validate()
 
         leave0 = self.env['hr.leave'].create({
             'name': 'Holiday 1 day',
@@ -531,36 +502,21 @@ class TestLeaveRequests(TestHrHolidaysCommon):
             'name': 'Classic 40h/week',
             'hours_per_day': 8.0,
             'attendance_ids': [
-                (0, 0,
-                 {'name': 'Monday Morning', 'dayofweek': '0', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-                (0, 0,
-                 {'name': 'Monday Lunch', 'dayofweek': '0', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
-                (0, 0, {'name': 'Monday Afternoon', 'dayofweek': '0', 'hour_from': 13, 'hour_to': 17,
-                        'day_period': 'afternoon'}),
-                (0, 0,
-                 {'name': 'Tuesday Morning', 'dayofweek': '1', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-                (0, 0,
-                 {'name': 'Tuesday Lunch', 'dayofweek': '1', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
-                (0, 0, {'name': 'Tuesday Afternoon', 'dayofweek': '1', 'hour_from': 13, 'hour_to': 17,
-                        'day_period': 'afternoon'}),
-                (0, 0, {'name': 'Wednesday Morning', 'dayofweek': '2', 'hour_from': 8, 'hour_to': 12,
-                        'day_period': 'morning'}),
-                (0, 0,
-                 {'name': 'Wednesday Lunch', 'dayofweek': '2', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
-                (0, 0, {'name': 'Wednesday Afternoon', 'dayofweek': '2', 'hour_from': 13, 'hour_to': 17,
-                        'day_period': 'afternoon'}),
-                (0, 0, {'name': 'Thursday Morning', 'dayofweek': '3', 'hour_from': 8, 'hour_to': 12,
-                        'day_period': 'morning'}),
-                (0, 0,
-                 {'name': 'Thursday Lunch', 'dayofweek': '3', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
-                (0, 0, {'name': 'Thursday Afternoon', 'dayofweek': '3', 'hour_from': 13, 'hour_to': 17,
-                        'day_period': 'afternoon'}),
-                (0, 0,
-                 {'name': 'Friday Morning', 'dayofweek': '4', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-                (0, 0,
-                 {'name': 'Friday Lunch', 'dayofweek': '4', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
-                (0, 0, {'name': 'Friday Afternoon', 'dayofweek': '4', 'hour_from': 13, 'hour_to': 17,
-                        'day_period': 'afternoon'})
+                (0, 0, {'name': 'Monday Morning', 'dayofweek': '0', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
+                (0, 0, {'name': 'Monday Lunch', 'dayofweek': '0', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
+                (0, 0, {'name': 'Monday Afternoon', 'dayofweek': '0', 'hour_from': 13, 'hour_to': 17, 'day_period': 'afternoon'}),
+                (0, 0, {'name': 'Tuesday Morning', 'dayofweek': '1', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
+                (0, 0, {'name': 'Tuesday Lunch', 'dayofweek': '1', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
+                (0, 0, {'name': 'Tuesday Afternoon', 'dayofweek': '1', 'hour_from': 13, 'hour_to': 17, 'day_period': 'afternoon'}),
+                (0, 0, {'name': 'Wednesday Morning', 'dayofweek': '2', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
+                (0, 0, {'name': 'Wednesday Lunch', 'dayofweek': '2', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
+                (0, 0, {'name': 'Wednesday Afternoon', 'dayofweek': '2', 'hour_from': 13, 'hour_to': 17, 'day_period': 'afternoon'}),
+                (0, 0, {'name': 'Thursday Morning', 'dayofweek': '3', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
+                (0, 0, {'name': 'Thursday Lunch', 'dayofweek': '3', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
+                (0, 0, {'name': 'Thursday Afternoon', 'dayofweek': '3', 'hour_from': 13, 'hour_to': 17, 'day_period': 'afternoon'}),
+                (0, 0, {'name': 'Friday Morning', 'dayofweek': '4', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
+                (0, 0, {'name': 'Friday Lunch', 'dayofweek': '4', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
+                (0, 0, {'name': 'Friday Afternoon', 'dayofweek': '4', 'hour_from': 13, 'hour_to': 17, 'day_period': 'afternoon'})
             ],
             'global_leave_ids': [(0, 0, {
                 'name': 'Christmas Time Off',
@@ -610,8 +566,7 @@ class TestLeaveRequests(TestHrHolidaysCommon):
     @mute_logger('odoo.models.unlink', 'odoo.addons.mail.models.mail_mail')
     def test_leave_defaults_with_timezones(self):
         """ Make sure that leaves start with correct defaults for non-UTC timezones """
-        timezones_to_test = ('UTC', 'Pacific/Midway', 'America/Los_Angeles', 'Asia/Taipei',
-                             'Pacific/Kiritimati')  # UTC, UTC -11, UTC -8, UTC +8, UTC +14
+        timezones_to_test = ('UTC', 'Pacific/Midway', 'America/Los_Angeles', 'Asia/Taipei', 'Pacific/Kiritimati')  # UTC, UTC -11, UTC -8, UTC +8, UTC +14
 
         #     January 2020
         # Su Mo Tu We Th Fr Sa
@@ -748,8 +703,8 @@ class TestLeaveRequests(TestHrHolidaysCommon):
             'date_from': '2022-01-01',
             'date_to': '2022-12-31',
         }
-        self.env['hr.leave.allocation'].create(allocation_vals)
-        self.env['hr.leave.allocation'].create(allocation_vals)
+        self.env['hr.leave.allocation'].create(allocation_vals).action_validate()
+        self.env['hr.leave.allocation'].create(allocation_vals).action_validate()
 
         # Able to create a leave of 10 days with two allocations of 5 days
         self.env['hr.leave'].with_user(self.user_employee_id).create({
@@ -926,10 +881,8 @@ class TestLeaveRequests(TestHrHolidaysCommon):
         calendar = self.env['resource.calendar'].create({
             'name': 'Irregular Working Schedule (monday morning - wednesday afternoon)',
             'attendance_ids': [
-                (0, 0,
-                 {'name': 'Monday Morning', 'dayofweek': '0', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-                (0, 0, {'name': 'Wednesday Afternoon', 'dayofweek': '2', 'hour_from': 13, 'hour_to': 17,
-                        'day_period': 'afternoon'}),
+                (0, 0, {'name': 'Monday Morning', 'dayofweek': '0', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
+                (0, 0, {'name': 'Wednesday Afternoon', 'dayofweek': '2', 'hour_from': 13, 'hour_to': 17, 'day_period': 'afternoon'}),
             ],
         })
         self.employee_emp.resource_calendar_id = calendar
@@ -966,8 +919,7 @@ class TestLeaveRequests(TestHrHolidaysCommon):
             })
 
             self._check_holidays_count(
-                self.employee_emp._get_consumed_leaves(self.holidays_type_2)[0][self.employee_emp][
-                    self.holidays_type_2][allocation],
+                self.employee_emp._get_consumed_leaves(self.holidays_type_2)[0][self.employee_emp][self.holidays_type_2][allocation],
                 ml=5, lt=0, rl=5, vrl=2, vlt=3,
             )
 
@@ -1007,15 +959,13 @@ class TestLeaveRequests(TestHrHolidaysCommon):
 
             # The holidays count only takes into account the valid allocations at that date
             self._check_holidays_count(
-                self.holidays_type_2.get_allocation_data(self.employee_emp, target_date=date(2021, 12, 1))[
-                    self.employee_emp][0][1],
+                self.holidays_type_2.get_allocation_data(self.employee_emp, target_date=date(2021, 12, 1))[self.employee_emp][0][1],
                 ml=10, lt=5, rl=5, vrl=5, vlt=5,
             )
 
             # Days remaining before the allocation ends is equal to 1 because there is only one day remaining in the allocation based on its validity
             self.assertEqual(
-                self.holidays_type_2.get_allocation_data(self.employee_emp, target_date=date(2021, 12, 31))[
-                    self.employee_emp][0][1]['closest_allocation_duration'],
+                self.holidays_type_2.get_allocation_data(self.employee_emp, target_date=date(2021, 12, 31))[self.employee_emp][0][1]['closest_allocation_duration'],
                 1,
                 "Only one day should remain before the allocation expires"
             )
@@ -1037,8 +987,7 @@ class TestLeaveRequests(TestHrHolidaysCommon):
 
             # The holidays count in 2021 is not affected by the leave taken in 2022
             self._check_holidays_count(
-                self.holidays_type_2.get_allocation_data(self.employee_emp, target_date=date(2021, 12, 1))[
-                    self.employee_emp][0][1],
+                self.holidays_type_2.get_allocation_data(self.employee_emp, target_date=date(2021, 12, 1))[self.employee_emp][0][1],
                 ml=10, lt=5, rl=5, vrl=5, vlt=5,
             )
 
@@ -1052,7 +1001,7 @@ class TestLeaveRequests(TestHrHolidaysCommon):
                 'state': 'confirm',
                 'date_from': '2020-01-01',
                 'date_to': '2020-12-31',
-            })
+            }).action_validate()
 
             leave = self.env['hr.leave'].with_user(self.user_employee_id).create({
                 'name': 'Holiday Request',
@@ -1091,8 +1040,7 @@ class TestLeaveRequests(TestHrHolidaysCommon):
             The objective is to check that it is not possible to place leaves
             for which the interval does not correspond to the interval of allocations.
         """
-        leave_type_A = self.env['hr.leave.type'].with_user(self.user_hrmanager_id).with_context(
-            tracking_disable=True).create({
+        leave_type_A = self.env['hr.leave.type'].with_user(self.user_hrmanager_id).with_context(tracking_disable=True).create({
             'name': 'Type A',
             'requires_allocation': 'yes',
             'employee_requests': 'yes',
@@ -1187,6 +1135,7 @@ class TestLeaveRequests(TestHrHolidaysCommon):
             'name': 'Sick Leave (days)',
             'request_unit': 'day',
             'leave_validation_type': 'hr',
+            'requires_allocation': 'no',
         })
         sick_leave = self.env['hr.leave'].create({
             'name': 'Sick 3 days',
@@ -1199,6 +1148,7 @@ class TestLeaveRequests(TestHrHolidaysCommon):
             'name': 'OT Compensation (hours)',
             'request_unit': 'hour',
             'leave_validation_type': 'manager',
+            'requires_allocation': 'no',
         })
         comp_leave = self.env['hr.leave'].create({
             'name': 'OT Comp (4 hours)',
@@ -1237,6 +1187,7 @@ class TestLeaveRequests(TestHrHolidaysCommon):
             'name': 'Sick Leave (days)',
             'request_unit': 'day',
             'leave_validation_type': 'hr',
+            'requires_allocation': 'no',
         })
         sick_leave = self.env['hr.leave'].create({
             'name': 'Sick 3 days',
@@ -1255,8 +1206,7 @@ class TestLeaveRequests(TestHrHolidaysCommon):
             'time_type': 'leave',
         })]
 
-        self.assertEqual(sick_leave.duration_display, '2 days',
-                         "hr_holidays: duration_display should not count public holiday")
+        self.assertEqual(sick_leave.duration_display, '2 days', "hr_holidays: duration_display should not count public holiday")
 
         sick_leave_type.include_public_holidays_in_duration = True
         sick_leave.unlink()
@@ -1268,8 +1218,7 @@ class TestLeaveRequests(TestHrHolidaysCommon):
             'request_date_to': '2021-11-17',
         })
 
-        self.assertEqual(sick_leave.duration_display, '3 days',
-                         "hr_holidays: duration_display should not update after adding an overlapping holiday")
+        self.assertEqual(sick_leave.duration_display, '3 days', "hr_holidays: duration_display should not update after adding an overlapping holiday")
 
     @freeze_time('2024-01-18')
     def test_undefined_working_hours(self):
@@ -1317,7 +1266,7 @@ class TestLeaveRequests(TestHrHolidaysCommon):
             'default_date_to': '2024-03-28 08:00:00',
         }
         leave_form = Form(self.env['hr.leave'].with_user(self.user_employee).with_context(context))
-        leave_form.holiday_status_id = self.holidays_type_2
+        leave_form.holiday_status_id = self.holidays_type_3
         leave = leave_form.save()
         self.assertEqual(leave.number_of_days, 1.0)
 
@@ -1341,16 +1290,16 @@ class TestLeaveRequests(TestHrHolidaysCommon):
         self.assertEqual(allocation.state, 'validate')
 
         search_domain = ['|',
-                         ['requires_allocation', '=', 'no'],
-                         '&',
-                         ['has_valid_allocation', '=', True],
-                         '&',
-                         ['max_leaves', '>', '0'],
-                         '|',
-                         ['allows_negative', '=', True],
-                         '&',
-                         ['virtual_remaining_leaves', '>', 0],
-                         ['allows_negative', '=', False]]
+                        ['requires_allocation', '=', 'no'],
+                        '&',
+                            ['has_valid_allocation', '=', True],
+                            '&',
+                                ['max_leaves', '>', '0'],
+                                '|',
+                                ['allows_negative', '=', True],
+                                '&',
+                                    ['virtual_remaining_leaves', '>', 0],
+                                    ['allows_negative', '=', False]]
 
         search_result = self.env['hr.leave.type'].with_context(employee_id=False).name_search(args=search_domain)
         self.assertFalse(self.holidays_type_2.id in [alloc_id for (alloc_id, _) in search_result])
@@ -1375,7 +1324,7 @@ class TestLeaveRequests(TestHrHolidaysCommon):
     def test_activity_update_with_time_off_officer(self):
         """ Test activity creation flow when approval settings involve Time Off Officer and Employee's Approver. """
         # Case 1: Approved by Time Off Officer but no Time Off Officer is set
-        self.holidays_type_1.responsible_ids = False  # No Time Off Officer set
+        self.holidays_type_1.responsible_ids = False    # No Time Off Officer set
 
         test_holiday_1 = self.env['hr.leave'].create({
             'name': 'Test leave',
@@ -1389,6 +1338,15 @@ class TestLeaveRequests(TestHrHolidaysCommon):
         activities = test_holiday_1.activity_ids
         self.assertFalse(activities, "No activity should be created if no Time Off Officer is set for approval.")
 
+        allocation = self.env['hr.leave.allocation'].create({
+            'name': 'Allocation for hruser',
+            'employee_id': self.employee_hruser_id,
+            'holiday_status_id': self.holidays_type_2.id,
+            'number_of_days': 5,
+            'state': 'confirm',
+            'date_from': '2024-01-01',
+        })
+        allocation.action_validate()
         self.holidays_type_2.responsible_ids = [Command.link(self.user_employee.id)]
         test_holiday_2 = self.env['hr.leave'].create({
             'name': 'Test leave',
@@ -1401,14 +1359,20 @@ class TestLeaveRequests(TestHrHolidaysCommon):
 
         activities = test_holiday_2.activity_ids
         self.assertEqual(len(activities), 1, "One activity should be created for the Employee's Approver.")
-        self.assertEqual(activities.activity_type_id, self.env.ref('hr_holidays.mail_act_leave_approval'),
-                         "The activity type should be for leave approval by the Employee's Approver.")
-        self.assertEqual(activities.user_id.id, self.user_employee_id,
-                         "The activity should be assigned to the Employee's Approver.")
+        self.assertEqual(activities.activity_type_id, self.env.ref('hr_holidays.mail_act_leave_approval'), "The activity type should be for leave approval by the Employee's Approver.")
+        self.assertEqual(activities.user_id.id, self.user_employee_id, "The activity should be assigned to the Employee's Approver.")
 
         # Case 2: Approved by Time Off Officer and Employee's Approver, but no Time Off Officer is set
-        self.holidays_type_4.responsible_ids = False  # No Time Off Officer set
-
+        self.holidays_type_4.responsible_ids = False     # No Time Off Officer set
+        allocation = self.env['hr.leave.allocation'].create({
+            'name': 'Allocation for hrmanager',
+            'employee_id': self.employee_hrmanager_id,
+            'holiday_status_id': self.holidays_type_4.id,
+            'number_of_days': 5,
+            'state': 'confirm',
+            'date_from': '2024-01-01',
+        })
+        allocation.action_validate()
         test_holiday_3 = self.env['hr.leave'].create({
             'name': 'Test leave',
             'employee_id': self.employee_hrmanager_id,
@@ -1421,10 +1385,8 @@ class TestLeaveRequests(TestHrHolidaysCommon):
 
         activities = test_holiday_3.activity_ids
         self.assertEqual(len(activities), 1, "One activity should be created for the Employee's Approver.")
-        self.assertEqual(activities.activity_type_id, self.env.ref('hr_holidays.mail_act_leave_approval'),
-                         "The activity type should be for leave approval by the Employee's Approver.")
-        self.assertEqual(activities.user_id, self.employee_hrmanager.leave_manager_id,
-                         "The activity should be assigned to the Employee's Approver.")
+        self.assertEqual(activities.activity_type_id, self.env.ref('hr_holidays.mail_act_leave_approval'), "The activity type should be for leave approval by the Employee's Approver.")
+        self.assertEqual(activities.user_id, self.employee_hrmanager.leave_manager_id, "The activity should be assigned to the Employee's Approver.")
 
     def test_time_off_date_edit(self):
         user_id = self.employee_emp.user_id
@@ -1433,7 +1395,7 @@ class TestLeaveRequests(TestHrHolidaysCommon):
         leave = self.env['hr.leave'].with_user(user_id).create({
             'name': 'Test leave',
             'employee_id': employee_id,
-            'holiday_status_id': self.holidays_type_2.id,
+            'holiday_status_id': self.holidays_type_1.id,
             'date_from': (datetime.today() - relativedelta(days=2)),
             'date_to': datetime.today()
         })
@@ -1470,3 +1432,18 @@ class TestLeaveRequests(TestHrHolidaysCommon):
             'request_date_to': date(2022, 3, 12),
         })
         self.assertEqual(leave.number_of_days, 2)
+
+    def test_time_off_creation_without_allocation(self):
+        leave_type = self.env['hr.leave.type'].create({
+            'name': 'Smart Leave',
+            'requires_allocation': 'yes',
+            'leave_validation_type': 'hr',
+        })
+        with self.assertRaises(ValidationError):
+            self.env['hr.leave'].create({
+                'name': 'Smart Leave Request',
+                'employee_id': self.employee_emp_id,
+                'holiday_status_id': leave_type.id,
+                'request_date_from': '2024-07-01',
+                'request_date_to': '2024-07-02',
+            })

@@ -8,16 +8,17 @@
                 <search string="Timesheet Attendance">
                     <field name="employee_id" string="Employee"/>
                     <filter string="My Team" name="my_team" domain="[('employee_id.parent_id.user_id', '=', uid)]"/>
-                    <filter string="My Department" name="my_department"
-                            domain="[('employee_id.member_of_department', '=', True)]"/>
+                    <filter string="My Department" name="my_department" domain="[('employee_id.member_of_department', '=', True)]"/>
                     <separator/>
                     <filter name="month" string="Date" date="date">
                         <filter name="date_this_week" string="This Week" domain="[
                             ('date', '&gt;=', (datetime.datetime.combine(context_today() + relativedelta(weeks=-1,days=1,weekday=0), datetime.time(0,0,0)).to_utc())),
                             ('date', '&lt;', (datetime.datetime.combine(context_today() + relativedelta(days=1,weekday=0), datetime.time(0,0,0)).to_utc())),
                         ]"/>
-                        <filter name="date_today" string="Today"
-                                domain="[('date', '&gt;', datetime.datetime.combine(context_today() - relativedelta(days=1), datetime.time(23, 59, 59)).to_utc())]"/>
+                        <filter name="date_today" string="Today" domain="[
+                            ('date', '&gt;=', datetime.datetime.combine(context_today(), datetime.time(0, 0, 0)).to_utc()),
+                            ('date', '&lt;', datetime.datetime.combine(context_today() + relativedelta(days=1), datetime.time(0, 0, 0)).to_utc())
+                        ]"/>
                         <filter name="date_last_week" string="Last Week" domain="[
                             ('date', '&gt;=', (datetime.datetime.combine(context_today() + relativedelta(weeks=-2,days=1,weekday=0), datetime.time(0,0,0)).to_utc())),
                             ('date', '&lt;', (datetime.datetime.combine(context_today() + relativedelta(weeks=-1,days=1,weekday=0), datetime.time(0,0,0)).to_utc())),
@@ -65,8 +66,7 @@
             <field name="help" type="html">
                 <p class="o_view_nocontent_empty_folder">
                     No data yet!
-                </p>
-                <p>
+                </p><p>
                     Compare the time recorded by your employees with their attendance.
                 </p>
             </field>

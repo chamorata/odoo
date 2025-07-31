@@ -1,12 +1,16 @@
-import base64
 import gzip
 import json
 import re
+import base64
 from datetime import datetime
 from uuid import uuid4
 
 import requests
 from lxml import etree
+from pytz import timezone
+from requests.exceptions import RequestException
+
+from odoo import _, api, fields, models, release
 from odoo.addons.certificate.tools import CertificateAdapter
 from odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_agencies import get_key
 from odoo.addons.l10n_es_edi_tbai.models.xml_utils import (
@@ -15,10 +19,6 @@ from odoo.addons.l10n_es_edi_tbai.models.xml_utils import (
     canonicalize_node,
     cleanup_xml_signature,
 )
-from pytz import timezone
-from requests.exceptions import RequestException
-
-from odoo import _, api, fields, models, release
 from odoo.exceptions import UserError
 from odoo.tools import get_lang
 from odoo.tools.float_utils import float_repr, float_round
@@ -68,10 +68,10 @@ class L10nEsEdiTbaiDocument(models.Model):
     )
 
     state = fields.Selection([
-        ('to_send', "To Send"),
-        ('accepted', "Accepted"),
-        ('rejected', "Rejected"),
-    ],
+            ('to_send', "To Send"),
+            ('accepted', "Accepted"),
+            ('rejected', "Rejected"),
+        ],
         string="status",
         default='to_send',
         copy=False,
@@ -112,13 +112,12 @@ class L10nEsEdiTbaiDocument(models.Model):
         if not self.company_id.vat:
             return _("Please configure the Tax ID on your company for TicketBAI.")
 
-        if self.company_id.l10n_es_tbai_tax_agency == 'bizkaia' and self.company_id._l10n_es_freelancer() and not \
-        self.env['ir.config_parameter'].sudo().get_param('l10n_es_edi_tbai.epigrafe', False):
+        if self.company_id.l10n_es_tbai_tax_agency == 'bizkaia' and self.company_id._l10n_es_freelancer() and not self.env['ir.config_parameter'].sudo().get_param('l10n_es_edi_tbai.epigrafe', False):
             return _("In order to use Ticketbai Batuz for freelancers, you will need to configure the "
-                     "Epigrafe or Main Activity.  In this version, you need to go in debug mode to "
-                     "Settings > Technical > System Parameters and set the parameter 'l10n_es_edi_tbai.epigrafe'"
-                     "to your epigrafe number. You can find them in %s",
-                     "https://www.batuz.eus/fitxategiak/batuz/lroe/batuz_lroe_lista_epigrafes_v1_0_3.xlsx")
+                        "Epigrafe or Main Activity.  In this version, you need to go in debug mode to "
+                        "Settings > Technical > System Parameters and set the parameter 'l10n_es_edi_tbai.epigrafe'"
+                        "to your epigrafe number. You can find them in %s",
+                        "https://www.batuz.eus/fitxategiak/batuz/lroe/batuz_lroe_lista_epigrafes_v1_0_3.xlsx")
 
         if values['is_sale'] and not self.is_cancel:
             if any(not base_line['tax_ids'] for base_line in values['base_lines']):
@@ -127,12 +126,10 @@ class L10nEsEdiTbaiDocument(models.Model):
             # Chain integrity check: chain head must have been REALLY posted
             chain_head_doc = self.company_id._get_l10n_es_tbai_last_chained_document()
             if chain_head_doc and chain_head_doc != self and chain_head_doc.state != 'accepted':
-                return _("TicketBAI: Cannot post invoice while chain head (%s) has not been posted",
-                         chain_head_doc.name)
+                return _("TicketBAI: Cannot post invoice while chain head (%s) has not been posted", chain_head_doc.name)
 
             # Tax configuration check: In case of foreign customer we need the tax scope to be set
-            if values['partner'] and values['partner']._l10n_es_is_foreign() and values['taxes'].filtered(
-                    lambda t: not t.tax_scope):
+            if values['partner'] and values['partner']._l10n_es_is_foreign() and values['taxes'].filtered(lambda t: not t.tax_scope):
                 return _(
                     "In case of a foreign customer, you need to configure the tax scope on taxes:\n%s",
                     "\n".join(values['taxes'].mapped('name'))
@@ -166,9 +163,9 @@ class L10nEsEdiTbaiDocument(models.Model):
             self._generate_xml(values)
 
         if (
-                not self.chain_index
-                and not self.is_cancel
-                and values['is_sale']
+            not self.chain_index
+            and not self.is_cancel
+            and values['is_sale']
         ):
             # Assign unique 'chain index' from dedicated sequence
             self.sudo().chain_index = self.company_id._get_l10n_es_tbai_next_chain_index()
@@ -229,8 +226,7 @@ class L10nEsEdiTbaiDocument(models.Model):
         """Web service parameters for Araba and Gipuzkoa."""
         company = self.company_id
         return {
-            'url': get_key(self.company_id.l10n_es_tbai_tax_agency, 'cancel_url_' if self.is_cancel else 'post_url_',
-                           company.l10n_es_tbai_test_env),
+            'url': get_key(self.company_id.l10n_es_tbai_tax_agency, 'cancel_url_' if self.is_cancel else 'post_url_', company.l10n_es_tbai_test_env),
             'headers': {"Content-Type": "application/xml; charset=utf-8"},
             'pkcs12_data': company.l10n_es_tbai_certificate_id,
             'data': self.xml_attachment_id.raw,
@@ -265,9 +261,9 @@ class L10nEsEdiTbaiDocument(models.Model):
 
         lroe_bytes = gzip.compress(lroe_str)
 
+
         return {
-            'url': get_key(company.l10n_es_tbai_tax_agency, 'cancel_url_' if self.is_cancel else 'post_url_',
-                           company.l10n_es_tbai_test_env),
+            'url': get_key(company.l10n_es_tbai_tax_agency, 'cancel_url_' if self.is_cancel else 'post_url_', company.l10n_es_tbai_test_env),
             'headers': {
                 'Accept-Encoding': 'gzip',
                 'Content-Encoding': 'gzip',
@@ -345,9 +341,7 @@ class L10nEsEdiTbaiDocument(models.Model):
             'doc': self,
             **self._get_header_values(),
             **self._get_sender_values(),
-            **(self._get_recipient_values(values['partner'], values["is_simplified"]) if values[
-                                                                                             'partner'] and not self.is_cancel or not
-                                                                                         values['is_sale'] else {}),
+            **(self._get_recipient_values(values['partner'], values["is_simplified"]) if values['partner'] and not self.is_cancel or not values['is_sale'] else {}),
             'datetime_now': datetime.now(tz=timezone('Europe/Madrid')),
             'format_date': lambda d: datetime.strftime(d, '%d-%m-%Y'),
             'format_time': lambda d: datetime.strftime(d, '%H:%M:%S'),
@@ -456,8 +450,7 @@ class L10nEsEdiTbaiDocument(models.Model):
 
             base_line['gross_price_subtotal'] = gross_price_subtotal_before_discount
             base_line['discount_amount'] = gross_price_subtotal_before_discount - price_subtotal
-            base_line['description'] = re.sub(r'[^0-9a-zA-Z ]+', '',
-                                              base_line['name'] or base_line['product_id'].display_name or '')[:250]
+            base_line['description'] = re.sub(r'[^0-9a-zA-Z ]+', '', base_line['name'] or base_line['product_id'].display_name or '')[:250]
 
             if quantity:
                 base_line['gross_price_unit'] = gross_price_subtotal_before_discount / quantity
@@ -476,47 +469,48 @@ class L10nEsEdiTbaiDocument(models.Model):
                 continue
 
             l10n_es_type = grouping_key['l10n_es_type']
+            sign = grouping_key['is_refund'] and -1 or 1
             encountered_l10n_es_type.add(l10n_es_type)
             if l10n_es_type in ('sujeto', 'sujeto_isp'):
                 tax_info = {
                     'TipoImpositivo': grouping_key['applied_tax_amount'],
-                    'BaseImponible': float_round(values['base_amount'], 2),
-                    'CuotaRepercutida': float_round(values['tax_amount'], 2),
+                    'BaseImponible': sign * float_round(values['base_amount'], 2),
+                    'CuotaRepercutida': sign * float_round(values['tax_amount'], 2),
                 }
-                sujeta_no_sujeta \
-                    .setdefault('Sujeta', {}) \
-                    .setdefault('NoExenta', {}) \
-                    .setdefault('DesgloseIVA', {'DetalleIVA': []})['DetalleIVA'] \
+                sujeta_no_sujeta\
+                    .setdefault('Sujeta', {})\
+                    .setdefault('NoExenta', {})\
+                    .setdefault('DesgloseIVA', {'DetalleIVA': []})['DetalleIVA']\
                     .append(tax_info)
                 if l10n_es_type == 'sujeto':
                     sujeto.append(tax_info)
                 else:
                     sujeto_isp.append(tax_info)
             elif l10n_es_type == 'exento':
-                sujeta_no_sujeta \
-                    .setdefault('Sujeta', {}) \
-                    .setdefault('Exenta', {'DetalleExenta': []})['DetalleExenta'] \
+                sujeta_no_sujeta\
+                    .setdefault('Sujeta', {})\
+                    .setdefault('Exenta', {'DetalleExenta': []})['DetalleExenta']\
                     .append({
-                    'BaseImponible': float_round(values['base_amount'], 2),
-                    'CausaExencion': grouping_key['l10n_es_exempt_reason'],
-                })
+                        'BaseImponible': sign * float_round(values['base_amount'], 2),
+                        'CausaExencion': grouping_key['l10n_es_exempt_reason'],
+                    })
             elif l10n_es_type == 'recargo':
-                detalle_iva = sujeta_no_sujeta \
-                    .get('Sujeta', {}) \
-                    .get('NoExenta', {}) \
-                    .get('DesgloseIVA', {}) \
+                detalle_iva = sujeta_no_sujeta\
+                    .get('Sujeta', {})\
+                    .get('NoExenta', {})\
+                    .get('DesgloseIVA', {})\
                     .get('DetalleIVA')
                 if detalle_iva:
-                    detalle_iva[-1]['CuotaRecargoEquivalencia'] = float_round(values['tax_amount'], 2)
-                    detalle_iva[-1]['TipoRecargoEquivalencia'] = grouping_key['applied_tax_amount']
+                    detalle_iva[-1]['CuotaRecargoEquivalencia'] = sign * float_round(values['tax_amount'], 2)
+                    detalle_iva[-1]['TipoRecargoEquivalencia'] = sign * grouping_key['applied_tax_amount']
             elif l10n_es_type == 'no_sujeto':
                 no_sujeta = sujeta_no_sujeta.setdefault('NoSujeta', {})
                 no_sujeta.setdefault('ImportePorArticulos7_14_Otros', 0.0)
-                no_sujeta['ImportePorArticulos7_14_Otros'] += float_round(values['base_amount'], 2)
+                no_sujeta['ImportePorArticulos7_14_Otros'] += sign * float_round(values['base_amount'], 2)
             elif l10n_es_type == 'no_sujeto_loc':
                 no_sujeta = sujeta_no_sujeta.setdefault('NoSujeta', {})
                 no_sujeta.setdefault('ImporteTAIReglasLocalizacion', 0.0)
-                no_sujeta['ImporteTAIReglasLocalizacion'] += float_round(values['base_amount'], 2)
+                no_sujeta['ImporteTAIReglasLocalizacion'] += sign * float_round(values['base_amount'], 2)
 
         if 'sujeto' in encountered_l10n_es_type and 'sujeto_isp' not in encountered_l10n_es_type:
             sujeta_no_sujeta['Sujeta']['NoExenta']['TipoNoExenta'] = 'S2'
@@ -547,10 +541,10 @@ class L10nEsEdiTbaiDocument(models.Model):
                 'l10n_es_bien_inversion': tax.l10n_es_bien_inversion,
                 'is_reverse_charge': tax_data['is_reverse_charge'],
                 'tax_scope': tax.tax_scope,
+                'is_refund': base_line['is_refund'],
             }
 
-        base_lines_aggregated_values = AccountTax._aggregate_base_lines_tax_details(base_lines,
-                                                                                    tax_details_info_grouping_function)
+        base_lines_aggregated_values = AccountTax._aggregate_base_lines_tax_details(base_lines, tax_details_info_grouping_function)
         values_per_grouping_key = AccountTax._aggregate_base_lines_aggregated_values(base_lines_aggregated_values)
 
         tax_details_info = self._build_tax_details_info(values_per_grouping_key.values())
@@ -574,12 +568,15 @@ class L10nEsEdiTbaiDocument(models.Model):
         def totals_grouping_function(base_line, tax_data):
             return True if tax_data else None
 
-        base_lines_aggregated_values = AccountTax._aggregate_base_lines_tax_details(base_lines,
-                                                                                    totals_grouping_function)
+        base_lines_aggregated_values = AccountTax._aggregate_base_lines_tax_details(base_lines, totals_grouping_function)
         values_per_grouping_key = AccountTax._aggregate_base_lines_aggregated_values(base_lines_aggregated_values)
 
         for values in values_per_grouping_key.values():
             total_amount += values['base_amount']
+
+        if is_refund:
+            total_amount = -total_amount
+            total_retention = -total_retention
 
         return {
             'invoice_info': invoice_info,
@@ -603,10 +600,10 @@ class L10nEsEdiTbaiDocument(models.Model):
                 'l10n_es_bien_inversion': tax.l10n_es_bien_inversion,
                 'is_reverse_charge': tax_data['is_reverse_charge'],
                 'tax_scope': tax.tax_scope,
+                'is_refund': base_line['is_refund'],
             }
 
-        base_lines_aggregated_values = AccountTax._aggregate_base_lines_tax_details(base_lines,
-                                                                                    tax_details_info_grouping_function)
+        base_lines_aggregated_values = AccountTax._aggregate_base_lines_tax_details(base_lines, tax_details_info_grouping_function)
         values_per_grouping_key = AccountTax._aggregate_base_lines_aggregated_values(base_lines_aggregated_values)
 
         invoice_info = {}
@@ -636,8 +633,7 @@ class L10nEsEdiTbaiDocument(models.Model):
         def totals_grouping_function(base_line, tax_data):
             return True if tax_data else None
 
-        base_lines_aggregated_values = AccountTax._aggregate_base_lines_tax_details(base_lines,
-                                                                                    totals_grouping_function)
+        base_lines_aggregated_values = AccountTax._aggregate_base_lines_tax_details(base_lines, totals_grouping_function)
         values_per_grouping_key = AccountTax._aggregate_base_lines_aggregated_values(base_lines_aggregated_values)
 
         for values in values_per_grouping_key.values():
@@ -645,6 +641,7 @@ class L10nEsEdiTbaiDocument(models.Model):
 
         if is_refund:
             total_amount = -total_amount
+            total_retention = -total_retention
 
         return {
             'invoice_info': invoice_info,
@@ -686,8 +683,7 @@ class L10nEsEdiTbaiDocument(models.Model):
         values = {
             'dsig': {
                 'document_id': document_id,
-                'x509_certificate': base64.encodebytes(
-                    base64.b64decode(certificate_sudo._get_der_certificate_bytes())).decode(),
+                'x509_certificate': base64.encodebytes(base64.b64decode(certificate_sudo._get_der_certificate_bytes())).decode(),
                 'public_modulus': n.decode(),
                 'public_exponent': e.decode(),
                 'iso_now': datetime.now().isoformat(),
@@ -713,8 +709,7 @@ class L10nEsEdiTbaiDocument(models.Model):
 
         # Sign (writes into SignatureValue)
         signed_info_xml = xml_sig.find('SignedInfo', namespaces=NS_MAP)
-        xml_sig.find('SignatureValue', namespaces=NS_MAP).text = certificate_sudo._sign(
-            canonicalize_node(signed_info_xml)).decode()
+        xml_sig.find('SignatureValue', namespaces=NS_MAP).text = certificate_sudo._sign(canonicalize_node(signed_info_xml)).decode()
 
         return xml_root
 
@@ -725,8 +720,8 @@ class L10nEsEdiTbaiDocument(models.Model):
             'sender': sender,
             'sender_vat': sender.vat[2:] if sender.vat.startswith('ES') else sender.vat,
             'fiscal_year': str(self.date.year),
-            'epigrafe': self.env['ir.config_parameter'].sudo().get_param('l10n_es_edi_tbai.epigrafe', '')
-
+            'epigrafe': self.env['ir.config_parameter'].sudo().get_param('l10n_es_edi_tbai.epigrafe', ''),
+            'batuz_correction': self.env.context.get('batuz_correction'),
         }
         lroe_values.update(values)
         lroe_str = self.env['ir.qweb']._render('l10n_es_edi_tbai.template_LROE_240_main_recibidas', lroe_values)
@@ -744,7 +739,7 @@ class L10nEsEdiTbaiDocument(models.Model):
         self.ensure_one()
         original_vendor_bill = self.env['account.move'].search([('l10n_es_tbai_post_document_id', '=', self.id)],
                                                                limit=1)
-        if original_vendor_bill and self.is_cancel:  # Normally it should be is_cancel in this case
+        if original_vendor_bill and self.is_cancel: # Normally it should be is_cancel in this case
             vals = original_vendor_bill.l10n_es_tbai_post_document_id._get_values_from_xml({
                 'sequence': './/CabeceraFactura/SerieFactura',
                 'number': './/CabeceraFactura/NumFactura',
@@ -817,8 +812,7 @@ class L10nEsEdiTbaiDocument(models.Model):
 
         company = self.company_id
         sequence, number = self._get_tbai_sequence_and_number()
-        tbai_qr_no_crc = get_key(company.l10n_es_tbai_tax_agency, 'qr_url_',
-                                 company.l10n_es_tbai_test_env) + '?' + '&'.join([
+        tbai_qr_no_crc = get_key(company.l10n_es_tbai_tax_agency, 'qr_url_', company.l10n_es_tbai_test_env) + '?' + '&'.join([
             'id=' + self._get_tbai_id(),
             's=' + sequence,
             'nf=' + number,

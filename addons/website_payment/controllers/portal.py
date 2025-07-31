@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.addons.payment import utils as payment_utils
-from odoo.addons.payment.controllers import portal as payment_portal
-
 from odoo import http, _
 from odoo.exceptions import ValidationError
 from odoo.http import request
 from odoo.tools.json import scriptsafe as json_safe
+
+from odoo.addons.account_payment.controllers import portal as account_payment_portal
+from odoo.addons.payment import utils as payment_utils
+from odoo.addons.payment.controllers import portal as payment_portal
 
 
 class PaymentPortal(payment_portal.PaymentPortal):
@@ -29,8 +30,7 @@ class PaymentPortal(payment_portal.PaymentPortal):
 
         if request.env.user._is_public():
             kwargs['partner_id'] = request.env.user.partner_id.id
-            kwargs['access_token'] = payment_utils.generate_access_token(kwargs['partner_id'], kwargs['amount'],
-                                                                         kwargs['currency_id'])
+            kwargs['access_token'] = payment_utils.generate_access_token(kwargs['partner_id'], kwargs['amount'], kwargs['currency_id'])
 
         return self.payment_pay(**kwargs)
 
@@ -84,7 +84,7 @@ class PaymentPortal(payment_portal.PaymentPortal):
         return tx_sudo._get_processing_values()
 
     def _get_extra_payment_form_values(
-            self, donation_options=None, donation_descriptions=None, is_donation=False, **kwargs
+        self, donation_options=None, donation_descriptions=None, is_donation=False, **kwargs
     ):
         rendering_context = super()._get_extra_payment_form_values(
             donation_options=donation_options,
@@ -152,3 +152,9 @@ class PaymentPortal(payment_portal.PaymentPortal):
             for provider_sudo in providers_sudo:
                 res[provider_sudo.id] = False
         return res
+
+
+class PortalAccount(account_payment_portal.PortalAccount):
+    def _invoice_get_page_view_values(self, *args, **kwargs):
+        """Override of `account_payment` to make the providers filtering website-aware."""
+        return super()._invoice_get_page_view_values(*args, website_id=request.website.id, **kwargs)

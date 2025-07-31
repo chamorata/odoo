@@ -10,7 +10,8 @@ from odoo.osv.expression import AND
 
 
 class ProductTemplate(models.Model):
-    _inherit = 'product.template'
+    _name = 'product.template'
+    _inherit = ['product.template', 'pos.load.mixin']
 
     available_in_pos = fields.Boolean(string='Available in POS',
                                       help='Check if you want this product to appear in the Point of Sale.',
@@ -61,6 +62,14 @@ class ProductTemplate(models.Model):
                     [('product_id', 'in', product.product_variant_ids.ids)], limit=1).combo_id.name
                 if combo_name:
                     raise UserError(_('You must first remove this product from the %s combo', combo_name))
+
+    @api.model
+    def _load_pos_data_fields(self, config_id):
+        return ['id']
+
+    @api.model
+    def _load_pos_data_domain(self, data):
+        return [('id', 'in', list({p['product_tmpl_id'] for p in data['product.product']['data']}))]
 
 
 class ProductProduct(models.Model):

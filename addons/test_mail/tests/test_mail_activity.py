@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import random
 from datetime import date, datetime, timedelta
-from unittest.mock import DEFAULT
+from dateutil.relativedelta import relativedelta
+from psycopg2 import IntegrityError
 from unittest.mock import patch
+from unittest.mock import DEFAULT
 
 import pytz
-from dateutil.relativedelta import relativedelta
-from freezegun import freeze_time
+import random
+
+from odoo import fields, exceptions, tests
 from odoo.addons.mail.models.mail_activity import MailActivity
 from odoo.addons.mail.tests.common import mail_new_test_user, MailCommon
 from odoo.addons.test_mail.models.test_mail_models import MailTestActivity
-from psycopg2 import IntegrityError
-
-from odoo import fields, exceptions, tests
 from odoo.tests import Form, HttpCase, users
+from odoo.tests.common import freeze_time
 from odoo.tools import mute_logger
 
 
@@ -196,8 +196,7 @@ class TestActivityFlow(TestActivityCommon):
         rec = self.test_record.with_user(self.user_employee)
         with self.assertSinglePostNotifications(
                 [{'partner': self.partner_admin, 'type': 'email'}],
-                message_info={'content': 'assigned you the following activity', 'subtype': 'mail.mt_note',
-                              'message_type': 'user_notification'}):
+                message_info={'content': 'assigned you the following activity', 'subtype': 'mail.mt_note', 'message_type': 'user_notification'}):
             activity = rec.activity_schedule(
                 'test_mail.mail_act_test_todo',
                 user_id=self.user_admin.id)
@@ -230,9 +229,7 @@ class TestActivityFlow(TestActivityCommon):
             'summary': 'Email Summary',
         })
         call_activity_type = ActivityType.create({'name': 'call'})
-        with Form(self.env['mail.activity'].with_context(
-                default_res_model_id=self.env['ir.model']._get_id('mail.test.activity'),
-                default_res_id=self.test_record.id)) as ActivityForm:
+        with Form(self.env['mail.activity'].with_context(default_res_model_id=self.env['ir.model']._get_id('mail.test.activity'), default_res_id=self.test_record.id)) as ActivityForm:
             # `res_model_id` and `res_id` are invisible, see view `mail.mail_activity_view_form_popup`
             # they must be set using defaults, see `action_feedback_schedule_next`
             ActivityForm.activity_type_id = call_activity_type
@@ -362,7 +359,7 @@ class TestActivityMixin(TestActivityCommon):
             self.test_record.activity_feedback(
                 ['test_mail.mail_act_test_todo'],
                 user_id=self.user_admin.id,
-                feedback='Test feedback', )
+                feedback='Test feedback',)
             self.assertEqual(self.test_record.activity_ids, act2 | act3)
             self.assertFalse(act1.exists())
 
@@ -418,8 +415,7 @@ class TestActivityMixin(TestActivityCommon):
             test_users += mail_new_test_user(self.env, name=f'test_user_{i}', login=f'test_password_{i}')
         for user in test_users:
             self.test_record.activity_schedule(user_id=user.id)
-        archived_users = self.env['res.users'].browse(
-            map(lambda x: x.id, random.sample(test_users, 2)))  # pick 2 users to archive
+        archived_users = self.env['res.users'].browse(map(lambda x: x.id, random.sample(test_users, 2)))  # pick 2 users to archive
         archived_users.action_archive()
         active_users = test_users - archived_users
 
@@ -623,7 +619,7 @@ class TestActivityMixin(TestActivityCommon):
         activity_type.sudo().keep_done = True
 
         with patch('odoo.addons.mail.models.mail_activity.datetime', MockedDatetime), \
-                patch('odoo.addons.mail.models.mail_activity_mixin.datetime', MockedDatetime):
+            patch('odoo.addons.mail.models.mail_activity_mixin.datetime', MockedDatetime):
             origin_1_activity_1 = self.env['mail.activity'].create({
                 'summary': 'Test',
                 'activity_type_id': activity_type.id,
@@ -671,8 +667,7 @@ class TestActivityMixin(TestActivityCommon):
 
             result = self.env['mail.test.activity'].search([('activity_state', 'in', ('today', 'overdue'))])
             self.assertTrue(len(result) > 0)
-            self.assertEqual(result,
-                             all_activity_mixin_record.filtered(lambda p: p.activity_state in ('today', 'overdue')))
+            self.assertEqual(result, all_activity_mixin_record.filtered(lambda p: p.activity_state in ('today', 'overdue')))
 
             result = self.env['mail.test.activity'].search([('activity_state', 'not in', ('today',))])
             self.assertTrue(len(result) > 0)
@@ -682,8 +677,7 @@ class TestActivityMixin(TestActivityCommon):
             self.assertTrue(len(result) >= 3, "There is more than 3 records without an activity schedule on it")
             self.assertEqual(result, all_activity_mixin_record.filtered(lambda p: not p.activity_state))
 
-            result = self.env['mail.test.activity'].search(
-                [('activity_state', 'not in', ('planned', 'overdue', 'today'))])
+            result = self.env['mail.test.activity'].search([('activity_state', 'not in', ('planned', 'overdue', 'today'))])
             self.assertTrue(len(result) >= 3, "There is more than 3 records without an activity schedule on it")
             self.assertEqual(result, all_activity_mixin_record.filtered(lambda p: not p.activity_state))
 
@@ -691,8 +685,7 @@ class TestActivityMixin(TestActivityCommon):
             # because of falsy value
             result = self.env['mail.test.activity'].search([('activity_state', 'not in', ('today', False))])
             self.assertTrue(len(result) > 0)
-            self.assertEqual(result,
-                             all_activity_mixin_record.filtered(lambda p: p.activity_state not in ('today', False)))
+            self.assertEqual(result, all_activity_mixin_record.filtered(lambda p: p.activity_state not in ('today', False)))
 
             result = self.env['mail.test.activity'].search([('activity_state', 'in', ('today', False))])
             self.assertTrue(len(result) > 0)
@@ -752,6 +745,7 @@ class TestActivityMixin(TestActivityCommon):
 
     @mute_logger('odoo.addons.mail.models.mail_mail')
     def test_my_activity_flow_employee(self):
+        self.env.ref('test_mail.mail_act_test_todo').keep_done = True
         Activity = self.env['mail.activity']
         date_today = date.today()
         Activity.create({
@@ -770,7 +764,7 @@ class TestActivityMixin(TestActivityCommon):
         })
 
         test_record_1 = self.env['mail.test.activity'].with_context(self._test_context).create({'name': 'Test 1'})
-        Activity.create({
+        test_record_1_late_activity = Activity.create({
             'activity_type_id': self.env.ref('test_mail.mail_act_test_todo').id,
             'date_deadline': date_today,
             'res_model_id': self.env.ref('test_mail.model_mail_test_activity').id,
@@ -780,6 +774,11 @@ class TestActivityMixin(TestActivityCommon):
         with self.with_user('employee'):
             record = self.env['mail.test.activity'].search([('my_activity_date_deadline', '=', date_today)])
             self.assertEqual(test_record_1, record)
+            test_record_1_late_activity._action_done()
+            record = self.env['mail.test.activity'].with_context(active_test=False).search([
+                ('my_activity_date_deadline', '=', date_today)
+            ])
+            self.assertFalse(record, "Should not find record if the only late activity is done")
 
     @users('employee')
     def test_record_unlink(self):
@@ -829,6 +828,129 @@ class TestActivitySystray(TestActivityCommon, HttpCase):
             if record.get("model") == self.test_record._name
         )
         self.assertEqual(total_count, 1)
+
+
+@tests.tagged('mail_activity')
+@freeze_time("2024-01-01 09:00:00")
+class TestActivitySystrayBusNotify(TestActivityCommon):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.user_employee_2 = cls.user_employee.copy(default={'login': "employee_2"})
+
+        cls.activity_vals = [
+            {
+                'res_model_id': cls.env['ir.model']._get_id(cls.test_record._name),
+                'res_id': cls.test_record.id,
+                'date_deadline': dt,
+                'user_id': cls.user_employee.id,
+            } | extra
+            for dt, extra in zip(
+                (datetime(2023, 12, 31, 15, 0, 0), datetime(2023, 12, 31, 15, 0, 0), datetime(2024, 1, 1, 15, 0, 0), datetime(2024, 1, 2, 15, 0, 0)),
+                ({'active': False}, {}, {}, {}),
+            )
+        ]
+
+    @users('employee')
+    def test_notify_create_unlink_activities(self):
+        """Check creating and unlinking activities notifies of the change in 'to be done' activity count per user."""
+        users = self.env.user + self.user_employee_2
+
+        expected_create_notifs = [
+            ([(self.env.cr.dbname, user.partner_id._name, user.partner_id.id)], [{
+                "type": "mail.activity/updated",
+                "payload": {
+                    "activity_created": True,
+                    "count_diff": 2,
+                },
+            }])
+            for user in users
+        ]
+        expected_unlink_notifs = [
+            ([(self.env.cr.dbname, user.partner_id._name, user.partner_id.id)], [{
+                "type": "mail.activity/updated",
+                "payload": {
+                    "activity_deleted": True,
+                    "count_diff": -2,
+                },
+            }])
+            for user in users
+        ]
+        for (
+            user,
+            (expected_create_notif_channels, expected_create_notif_message_items),
+            (expected_unlink_notif_channels, expected_unlink_notif_message_items),
+        ) in zip(users, expected_create_notifs, expected_unlink_notifs):
+            user_activity_vals = [vals | {'user_id': user.id} for vals in self.activity_vals]
+            with self.assertBus(expected_create_notif_channels, expected_create_notif_message_items):
+                activities = self.env['mail.activity'].create(user_activity_vals)
+            self._reset_bus()
+            with self.assertBus(expected_unlink_notif_channels, expected_unlink_notif_message_items):
+                activities.unlink()
+
+    @users('employee')
+    def test_notify_update_activities(self):
+        write_vals_all = [
+            # added to counter for employee 2, removed from counter for current employee
+            {'user_id': self.user_employee_2.id},
+            {'user_id': self.user_employee_2.id, 'date_deadline': datetime(2023, 12, 31, 15, 0, 0), 'active': True},
+            # just notify
+            {'date_deadline': datetime(2024, 1, 2, 15, 0, 0)},  # everything is in the future -> all removed from counter
+            {'date_deadline': datetime(2023, 12, 31, 15, 0, 0)},  # everything is in the past -> the one from the future is added
+            {'active': False},  # everything is archived -> all removed from counter
+            {'active': True},  # the archived one is unarchived -> added to counter
+            {},  # no "to be done" count change -> no notif
+            [{'date_deadline': datetime(2024, 1, 2, 15, 0, 0), 'active': True}, {}, {}, {}],
+        ]
+
+        expected_notifs = [
+            # transfer 4 activities to the second employee, 2 todos taken and 2 given
+            [
+                ([(self.env.cr.dbname, user.partner_id._name, user.partner_id.id)], [{
+                    "type": "mail.activity/updated",
+                    "payload": {
+                        "count_diff": count_diff,
+                    } | ({"activity_created": True} if count_diff > 0 else {"activity_deleted": True}),
+                }])
+                for user, count_diff
+                in zip(self.user_employee + self.user_employee_2, [-2, 2])
+            ],
+            # transfer 4 activities to the second employee, 2 todos are taken and 4 are given
+            [
+                ([(self.env.cr.dbname, user.partner_id._name, user.partner_id.id)], [{
+                    "type": "mail.activity/updated",
+                    "payload": {
+                        "count_diff": count_diff,
+                    } | ({"activity_created": True} if count_diff > 0 else {"activity_deleted": True}),
+                }])
+                for user, count_diff
+                in zip(self.user_employee + self.user_employee_2, [-2, 4])
+            ],
+        ] + [[
+                ([(self.env.cr.dbname, self.user_employee.partner_id._name, self.user_employee.partner_id.id)], [{
+                    "type": "mail.activity/updated",
+                    "payload": {
+                        "count_diff": count_diff,
+                    } | ({"activity_created": True} if count_diff > 0 else {"activity_deleted": True}),
+                }])
+            ] for count_diff in (-2, 1, -2, 1)
+        ] + [
+            [([], [])],  # no change -> no notif
+            [([], [])],  # no change in "todo" count -> no notif
+        ]
+        for write_vals, expected_notif_vals in zip(write_vals_all, expected_notifs):
+            with self.subTest(vals=write_vals):
+                _past_archived, _past_active, _today, _tomorrow = activities = self.env['mail.activity'].create(self.activity_vals)
+                self._reset_bus()
+                if isinstance(write_vals, list):
+                    for activity, vals in zip(activities, write_vals):
+                        activity.write(vals)
+                else:
+                    activities.write(write_vals)
+                for (notif_channels, notif_messages) in expected_notif_vals:
+                    self.assertBusNotifications(notif_channels, notif_messages)
+                activities.unlink()
 
 
 @tests.tagged('mail_activity')

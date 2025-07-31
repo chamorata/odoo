@@ -3,13 +3,13 @@
 import logging
 import re
 
-from odoo.addons.website.tools import text_from_html
 from werkzeug.urls import url_join
 
 from odoo import api, fields, models, _
-from odoo.exceptions import AccessError
+from odoo.addons.website.tools import text_from_html
 from odoo.http import request
 from odoo.osv import expression
+from odoo.exceptions import AccessError
 from odoo.tools import escape_psql
 from odoo.tools.json import scriptsafe as json_safe
 
@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 class SeoMetadata(models.AbstractModel):
+
     _name = 'website.seo.metadata'
     _description = 'SEO metadata'
 
@@ -53,8 +54,7 @@ class SeoMetadata(models.AbstractModel):
             'og:type': 'website',
             'og:title': title,
             'og:site_name': request.website.name,
-            'og:url': url_join(request.website.domain or request.httprequest.url_root,
-                               self.env['ir.http']._url_for(request.httprequest.path)),
+            'og:url': url_join(request.website.domain or request.httprequest.url_root, self.env['ir.http']._url_for(request.httprequest.path)),
             'og:image': request.website.image_url(request.website, img_field),
         }
         # Default meta for Twitter
@@ -89,10 +89,8 @@ class SeoMetadata(models.AbstractModel):
         if self.website_meta_description:
             opengraph_meta['og:description'] = self.website_meta_description
             twitter_meta['twitter:description'] = self.website_meta_description
-        opengraph_meta['og:image'] = url_join(root_url, self.env['ir.http']._url_for(
-            self.website_meta_og_img or opengraph_meta['og:image']))
-        twitter_meta['twitter:image'] = url_join(root_url, self.env['ir.http']._url_for(
-            self.website_meta_og_img or twitter_meta['twitter:image']))
+        opengraph_meta['og:image'] = url_join(root_url, self.env['ir.http']._url_for(self.website_meta_og_img or opengraph_meta['og:image']))
+        twitter_meta['twitter:image'] = url_join(root_url, self.env['ir.http']._url_for(self.website_meta_og_img or twitter_meta['twitter:image']))
         return {
             'opengraph_meta': opengraph_meta,
             'twitter_meta': twitter_meta,
@@ -101,6 +99,7 @@ class SeoMetadata(models.AbstractModel):
 
 
 class WebsiteCoverPropertiesMixin(models.AbstractModel):
+
     _name = 'website.cover_properties.mixin'
     _description = 'Cover Properties Website Mixin'
 
@@ -155,6 +154,7 @@ class WebsiteCoverPropertiesMixin(models.AbstractModel):
 
 
 class WebsiteMultiMixin(models.AbstractModel):
+
     _name = 'website.multi.mixin'
     _description = 'Multi Website Mixin'
 
@@ -176,15 +176,14 @@ class WebsiteMultiMixin(models.AbstractModel):
 
 
 class WebsitePublishedMixin(models.AbstractModel):
+
     _name = "website.published.mixin"
     _description = 'Website Published Mixin'
 
     website_published = fields.Boolean('Visible on current website', related='is_published', readonly=False)
-    is_published = fields.Boolean('Is Published', copy=False, default=lambda self: self._default_is_published(),
-                                  index=True)
+    is_published = fields.Boolean('Is Published', copy=False, default=lambda self: self._default_is_published(), index=True)
     can_publish = fields.Boolean('Can Publish', compute='_compute_can_publish')
-    website_url = fields.Char('Website URL', compute='_compute_website_url',
-                              help='The full URL to access the document through the website.')
+    website_url = fields.Char('Website URL', compute='_compute_website_url', help='The full URL to access the document through the website.')
 
     @api.depends_context('lang')
     def _compute_website_url(self):
@@ -231,8 +230,11 @@ class WebsitePublishedMixin(models.AbstractModel):
                 # Some main_record might be in sudo because their content needs
                 # to be rendered by a template even if they were not supposed
                 # to be accessible
-                plain_record = record.sudo(flag=False) if self._context.get('can_publish_unsudo_main_object',
-                                                                            False) else record
+                # TODO in master, instead of this we should ensure main_object
+                # (which calls can_publish) is ensured to not be in sudo for all
+                # renderings, and sudo() only the required operations if needed.
+                # See REVIEW_CAN_PUBLISH_UNSUDO
+                plain_record = record.sudo(flag=False) if self._context.get('can_publish_unsudo_main_object', False) else record
                 self.env['website'].get_current_website()._check_user_can_modify(plain_record)
                 record.can_publish = True
             except AccessError:
@@ -246,6 +248,7 @@ class WebsitePublishedMixin(models.AbstractModel):
 
 
 class WebsitePublishedMultiMixin(WebsitePublishedMixin):
+
     _name = 'website.published.multi.mixin'
     _inherit = ['website.published.mixin', 'website.multi.mixin']
     _description = 'Multi Website Published Mixin'
@@ -261,8 +264,7 @@ class WebsitePublishedMultiMixin(WebsitePublishedMixin):
         current_website_id = self._context.get('website_id')
         for record in self:
             if current_website_id:
-                record.website_published = record.is_published and (
-                            not record.website_id or record.website_id.id == current_website_id)
+                record.website_published = record.is_published and (not record.website_id or record.website_id.id == current_website_id)
             else:
                 record.website_published = record.is_published
 
@@ -364,7 +366,7 @@ class WebsiteSearchableMixin(models.AbstractModel):
             limit=limit,
             order=search_detail.get('order', order)
         )
-        count = model.search_count(domain)
+        count = model.search_count(domain) if limit and limit == len(results) else len(results)
         return results, count
 
     def _search_render_results(self, fetch_fields, mapping, icon, limit):

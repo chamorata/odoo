@@ -1,9 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import re
-
-import werkzeug
 from markupsafe import Markup
+import werkzeug
 
 from odoo import api, fields, Command, models, _
 from odoo.exceptions import UserError, ValidationError
@@ -71,10 +70,8 @@ class HrExpense(models.Model):
         related='product_id.uom_id.category_id',
         readonly=True,
     )
-    product_has_cost = fields.Boolean(
-        compute='_compute_from_product')  # Whether the product has a cost (standard_price) or not
-    product_has_tax = fields.Boolean(string="Whether tax is defined on a selected product",
-                                     compute='_compute_from_product')
+    product_has_cost = fields.Boolean(compute='_compute_from_product')  # Whether the product has a cost (standard_price) or not
+    product_has_tax = fields.Boolean(string="Whether tax is defined on a selected product", compute='_compute_from_product')
     quantity = fields.Float(required=True, digits='Product Unit of Measure', default=1)
     description = fields.Text(string="Internal Notes")
     message_main_attachment_checksum = fields.Char(related='message_main_attachment_id.checksum')
@@ -108,13 +105,10 @@ class HrExpense(models.Model):
         copy=False,
         index=True,
     )
-    approved_by = fields.Many2one(comodel_name='res.users', string="Approved By", related='sheet_id.user_id',
-                                  tracking=False)
+    approved_by = fields.Many2one(comodel_name='res.users', string="Approved By", related='sheet_id.user_id', tracking=False)
     approved_on = fields.Datetime(string="Approved On", related='sheet_id.approval_date')
-    duplicate_expense_ids = fields.Many2many(comodel_name='hr.expense',
-                                             compute='_compute_duplicate_expense_ids')  # Used to trigger warnings
-    same_receipt_expense_ids = fields.Many2many(comodel_name='hr.expense',
-                                                compute='_compute_same_receipt_expense_ids')  # Used to trigger warnings
+    duplicate_expense_ids = fields.Many2many(comodel_name='hr.expense', compute='_compute_duplicate_expense_ids')  # Used to trigger warnings
+    same_receipt_expense_ids = fields.Many2many(comodel_name='hr.expense', compute='_compute_same_receipt_expense_ids')  # Used to trigger warnings
 
     # Amount fields
     tax_amount_currency = fields.Monetary(
@@ -203,8 +197,7 @@ class HrExpense(models.Model):
         check_company=True,
         help="Both price-included and price-excluded taxes will behave as price-included taxes for expenses.",
     )
-    accounting_date = fields.Date(
-        # The date used for the accounting entries or the one we'd like to use if not yet posted
+    accounting_date = fields.Date(  # The date used for the accounting entries or the one we'd like to use if not yet posted
         related='sheet_id.accounting_date',
         string="Accounting Date",
         store=True,
@@ -238,8 +231,7 @@ class HrExpense(models.Model):
     @api.depends('product_id')
     def _compute_product_description(self):
         for expense in self:
-            expense.product_description = not is_html_empty(
-                expense.product_id.description) and expense.product_id.description
+            expense.product_description = not is_html_empty(expense.product_id.description) and expense.product_id.description
 
     @api.depends('product_id')
     def _compute_name(self):
@@ -296,10 +288,8 @@ class HrExpense(models.Model):
     @api.depends('product_id')
     def _compute_from_product(self):
         for expense in self:
-            expense.product_has_cost = expense.product_id and not expense.company_currency_id.is_zero(
-                expense.product_id.standard_price)
-            expense.product_has_tax = bool(expense.product_id.supplier_taxes_id.filtered_domain(
-                self.env['account.tax']._check_company_domain(expense.company_id)))
+            expense.product_has_cost = expense.product_id and not expense.company_currency_id.is_zero(expense.product_id.standard_price)
+            expense.product_has_tax = bool(expense.product_id.supplier_taxes_id.filtered_domain(self.env['account.tax']._check_company_domain(expense.company_id)))
 
     @api.depends('product_id.uom_id')
     def _compute_uom_id(self):
@@ -326,8 +316,7 @@ class HrExpense(models.Model):
     def _compute_total_amount_currency(self):
         AccountTax = self.env['account.tax']
         for expense in self.filtered('product_has_cost'):
-            base_line = expense._prepare_base_line_for_taxes_computation(price_unit=expense.price_unit,
-                                                                         quantity=expense.quantity)
+            base_line = expense._prepare_base_line_for_taxes_computation(price_unit=expense.price_unit, quantity=expense.quantity)
             AccountTax._add_tax_details_in_base_line(base_line, expense.company_id)
             AccountTax._round_base_lines_tax_details([base_line], expense.company_id)
             expense.total_amount_currency = base_line['tax_details']['total_included_currency']
@@ -391,8 +380,7 @@ class HrExpense(models.Model):
         for _expense in self:
             expense = _expense.with_company(_expense.company_id)
             # taxes only from the same company
-            expense.tax_ids = expense.product_id.supplier_taxes_id.filtered_domain(
-                self.env['account.tax']._check_company_domain(expense.company_id))
+            expense.tax_ids = expense.product_id.supplier_taxes_id.filtered_domain(self.env['account.tax']._check_company_domain(expense.company_id))
 
     @api.depends('total_amount_currency', 'tax_ids')
     def _compute_tax_amount_currency(self):
@@ -409,8 +397,7 @@ class HrExpense(models.Model):
             AccountTax._add_tax_details_in_base_line(base_line, expense.company_id)
             AccountTax._round_base_lines_tax_details([base_line], expense.company_id)
             tax_details = base_line['tax_details']
-            expense.tax_amount_currency = tax_details['total_included_currency'] - tax_details[
-                'total_excluded_currency']
+            expense.tax_amount_currency = tax_details['total_included_currency'] - tax_details['total_excluded_currency']
             expense.untaxed_amount_currency = tax_details['total_excluded_currency']
 
     @api.depends('total_amount', 'currency_rate', 'tax_ids', 'is_multiple_currency')
@@ -452,8 +439,7 @@ class HrExpense(models.Model):
                     company=expense.company_id,
                 )[product_id.id]
             else:
-                expense.price_unit = expense.company_currency_id.round(
-                    expense.total_amount / expense.quantity) if expense.quantity else 0.
+                expense.price_unit = expense.company_currency_id.round(expense.total_amount / expense.quantity) if expense.quantity else 0.
 
     def _needs_product_price_computation(self):
         # Hook to be overridden.
@@ -505,8 +491,7 @@ class HrExpense(models.Model):
     def _compute_duplicate_expense_ids(self):
         self.duplicate_expense_ids = [Command.clear()]
 
-        expenses = self.filtered(
-            lambda expense: expense.employee_id and expense.product_id and expense.total_amount_currency)
+        expenses = self.filtered(lambda expense: expense.employee_id and expense.product_id and expense.total_amount_currency)
         if expenses.ids:
             duplicates_query = """
               SELECT ARRAY_AGG(DISTINCT he.id)
@@ -569,8 +554,9 @@ class HrExpense(models.Model):
 
     def attach_document(self, **kwargs):
         """When an attachment is uploaded as a receipt, set it as the main attachment."""
-        self._message_set_main_attachment_id(self.env["ir.attachment"].browse(kwargs['attachment_ids'][-1:]),
-                                             force=True)
+        if not self.has_access('write') or (self.sheet_id and not self.sheet_id.has_access('write')):
+            raise UserError(_("You don't have the rights to attach a document to a submitted expense. Please reset the expense report to draft first."))
+        self._message_set_main_attachment_id(self.env["ir.attachment"].browse(kwargs['attachment_ids'][-1:]), force=True)
 
     @api.model
     def create_expense_from_attachments(self, attachment_ids=None, view_type='list'):
@@ -591,8 +577,7 @@ class HrExpense(models.Model):
         if product:
             product = product.filtered(lambda p: p.default_code == "EXP_GEN")[:1] or product[0]
         else:
-            raise UserError(
-                _("You need to have at least one category that can be expensed in your database to proceed!"))
+            raise UserError(_("You need to have at least one category that can be expensed in your database to proceed!"))
 
         for attachment in attachments:
             attachment_name = '.'.join(attachment.name.split('.')[:-1])
@@ -686,8 +671,7 @@ class HrExpense(models.Model):
             attachments_to_unlink = self.env['ir.attachment']
             for expense in self:
                 previous_sheet = expense_to_previous_sheet[expense]
-                checksums = set(
-                    (expense.attachment_ids - previous_sheet.expense_line_ids.attachment_ids).mapped('checksum'))
+                checksums = set((expense.attachment_ids - previous_sheet.expense_line_ids.attachment_ids).mapped('checksum'))
                 attachments_to_unlink += previous_sheet.attachment_ids.filtered(lambda att: att.checksum in checksums)
                 if vals['sheet_id'] and expense.sheet_id != previous_sheet:
                     for attachment in expense.attachment_ids.with_context(sync_attachment=False):
@@ -721,8 +705,7 @@ class HrExpense(models.Model):
     @api.model
     def _get_empty_list_mail_alias(self):
         use_mailgateway = self.env['ir.config_parameter'].sudo().get_param('hr_expense.use_mailgateway')
-        expense_alias = self.env.ref('hr_expense.mail_alias_expense',
-                                     raise_if_not_found=False) if use_mailgateway else False
+        expense_alias = self.env.ref('hr_expense.mail_alias_expense', raise_if_not_found=False) if use_mailgateway else False
         if expense_alias and expense_alias.alias_domain and expense_alias.alias_name:
             # encode, but force %20 encoding for space instead of a + (URL / mailto difference)
             params = werkzeug.urls.url_encode({'subject': _("Lunch with customer $12.32")}).replace('+', '%20')
@@ -773,10 +756,9 @@ class HrExpense(models.Model):
     def _get_default_expense_sheet_values(self):
         # If there is an expense with total_amount == 0, it means that expense has not been processed by OCR yet
         expenses_with_amount = self.filtered(lambda expense: not (
-                expense.currency_id.is_zero(expense.total_amount_currency)
-                or expense.company_currency_id.is_zero(expense.total_amount)
-                or (expense.product_id and not float_round(expense.quantity,
-                                                           precision_rounding=expense.product_uom_id.rounding))
+            expense.currency_id.is_zero(expense.total_amount_currency)
+            or expense.company_currency_id.is_zero(expense.total_amount)
+            or (expense.product_id and not float_round(expense.quantity, precision_rounding=expense.product_uom_id.rounding))
         ))
 
         if any(expense.state != 'draft' or expense.sheet_id for expense in expenses_with_amount):
@@ -817,8 +799,7 @@ class HrExpense(models.Model):
     def get_expenses_to_submit(self):
         # if there ere no records selected, then select all draft expenses for the user
         if self:
-            expenses = self.filtered(
-                lambda expense: expense.state == 'draft' and not expense.sheet_id and expense.is_editable)
+            expenses = self.filtered(lambda expense: expense.state == 'draft' and not expense.sheet_id and expense.is_editable)
         else:
             expenses = self.env['hr.expense'].search([
                 ('state', '=', 'draft'),
@@ -861,8 +842,7 @@ class HrExpense(models.Model):
         root = self.env['ir.model.data']._xmlid_to_res_id("base.partner_root")
         for expense in self.duplicate_expense_ids:
             expense.message_post(
-                body=_('%(user)s confirms this expense is not a duplicate with similar expense.',
-                       user=self.env.user.name),
+                body=_('%(user)s confirms this expense is not a duplicate with similar expense.', user=self.env.user.name),
                 author_id=root,
             )
 
@@ -870,8 +850,7 @@ class HrExpense(models.Model):
         self.ensure_one()
         half_price = self.total_amount_currency / 2
         price_round_up = float_round(half_price, precision_digits=self.currency_id.decimal_places, rounding_method='UP')
-        price_round_down = float_round(half_price, precision_digits=self.currency_id.decimal_places,
-                                       rounding_method='DOWN')
+        price_round_down = float_round(half_price, precision_digits=self.currency_id.decimal_places, rounding_method='DOWN')
 
         return [{
             'name': self.name,
@@ -933,8 +912,7 @@ class HrExpense(models.Model):
         base_lines = [base_line]
         AccountTax._add_tax_details_in_base_lines(base_lines, self.company_id)
         AccountTax._round_base_lines_tax_details(base_lines, self.company_id)
-        AccountTax._add_accounting_data_in_base_lines_tax_details(base_lines, self.company_id,
-                                                                  include_caba_tags=self.payment_mode == 'company_account')
+        AccountTax._add_accounting_data_in_base_lines_tax_details(base_lines, self.company_id, include_caba_tags=self.payment_mode == 'company_account')
         tax_results = AccountTax._prepare_tax_lines(base_lines, self.company_id)
 
         # Base line.
@@ -987,15 +965,13 @@ class HrExpense(models.Model):
         move_vals = {
             **self.sheet_id._prepare_move_vals(),
             'ref': self.name,
-            'date': self.date,
-            # Overidden from self.sheet_id._prepare_move_vals() so we can use the expense date for the account move date
+            'date': self.date,  # Overidden from self.sheet_id._prepare_move_vals() so we can use the expense date for the account move date
             'journal_id': journal.id,
             'partner_id': self.vendor_id.id,
             'currency_id': self.currency_id.id,
             'line_ids': [Command.create(line) for line in move_lines],
             'attachment_ids': [
-                Command.create(
-                    attachment.copy_data({'res_model': 'account.move', 'res_id': False, 'raw': attachment.raw})[0])
+                Command.create(attachment.copy_data({'res_model': 'account.move', 'res_id': False, 'raw': attachment.raw})[0])
                 for attachment in self.message_main_attachment_id]
         }
         return move_vals, payment_vals
@@ -1080,9 +1056,8 @@ class HrExpense(models.Model):
         expenses = self._read_group(
             [
                 ('employee_id', 'in', self.env.user.employee_ids.ids),
-                '|', '&', ('payment_mode', 'in', ('own_account', 'company_account')),
-                ('state', 'in', ('draft', 'reported', 'submitted')),
-                '&', ('payment_mode', '=', 'own_account'), ('state', '=', 'approved')
+                '|', '&', ('payment_mode', 'in', ('own_account', 'company_account')), ('state', 'in', ('draft', 'reported', 'submitted')),
+                     '&', ('payment_mode', '=', 'own_account'), ('state', '=', 'approved')
             ], ['state'], ['total_amount:sum'])
         for state, total_amount_sum in expenses:
             if state in {'draft', 'reported'}:  # Fuse the two states into only one "To Submit" state
@@ -1170,8 +1145,7 @@ class HrExpense(models.Model):
             Return product.product and updated description
         """
         product_code = expense_description.split(' ')[0]
-        product = self.env['product.product'].search(
-            [('can_be_expensed', '=', True), ('default_code', '=ilike', product_code)], limit=1)
+        product = self.env['product.product'].search([('can_be_expensed', '=', True), ('default_code', '=ilike', product_code)], limit=1)
         if product:
             expense_description = expense_description.replace(product_code, '', 1)
 

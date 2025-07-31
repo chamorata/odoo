@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.exceptions import AccessError, RedirectWarning, UserError, ValidationError
+from lxml import etree
+
 from odoo.fields import Command
-from odoo.tests import Form, TransactionCase
+from odoo.tests import Form, TransactionCase, new_test_user
+from odoo.exceptions import AccessError, RedirectWarning, UserError, ValidationError
 
 
 class TestCommonTimesheet(TransactionCase):
@@ -79,8 +81,7 @@ class TestCommonTimesheet(TransactionCase):
         cls.empl_employee = cls.env['hr.employee'].create({
             'name': 'User Empl Employee',
             'user_id': cls.user_employee.id,
-            'employee_type': 'freelance',
-            # Avoid searching the contract if hr_contract module is installed before this module.
+            'employee_type': 'freelance',  # Avoid searching the contract if hr_contract module is installed before this module.
         })
         cls.empl_employee2 = cls.env['hr.employee'].create({
             'name': 'User Empl Employee 2',
@@ -92,6 +93,24 @@ class TestCommonTimesheet(TransactionCase):
             'user_id': cls.user_manager.id,
             'employee_type': 'freelance',
         })
+        cls.project = cls.env['project.project'].create({
+            'name': 'Test Project',
+            'privacy_visibility': 'followers',
+            'task_ids': [Command.create({
+                'name': 'Test Task',
+            })],
+        })
+        cls.timesheet = cls.env['account.analytic.line'].create({
+            'name': 'Test Timesheet',
+            'project_id': cls.project.id,
+            'task_id': cls.project.task_ids[0].id,
+            'employee_id':   cls.empl_employee.id,
+        })
+        cls.timesheet_manager_no_project_user = new_test_user(
+            cls.env,
+            login='no_project_user',
+            groups='hr_timesheet.group_timesheet_manager'
+        )
 
 
 class TestTimesheet(TestCommonTimesheet):
@@ -117,13 +136,10 @@ class TestTimesheet(TestCommonTimesheet):
             'name': 'my first timesheet',
             'unit_amount': 4,
         })
-        self.assertEqual(timesheet1.account_id, self.project_customer.account_id,
-                         'Analytic account should be the same as the project')
+        self.assertEqual(timesheet1.account_id, self.project_customer.account_id, 'Analytic account should be the same as the project')
         self.assertEqual(timesheet1.employee_id, self.empl_employee, 'Employee should be the one of the current user')
-        self.assertEqual(timesheet1.partner_id, self.task1.partner_id,
-                         'Customer of task should be the same of the one set on new timesheet')
-        self.assertEqual(timesheet1.product_uom_id, timesheet_uom,
-                         "The UoM of the timesheet should be the one set on the company of the analytic account.")
+        self.assertEqual(timesheet1.partner_id, self.task1.partner_id, 'Customer of task should be the same of the one set on new timesheet')
+        self.assertEqual(timesheet1.product_uom_id, timesheet_uom, "The UoM of the timesheet should be the one set on the company of the analytic account.")
 
         # employee 1 cannot log timesheet for employee 2
         with self.assertRaises(AccessError):
@@ -143,10 +159,8 @@ class TestTimesheet(TestCommonTimesheet):
             'unit_amount': 7,
             'employee_id': self.empl_employee2.id,
         })
-        self.assertEqual(timesheet3.user_id, self.user_employee2,
-                         'Timesheet user should be the one linked to the given employee')
-        self.assertEqual(timesheet3.product_uom_id, timesheet_uom,
-                         "The UoM of the timesheet 3 should be the one set on the company of the analytic account.")
+        self.assertEqual(timesheet3.user_id, self.user_employee2, 'Timesheet user should be the one linked to the given employee')
+        self.assertEqual(timesheet3.product_uom_id, timesheet_uom, "The UoM of the timesheet 3 should be the one set on the company of the analytic account.")
 
         # employee 1 log some timesheet on project (no task)
         timesheet4 = Timesheet.with_user(self.user_employee).create({
@@ -154,8 +168,7 @@ class TestTimesheet(TestCommonTimesheet):
             'name': 'my first timesheet',
             'unit_amount': 4,
         })
-        self.assertEqual(timesheet4.partner_id, self.project_customer.partner_id,
-                         'Customer of new timesheet should be the same of the one set project (since no task on timesheet)')
+        self.assertEqual(timesheet4.partner_id, self.project_customer.partner_id, 'Customer of new timesheet should be the same of the one set project (since no task on timesheet)')
 
     def test_log_access_rights(self):
         """ Test access rights: user can update its own timesheets only, and manager can change all """
@@ -178,8 +191,7 @@ class TestTimesheet(TestCommonTimesheet):
             'unit_amount': 8,
             'employee_id': self.empl_employee2.id,
         })
-        self.assertEqual(timesheet1.user_id, self.user_employee2,
-                         'Changing timesheet employee should change the related user')
+        self.assertEqual(timesheet1.user_id, self.user_employee2, 'Changing timesheet employee should change the related user')
 
     def test_create_unlink_project(self):
         """ Check project creation, and if necessary the analytic account generated when project should track time. """
@@ -189,8 +201,7 @@ class TestTimesheet(TestCommonTimesheet):
             'allow_timesheets': False,
             'partner_id': self.partner.id,
         })
-        self.assertFalse(non_tracked_project.account_id,
-                         "A non time-tracked project shouldn't generate an analytic account")
+        self.assertFalse(non_tracked_project.account_id, "A non time-tracked project shouldn't generate an analytic account")
 
         # create a project tracking time
         tracked_project = self.env['project.project'].create({
@@ -199,14 +210,10 @@ class TestTimesheet(TestCommonTimesheet):
             'partner_id': self.partner.id,
         })
         self.assertTrue(tracked_project.account_id, "A time-tracked project should generate an analytic account")
-        self.assertTrue(tracked_project.account_id.active,
-                        "A time-tracked project should generate an active analytic account")
-        self.assertEqual(tracked_project.partner_id, tracked_project.account_id.partner_id,
-                         "The generated AA should have the same partner as the project")
-        self.assertEqual(tracked_project.name, tracked_project.account_id.name,
-                         "The generated AA should have the same name as the project")
-        self.assertEqual(tracked_project.account_id.project_count, 1,
-                         "The generated AA should be linked to the project")
+        self.assertTrue(tracked_project.account_id.active, "A time-tracked project should generate an active analytic account")
+        self.assertEqual(tracked_project.partner_id, tracked_project.account_id.partner_id, "The generated AA should have the same partner as the project")
+        self.assertEqual(tracked_project.name, tracked_project.account_id.name, "The generated AA should have the same name as the project")
+        self.assertEqual(tracked_project.account_id.project_count, 1, "The generated AA should be linked to the project")
 
         # create a project without tracking time, but with analytic account
         analytic_project = self.env['project.project'].create({
@@ -215,8 +222,7 @@ class TestTimesheet(TestCommonTimesheet):
             'partner_id': self.partner.id,
             'account_id': tracked_project.account_id.id,
         })
-        self.assertNotEqual(analytic_project.name, tracked_project.account_id.name,
-                            "The name of the associated AA can be different from the project")
+        self.assertNotEqual(analytic_project.name, tracked_project.account_id.name, "The name of the associated AA can be different from the project")
         self.assertEqual(tracked_project.account_id.project_count, 2, "The AA should be linked to 2 project")
 
         # analytic linked to projects containing tasks can not be removed
@@ -293,8 +299,7 @@ class TestTimesheet(TestCommonTimesheet):
         self.assertEqual(timesheet_count2, 3, "3 timesheets should be linked to Project2")
         self.assertEqual(len(self.task1.timesheet_ids), 1, "The timesheet still should be linked to task1")
         self.assertEqual(len(task_child.timesheet_ids), 1, "The timesheet still should be linked to task_child")
-        self.assertEqual(len(task_grandchild.timesheet_ids), 1,
-                         "The timesheet still should be linked to task_grandchild")
+        self.assertEqual(len(task_grandchild.timesheet_ids), 1, "The timesheet still should be linked to task_grandchild")
 
         # It is forbidden to unset the project of a task with timesheet
         with self.assertRaises(UserError):
@@ -354,13 +359,11 @@ class TestTimesheet(TestCommonTimesheet):
             'user_id': self.user_employee.id,
         })
 
-        self.assertEqual(timesheet_entry.partner_id, self.partner,
-                         "The timesheet entry's partner should be equal to the task's partner/customer")
+        self.assertEqual(timesheet_entry.partner_id, self.partner, "The timesheet entry's partner should be equal to the task's partner/customer")
 
         self.task1.write({'partner_id': partner2})
 
-        self.assertEqual(timesheet_entry.partner_id, partner2,
-                         "The timesheet entry's partner should still be equal to the task's partner/customer, after the change")
+        self.assertEqual(timesheet_entry.partner_id, partner2, "The timesheet entry's partner should still be equal to the task's partner/customer, after the change")
 
     def test_task_with_timesheet_project_change(self):
         '''This test checks that no error is raised when moving a task that contains timesheet to another project.
@@ -403,8 +406,15 @@ class TestTimesheet(TestCommonTimesheet):
             'project_id': second_project.id
         })
 
-        self.assertEqual(timesheet.project_id, second_project,
-                         'The project_id of non-validated timesheet should have changed')
+        self.assertEqual(timesheet.project_id, second_project, 'The project_id of non-validated timesheet should have changed')
+
+    def test_compute_display_name(self):
+        self.timesheet.with_user(self.timesheet_manager_no_project_user)._compute_display_name()
+        self.assertEqual(
+            self.timesheet.display_name,
+            "Test Project - Test Task",
+            "Display name should be correctly computed without raising AccessError."
+        )
 
     def test_create_timesheet_employee_not_in_company(self):
         ''' ts.employee_id only if the user has an employee in the company or one employee for all companies.
@@ -430,8 +440,7 @@ class TestTimesheet(TestCommonTimesheet):
             'project_id': project.id,
         })
 
-        Timesheet = self.env['account.analytic.line'].with_context(
-            allowed_company_ids=[company_3.id, company_2.id, self.env.company.id])
+        Timesheet = self.env['account.analytic.line'].with_context(allowed_company_ids=[company_3.id, company_2.id, self.env.company.id])
         timesheet = Timesheet.create({
             'name': 'Timesheet',
             'project_id': project.id,
@@ -440,8 +449,7 @@ class TestTimesheet(TestCommonTimesheet):
             'user_id': self.user_manager.id,
             'company_id': company_3.id,
         })
-        self.assertEqual(timesheet.employee_id, self.user_manager.employee_id,
-                         'As there is a unique employee for this user, it must be found')
+        self.assertEqual(timesheet.employee_id, self.user_manager.employee_id, 'As there is a unique employee for this user, it must be found')
 
         self.env['hr.employee'].with_company(company_2).create({
             'name': 'Employee 2',
@@ -466,8 +474,7 @@ class TestTimesheet(TestCommonTimesheet):
             {'name': 'Employee 4', 'active': False},
         ])
 
-        Timesheet = self.env['account.analytic.line'].with_context(
-            allowed_company_ids=[company_4.id, self.env.company.id])
+        Timesheet = self.env['account.analytic.line'].with_context(allowed_company_ids=[company_4.id, self.env.company.id])
 
         timesheet = Timesheet.create({
             'project_id': self.project_customer.id,
@@ -510,8 +517,7 @@ class TestTimesheet(TestCommonTimesheet):
         subsubtask = subtask_2.child_ids
         self.task1.child_ids = subtask_1 + subtask_2
         self.assertTrue(self.project_customer.allow_timesheets, 'The project should be timesheetable')
-        self.assertEqual(subtask_1.allow_timesheets, self.project_customer.allow_timesheets,
-                         'The subtask should follow the settings of its project linked.')
+        self.assertEqual(subtask_1.allow_timesheets, self.project_customer.allow_timesheets, 'The subtask should follow the settings of its project linked.')
         Timesheet = self.env['account.analytic.line']
         Timesheet.create({
             'name': 'FirstTimeSheet',
@@ -520,8 +526,7 @@ class TestTimesheet(TestCommonTimesheet):
             'unit_amount': 8.0,
             'employee_id': self.empl_employee2.id,
         })
-        self.assertEqual(self.task1.subtask_effective_hours, 8,
-                         'Hours Spent on Sub-tasks should be 8 hours in Parent Task')
+        self.assertEqual(self.task1.subtask_effective_hours, 8, 'Hours Spent on Sub-tasks should be 8 hours in Parent Task')
 
         Timesheet.create([
             {
@@ -541,8 +546,7 @@ class TestTimesheet(TestCommonTimesheet):
 
     def test_ensure_product_uom_set_in_timesheet(self):
         self.assertFalse(self.project_customer.timesheet_ids, 'No timesheet should be recorded in this project')
-        self.assertFalse(self.project_customer.total_timesheet_time,
-                         'The total time recorded should be equal to 0 since no timesheet is recorded.')
+        self.assertFalse(self.project_customer.total_timesheet_time, 'The total time recorded should be equal to 0 since no timesheet is recorded.')
 
         timesheet1, timesheet2 = self.env['account.analytic.line'].with_user(self.user_employee).create([
             {'unit_amount': 1.0, 'project_id': self.project_customer.id},
@@ -565,7 +569,6 @@ class TestTimesheet(TestCommonTimesheet):
             timesheet1.unit_amount + timesheet2.unit_amount,
             'The total timesheet time of this project should be equal to 4.'
         )
-
     def test_create_timesheet_with_archived_employee(self):
         ''' the timesheet can be created or edited only with an active employee
         '''
@@ -608,6 +611,7 @@ class TestTimesheet(TestCommonTimesheet):
                          "The product_uom_id of the timesheet should be equal to the company uom "
                          "if the project's analytic account and the project have no company_id")
 
+
     def test_create_timesheet_with_default_employee_in_context(self):
         timesheet = self.env['account.analytic.line'].with_context(default_employee_id=self.empl_employee.id).create({
             'project_id': self.project_customer.id,
@@ -639,8 +643,7 @@ class TestTimesheet(TestCommonTimesheet):
         })
         self.env.company.timesheet_encode_uom_id = self.env.ref('uom.product_uom_day')
         self.assertEqual(project.total_timesheet_time, 8, "Total timesheet time should be 8 hours")
-        self.assertEqual(project.timesheet_encode_uom_id, self.env.company.timesheet_encode_uom_id,
-                         "Timesheet encode uom should be the one from the company of the env, since the project has no company.")
+        self.assertEqual(project.timesheet_encode_uom_id, self.env.company.timesheet_encode_uom_id, "Timesheet encode uom should be the one from the company of the env, since the project has no company.")
 
     def test_unlink_task_with_timesheet(self):
         self.env['account.analytic.line'].create({
@@ -673,7 +676,7 @@ class TestTimesheet(TestCommonTimesheet):
 
     def test_percentage_of_allocated_hours(self):
         """ Test the percentage of allocated hours on a task. """
-        self.task1.allocated_hours = 11 / 60
+        self.task1.allocated_hours = 11/60
         self.assertEqual(self.task1.effective_hours, 0, 'No timesheet should be created yet.')
         self.assertEqual(self.task1.progress, 0, 'No timesheet should be created yet.')
         self.env['account.analytic.line'].create([
@@ -681,19 +684,19 @@ class TestTimesheet(TestCommonTimesheet):
                 'name': 'Timesheet',
                 'project_id': self.project_customer.id,
                 'task_id': self.task1.id,
-                'unit_amount': 3 / 60,
+                'unit_amount': 3/60,
                 'employee_id': self.empl_employee.id,
             }, {
                 'name': 'Timesheet',
                 'project_id': self.project_customer.id,
                 'task_id': self.task1.id,
-                'unit_amount': 4 / 60,
+                'unit_amount': 4/60,
                 'employee_id': self.empl_employee.id,
             }, {
                 'name': 'Timesheet',
                 'project_id': self.project_customer.id,
                 'task_id': self.task1.id,
-                'unit_amount': 4 / 60,
+                'unit_amount': 4/60,
                 'employee_id': self.empl_employee.id,
             },
         ])
@@ -798,12 +801,12 @@ class TestTimesheet(TestCommonTimesheet):
                 'code': 'TEST',
             },
             {
-                'name': 'Another Analytic Account',
-                'partner_id': self.partner.id,
-                'plan_id': self.analytic_plan.id,
-                'code': 'TEST2',
+                 'name': 'Another Analytic Account',
+                 'partner_id': self.partner.id,
+                 'plan_id': self.analytic_plan.id,
+                 'code': 'TEST2',
             },
-        ])
+       ])
 
         self.project_customer.write({
             field_name: another_account.id,
@@ -816,8 +819,7 @@ class TestTimesheet(TestCommonTimesheet):
             field_name: analytic_account.id,
             'employee_id': self.empl_employee.id,
         })
-        self.assertEqual(line[field_name].id, analytic_account.id,
-                         f"The value of {field_name} shouldn't get overwritten by the project's account")
+        self.assertEqual(line[field_name].id, analytic_account.id, f"The value of {field_name} shouldn't get overwritten by the project's account")
 
     def test_keep_write_account_values_at_timesheet_update(self):
         field_name = self.analytic_plan._column_name()
@@ -850,5 +852,4 @@ class TestTimesheet(TestCommonTimesheet):
             'project_id': self.project_customer.id,
             field_name: analytic_account.id
         })
-        self.assertEqual(line[field_name].id, analytic_account.id,
-                         f"The value of {field_name} shouldn't get overwritten by the project's account")
+        self.assertEqual(line[field_name].id, analytic_account.id, f"The value of {field_name} shouldn't get overwritten by the project's account")

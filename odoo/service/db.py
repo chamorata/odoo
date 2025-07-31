@@ -7,12 +7,14 @@ import shutil
 import subprocess
 import tempfile
 import zipfile
+
 from contextlib import closing
+from datetime import datetime
 from xml.etree import ElementTree as ET
 
 import psycopg2
-from decorator import decorator
 from psycopg2.extensions import quote_ident
+from decorator import decorator
 from pytz import country_timezones
 
 import odoo
@@ -48,19 +50,16 @@ def check_db_management_enabled(method):
             _logger.error('Database management functions blocked, admin disabled database listing')
             raise AccessDenied()
         return method(self, *args, **kwargs)
-
     return decorator(if_db_mgt_enabled, method)
 
-
-# ----------------------------------------------------------
+#----------------------------------------------------------
 # Master password required
-# ----------------------------------------------------------
+#----------------------------------------------------------
 
 def check_super(passwd):
     if passwd and odoo.tools.config.verify_admin_password(passwd):
         return True
     raise odoo.exceptions.AccessDenied()
-
 
 # This should be moved to odoo.modules.db, along side initialize().
 def _initialize_db(id, db_name, demo, lang, user_password, login='admin', country_code=None, phone=None):
@@ -83,8 +82,7 @@ def _initialize_db(id, db_name, demo, lang, user_password, login='admin', countr
 
             if country_code:
                 country = env['res.country'].search([('code', 'ilike', country_code)])[0]
-                env['res.company'].browse(1).write(
-                    {'country_id': country_code and country.id, 'currency_id': country_code and country.currency_id.id})
+                env['res.company'].browse(1).write({'country_id': country_code and country.id, 'currency_id': country_code and country.currency_id.id})
                 if len(country_timezones.get(country_code, [])) == 1:
                     users = env['res.users'].search([])
                     users.write({'tz': country_timezones[country_code][0]})
@@ -107,6 +105,29 @@ def _initialize_db(id, db_name, demo, lang, user_password, login='admin', countr
         _logger.exception('CREATE DATABASE failed:')
 
 
+def _check_faketime_mode(db_name):
+    if os.getenv('ODOO_FAKETIME_TEST_MODE') and db_name != 'postgres':
+        try:
+            db = odoo.sql_db.db_connect(db_name)
+            with db.cursor() as cursor:
+                cursor.execute("SELECT (pg_catalog.now() AT TIME ZONE 'UTC');")
+                server_now = cursor.fetchone()[0]
+                time_offset = (datetime.now() - server_now).total_seconds()
+
+                cursor.execute("""
+                    CREATE OR REPLACE FUNCTION public.now()
+                        RETURNS timestamp with time zone AS $$
+                            SELECT pg_catalog.now() +  %s * interval '1 second';
+                        $$ LANGUAGE sql;
+                """, (int(time_offset), ))
+                cursor.execute("SELECT (now() AT TIME ZONE 'UTC');")
+                new_now = cursor.fetchone()[0]
+                _logger.info("Faketime mode, new cursor now is %s", new_now)
+                cursor.commit()
+        except psycopg2.Error as e:
+            _logger.warning("Unable to set fakedtimed NOW() : %s", e)
+
+
 def _create_empty_database(name):
     db = odoo.sql_db.db_connect('postgres')
     with closing(db.cursor()) as cr:
@@ -114,6 +135,7 @@ def _create_empty_database(name):
         cr.execute("SELECT datname FROM pg_database WHERE datname = %s",
                    (name,), log_exceptions=False)
         if cr.fetchall():
+            _check_faketime_mode(name)
             raise DatabaseExists("database %r already exists!" % (name,))
         else:
             # database-altering operations cannot be executed inside a transaction
@@ -144,6 +166,7 @@ def _create_empty_database(name):
                 cr.execute("ALTER FUNCTION unaccent(text) IMMUTABLE")
     except psycopg2.Error as e:
         _logger.warning("Unable to create PostgreSQL extensions : %s", e)
+    _check_faketime_mode(name)
 
     # restore legacy behaviour on pg15+
     try:
@@ -153,7 +176,6 @@ def _create_empty_database(name):
     except psycopg2.Error as e:
         _logger.warning("Unable to make public schema public-accessible: %s", e)
 
-
 @check_db_management_enabled
 def exp_create_database(db_name, demo, lang, user_password='admin', login='admin', country_code=None, phone=None):
     """ Similar to exp_create but blocking."""
@@ -161,7 +183,6 @@ def exp_create_database(db_name, demo, lang, user_password='admin', login='admin
     _create_empty_database(db_name)
     _initialize_db(id, db_name, demo, lang, user_password, login, country_code, phone)
     return True
-
 
 @check_db_management_enabled
 def exp_duplicate_database(db_original_name, db_name, neutralize_database=False):
@@ -192,7 +213,6 @@ def exp_duplicate_database(db_original_name, db_name, neutralize_database=False)
         shutil.copytree(from_fs, to_fs)
     return True
 
-
 def _drop_conn(cr, db_name):
     # Try to terminate all other connections that might prevent
     # dropping the database
@@ -208,7 +228,6 @@ def _drop_conn(cr, db_name):
                    (db_name,))
     except Exception:
         pass
-
 
 @check_db_management_enabled
 def exp_drop(db_name):
@@ -236,14 +255,12 @@ def exp_drop(db_name):
         shutil.rmtree(fs)
     return True
 
-
 @check_db_management_enabled
 def exp_dump(db_name, format):
     with tempfile.TemporaryFile(mode='w+b') as t:
         dump_db(db_name, t, format)
         t.seek(0)
         return base64.b64encode(t.read()).decode()
-
 
 @check_db_management_enabled
 def dump_db_manifest(cr):
@@ -260,7 +277,6 @@ def dump_db_manifest(cr):
         'modules': modules,
     }
     return manifest
-
 
 @check_db_management_enabled
 def dump_db(db_name, stream, backup_format='zip'):
@@ -284,12 +300,10 @@ def dump_db(db_name, stream, backup_format='zip'):
             cmd.insert(-1, '--file=' + os.path.join(dump_dir, 'dump.sql'))
             subprocess.run(cmd, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT, check=True)
             if stream:
-                odoo.tools.osutil.zip_dir(dump_dir, stream, include_dir=False,
-                                          fnct_sort=lambda file_name: file_name != 'dump.sql')
+                odoo.tools.osutil.zip_dir(dump_dir, stream, include_dir=False, fnct_sort=lambda file_name: file_name != 'dump.sql')
             else:
-                t = tempfile.TemporaryFile()
-                odoo.tools.osutil.zip_dir(dump_dir, t, include_dir=False,
-                                          fnct_sort=lambda file_name: file_name != 'dump.sql')
+                t=tempfile.TemporaryFile()
+                odoo.tools.osutil.zip_dir(dump_dir, t, include_dir=False, fnct_sort=lambda file_name: file_name != 'dump.sql')
                 t.seek(0)
                 return t
     else:
@@ -300,13 +314,11 @@ def dump_db(db_name, stream, backup_format='zip'):
         else:
             return stdout
 
-
 @check_db_management_enabled
 def exp_restore(db_name, data, copy=False):
     def chunks(d, n=8192):
         for i in range(0, len(d), n):
-            yield d[i:i + n]
-
+            yield d[i:i+n]
     data_file = tempfile.NamedTemporaryFile(delete=False)
     try:
         for chunk in chunks(data):
@@ -316,7 +328,6 @@ def exp_restore(db_name, data, copy=False):
     finally:
         os.unlink(data_file.name)
     return True
-
 
 @check_db_management_enabled
 def restore_db(db, dump_file, copy=False, neutralize_database=False):
@@ -372,7 +383,6 @@ def restore_db(db, dump_file, copy=False, neutralize_database=False):
 
     _logger.info('RESTORE DB: %s', db)
 
-
 @check_db_management_enabled
 def exp_rename(old_name, new_name):
     odoo.modules.registry.Registry.delete(old_name)
@@ -384,8 +394,7 @@ def exp_rename(old_name, new_name):
         cr._cnx.autocommit = True
         _drop_conn(cr, old_name)
         try:
-            cr.execute(SQL('ALTER DATABASE %s RENAME TO %s', database_identifier(cr, old_name),
-                           database_identifier(cr, new_name)))
+            cr.execute(SQL('ALTER DATABASE %s RENAME TO %s', database_identifier(cr, old_name), database_identifier(cr, new_name)))
             _logger.info('RENAME DB: %s -> %s', old_name, new_name)
         except Exception as e:
             _logger.info('RENAME DB: %s -> %s failed:\n%s', old_name, new_name, e)
@@ -397,13 +406,11 @@ def exp_rename(old_name, new_name):
         shutil.move(old_fs, new_fs)
     return True
 
-
 @check_db_management_enabled
 def exp_change_admin_password(new_password):
     odoo.tools.config.set_admin_password(new_password)
     odoo.tools.config.save(['admin_passwd'])
     return True
-
 
 @check_db_management_enabled
 def exp_migrate_databases(databases):
@@ -413,10 +420,9 @@ def exp_migrate_databases(databases):
         odoo.modules.registry.Registry.new(db, force_demo=False, update_module=True)
     return True
 
-
-# ----------------------------------------------------------
+#----------------------------------------------------------
 # No master password required
-# ----------------------------------------------------------
+#----------------------------------------------------------
 
 @odoo.tools.mute_logger('odoo.sql_db')
 def exp_db_exist(db_name):
@@ -427,7 +433,6 @@ def exp_db_exist(db_name):
             return True
     except Exception:
         return False
-
 
 def list_dbs(force=False):
     if not odoo.tools.config['list_db'] and not force:
@@ -445,14 +450,11 @@ def list_dbs(force=False):
     db = odoo.sql_db.db_connect('postgres')
     with closing(db.cursor()) as cr:
         try:
-            cr.execute(
-                "select datname from pg_database where datdba=(select usesysid from pg_user where usename=current_user) and not datistemplate and datallowconn and datname not in %s order by datname",
-                (templates_list,))
+            cr.execute("select datname from pg_database where datdba=(select usesysid from pg_user where usename=current_user) and not datistemplate and datallowconn and datname not in %s order by datname", (templates_list,))
             return [name for (name,) in cr.fetchall()]
         except Exception:
             _logger.exception('Listing databases failed:')
             return []
-
 
 def list_db_incompatible(databases):
     """"Check a list of databases if they are compatible with this version of Odoo
@@ -487,10 +489,8 @@ def exp_list(document=False):
         raise odoo.exceptions.AccessDenied()
     return list_dbs()
 
-
 def exp_list_lang():
     return odoo.tools.misc.scan_languages()
-
 
 def exp_list_countries():
     list_countries = []
@@ -501,17 +501,15 @@ def exp_list_countries():
         list_countries.append([code, name])
     return sorted(list_countries, key=lambda c: c[1])
 
-
 def exp_server_version():
     """ Return the version of the server
         Used by the client to verify the compatibility with its own version
     """
     return odoo.release.version
 
-
-# ----------------------------------------------------------
+#----------------------------------------------------------
 # db service dispatch
-# ----------------------------------------------------------
+#----------------------------------------------------------
 
 def dispatch(method, params):
     g = globals()

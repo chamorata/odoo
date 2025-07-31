@@ -1,18 +1,18 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import logging
 from ast import literal_eval
+import logging
+import pytz
+
 from collections import defaultdict, Counter
 from datetime import date, datetime, timedelta
-
-import pytz
 from dateutil.relativedelta import relativedelta
-from odoo.addons.mail.tools.discuss import Store
 
 from odoo import api, fields, models, _
 from odoo.exceptions import AccessError
 from odoo.tools import is_html_empty
 from odoo.tools.misc import clean_context, get_lang, groupby
+from odoo.addons.mail.tools.discuss import Store
 
 _logger = logging.getLogger(__name__)
 
@@ -47,8 +47,7 @@ class MailActivity(models.Model):
     @api.model
     def _default_activity_type_for_model(self, model):
         todo_id = self.env['ir.model.data']._xmlid_to_res_id('mail.mail_activity_data_todo', raise_if_not_found=False)
-        activity_type_todo = self.env['mail.activity.type'].browse(todo_id) if todo_id else self.env[
-            'mail.activity.type']
+        activity_type_todo = self.env['mail.activity.type'].browse(todo_id) if todo_id else self.env['mail.activity.type']
         if activity_type_todo and activity_type_todo.active and \
                 (activity_type_todo.res_model == model or not activity_type_todo.res_model):
             return activity_type_todo
@@ -106,11 +105,11 @@ class MailActivity(models.Model):
     previous_activity_type_id = fields.Many2one('mail.activity.type', string='Previous Activity Type', readonly=True)
     has_recommended_activities = fields.Boolean(
         'Next activities available',
-        compute='_compute_has_recommended_activities')  # technical field for UX purpose
+        compute='_compute_has_recommended_activities') # technical field for UX purpose
     mail_template_ids = fields.Many2many(related='activity_type_id.mail_template_ids', readonly=True)
     chaining_type = fields.Selection(related='activity_type_id.chaining_type', readonly=True)
     # access
-    can_write = fields.Boolean(compute='_compute_can_write')  # used to hide buttons if the current user has no access
+    can_write = fields.Boolean(compute='_compute_can_write') # used to hide buttons if the current user has no access
     active = fields.Boolean(default=True)
 
     _sql_constraints = [
@@ -145,7 +144,7 @@ class MailActivity(models.Model):
     def _compute_res_name(self):
         for activity in self:
             activity.res_name = activity.res_model and \
-                                self.env[activity.res_model].browse(activity.res_id).display_name
+                self.env[activity.res_model].browse(activity.res_id).display_name
 
     @api.depends('active', 'date_deadline')
     def _compute_state(self):
@@ -293,48 +292,67 @@ class MailActivity(models.Model):
 
         # subscribe (batch by model and user to speedup)
         for model, activity_data in activities._classify_by_model().items():
-            per_user = defaultdict(list)
+            per_user = defaultdict(set)
             for activity in activity_data['activities'].filtered(lambda act: act.user_id):
-                if activity.res_id not in per_user[activity.user_id]:
-                    per_user[activity.user_id].append(activity.res_id)
+                per_user[activity.user_id].add(activity.res_id)
             for user, res_ids in per_user.items():
                 pids = user.partner_id.ids if user.partner_id in readable_user_partners else user.sudo().partner_id.ids
                 self.env[model].browse(res_ids).message_subscribe(partner_ids=pids)
 
         # send notifications about activity creation
-        todo_activities = activities.filtered(lambda act: act.date_deadline <= fields.Date.today())
+        todo_activities = activities.filtered(lambda act: act.active and act.date_deadline <= fields.Date.today())
         if todo_activities:
-            activity.user_id._bus_send("mail.activity/updated", {"activity_created": True})
+            for user, user_activities in todo_activities.grouped('user_id').items():
+                user._bus_send("mail.activity/updated", {"activity_created": True, "count_diff": len(user_activities)})
         return activities
 
     def write(self, values):
-        if values.get('user_id'):
-            user_changes = self.filtered(lambda activity: activity.user_id.id != values.get('user_id'))
-            pre_responsibles = user_changes.user_id
-        res = super(MailActivity, self).write(values)
+        today = fields.Date.today()
 
+        def get_user_todo_activity_count(activities):
+            return {
+                user: len(user_activities.filtered(lambda a: a.active and a.date_deadline <= today))
+                for user, user_activities in activities.grouped('user_id').items()
+            }
+
+        original_user_todo_activity_count = None
+        if 'date_deadline' in values or 'active' in values or 'user_id' in values:
+            original_user_todo_activity_count = get_user_todo_activity_count(self)
+
+        new_user_activities = self.env['mail.activity']
         if values.get('user_id'):
+            new_user_activities = self.filtered(lambda activity: activity.user_id.id != values.get('user_id'))
+
+        res = super().write(values)
+
+        # notify new responsibles
+        if 'user_id' in values:
             if values['user_id'] != self.env.uid:
                 if not self.env.context.get('mail_activity_quick_update', False):
-                    user_changes.action_notify()
-            for activity in user_changes:
-                self.env[activity.res_model].browse(activity.res_id).message_subscribe(
-                    partner_ids=[activity.user_id.partner_id.id])
+                    new_user_activities.action_notify()
+            new_user = self.env['res.users'].browse(values['user_id'])
+            for res_model, model_activities in new_user_activities.grouped('res_model').items():
+                res_ids = list(set(model_activities.mapped('res_id')))
+                self.env[res_model].browse(res_ids).message_subscribe(partner_ids=new_user.partner_id.ids)
 
-            # send bus notifications
-            todo_activities = user_changes.filtered(lambda act: act.date_deadline <= fields.Date.today())
-            if todo_activities:
-                todo_activities.user_id._bus_send(
-                    "mail.activity/updated", {"activity_created": True}
-                )
-                pre_responsibles._bus_send("mail.activity/updated", {"activity_deleted": True})
+        # update activity counter
+        if original_user_todo_activity_count is not None:
+            new_user_todo_activity_count = get_user_todo_activity_count(self)
+            for user in new_user_todo_activity_count.keys() | original_user_todo_activity_count.keys():
+                count_diff = new_user_todo_activity_count.get(user, 0) - original_user_todo_activity_count.get(user, 0)
+                if count_diff > 0:
+                    user._bus_send("mail.activity/updated", {"activity_created": True, "count_diff": count_diff})
+                elif count_diff < 0:
+                    user._bus_send("mail.activity/updated", {"activity_deleted": True, "count_diff": count_diff})
+
         return res
 
     def unlink(self):
-        todo_activities = self.filtered(lambda act: act.date_deadline <= fields.Date.today())
+        todo_activities = self.filtered(lambda act: act.active and act.date_deadline <= fields.Date.today())
         if todo_activities:
-            todo_activities.user_id._bus_send("mail.activity/updated", {"activity_deleted": True})
-        return super(MailActivity, self).unlink()
+            for user, user_activities in todo_activities.grouped('user_id').items():
+                user._bus_send("mail.activity/updated", {"activity_deleted": True, "count_diff": -len(user_activities)})
+        return super().unlink()
 
     @api.model
     def _search(self, domain, offset=0, limit=None, order=None):
@@ -471,8 +489,7 @@ class MailActivity(models.Model):
             default_res_id=self.res_id,
             default_res_model=self.res_model,
         )
-        _messages, next_activities = self._action_done(feedback=feedback,
-                                                       attachment_ids=attachment_ids)  # will unlink activity, dont access self after that
+        _messages, next_activities = self._action_done(feedback=feedback, attachment_ids=attachment_ids)  # will unlink activity, dont access self after that
         if next_activities:
             return False
         return {
@@ -517,8 +534,7 @@ class MailActivity(models.Model):
             for record_sudo, activity in zip(records_sudo, activity_data['activities']):
                 # extract value to generate next activities
                 if activity.chaining_type == 'trigger':
-                    vals = activity.with_context(
-                        activity_previous_deadline=activity.date_deadline)._prepare_next_activity_values()
+                    vals = activity.with_context(activity_previous_deadline=activity.date_deadline)._prepare_next_activity_values()
                     next_activities_values.append(vals)
 
                 # post message on activity, before deleting it
@@ -650,8 +666,7 @@ class MailActivity(models.Model):
         activity_domain = [('res_model', '=', res_model)]
         is_filtered = domain or limit or offset
         if is_filtered:
-            activity_domain.append(
-                ('res_id', 'in', DocModel._search(domain or [], offset, limit, DocModel._order) if is_filtered else []))
+            activity_domain.append(('res_id', 'in', DocModel._search(domain or [], offset, limit, DocModel._order) if is_filtered else []))
         all_activities = Activity.with_context(active_test=not fetch_done).search(
             activity_domain, order='date_done DESC, date_deadline ASC')
         all_ongoing = all_activities.filtered('active')
@@ -794,18 +809,14 @@ class MailActivity(models.Model):
         - If the config_parameter is set to a negative number, it's an invalid value, we skip the gc routine
         - If the config_parameter is set to a positive number, we delete only overdue activities which deadline is older than X years
         """
-        year_threshold = int(
-            self.env['ir.config_parameter'].sudo().get_param('mail.activity.gc.delete_overdue_years', 0))
+        year_threshold = int(self.env['ir.config_parameter'].sudo().get_param('mail.activity.gc.delete_overdue_years', 0))
         if year_threshold == 0:
-            _logger.warning(
-                "The ir.config_parameter 'mail.activity.gc.delete_overdue_years' is missing or set to 0. Skipping gc routine.")
+            _logger.warning("The ir.config_parameter 'mail.activity.gc.delete_overdue_years' is missing or set to 0. Skipping gc routine.")
             return
         if year_threshold < 0:
-            _logger.warning(
-                "The ir.config_parameter 'mail.activity.gc.delete_overdue_years' is set to a negative number "
-                "which is invalid. Skipping gc routine.")
+            _logger.warning("The ir.config_parameter 'mail.activity.gc.delete_overdue_years' is set to a negative number "
+                            "which is invalid. Skipping gc routine.")
             return
         deadline_threshold_dt = datetime.now() - relativedelta(years=year_threshold)
-        old_overdue_activities = self.env['mail.activity'].search([('date_deadline', '<', deadline_threshold_dt)],
-                                                                  limit=10_000)
+        old_overdue_activities = self.env['mail.activity'].search([('date_deadline', '<', deadline_threshold_dt)], limit=10_000)
         old_overdue_activities.unlink()

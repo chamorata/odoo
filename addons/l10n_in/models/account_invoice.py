@@ -12,25 +12,23 @@ class AccountMove(models.Model):
     _inherit = "account.move"
 
     l10n_in_gst_treatment = fields.Selection([
-        ('regular', 'Registered Business - Regular'),
-        ('composition', 'Registered Business - Composition'),
-        ('unregistered', 'Unregistered Business'),
-        ('consumer', 'Consumer'),
-        ('overseas', 'Overseas'),
-        ('special_economic_zone', 'Special Economic Zone'),
-        ('deemed_export', 'Deemed Export'),
-        ('uin_holders', 'UIN Holders'),
-    ], string="GST Treatment", compute="_compute_l10n_in_gst_treatment", store=True, readonly=False, copy=True,
-        precompute=True)
+            ('regular', 'Registered Business - Regular'),
+            ('composition', 'Registered Business - Composition'),
+            ('unregistered', 'Unregistered Business'),
+            ('consumer', 'Consumer'),
+            ('overseas', 'Overseas'),
+            ('special_economic_zone', 'Special Economic Zone'),
+            ('deemed_export', 'Deemed Export'),
+            ('uin_holders', 'UIN Holders'),
+        ], string="GST Treatment", compute="_compute_l10n_in_gst_treatment", store=True, readonly=False, copy=True, precompute=True)
     l10n_in_state_id = fields.Many2one('res.country.state', string="Place of supply",
-                                       compute="_compute_l10n_in_state_id", store=True, readonly=False, precompute=True)
+        compute="_compute_l10n_in_state_id", store=True, readonly=False, precompute=True)
     l10n_in_gstin = fields.Char(string="GSTIN")
     # For Export invoice this data is need in GSTR report
     l10n_in_shipping_bill_number = fields.Char('Shipping bill number')
     l10n_in_shipping_bill_date = fields.Date('Shipping bill date')
     l10n_in_shipping_port_code_id = fields.Many2one('l10n_in.port.code', 'Port code')
-    l10n_in_reseller_partner_id = fields.Many2one('res.partner', 'Reseller', domain=[('vat', '!=', False)],
-                                                  help="Only Registered Reseller")
+    l10n_in_reseller_partner_id = fields.Many2one('res.partner', 'Reseller', domain=[('vat', '!=', False)], help="Only Registered Reseller")
     l10n_in_journal_type = fields.Selection(string="Journal Type", related='journal_id.type')
     l10n_in_warning = fields.Json(compute="_compute_l10n_in_warning")
 
@@ -51,20 +49,20 @@ class AccountMove(models.Model):
 
     @api.depends('partner_id', 'partner_shipping_id', 'company_id')
     def _compute_l10n_in_state_id(self):
+        foreign_state = self.env.ref('l10n_in.state_in_oc', raise_if_not_found=False)
         for move in self:
             if move.country_code == 'IN' and move.is_sale_document(include_receipts=True):
-                partner_state = (
-                        move.partner_id.commercial_partner_id == move.partner_shipping_id.commercial_partner_id
-                        and move.partner_shipping_id.state_id
-                        or move.partner_id.state_id
+                partner = (
+                    move.partner_id.commercial_partner_id == move.partner_shipping_id.commercial_partner_id
+                    and move.partner_shipping_id
+                    or move.partner_id
                 )
-                if not partner_state:
-                    partner_state = move.partner_id.commercial_partner_id.state_id or move.company_id.state_id
+                if partner.country_id and partner.country_id.code != 'IN':
+                    move.l10n_in_state_id = foreign_state
+                    continue
+                partner_state = partner.state_id or move.partner_id.commercial_partner_id.state_id or move.company_id.state_id
                 country_code = partner_state.country_id.code or move.country_code
-                if country_code == 'IN':
-                    move.l10n_in_state_id = partner_state
-                else:
-                    move.l10n_in_state_id = self.env.ref('l10n_in.state_in_oc', raise_if_not_found=False)
+                move.l10n_in_state_id = partner_state if country_code == 'IN' else foreign_state
             elif move.country_code == 'IN' and move.journal_id.type == 'purchase':
                 move.l10n_in_state_id = move.company_id.state_id
             else:
@@ -80,11 +78,11 @@ class AccountMove(models.Model):
             """
 
             if (
-                    move.country_code != 'IN'
-                    or not move.is_invoice(include_receipts=True)
-                    # Partner's FP takes precedence through super
-                    or move.partner_shipping_id.property_account_position_id
-                    or move.partner_id.property_account_position_id
+                move.country_code != 'IN'
+                or not move.is_invoice(include_receipts=True)
+                # Partner's FP takes precedence through super
+                or move.partner_shipping_id.property_account_position_id
+                or move.partner_id.property_account_position_id
             ):
                 return False
             elif move.l10n_in_gst_treatment == 'special_economic_zone':
@@ -104,9 +102,9 @@ class AccountMove(models.Model):
                 elif pos_state_id != move.partner_id.state_id:
                     # Inter-State: Group by state that doesn't match the company's state.
                     return (
-                            pos_state_id == move.company_id.state_id
-                            and move.partner_id.state_id
-                            or pos_state_id
+                        pos_state_id == move.company_id.state_id
+                        and move.partner_id.state_id
+                        or pos_state_id
                     )
             return False
 
@@ -129,10 +127,9 @@ class AccountMove(models.Model):
 
     @api.onchange('name')
     def _onchange_name_warning(self):
-        if self.country_code == 'IN' and self.journal_id.type == 'sale' and self.name and (
-                len(self.name) > 16 or not re.match(r'^[a-zA-Z0-9-\/]+$', self.name)):
+        if self.country_code == 'IN' and self.journal_id.type == 'sale' and self.name and (len(self.name) > 16 or not re.match(r'^[a-zA-Z0-9-\/]+$', self.name)):
             return {'warning': {
-                'title': _("Invalid sequence as per GST rule 46(b)"),
+                'title' : _("Invalid sequence as per GST rule 46(b)"),
                 'message': _(
                     "The invoice number should not exceed 16 characters\n"
                     "and must only contain '-' (hyphen) and '/' (slash) as special characters"
@@ -147,21 +144,16 @@ class AccountMove(models.Model):
             return {
                 'message': message,
                 'action_text': self.env._("View %s", action_name),
-                'action': record._get_records_action(name=self.env._("Check %s", action_name), target='current',
-                                                     views=views, domain=domain or [])
+                'action': record._get_records_action(name=self.env._("Check %s", action_name), target='current', views=views, domain=domain or [])
             }
 
         indian_invoice = self.filtered(lambda m: m.country_code == 'IN' and m.move_type != 'entry')
         for move in indian_invoice:
-            filtered_lines = move.invoice_line_ids.filtered(
-                lambda line: line.display_type == 'product' and line.tax_ids and line._origin)
+            filtered_lines = move.invoice_line_ids.filtered(lambda line: line.display_type == 'product' and line.tax_ids and line._origin)
             if move.company_id.l10n_in_hsn_code_digit and filtered_lines:
                 lines = self.env['account.move.line']
                 for line in filtered_lines:
-                    if (line.l10n_in_hsn_code and (
-                            not re.match(r'^\d{4}$|^\d{6}$|^\d{8}$', line.l10n_in_hsn_code) or len(
-                            line.l10n_in_hsn_code) < int(
-                            move.company_id.l10n_in_hsn_code_digit))) or not line.l10n_in_hsn_code:
+                    if (line.l10n_in_hsn_code and (not re.match(r'^\d{4}$|^\d{6}$|^\d{8}$', line.l10n_in_hsn_code) or len(line.l10n_in_hsn_code) < int(move.company_id.l10n_in_hsn_code_digit))) or not line.l10n_in_hsn_code:
                         lines |= line._origin
 
                 digit_suffixes = {
@@ -170,8 +162,8 @@ class AccountMove(models.Model):
                     '8': _("8 digits")
                 }
                 msg = _("Ensure that the HSN/SAC Code consists either %s in invoice lines",
-                        digit_suffixes.get(move.company_id.l10n_in_hsn_code_digit, _("Invalid HSN/SAC Code digit"))
-                        )
+                    digit_suffixes.get(move.company_id.l10n_in_hsn_code_digit, _("Invalid HSN/SAC Code digit"))
+                )
                 move.l10n_in_warning = {
                     'invalid_hsn_code_length': build_warning(
                         message=msg,
@@ -195,25 +187,23 @@ class AccountMove(models.Model):
         """Use journal type to define document type because not miss state in any entry including POS entry"""
         posted = super()._post(soft)
         gst_treatment_name_mapping = {k: v for k, v in
-                                      self._fields['l10n_in_gst_treatment']._description_selection(self.env)}
+                             self._fields['l10n_in_gst_treatment']._description_selection(self.env)}
         for move in posted.filtered(lambda m: m.country_code == 'IN' and m.is_sale_document()):
             if move.l10n_in_state_id and not move.l10n_in_state_id.l10n_in_tin:
-                raise UserError(
-                    _("Please set a valid TIN Number on the Place of Supply %s", move.l10n_in_state_id.name))
+                raise UserError(_("Please set a valid TIN Number on the Place of Supply %s", move.l10n_in_state_id.name))
             if not move.company_id.state_id:
                 msg = _("Your company %s needs to have a correct address in order to validate this invoice.\n"
-                        "Set the address of your company (Don't forget the State field)", move.company_id.name)
+                "Set the address of your company (Don't forget the State field)", move.company_id.name)
                 action = {
                     "view_mode": "form",
                     "res_model": "res.company",
                     "type": "ir.actions.act_window",
-                    "res_id": move.company_id.id,
+                    "res_id" : move.company_id.id,
                     "views": [[self.env.ref("base.view_company_form").id, "form"]],
                 }
                 raise RedirectWarning(msg, action, _('Go to Company configuration'))
             move.l10n_in_gstin = move.partner_id.vat
-            if not move.l10n_in_gstin and move.l10n_in_gst_treatment in ['regular', 'composition',
-                                                                         'special_economic_zone', 'deemed_export']:
+            if not move.l10n_in_gstin and move.l10n_in_gst_treatment in ['regular', 'composition', 'special_economic_zone', 'deemed_export']:
                 raise ValidationError(_(
                     "Partner %(partner_name)s (%(partner_id)s) GSTIN is required under GST Treatment %(name)s",
                     partner_name=move.partner_id.name,

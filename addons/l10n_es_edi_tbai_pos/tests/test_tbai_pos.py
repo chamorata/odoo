@@ -1,8 +1,9 @@
 from unittest.mock import patch
 
-from odoo import Command
 from odoo.addons.l10n_es_edi_tbai.tests.common import TestEsEdiTbaiCommonGipuzkoa
 from odoo.addons.point_of_sale.tests.common import TestPointOfSaleCommon
+
+from odoo import Command
 from odoo.exceptions import UserError
 from odoo.tests import tagged
 
@@ -51,8 +52,8 @@ class TestPosEdi(TestEsEdiTbaiCommonGipuzkoa, TestPointOfSaleCommon):
             'amount': pos_order.amount_total,
         })
         with patch(
-            'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
-            return_value=cls.mock_response_post_invoice_success,
+                'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
+                return_value=cls.mock_response_post_invoice_success,
         ):
             pos_make_payment.with_context(context_make_payment).check()
 

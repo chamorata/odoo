@@ -3,6 +3,7 @@
 
 from odoo.tests import common
 
+
 class TestFillTemporal(common.TransactionCase):
     """Test for fill temporal.
 
@@ -161,7 +162,7 @@ class TestFillTemporal(common.TransactionCase):
 
         # Time Zone                      UTC     UTC DST
         tzs = ["America/Anchorage",  # −09:00    −08:00
-               "Europe/Brussels",    # +01:00    +02:00
+               "Europe/Brussels",  # +01:00    +02:00
                "Pacific/Kwajalein"]  # +12:00    +12:00
 
         for tz in tzs:
@@ -235,11 +236,11 @@ class TestFillTemporal(common.TransactionCase):
     def test_date_range_groupby_week(self):
         """Test data with weeks starting on Sunday."""
         self.Model.create([
-            {'date': '1916-08-19', 'value': 4},   # saturday W34
+            {'date': '1916-08-19', 'value': 4},  # saturday W34
             {'date': '1916-08-20', 'value': 13},  # sunday   W35
-            {'date': '1916-09-10', 'value': 5},   # sunday   W38
-            {'date': '1916-08-18', 'value': 3},   # friday   W34
-            {'date': '1916-09-11', 'value': 4},   # monday   W38
+            {'date': '1916-09-10', 'value': 5},  # sunday   W38
+            {'date': '1916-08-18', 'value': 3},  # friday   W34
+            {'date': '1916-09-11', 'value': 4},  # monday   W38
             {'date': '1916-09-12', 'value': 11},  # tuesday  W38
         ])
 
@@ -335,24 +336,24 @@ class TestFillTemporal(common.TransactionCase):
 
         expected = [{
             '__domain': ['&',
-                      ('datetime', '>=', '1916-08-01 00:00:00'),
-                      ('datetime', '<', '1916-09-01 00:00:00')],
+                         ('datetime', '>=', '1916-08-01 00:00:00'),
+                         ('datetime', '<', '1916-09-01 00:00:00')],
             '__range': {'datetime': {'from': '1916-08-01 00:00:00', 'to': '1916-09-01 00:00:00'}},
             'datetime': 'August 1916',
             'datetime_count': 2,
             'value': 10
         }, {
             '__domain': ['&',
-                      ('datetime', '>=', '1916-09-01 00:00:00'),
-                      ('datetime', '<', '1916-10-01 00:00:00')],
+                         ('datetime', '>=', '1916-09-01 00:00:00'),
+                         ('datetime', '<', '1916-10-01 00:00:00')],
             '__range': {'datetime': {'from': '1916-09-01 00:00:00', 'to': '1916-10-01 00:00:00'}},
             'datetime': 'September 1916',
             'datetime_count': 0,
             'value': False
         }, {
             '__domain': ['&',
-                      ('datetime', '>=', '1916-10-01 00:00:00'),
-                      ('datetime', '<', '1916-11-01 00:00:00')],
+                         ('datetime', '>=', '1916-10-01 00:00:00'),
+                         ('datetime', '<', '1916-11-01 00:00:00')],
             '__range': {'datetime': {'from': '1916-10-01 00:00:00', 'to': '1916-11-01 00:00:00'}},
             'datetime': 'October 1916',
             'datetime_count': 3,
@@ -652,32 +653,32 @@ class TestFillTemporal(common.TransactionCase):
 
         expected = [{
             '__domain': ['&',
-                ('datetime', '>=', '2015-12-31 17:00:00'),
-                ('datetime', '<', '2016-03-31 16:00:00')],
+                         ('datetime', '>=', '2015-12-31 17:00:00'),
+                         ('datetime', '<', '2016-03-31 16:00:00')],
             '__range': {'datetime:quarter': {'from': '2015-12-31 17:00:00', 'to': '2016-03-31 16:00:00'}},
             'datetime:quarter': 'Q1 2016',
             'datetime_count': 1,
             'value': 2
         }, {
             '__domain': ['&',
-                       ('datetime', '>=', '2016-03-31 16:00:00'),
-                       ('datetime', '<', '2016-06-30 16:00:00')],
+                         ('datetime', '>=', '2016-03-31 16:00:00'),
+                         ('datetime', '<', '2016-06-30 16:00:00')],
             '__range': {'datetime:quarter': {'from': '2016-03-31 16:00:00', 'to': '2016-06-30 16:00:00'}},
             'datetime:quarter': 'Q2 2016',
             'datetime_count': 0,
             'value': False
         }, {
             '__domain': ['&',
-                       ('datetime', '>=', '2016-06-30 16:00:00'),
-                       ('datetime', '<', '2016-09-30 17:00:00')],
+                         ('datetime', '>=', '2016-06-30 16:00:00'),
+                         ('datetime', '<', '2016-09-30 17:00:00')],
             '__range': {'datetime:quarter': {'from': '2016-06-30 16:00:00', 'to': '2016-09-30 17:00:00'}},
             'datetime:quarter': 'Q3 2016',
             'datetime_count': 0,
             'value': False
         }, {
             '__domain': ['&',
-                       ('datetime', '>=', '2016-09-30 17:00:00'),
-                       ('datetime', '<', '2016-12-31 17:00:00')],
+                         ('datetime', '>=', '2016-09-30 17:00:00'),
+                         ('datetime', '<', '2016-12-31 17:00:00')],
             '__range': {'datetime:quarter': {'from': '2016-09-30 17:00:00', 'to': '2016-12-31 17:00:00'}},
             'datetime:quarter': 'Q4 2016',
             'datetime_count': 1,
@@ -780,11 +781,11 @@ class TestFillTemporal(common.TransactionCase):
     def test_with_bounds_groupby_week(self):
         """Test data with weeks starting on Sunday and forced boundaries."""
         self.Model.create([
-            {'date': '1916-08-19', 'value': 4},   # saturday W34
+            {'date': '1916-08-19', 'value': 4},  # saturday W34
             {'date': '1916-08-20', 'value': 13},  # sunday   W35
-            {'date': '1916-09-10', 'value': 5},   # sunday   W38
-            {'date': '1916-08-18', 'value': 3},   # friday   W34
-            {'date': '1916-09-11', 'value': 4},   # monday   W38
+            {'date': '1916-09-10', 'value': 5},  # sunday   W38
+            {'date': '1916-08-18', 'value': 3},  # friday   W34
+            {'date': '1916-09-11', 'value': 4},  # monday   W38
             {'date': '1916-09-12', 'value': 11},  # tuesday  W38
         ])
 
@@ -1016,7 +1017,8 @@ class TestFillTemporal(common.TransactionCase):
             'value': 3
         }]
 
-        model_fill = self.Model.with_context(fill_temporal={"fill_from": '1916-05-15', "fill_to": '1916-07-15', "min_groups": 4})
+        model_fill = self.Model.with_context(
+            fill_temporal={"fill_from": '1916-05-15', "fill_to": '1916-07-15', "min_groups": 4})
         groups = model_fill.read_group([], fields=['date', 'value'], groupby=['date'])
 
         self.assertEqual(groups, expected)

@@ -3,9 +3,9 @@
 import json
 from ast import literal_eval
 from collections import defaultdict
-from odoo.osv import expression
 
 from odoo import models
+from odoo.osv import expression
 
 
 class Project(models.Model):
@@ -14,8 +14,8 @@ class Project(models.Model):
     def _add_purchase_items(self, profitability_items, with_action=True):
         domain = self._get_add_purchase_items_domain()
         with_action = with_action and (
-            self.env.user.has_group('account.group_account_invoice')
-            or self.env.user.has_group('account.group_account_readonly')
+                self.env.user.has_group('account.group_account_invoice')
+                or self.env.user.has_group('account.group_account_readonly')
         )
         self._get_costs_items_from_purchase(domain, profitability_items, with_action=with_action)
 
@@ -68,7 +68,8 @@ class Project(models.Model):
                     'to_bill': amount_to_invoice,
                 }
                 if with_action:
-                    bills_costs['action'] = self._get_action_for_profitability_section(account_move_lines.move_id.ids, section_id)
+                    bills_costs['action'] = self._get_action_for_profitability_section(account_move_lines.move_id.ids,
+                                                                                       section_id)
                 costs['data'].append(bills_costs)
                 costs['total']['billed'] += amount_invoiced
                 costs['total']['to_bill'] += amount_to_invoice
@@ -108,9 +109,13 @@ class Project(models.Model):
                 action['view_mode'] = 'form'
                 action['res_id'] = res_id
             else:
-                pivot_view_id = self.env['ir.model.data']._xmlid_to_res_id('project_account.project_view_account_analytic_line_pivot')
-                graph_view_id = self.env['ir.model.data']._xmlid_to_res_id('project_account.project_view_account_analytic_line_graph')
-                action['views'] = [(pivot_view_id, view_type) if view_type == 'pivot' else (graph_view_id, view_type) if view_type == 'graph' else (view_id, view_type)
+                pivot_view_id = self.env['ir.model.data']._xmlid_to_res_id(
+                    'project_account.project_view_account_analytic_line_pivot')
+                graph_view_id = self.env['ir.model.data']._xmlid_to_res_id(
+                    'project_account.project_view_account_analytic_line_graph')
+                action['views'] = [(pivot_view_id, view_type) if view_type == 'pivot' else (graph_view_id,
+                                                                                            view_type) if view_type == 'graph' else (
+                    view_id, view_type)
                                    for (view_id, view_type) in action['views']]
             return action
 
@@ -166,8 +171,11 @@ class Project(models.Model):
         # we dont know what part of the numbers has already been billed or not, so we have no choice but to put everything under the billed/invoiced columns.
         # The to bill/to invoice ones will simply remain 0
         profitability_sequence_per_invoice_type = self._get_profitability_sequence_per_invoice_type()
-        revenues = {'id': 'other_revenues_aal', 'sequence': profitability_sequence_per_invoice_type['other_revenues_aal'], 'invoiced': total_revenues, 'to_invoice': 0.0}
-        costs = {'id': 'other_costs_aal', 'sequence': profitability_sequence_per_invoice_type['other_costs_aal'], 'billed': total_costs, 'to_bill': 0.0}
+        revenues = {'id': 'other_revenues_aal',
+                    'sequence': profitability_sequence_per_invoice_type['other_revenues_aal'],
+                    'invoiced': total_revenues, 'to_invoice': 0.0}
+        costs = {'id': 'other_costs_aal', 'sequence': profitability_sequence_per_invoice_type['other_costs_aal'],
+                 'billed': total_costs, 'to_bill': 0.0}
 
         if with_action and self.env.user.has_group('account.group_account_readonly'):
             costs['action'] = self._get_action_for_profitability_section(cost_ids, 'other_costs_aal')

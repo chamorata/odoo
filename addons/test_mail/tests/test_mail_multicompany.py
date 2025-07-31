@@ -2,16 +2,16 @@
 
 import base64
 import socket
-
 from itertools import product
-from freezegun import freeze_time
 from unittest.mock import patch
-from werkzeug.urls import url_parse
 
+from freezegun import freeze_time
 from odoo.addons.mail.models.mail_message import Message
 from odoo.addons.mail.tests.common import MailCommon
 from odoo.addons.test_mail.models.test_mail_corner_case_models import MailTestMultiCompanyWithActivity
 from odoo.addons.test_mail.tests.common import TestRecipients
+from werkzeug.urls import url_parse
+
 from odoo.exceptions import AccessError
 from odoo.tests import tagged, users, HttpCase
 from odoo.tools import mute_logger
@@ -424,11 +424,11 @@ class TestMultiCompanyRedirect(MailCommon, HttpCase):
         ])
 
         for (login, password), mc_record in product(
-            ((None, None),  # not logged: redirect to web/login
-             ('employee', 'employee'),  # access only main company
-             ('admin', 'admin'),  # access both companies
-            ),
-            (mc_record_c1, mc_record_c2),
+                ((None, None),  # not logged: redirect to web/login
+                 ('employee', 'employee'),  # access only main company
+                 ('admin', 'admin'),  # access both companies
+                 ),
+                (mc_record_c1, mc_record_c2),
         ):
             with self.subTest(login=login, mc_record=mc_record):
                 self.authenticate(login, password)

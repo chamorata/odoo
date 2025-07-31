@@ -1,7 +1,8 @@
 import json
 from contextlib import contextmanager
-from requests import Session, PreparedRequest, Response
+
 from psycopg2 import IntegrityError
+from requests import Session, PreparedRequest, Response
 
 from odoo.exceptions import ValidationError, UserError
 from odoo.tests.common import tagged, TransactionCase, freeze_time
@@ -10,6 +11,7 @@ from odoo.tools import mute_logger
 ID_CLIENT = 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
 FAKE_UUID = 'yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy'
 PDF_FILE_PATH = 'account_peppol/tests/assets/peppol_identification_test.pdf'
+
 
 @freeze_time('2023-01-01')
 @tagged('-at_install', 'post_install')
@@ -65,9 +67,9 @@ class TestPeppolParticipant(TransactionCase):
         body = json.loads(r.body)
         responses = cls._get_mock_responses()
         if (
-            url == '/api/peppol/2/register_participant'
-            and cls.env.context.get('migrate_to')
-            and not body['params'].get('migration_key')
+                url == '/api/peppol/2/register_participant'
+                and cls.env.context.get('migrate_to')
+                and not body['params'].get('migration_key')
         ):
             raise UserError('No migration key was provided')
 
@@ -204,12 +206,12 @@ class TestPeppolParticipant(TransactionCase):
 
     def test_save_migration_key(self):
         # migration key should be saved
-        wizard = self.env['peppol.registration']\
+        wizard = self.env['peppol.registration'] \
             .create({
-                **self._get_participant_vals(),
-                'smp_registration': True,
-                'account_peppol_migration_key': 'helloo',
-            })
+            **self._get_participant_vals(),
+            'smp_registration': True,
+            'account_peppol_migration_key': 'helloo',
+        })
 
         with self._set_context({'migrate_to': True}):
             self.assertEqual(self.env.company.account_peppol_migration_key, 'helloo')
@@ -217,4 +219,5 @@ class TestPeppolParticipant(TransactionCase):
             wizard.verification_code = '123456'
             wizard.button_check_peppol_verification_code()
             self.assertEqual(self.env.company.account_peppol_proxy_state, 'smp_registration')
-            self.assertFalse(self.env.company.account_peppol_migration_key)  # the key should be reset once we've used it
+            self.assertFalse(
+                self.env.company.account_peppol_migration_key)  # the key should be reset once we've used it

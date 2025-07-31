@@ -9,8 +9,10 @@ class FleetVehicleSendMail(models.TransientModel):
     _description = 'Send mails to Drivers'
 
     vehicle_ids = fields.Many2many('fleet.vehicle', string='Vehicles', required=True)
-    author_id = fields.Many2one('res.partner', 'Author', required=True, default=lambda self: self.env.user.partner_id.id)
-    template_id = fields.Many2one(domain=lambda self: [('model_id', '=', self.env['ir.model']._get('fleet.vehicle').id)])
+    author_id = fields.Many2one('res.partner', 'Author', required=True,
+                                default=lambda self: self.env.user.partner_id.id)
+    template_id = fields.Many2one(
+        domain=lambda self: [('model_id', '=', self.env['ir.model']._get('fleet.vehicle').id)])
     attachment_ids = fields.Many2many(
         'ir.attachment', 'fleet_vehicle_mail_compose_message_ir_attachments_rel',
         'wizard_id', 'attachment_id', string='Attachments')
@@ -32,7 +34,8 @@ class FleetVehicleSendMail(models.TransientModel):
                 'tag': 'display_notification',
                 'params': {
                     'type': 'danger',
-                    'message': _("The following vehicle drivers are missing an email address: %s.", ', '.join(without_emails.mapped("name"))),
+                    'message': _("The following vehicle drivers are missing an email address: %s.",
+                                 ', '.join(without_emails.mapped("name"))),
                 }
             }
 
@@ -65,7 +68,8 @@ class FleetVehicleSendMail(models.TransientModel):
         })
 
         if self.attachment_ids:
-            attachments = self.env['ir.attachment'].sudo().browse(self.attachment_ids.ids).filtered(lambda a: a.create_uid.id == self._uid)
+            attachments = self.env['ir.attachment'].sudo().browse(self.attachment_ids.ids).filtered(
+                lambda a: a.create_uid.id == self._uid)
             if attachments:
                 attachments.write({'res_model': template._name, 'res_id': template.id})
             template.attachment_ids |= self.attachment_ids

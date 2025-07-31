@@ -25,14 +25,17 @@
                         <field name="code">VA_section1</field>
                         <field name="children_ids">
                             <record id="tax_annual_report_line_va1" model="account.report.line">
-                                <field name="name">VA1 - To be filled in by the entity of originator in cases of extraordinary transactions</field>
+                                <field name="name">VA1 - To be filled in by the entity of originator in cases of
+                                    extraordinary transactions
+                                </field>
                                 <field name="code">VA1</field>
                                 <field name="children_ids">
                                     <record id="tax_annual_report_line_va1_4" model="account.report.line">
                                         <field name="name">VAT/2023 declaration credit transferred</field>
                                         <field name="code">VA1.4</field>
                                         <field name="expression_ids">
-                                            <record id="tax_annual_report_line_va1_4_extval" model="account.report.expression">
+                                            <record id="tax_annual_report_line_va1_4_extval"
+                                                    model="account.report.expression">
                                                 <field name="label">balance</field>
                                                 <field name="engine">external</field>
                                                 <field name="formula">sum</field>
@@ -43,20 +46,24 @@
                                 </field>
                             </record>
                             <record id="tax_annual_report_line_va5" model="account.report.line">
-                                <field name="name">VA5 - Terminals for mobile telecommunication radio service with more than 50% deduction</field>
+                                <field name="name">VA5 - Terminals for mobile telecommunication radio service with more
+                                    than 50% deduction
+                                </field>
                                 <field name="code">VA5</field>
                                 <field name="children_ids">
                                     <record id="tax_annual_report_line_va5_section_1" model="account.report.line">
                                         <field name="name">Equipment purchases</field>
                                         <field name="code">VA5_AA</field>
                                         <field name="expression_ids">
-                                            <record id="tax_annual_report_line_va5_aa_tag" model="account.report.expression">
+                                            <record id="tax_annual_report_line_va5_aa_tag"
+                                                    model="account.report.expression">
                                                 <field name="label">balance</field>
                                                 <field name="engine">external</field>
                                                 <field name="formula">sum</field>
                                                 <field name="subformula">editable;rounding=2</field>
                                             </record>
-                                            <record id="tax_annual_report_line_va5_aa_tax" model="account.report.expression">
+                                            <record id="tax_annual_report_line_va5_aa_tax"
+                                                    model="account.report.expression">
                                                 <field name="label">tax</field>
                                                 <field name="engine">aggregation</field>
                                                 <field name="formula">VA5_AA.balance * 0.5</field>
@@ -67,13 +74,15 @@
                                         <field name="name">Management services</field>
                                         <field name="code">VA5_SDG</field>
                                         <field name="expression_ids">
-                                            <record id="tax_annual_report_line_va5_sdg_tag" model="account.report.expression">
+                                            <record id="tax_annual_report_line_va5_sdg_tag"
+                                                    model="account.report.expression">
                                                 <field name="label">balance</field>
                                                 <field name="engine">external</field>
                                                 <field name="formula">sum</field>
                                                 <field name="subformula">editable;rounding=2</field>
                                             </record>
-                                            <record id="tax_annual_report_line_va5_sdg_tax" model="account.report.expression">
+                                            <record id="tax_annual_report_line_va5_sdg_tax"
+                                                    model="account.report.expression">
                                                 <field name="label">tax</field>
                                                 <field name="engine">aggregation</field>
                                                 <field name="formula">VA5_SDG.balance * 0.5</field>
@@ -89,7 +98,9 @@
                         <field name="code">VA_section2</field>
                         <field name="children_ids">
                             <record id="tax_annual_report_line_va16" model="account.report.line">
-                                <field name="name">VA11 - Data on amounts suspended as a result of the health emergency by COVID-19</field>
+                                <field name="name">VA11 - Data on amounts suspended as a result of the health emergency
+                                    by COVID-19
+                                </field>
                                 <field name="code">VA11</field>
                                 <field name="expression_ids">
                                     <record id="tax_annual_report_line_va16_extval" model="account.report.expression">
@@ -101,7 +112,9 @@
                                 </field>
                             </record>
                             <record id="tax_annual_report_line_va12" model="account.report.line">
-                                <field name="name">VA12 - Reserved for indication of surplus credit of former parent companies to be guaranteed</field>
+                                <field name="name">VA12 - Reserved for indication of surplus credit of former parent
+                                    companies to be guaranteed
+                                </field>
                                 <field name="code">VA12</field>
                                 <field name="expression_ids">
                                     <record id="tax_annual_report_line_va12_extval" model="account.report.expression">

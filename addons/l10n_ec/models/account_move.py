@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.l10n_ec.models.res_partner import PartnerIdTypeEc
+
 from odoo import fields, models, api
 
 _DOCUMENTS_MAPPING = {
@@ -153,7 +154,8 @@ class AccountMove(models.Model):
                 domain.extend([('internal_type', '=', 'debit_note')])
             elif self.move_type in ('out_invoice', 'in_invoice'):
                 domain.extend([('internal_type', '=', 'invoice')])
-            allowed_documents = self._get_l10n_ec_documents_allowed(PartnerIdTypeEc.get_ats_code_for_partner(self.partner_id, self.move_type))
+            allowed_documents = self._get_l10n_ec_documents_allowed(
+                PartnerIdTypeEc.get_ats_code_for_partner(self.partner_id, self.move_type))
             domain.extend([('id', 'in', allowed_documents.ids)])
         return domain
 
@@ -169,8 +171,8 @@ class AccountMove(models.Model):
         """If use documents then will create a new starting sequence using the document type code prefix and the
         journal document number with a 8 padding number"""
         if (
-            self.journal_id.l10n_latam_use_documents
-            and self.company_id.country_id.code == "EC"
+                self.journal_id.l10n_latam_use_documents
+                and self.company_id.country_id.code == "EC"
         ):
             if self.l10n_latam_document_type_id:
                 return self._get_ec_formatted_sequence()

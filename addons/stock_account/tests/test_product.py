@@ -1,6 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.stock_account.tests.test_stockvaluationlayer import TestStockValuationCommon
+
 from odoo.fields import Command
 
 
@@ -35,7 +36,7 @@ class TestStockAccountProduct(TestStockValuationCommon):
                     'value_ids': [
                         Command.link(self.attribute_legs.value_ids[0].id),  # Add Steel
                         Command.link(self.attribute_legs.value_ids[1].id),  # Add Aluminium
-                ]}),
+                    ]}),
             ],
         })
         initial_variants = template.product_variant_ids

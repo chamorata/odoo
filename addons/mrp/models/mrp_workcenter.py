@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import json
+from datetime import timedelta, datetime
+from functools import partial
+from random import randint
 
 from babel.dates import format_date
 from dateutil import relativedelta
-from datetime import timedelta, datetime
-from functools import partial
+from odoo.addons.resource.models.utils import make_aware, Intervals
 from pytz import timezone
-from random import randint
 
 from odoo import api, exceptions, fields, models, _
 from odoo.exceptions import UserError, ValidationError
-from odoo.addons.resource.models.utils import make_aware, Intervals
 from odoo.tools.date_utils import start_of, end_of
 from odoo.tools.float_utils import float_compare, float_round
 from odoo.tools.misc import get_lang
@@ -26,7 +26,8 @@ class MrpWorkcenter(models.Model):
 
     # resource
     name = fields.Char('Work Center', related='resource_id.name', store=True, readonly=False)
-    time_efficiency = fields.Float('Time Efficiency', related='resource_id.time_efficiency', default=100, store=True, readonly=False)
+    time_efficiency = fields.Float('Time Efficiency', related='resource_id.time_efficiency', default=100, store=True,
+                                   readonly=False)
     active = fields.Boolean('Active', related='resource_id.active', default=True, store=True, readonly=False)
 
     code = fields.Char('Code', copy=False)
@@ -39,12 +40,14 @@ class MrpWorkcenter(models.Model):
         'Sequence', default=1, required=True,
         help="Gives the sequence order when displaying a list of work centers.")
     color = fields.Integer('Color')
-    currency_id = fields.Many2one('res.currency', 'Currency', related='company_id.currency_id', readonly=True, required=True)
+    currency_id = fields.Many2one('res.currency', 'Currency', related='company_id.currency_id', readonly=True,
+                                  required=True)
     costs_hour = fields.Float(string='Cost per hour', help='Hourly processing cost.', default=0.0, tracking=True)
     time_start = fields.Float('Setup Time')
     time_stop = fields.Float('Cleanup Time')
     routing_line_ids = fields.One2many('mrp.routing.workcenter', 'workcenter_id', "Routing Lines")
-    has_routing_lines = fields.Boolean(compute='_compute_has_routing_lines', help='Technical field for workcenter views')
+    has_routing_lines = fields.Boolean(compute='_compute_has_routing_lines',
+                                       help='Technical field for workcenter views')
     order_ids = fields.One2many('mrp.workorder', 'workcenter_id', "Orders")
     workorder_count = fields.Integer('# Work Orders', compute='_compute_workorder_count')
     workorder_ready_count = fields.Integer('# Ready Work Orders', compute='_compute_workorder_count')
@@ -78,7 +81,8 @@ class MrpWorkcenter(models.Model):
     )
     tag_ids = fields.Many2many('mrp.workcenter.tag')
     capacity_ids = fields.One2many('mrp.workcenter.capacity', 'workcenter_id', string='Product Capacities',
-        help="Specific number of pieces that can be produced in parallel per product.", copy=True)
+                                   help="Specific number of pieces that can be produced in parallel per product.",
+                                   copy=True)
     kanban_dashboard_graph = fields.Text(compute='_compute_kanban_dashboard_graph')
     resource_calendar_id = fields.Many2one(check_company=True)
 
@@ -131,7 +135,7 @@ class MrpWorkcenter(models.Model):
         # demo data
         if not self.order_ids:
             for wc in self:
-                load_limit = 40     # default max load per week is 40 hours on a new workcenter
+                load_limit = 40  # default max load per week is 40 hours on a new workcenter
                 load_data[wc] = {week_start: randint(0, int(load_limit * 2)) for week_start in week_range}
             return load_data
 
@@ -153,7 +157,9 @@ class MrpWorkcenter(models.Model):
             excess_bar = []
             for week_start in week_range:
                 load_bar.append(min(load_data[workcenter].get(week_start, 0), load_limit))
-                excess_bar.append(max(float_round(load_data[workcenter].get(week_start, 0) - load_limit, precision_digits=1, rounding_method='HALF-UP'), 0))
+                excess_bar.append(
+                    max(float_round(load_data[workcenter].get(week_start, 0) - load_limit, precision_digits=1,
+                                    rounding_method='HALF-UP'), 0))
             wc_data['values'] = [load_bar, load_limit, excess_bar]
             graph_data[workcenter.id].append(wc_data)
         return graph_data
@@ -165,7 +171,8 @@ class MrpWorkcenter(models.Model):
         result_duration_expected = {wid: 0 for wid in self._ids}
         # Count Late Workorder
         data = MrpWorkorder._read_group(
-            [('workcenter_id', 'in', self.ids), ('state', 'in', ('pending', 'waiting', 'ready')), ('date_start', '<', datetime.now().strftime('%Y-%m-%d'))],
+            [('workcenter_id', 'in', self.ids), ('state', 'in', ('pending', 'waiting', 'ready')),
+             ('date_start', '<', datetime.now().strftime('%Y-%m-%d'))],
             ['workcenter_id'], ['__count'])
         count_data = {workcenter.id: count for workcenter, count in data}
         # Count All, Pending, Ready, Progress Workorder
@@ -177,7 +184,8 @@ class MrpWorkcenter(models.Model):
             if state in ('pending', 'waiting', 'ready', 'progress'):
                 result_duration_expected[workcenter.id] += duration_sum
         for workcenter in self:
-            workcenter.workorder_count = sum(count for state, count in result[workcenter.id].items() if state not in ('done', 'cancel'))
+            workcenter.workorder_count = sum(
+                count for state, count in result[workcenter.id].items() if state not in ('done', 'cancel'))
             workcenter.workorder_pending_count = result[workcenter.id].get('pending', 0)
             workcenter.workcenter_load = result_duration_expected[workcenter.id]
             workcenter.workorder_ready_count = result[workcenter.id].get('ready', 0)
@@ -252,7 +260,8 @@ class MrpWorkcenter(models.Model):
     @api.depends('routing_line_ids')
     def _compute_has_routing_lines(self):
         for workcenter in self:
-            workcenter.has_routing_lines = self.env['mrp.routing.workcenter'].search_count([('workcenter_id', '=', workcenter.id)], limit=1)
+            workcenter.has_routing_lines = self.env['mrp.routing.workcenter'].search_count(
+                [('workcenter_id', '=', workcenter.id)], limit=1)
 
     @api.constrains('default_capacity')
     def _check_capacity(self):
@@ -263,7 +272,8 @@ class MrpWorkcenter(models.Model):
         self.ensure_one()
         if self.working_state != 'blocked':
             raise exceptions.UserError(_("It has already been unblocked."))
-        times = self.env['mrp.workcenter.productivity'].search([('workcenter_id', '=', self.id), ('date_end', '=', False)])
+        times = self.env['mrp.workcenter.productivity'].search(
+            [('workcenter_id', '=', self.id), ('date_end', '=', False)])
         times.write({'date_end': datetime.now()})
         return True
 
@@ -311,7 +321,8 @@ class MrpWorkcenter(models.Model):
         unavailability_ressources = self.resource_id._get_unavailable_intervals(start_datetime, end_datetime)
         return {wc.id: unavailability_ressources.get(wc.resource_id.id, []) for wc in self}
 
-    def _get_first_available_slot(self, start_datetime, duration, forward=True, leaves_to_ignore=False, extra_leaves_slots=[]):
+    def _get_first_available_slot(self, start_datetime, duration, forward=True, leaves_to_ignore=False,
+                                  extra_leaves_slots=[]):
         """Get the first available interval for the workcenter in `self`.
 
         The available interval is disjoinct with all other workorders planned on this workcenter, but
@@ -329,12 +340,17 @@ class MrpWorkcenter(models.Model):
         self.ensure_one()
         resource = self.resource_id
         start_datetime, revert = make_aware(start_datetime)
-        get_available_intervals = partial(self.resource_calendar_id._work_intervals_batch, resources=resource, tz=timezone(self.resource_calendar_id.tz))
+        get_available_intervals = partial(self.resource_calendar_id._work_intervals_batch, resources=resource,
+                                          tz=timezone(self.resource_calendar_id.tz))
         workorder_intervals_leaves_domain = [('time_type', '=', 'other')]
         if leaves_to_ignore:
             workorder_intervals_leaves_domain.append(('id', 'not in', leaves_to_ignore.ids))
-        get_workorder_intervals = partial(self.resource_calendar_id._leave_intervals_batch, domain=workorder_intervals_leaves_domain, resources=resource, tz=timezone(self.resource_calendar_id.tz))
-        extra_leaves_slots_intervals = Intervals([(make_aware(start)[0], make_aware(stop)[0], self.env['resource.calendar.attendance']) for start, stop in extra_leaves_slots])
+        get_workorder_intervals = partial(self.resource_calendar_id._leave_intervals_batch,
+                                          domain=workorder_intervals_leaves_domain, resources=resource,
+                                          tz=timezone(self.resource_calendar_id.tz))
+        extra_leaves_slots_intervals = Intervals(
+            [(make_aware(start)[0], make_aware(stop)[0], self.env['resource.calendar.attendance']) for start, stop in
+             extra_leaves_slots])
 
         remaining = duration
         now = make_aware(datetime.now())[0]
@@ -349,9 +365,12 @@ class MrpWorkcenter(models.Model):
                 for start, stop, _records in available_intervals:
                     start_interval = start_interval or start
                     interval_minutes = (stop - start).total_seconds() / 60
-                    while (interval := Intervals([(start_interval or start, start + timedelta(minutes=min(remaining, interval_minutes)), _records)])) \
-                      and (conflict := interval & workorder_intervals or interval & extra_leaves_slots_intervals):
-                        (_start, start, _records) = conflict._items[0]  # restart available interval at conflicting interval stop
+                    while (interval := Intervals(
+                            [(start_interval or start, start + timedelta(minutes=min(remaining, interval_minutes)),
+                              _records)])) \
+                            and (conflict := interval & workorder_intervals or interval & extra_leaves_slots_intervals):
+                        (_start, start, _records) = conflict._items[
+                            0]  # restart available interval at conflicting interval stop
                         interval_minutes = (stop - start).total_seconds() / 60
                         start_interval, remaining = start if interval_minutes else None, duration
                     if float_compare(interval_minutes, remaining, precision_digits=3) >= 0:
@@ -367,9 +386,12 @@ class MrpWorkcenter(models.Model):
                 for start, stop, _records in available_intervals:
                     stop_interval = stop_interval or stop
                     interval_minutes = (stop - start).total_seconds() / 60
-                    while (interval := Intervals([(stop - timedelta(minutes=min(remaining, interval_minutes)), stop_interval or stop, _records)])) \
-                      and (conflict := interval & workorder_intervals or interval & extra_leaves_slots_intervals):
-                        (stop, _stop, _records) = conflict._items[0]  # restart available interval at conflicting interval start
+                    while (interval := Intervals(
+                            [(stop - timedelta(minutes=min(remaining, interval_minutes)), stop_interval or stop,
+                              _records)])) \
+                            and (conflict := interval & workorder_intervals or interval & extra_leaves_slots_intervals):
+                        (stop, _stop, _records) = conflict._items[
+                            0]  # restart available interval at conflicting interval start
                         interval_minutes = (stop - start).total_seconds() / 60
                         stop_interval, remaining = stop if interval_minutes else None, duration
                     if float_compare(interval_minutes, remaining, precision_digits=3) >= 0:
@@ -387,11 +409,12 @@ class MrpWorkcenter(models.Model):
                 'type': 'ir.actions.client',
                 'tag': 'display_notification',
                 'params': {
-                'title': _("Note that archived work center(s): '%s' is/are still linked to active Bill of Materials, which means that operations can still be planned on it/them. "
-                           "To prevent this, deletion of the work center is recommended instead.", filtered_workcenters),
-                'type': 'warning',
-                'sticky': True,  #True/False will display for few seconds if false
-                'next': {'type': 'ir.actions.act_window_close'},
+                    'title': _(
+                        "Note that archived work center(s): '%s' is/are still linked to active Bill of Materials, which means that operations can still be planned on it/them. "
+                        "To prevent this, deletion of the work center is recommended instead.", filtered_workcenters),
+                    'type': 'warning',
+                    'sticky': True,  # True/False will display for few seconds if false
+                    'next': {'type': 'ir.actions.act_window_close'},
                 },
             }
         return res
@@ -439,10 +462,10 @@ class MrpWorkcenterProductivityLossType(models.Model):
             rec.display_name = rec.loss_type.title()
 
     loss_type = fields.Selection([
-            ('availability', 'Availability'),
-            ('performance', 'Performance'),
-            ('quality', 'Quality'),
-            ('productive', 'Productive')], string='Category', default='availability', required=True)
+        ('availability', 'Availability'),
+        ('performance', 'Performance'),
+        ('quality', 'Quality'),
+        ('productive', 'Productive')], string='Category', default='availability', required=True)
 
 
 class MrpWorkcenterProductivityLoss(models.Model):
@@ -453,8 +476,10 @@ class MrpWorkcenterProductivityLoss(models.Model):
     name = fields.Char('Blocking Reason', required=True, translate=True)
     sequence = fields.Integer('Sequence', default=1)
     manual = fields.Boolean('Is a Blocking Reason', default=True)
-    loss_id = fields.Many2one('mrp.workcenter.productivity.loss.type', domain=[('loss_type', 'in', ['quality', 'availability'])], string='Category')
-    loss_type = fields.Selection(string='Effectiveness Category', related='loss_id.loss_type', store=True, readonly=False)
+    loss_id = fields.Many2one('mrp.workcenter.productivity.loss.type',
+                              domain=[('loss_type', 'in', ['quality', 'availability'])], string='Category')
+    loss_type = fields.Selection(string='Effectiveness Category', related='loss_id.loss_type', store=True,
+                                 readonly=False)
 
     def _convert_to_duration(self, date_start, date_stop, workcenter=False):
         """ Convert a date range into a duration in minutes.
@@ -464,12 +489,14 @@ class MrpWorkcenterProductivityLoss(models.Model):
         """
         duration = 0
         for productivity_loss in self:
-            if (productivity_loss.loss_type not in ('productive', 'performance')) and workcenter and workcenter.resource_calendar_id:
+            if (productivity_loss.loss_type not in ('productive',
+                                                    'performance')) and workcenter and workcenter.resource_calendar_id:
                 r = workcenter._get_work_days_data_batch(date_start, date_stop)[workcenter.id]['hours']
                 duration = max(duration, r * 60)
             else:
                 duration = max(duration, (date_stop - date_start).total_seconds() / 60.0)
         return round(duration, 2)
+
 
 class MrpWorkcenterProductivity(models.Model):
     _name = "mrp.workcenter.productivity"
@@ -492,7 +519,8 @@ class MrpWorkcenterProductivity(models.Model):
             company_id = self.env.company
         return company_id
 
-    production_id = fields.Many2one('mrp.production', string='Manufacturing Order', related='workorder_id.production_id', readonly=True)
+    production_id = fields.Many2one('mrp.production', string='Manufacturing Order',
+                                    related='workorder_id.production_id', readonly=True)
     workcenter_id = fields.Many2one('mrp.workcenter', "Work Center", required=True, check_company=True, index=True)
     company_id = fields.Many2one(
         'res.company', required=True, index=True,
@@ -515,7 +543,9 @@ class MrpWorkcenterProductivity(models.Model):
     def _compute_duration(self):
         for blocktime in self:
             if blocktime.date_start and blocktime.date_end:
-                blocktime.duration = blocktime.loss_id._convert_to_duration(blocktime.date_start.replace(microsecond=0), blocktime.date_end.replace(microsecond=0), blocktime.workcenter_id)
+                blocktime.duration = blocktime.loss_id._convert_to_duration(blocktime.date_start.replace(microsecond=0),
+                                                                            blocktime.date_end.replace(microsecond=0),
+                                                                            blocktime.workcenter_id)
             else:
                 blocktime.duration = 0.0
 
@@ -567,16 +597,19 @@ class MrpWorkcenterProductivity(models.Model):
             wo = timer.workorder_id
             timer.write({'date_end': fields.Datetime.now()})
             if wo.duration > wo.duration_expected:
-                productive_date_end = timer.date_end - relativedelta.relativedelta(minutes=wo.duration - wo.duration_expected)
+                productive_date_end = timer.date_end - relativedelta.relativedelta(
+                    minutes=wo.duration - wo.duration_expected)
                 if productive_date_end <= timer.date_start:
                     underperformance_timers |= timer
                 else:
                     underperformance_timers |= timer.copy({'date_start': productive_date_end})
                     timer.write({'date_end': productive_date_end})
         if underperformance_timers:
-            underperformance_type = self.env['mrp.workcenter.productivity.loss'].search([('loss_type', '=', 'performance')], limit=1)
+            underperformance_type = self.env['mrp.workcenter.productivity.loss'].search(
+                [('loss_type', '=', 'performance')], limit=1)
             if not underperformance_type:
-                raise UserError(_("You need to define at least one unactive productivity loss in the category 'Performance'. Create one from the Manufacturing app, menu: Configuration / Productivity Losses."))
+                raise UserError(
+                    _("You need to define at least one unactive productivity loss in the category 'Performance'. Create one from the Manufacturing app, menu: Configuration / Productivity Losses."))
             underperformance_timers.write({'loss_id': underperformance_type.id})
 
 
@@ -596,11 +629,15 @@ class MrpWorkCenterCapacity(models.Model):
     workcenter_id = fields.Many2one('mrp.workcenter', string='Work Center', required=True)
     product_id = fields.Many2one('product.product', string='Product', required=True)
     product_uom_id = fields.Many2one('uom.uom', string='Product UoM', related='product_id.uom_id')
-    capacity = fields.Float('Capacity', default=1.0, help="Number of pieces that can be produced in parallel for this product.")
-    time_start = fields.Float('Setup Time (minutes)', default=_default_time_start, help="Time in minutes for the setup.")
-    time_stop = fields.Float('Cleanup Time (minutes)', default=_default_time_stop, help="Time in minutes for the cleaning.")
+    capacity = fields.Float('Capacity', default=1.0,
+                            help="Number of pieces that can be produced in parallel for this product.")
+    time_start = fields.Float('Setup Time (minutes)', default=_default_time_start,
+                              help="Time in minutes for the setup.")
+    time_stop = fields.Float('Cleanup Time (minutes)', default=_default_time_stop,
+                             help="Time in minutes for the cleaning.")
 
     _sql_constraints = [
         ('positive_capacity', 'CHECK(capacity > 0)', 'Capacity should be a positive number.'),
-        ('unique_product', 'UNIQUE(workcenter_id, product_id)', 'Product capacity should be unique for each workcenter.'),
+        ('unique_product', 'UNIQUE(workcenter_id, product_id)',
+         'Product capacity should be unique for each workcenter.'),
     ]

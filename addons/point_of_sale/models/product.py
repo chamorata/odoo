@@ -1,18 +1,22 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo import api, fields, models, _
-from odoo.exceptions import UserError
 from collections import defaultdict
+from datetime import date
 from itertools import groupby
 from operator import itemgetter
-from datetime import date
+
+from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 from odoo.osv.expression import AND
 
 
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
-    available_in_pos = fields.Boolean(string='Available in POS', help='Check if you want this product to appear in the Point of Sale.', default=False)
-    to_weight = fields.Boolean(string='To Weigh With Scale', help="Check if the product should be weighted using the hardware scale integration.")
+    available_in_pos = fields.Boolean(string='Available in POS',
+                                      help='Check if you want this product to appear in the Point of Sale.',
+                                      default=False)
+    to_weight = fields.Boolean(string='To Weigh With Scale',
+                               help="Check if the product should be weighted using the hardware scale integration.")
     pos_categ_ids = fields.Many2many(
         'pos.category', string='Point of Sale Category',
         help="Category used in the Point of Sale.")
@@ -53,7 +57,8 @@ class ProductTemplate(models.Model):
     def _check_combo_inclusions(self):
         for product in self:
             if not product.available_in_pos:
-                combo_name = self.env['product.combo.item'].sudo().search([('product_id', 'in', product.product_variant_ids.ids)], limit=1).combo_id.name
+                combo_name = self.env['product.combo.item'].sudo().search(
+                    [('product_id', 'in', product.product_variant_ids.ids)], limit=1).combo_id.name
                 if combo_name:
                     raise UserError(_('You must first remove this product from the %s combo', combo_name))
 
@@ -70,9 +75,12 @@ class ProductProduct(models.Model):
     @api.model
     def _load_pos_data_fields(self, config_id):
         return [
-            'id', 'display_name', 'lst_price', 'standard_price', 'categ_id', 'pos_categ_ids', 'taxes_id', 'barcode', 'name',
-            'default_code', 'to_weight', 'uom_id', 'description_sale', 'description', 'product_tmpl_id', 'tracking', 'type', 'service_tracking', 'is_storable',
-            'write_date', 'color', 'available_in_pos', 'attribute_line_ids', 'active', 'image_128', 'combo_ids', 'product_template_variant_value_ids', 'product_tag_ids',
+            'id', 'display_name', 'lst_price', 'standard_price', 'categ_id', 'pos_categ_ids', 'taxes_id', 'barcode',
+            'name',
+            'default_code', 'to_weight', 'uom_id', 'description_sale', 'description', 'product_tmpl_id', 'tracking',
+            'type', 'service_tracking', 'is_storable',
+            'write_date', 'color', 'available_in_pos', 'attribute_line_ids', 'active', 'image_128', 'combo_ids',
+            'product_template_variant_value_ids', 'product_tag_ids',
         ]
 
     def _load_pos_data(self, data):
@@ -143,7 +151,9 @@ class ProductProduct(models.Model):
         different_currency = config_id.currency_id != self.env.company.currency_id
         for product in products:
             if different_currency:
-                product['lst_price'] = self.env.company.currency_id._convert(product['lst_price'], config_id.currency_id, self.env.company, fields.Date.today())
+                product['lst_price'] = self.env.company.currency_id._convert(product['lst_price'],
+                                                                             config_id.currency_id, self.env.company,
+                                                                             fields.Date.today())
             product['image_128'] = bool(product['image_128'])
 
             if len(taxes_by_company) > 1 and len(product['taxes_id']) > 1:
@@ -168,7 +178,8 @@ class ProductProduct(models.Model):
     def _unlink_except_active_pos_session(self):
         product_ctx = dict(self.env.context or {}, active_test=False)
         if self.env['pos.session'].sudo().search_count([('state', '!=', 'closed')]):
-            if self.with_context(product_ctx).search_count([('id', 'in', self.ids), ('product_tmpl_id.available_in_pos', '=', True)]):
+            if self.with_context(product_ctx).search_count(
+                    [('id', 'in', self.ids), ('product_tmpl_id.available_in_pos', '=', True)]):
                 raise UserError(_(
                     "To delete a product, make sure all point of sale sessions are closed.\n\n"
                     "Deleting a product available in a session would be like attempting to snatch a hamburger from a customer’s hand mid-bite; chaos will ensue as ketchup and mayo go flying everywhere!",
@@ -189,16 +200,16 @@ class ProductProduct(models.Model):
         grouped_taxes = {}
         for tax in taxes['taxes']:
             if tax['id'] in grouped_taxes:
-                grouped_taxes[tax['id']]['amount'] += tax['amount']/quantity if quantity else 0
+                grouped_taxes[tax['id']]['amount'] += tax['amount'] / quantity if quantity else 0
             else:
                 grouped_taxes[tax['id']] = {
                     'name': tax['name'],
-                    'amount': tax['amount']/quantity if quantity else 0
+                    'amount': tax['amount'] / quantity if quantity else 0
                 }
 
         all_prices = {
-            'price_without_tax': taxes['total_excluded']/quantity if quantity else 0,
-            'price_with_tax': taxes['total_included']/quantity if quantity else 0,
+            'price_without_tax': taxes['total_excluded'] / quantity if quantity else 0,
+            'price_with_tax': taxes['total_included'] / quantity if quantity else 0,
             'tax_details': list(grouped_taxes.values()),
         }
 
@@ -213,10 +224,10 @@ class ProductProduct(models.Model):
         # Warehouses
         warehouse_list = [
             {'id': w.id,
-            'name': w.name,
-            'available_quantity': self.with_context({'warehouse_id': w.id}).qty_available,
-            'forecasted_quantity': self.with_context({'warehouse_id': w.id}).virtual_available,
-            'uom': self.uom_name}
+             'name': w.name,
+             'available_quantity': self.with_context({'warehouse_id': w.id}).qty_available,
+             'forecasted_quantity': self.with_context({'warehouse_id': w.id}).virtual_available,
+             'uom': self.uom_name}
             for w in self.env['stock.warehouse'].search([('company_id', '=', config.company_id.id)])]
 
         if config.picking_type_id.warehouse_id:
@@ -231,7 +242,8 @@ class ProductProduct(models.Model):
         supplier_list = []
         for key, group in groupby(sorted(self.seller_ids, key=key), key=key):
             for s in list(group):
-                if not((s.date_start and s.date_start > date.today()) or (s.date_end and s.date_end < date.today()) or (s.min_qty > quantity)):
+                if not ((s.date_start and s.date_start > date.today()) or (
+                        s.date_end and s.date_end < date.today()) or (s.min_qty > quantity)):
                     supplier_list.append({
                         'id': s.id,
                         'name': s.partner_id.name,
@@ -242,7 +254,9 @@ class ProductProduct(models.Model):
 
         # Variants
         variant_list = [{'name': attribute_line.attribute_id.name,
-                         'values': list(map(lambda attr_name: {'name': attr_name, 'search': '%s %s' % (self.name, attr_name)}, attribute_line.value_ids.mapped('name')))}
+                         'values': list(
+                             map(lambda attr_name: {'name': attr_name, 'search': '%s %s' % (self.name, attr_name)},
+                                 attribute_line.value_ids.mapped('name')))}
                         for attribute_line in self.attribute_line_ids]
 
         return {
@@ -303,8 +317,10 @@ class ProductTemplateAttributeValue(models.Model):
 
     @api.model
     def _load_pos_data_domain(self, data):
-        ptav_ids = {ptav_id for p in data['product.product']['data'] for ptav_id in p['product_template_variant_value_ids']}
-        ptav_ids.update({ptav_id for ptal in data['product.template.attribute.line']['data'] for ptav_id in ptal['product_template_value_ids']})
+        ptav_ids = {ptav_id for p in data['product.product']['data'] for ptav_id in
+                    p['product_template_variant_value_ids']}
+        ptav_ids.update({ptav_id for ptal in data['product.template.attribute.line']['data'] for ptav_id in
+                         ptal['product_template_value_ids']})
         return AND([
             [('ptav_active', '=', True)],
             [('attribute_id', 'in', [attr['id'] for attr in data['product.attribute']['data']])],
@@ -313,7 +329,8 @@ class ProductTemplateAttributeValue(models.Model):
 
     @api.model
     def _load_pos_data_fields(self, config_id):
-        return ['attribute_id', 'attribute_line_id', 'product_attribute_value_id', 'price_extra', 'name', 'is_custom', 'html_color', 'image']
+        return ['attribute_id', 'attribute_line_id', 'product_attribute_value_id', 'price_extra', 'name', 'is_custom',
+                'html_color', 'image']
 
 
 class ProductPackaging(models.Model):
@@ -322,7 +339,8 @@ class ProductPackaging(models.Model):
 
     @api.model
     def _load_pos_data_domain(self, data):
-        return AND([[('barcode', 'not in', ['', False])], [('product_id', 'in', [x['id'] for x in data['product.product']['data']])] if data else []])
+        return AND([[('barcode', 'not in', ['', False])],
+                    [('product_id', 'in', [x['id'] for x in data['product.product']['data']])] if data else []])
 
     @api.model
     def _load_pos_data_fields(self, config_id):
@@ -334,7 +352,7 @@ class UomCateg(models.Model):
     _inherit = ['uom.category', 'pos.load.mixin']
 
     is_pos_groupable = fields.Boolean(string='Group Products in POS',
-        help="Check if you want to group products of this category in point of sale orders")
+                                      help="Check if you want to group products of this category in point of sale orders")
 
     @api.model
     def _load_pos_data_domain(self, data):
@@ -396,7 +414,8 @@ class ProductPricelistItem(models.Model):
     @api.model
     def _load_pos_data_fields(self, config_id):
         return ['product_tmpl_id', 'product_id', 'pricelist_id', 'price_surcharge', 'price_discount', 'price_round',
-                'price_min_margin', 'price_max_margin', 'company_id', 'currency_id', 'date_start', 'date_end', 'compute_price',
+                'price_min_margin', 'price_max_margin', 'company_id', 'currency_id', 'date_start', 'date_end',
+                'compute_price',
                 'fixed_price', 'percent_price', 'base_pricelist_id', 'base', 'categ_id', 'min_quantity']
 
 

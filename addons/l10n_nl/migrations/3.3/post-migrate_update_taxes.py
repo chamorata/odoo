@@ -55,9 +55,11 @@ def migrate(cr, version):
 
     insert_query_params = [
         (goods_plus_tax_tag_id, goods_taxes.ids, old_plus_tax_tag_ids, goods_taxes.invoice_repartition_line_ids.ids),
-        (services_plus_tax_tag_id, services_taxes.ids, old_plus_tax_tag_ids, services_taxes.invoice_repartition_line_ids.ids),
+        (services_plus_tax_tag_id, services_taxes.ids, old_plus_tax_tag_ids,
+         services_taxes.invoice_repartition_line_ids.ids),
         (goods_minus_tax_tag_id, goods_taxes.ids, old_minus_tax_tag_ids, goods_taxes.refund_repartition_line_ids.ids),
-        (services_minus_tax_tag_id, services_taxes.ids, old_minus_tax_tag_ids, services_taxes.refund_repartition_line_ids.ids),
+        (services_minus_tax_tag_id, services_taxes.ids, old_minus_tax_tag_ids,
+         services_taxes.refund_repartition_line_ids.ids),
     ]
     insert_query_parts = []
 
@@ -70,8 +72,8 @@ def migrate(cr, version):
                     WHERE aml_at_rel.account_tax_id = ANY(%s)
                     AND tag_aml_rel.account_account_tag_id = ANY(%s)
                     """,
-                    new_tax_tag_id, tax_ids, old_tax_tag_ids
-            )
+                new_tax_tag_id, tax_ids, old_tax_tag_ids
+                )
         )
 
         if len(old_tax_tag_ids) > 1:
@@ -100,10 +102,10 @@ def migrate(cr, version):
         ))
 
     cr.execute(SQL(
-            """
-            INSERT INTO account_account_tag_account_move_line_rel (account_move_line_id, account_account_tag_id)
-                %s
-            ON CONFLICT DO NOTHING
-            """,
-            SQL(" UNION ").join(insert_query_parts)
+        """
+        INSERT INTO account_account_tag_account_move_line_rel (account_move_line_id, account_account_tag_id)
+            %s
+        ON CONFLICT DO NOTHING
+        """,
+        SQL(" UNION ").join(insert_query_parts)
     ))

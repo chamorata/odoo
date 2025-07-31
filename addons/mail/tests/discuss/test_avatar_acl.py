@@ -1,9 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import fields, Command
-from odoo.tools.misc import limited_field_access_token
 from odoo.tests import HttpCase
 from odoo.tests.common import tagged
+from odoo.tools.misc import limited_field_access_token
 
 
 @tagged("post_install", "-at_install")

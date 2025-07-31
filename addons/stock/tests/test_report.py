@@ -3,8 +3,8 @@
 
 from datetime import date, datetime, timedelta
 
-from odoo.tests import Form, tagged, TransactionCase
 from odoo import Command
+from odoo.tests import Form, tagged, TransactionCase
 
 
 class TestReportsCommon(TransactionCase):
@@ -13,10 +13,14 @@ class TestReportsCommon(TransactionCase):
         super().setUpClass()
         cls.partner = cls.env['res.partner'].create({'name': 'Partner'})
         cls.ModelDataObj = cls.env['ir.model.data']
-        cls.picking_type_in = cls.env['stock.picking.type'].browse(cls.ModelDataObj._xmlid_to_res_id('stock.picking_type_in'))
-        cls.picking_type_out = cls.env['stock.picking.type'].browse(cls.ModelDataObj._xmlid_to_res_id('stock.picking_type_out'))
-        cls.supplier_location = cls.env['stock.location'].browse(cls.ModelDataObj._xmlid_to_res_id('stock.stock_location_suppliers'))
-        cls.stock_location = cls.env['stock.location'].browse(cls.ModelDataObj._xmlid_to_res_id('stock.stock_location_stock'))
+        cls.picking_type_in = cls.env['stock.picking.type'].browse(
+            cls.ModelDataObj._xmlid_to_res_id('stock.picking_type_in'))
+        cls.picking_type_out = cls.env['stock.picking.type'].browse(
+            cls.ModelDataObj._xmlid_to_res_id('stock.picking_type_out'))
+        cls.supplier_location = cls.env['stock.location'].browse(
+            cls.ModelDataObj._xmlid_to_res_id('stock.stock_location_suppliers'))
+        cls.stock_location = cls.env['stock.location'].browse(
+            cls.ModelDataObj._xmlid_to_res_id('stock.stock_location_stock'))
 
         cls.product1 = cls.env['product.product'].create({
             'name': 'Mellohi"',
@@ -65,16 +69,24 @@ class TestReports(TestReportsCommon):
         """
         report = self.env.ref('stock.label_product_product')
         target = b'\n\n^XA^CI28\n^FT100,80^A0N,40,30^FD[C4181234""154654654654]Mellohi"^FS\n^FT100,115^A0N,30,24^FDC4181234""15465^FS\n^FT100,150^A0N,30,24^FD4654654^FS\n^FO100,160^BY3\n^BCN,100,Y,N,N\n^FDscan""me^FS\n^XZ\n\n\n^XA^CI28\n^FT100,80^A0N,40,30^FD[C4181234""154654654654]Mellohi"^FS\n^FT100,115^A0N,30,24^FDC4181234""15465^FS\n^FT100,150^A0N,30,24^FD4654654^FS\n^FO100,160^BY3\n^BCN,100,Y,N,N\n^FDscan""me^FS\n^XZ\n'
-        rendering, qweb_type = report._render_qweb_text('stock.label_product_product', self.product1.product_tmpl_id.id, {'quantity_by_product': {self.product1.product_tmpl_id.id: 2}, 'active_model': 'product.template'})
-        self.assertEqual(target, rendering.replace(b' ', b''), 'Product name, default code or barcode is not correctly rendered, make sure the quotes are escaped correctly')
+        rendering, qweb_type = report._render_qweb_text('stock.label_product_product', self.product1.product_tmpl_id.id,
+                                                        {'quantity_by_product': {self.product1.product_tmpl_id.id: 2},
+                                                         'active_model': 'product.template'})
+        self.assertEqual(target, rendering.replace(b' ', b''),
+                         'Product name, default code or barcode is not correctly rendered, make sure the quotes are escaped correctly')
         self.assertEqual(qweb_type, 'text', 'the report type is not good')
 
     def test_product_label_custom_barcode_reports(self):
         """ Test that the custom barcodes are correctly rendered with special characters."""
         report = self.env.ref('stock.label_product_product')
         target = b'\n\n^XA^CI28\n^FT100,80^A0N,40,30^FD[C4181234""154654654654]Mellohi"^FS\n^FT100,115^A0N,30,24^FDC4181234""15465^FS\n^FT100,150^A0N,30,24^FD4654654^FS\n^FO100,160^BY3\n^BCN,100,Y,N,N\n^FD123"barcode^FS\n^XZ\n\n\n^XA^CI28\n^FT100,80^A0N,40,30^FD[C4181234""154654654654]Mellohi"^FS\n^FT100,115^A0N,30,24^FDC4181234""15465^FS\n^FT100,150^A0N,30,24^FD4654654^FS\n^FO100,160^BY3\n^BCN,100,Y,N,N\n^FD123"barcode^FS\n^XZ\n\n\n^XA^CI28\n^FT100,80^A0N,40,30^FD[C4181234""154654654654]Mellohi"^FS\n^FT100,115^A0N,30,24^FDC4181234""15465^FS\n^FT100,150^A0N,30,24^FD4654654^FS\n^FO100,160^BY3\n^BCN,100,Y,N,N\n^FDbarcode"456^FS\n^XZ\n\n\n^XA^CI28\n^FT100,80^A0N,40,30^FD[C4181234""154654654654]Mellohi"^FS\n^FT100,115^A0N,30,24^FDC4181234""15465^FS\n^FT100,150^A0N,30,24^FD4654654^FS\n^FO100,160^BY3\n^BCN,100,Y,N,N\n^FDbarcode"456^FS\n^XZ\n'
-        rendering, qweb_type = report._render_qweb_text('stock.label_product_product', self.product1.product_tmpl_id.id, {'custom_barcodes': {self.product1.product_tmpl_id.id: [('123"barcode', 2), ('barcode"456', 2)]}, 'quantity_by_product': {}, 'active_model': 'product.template'})
-        self.assertEqual(target, rendering.replace(b' ', b''), 'Custom barcodes are most likely not corretly rendered, make sure the quotes are escaped correctly')
+        rendering, qweb_type = report._render_qweb_text('stock.label_product_product', self.product1.product_tmpl_id.id,
+                                                        {'custom_barcodes': {
+                                                            self.product1.product_tmpl_id.id: [('123"barcode', 2),
+                                                                                               ('barcode"456', 2)]},
+                                                         'quantity_by_product': {}, 'active_model': 'product.template'})
+        self.assertEqual(target, rendering.replace(b' ', b''),
+                         'Custom barcodes are most likely not corretly rendered, make sure the quotes are escaped correctly')
         self.assertEqual(qweb_type, 'text', 'the report type is not good')
 
     def test_reports_with_special_characters(self):
@@ -91,13 +103,14 @@ class TestReports(TestReportsCommon):
             'name': 'Volume-Beta"',
             'product_id': product_test.id,
         })
-        #add group to the user
+        # add group to the user
         self.env.user.groups_id += self.env.ref('stock.group_stock_lot_print_gs1')
         report = self.env.ref('stock.label_lot_template')
         target = b'\n\n^XA^CI28\n^FO100,50\n^A0N,44,33^FD[C4181234""154654654654]Mellohi"^FS\n^FO100,100\n^A0N,44,33^FDLN/SN:Volume-Beta"^FS\n\n^FO425,150^BY3\n^BXN,8,200\n^FD010974521379614210Volume-Beta"^FS\n^XZ\n'
 
         rendering, qweb_type = report._render_qweb_text('stock.label_lot_template', lot1.id)
-        self.assertEqual(target, rendering.replace(b' ', b''), 'The rendering is not good, make sure quotes are correctly escaped')
+        self.assertEqual(target, rendering.replace(b' ', b''),
+                         'The rendering is not good, make sure quotes are correctly escaped')
         self.assertEqual(qweb_type, 'text', 'the report type is not good')
 
     def test_reports_product_no_barcode(self):
@@ -106,8 +119,11 @@ class TestReports(TestReportsCommon):
         report = self.env.ref('stock.label_product_product')
         self.product1.barcode = False
         target = b'\n\n^XA^CI28\n^FT100,80^A0N,40,30^FD[C4181234""154654654654]Mellohi"^FS\n^FT100,115^A0N,30,24^FDC4181234""15465^FS\n^FT100,150^A0N,30,24^FD4654654^FS\n^XZ\n'
-        rendering, qweb_type = report._render_qweb_text('stock.label_product_product', self.product1.product_tmpl_id.id, {'quantity_by_product': {self.product1.product_tmpl_id.id: 1}, 'active_model': 'product.template'})
-        self.assertEqual(target, rendering.replace(b' ', b''), 'Product name, default code or barcode is not correctly rendered, make sure the quotes are escaped correctly')
+        rendering, qweb_type = report._render_qweb_text('stock.label_product_product', self.product1.product_tmpl_id.id,
+                                                        {'quantity_by_product': {self.product1.product_tmpl_id.id: 1},
+                                                         'active_model': 'product.template'})
+        self.assertEqual(target, rendering.replace(b' ', b''),
+                         'Product name, default code or barcode is not correctly rendered, make sure the quotes are escaped correctly')
         self.assertEqual(qweb_type, 'text', 'the report type is not good')
 
     def test_report_quantity_1(self):
@@ -163,7 +179,8 @@ class TestReports(TestReportsCommon):
         report_records_tomorrow = self.env['report.stock.quantity']._read_group(
             [('product_id', '=', product.id), ('date', '=', date.today() + timedelta(days=1))],
             ['state'], ['product_qty:sum'])
-        self.assertEqual(sum(product_qty for state, product_qty in report_records_tomorrow if state == 'forecast'), 30.0)
+        self.assertEqual(sum(product_qty for state, product_qty in report_records_tomorrow if state == 'forecast'),
+                         30.0)
         self.assertEqual(sum(product_qty for state, product_qty in report_records_tomorrow if state == 'out'), -20.0)
         report_records_today = self.env['report.stock.quantity']._read_group(
             [('product_id', '=', product.id), ('date', '=', date.today())],
@@ -185,7 +202,8 @@ class TestReports(TestReportsCommon):
         report_records_tomorrow = self.env['report.stock.quantity']._read_group(
             [('product_id', '=', product.id), ('date', '=', date.today() + timedelta(days=1))],
             ['state'], ['product_qty:sum'])
-        self.assertEqual(sum(product_qty for state, product_qty in report_records_tomorrow if state == 'forecast'), 40.0)
+        self.assertEqual(sum(product_qty for state, product_qty in report_records_tomorrow if state == 'forecast'),
+                         40.0)
         self.assertEqual(sum(product_qty for state, product_qty in report_records_tomorrow if state == 'out'), -20.0)
         self.assertEqual(sum(product_qty for state, product_qty in report_records_tomorrow if state == 'in'), 10.0)
         report_records_today = self.env['report.stock.quantity']._read_group(
@@ -215,7 +233,8 @@ class TestReports(TestReportsCommon):
             [('product_id', '=', product.id), ('date', '=', date.today() - timedelta(days=1))],
             ['state'], ['product_qty:sum'])
 
-        self.assertEqual(sum(product_qty for state, product_qty in report_records_yesterday if state == 'forecast'), -30.0)
+        self.assertEqual(sum(product_qty for state, product_qty in report_records_yesterday if state == 'forecast'),
+                         -30.0)
         self.assertEqual(sum(product_qty for state, product_qty in report_records_yesterday if state == 'out'), -30.0)
         self.assertEqual(sum(product_qty for state, product_qty in report_records_yesterday if state == 'in'), 0.0)
 
@@ -223,7 +242,8 @@ class TestReports(TestReportsCommon):
         self.assertEqual(sum(product_qty for state, product_qty in report_records_today if state == 'out'), 0.0)
         self.assertEqual(sum(product_qty for state, product_qty in report_records_today if state == 'in'), 0.0)
 
-        self.assertEqual(sum(product_qty for state, product_qty in report_records_tomorrow if state == 'forecast'), 10.0)
+        self.assertEqual(sum(product_qty for state, product_qty in report_records_tomorrow if state == 'forecast'),
+                         10.0)
         self.assertEqual(sum(product_qty for state, product_qty in report_records_tomorrow if state == 'out'), -20.0)
         self.assertEqual(sum(product_qty for state, product_qty in report_records_tomorrow if state == 'in'), 10.0)
 
@@ -377,7 +397,8 @@ class TestReports(TestReportsCommon):
             [], ['product_qty:sum'])
         self.assertFalse(report_records[0][0], "Forecast should still be at 0 today, so no records.")
         report_records = self.env['report.stock.quantity']._read_group(
-            [('state', '=', 'forecast'), ('product_id', '=', self.product1.id), ('date', '=', (now + timedelta(days=2)).date())],
+            [('state', '=', 'forecast'), ('product_id', '=', self.product1.id),
+             ('date', '=', (now + timedelta(days=2)).date())],
             [], ['product_qty:sum'])
         self.assertEqual(report_records[0][0], -5)
 
@@ -398,11 +419,13 @@ class TestReports(TestReportsCommon):
             [], ['product_qty:sum'])
         self.assertFalse(report_records[0][0], "Forecast should still be at 0 today, so no records.")
         report_records = self.env['report.stock.quantity']._read_group(
-            [('state', '=', 'forecast'), ('product_id', '=', self.product1.id), ('date', '=', (now + timedelta(days=1)).date())],
+            [('state', '=', 'forecast'), ('product_id', '=', self.product1.id),
+             ('date', '=', (now + timedelta(days=1)).date())],
             [], ['product_qty:sum'])
         self.assertEqual(report_records[0][0], 10)
         report_records = self.env['report.stock.quantity']._read_group(
-            [('state', '=', 'forecast'), ('product_id', '=', self.product1.id), ('date', '=', (now + timedelta(days=2)).date())],
+            [('state', '=', 'forecast'), ('product_id', '=', self.product1.id),
+             ('date', '=', (now + timedelta(days=2)).date())],
             [], ['product_qty:sum'])
         self.assertEqual(report_records[0][0], 5)
 
@@ -1016,7 +1039,8 @@ class TestReports(TestReportsCommon):
 
         report_values, docs, lines = self.get_report_forecast(product_template_ids=product_template.ids)
         self.assertEqual(len(lines), 5, "Must have 5 lines.")
-        self.assertTrue(all(product_variant['id'] in product_template.product_variant_ids.ids for product_variant in docs['product_variants']))
+        self.assertTrue(all(product_variant['id'] in product_template.product_variant_ids.ids for product_variant in
+                            docs['product_variants']))
 
         # Create a delivery for one of these products and check the report lines
         # are correctly linked to the good receipts.
@@ -1223,10 +1247,13 @@ class TestReports(TestReportsCommon):
             context = picking.move_ids[0].action_product_forecast_report()['context']
             _, _, lines = self.get_report_forecast(product_template_ids=self.product_template.ids, context=context)
             for line in lines:
-                if (line['document_in'] and picking.id == line['document_in']['id']) or (line['document_out'] and picking.id == line['document_out']['id']): #document_in is False
-                    self.assertTrue(line['is_matched'], "The corresponding picking should be matched in the forecast report.")
+                if (line['document_in'] and picking.id == line['document_in']['id']) or (
+                        line['document_out'] and picking.id == line['document_out']['id']):  # document_in is False
+                    self.assertTrue(line['is_matched'],
+                                    "The corresponding picking should be matched in the forecast report.")
                 else:
-                    self.assertFalse(line['is_matched'], "A line of the forecast report not linked to the picking shoud not be matched.")
+                    self.assertFalse(line['is_matched'],
+                                     "A line of the forecast report not linked to the picking shoud not be matched.")
 
     def test_report_forecast_11_non_reserved_order(self):
         """ Creates deliveries with different operation type reservation methods.
@@ -1416,7 +1443,8 @@ class TestReports(TestReportsCommon):
             'product_uom_qty': 5.0,
         })
         move_pick._action_confirm()
-        _, _, lines = self.get_report_forecast(product_template_ids=self.product1.product_tmpl_id.ids, context={'warehouse_id': self.wh_2.id})
+        _, _, lines = self.get_report_forecast(product_template_ids=self.product1.product_tmpl_id.ids,
+                                               context={'warehouse_id': self.wh_2.id})
         self.assertEqual(len(lines), 1)
         self.assertEqual(lines[0]['move_out']['id'], move_pick.id)
 
@@ -1487,16 +1515,20 @@ class TestReports(TestReportsCommon):
         all_lines = []
         for dummy, lines in sources_to_lines.items():
             for line in lines:
-                self.assertFalse(line['is_qty_assignable'], "The receipt IS DRAFT => its move quantities ARE NOT available to assign.")
+                self.assertFalse(line['is_qty_assignable'],
+                                 "The receipt IS DRAFT => its move quantities ARE NOT available to assign.")
                 all_lines.append(line)
         self.assertEqual(len(all_lines), 3, "The report has wrong number of outgoing moves.")
         # we expect this order based on move creation
         self.assertEqual(all_lines[0]['quantity'], 5, "The first move has wrong incoming qty.")
-        self.assertEqual(all_lines[0]['product']['id'], self.product.id, "The first move has wrong incoming product to assign.")
+        self.assertEqual(all_lines[0]['product']['id'], self.product.id,
+                         "The first move has wrong incoming product to assign.")
         self.assertEqual(all_lines[1]['quantity'], 5, "The second move has wrong incoming qty.")
-        self.assertEqual(all_lines[1]['product']['id'], product2.id, "The second move has wrong incoming product to assign.")
+        self.assertEqual(all_lines[1]['product']['id'], product2.id,
+                         "The second move has wrong incoming product to assign.")
         self.assertEqual(all_lines[2]['quantity'], 2, "The last move has wrong incoming qty.")
-        self.assertEqual(all_lines[2]['product']['id'], self.product.id, "The third move has wrong incoming product to assign.")
+        self.assertEqual(all_lines[2]['product']['id'], self.product.id,
+                         "The third move has wrong incoming product to assign.")
 
         # check that report correctly realizes outgoing moves can be linked when receipt is done
         receipt.action_confirm()
@@ -1513,7 +1545,8 @@ class TestReports(TestReportsCommon):
         in_ids = []
         for dummy, lines in sources_to_lines.items():
             for line in lines:
-                self.assertTrue(line['is_qty_assignable'], "The receipt IS DONE => all of its move quantities ARE assignable")
+                self.assertTrue(line['is_qty_assignable'],
+                                "The receipt IS DONE => all of its move quantities ARE assignable")
                 all_lines.append(line)
                 move_ids.append(line['move_out'].id)
                 qtys.append(line['quantity'])
@@ -1529,10 +1562,13 @@ class TestReports(TestReportsCommon):
 
         # check that report assign button works correctly
         report.action_assign(move_ids, qtys, in_ids)
-        self.assertEqual(len(receipt.move_ids[0].move_dest_ids.ids), 2, "Demand qty of first and last moves should now be linked to incoming.")
-        self.assertEqual(len(receipt.move_ids[1].move_dest_ids.ids), 1, "Demand qty of second move should now be linked to incoming.")
+        self.assertEqual(len(receipt.move_ids[0].move_dest_ids.ids), 2,
+                         "Demand qty of first and last moves should now be linked to incoming.")
+        self.assertEqual(len(receipt.move_ids[1].move_dest_ids.ids), 1,
+                         "Demand qty of second move should now be linked to incoming.")
         self.assertEqual(len(receipt.move_ids[2].move_dest_ids.ids), 0, "product3 should have no moves linked to it.")
-        self.assertEqual(len(delivery1.move_ids.filtered(lambda m: m.product_id == product2)), 2, "product2 outgoing move should be split between linked and non-linked quantities.")
+        self.assertEqual(len(delivery1.move_ids.filtered(lambda m: m.product_id == product2)), 2,
+                         "product2 outgoing move should be split between linked and non-linked quantities.")
 
     def test_report_reception_2_two_receipts(self):
         """ Create 1 delivery and 2 receipts where the products being received
@@ -1578,7 +1614,8 @@ class TestReports(TestReportsCommon):
         self.assertEqual(len(sources_to_lines), 1, "The report has wrong number of outgoing pickings.")
         all_lines = list(sources_to_lines.values())[0]
         self.assertEqual(len(all_lines), 1, "The report has wrong number of outgoing move lines.")
-        self.assertFalse(all_lines[0]['is_qty_assignable'], "The receipt IS NOT done => its move quantities ARE NOT available to reserve (i.e. done).")
+        self.assertFalse(all_lines[0]['is_qty_assignable'],
+                         "The receipt IS NOT done => its move quantities ARE NOT available to reserve (i.e. done).")
         self.assertEqual(all_lines[0]['quantity'], 8, "The move has wrong incoming qty.")
 
         # check that report splits assignable and non-assignable quantities when 1 receipt is draft and other is confirmed
@@ -1602,15 +1639,20 @@ class TestReports(TestReportsCommon):
         report_values = report._get_report_values(docids=[receipt1.id, receipt2.id])
         sources_to_lines = report_values['sources_to_lines']
         all_lines = list(sources_to_lines.values())[0]
-        self.assertEqual(len(all_lines), 1, "The report has wrong number of lines (1 outgoing move they are assignable to).")
-        self.assertEqual(all_lines[0]['quantity'], incoming_qty, "The total amount of incoming qty to assign should be receipt1 + receipt2's qties.")
-        self.assertTrue(all_lines[0]['is_qty_assignable'], "receipts are confirmed, incoming moves should be assignable.")
-        report.action_assign(delivery.move_ids_without_package.ids, [incoming_qty], (receipt1 | receipt2).move_ids_without_package.ids)
+        self.assertEqual(len(all_lines), 1,
+                         "The report has wrong number of lines (1 outgoing move they are assignable to).")
+        self.assertEqual(all_lines[0]['quantity'], incoming_qty,
+                         "The total amount of incoming qty to assign should be receipt1 + receipt2's qties.")
+        self.assertTrue(all_lines[0]['is_qty_assignable'],
+                        "receipts are confirmed, incoming moves should be assignable.")
+        report.action_assign(delivery.move_ids_without_package.ids, [incoming_qty],
+                             (receipt1 | receipt2).move_ids_without_package.ids)
         mto_move = delivery.move_ids_without_package.filtered(lambda m: m.procure_method == 'make_to_order')
         non_mto_move = delivery.move_ids_without_package - mto_move
         # check that assigned (MTO) move is correctly created
         self.assertEqual(len(mto_move), 1, "Only 1 delivery move should be MTO")
-        self.assertEqual(len(non_mto_move), 1, "Remaining not-assigned outgoing qty should have split into separate move")
+        self.assertEqual(len(non_mto_move), 1,
+                         "Remaining not-assigned outgoing qty should have split into separate move")
         self.assertEqual(mto_move.product_uom_qty, incoming_qty, "Incorrect quantity split for MTO move")
         self.assertEqual(mto_move.state, 'waiting', "MTO move state not correctly set")
         # unassign only 1 of the incoming moves
@@ -1618,14 +1660,17 @@ class TestReports(TestReportsCommon):
         mto_move = delivery.move_ids_without_package.filtered(lambda m: m.procure_method == 'make_to_order')
         non_mto_moves = delivery.move_ids_without_package - mto_move
         self.assertEqual(len(mto_move), 1, "Only 1 delivery move should be MTO")
-        self.assertEqual(len(non_mto_moves), 2, "Original split not-assigned outgoing qty should still exist + new move of unassigned qty")
+        self.assertEqual(len(non_mto_moves), 2,
+                         "Original split not-assigned outgoing qty should still exist + new move of unassigned qty")
         self.assertEqual(mto_move.product_uom_qty, receipt1_qty, "Incorrect quantity split for remaining MTO move qty")
         self.assertEqual(mto_move.state, 'waiting', "MTO move state shouldn't have changed")
 
         # check that report doesn't allow done and non-done moves at same time
         receipt1.button_validate()
         reason = report._get_report_values(docids=[receipt1.id, receipt2.id])['reason']
-        self.assertEqual(reason, "This report cannot be used for done and not done %s at the same time" % report._get_doc_types(), "empty report reason not shown")
+        self.assertEqual(reason,
+                         "This report cannot be used for done and not done %s at the same time" % report._get_doc_types(),
+                         "empty report reason not shown")
 
         # check that we can assign incoming quantities from 2 different DONE receipts and then unassign just 1 of them afterwards when reserved amounts in delivery
         receipt2.button_validate()
@@ -1638,13 +1683,16 @@ class TestReports(TestReportsCommon):
             'inventory_quantity': outgoing_qty
         }).action_apply_inventory()
         delivery2.action_confirm()
-        self.assertEqual(delivery2.move_ids_without_package.quantity, outgoing_qty, "Delivery move should already be reserved")
-        report.action_assign(delivery2.move_ids_without_package.ids, [incoming_qty], (receipt1 | receipt2).move_ids_without_package.ids)
+        self.assertEqual(delivery2.move_ids_without_package.quantity, outgoing_qty,
+                         "Delivery move should already be reserved")
+        report.action_assign(delivery2.move_ids_without_package.ids, [incoming_qty],
+                             (receipt1 | receipt2).move_ids_without_package.ids)
         mto_move = delivery2.move_ids_without_package.filtered(lambda m: m.procure_method == 'make_to_order')
         non_mto_move = delivery2.move_ids_without_package - mto_move
         # check that assigned (MTO) move is correctly created
         self.assertEqual(len(mto_move), 1, "Only 1 delivery move should be MTO")
-        self.assertEqual(len(non_mto_move), 1, "Remaining not-assigned outgoing qty should have split into separate move")
+        self.assertEqual(len(non_mto_move), 1,
+                         "Remaining not-assigned outgoing qty should have split into separate move")
         self.assertEqual(mto_move.product_uom_qty, incoming_qty, "Incorrect quantity split for MTO move")
         self.assertEqual(mto_move.state, 'assigned', "MTO move should still be reserved")
         # unassign only 1 of the incoming moves
@@ -1652,12 +1700,14 @@ class TestReports(TestReportsCommon):
         mto_move = delivery2.move_ids_without_package.filtered(lambda m: m.procure_method == 'make_to_order')
         non_mto_moves = delivery2.move_ids_without_package - mto_move
         self.assertEqual(len(mto_move), 1, "Only 1 delivery move should be MTO")
-        self.assertEqual(len(non_mto_moves), 2, "Original split not-assigned outgoing qty should still exist + new move of unassigned qty")
+        self.assertEqual(len(non_mto_moves), 2,
+                         "Original split not-assigned outgoing qty should still exist + new move of unassigned qty")
         self.assertEqual(mto_move.product_uom_qty, receipt1_qty, "Incorrect quantity split for remaining MTO move qty")
         self.assertEqual(mto_move.quantity, receipt1_qty, "Incorrect reserved amount split for remaining MTO move qty")
         self.assertEqual(mto_move.state, 'assigned', "MTO move state shouldn't have changed")
         total_non_mto_qty = sum(move.quantity for move in non_mto_moves)
-        self.assertEqual(total_non_mto_qty, outgoing_qty - (receipt1_qty + receipt2_qty), "Unassigned move should be also unreserved")
+        self.assertEqual(total_non_mto_qty, outgoing_qty - (receipt1_qty + receipt2_qty),
+                         "Unassigned move should be also unreserved")
 
     def test_report_reception_3_multiwarehouse(self):
         """ Check that reception report respects same warehouse for
@@ -1694,7 +1744,8 @@ class TestReports(TestReportsCommon):
 
         report = self.env['report.stock.report_reception']
         report_values = report._get_report_values(docids=[receipt.id])
-        self.assertEqual(len(report_values['sources_to_lines']), 0, "The receipt and delivery are in different warehouses => no moves to link to should be found.")
+        self.assertEqual(len(report_values['sources_to_lines']), 0,
+                         "The receipt and delivery are in different warehouses => no moves to link to should be found.")
 
     def test_report_reception_5_move_splitting(self):
         """ Check the complicated use cases of correct move splitting when assigning/unassigning when:
@@ -1735,14 +1786,18 @@ class TestReports(TestReportsCommon):
         # -------------------
         # check report assign
         # -------------------
-        report.action_assign(delivery.move_ids_without_package.ids, [incoming_qty], receipt.move_ids_without_package.ids)
+        report.action_assign(delivery.move_ids_without_package.ids, [incoming_qty],
+                             receipt.move_ids_without_package.ids)
         mto_move = delivery.move_ids_without_package.filtered(lambda m: m.procure_method == 'make_to_order')
         non_mto_move = delivery.move_ids_without_package - mto_move
 
         # check that delivery move splits correctly when receipt move is assigned to it
-        self.assertEqual(len(delivery.move_ids_without_package), 2, "Delivery moves should have split into assigned + not assigned")
-        self.assertEqual(len(delivery.move_ids_without_package.mapped('move_orig_ids')), 1, "Only 1 delivery + 1 receipt move should be assigned")
-        self.assertEqual(len(receipt.move_ids_without_package.mapped('move_dest_ids')), 1, "Receipt move should remain unsplit")
+        self.assertEqual(len(delivery.move_ids_without_package), 2,
+                         "Delivery moves should have split into assigned + not assigned")
+        self.assertEqual(len(delivery.move_ids_without_package.mapped('move_orig_ids')), 1,
+                         "Only 1 delivery + 1 receipt move should be assigned")
+        self.assertEqual(len(receipt.move_ids_without_package.mapped('move_dest_ids')), 1,
+                         "Receipt move should remain unsplit")
 
         # check that assigned (MTO) move is correctly created
         self.assertEqual(len(mto_move), 1, "Only 1 delivery move should be MTO")
@@ -1751,7 +1806,8 @@ class TestReports(TestReportsCommon):
         self.assertEqual(mto_move.state, 'waiting', "MTO move state not correctly set")
 
         # check that non-assigned move has correct values
-        self.assertEqual(non_mto_move.product_uom_qty, outgoing_qty - incoming_qty, "Incorrect quantity split for non-MTO move")
+        self.assertEqual(non_mto_move.product_uom_qty, outgoing_qty - incoming_qty,
+                         "Incorrect quantity split for non-MTO move")
         self.assertEqual(non_mto_move.quantity, qty_in_stock, "Reserved qty not correctly linked to non-MTO move")
         self.assertEqual(non_mto_move.state, 'assigned', "Fully reserved move has not correctly set state")
 
@@ -1793,8 +1849,10 @@ class TestReports(TestReportsCommon):
         receipt.action_confirm()
 
         report = self.env['report.stock.report_reception']
-        report.action_assign(delivery.move_ids_without_package.ids, [outgoing_qty], receipt.move_ids_without_package.ids)
-        self.assertEqual(receipt.move_ids_without_package.move_dest_ids.ids, delivery.move_ids_without_package.ids, "Link between receipt and delivery moves should have been made")
+        report.action_assign(delivery.move_ids_without_package.ids, [outgoing_qty],
+                             receipt.move_ids_without_package.ids)
+        self.assertEqual(receipt.move_ids_without_package.move_dest_ids.ids, delivery.move_ids_without_package.ids,
+                         "Link between receipt and delivery moves should have been made")
 
         for move in receipt.move_ids:
             move.quantity = orig_incoming_quantity
@@ -1803,30 +1861,38 @@ class TestReports(TestReportsCommon):
         backorder = self.env['stock.picking'].search([('backorder_id', '=', receipt.id)])
 
         # Check backorder assigned quantities
-        self.assertEqual(receipt.move_ids_without_package.move_dest_ids, backorder.move_ids_without_package.move_dest_ids, "Backorder should have copied link to delivery move")
+        self.assertEqual(receipt.move_ids_without_package.move_dest_ids,
+                         backorder.move_ids_without_package.move_dest_ids,
+                         "Backorder should have copied link to delivery move")
         report_values = report._get_report_values(docids=[backorder.id])
         sources_to_lines = report_values['sources_to_lines']
         all_lines = list(sources_to_lines.values())[0]
         self.assertEqual(len(all_lines), 1, "The report has wrong number of outgoing moves.")
         # we expect that the report won't know about original receipt done amount, so it will show outgoing_qty as assigned
         # (rather than the remaining amount that isn't reserved). This can change if the report becomes more sophisticated
-        self.assertEqual(all_lines[0]['quantity'], incoming_qty - orig_incoming_quantity, "The report doesn't have the correct qty assigned.")
+        self.assertEqual(all_lines[0]['quantity'], incoming_qty - orig_incoming_quantity,
+                         "The report doesn't have the correct qty assigned.")
 
         # Unassign the amount we expect to see in the report + check split correctly happens
-        report.action_unassign(delivery.move_ids_without_package.ids, outgoing_qty, backorder.move_ids_without_package.ids)
-        self.assertEqual(len(delivery.move_ids_without_package), 2, "The delivery should have split its reserved qty from the original move")
+        report.action_unassign(delivery.move_ids_without_package.ids, outgoing_qty,
+                               backorder.move_ids_without_package.ids)
+        self.assertEqual(len(delivery.move_ids_without_package), 2,
+                         "The delivery should have split its reserved qty from the original move")
         reserved_move = receipt.move_ids_without_package.move_dest_ids
         self.assertEqual(len(reserved_move), 1, "Move w/reserved qty should have full demand reserved")
         self.assertEqual(reserved_move.state, 'assigned', "Move w/reserved qty should have full demand reserved")
-        self.assertEqual(reserved_move.product_uom_qty, orig_incoming_quantity, "Done amount in original receipt should be amount demanded/reserved in delivery still with a link")
+        self.assertEqual(reserved_move.product_uom_qty, orig_incoming_quantity,
+                         "Done amount in original receipt should be amount demanded/reserved in delivery still with a link")
         report_values = report._get_report_values(docids=[backorder.id])
         sources_to_lines = report_values['sources_to_lines']
         all_lines = list(sources_to_lines.values())[0]
         self.assertEqual(len(all_lines), 1, "The report should only contain the remaining non-reserved move")
-        self.assertEqual(all_lines[0]['quantity'], outgoing_qty - orig_incoming_quantity, "The report doesn't have the correct qty to assign")
+        self.assertEqual(all_lines[0]['quantity'], outgoing_qty - orig_incoming_quantity,
+                         "The report doesn't have the correct qty to assign")
 
         # Re-assign the remaining delivery amount and check that everything reserves correctly in the end
-        report.action_assign((delivery.move_ids_without_package - reserved_move).ids, [outgoing_qty - orig_incoming_quantity], backorder.move_ids_without_package.ids)
+        report.action_assign((delivery.move_ids_without_package - reserved_move).ids,
+                             [outgoing_qty - orig_incoming_quantity], backorder.move_ids_without_package.ids)
         for move in backorder.move_ids:
             move.quantity = incoming_qty - orig_incoming_quantity
         backorder.move_ids.picked = True
@@ -1868,30 +1934,37 @@ class TestReports(TestReportsCommon):
         receipt.button_validate()
 
         self.assertEqual(len(delivery.move_ids_without_package), 1)
-        self.assertEqual(delivery.move_ids_without_package.quantity, outgoing_qty, "Delivery move should already be reserved")
+        self.assertEqual(delivery.move_ids_without_package.quantity, outgoing_qty,
+                         "Delivery move should already be reserved")
         report = self.env['report.stock.report_reception']
 
         # -------------------
         # check report assign
         # -------------------
-        report.action_assign(delivery.move_ids_without_package.ids, [incoming_qty], receipt.move_ids_without_package.ids)
+        report.action_assign(delivery.move_ids_without_package.ids, [incoming_qty],
+                             receipt.move_ids_without_package.ids)
         mto_move = delivery.move_ids_without_package.filtered(lambda m: m.procure_method == 'make_to_order')
         non_mto_move = delivery.move_ids_without_package - mto_move
 
         # check that delivery move splits correctly when receipt move is assigned to it, done receipt = can be assigned to reserved outs
-        self.assertEqual(len(delivery.move_ids_without_package), 2, "Delivery moves should have split into assigned + not assigned")
-        self.assertEqual(len(delivery.move_ids_without_package.move_orig_ids), 1, "Only 1 delivery + 1 receipt move should be assigned")
+        self.assertEqual(len(delivery.move_ids_without_package), 2,
+                         "Delivery moves should have split into assigned + not assigned")
+        self.assertEqual(len(delivery.move_ids_without_package.move_orig_ids), 1,
+                         "Only 1 delivery + 1 receipt move should be assigned")
         self.assertEqual(len(receipt.move_ids_without_package.move_dest_ids), 1, "Receipt move should remain unsplit")
 
         # check that assigned (MTO) move is correctly created
         self.assertEqual(len(mto_move), 1, "Only 1 delivery move should be MTO")
         self.assertEqual(mto_move.product_uom_qty, incoming_qty, "Incorrect quantity split for MTO move")
-        self.assertEqual(mto_move.quantity, incoming_qty, "Receipt IS done => assigned pre-reserved move reserved_qty = assigned receipt move qty")
+        self.assertEqual(mto_move.quantity, incoming_qty,
+                         "Receipt IS done => assigned pre-reserved move reserved_qty = assigned receipt move qty")
         self.assertEqual(mto_move.state, 'assigned', "MTO move state not correctly set")
 
         # check that non-assigned move has correct values
-        self.assertEqual(non_mto_move.product_uom_qty, outgoing_qty - incoming_qty, "Incorrect quantity split for non-MTO move")
-        self.assertEqual(non_mto_move.quantity, outgoing_qty - incoming_qty, "Remaining reserved qty not correctly linked to non-MTO move")
+        self.assertEqual(non_mto_move.product_uom_qty, outgoing_qty - incoming_qty,
+                         "Incorrect quantity split for non-MTO move")
+        self.assertEqual(non_mto_move.quantity, outgoing_qty - incoming_qty,
+                         "Remaining reserved qty not correctly linked to non-MTO move")
         self.assertEqual(non_mto_move.state, 'assigned', "Remaining non-MTO reserved move should stay reserved")
 
         # ---------------------
@@ -1945,7 +2018,8 @@ class TestReports(TestReportsCommon):
         out_move = planned_delivery.move_ids
         in_move = immediate_receipt_transfer.move_ids
 
-        sources_lines_items, = Report._get_report_values(docids=[immediate_receipt_transfer.id])['sources_to_lines'].items()
+        sources_lines_items, = Report._get_report_values(docids=[immediate_receipt_transfer.id])[
+            'sources_to_lines'].items()
         sources, lines = sources_lines_items
         (source,), = sources
         self.assertEqual(source, planned_delivery)

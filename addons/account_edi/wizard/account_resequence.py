@@ -18,6 +18,6 @@ class ReSequenceWizard(models.TransientModel):
         edi_sent_moves = self._frozen_edi_documents()
         if edi_sent_moves:
             raise UserError(_("The following documents have already been sent and cannot be resequenced: %s")
-                % ", ".join(set(edi_sent_moves.move_id.mapped('name')))
-            )
+                            % ", ".join(set(edi_sent_moves.move_id.mapped('name')))
+                            )
         return super().resequence()

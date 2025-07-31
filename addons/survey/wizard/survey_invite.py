@@ -3,6 +3,7 @@
 
 import logging
 import re
+
 import werkzeug
 
 from odoo import api, fields, models, _
@@ -73,7 +74,8 @@ class SurveyInvite(models.TransientModel):
     @api.depends('partner_ids', 'survey_id')
     def _compute_existing_partner_ids(self):
         for wizard in self:
-            wizard.existing_partner_ids = list(set(wizard.survey_id.user_input_ids.partner_id.ids) & set(wizard.partner_ids.ids))
+            wizard.existing_partner_ids = list(
+                set(wizard.survey_id.user_input_ids.partner_id.ids) & set(wizard.partner_ids.ids))
 
     @api.depends('emails', 'survey_id')
     def _compute_existing_emails(self):
@@ -103,7 +105,8 @@ class SurveyInvite(models.TransientModel):
     @api.depends('survey_id.access_token')
     def _compute_survey_start_url(self):
         for invite in self:
-            invite.survey_start_url = werkzeug.urls.url_join(invite.survey_id.get_base_url(), invite.survey_id.get_start_url()) if invite.survey_id else False
+            invite.survey_start_url = werkzeug.urls.url_join(invite.survey_id.get_base_url(),
+                                                             invite.survey_id.get_start_url()) if invite.survey_id else False
 
     # Overrides of mail.composer.mixin
     @api.depends('survey_id')  # fake trigger otherwise not computed in new mode
@@ -113,7 +116,8 @@ class SurveyInvite(models.TransientModel):
     @api.onchange('emails')
     def _onchange_emails(self):
         if self.emails and (self.survey_users_login_required and not self.survey_id.users_can_signup):
-            raise UserError(_('This survey does not allow external people to participate. You should create user accounts or update survey access mode accordingly.'))
+            raise UserError(
+                _('This survey does not allow external people to participate. You should create user accounts or update survey access mode accordingly.'))
         if not self.emails:
             return
         valid, error = [], []
@@ -195,9 +199,11 @@ class SurveyInvite(models.TransientModel):
         partners_done, emails_done, answers = self._get_done_partners_emails(existing_answers)
 
         for new_partner in partners - partners_done:
-            answers |= self.survey_id._create_answer(partner=new_partner, check_attempts=False, **self._get_answers_values())
+            answers |= self.survey_id._create_answer(partner=new_partner, check_attempts=False,
+                                                     **self._get_answers_values())
         for new_email in [email for email in emails if email not in emails_done]:
-            answers |= self.survey_id._create_answer(email=new_email, check_attempts=False, **self._get_answers_values())
+            answers |= self.survey_id._create_answer(email=new_email, check_attempts=False,
+                                                     **self._get_answers_values())
 
         return answers
 
@@ -214,13 +220,13 @@ class SurveyInvite(models.TransientModel):
                 # to have only one mail sent per user
                 for partner_done in partners_done:
                     answers |= next(existing_answer for existing_answer in
-                        existing_answers.sorted(lambda answer: answer.create_date, reverse=True)
-                        if existing_answer.partner_id == partner_done)
+                                    existing_answers.sorted(lambda answer: answer.create_date, reverse=True)
+                                    if existing_answer.partner_id == partner_done)
 
                 for email_done in emails_done:
                     answers |= next(existing_answer for existing_answer in
-                        existing_answers.sorted(lambda answer: answer.create_date, reverse=True)
-                        if existing_answer.email == email_done)
+                                    existing_answers.sorted(lambda answer: answer.create_date, reverse=True)
+                                    if existing_answer.email == email_done)
         return (partners_done, emails_done, answers)
 
     def _get_answers_values(self):
@@ -230,7 +236,8 @@ class SurveyInvite(models.TransientModel):
 
     def _send_mail(self, answer):
         """ Create mail specific for recipient containing notably its access token """
-        email_from = self.template_id._render_field('email_from', answer.ids)[answer.id] if self.template_id.email_from else self.author_id.email_formatted
+        email_from = self.template_id._render_field('email_from', answer.ids)[
+            answer.id] if self.template_id.email_from else self.author_id.email_formatted
         if not email_from:
             raise UserError(_("Unable to post message, please configure the sender's email address."))
         subject = self._render_field('subject', answer.ids)[answer.id]
@@ -255,15 +262,19 @@ class SurveyInvite(models.TransientModel):
         email_layout_xmlid = self.env.context.get('default_email_layout_xmlid', self.env.context.get('notif_layout'))
         if email_layout_xmlid:
             template_ctx = {
-                'message': self.env['mail.message'].sudo().new(dict(body=mail_values['body_html'], record_name=self.survey_id.title)),
+                'message': self.env['mail.message'].sudo().new(
+                    dict(body=mail_values['body_html'], record_name=self.survey_id.title)),
                 'model_description': self.env['ir.model']._get('survey.survey').display_name,
                 'company': self.env.company,
             }
-            body = self.env['ir.qweb']._render(email_layout_xmlid, template_ctx, minimal_qcontext=True, raise_if_not_found=False)
+            body = self.env['ir.qweb']._render(email_layout_xmlid, template_ctx, minimal_qcontext=True,
+                                               raise_if_not_found=False)
             if body:
                 mail_values['body_html'] = self.env['mail.render.mixin']._replace_local_links(body)
             else:
-                _logger.warning('QWeb template %s not found or is empty when sending survey mails. Sending without layout', email_layout_xmlid)
+                _logger.warning(
+                    'QWeb template %s not found or is empty when sending survey mails. Sending without layout',
+                    email_layout_xmlid)
 
         return self.env['mail.mail'].sudo().create(mail_values)
 

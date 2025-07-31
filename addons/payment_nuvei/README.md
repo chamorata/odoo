@@ -19,11 +19,10 @@ submission provided by the `payment` module.
 - [Full and partial manual capture](https://docs.nuvei.com/documentation/features/financial-operations/auth-and-settle/)
 - [Full and partial refunds](https://docs.nuvei.com/documentation/features/financial-operations/refund/)
 
-
 ## Module history
 
 - `18.0`
-  - The first version of the module is merged. odoo/odoo#181459
+    - The first version of the module is merged. odoo/odoo#181459
 
 ## Testing instructions
 

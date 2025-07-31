@@ -11,7 +11,8 @@
                 </div>
                 <div class="o_kanban_details">
                     <div class="o_kanban_details_wrapper">
-                        <div t-att-title="props.fileUpload.title" t-att-aria-label="props.fileUpload.title" class="o_kanban_record_title">
+                        <div t-att-title="props.fileUpload.title" t-att-aria-label="props.fileUpload.title"
+                             class="o_kanban_record_title">
                             <span t-esc="props.fileUpload.title"/>
                         </div>
                         <div class="o_kanban_record_body"/>

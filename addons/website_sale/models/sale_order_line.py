@@ -1,6 +1,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 
 
 class SaleOrderLine(models.Model):
@@ -9,7 +9,7 @@ class SaleOrderLine(models.Model):
     name_short = fields.Char(compute='_compute_name_short')
     shop_warning = fields.Char(string="Warning")
 
-    #=== COMPUTE METHODS ===#
+    # === COMPUTE METHODS ===#
 
     @api.depends('product_id.display_name')
     def _compute_name_short(self):
@@ -19,7 +19,7 @@ class SaleOrderLine(models.Model):
         for record in self:
             record.name_short = record.product_id.with_context(display_default_code=False).display_name
 
-    #=== BUSINESS METHODS ===#
+    # === BUSINESS METHODS ===#
 
     def get_description_following_lines(self):
         return self.name.splitlines()[1:]

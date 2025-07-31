@@ -1,10 +1,10 @@
-import json
 import base64
+import json
 
 from odoo.tests.common import HttpCase
 from odoo.tools import mute_logger
-
 from .common import DashboardTestCommon
+
 
 class TestShareController(DashboardTestCommon, HttpCase):
     def test_dashboard_share_portal(self):
@@ -40,9 +40,9 @@ class TestShareController(DashboardTestCommon, HttpCase):
             share = self.share_dashboard(dashboard)
 
         response = self.url_open(f"/dashboard/data/{share.id}/{share.access_token}")
-        self.assertEqual(response.status_code, 200) # access granted
+        self.assertEqual(response.status_code, 200)  # access granted
 
-        self.user.groups_id -= self.group # revoke access
+        self.user.groups_id -= self.group  # revoke access
 
         with mute_logger('odoo.http'):  # mute 403 warning
             response = self.url_open(f"/dashboard/data/{share.id}/{share.access_token}")
@@ -70,9 +70,9 @@ class TestShareController(DashboardTestCommon, HttpCase):
             share = self.share_dashboard(dashboard)
         share.excel_export = base64.b64encode(b"test")
         response = self.url_open(f"/dashboard/download/{share.id}/{share.access_token}")
-        self.assertEqual(response.status_code, 200) # access granted
+        self.assertEqual(response.status_code, 200)  # access granted
 
-        self.user.groups_id -= self.group # revoke access
+        self.user.groups_id -= self.group  # revoke access
 
         with mute_logger('odoo.http'):  # mute 403 warning
             response = self.url_open(f"/dashboard/download/{share.id}/{share.access_token}")

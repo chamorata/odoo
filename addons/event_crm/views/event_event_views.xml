@@ -9,8 +9,8 @@
             <xpath expr="//header" position="inside">
                 <field name="has_lead_request" invisible="1"/>
                 <button name="action_generate_leads" groups="event.group_event_manager"
-                    class="btn btn-secondary" type="object"
-                    invisible="not seats_taken or has_lead_request">
+                        class="btn btn-secondary" type="object"
+                        invisible="not seats_taken or has_lead_request">
                     Generate Leads
                 </button>
             </xpath>

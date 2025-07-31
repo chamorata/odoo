@@ -6,14 +6,19 @@ from odoo import api, fields, models
 class ResUsersSettings(models.Model):
     _inherit = 'res.users.settings'
 
-    is_discuss_sidebar_category_channel_open = fields.Boolean(string="Is discuss sidebar category channel open?", default=True)
-    is_discuss_sidebar_category_chat_open = fields.Boolean(string="Is discuss sidebar category chat open?", default=True)
+    is_discuss_sidebar_category_channel_open = fields.Boolean(string="Is discuss sidebar category channel open?",
+                                                              default=True)
+    is_discuss_sidebar_category_chat_open = fields.Boolean(string="Is discuss sidebar category chat open?",
+                                                           default=True)
 
     # RTC
-    push_to_talk_key = fields.Char(string="Push-To-Talk shortcut", help="String formatted to represent a key with modifiers following this pattern: shift.ctrl.alt.key, e.g: truthy.1.true.b")
+    push_to_talk_key = fields.Char(string="Push-To-Talk shortcut",
+                                   help="String formatted to represent a key with modifiers following this pattern: shift.ctrl.alt.key, e.g: truthy.1.true.b")
     use_push_to_talk = fields.Boolean(string="Use the push to talk feature", default=False)
-    voice_active_duration = fields.Integer(string="Duration of voice activity in ms", default=200, help="How long the audio broadcast will remain active after passing the volume threshold")
-    volume_settings_ids = fields.One2many('res.users.settings.volumes', 'user_setting_id', string="Volumes of other partners")
+    voice_active_duration = fields.Integer(string="Duration of voice activity in ms", default=200,
+                                           help="How long the audio broadcast will remain active after passing the volume threshold")
+    volume_settings_ids = fields.One2many('res.users.settings.volumes', 'user_setting_id',
+                                          string="Volumes of other partners")
 
     # Notifications
     channel_notifications = fields.Selection(
@@ -21,7 +26,8 @@ class ResUsersSettings(models.Model):
         "Channel Notifications",
         help="This setting will only be applied to channels. Mentions only if not specified.",
     )
-    mute_until_dt = fields.Datetime(string="Mute notifications until", index=True, help="If set, the user will not receive notifications from all the channels until this date.")
+    mute_until_dt = fields.Datetime(string="Mute notifications until", index=True,
+                                    help="If set, the user will not receive notifications from all the channels until this date.")
 
     @api.model
     def _cleanup_expired_mutes(self):

@@ -36,14 +36,16 @@ class HrContract(models.Model):
 
         interval_start = interval[0].astimezone(pytz.utc).replace(tzinfo=None)
         interval_stop = interval[1].astimezone(pytz.utc).replace(tzinfo=None)
-        including_rcleaves = [l[2] for l in leaves if l[2] and interval_start >= l[2].date_from and interval_stop <= l[2].date_to]
+        including_rcleaves = [l[2] for l in leaves if
+                              l[2] and interval_start >= l[2].date_from and interval_stop <= l[2].date_to]
         including_global_rcleaves = [l for l in including_rcleaves if not l.holiday_id]
         including_holiday_rcleaves = [l for l in including_rcleaves if l.holiday_id]
         rc_leave = False
 
         # Example: In CP200: Long term sick > Public Holidays (which is global)
         if bypassing_codes:
-            bypassing_rc_leave = [l for l in including_holiday_rcleaves if l.holiday_id.holiday_status_id.work_entry_type_id.code in bypassing_codes]
+            bypassing_rc_leave = [l for l in including_holiday_rcleaves if
+                                  l.holiday_id.holiday_status_id.work_entry_type_id.code in bypassing_codes]
         else:
             bypassing_rc_leave = []
 
@@ -61,5 +63,6 @@ class HrContract(models.Model):
         domain = super()._get_sub_leave_domain()
         return OR([
             domain,
-            [('holiday_id.employee_id', 'in', self.employee_id.ids)] # see https://github.com/odoo/enterprise/pull/15091
+            [('holiday_id.employee_id', 'in', self.employee_id.ids)]
+            # see https://github.com/odoo/enterprise/pull/15091
         ])

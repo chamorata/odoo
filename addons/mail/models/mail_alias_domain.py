@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, exceptions, fields, models, _
 from odoo.addons.mail.models.mail_alias import dot_atom_text
+
+from odoo import api, exceptions, fields, models, _
 
 
 class AliasDomain(models.Model):
@@ -79,7 +80,8 @@ class AliasDomain(models.Model):
 
     @api.constrains('bounce_alias', 'catchall_alias')
     def _check_bounce_catchall_uniqueness(self):
-        names = self.filtered('bounce_alias').mapped('bounce_alias') + self.filtered('catchall_alias').mapped('catchall_alias')
+        names = self.filtered('bounce_alias').mapped('bounce_alias') + self.filtered('catchall_alias').mapped(
+            'catchall_alias')
         if not names:
             return
 
@@ -114,15 +116,17 @@ class AliasDomain(models.Model):
             document_name = False
             # If owner or target: display document name also in the warning
             if existing.alias_parent_model_id and existing.alias_parent_thread_id:
-                document_name = self.env[existing.alias_parent_model_id.model].sudo().browse(existing.alias_parent_thread_id).display_name
+                document_name = self.env[existing.alias_parent_model_id.model].sudo().browse(
+                    existing.alias_parent_thread_id).display_name
             elif existing.alias_model_id and existing.alias_force_thread_id:
-                document_name = self.env[existing.alias_model_id.model].sudo().browse(existing.alias_force_thread_id).display_name
+                document_name = self.env[existing.alias_model_id.model].sudo().browse(
+                    existing.alias_force_thread_id).display_name
             if document_name:
                 raise exceptions.ValidationError(
                     _("Bounce/Catchall '%(matching_alias_name)s' is already used by %(document_name)s. Choose another alias or change it on the other document.",
                       matching_alias_name=existing.display_name,
                       document_name=document_name)
-                        )
+                )
             raise exceptions.ValidationError(
                 _("Bounce/Catchall '%(matching_alias_name)s' is already used. Choose another alias or change it on the linked model.",
                   matching_alias_name=existing.display_name)
@@ -174,7 +178,8 @@ class AliasDomain(models.Model):
         if config_values.get('bounce_alias'):
             config_values['bounce_alias'] = self.env['mail.alias']._sanitize_alias_name(config_values['bounce_alias'])
         if config_values.get('catchall_alias'):
-            config_values['catchall_alias'] = self.env['mail.alias']._sanitize_alias_name(config_values['catchall_alias'])
+            config_values['catchall_alias'] = self.env['mail.alias']._sanitize_alias_name(
+                config_values['catchall_alias'])
         if config_values.get('default_from'):
             config_values['default_from'] = self.env['mail.alias']._sanitize_alias_name(
                 config_values['default_from'], is_email=True

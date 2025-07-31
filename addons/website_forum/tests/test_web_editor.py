@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import json
+
 from odoo.tests.common import HttpCase, new_test_user
 
 
@@ -32,16 +33,19 @@ class TestAttachmentController(HttpCase):
             "forum_id": self.env.ref("website_forum.forum_help").id,
         })
         self.authenticate(self.portal_user.login, self.portal_user.login)
-        payload = self._build_payload({'name': 'pixel', 'data': self.pixel, 'is_image': True, 'res_model': 'forum.post', 'res_id': post.id})
+        payload = self._build_payload(
+            {'name': 'pixel', 'data': self.pixel, 'is_image': True, 'res_model': 'forum.post', 'res_id': post.id})
         self.portal_user.karma = 30
-        response = self.url_open('/web_editor/attachment/add_data', data=json.dumps(payload), headers=self.headers, timeout=60000)
+        response = self.url_open('/web_editor/attachment/add_data', data=json.dumps(payload), headers=self.headers,
+                                 timeout=60000)
         self.assertEqual(200, response.status_code)
         attachment = self.env['ir.attachment'].search([('name', '=', 'pixel')])
         self.assertTrue(attachment)
 
     def test_02_admin_attachment(self):
         self.authenticate(self.admin_user.login, self.admin_user.login)
-        payload = self._build_payload({"name": "pixel", "data": self.pixel, "is_image": True, "res_model": "forum.post"})
+        payload = self._build_payload(
+            {"name": "pixel", "data": self.pixel, "is_image": True, "res_model": "forum.post"})
         response = self.url_open('/web_editor/attachment/add_data', data=json.dumps(payload), headers=self.headers)
         self.assertEqual(200, response.status_code)
         attachment = self.env['ir.attachment'].search([('name', '=', 'pixel')])
@@ -49,7 +53,8 @@ class TestAttachmentController(HttpCase):
 
         attachment = self.env['ir.attachment'].create([{'name': 'test_pixel', 'public': True, 'res_id': False,
                                                         'mimetype': 'text/plain', 'res_model': 'forum.post',
-                                                        'raw': self.pixel, 'website_id': self.env.ref('website.default_website').id}])
+                                                        'raw': self.pixel,
+                                                        'website_id': self.env.ref('website.default_website').id}])
         domain = [('name', '=', 'test_pixel')]
         result = attachment.search(domain, limit=1)
         self.assertTrue(result, "No attachment fetched")

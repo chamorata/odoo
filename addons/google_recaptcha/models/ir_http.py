@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import logging
+
 import requests
 
 from odoo import api, models, _
-from odoo.http import request
 from odoo.exceptions import UserError, ValidationError
+from odoo.http import request
 
 logger = logging.getLogger(__name__)
 
@@ -95,12 +96,14 @@ class Http(models.AbstractModel):
                 logger.warning("Trial captcha verification for ip address %s failed with score %f.", ip_addr, score)
                 return 'is_bot'
             if res_action and res_action != action:
-                logger.warning("Trial captcha verification for ip address %s failed with action %f, expected: %s.", ip_addr, score, action)
+                logger.warning("Trial captcha verification for ip address %s failed with action %f, expected: %s.",
+                               ip_addr, score, action)
                 return 'wrong_action'
             logger.info("Trial captcha verification for ip address %s succeeded with score %f.", ip_addr, score)
             return 'is_human'
         errors = result.get('error-codes', [])
-        logger.warning("Trial captcha verification for ip address %s failed error codes %r. token was: [%s]", ip_addr, errors, token)
+        logger.warning("Trial captcha verification for ip address %s failed error codes %r. token was: [%s]", ip_addr,
+                       errors, token)
         for error in errors:
             if error in ['missing-input-secret', 'invalid-input-secret']:
                 return 'wrong_secret'

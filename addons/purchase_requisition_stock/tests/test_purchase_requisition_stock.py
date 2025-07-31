@@ -2,8 +2,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.purchase_requisition.tests.common import TestPurchaseRequisitionCommon
-from odoo.tests import Form
+
 from odoo import Command
+from odoo.tests import Form
 
 
 class TestPurchaseRequisitionStock(TestPurchaseRequisitionCommon):
@@ -47,10 +48,12 @@ class TestPurchaseRequisitionStock(TestPurchaseRequisitionCommon):
 
         # Verification : there should be a purchase order created with the good price
         purchase1 = self.env['purchase.order'].search([('partner_id', '=', vendor1.id)])
-        self.assertEqual(purchase1.order_line.price_unit, 50, 'The price on the purchase order is not the supplierinfo one')
+        self.assertEqual(purchase1.order_line.price_unit, 50,
+                         'The price on the purchase order is not the supplierinfo one')
 
         # Blanket order creation
-        line1 = (0, 0, {'product_id': product_test.id, 'product_qty': 18, 'product_uom_id': product_test.uom_po_id.id, 'price_unit': 50})
+        line1 = (0, 0, {'product_id': product_test.id, 'product_qty': 18, 'product_uom_id': product_test.uom_po_id.id,
+                        'price_unit': 50})
         requisition_blanket = self.env['purchase.requisition'].create({
             'line_ids': [line1],
             'requisition_type': 'blanket_order',
@@ -95,9 +98,11 @@ class TestPurchaseRequisitionStock(TestPurchaseRequisitionCommon):
         move3._action_confirm()
 
         # Verifications
-        purchase2 = self.env['purchase.order'].search([('partner_id', '=', vendor2.id), ('requisition_id', '=', requisition_blanket.id)])
+        purchase2 = self.env['purchase.order'].search(
+            [('partner_id', '=', vendor2.id), ('requisition_id', '=', requisition_blanket.id)])
         self.assertEqual(len(purchase2), 1)
-        self.assertEqual(purchase2.order_line.price_unit, 50, 'The price on the purchase order is not the blanquet order one')
+        self.assertEqual(purchase2.order_line.price_unit, 50,
+                         'The price on the purchase order is not the blanquet order one')
 
     def test_03_purchase_requisition_stock(self):
         """ Two blanket orders on different 'make to order' products must generate
@@ -131,8 +136,10 @@ class TestPurchaseRequisitionStock(TestPurchaseRequisitionCommon):
             'route_ids': [(6, 0, [route_buy, route_mto])]
         })
         # Blanket orders creation
-        line1 = (0, 0, {'product_id': product_1.id, 'product_qty': 18, 'product_uom_id': product_1.uom_po_id.id, 'price_unit': 41})
-        line2 = (0, 0, {'product_id': product_2.id, 'product_qty': 18, 'product_uom_id': product_2.uom_po_id.id, 'price_unit': 42})
+        line1 = (0, 0, {'product_id': product_1.id, 'product_qty': 18, 'product_uom_id': product_1.uom_po_id.id,
+                        'price_unit': 41})
+        line2 = (0, 0, {'product_id': product_2.id, 'product_qty': 18, 'product_uom_id': product_2.uom_po_id.id,
+                        'price_unit': 42})
         requisition_1 = self.env['purchase.requisition'].create({
             'line_ids': [line1],
             'requisition_type': 'blanket_order',
@@ -302,9 +309,11 @@ class TestPurchaseRequisitionStock(TestPurchaseRequisitionCommon):
         in_picking.move_ids.picked = True
         in_picking.button_validate()
         # Now the internal move (Input -> Stock) should be generated
-        int_move = self.env['stock.move'].search([('product_id', '=', product.id), ('location_dest_id', '=', wh.lot_stock_id.id)])
+        int_move = self.env['stock.move'].search(
+            [('product_id', '=', product.id), ('location_dest_id', '=', wh.lot_stock_id.id)])
         self.assertEqual(int_move.quantity, 10, "Quantity should be reserved in the original internal move.")
-        self.assertEqual(int_move.move_orig_ids.id, in_picking.move_ids.id, "Both moves should be correctly chained together.")
+        self.assertEqual(int_move.move_orig_ids.id, in_picking.move_ids.id,
+                         "Both moves should be correctly chained together.")
 
     def test_group_id_alternative_po(self):
         """ Check that the group_id is propagated in the alternative PO"""

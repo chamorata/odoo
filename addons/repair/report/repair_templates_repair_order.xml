@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-<data>
-<template id="report_repairorder">
-        <t t-set="o" t-value="doc"/>
+    <data>
+        <template id="report_repairorder">
+            <t t-set="o" t-value="doc"/>
             <t t-call="web.external_layout">
-                <t t-set="o" t-value="o.with_context(lang=o.partner_id.lang)" />
+                <t t-set="o" t-value="o.with_context(lang=o.partner_id.lang)"/>
                 <div class="page">
                     <div class="oe_structure"/>
                     <h2>
@@ -50,9 +50,16 @@
                         <tbody>
                             <tr t-foreach="o.move_ids" t-as="line">
                                 <td>
-                                    <p t-if="line.repair_line_type == 'add'"><i>(Add)</i> <span t-field="line.product_id">Product A</span></p>
-                                    <p t-if="line.repair_line_type == 'remove'">(<i>Remove</i>) <span t-field="line.product_id">Product B</span></p>
-                                    <p t-if="line.repair_line_type == 'recycle'">(<i>Recycle</i>) <span t-field="line.product_id" data-oe-demo="Product C"/></p>
+                                    <p t-if="line.repair_line_type == 'add'">
+                                        <i>(Add)</i>
+                                        <span t-field="line.product_id">Product A</span>
+                                    </p>
+                                    <p t-if="line.repair_line_type == 'remove'">(<i>Remove</i>)
+                                        <span t-field="line.product_id">Product B</span>
+                                    </p>
+                                    <p t-if="line.repair_line_type == 'recycle'">(<i>Recycle</i>)
+                                        <span t-field="line.product_id" data-oe-demo="Product C"/>
+                                    </p>
                                 </td>
                                 <td class="text-end">
                                     <span t-field="line.product_uom_qty">5</span>
@@ -70,14 +77,14 @@
                     <div class="oe_structure"/>
                 </div>
             </t>
-</template>
+        </template>
 
-<template id="report_repairorder2">
-    <t t-call="web.html_container">
-        <t t-foreach="docs" t-as="doc">
-            <t t-call="repair.report_repairorder" t-lang="doc.partner_id.lang"/>
-        </t>
-    </t>
-</template>
-</data>
+        <template id="report_repairorder2">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="repair.report_repairorder" t-lang="doc.partner_id.lang"/>
+                </t>
+            </t>
+        </template>
+    </data>
 </odoo>

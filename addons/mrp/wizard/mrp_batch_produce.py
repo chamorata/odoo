@@ -2,7 +2,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import re
-
 from collections import defaultdict, deque
 
 from odoo import _, api, fields, models
@@ -33,7 +32,8 @@ class MrpBatchProduct(models.TransientModel):
                 continue
             wizard.lot_name = self.production_id.lot_producing_id.name
             if not wizard.lot_name:
-                wizard.lot_name = self.env['stock.lot']._get_next_serial(self.production_id.company_id, self.production_id.product_id)
+                wizard.lot_name = self.env['stock.lot']._get_next_serial(self.production_id.company_id,
+                                                                         self.production_id.product_id)
 
     @api.depends('production_id')
     def _compute_lot_qty(self):
@@ -81,7 +81,8 @@ class MrpBatchProduct(models.TransientModel):
                 continue
             components_line = deque(production_line.split(self.component_separator))
             finished_line = components_line.popleft()
-            finished_move = self.production_id.move_finished_ids.filtered(lambda m: m.product_id == self.production_id.product_id)
+            finished_move = self.production_id.move_finished_ids.filtered(
+                lambda m: m.product_id == self.production_id.product_id)
             finished_lot, finished_qty = self._get_lot_and_qty(finished_move, finished_line)
             productions_amount.append(finished_qty)
             productions_lot_list.append(finished_lot)
@@ -136,7 +137,7 @@ class MrpBatchProduct(models.TransientModel):
                 moves_vals[move_raw].append((qty, lot_name))
                 lot_names.append(lot_name)
 
-        lots = {(l.name, l.product_id): l for  l in self.env['stock.lot'].search([('name', 'in', lot_names)])}
+        lots = {(l.name, l.product_id): l for l in self.env['stock.lot'].search([('name', 'in', lot_names)])}
         mls_vals = []
         for move, mls in moves_vals.items():
             if mls:

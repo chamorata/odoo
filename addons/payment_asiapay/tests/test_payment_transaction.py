@@ -3,14 +3,13 @@
 from unittest.mock import patch
 
 from freezegun import freeze_time
+from odoo.addons.payment.tests.http_common import PaymentHttpCommon
+from odoo.addons.payment_asiapay import const
+from odoo.addons.payment_asiapay.tests.common import AsiaPayCommon
 
 from odoo.fields import Command
 from odoo.tests import tagged
 from odoo.tools import mute_logger
-
-from odoo.addons.payment.tests.http_common import PaymentHttpCommon
-from odoo.addons.payment_asiapay import const
-from odoo.addons.payment_asiapay.tests.common import AsiaPayCommon
 
 
 @tagged('post_install', '-at_install')
@@ -63,8 +62,8 @@ class TestPaymentTransaction(AsiaPayCommon, PaymentHttpCommon):
         """ Test that the rendered values are conform to the transaction fields. """
         tx = self._create_transaction(flow='redirect')
         with patch(
-            'odoo.addons.payment_asiapay.models.payment_provider.PaymentProvider'
-            '._asiapay_calculate_signature', return_value='dummy_signature'
+                'odoo.addons.payment_asiapay.models.payment_provider.PaymentProvider'
+                '._asiapay_calculate_signature', return_value='dummy_signature'
         ):
             rendering_values = tx._get_specific_rendering_values(None)
             self.assertDictEqual(

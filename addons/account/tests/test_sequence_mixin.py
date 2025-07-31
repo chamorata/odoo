@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
-from odoo.addons.account.tests.common import AccountTestInvoicingCommon
-from odoo.exceptions import ValidationError
-from odoo.tests import Form, tagged, TransactionCase
-from odoo import fields, api, SUPERUSER_ID, Command
-from odoo.tools import mute_logger
+import json
+from functools import reduce
+from unittest.mock import patch, Mock
 
+import psycopg2
 from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
-from functools import reduce
-import json
-import psycopg2
-from unittest.mock import patch, Mock
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
+from odoo import fields, api, SUPERUSER_ID, Command
+from odoo.exceptions import ValidationError
+from odoo.tests import Form, tagged, TransactionCase
+from odoo.tools import mute_logger
 
 
 class TestSequenceMixinCommon(AccountTestInvoicingCommon):
@@ -43,8 +44,10 @@ class TestSequenceMixinCommon(AccountTestInvoicingCommon):
 
     def assertMoveName(cls, move, expected_name):
         if move.name_placeholder:
-            cls.assertFalse(move.name, f"This move is potentially the first of the sequence, it shouldn't have a name while it is not posted. Got '{move.name}'.")
-            cls.assertEqual(move.name_placeholder, expected_name, f"This move is potentially the first of the sequence, it doesn't have a name but a placeholder name which is currently '{move.name_placeholder}'. You expected '{expected_name}'.")
+            cls.assertFalse(move.name,
+                            f"This move is potentially the first of the sequence, it shouldn't have a name while it is not posted. Got '{move.name}'.")
+            cls.assertEqual(move.name_placeholder, expected_name,
+                            f"This move is potentially the first of the sequence, it doesn't have a name but a placeholder name which is currently '{move.name_placeholder}'. You expected '{expected_name}'.")
         else:
             cls.assertEqual(move.name, expected_name, f"Expected '{expected_name}' but got '{move.name}'.")
 
@@ -235,7 +238,8 @@ class TestSequenceMixin(TestSequenceMixinCommon):
             move_form.date = fields.Date.to_date('2016-01-10')
 
     def test_sequence_draft_change_date_with_new_sequence(self):
-        invoice_1 = self.test_move.copy({'date': '2016-02-01', 'journal_id': self.company_data['default_journal_sale'].id})
+        invoice_1 = self.test_move.copy(
+            {'date': '2016-02-01', 'journal_id': self.company_data['default_journal_sale'].id})
         invoice_2 = invoice_1.copy({'date': '2016-02-02'})
 
         self.assertMoveName(invoice_2, 'INV/15-16/0001')
@@ -419,10 +423,10 @@ class TestSequenceMixin(TestSequenceMixinCommon):
             'type': 'general',
         }])
         moves = (
-            self.create_move(date='2010-01-01', journal=journal_same_code, name='J0/2010/00001')
-            + self.create_move(date='2010-01-01', journal=journal_same_code)
-            + self.create_move(date='2010-01-01', journal=journal_same_code)
-            + self.create_move(date='2010-01-01', journal=journals[0])
+                self.create_move(date='2010-01-01', journal=journal_same_code, name='J0/2010/00001')
+                + self.create_move(date='2010-01-01', journal=journal_same_code)
+                + self.create_move(date='2010-01-01', journal=journal_same_code)
+                + self.create_move(date='2010-01-01', journal=journals[0])
         )._post()
         self.assertEqual(
             moves.mapped('name'),
@@ -479,13 +483,13 @@ class TestSequenceMixin(TestSequenceMixinCommon):
 
         # check if year is correctly extracted
         with self.assertRaises(ValidationError):
-            self.create_move(date='2022-01-01', name='MISC/2021/22/00001', post=True) # year does not match
+            self.create_move(date='2022-01-01', name='MISC/2021/22/00001', post=True)  # year does not match
         self.create_move(date='2022-01-01', name='MISC/2022/22/00001', post=True)  # fix the year in the name
 
     def test_journal_sequence_ordering(self):
         """Entries are correctly sorted when posting multiple at once."""
         self.test_move.name = 'XMISC/2016/00001'
-        copies = reduce((lambda x, y: x+y), [
+        copies = reduce((lambda x, y: x + y), [
             self.create_move(date=self.test_move.date)
             for i in range(6)
         ])
@@ -556,11 +560,11 @@ class TestSequenceMixin(TestSequenceMixinCommon):
         """Resequence XMISC/2023-2024/00001 into XMISC/23-24/00001."""
         self.test_move.name = 'XMISC/2015-2016/00001'
         invoices = (
-            self.create_move(date="2023-03-01", post=True)
-            + self.create_move(date="2023-03-02", post=True)
-            + self.create_move(date="2023-03-03", post=True)
-            + self.create_move(date="2023-04-01", post=True)
-            + self.create_move(date="2023-04-02", post=True)
+                self.create_move(date="2023-03-01", post=True)
+                + self.create_move(date="2023-03-02", post=True)
+                + self.create_move(date="2023-03-03", post=True)
+                + self.create_move(date="2023-04-01", post=True)
+                + self.create_move(date="2023-04-02", post=True)
         )
         self.assertRecordValues(invoices, (
             {'name': 'XMISC/2022-2023/00001', 'state': 'posted'},
@@ -572,7 +576,8 @@ class TestSequenceMixin(TestSequenceMixinCommon):
 
         # Call the resequence wizard and change the sequence to XMISC/22-23/00001
         # By default the sequence order should be kept
-        resequence_wizard = Form(self.env['account.resequence.wizard'].with_context(active_ids=invoices.ids, active_model='account.move'))
+        resequence_wizard = Form(
+            self.env['account.resequence.wizard'].with_context(active_ids=invoices.ids, active_model='account.move'))
         resequence_wizard.first_name = "XMISC/22-23/00001"
         new_values = json.loads(resequence_wizard.new_values)
         # Ensure consistencies of sequence displayed in the UI
@@ -759,6 +764,7 @@ class TestSequenceMixin(TestSequenceMixinCommon):
         with patch.object(self.env.cr, 'savepoint', Mock(wraps=self.env.cr.savepoint)) as mock:
             self.create_move(date='2021-01-01', post=True)
         mock.assert_called_once()
+
 
 @tagged('post_install', '-at_install')
 class TestSequenceGaps(TestSequenceMixinCommon):

@@ -2,10 +2,10 @@
 
 import time
 
+from odoo.addons.product.tests.common import ProductCommon
+
 from odoo.fields import Command
 from odoo.tests import tagged
-
-from odoo.addons.product.tests.common import ProductCommon
 
 
 @tagged('post_install', '-at_install')
@@ -60,7 +60,8 @@ class TestProductRounding(ProductCommon):
 
         product_in_jpy = product.with_context(pricelist=self.pricelist_jpy.id)
         discount_jpy = product_in_jpy._get_contextual_discount()
-        self.assertAlmostEqual(discount_jpy, 0.0, places=6, msg="No discount should be applied for $1 product in Testing JPY.")
+        self.assertAlmostEqual(discount_jpy, 0.0, places=6,
+                               msg="No discount should be applied for $1 product in Testing JPY.")
 
         product_in_usd = product.with_context(pricelist=self.pricelist_usd.id)
         discount_usd = product_in_usd._get_contextual_discount()
@@ -68,7 +69,8 @@ class TestProductRounding(ProductCommon):
 
         product_in_cad = product.with_context(pricelist=self.pricelist_cad.id)
         discount_cad = product_in_cad._get_contextual_discount()
-        self.assertAlmostEqual(discount_cad, 0.0, places=6, msg="No discount should be applied for $1 product in Testing CAD.")
+        self.assertAlmostEqual(discount_cad, 0.0, places=6,
+                               msg="No discount should be applied for $1 product in Testing CAD.")
 
     def test_no_discount_100_dollars_product(self):
         """Ensure that no discount is applied when there shouldn't be, even for very small amounts."""
@@ -76,12 +78,15 @@ class TestProductRounding(ProductCommon):
 
         product_in_jpy = product.with_context(pricelist=self.pricelist_jpy.id)
         discount_jpy = product_in_jpy._get_contextual_discount()
-        self.assertAlmostEqual(discount_jpy, 0.0, places=6, msg="No discount should be applied for $100 product in Testing JPY.")
+        self.assertAlmostEqual(discount_jpy, 0.0, places=6,
+                               msg="No discount should be applied for $100 product in Testing JPY.")
 
         product_in_usd = product.with_context(pricelist=self.pricelist_usd.id)
         discount_usd = product_in_usd._get_contextual_discount()
-        self.assertAlmostEqual(discount_usd, 0.0, places=6, msg="No discount should be applied for $100 product in USD.")
+        self.assertAlmostEqual(discount_usd, 0.0, places=6,
+                               msg="No discount should be applied for $100 product in USD.")
 
         product_in_cad = product.with_context(pricelist=self.pricelist_cad.id)
         discount_cad = product_in_cad._get_contextual_discount()
-        self.assertAlmostEqual(discount_cad, 0.0, places=6, msg="No discount should be applied for $100 product in Testing CAD.")
+        self.assertAlmostEqual(discount_cad, 0.0, places=6,
+                               msg="No discount should be applied for $100 product in Testing CAD.")

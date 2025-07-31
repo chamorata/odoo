@@ -35,5 +35,6 @@ class IrWebsocket(models.AbstractModel):
                         document.check_access('write')
                         document.check_field_access_rights('write', [field_name])
 
-                        channels.append((self.env.registry.db_name, 'editor_collaboration', model_name, field_name, res_id))
+                        channels.append(
+                            (self.env.registry.db_name, 'editor_collaboration', model_name, field_name, res_id))
         return super()._build_bus_channel_list(channels)

@@ -18,7 +18,8 @@ class SlideQuestion(models.Model):
     answers_validation_error = fields.Char("Error on Answers", compute='_compute_answers_validation_error')
     # statistics
     attempts_count = fields.Integer(compute='_compute_statistics', groups='website_slides.group_website_slides_officer')
-    attempts_avg = fields.Float(compute="_compute_statistics", digits=(6, 2), groups='website_slides.group_website_slides_officer')
+    attempts_avg = fields.Float(compute="_compute_statistics", digits=(6, 2),
+                                groups='website_slides.group_website_slides_officer')
     done_count = fields.Integer(compute="_compute_statistics", groups='website_slides.group_website_slides_officer')
 
     @api.constrains('answer_ids')
@@ -36,7 +37,8 @@ class SlideQuestion(models.Model):
     @api.depends('slide_id')
     def _compute_statistics(self):
         slide_partners = self.env['slide.slide.partner'].sudo().search([('slide_id', 'in', self.slide_id.ids)])
-        slide_stats = dict((s.slide_id.id, dict({'attempts_count': 0, 'attempts_unique': 0, 'done_count': 0})) for s in slide_partners)
+        slide_stats = dict(
+            (s.slide_id.id, dict({'attempts_count': 0, 'attempts_unique': 0, 'done_count': 0})) for s in slide_partners)
 
         for slide_partner in slide_partners:
             slide_stats[slide_partner.slide_id.id]['attempts_count'] += slide_partner.quiz_attempts_count
@@ -58,6 +60,7 @@ class SlideQuestion(models.Model):
                 'This question must have at least one correct answer and one incorrect answer.'
             ) if not correct or correct == question.answer_ids else ''
 
+
 class SlideAnswer(models.Model):
     _name = "slide.answer"
     _rec_name = "text_value"
@@ -68,4 +71,5 @@ class SlideAnswer(models.Model):
     question_id = fields.Many2one('slide.question', string="Question", required=True, ondelete='cascade')
     text_value = fields.Char("Answer", required=True, translate=True)
     is_correct = fields.Boolean("Is correct answer")
-    comment = fields.Text("Comment", translate=True, help='This comment will be displayed to the user if they select this answer')
+    comment = fields.Text("Comment", translate=True,
+                          help='This comment will be displayed to the user if they select this answer')

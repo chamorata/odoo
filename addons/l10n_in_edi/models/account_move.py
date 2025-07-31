@@ -15,16 +15,17 @@ class AccountMove(models.Model):
         ("2", "Data Entry Mistake"),
         ("3", "Order Cancelled"),
         ("4", "Others"),
-        ], string="Cancel reason", copy=False)
+    ], string="Cancel reason", copy=False)
     l10n_in_edi_cancel_remarks = fields.Char("Cancel remarks", copy=False)
-    l10n_in_edi_show_cancel = fields.Boolean(compute="_compute_l10n_in_edi_show_cancel", string="E-invoice(IN) is sent?")
+    l10n_in_edi_show_cancel = fields.Boolean(compute="_compute_l10n_in_edi_show_cancel",
+                                             string="E-invoice(IN) is sent?")
 
     @api.depends('edi_document_ids')
     def _compute_l10n_in_edi_show_cancel(self):
         for invoice in self:
             invoice.l10n_in_edi_show_cancel = bool(invoice.edi_document_ids.filtered(
                 lambda i: i.edi_format_id.code == "in_einvoice_1_03"
-                and i.state in ("sent", "to_cancel", "cancelled")
+                          and i.state in ("sent", "to_cancel", "cancelled")
             ))
 
     def button_cancel_posted_moves(self):
@@ -46,7 +47,7 @@ class AccountMove(models.Model):
     def _get_l10n_in_edi_response_json(self):
         self.ensure_one()
         l10n_in_edi = self.edi_document_ids.filtered(lambda i: i.edi_format_id.code == "in_einvoice_1_03"
-            and i.state in ("sent", "to_cancel"))
+                                                               and i.state in ("sent", "to_cancel"))
         if l10n_in_edi:
             return json.loads(l10n_in_edi.sudo().attachment_id.raw.decode("utf-8"))
         else:
@@ -55,4 +56,5 @@ class AccountMove(models.Model):
     def _can_force_cancel(self):
         # OVERRIDE
         self.ensure_one()
-        return any(document.edi_format_id.code == 'in_einvoice_1_03' and document.state == 'to_cancel' for document in self.edi_document_ids) or super()._can_force_cancel()
+        return any(document.edi_format_id.code == 'in_einvoice_1_03' and document.state == 'to_cancel' for document in
+                   self.edi_document_ids) or super()._can_force_cancel()

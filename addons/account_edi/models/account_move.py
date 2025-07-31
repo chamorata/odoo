@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import io
-import zipfile
 from werkzeug.urls import url_encode
 
 from odoo import api, fields, models, _
@@ -42,7 +40,8 @@ class AccountMove(models.Model):
     @api.depends('edi_document_ids.state')
     def _compute_edi_state(self):
         for move in self:
-            all_states = set(move.edi_document_ids.filtered(lambda d: d.edi_format_id._needs_web_services()).mapped('state'))
+            all_states = set(
+                move.edi_document_ids.filtered(lambda d: d.edi_format_id._needs_web_services()).mapped('state'))
             if all_states == {'sent'}:
                 move.edi_state = 'sent'
             elif all_states == {'cancelled'}:
@@ -95,7 +94,8 @@ class AccountMove(models.Model):
         'edi_document_ids.edi_format_id.name')
     def _compute_edi_web_services_to_process(self):
         for move in self:
-            to_process = move.edi_document_ids.filtered(lambda d: d.state in ['to_send', 'to_cancel'] and d.blocking_level != 'error')
+            to_process = move.edi_document_ids.filtered(
+                lambda d: d.state in ['to_send', 'to_cancel'] and d.blocking_level != 'error')
             format_web_services = to_process.edi_format_id.filtered(lambda f: f._needs_web_services())
             move.edi_web_services_to_process = ', '.join(f.name for f in format_web_services)
 
@@ -104,9 +104,9 @@ class AccountMove(models.Model):
         for doc in self.edi_document_ids:
             move_applicability = doc.edi_format_id._get_move_applicability(self)
             if doc.edi_format_id._needs_web_services() \
-                and doc.state in ('sent', 'to_cancel') \
-                and move_applicability \
-                and move_applicability.get('cancel'):
+                    and doc.state in ('sent', 'to_cancel') \
+                    and move_applicability \
+                    and move_applicability.get('cancel'):
                 return False
         return True
 
@@ -129,9 +129,9 @@ class AccountMove(models.Model):
             for doc in move.edi_document_ids:
                 move_applicability = doc.edi_format_id._get_move_applicability(move)
                 if doc.edi_format_id._needs_web_services() \
-                    and doc.state == 'sent' \
-                    and move_applicability \
-                    and move_applicability.get('cancel'):
+                        and doc.state == 'sent' \
+                        and move_applicability \
+                        and move_applicability.get('cancel'):
                     move.edi_show_cancel_button = True
                     break
 
@@ -142,9 +142,9 @@ class AccountMove(models.Model):
             for doc in move.sudo().edi_document_ids:
                 move_applicability = doc.edi_format_id._get_move_applicability(move)
                 if doc.edi_format_id._needs_web_services() \
-                    and doc.state == 'to_cancel' \
-                    and move_applicability \
-                    and move_applicability.get('cancel'):
+                        and doc.state == 'to_cancel' \
+                        and move_applicability \
+                        and move_applicability.get('cancel'):
                     move.edi_show_abandon_cancel_button = True
                     break
 
@@ -269,7 +269,9 @@ class AccountMove(models.Model):
         """
         for move in self:
             to_cancel_edi_documents = move.edi_document_ids.filtered(lambda doc: doc.state == 'to_cancel')
-            move.message_post(body=_("This invoice was canceled while the EDIs %s still had a pending cancellation request.", ", ".join(to_cancel_edi_documents.mapped('edi_format_id.name'))))
+            move.message_post(
+                body=_("This invoice was canceled while the EDIs %s still had a pending cancellation request.",
+                       ", ".join(to_cancel_edi_documents.mapped('edi_format_id.name'))))
         self.button_cancel()
 
     def button_cancel(self):
@@ -277,8 +279,10 @@ class AccountMove(models.Model):
         # Set the electronic document to be canceled and cancel immediately for synchronous formats.
         res = super().button_cancel()
 
-        self.edi_document_ids.filtered(lambda doc: doc.state != 'sent').write({'state': 'cancelled', 'error': False, 'blocking_level': False})
-        self.edi_document_ids.filtered(lambda doc: doc.state == 'sent').write({'state': 'to_cancel', 'error': False, 'blocking_level': False})
+        self.edi_document_ids.filtered(lambda doc: doc.state != 'sent').write(
+            {'state': 'cancelled', 'error': False, 'blocking_level': False})
+        self.edi_document_ids.filtered(lambda doc: doc.state == 'sent').write(
+            {'state': 'to_cancel', 'error': False, 'blocking_level': False})
         self.edi_document_ids._process_documents_no_web_services()
         self.env.ref('account_edi.ir_cron_edi_network')._trigger()
 
@@ -348,7 +352,8 @@ class AccountMove(models.Model):
 
     # this override is to make sure that the main attachment is not the edi xml otherwise the attachment viewer will not work correctly
     def _message_set_main_attachment_id(self, attachments, force=False, filter_xml=True):
-        if not force and len(attachments) > 1 and self.message_main_attachment_id in self.edi_document_ids.attachment_id:
+        if not force and len(
+                attachments) > 1 and self.message_main_attachment_id in self.edi_document_ids.attachment_id:
             force = True
         super()._message_set_main_attachment_id(attachments, force=force, filter_xml=filter_xml)
 
@@ -361,7 +366,8 @@ class AccountMove(models.Model):
         self.action_process_edi_web_services(with_commit=False)
 
     def action_process_edi_web_services(self, with_commit=True):
-        docs = self.edi_document_ids.filtered(lambda d: d.state in ('to_send', 'to_cancel') and d.blocking_level != 'error')
+        docs = self.edi_document_ids.filtered(
+            lambda d: d.state in ('to_send', 'to_cancel') and d.blocking_level != 'error')
         docs._process_documents_web_services(with_commit=with_commit)
 
     def _retry_edi_documents_error_hook(self):

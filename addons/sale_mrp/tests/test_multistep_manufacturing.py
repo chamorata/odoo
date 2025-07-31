@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.tests import Form
 from odoo.addons.mrp.tests.common import TestMrpCommon
+
+from odoo.tests import Form
 
 
 class TestMultistepManufacturing(TestMrpCommon):
@@ -77,8 +78,10 @@ class TestMultistepManufacturing(TestMrpCommon):
         # Check all procurements for created sale order
         mo_procurement = self.MrpProduction.search([('origin', '=', self.sale_order.name)])
         # Get manufactured procurement
-        self.assertEqual(mo_procurement.location_src_id.id, self.warehouse.lot_stock_id.id, "Source loction does not match.")
-        self.assertEqual(mo_procurement.location_dest_id.id, self.warehouse.lot_stock_id.id, "Destination location does not match.")
+        self.assertEqual(mo_procurement.location_src_id.id, self.warehouse.lot_stock_id.id,
+                         "Source loction does not match.")
+        self.assertEqual(mo_procurement.location_dest_id.id, self.warehouse.lot_stock_id.id,
+                         "Destination location does not match.")
         self.assertEqual(len(mo_procurement), 1, "No Procurement !")
 
     def test_01_manufacturing_step_two(self):
@@ -93,8 +96,10 @@ class TestMultistepManufacturing(TestMrpCommon):
             ('product_id', '=', self.product_manu.id),
         ])
         self.assertEqual(self.sale_order.action_view_mrp_production()['res_id'], mo.id)
-        self.assertEqual(mo_procurement.location_src_id.id, self.warehouse.pbm_loc_id.id, "Source loction does not match.")
-        self.assertEqual(mo_procurement.location_dest_id.id, self.warehouse.lot_stock_id.id, "Destination location does not match.")
+        self.assertEqual(mo_procurement.location_src_id.id, self.warehouse.pbm_loc_id.id,
+                         "Source loction does not match.")
+        self.assertEqual(mo_procurement.location_dest_id.id, self.warehouse.lot_stock_id.id,
+                         "Destination location does not match.")
 
         self.assertEqual(len(mo_procurement), 1, "No Procurement !")
 
@@ -136,7 +141,8 @@ class TestMultistepManufacturing(TestMrpCommon):
         # Check if activity is generated or not on parent MO.
         exception = self.env['mail.activity'].search([('res_model', '=', 'mrp.production'),
                                                       ('res_id', '=', manufaturing_from_so.id)])
-        self.assertEqual(len(exception.ids), 1, 'When user cancelled child manufacturing, exception must be generated on parent manufacturing.')
+        self.assertEqual(len(exception.ids), 1,
+                         'When user cancelled child manufacturing, exception must be generated on parent manufacturing.')
 
     def test_manufacturing_step_three(self):
         """ Testing for Step-3 """

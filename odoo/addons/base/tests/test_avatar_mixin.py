@@ -5,13 +5,15 @@ from base64 import b64decode
 
 from odoo.tests.common import TransactionCase
 
-class TestAvatarMixin(TransactionCase):
 
+class TestAvatarMixin(TransactionCase):
     """ tests the avatar mixin """
+
     def setUp(self):
         super().setUp()
         # Set partner manually to fake seed create_date
-        partner_without_image = self.env['res.partner'].create({'name': 'Marc Demo', 'create_date': '2015-11-12 00:00:00'})
+        partner_without_image = self.env['res.partner'].create(
+            {'name': 'Marc Demo', 'create_date': '2015-11-12 00:00:00'})
         self.user_without_image = self.env['res.users'].create({
             'name': 'Marc Demo',
             'email': 'mark.brown23@example.com',
@@ -52,7 +54,8 @@ class TestAvatarMixin(TransactionCase):
         self.assertEqual(expectedAvatar, b64decode(self.user_without_image.partner_id.avatar_1920).decode('utf-8'))
 
     def test_partner_without_name_has_default_placeholder_image_as_avatar(self):
-        self.assertEqual(self.user_without_name.partner_id._avatar_get_placeholder(), b64decode(self.user_without_name.partner_id.avatar_1920))
+        self.assertEqual(self.user_without_name.partner_id._avatar_get_placeholder(),
+                         b64decode(self.user_without_name.partner_id.avatar_1920))
 
     def test_external_partner_has_default_placeholder_image_as_avatar(self):
         self.assertEqual(self.external_partner._avatar_get_placeholder(), b64decode(self.external_partner.avatar_1920))

@@ -6,7 +6,9 @@
         <t t-call="web.frontend_layout">
             <body class="bg-white o_mailing_portal_body">
                 <header>
-                    <div><title>Odoo</title></div>
+                    <div>
+                        <title>Odoo</title>
+                    </div>
                     <div class="text-center">
                         <img t-attf-src="/web/binary/company_logo?company={{ res_company.id }}"/>
                     </div>
@@ -22,6 +24,6 @@
             <xpath expr="//header" position="before">
                 <t t-set="no_header" t-value="True"/>
             </xpath>
-         </t>
-     </template>
+        </t>
+    </template>
 </odoo>

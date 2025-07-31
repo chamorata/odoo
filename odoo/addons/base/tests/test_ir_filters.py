@@ -10,6 +10,7 @@ from odoo.tests.common import TransactionCase, ADMIN_USER_ID, tagged
 
 _logger = logging.getLogger(__name__)
 
+
 def noid(seq):
     """ Removes values that are not relevant for the test comparisons """
     for d in seq:
@@ -18,6 +19,7 @@ def noid(seq):
         d.pop('embedded_action_id', None)
         d.pop('embedded_parent_res_id', None)
     return seq
+
 
 class FiltersCase(TransactionCaseWithUserDemo):
     def setUp(self):
@@ -73,7 +75,7 @@ class TestGetFilters(FiltersCase):
             dict(name='a', user_id=False, model_id='ir.filters'),
             dict(name='b', user_id=ADMIN_USER_ID, model_id='ir.filters'),
             dict(name='c', user_id=self.USER_ID, model_id='ir.filters'),
-            dict(name='d', user_id=ADMIN_USER_ID, model_id='ir.filters')  )
+            dict(name='d', user_id=ADMIN_USER_ID, model_id='ir.filters'))
 
         filters = self.env['ir.filters'].with_user(self.USER_ID).get_filters('ir.filters')
 
@@ -286,7 +288,8 @@ class TestAllFilters(TransactionCase):
             except ValueError as e:
                 raise self.failureException("Test filter '%s' failed: %s" % (name, e)) from None
             except KeyError as e:
-                raise self.failureException("Test filter '%s' failed: field or aggregate %s does not exist"% (name, e)) from None
+                raise self.failureException(
+                    "Test filter '%s' failed: field or aggregate %s does not exist" % (name, e)) from None
         elif domain:
             try:
                 self.env[model].with_context(context).search(domain, order=order)
@@ -358,16 +361,24 @@ class TestEmbeddedFilters(FiltersCase):
         })
 
         # If embedded_action_id and embedded_parent_res_id are set, should return the corresponding filter
-        filters = self.env['ir.filters'].with_user(self.USER_ID).get_filters('ir.filters', embedded_action_id=self.embedded_action_1.id, embedded_parent_res_id=1)
-        self.assertItemsEqual(noid(filters), [dict(name='a', is_default=True, user_id=False, domain='[]', context='{}', sort='[]')])
+        filters = self.env['ir.filters'].with_user(self.USER_ID).get_filters('ir.filters',
+                                                                             embedded_action_id=self.embedded_action_1.id,
+                                                                             embedded_parent_res_id=1)
+        self.assertItemsEqual(noid(filters),
+                              [dict(name='a', is_default=True, user_id=False, domain='[]', context='{}', sort='[]')])
 
         # Check that the filter is correctly linked to one embedded_parent_res_id and is not returned if another one is set
-        filters = self.env['ir.filters'].with_user(self.USER_ID).get_filters('ir.filters', embedded_action_id=self.embedded_action_1.id, embedded_parent_res_id=2)
+        filters = self.env['ir.filters'].with_user(self.USER_ID).get_filters('ir.filters',
+                                                                             embedded_action_id=self.embedded_action_1.id,
+                                                                             embedded_parent_res_id=2)
         self.assertItemsEqual(noid(filters), [])
 
         # Check that a shared filter can be fetched with another user
-        filters = self.env['ir.filters'].with_user(ADMIN_USER_ID).get_filters('ir.filters', embedded_action_id=self.embedded_action_1.id, embedded_parent_res_id=1)
-        self.assertItemsEqual(noid(filters), [dict(name='a', is_default=True, user_id=False, domain='[]', context='{}', sort='[]')])
+        filters = self.env['ir.filters'].with_user(ADMIN_USER_ID).get_filters('ir.filters',
+                                                                              embedded_action_id=self.embedded_action_1.id,
+                                                                              embedded_parent_res_id=1)
+        self.assertItemsEqual(noid(filters),
+                              [dict(name='a', is_default=True, user_id=False, domain='[]', context='{}', sort='[]')])
 
         # If embedded_action_id and embedded_parent_res_id are not set, should return no filters
         filters = self.env['ir.filters'].with_user(self.USER_ID).get_filters('ir.filters')

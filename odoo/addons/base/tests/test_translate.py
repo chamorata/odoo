@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from hashlib import sha256
-from unittest.mock import patch
+import io
 import logging
 import time
+from hashlib import sha256
+from unittest.mock import patch
 
-from psycopg2 import IntegrityError
 from psycopg2.extras import Json
-import io
 
 from odoo.exceptions import UserError
+from odoo.tests.common import TransactionCase, BaseCase, tagged
 from odoo.tools import sql
-from odoo.tools.translate import quote, unquote, xml_translate, html_translate, TranslationImporter, TranslationModuleReader
-from odoo.tests.common import TransactionCase, BaseCase, new_test_user, tagged
+from odoo.tools.translate import quote, unquote, xml_translate, html_translate, TranslationImporter, \
+    TranslationModuleReader
 
 _stats_logger = logging.getLogger('odoo.tests.stats')
 
@@ -25,13 +25,12 @@ class TranslationToolsTestCase(BaseCase):
         self.assertEqual(sorted(a), sorted(b), msg)
 
     def test_quote_unquote(self):
-
         def test_string(str):
             quoted = quote(str)
-            #print "\n1:", repr(str)
-            #print "2:", repr(quoted)
+            # print "\n1:", repr(str)
+            # print "2:", repr(quoted)
             unquoted = unquote("".join(quoted.split('"\n"')))
-            #print "3:", repr(unquoted)
+            # print "3:", repr(unquoted)
             self.assertEqual(str, unquoted)
 
         test_string("""test \nall kinds\n \n o\r
@@ -57,7 +56,7 @@ class TranslationToolsTestCase(BaseCase):
         result = xml_translate(terms.append, source)
         self.assertEqual(result, source)
         self.assertItemsEqual(terms,
-            ['Form stuff', 'Blah blah blah', 'Put some more text here'])
+                              ['Form stuff', 'Blah blah blah', 'Put some more text here'])
 
     def test_translate_xml_text(self):
         """ Test xml_translate() on plain text. """
@@ -94,7 +93,7 @@ class TranslationToolsTestCase(BaseCase):
         result = xml_translate(terms.append, source)
         self.assertEqual(result, source)
         self.assertItemsEqual(terms,
-            ['Form stuff', 'Blah <i>blah</i> blah', 'Put some <b>more text</b> here'])
+                              ['Form stuff', 'Blah <i>blah</i> blah', 'Put some <b>more text</b> here'])
 
     def test_translate_xml_inline2(self):
         """ Test xml_translate() with formatting elements embedding other elements. """
@@ -107,7 +106,7 @@ class TranslationToolsTestCase(BaseCase):
         result = xml_translate(terms.append, source)
         self.assertEqual(result, source)
         self.assertItemsEqual(terms,
-            ['Form stuff', 'Blah <i>blah</i> blah', 'Put <em>some <b>more text</b></em> here'])
+                              ['Form stuff', 'Blah <i>blah</i> blah', 'Put <em>some <b>more text</b></em> here'])
 
     def test_translate_xml_inline3(self):
         """ Test xml_translate() with formatting elements without actual text. """
@@ -124,7 +123,7 @@ class TranslationToolsTestCase(BaseCase):
         result = xml_translate(terms.append, source)
         self.assertEqual(result, source)
         self.assertItemsEqual(terms,
-            ['Form stuff', 'Blah blah blah'])
+                              ['Form stuff', 'Blah blah blah'])
 
     def test_translate_xml_inline4(self):
         """ Test xml_translate() with inline elements with translated attrs only. """
@@ -138,7 +137,7 @@ class TranslationToolsTestCase(BaseCase):
         result = xml_translate(terms.append, source)
         self.assertEqual(result, source)
         self.assertItemsEqual(terms,
-            ['Form stuff', '<span class="fa fa-globe" title="Title stuff"/>'])
+                              ['Form stuff', '<span class="fa fa-globe" title="Title stuff"/>'])
 
     def test_translate_xml_inline5(self):
         """ Test xml_translate() with inline elements with empty translated attrs only. """
@@ -164,7 +163,7 @@ class TranslationToolsTestCase(BaseCase):
         result = xml_translate(terms.append, source)
         self.assertEqual(result, source)
         self.assertItemsEqual(terms,
-            ['stuff before', 'stuff after'])
+                              ['stuff before', 'stuff after'])
 
     def test_translate_xml_off(self):
         """ Test xml_translate() with attribute translate="off". """
@@ -177,7 +176,7 @@ class TranslationToolsTestCase(BaseCase):
         result = xml_translate(terms.append, source)
         self.assertEqual(result, source)
         self.assertItemsEqual(terms,
-            ['stuff before', 'stuff after'])
+                              ['stuff before', 'stuff after'])
 
     def test_translate_xml_attribute(self):
         """ Test xml_translate() with <attribute> elements. """
@@ -189,7 +188,7 @@ class TranslationToolsTestCase(BaseCase):
         result = xml_translate(terms.append, source)
         self.assertEqual(result, source)
         self.assertItemsEqual(terms,
-            ['Translate this'])
+                              ['Translate this'])
 
     def test_translate_xml_a(self):
         """ Test xml_translate() with <a> elements. """
@@ -206,7 +205,7 @@ class TranslationToolsTestCase(BaseCase):
         result = xml_translate(terms.append, source)
         self.assertEqual(result, source)
         self.assertItemsEqual(terms,
-            ['<span class="oe_menu_text">Blah</span>'])
+                              ['<span class="oe_menu_text">Blah</span>'])
 
     def test_translate_xml_with_namespace(self):
         """ Test xml_translate() on elements with namespaces. """
@@ -452,7 +451,7 @@ class TestTranslation(TransactionCase):
         # search for categories, and sort them by (translated) name
         categories = padawans_fr.search([('id', 'in', [self.customers.id, padawans.id])], order='name')
         self.assertEqual(categories.ids, [padawans.id, self.customers.id],
-            "Search ordered by translated name should return Padawans (Apprentis) before Customers (Clients)")
+                         "Search ordered by translated name should return Padawans (Apprentis) before Customers (Clients)")
 
     def test_105_duplicate_record_multi_no_en(self):
         self.env['res.partner'].with_context(active_test=False).search([]).write({'lang': 'fr_FR'})
@@ -526,13 +525,17 @@ class TestTranslation(TransactionCase):
                          langs, "Test did not start with the expected languages")
         CategoryEs = self.env['res.partner.category'].with_context(lang='es_ES')
         category_equal = CategoryEs.search([('name', '=', 'Customers')])
-        self.assertEqual(category_equal.id, self.customers.id, "Search with '=' should use the English name if the current language translation is not available")
+        self.assertEqual(category_equal.id, self.customers.id,
+                         "Search with '=' should use the English name if the current language translation is not available")
         category_ilike = CategoryEs.search([('name', 'ilike', 'usTom')])
-        self.assertIn(self.customers, category_ilike, "Search with 'ilike' should use the English name if the current language translation is not available")
+        self.assertIn(self.customers, category_ilike,
+                      "Search with 'ilike' should use the English name if the current language translation is not available")
         category_eq_ilike = CategoryEs.search([('name', '=ilike', 'CustoMers')])
-        self.assertIn(self.customers, category_eq_ilike, "Search with '=ilike' should use the English name if the current language translation is not available")
+        self.assertIn(self.customers, category_eq_ilike,
+                      "Search with '=ilike' should use the English name if the current language translation is not available")
         category_in = CategoryEs.search([('name', 'in', ['Customers'])])
-        self.assertIn(self.customers, category_in, "Search with 'in' should use the English name if the current language translation is not available")
+        self.assertIn(self.customers, category_in,
+                      "Search with 'in' should use the English name if the current language translation is not available")
 
     def test_111_prefetch_langs(self):
         category_en = self.customers.with_context(lang='en_US')
@@ -559,7 +562,6 @@ class TestTranslation(TransactionCase):
             self.assertEqual(category_nl.name, 'Klanten')
             self.assertEqual(category_en.name, 'Customers')
 
-
     # TODO Currently, the unique constraint doesn't work for translatable field
     # def test_111_unique_en(self):
     #     Country = self.env['res.country']
@@ -574,6 +576,7 @@ class TestTranslation(TransactionCase):
     #
     #     with self.assertRaises(IntegrityError), mute_logger('odoo.sql_db'):
     #         country_3 = Country.create({'name': 'Odoo'})
+
 
 class TestTranslationWrite(TransactionCase):
     @classmethod
@@ -654,7 +657,7 @@ class TestTranslationWrite(TransactionCase):
 
         langs = self.env['res.lang'].get_installed()
         self.assertEqual([('en_US', 'English (US)'), ('fr_FR', 'French / Français')], langs,
-            "Test did not started with expected languages")
+                         "Test did not started with expected languages")
 
         po_string = '''
         #. module: __export__
@@ -719,7 +722,7 @@ class TestTranslationWrite(TransactionCase):
 
         langs = self.env['res.lang'].get_installed()
         self.assertEqual([('en_US', 'English (US)'), ('fr_FR', 'French / Français')], langs,
-            "Test did not started with expected languages")
+                         "Test did not started with expected languages")
 
         belgium = self.env.ref('base.be')
         # vat_label is translatable and not required
@@ -771,7 +774,8 @@ class TestTranslationWrite(TransactionCase):
         self.env['res.lang']._activate_lang('nl_NL')
 
         langs = self.env['res.lang'].get_installed()
-        self.assertEqual([('nl_NL', 'Dutch / Nederlands'), ('en_US', 'English (US)'), ('fr_FR', 'French / Français')], langs,
+        self.assertEqual([('nl_NL', 'Dutch / Nederlands'), ('en_US', 'English (US)'), ('fr_FR', 'French / Français')],
+                         langs,
                          "Test did not started with expected languages")
 
         belgium = self.env.ref('base.be')
@@ -864,7 +868,8 @@ class TestTranslationWrite(TransactionCase):
         groupNL = group.with_context(lang='nl_NL')
         self.assertEqual(groupEN.comment, False)
         groupFR.update_field_translations('comment', {'nl_NL': 'Dutch Name', 'fr_FR': 'French Name'})
-        self.assertEqual(groupEN.comment, 'French Name', 'fr_FR value as the current env.lang is chosen as the default en_US value')
+        self.assertEqual(groupEN.comment, 'French Name',
+                         'fr_FR value as the current env.lang is chosen as the default en_US value')
         self.assertEqual(groupFR.comment, 'French Name')
         self.assertEqual(groupNL.comment, 'Dutch Name')
 
@@ -1189,7 +1194,8 @@ class TestXMLTranslation(TransactionCase):
     </div>
 </form>'''
         terms_en = ('Bread and cheese', 'Knive and Fork', 'Knive <span style="font-weight:bold">and</span> Fork')
-        terms_fr = ('Pain et fromage', 'Couteau et Fourchette', 'Couteau <span style="font-weight:bold">et</span> Fourchette')
+        terms_fr = ('Pain et fromage', 'Couteau et Fourchette',
+                    'Couteau <span style="font-weight:bold">et</span> Fourchette')
         terms_nl = ('Brood and kaas', 'Mes en Vork', 'Mes en Vork')
         view = self.create_view(archf, terms_en, en_US=terms_en, fr_FR=terms_fr, nl_NL=terms_nl)
 
@@ -1206,7 +1212,8 @@ class TestXMLTranslation(TransactionCase):
         # modify attributes in source term
         terms_en = ('Bread and cheese', 'Knife and Fork', 'Knife <span invisible="1">and</span> Fork')
         view.with_env(env_en).write({'arch_db': archf % terms_en})
-        terms_fr = ('Pain et fromage', 'Couteau et Fourchette', 'Couteau <span style="font-weight:bold" invisible="1">et</span> Fourchette')
+        terms_fr = ('Pain et fromage', 'Couteau et Fourchette',
+                    'Couteau <span style="font-weight:bold" invisible="1">et</span> Fourchette')
         terms_nl = ('Brood and kaas', 'Mes en Vork', 'Knife <span invisible="1">and</span> Fork')
 
         # check whether translations have been kept
@@ -1216,10 +1223,13 @@ class TestXMLTranslation(TransactionCase):
         self.assertEqual(view.with_env(env_nl).arch_db, archf % terms_nl)
 
         # modify attributes in source term
-        terms_en = ('Bread and cheese', 'Knife and Fork', 'Knife <span style="text-align: center;" readonly="1">and</span> Fork')
+        terms_en = ('Bread and cheese', 'Knife and Fork',
+                    'Knife <span style="text-align: center;" readonly="1">and</span> Fork')
         view.with_env(env_en).write({'arch_db': archf % terms_en})
-        terms_fr = ('Pain et fromage', 'Couteau et Fourchette', 'Couteau <span style="text-align: center;" readonly="1">et</span> Fourchette')
-        terms_nl = ('Brood and kaas', 'Mes en Vork', 'Knife <span style="text-align: center;" readonly="1">and</span> Fork')
+        terms_fr = ('Pain et fromage', 'Couteau et Fourchette',
+                    'Couteau <span style="text-align: center;" readonly="1">et</span> Fourchette')
+        terms_nl = ('Brood and kaas', 'Mes en Vork',
+                    'Knife <span style="text-align: center;" readonly="1">and</span> Fork')
 
         # check whether translations have been kept
         self.assertEqual(view.with_env(env_nolang).arch_db, archf % terms_en)
@@ -1249,7 +1259,8 @@ class TestXMLTranslation(TransactionCase):
         # check whether close terms have correct translations
         self.assertEqual(view.with_env(env_nolang).arch_db, archf % terms_en)
         self.assertEqual(view.with_env(env_en).arch_db, archf % terms_en)
-        self.assertEqual(view.with_env(env_fr).arch_db, archf % ('RandomRandom1', 'SomethingElse', 'AléatoireAléatoire3'))
+        self.assertEqual(view.with_env(env_fr).arch_db,
+                         archf % ('RandomRandom1', 'SomethingElse', 'AléatoireAléatoire3'))
 
     def test_sync_xml_upgrade(self):
         # text term and xml term with the same text content, text term is removed, xml term is changed
@@ -1265,7 +1276,7 @@ class TestXMLTranslation(TransactionCase):
 
         self.assertEqual(view.arch_db, archf % terms_en)
         self.assertEqual(view.with_context(lang='fr_FR').arch_db, archf % terms_fr)
-        
+
         # change the order of the text term and the xml term and redo the previous test
         archf = '<form>%s<div>%s</div></form>'
         terms_en = ('<span invisible="1">Draft</span>', 'Draft')
@@ -1322,7 +1333,6 @@ class TestXMLTranslation(TransactionCase):
         self.assertEqual(view.arch_db, archf % terms_en)
         self.assertEqual(view.with_context(lang='fr_FR').arch_db, archf % terms_fr)
 
-
     def test_cache_consistency(self):
         view = self.env["ir.ui.view"].create({
             "name": "test_translate_xml_cache_invalidation",
@@ -1357,25 +1367,32 @@ class TestXMLTranslation(TransactionCase):
         })
 
         self.assertEqual(view.arch_db, '<form string="X">Bread and cheese<div>Fork2</div></form>')
-        self.assertEqual(view.with_context(lang='en_US').arch_db, '<form string="X">Bread and cheese<div>Fork2</div></form>')
-        self.assertEqual(view.with_context(lang='fr_FR').arch_db, '<form string="X">Pain et fromage<div>Fourchette2</div></form>')
+        self.assertEqual(view.with_context(lang='en_US').arch_db,
+                         '<form string="X">Bread and cheese<div>Fork2</div></form>')
+        self.assertEqual(view.with_context(lang='fr_FR').arch_db,
+                         '<form string="X">Pain et fromage<div>Fourchette2</div></form>')
         self.assertEqual(view.with_context(lang='nl_NL').arch_db, view_nl)
 
         view.invalidate_recordset()
         self.assertEqual(view.arch_db, '<form string="X">Bread and cheese<div>Fork2</div></form>')
-        self.assertEqual(view.with_context(lang='en_US').arch_db, '<form string="X">Bread and cheese<div>Fork2</div></form>')
-        self.assertEqual(view.with_context(lang='fr_FR').arch_db, '<form string="X">Pain et fromage<div>Fourchette2</div></form>')
+        self.assertEqual(view.with_context(lang='en_US').arch_db,
+                         '<form string="X">Bread and cheese<div>Fork2</div></form>')
+        self.assertEqual(view.with_context(lang='fr_FR').arch_db,
+                         '<form string="X">Pain et fromage<div>Fourchette2</div></form>')
         self.assertEqual(view.with_context(lang='nl_NL').arch_db, view_nl)
 
         # update translations for fallback values and en_US
         self.env['res.lang']._activate_lang('es_ES')
-        self.assertEqual(view.with_context(lang='es_ES').arch_db, '<form string="X">Bread and cheese<div>Fork2</div></form>')
+        self.assertEqual(view.with_context(lang='es_ES').arch_db,
+                         '<form string="X">Bread and cheese<div>Fork2</div></form>')
         view.update_field_translations('arch_db', {
             'en_US': {'Fork2': 'Fork3'},
             'es_ES': {'Fork2': 'Tenedor3'}
         })
-        self.assertEqual(view.with_context(lang='en_US').arch_db, '<form string="X">Bread and cheese<div>Fork3</div></form>')
-        self.assertEqual(view.with_context(lang='es_ES').arch_db, '<form string="X">Bread and cheese<div>Tenedor3</div></form>')
+        self.assertEqual(view.with_context(lang='en_US').arch_db,
+                         '<form string="X">Bread and cheese<div>Fork3</div></form>')
+        self.assertEqual(view.with_context(lang='es_ES').arch_db,
+                         '<form string="X">Bread and cheese<div>Tenedor3</div></form>')
 
     def test_delay_translations(self):
         archf = '<form string="%s"><div>%s</div><div>%s</div></form>'
@@ -1404,41 +1421,41 @@ class TestXMLTranslation(TransactionCase):
         self.assertEqual(
             view0.with_context(lang='fr_FR', edit_translations=True).arch_db,
             '<form string="'
-                '&lt;span '
-                     'class=&quot;o_delay_translation&quot; '
-                     'data-oe-model=&quot;ir.ui.view&quot; '
-                    f'data-oe-id=&quot;{view0.id}&quot; '
-                     'data-oe-field=&quot;arch_db&quot; '
-                     'data-oe-translation-state=&quot;to_translate&quot; '
-                    f'data-oe-translation-source-sha=&quot;{sha256(terms_en2[0].encode()).hexdigest()}&quot;'
-                '&gt;'
-                    f'{terms_en2[0]}'
-                '&lt;/span&gt;"'
+            '&lt;span '
+            'class=&quot;o_delay_translation&quot; '
+            'data-oe-model=&quot;ir.ui.view&quot; '
+            f'data-oe-id=&quot;{view0.id}&quot; '
+            'data-oe-field=&quot;arch_db&quot; '
+            'data-oe-translation-state=&quot;to_translate&quot; '
+            f'data-oe-translation-source-sha=&quot;{sha256(terms_en2[0].encode()).hexdigest()}&quot;'
+            '&gt;'
+            f'{terms_en2[0]}'
+            '&lt;/span&gt;"'
             '>'
-                '<p>'
-                    '<span '
-                         'class="o_delay_translation" '
-                         'data-oe-model="ir.ui.view" '
-                        f'data-oe-id="{view0.id}" '
-                         'data-oe-field="arch_db" '
-                         'data-oe-translation-state="translated" '
-                        f'data-oe-translation-source-sha="{sha256(terms_en2[1].encode()).hexdigest()}"'
-                    '>'
-                        f'{terms_fr[1]}'
-                    '</span>'
-                '</p>'
-                '<div>'
-                    '<span '
-                         'class="o_delay_translation" '
-                         'data-oe-model="ir.ui.view" '
-                        f'data-oe-id="{view0.id}" '
-                         'data-oe-field="arch_db" '
-                         'data-oe-translation-state="translated" '
-                        f'data-oe-translation-source-sha="{sha256(terms_en2[2].encode()).hexdigest()}"'
-                    '>'
-                        f'{terms_fr[2]}'
-                    '</span>'
-                '</div>'
+            '<p>'
+            '<span '
+            'class="o_delay_translation" '
+            'data-oe-model="ir.ui.view" '
+            f'data-oe-id="{view0.id}" '
+            'data-oe-field="arch_db" '
+            'data-oe-translation-state="translated" '
+            f'data-oe-translation-source-sha="{sha256(terms_en2[1].encode()).hexdigest()}"'
+            '>'
+            f'{terms_fr[1]}'
+            '</span>'
+            '</p>'
+            '<div>'
+            '<span '
+            'class="o_delay_translation" '
+            'data-oe-model="ir.ui.view" '
+            f'data-oe-id="{view0.id}" '
+            'data-oe-field="arch_db" '
+            'data-oe-translation-state="translated" '
+            f'data-oe-translation-source-sha="{sha256(terms_en2[2].encode()).hexdigest()}"'
+            '>'
+            f'{terms_fr[2]}'
+            '</span>'
+            '</div>'
             '</form>'
         )
         self.assertEqual(
@@ -1588,7 +1605,8 @@ class TestXMLTranslation(TransactionCase):
         self.assertEqual(view1_gb.arch_db, xml % ('Footbell', 'Clubs', 'Rakning'))  # "Clbus" should be fixed in en_GB
         self.assertEqual(view1_fr.arch_db, xml % ('SocceR', 'Clbus', 'Rakning'))  # fr_FR should fall back to en_US
         # fix "SocceR" in en_US and "Footbell" in en_GB
-        view1.update_field_translations('arch_db', {'en_US': {'SocceR': 'Soccer'}, 'en_GB': {'SocceR': 'Football'}})  # always use old_en_terms to update
+        view1.update_field_translations('arch_db', {'en_US': {'SocceR': 'Soccer'}, 'en_GB': {
+            'SocceR': 'Football'}})  # always use old_en_terms to update
         self.assertEqual(view1_us.arch_db, xml % ('Soccer', 'Clbus', 'Rakning'))  # "SocceR" should be fixed in en_US
         self.assertEqual(view1_gb.arch_db, xml % ('Football', 'Clubs', 'Rakning'))  # "Clbus" should be fixed in en_GB
         self.assertEqual(view1_fr.arch_db, xml % ('Soccer', 'Clbus', 'Rakning'))
@@ -1604,6 +1622,7 @@ class TestXMLDuplicateTranslations(TransactionCase):
     duplicate translations are not supported
     this test is only used to describe all tricky behaviours
     """
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -1662,7 +1681,8 @@ class TestXMLDuplicateTranslations(TransactionCase):
         # capitalize 'un étudiant' in fr_FR only
         self.view1.update_field_translations('arch_db', {'fr_FR': {'A STUDENT': 'UNE ÉTUDIANTE'}})
         self.assertEqual(self.view1_en.arch_db, self.xml % ('A STUDENT', 'A STUDENT'))
-        self.assertEqual(self.view1_fr.arch_db, self.xml % ('UNE ÉTUDIANTE', 'UNE ÉTUDIANTE'))  # 'un étudiant' is dropped
+        self.assertEqual(self.view1_fr.arch_db,
+                         self.xml % ('UNE ÉTUDIANTE', 'UNE ÉTUDIANTE'))  # 'un étudiant' is dropped
         self.assertEqual(self.view1_es.arch_db, self.xml % ('un estudiante', 'una estudiante'))
 
     # tricky behaviour
@@ -1702,8 +1722,10 @@ class TestXMLDuplicateTranslations(TransactionCase):
         new_xml2 = '<form><div>%s</div><div>%s</div><div/><div/></form>'
         self.view1_en.arch = new_xml2 % ('a student', 'a student')
         self.assertEqual(self.view1_en.arch_db, new_xml2 % ('a student', 'a student'))
-        self.assertEqual(self.view1_fr.arch_db, new_xml2 % ('une étudiante', 'une étudiante'))  # 'un étudiant' is dropped
-        self.assertEqual(self.view1_es.arch_db, new_xml2 % ('una estudiante', 'una estudiante'))  # 'un estudiante' is dropped
+        self.assertEqual(self.view1_fr.arch_db,
+                         new_xml2 % ('une étudiante', 'une étudiante'))  # 'un étudiant' is dropped
+        self.assertEqual(self.view1_es.arch_db,
+                         new_xml2 % ('una estudiante', 'una estudiante'))  # 'un estudiante' is dropped
 
     # tricky behaviour
     def test_copy(self):
@@ -1726,7 +1748,8 @@ class TestXMLDuplicateTranslations(TransactionCase):
         # is called when copy
         self.assertEqual(view1_fr_copy.with_context(lang='en_US').arch_db, self.xml % ('a student', 'a student'))
         self.assertEqual(view1_fr_copy.arch_db, self.xml % ('un étudiant', 'une étudiante'))
-        self.assertEqual(view1_fr_copy.with_context(lang='es_ES').arch_db, self.xml % ('un estudiante', 'una estudiante'))
+        self.assertEqual(view1_fr_copy.with_context(lang='es_ES').arch_db,
+                         self.xml % ('un estudiante', 'una estudiante'))
 
         # copy the record in en_US
         view1_en_copy = self.view1_en.copy({'name': 'view1_us_copy'})
@@ -1736,8 +1759,10 @@ class TestXMLDuplicateTranslations(TransactionCase):
         # })
         # is called when copy
         self.assertEqual(view1_en_copy.arch_db, self.xml % ('a student', 'a student'))
-        self.assertEqual(view1_en_copy.with_context(lang='fr_FR').arch_db, self.xml % ('une étudiante', 'une étudiante'))  # 'un étudiant' is dropped
-        self.assertEqual(view1_en_copy.with_context(lang='es_ES').arch_db, self.xml % ('una estudiante', 'una estudiante'))  # 'un estudiante' is dropped
+        self.assertEqual(view1_en_copy.with_context(lang='fr_FR').arch_db,
+                         self.xml % ('une étudiante', 'une étudiante'))  # 'un étudiant' is dropped
+        self.assertEqual(view1_en_copy.with_context(lang='es_ES').arch_db,
+                         self.xml % ('una estudiante', 'una estudiante'))  # 'un estudiante' is dropped
 
 
 class TestHTMLTranslation(TransactionCase):
@@ -1794,14 +1819,14 @@ class TestTranslationTrigramIndexPatterns(BaseCase):
         sc = SPECIAL_CHARACTERS
         cases = [
             # pylint: disable=bad-whitespace
-            ( 'abc',    '%abc%',      'simple text is not escaped correctly'),
-            ( 'a"bc',  r'%a\\"bc%',   '" is not escaped correctly'),
-            (r'a\bc',  r'%a\\\\bc%', r'\ is not escaped correctly'),
-            ( 'a\nbc', r'%a\\nbc%',  r'\n is not escaped correctly'),
-            ( 'a_bc',  r'%a\_bc%',    '_ is not escaped correctly'),
-            ( 'a%bc',  r'%a\%bc%',    '% is not escaped correctly'),
-            ( 'a_',     '%',          'values with less than 3 characters should be dropped'),
-            ( sc,      f'%{sc}%',     'special characters should not be escaped'),
+            ('abc', '%abc%', 'simple text is not escaped correctly'),
+            ('a"bc', r'%a\\"bc%', '" is not escaped correctly'),
+            (r'a\bc', r'%a\\\\bc%', r'\ is not escaped correctly'),
+            ('a\nbc', r'%a\\nbc%', r'\n is not escaped correctly'),
+            ('a_bc', r'%a\_bc%', '_ is not escaped correctly'),
+            ('a%bc', r'%a\%bc%', '% is not escaped correctly'),
+            ('a_', '%', 'values with less than 3 characters should be dropped'),
+            (sc, f'%{sc}%', 'special characters should not be escaped'),
         ]
         for value, expected, message in cases:
             self.assertEqual(sql.value_to_translated_trigram_pattern(value), expected, message)
@@ -1810,18 +1835,18 @@ class TestTranslationTrigramIndexPatterns(BaseCase):
         sc = SPECIAL_CHARACTERS
         cases = [
             # pylint: disable=bad-whitespace
-            ( 'abc',      '%abc%',      'simple pattern is not escaped correctly'),
-            ( 'a"bc',    r'%a\\"bc%',   '" is not escaped correctly'),
-            (r'a\\bc',   r'%a\\\\bc%', r'\ is not escaped correctly'),
-            ( 'a\nbc',   r'%a\\nbc%',  r'\n is not escaped correctly'),
-            (r'a\_bc',   r'%a\_bc%',   r"\_ shouldn't be escaped"),
-            (r'a\%bc',   r'%a\%bc%',   r"\% shouldn't be escaped"),
-            ( 'abc_def',  '%abc%def%',  'wildcard character _ should be changed to %'),
-            ( 'abc%def',  '%abc%def%',  "wildcard character % shouldn't be escaped"),
-            (r'a\bc',     '%abc%',     r'redundant \ for pattern should be removed'),
-            ( 'abc_de',   '%abc%',      'sub patterns less than 3 characters should be dropped'),
-            ( 'ab',       '%',          'patterns without trigram should be simplified'),
-            ( sc,        f'%{sc}%',     'special characters should not be escaped'),
+            ('abc', '%abc%', 'simple pattern is not escaped correctly'),
+            ('a"bc', r'%a\\"bc%', '" is not escaped correctly'),
+            (r'a\\bc', r'%a\\\\bc%', r'\ is not escaped correctly'),
+            ('a\nbc', r'%a\\nbc%', r'\n is not escaped correctly'),
+            (r'a\_bc', r'%a\_bc%', r"\_ shouldn't be escaped"),
+            (r'a\%bc', r'%a\%bc%', r"\% shouldn't be escaped"),
+            ('abc_def', '%abc%def%', 'wildcard character _ should be changed to %'),
+            ('abc%def', '%abc%def%', "wildcard character % shouldn't be escaped"),
+            (r'a\bc', '%abc%', r'redundant \ for pattern should be removed'),
+            ('abc_de', '%abc%', 'sub patterns less than 3 characters should be dropped'),
+            ('ab', '%', 'patterns without trigram should be simplified'),
+            (sc, f'%{sc}%', 'special characters should not be escaped'),
         ]
         for original_pattern, escaped_pattern, message in cases:
             self.assertEqual(sql.pattern_to_translated_trigram_pattern(original_pattern), escaped_pattern, message)

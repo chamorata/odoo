@@ -22,7 +22,9 @@ class ProjectTask(models.Model):
         ])
         return domain
 
-    sale_order_id = fields.Many2one('sale.order', 'Sales Order', compute='_compute_sale_order_id', store=True, help="Sales order to which the task is linked.", group_expand="_group_expand_sales_order")
+    sale_order_id = fields.Many2one('sale.order', 'Sales Order', compute='_compute_sale_order_id', store=True,
+                                    help="Sales order to which the task is linked.",
+                                    group_expand="_group_expand_sales_order")
     sale_line_id = fields.Many2one(
         'sale.order.line', 'Sales Order Item',
         copy=True, tracking=True, index='btree_not_null', recursive=True,
@@ -31,18 +33,22 @@ class ProjectTask(models.Model):
         help="Sales Order Item to which the time spent on this task will be added in order to be invoiced to your customer.\n"
              "By default the sales order item set on the project will be selected. In the absence of one, the last prepaid sales order item that has time remaining will be used.\n"
              "Remove the sales order item in order to make this task non billable. You can also change or remove the sales order item of each timesheet entry individually.")
-    project_sale_order_id = fields.Many2one('sale.order', string="Project's sale order", related='project_id.sale_order_id')
+    project_sale_order_id = fields.Many2one('sale.order', string="Project's sale order",
+                                            related='project_id.sale_order_id')
     sale_order_state = fields.Selection(related='sale_order_id.state')
-    task_to_invoice = fields.Boolean("To invoice", compute='_compute_task_to_invoice', search='_search_task_to_invoice', groups='sales_team.group_sale_salesman_all_leads')
+    task_to_invoice = fields.Boolean("To invoice", compute='_compute_task_to_invoice', search='_search_task_to_invoice',
+                                     groups='sales_team.group_sale_salesman_all_leads')
     allow_billable = fields.Boolean(related="project_id.allow_billable")
     partner_id = fields.Many2one(inverse='_inverse_partner_id')
 
     # Project sharing  fields
-    display_sale_order_button = fields.Boolean(string='Display Sales Order', compute='_compute_display_sale_order_button')
+    display_sale_order_button = fields.Boolean(string='Display Sales Order',
+                                               compute='_compute_display_sale_order_button')
 
     @property
     def SELF_READABLE_FIELDS(self):
-        return super().SELF_READABLE_FIELDS | {'allow_billable', 'sale_order_id', 'sale_line_id', 'display_sale_order_button'}
+        return super().SELF_READABLE_FIELDS | {'allow_billable', 'sale_order_id', 'sale_line_id',
+                                               'display_sale_order_button'}
 
     @api.model
     def _group_expand_sales_order(self, sales_orders, domain):
@@ -62,16 +68,16 @@ class ProjectTask(models.Model):
                 task.sale_order_id = False
                 continue
             sale_order = (
-                task.sale_line_id.order_id
-                or task.project_id.sale_order_id
-                or task.sale_order_id
+                    task.sale_line_id.order_id
+                    or task.project_id.sale_order_id
+                    or task.sale_order_id
             )
             if sale_order and not task.partner_id:
                 task.partner_id = sale_order.partner_id
             consistent_partners = (
-                sale_order.partner_id
-                | sale_order.partner_invoice_id
-                | sale_order.partner_shipping_id
+                    sale_order.partner_id
+                    | sale_order.partner_invoice_id
+                    | sale_order.partner_shipping_id
             ).commercial_partner_id
             if task.partner_id.commercial_partner_id in consistent_partners:
                 task.sale_order_id = sale_order
@@ -88,14 +94,15 @@ class ProjectTask(models.Model):
         for task in self:
             # check that sale_line_id/sale_order_id and customer are consistent
             consistent_partners = (
-                task.sale_order_id.partner_id
-                | task.sale_order_id.partner_invoice_id
-                | task.sale_order_id.partner_shipping_id
+                    task.sale_order_id.partner_id
+                    | task.sale_order_id.partner_invoice_id
+                    | task.sale_order_id.partner_shipping_id
             ).commercial_partner_id
             if task.sale_order_id and task.partner_id.commercial_partner_id not in consistent_partners:
                 task.sale_order_id = task.sale_line_id = False
 
-    @api.depends('sale_line_id.order_partner_id', 'parent_id.sale_line_id', 'project_id.sale_line_id', 'milestone_id.sale_line_id', 'allow_billable')
+    @api.depends('sale_line_id.order_partner_id', 'parent_id.sale_line_id', 'project_id.sale_line_id',
+                 'milestone_id.sale_line_id', 'allow_billable')
     def _compute_sale_line(self):
         for task in self:
             if not (task.allow_billable or task.parent_id.allow_billable):

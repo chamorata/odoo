@@ -1,7 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo.tests import tagged
 from odoo.addons.point_of_sale.tests.test_frontend import TestPointOfSaleHttpCommon
+
 from odoo import Command
+from odoo.tests import tagged
 
 
 @tagged('post_install', '-at_install')
@@ -35,9 +36,11 @@ class TestUi(TestPointOfSaleHttpCommon):
         })
 
         self.main_pos_config.module_pos_discount = True
-        self.main_pos_config.discount_product_id = self.env.ref("pos_discount.product_product_consumable", raise_if_not_found=False)
+        self.main_pos_config.discount_product_id = self.env.ref("pos_discount.product_product_consumable",
+                                                                raise_if_not_found=False)
         self.main_pos_config.with_user(self.pos_user).open_ui()
-        self.start_tour("/pos/ui?config_id=%d" % self.main_pos_config.id, 'pos_global_discount_tax_group', login="pos_user")
+        self.start_tour("/pos/ui?config_id=%d" % self.main_pos_config.id, 'pos_global_discount_tax_group',
+                        login="pos_user")
 
     def test_global_discount_tax_group_include_exclude(self):
         tax_10 = self.env['account.tax'].create({
@@ -68,6 +71,8 @@ class TestUi(TestPointOfSaleHttpCommon):
         })
 
         self.main_pos_config.module_pos_discount = True
-        self.main_pos_config.discount_product_id = self.env.ref("pos_discount.product_product_consumable", raise_if_not_found=False)
+        self.main_pos_config.discount_product_id = self.env.ref("pos_discount.product_product_consumable",
+                                                                raise_if_not_found=False)
         self.main_pos_config.with_user(self.pos_user).open_ui()
-        self.start_tour("/pos/ui?config_id=%d" % self.main_pos_config.id, 'pos_global_discount_tax_group_2', login="pos_user")
+        self.start_tour("/pos/ui?config_id=%d" % self.main_pos_config.id, 'pos_global_discount_tax_group_2',
+                        login="pos_user")

@@ -3,9 +3,9 @@
 
 from datetime import timedelta
 
-from odoo import fields
 from odoo.addons.stock.tests.common import TestStockCommon
 
+from odoo import fields
 from odoo.tests import Form
 
 
@@ -77,7 +77,8 @@ class TestSaleMrpLeadTime(TestStockCommon):
         order.action_confirm()
 
         # Check manufacturing order created or not
-        manufacturing_order = self.env['mrp.production'].search([('product_id', '=', self.product_1.id), ('move_dest_ids', 'in', order.picking_ids[0].move_ids.ids)])
+        manufacturing_order = self.env['mrp.production'].search(
+            [('product_id', '=', self.product_1.id), ('move_dest_ids', 'in', order.picking_ids[0].move_ids.ids)])
         self.assertTrue(manufacturing_order, 'Manufacturing order should be created.')
 
         # Check schedule date of picking
@@ -95,7 +96,8 @@ class TestSaleMrpLeadTime(TestStockCommon):
         )
 
         # Check schedule date and deadline of manufacturing order
-        mo_date_start = out_date - timedelta(days=manufacturing_order.bom_id.produce_delay) - timedelta(days=company.manufacturing_lead)
+        mo_date_start = out_date - timedelta(days=manufacturing_order.bom_id.produce_delay) - timedelta(
+            days=company.manufacturing_lead)
         self.assertAlmostEqual(
             fields.Datetime.from_string(manufacturing_order.date_start), mo_date_start,
             delta=timedelta(seconds=1),
@@ -132,7 +134,7 @@ class TestSaleMrpLeadTime(TestStockCommon):
         self.env['procurement.group'].run_scheduler()
 
         # Check manufacturing order created or not
-        manufacturing_order = self.env['mrp.production'].search([('product_id', '=', self.product_1.id)]) 
+        manufacturing_order = self.env['mrp.production'].search([('product_id', '=', self.product_1.id)])
         self.assertTrue(manufacturing_order, 'Manufacturing order should be created.')
 
         # Check the picking crated or not
@@ -141,7 +143,8 @@ class TestSaleMrpLeadTime(TestStockCommon):
         # Check schedule date of ship type picking
         out = order.picking_ids.filtered(lambda r: r.picking_type_id == warehouse.out_type_id)
         out_min_date = fields.Datetime.from_string(out.scheduled_date)
-        out_date = fields.Datetime.from_string(order.date_order) + timedelta(days=self.product_1.sale_delay) - timedelta(days=out.move_ids[0].rule_id.delay)
+        out_date = fields.Datetime.from_string(order.date_order) + timedelta(
+            days=self.product_1.sale_delay) - timedelta(days=out.move_ids[0].rule_id.delay)
         self.assertAlmostEqual(
             out_min_date, out_date,
             delta=timedelta(seconds=10),
@@ -168,7 +171,9 @@ class TestSaleMrpLeadTime(TestStockCommon):
         )
 
         # Check schedule date and deadline date of manufacturing order
-        mo_date_start = out_date - timedelta(days=manufacturing_order.bom_id.produce_delay) - timedelta(days=warehouse.delivery_route_id.rule_ids[0].delay) - timedelta(days=self.env.ref('base.main_company').manufacturing_lead)
+        mo_date_start = out_date - timedelta(days=manufacturing_order.bom_id.produce_delay) - timedelta(
+            days=warehouse.delivery_route_id.rule_ids[0].delay) - timedelta(
+            days=self.env.ref('base.main_company').manufacturing_lead)
         self.assertAlmostEqual(
             fields.Datetime.from_string(manufacturing_order.date_start), mo_date_start,
             delta=timedelta(seconds=1),

@@ -193,8 +193,9 @@
                                     <field name="label">tax</field>
                                     <field name="engine">aggregation</field>
                                     <field name="formula">atc_mod_420_4_6.tax + atc_mod_420_7_9.tax
-                                    + atc_mod_420_10_12.tax + atc_mod_420_13_15.tax + atc_mod_420_16_18.tax
-                                    + atc_mod_420_isp.tax + atc_mod_420_modif.tax - atc_mod_420_reav.tax</field>
+                                        + atc_mod_420_10_12.tax + atc_mod_420_13_15.tax + atc_mod_420_16_18.tax
+                                        + atc_mod_420_isp.tax + atc_mod_420_modif.tax - atc_mod_420_reav.tax
+                                    </field>
                                 </record>
                             </field>
                         </record>
@@ -332,7 +333,8 @@
                             </field>
                         </record>
                         <record id="mod_420_casilla_comp_reg_def" model="account.report.line">
-                            <field name="name">[39] Regularization for applying the definitive prorata percentage</field>
+                            <field name="name">[39] Regularization for applying the definitive prorata percentage
+                            </field>
                             <field name="code">atc_mod_420_reg_def</field>
                             <field name="expression_ids">
                                 <record id="mod_420_casilla_39" model="account.report.expression">
@@ -351,8 +353,10 @@
                                     <field name="label">tax</field>
                                     <field name="engine">aggregation</field>
                                     <field name="formula">atc_mod_420_deduc.tax + atc_mod_420_deduc_imp.tax
-                                    + atc_mod_420_deduc_imp_inv.tax + atc_mod_420_deduc_modif.tax + atc_mod_420_agri_comp.tax
-                                    + atc_mod_420_reg_inv.tax + atc_mod_420_reg_start.tax + atc_mod_420_reg_def.tax</field>
+                                        + atc_mod_420_deduc_imp_inv.tax + atc_mod_420_deduc_modif.tax +
+                                        atc_mod_420_agri_comp.tax
+                                        + atc_mod_420_reg_inv.tax + atc_mod_420_reg_start.tax + atc_mod_420_reg_def.tax
+                                    </field>
                                 </record>
                             </field>
                         </record>
@@ -410,7 +414,9 @@
                                 <record id="mod_420_casilla_45" model="account.report.expression">
                                     <field name="label">tax</field>
                                     <field name="engine">aggregation</field>
-                                    <field name="formula">atc_mod_420_diff.tax + atc_mod_420_reg_art.tax - atc_mod_420_igic_comp.tax - atc_mod_420_to_deduct_compl.tax</field>
+                                    <field name="formula">atc_mod_420_diff.tax + atc_mod_420_reg_art.tax -
+                                        atc_mod_420_igic_comp.tax - atc_mod_420_to_deduct_compl.tax
+                                    </field>
                                 </record>
                             </field>
                         </record>

@@ -1,6 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo import models
 from odoo.addons.account.models.chart_template import template
+
+from odoo import models
 
 
 class AccountChartTemplate(models.AbstractModel):
@@ -20,7 +21,6 @@ class AccountChartTemplate(models.AbstractModel):
 
     @template('ca_2023', 'res.company')
     def _get_ca_res_company(self):
-
         default_sales_tax, default_purchase_tax = {
             'BC': ('gstpst_sale_tax_12_bc', 'gstpst_purchase_tax_12_bc'),
             'MB': ('gstpst_sale_tax_12_mb', 'gstpst_purchase_tax_12_mb'),

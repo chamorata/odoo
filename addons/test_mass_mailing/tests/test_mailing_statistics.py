@@ -2,12 +2,12 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from lxml import html
-
 from odoo.addons.mail.tests.common import mail_new_test_user
 from odoo.addons.test_mass_mailing.data.mail_test_data import MAIL_TEMPLATE
 from odoo.addons.test_mass_mailing.tests.common import TestMassMailCommon
-from odoo.tests.common import users
+
 from odoo.tests import tagged
+from odoo.tests.common import users
 from odoo.tools import mute_logger
 
 
@@ -27,11 +27,13 @@ class TestMailingStatistics(TestMassMailCommon):
         )
 
     @users('user_marketing')
-    @mute_logger('odoo.addons.mass_mailing.models.mailing', 'odoo.addons.mail.models.mail_mail', 'odoo.addons.mail.models.mail_thread')
+    @mute_logger('odoo.addons.mass_mailing.models.mailing', 'odoo.addons.mail.models.mail_mail',
+                 'odoo.addons.mail.models.mail_thread')
     def test_mailing_statistics(self):
         target_records = self._create_mailing_test_records(model='mailing.test.blacklist', count=13)
         target_records[10]['email_from'] = False  # void email should lead to a 'cancel' trace_status
-        target_records[11]['email_from'] = 'raoul@example¢¡.com'  # wrong email should lead to a 'exception' trace_status
+        target_records[11][
+            'email_from'] = 'raoul@example¢¡.com'  # wrong email should lead to a 'exception' trace_status
         mailing = self.env['mailing.mailing'].browse(self.mailing_bl.ids)
         mailing.write({'mailing_domain': [('id', 'in', target_records.ids)], 'user_id': self.user_marketing_2.id})
         mailing.action_put_in_queue()
@@ -83,12 +85,14 @@ class TestMailingStatistics(TestMassMailCommon):
             ['83.33', str(mailing.opened_ratio), str(mailing.replied_ratio)]  # first value is received_ratio
         )
         # test body content: clicks (a bit hackish but hey we are in stable)
-        kpi_click_values = body_html.xpath('//table//tr[contains(@style,"color: #888888")]/td[contains(@style,"width: 30%")]/text()')
+        kpi_click_values = body_html.xpath(
+            '//table//tr[contains(@style,"color: #888888")]/td[contains(@style,"width: 30%")]/text()')
         first_link_value = int(kpi_click_values[0].strip().split()[1].strip('()'))
         self.assertEqual(first_link_value, mailing.clicked)
 
     @users('user_marketing')
-    @mute_logger('odoo.addons.mass_mailing.models.mailing', 'odoo.addons.mail.models.mail_mail', 'odoo.addons.mail.models.mail_thread')
+    @mute_logger('odoo.addons.mass_mailing.models.mailing', 'odoo.addons.mail.models.mail_mail',
+                 'odoo.addons.mail.models.mail_thread')
     def test_mailing_statistics_wo_user(self):
         target_records = self._create_mailing_test_records(model='mailing.test.blacklist', count=10)
         mailing = self.env['mailing.mailing'].browse(self.mailing_bl.ids)

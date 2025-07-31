@@ -5,6 +5,7 @@
 # Copyright 2015 Camptocamp SA
 
 from odoo.addons.stock.tests.common import TestStockCommon
+
 from odoo.exceptions import UserError
 from odoo.tests import Form
 

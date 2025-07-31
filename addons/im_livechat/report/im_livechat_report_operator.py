@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, fields, models, tools
+from odoo import fields, models, tools
 
 
 class ImLivechatReportOperator(models.Model):
@@ -17,8 +17,10 @@ class ImLivechatReportOperator(models.Model):
     nbr_channel = fields.Integer('# of Sessions', readonly=True, aggregator="sum")
     channel_id = fields.Many2one('discuss.channel', 'Conversation', readonly=True)
     start_date = fields.Datetime('Start Date of session', readonly=True)
-    time_to_answer = fields.Float('Time to answer', digits=(16, 2), readonly=True, aggregator="avg", help="Average time to give the first answer to the visitor")
-    duration = fields.Float('Average duration', digits=(16, 2), readonly=True, aggregator="avg", help="Duration of the conversation (in seconds)")
+    time_to_answer = fields.Float('Time to answer', digits=(16, 2), readonly=True, aggregator="avg",
+                                  help="Average time to give the first answer to the visitor")
+    duration = fields.Float('Average duration', digits=(16, 2), readonly=True, aggregator="avg",
+                            help="Duration of the conversation (in seconds)")
     rating = fields.Float('Average rating', readonly=True, aggregator="avg", help="Average rating given by the visitor")
 
     def init(self):

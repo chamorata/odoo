@@ -169,7 +169,8 @@ class report_paperformat(models.Model):
 
     name = fields.Char('Name', required=True)
     default = fields.Boolean('Default paper format?')
-    format = fields.Selection([(ps['key'], ps['description']) for ps in PAPER_SIZES], 'Paper size', default='A4', help="Select Proper Paper size")
+    format = fields.Selection([(ps['key'], ps['description']) for ps in PAPER_SIZES], 'Paper size', default='A4',
+                              help="Select Proper Paper size")
     margin_top = fields.Float('Top Margin (mm)', default=40)
     margin_bottom = fields.Float('Bottom Margin (mm)', default=20)
     margin_left = fields.Float('Left Margin (mm)', default=7)
@@ -179,12 +180,13 @@ class report_paperformat(models.Model):
     orientation = fields.Selection([
         ('Landscape', 'Landscape'),
         ('Portrait', 'Portrait')
-        ], 'Orientation', default='Landscape')
+    ], 'Orientation', default='Landscape')
     header_line = fields.Boolean('Display a header line', default=False)
     header_spacing = fields.Integer('Header spacing', default=35)
     disable_shrinking = fields.Boolean('Disable smart shrinking')
     dpi = fields.Integer('Output DPI', required=True, default=90)
-    report_ids = fields.One2many('ir.actions.report', 'paperformat_id', 'Associated reports', help="Explicitly associated reports")
+    report_ids = fields.One2many('ir.actions.report', 'paperformat_id', 'Associated reports',
+                                 help="Explicitly associated reports")
     print_page_width = fields.Float('Print page width (mm)', compute='_compute_print_page_size')
     print_page_height = fields.Float('Print page height (mm)', compute='_compute_print_page_size')
     css_margins = fields.Boolean('Use css margins', default=False)

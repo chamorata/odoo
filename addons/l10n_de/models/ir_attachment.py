@@ -14,15 +14,15 @@ class IrAttachment(models.Model):
     @api.ondelete(at_uninstall=True)
     def _except_audit_trail(self):
         audit_trail_attachments = self.filtered(lambda attachment:
-            attachment.res_model == 'account.move'
-            and attachment.res_id
-            and attachment.raw
-            and attachment.company_id.check_account_audit_trail
-            and guess_mimetype(attachment.raw) in (
-                'application/pdf',
-                'application/xml',
-            )
-        )
+                                                attachment.res_model == 'account.move'
+                                                and attachment.res_id
+                                                and attachment.raw
+                                                and attachment.company_id.check_account_audit_trail
+                                                and guess_mimetype(attachment.raw) in (
+                                                    'application/pdf',
+                                                    'application/xml',
+                                                )
+                                                )
         id2move = self.env['account.move'].browse(set(audit_trail_attachments.mapped('res_id'))).exists().grouped('id')
         for attachment in audit_trail_attachments:
             move = id2move.get(attachment.res_id)
@@ -37,9 +37,9 @@ class IrAttachment(models.Model):
                 self._except_audit_trail()
             except UserError as e:
                 if (
-                    not hasattr(e, '_audit_trail')
-                    or vals.get('res_model') != 'documents.document'
-                    or vals.keys() & {'raw', 'datas', 'store_fname', 'db_datas'}
+                        not hasattr(e, '_audit_trail')
+                        or vals.get('res_model') != 'documents.document'
+                        or vals.keys() & {'raw', 'datas', 'store_fname', 'db_datas'}
                 ):
                     raise  # do not raise if trying to version the attachment through a document
                 vals.pop('res_model', None)
@@ -48,12 +48,13 @@ class IrAttachment(models.Model):
 
     def unlink(self):
         invoice_pdf_attachments = self.filtered(lambda attachment:
-            attachment.res_model == 'account.move'
-            and attachment.res_id
-            and attachment.res_field in ('invoice_pdf_report_file', 'ubl_cii_xml_file')
-            and attachment.company_id.check_account_audit_trail
-            and attachment.company_id.account_fiscal_country_id.code == 'DE'
-        )
+                                                attachment.res_model == 'account.move'
+                                                and attachment.res_id
+                                                and attachment.res_field in ('invoice_pdf_report_file',
+                                                                             'ubl_cii_xml_file')
+                                                and attachment.company_id.check_account_audit_trail
+                                                and attachment.company_id.account_fiscal_country_id.code == 'DE'
+                                                )
         if invoice_pdf_attachments:
             # only detach the document from the field, but keep it in the database for the audit trail
             # it shouldn't be an issue as there aren't any security group on the fields as it is the public report

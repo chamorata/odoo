@@ -9,7 +9,8 @@ class AccountPayment(models.Model):
         string="Indian Payment TDS Entries",
         related=False
     )
-    l10n_in_total_withholding_amount = fields.Monetary(compute='_compute_l10n_in_total_withholding_amount', related=False)
+    l10n_in_total_withholding_amount = fields.Monetary(compute='_compute_l10n_in_total_withholding_amount',
+                                                       related=False)
 
     def _compute_l10n_in_total_withholding_amount(self):
         for payment in self:

@@ -1,20 +1,22 @@
 import base64
 from contextlib import contextmanager
-from freezegun import freeze_time
 from unittest.mock import patch
 
-from odoo.tests import BaseCase, TransactionCase
-from odoo.addons.base.models.ir_actions_report import IrActionsReport
+from freezegun import freeze_time
 from odoo.addons.mail.tests.common import mail_new_test_user
 
+from odoo.addons.base.models.ir_actions_report import IrActionsReport
+from odoo.tests import BaseCase, TransactionCase
 
-VALID_JPEG = base64.b64decode('/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAAMCAgICAgMCAgIDAwMDBAYEBAQEBAgGBgUGCQgKCgkICQkKDA8MCgsOCwkJDRENDg8QEBEQCgwSExIQEw8QEBD/yQALCAABAAEBAREA/8wABgAQEAX/2gAIAQEAAD8A0s8g/9k=')
+VALID_JPEG = base64.b64decode(
+    '/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAAMCAgICAgMCAgIDAwMDBAYEBAQEBAgGBgUGCQgKCgkICQkKDA8MCgsOCwkJDRENDg8QEBEQCgwSExIQEw8QEBD/yQALCAABAAEBAREA/8wABgAQEAX/2gAIAQEAAD8A0s8g/9k=')
 
 
 def mock_image_render(func):
     def patched(self, *args, **kwargs):
         with self.mock_image_renderer(collect_params=False):
             return func(self, *args, **kwargs)
+
     return patched
 
 

@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import Command
 from odoo.addons.hr.tests.test_mail_activity_plan import ActivityScheduleHRCase
+
+from odoo import Command
 from odoo.exceptions import ValidationError
 from odoo.tests import tagged, users
 

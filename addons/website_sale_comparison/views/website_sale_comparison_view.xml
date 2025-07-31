@@ -20,7 +20,8 @@
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create a new attribute category
-            </p><p>
+            </p>
+            <p>
                 Group attributes by category that will appear in the specification
                 part of a product page.
             </p>
@@ -28,8 +29,8 @@
     </record>
 
     <menuitem action="product_attribute_category_action"
-        id="menu_attribute_category_action"
-        parent="website_sale.menu_catalog" groups="base.group_no_one" sequence="11"/>
+              id="menu_attribute_category_action"
+              parent="website_sale.menu_catalog" groups="base.group_no_one" sequence="11"/>
 
     <record id="product_attribute_tree_view_inherit" model="ir.ui.view">
         <field name="name">product.attribute.list.inherit</field>
@@ -37,7 +38,7 @@
         <field name="inherit_id" ref="product.attribute_tree_view"/>
         <field name="arch" type="xml">
             <field name="name" position="after">
-               <field name="category_id"/>
+                <field name="category_id"/>
             </field>
         </field>
     </record>

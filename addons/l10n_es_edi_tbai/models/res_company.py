@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import markupsafe
 import re
+
+import markupsafe
 
 from odoo import api, fields, models, release
 from odoo.tools import LazyTranslate
@@ -40,6 +41,7 @@ L10N_ES_TBAI_LICENSE_DICT = {
         'software_version': release.version,
     },
 }
+
 
 class ResCompany(models.Model):
     _inherit = 'res.company'

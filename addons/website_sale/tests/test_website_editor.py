@@ -3,9 +3,10 @@
 
 import logging
 
-from odoo import Command
-from odoo.addons.website_sale.controllers.main import WebsiteSale
 from odoo.addons.website.tools import MockRequest
+from odoo.addons.website_sale.controllers.main import WebsiteSale
+
+from odoo import Command
 from odoo.exceptions import ValidationError
 from odoo.tests import HttpCase, tagged
 
@@ -93,12 +94,12 @@ class TestProductPictureController(HttpCase):
         })
         product_attribute_values = self.env['product.attribute.value'].create([
             {
-                "name" : "Test Dynamic 1",
+                "name": "Test Dynamic 1",
                 "attribute_id": product_attribute.id,
                 "sequence": 1,
             },
             {
-                "name" : "Test Dynamic 2",
+                "name": "Test Dynamic 2",
                 "attribute_id": product_attribute.id,
                 "sequence": 2,
             }
@@ -258,7 +259,8 @@ class TestWebsiteSaleEditor(HttpCase):
             'name': 'Test Product Outside Category',
             'website_published': True,
         })
-        self.start_tour(self.env['website'].get_client_action_url('/shop'), 'category_page_and_products_snippet_edition', login='restricted')
+        self.start_tour(self.env['website'].get_client_action_url('/shop'),
+                        'category_page_and_products_snippet_edition', login='restricted')
         self.start_tour('/shop', 'category_page_and_products_snippet_use', login=None)
 
     def test_website_sale_restricted_editor_ui(self):
@@ -267,4 +269,5 @@ class TestWebsiteSaleEditor(HttpCase):
             'website_sequence': 0,
             'website_published': True,
         })
-        self.start_tour(self.env['website'].get_client_action_url('/shop'), 'website_sale_restricted_editor_ui', login='restricted')
+        self.start_tour(self.env['website'].get_client_action_url('/shop'), 'website_sale_restricted_editor_ui',
+                        login='restricted')

@@ -3,6 +3,7 @@
 
 from odoo import models
 
+
 class ResUsers(models.Model):
     _inherit = 'res.users'
 
@@ -26,7 +27,8 @@ class ResUsers(models.Model):
         job_interviewers = self.env['hr.job']._read_group([('interviewer_ids', 'in', self.ids)], ['interviewer_ids'])
         user_ids = {interviewer.id for [interviewer] in job_interviewers}
 
-        application_interviewers = self.env['hr.applicant']._read_group([('interviewer_ids', 'in', self.ids)], ['interviewer_ids'])
+        application_interviewers = self.env['hr.applicant']._read_group([('interviewer_ids', 'in', self.ids)],
+                                                                        ['interviewer_ids'])
         user_ids |= {interviewer.id for [interviewer] in application_interviewers}
 
         # Remove users that are no longer interviewers on at least a job or an application

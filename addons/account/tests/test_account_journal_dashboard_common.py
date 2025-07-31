@@ -89,7 +89,8 @@ class TestAccountJournalDashboardCommon(AccountTestInvoicingCommon):
         # This bill has two residual amls. One of 10$ and one of 30$. Both of them are late and due 45 and 15 days prior.
         # number_waiting += 1, sum_waiting += -40$, number_late += 1, sum_late += -40$
 
-    def assertDashboardPurchaseSaleData(self, journal, number_draft, sum_draft, number_waiting, sum_waiting, number_late, sum_late, currency, **kwargs):
+    def assertDashboardPurchaseSaleData(self, journal, number_draft, sum_draft, number_waiting, sum_waiting,
+                                        number_late, sum_late, currency, **kwargs):
         expected_values = {
             'number_draft': number_draft,
             'sum_draft': format_amount(self.env, sum_draft, currency),

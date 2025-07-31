@@ -3,9 +3,9 @@
 
 from unittest.mock import patch
 
+from odoo import Command
 from odoo.addons.base.tests.common import SavepointCaseWithUserDemo
 from odoo.tests import TransactionCase, Form
-from odoo import Command
 from odoo.tools.misc import submap
 
 
@@ -204,7 +204,8 @@ class TestOnchange(SavepointCaseWithUserDemo):
         # ensure onchange changing one2many without subfield works
         one_level_fields_spec = {field_name: {} for field_name in fields_spec}
         values = dict(values, name='{generate_dummy_message}')
-        result = self.Discussion.with_context(generate_dummy_message=True).onchange(values, ['name'], one_level_fields_spec)
+        result = self.Discussion.with_context(generate_dummy_message=True).onchange(values, ['name'],
+                                                                                    one_level_fields_spec)
         self.assertEqual(result['value']['messages'], [
             Command.create({}),
         ])
@@ -285,7 +286,7 @@ class TestOnchange(SavepointCaseWithUserDemo):
         partner2 = self.env['res.partner'].create({'name': 'A second partner'})
         values = {
             'name': partner1.name,
-            'partner': partner2.id,             # this one just changed
+            'partner': partner2.id,  # this one just changed
             'lines': [
                 (Command.CREATE, 'virtual2', {'name': False, 'partner': False, 'tags': [Command.clear()]}),
             ],
@@ -310,7 +311,7 @@ class TestOnchange(SavepointCaseWithUserDemo):
         # do it again, but this time with a new tag on the second line
         values = {
             'name': partner1.name,
-            'partner': partner2.id,             # this one just changed
+            'partner': partner2.id,  # this one just changed
             'lines': [
                 (Command.CREATE, 'virtual2', {
                     'name': False,
@@ -821,7 +822,7 @@ class TestOnchange(SavepointCaseWithUserDemo):
         #   -> recompute 'name'
         #       -> set 'name' on all lines
         values = {
-            'partner': partner.id,             # this one just changed
+            'partner': partner.id,  # this one just changed
         }
         self.env.invalidate_all()
 
@@ -980,9 +981,9 @@ class TestComputeOnchange2(TransactionCase):
 
         # copy the record, and check results
         copied = record.copy()
-        self.assertEqual(copied.foo, "foo1 (copy)")   # copied and modified
+        self.assertEqual(copied.foo, "foo1 (copy)")  # copied and modified
         self.assertEqual(copied.bar, "foo1 (copy)r")  # computed
-        self.assertEqual(copied.baz, "baz1")          # copied
+        self.assertEqual(copied.baz, "baz1")  # copied
         self.assertEqual(record.line_ids.mapped('foo'), ['foo1', 'bar'])  # copied
         self.assertEqual(record.tag_ids, tag_foo + tag_bar)  # copied
 

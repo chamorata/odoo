@@ -19,9 +19,9 @@ from datetime import datetime
 import babel
 import pytz
 import requests
+from PIL import Image as I
 from lxml import etree, html
 from markupsafe import Markup, escape_silent
-from PIL import Image as I
 from werkzeug import urls
 
 from odoo import _, api, models, fields
@@ -61,7 +61,8 @@ class IrQWeb(models.AbstractModel):
                 if len(el_children) == 1:
                     sub_call = el_children[0].get('t-call')
                     if sub_call:
-                        el_children[0].set('t-options', f"{{'snippet-key': '{snippet_key}', 'snippet-sub-call-key': '{sub_call}'}}")
+                        el_children[0].set('t-options',
+                                           f"{{'snippet-key': '{snippet_key}', 'snippet-sub-call-key': '{sub_call}'}}")
         # If it already has a data-snippet it is a saved or an
         # inherited snippet. Do not override it.
         if 'data-snippet' not in snippet_base_node.attrib:
@@ -94,16 +95,17 @@ class IrQWeb(models.AbstractModel):
         forbid_sanitize = el.attrib.pop('t-forbid-sanitize', None)
         snippet_group = el.attrib.pop('snippet-group', None)
         group = el.attrib.pop('group', None)
-        div = Markup('<div name="%s" data-oe-type="snippet" data-o-image-preview="%s" data-oe-thumbnail="%s" data-oe-snippet-id="%s" data-oe-keywords="%s" %s %s %s>') % (
-            name,
-            escape_silent(image_preview),
-            thumbnail,
-            view.id,
-            escape_silent(el.findtext('keywords')),
-            Markup('data-oe-forbid-sanitize="%s"') % forbid_sanitize if forbid_sanitize else '',
-            Markup('data-o-snippet-group="%s"') % snippet_group if snippet_group else '',
-            Markup('data-o-group="%s"') % group if group else '',
-        )
+        div = Markup(
+            '<div name="%s" data-oe-type="snippet" data-o-image-preview="%s" data-oe-thumbnail="%s" data-oe-snippet-id="%s" data-oe-keywords="%s" %s %s %s>') % (
+                  name,
+                  escape_silent(image_preview),
+                  thumbnail,
+                  view.id,
+                  escape_silent(el.findtext('keywords')),
+                  Markup('data-oe-forbid-sanitize="%s"') % forbid_sanitize if forbid_sanitize else '',
+                  Markup('data-o-snippet-group="%s"') % snippet_group if snippet_group else '',
+                  Markup('data-o-group="%s"') % group if group else '',
+              )
         self._append_text(div, compile_context)
         code = self._compile_node(el, compile_context, indent)
         self._append_text('</div>', compile_context)
@@ -126,14 +128,15 @@ class IrQWeb(models.AbstractModel):
             if not module or module.state == 'installed':
                 return []
             name = el.attrib.get('string') or 'Snippet'
-            div = Markup('<div name="%s" data-oe-type="snippet" data-module-id="%s" data-module-display-name="%s" data-o-image-preview="%s" data-oe-thumbnail="%s" %s><section/></div>') % (
-                name,
-                module.id,
-                module.display_name,
-                escape_silent(image_preview),
-                thumbnail,
-                Markup('data-o-group="%s"') % group if group else '',
-            )
+            div = Markup(
+                '<div name="%s" data-oe-type="snippet" data-module-id="%s" data-module-display-name="%s" data-o-image-preview="%s" data-oe-thumbnail="%s" %s><section/></div>') % (
+                      name,
+                      module.id,
+                      module.display_name,
+                      escape_silent(image_preview),
+                      thumbnail,
+                      Markup('data-o-group="%s"') % group if group else '',
+                  )
             self._append_text(div, compile_context)
         return []
 
@@ -158,9 +161,9 @@ class IrQWeb(models.AbstractModel):
         return super()._get_template_cache_keys() + ['snippet_lang']
 
 
-#------------------------------------------------------
+# ------------------------------------------------------
 # QWeb fields
-#------------------------------------------------------
+# ------------------------------------------------------
 
 
 class Field(models.AbstractModel):
@@ -219,7 +222,7 @@ class Float(models.AbstractModel):
         lang = self.user_lang()
         value = element.text_content().strip()
         return float(value.replace(lang.thousands_sep or '', '')
-                          .replace(lang.decimal_point, '.'))
+                     .replace(lang.decimal_point, '.'))
 
 
 class ManyToOne(models.AbstractModel):
@@ -362,7 +365,8 @@ class DateTime(models.AbstractModel):
             datetime_format = f'{lg.date_format} {lg.time_format}'
             dt = datetime.strptime(value, datetime_format)
         except ValueError:
-            raise ValidationError(_("The datetime %(value)s does not match the format %(format)s", value=value, format=datetime_format))
+            raise ValidationError(
+                _("The datetime %(value)s does not match the format %(format)s", value=value, format=datetime_format))
 
         # convert back from user's timezone to UTC
         tz_name = element.attrib.get('data-oe-original-tz') or self.env.context.get('tz') or self.env.user.tz
@@ -407,7 +411,7 @@ class Selection(models.AbstractModel):
                 return k
 
         raise ValueError(u"No value found for label %s in selection %s" % (
-                         value, selection))
+            value, selection))
 
 
 class HTML(models.AbstractModel):
@@ -439,7 +443,8 @@ class HTML(models.AbstractModel):
                             attrs['data-oe-sanitize-prevent-edition'] = 1
                             return attrs
                 # The field edition is not fully prevented and the sanitation cannot be bypassed
-                attrs['data-oe-sanitize'] = 'no_block' if field.sanitize_attributes else 1 if field.sanitize_form else 'allow_form'
+                attrs[
+                    'data-oe-sanitize'] = 'no_block' if field.sanitize_attributes else 1 if field.sanitize_form else 'allow_form'
 
         return attrs
 
@@ -552,7 +557,7 @@ class Monetary(models.AbstractModel):
         value = element.find('span').text_content().strip()
 
         return float(value.replace(lang.thousands_sep or '', '')
-                          .replace(lang.decimal_point, '.'))
+                     .replace(lang.decimal_point, '.'))
 
 
 class Duration(models.AbstractModel):
@@ -631,12 +636,13 @@ def html_to_text(element):
         '\n',
         ''.join(_realize_padding(output)).strip())
 
+
 _PADDED_BLOCK = set('p h1 h2 h3 h4 h5 h6'.split())
 # https://developer.mozilla.org/en-US/docs/HTML/Block-level_elements minus p
 _MISC_BLOCK = set((
-    'address article aside audio blockquote canvas dd dl div figcaption figure'
-    ' footer form header hgroup hr ol output pre section tfoot ul video'
-).split())
+                      'address article aside audio blockquote canvas dd dl div figcaption figure'
+                      ' footer form header hgroup hr ol output pre section tfoot ul video'
+                  ).split())
 
 
 def _collapse_whitespace(text):

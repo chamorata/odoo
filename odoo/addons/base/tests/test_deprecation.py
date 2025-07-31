@@ -34,4 +34,5 @@ class TestModelDeprecations(TransactionCase):
                 if not hasattr(Model, 'name_get'):
                     continue
                 module = inspect.getmodule(Model.name_get)
-                self.fail(f"Deprecated name_get method found on {model_name} in {module.__name__}, you should override `_compute_display_name` instead")
+                self.fail(
+                    f"Deprecated name_get method found on {model_name} in {module.__name__}, you should override `_compute_display_name` instead")

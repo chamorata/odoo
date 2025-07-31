@@ -13,7 +13,7 @@
 
     <t t-name="web.OverlayContainer.Item">
         <div t-ref="rootRef" class="o-overlay-item">
-            <t t-component="props.component" t-props="props.props" />
+            <t t-component="props.component" t-props="props.props"/>
         </div>
     </t>
 

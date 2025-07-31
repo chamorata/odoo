@@ -1,6 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import date
+
 from odoo import api, models, _
 from odoo.exceptions import ValidationError
 
@@ -50,11 +51,12 @@ class HrContract(models.Model):
                         ('state', '!=', 'cancel'),
                         ('resource_calendar_id', '!=', False),
                         '|', '|', ('id', 'in', self.ids),
-                                  ('state', '!=', 'draft'),
-                             ('kanban_state', '=', 'done'),
+                        ('state', '!=', 'draft'),
+                        ('kanban_state', '=', 'done'),
                     ]).sorted(key=lambda c: {'open': 1, 'close': 2, 'draft': 3, 'cancel': 4}[c.state])
                     if len(overlapping_contracts.resource_calendar_id) <= 1:
-                        if overlapping_contracts and leave.resource_calendar_id != overlapping_contracts[0].resource_calendar_id:
+                        if overlapping_contracts and leave.resource_calendar_id != overlapping_contracts[
+                            0].resource_calendar_id:
                             leave.resource_calendar_id = overlapping_contracts[0].resource_calendar_id
                         continue
                     if leave.id not in leaves_state:

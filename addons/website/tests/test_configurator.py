@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 import odoo.tests
 
+
 class TestConfiguratorCommon(odoo.tests.HttpCase):
 
     def _theme_upgrade_upstream(self):
@@ -44,8 +45,10 @@ class TestConfiguratorCommon(odoo.tests.HttpCase):
         iap_patch = patch('odoo.addons.iap.tools.iap_tools.iap_jsonrpc', iap_jsonrpc_mocked_configurator)
         self.startPatcher(iap_patch)
 
-        patcher = patch('odoo.addons.website.models.ir_module_module.IrModuleModule._theme_upgrade_upstream', wraps=self._theme_upgrade_upstream)
+        patcher = patch('odoo.addons.website.models.ir_module_module.IrModuleModule._theme_upgrade_upstream',
+                        wraps=self._theme_upgrade_upstream)
         self.startPatcher(patcher)
+
 
 @odoo.tests.common.tagged('post_install', '-at_install')
 class TestConfiguratorTranslation(TestConfiguratorCommon):
@@ -70,4 +73,5 @@ class TestConfiguratorTranslation(TestConfiguratorCommon):
         # disable configurator todo to ensure this test goes through
         active_todo = self.env['ir.actions.todo'].search([('state', '=', 'open')], limit=1)
         active_todo.update({'state': 'done'})
-        self.start_tour('/website/force/%s?path=%%2Fwebsite%%2Fconfigurator' % website_fr.id, 'configurator_translation', login='admin')
+        self.start_tour('/website/force/%s?path=%%2Fwebsite%%2Fconfigurator' % website_fr.id,
+                        'configurator_translation', login='admin')

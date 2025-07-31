@@ -1,6 +1,6 @@
 from odoo import api, fields, _
-from odoo.exceptions import UserError, AccessDenied
 from odoo.addons.base.models.res_users import CheckIdentity
+from odoo.exceptions import UserError, AccessDenied
 
 
 class CheckIdentityPasskeys(CheckIdentity):
@@ -24,7 +24,8 @@ class CheckIdentityPasskeys(CheckIdentity):
                 }
                 self.create_uid._check_credentials(credential, {'interactive': True})
             except AccessDenied:
-                raise UserError(_("Incorrect Passkey. Please provide a valid passkey or use a different authentication method."))
+                raise UserError(
+                    _("Incorrect Passkey. Please provide a valid passkey or use a different authentication method."))
         else:
             super()._check_identity()
 

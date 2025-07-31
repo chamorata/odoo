@@ -17,7 +17,7 @@
                             <field name="parent_id" class="o_text_overflow"/>
                         </group>
                         <group name="sequence">
-                            <field name="color" widget="color_picker" />
+                            <field name="color" widget="color_picker"/>
                         </group>
                     </group>
                 </sheet>
@@ -45,7 +45,8 @@
                 <templates>
                     <t t-name="card" class="row g-0">
                         <aside class="col-4">
-                            <field name="image_128" widget="image" alt="Category" options="{'size': [100, 100], 'img_class': 'h-100'}"/>
+                            <field name="image_128" widget="image" alt="Category"
+                                   options="{'size': [100, 100], 'img_class': 'h-100'}"/>
                         </aside>
                         <main class="col ms-4">
                             <field name="name" class="fw-bolder fs-5"/>
@@ -64,7 +65,8 @@
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Define a new category
-            </p><p>
+            </p>
+            <p>
                 Categories are used to browse your products through the
                 touchscreen interface.
             </p>

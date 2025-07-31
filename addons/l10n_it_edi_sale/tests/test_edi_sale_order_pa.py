@@ -1,9 +1,9 @@
 import datetime
 
 from freezegun import freeze_time
+from odoo.addons.l10n_it_edi.tests.common import TestItEdi
 
 from odoo import Command
-from odoo.addons.l10n_it_edi.tests.common import TestItEdi
 from odoo.tests.common import tagged
 
 
@@ -98,4 +98,3 @@ class TestItEdiSaleOrderPa(TestItEdi):
             'l10n_it_origin_document_type': None,
             'l10n_it_origin_document_date': None,
         }])
-

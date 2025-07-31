@@ -19,5 +19,6 @@ def init_settings(env):
         config_wizard.execute()
         config_wizard.unlink()
 
+
 def post_init(env):
     init_settings(env)

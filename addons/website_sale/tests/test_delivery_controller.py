@@ -2,15 +2,14 @@
 
 from unittest.mock import patch
 
-from odoo.fields import Command
-from odoo.exceptions import UserError
-from odoo.tests import tagged
-
 from odoo.addons.payment.tests.common import PaymentCommon
 from odoo.addons.sale.tests.common import SaleCommon
 from odoo.addons.website.tools import MockRequest
 from odoo.addons.website_sale.controllers.delivery import Delivery
 
+from odoo.exceptions import UserError
+from odoo.fields import Command
+from odoo.tests import tagged
 
 
 @tagged('post_install', '-at_install')
@@ -26,8 +25,8 @@ class TestWebsiteSaleDeliveryController(PaymentCommon, SaleCommon):
             order = self.website.sale_get_order(force_create=True)
             order.transaction_ids = self._create_transaction(flow='redirect', state='pending')
             with self.assertRaises(UserError), patch(
-                'odoo.addons.website_sale.models.website.Website.sale_get_order',
-                return_value=order,
+                    'odoo.addons.website_sale.models.website.Website.sale_get_order',
+                    return_value=order,
             ):  # Patch to retrieve the order even if it is linked to a pending transaction.
                 self.Controller.shop_set_delivery_method(dm_id='1')
 

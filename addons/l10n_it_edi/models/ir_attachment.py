@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from odoo import api, models
-from odoo.addons.l10n_it_edi.tools.remove_signature import remove_signature
-
-from lxml import etree
 import logging
 import re
+
+from lxml import etree
+from odoo.addons.l10n_it_edi.tools.remove_signature import remove_signature
+
+from odoo import api, models
 
 _logger = logging.getLogger(__name__)
 
@@ -19,6 +20,7 @@ class IrAttachment(models.Model):
         """ Decodes a  into a list of one dictionary representing an attachment.
             :returns:           A list with a dictionary.
         """
+
         def parse_xml(parser, name, content):
             try:
                 return etree.fromstring(content, parser)
@@ -43,11 +45,11 @@ class IrAttachment(models.Model):
 
     def _is_l10n_it_edi_import_file(self):
         is_xml = (
-            self.name.endswith('.xml')
-            or self.mimetype.endswith('/xml')
-            or 'text/plain' in self.mimetype
-            and self.raw
-            and self.raw.startswith(b'<?xml'))
+                self.name.endswith('.xml')
+                or self.mimetype.endswith('/xml')
+                or 'text/plain' in self.mimetype
+                and self.raw
+                and self.raw.startswith(b'<?xml'))
         is_p7m = self.mimetype == 'application/pkcs7-mime'
         return (is_xml or is_p7m) and re.search(FATTURAPA_FILENAME_RE, self.name)
 

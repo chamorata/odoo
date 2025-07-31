@@ -5,7 +5,7 @@
         <field name="name">Sessions</field>
         <field name="res_model">pos.session</field>
         <field name="view_mode">list,form</field>
-        <field name="search_view_id" ref="view_pos_session_search" />
+        <field name="search_view_id" ref="view_pos_session_search"/>
         <field name="context">{
             'search_default_config_id': [active_id],
             'default_config_id': active_id}
@@ -43,7 +43,8 @@
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 No data yet!
-            </p><p>
+            </p>
+            <p>
                 Create a new POS order
             </p>
         </field>
@@ -78,7 +79,9 @@
                                         <a name="%(action_pos_session_filtered)d" type="action">Sessions</a>
                                     </div>
                                     <div role="menuitem" invisible="customer_display_type != 'remote'">
-                                        <a t-attf-href="/pos_customer_display/#{record.id.value}/#{record.access_token.value}" target="_blank" style="white-space: nowrap;">Customer Display</a>
+                                        <a t-attf-href="/pos_customer_display/#{record.id.value}/#{record.access_token.value}"
+                                           target="_blank" style="white-space: nowrap;">Customer Display
+                                        </a>
                                     </div>
                                 </div>
                                 <div class="col-6">
@@ -91,7 +94,8 @@
                                 </div>
                             </div>
 
-                            <div t-if="widget.editable" class="o_kanban_card_manage_settings row" groups="point_of_sale.group_pos_manager">
+                            <div t-if="widget.editable" class="o_kanban_card_manage_settings row"
+                                 groups="point_of_sale.group_pos_manager">
                                 <div role="menuitem" class="col-12">
                                     <a name="action_pos_config_modal_edit" type="object">Edit</a>
                                 </div>
@@ -101,21 +105,32 @@
                     <t t-name="card">
                         <div name="card_title" class="mb-4 ms-2">
                             <field name="name" class="fw-bold fs-4 d-block"/>
-                            <div t-if="!record.current_session_id.raw_value &amp;&amp; record.pos_session_username.value" class="badge text-bg-info d-inline-block">Opened by <field name="pos_session_username"/></div>
-                            <div t-if="record.pos_session_state.raw_value == 'opening_control'" class="badge text-bg-info d-inline-block">Opening Control</div>
-                            <div t-if="record.pos_session_state.raw_value == 'closing_control'" class="badge text-bg-info d-inline-block">Closing Control</div>
-                            <div t-if="record.pos_session_state.raw_value == 'opened' and record.pos_session_duration.raw_value > 1" t-attf-class="badge bg-#{record.pos_session_duration.raw_value > 3 and 'danger' or 'warning'} d-inline-block"
-                                    title="The session has been opened for an unusually long period. Please consider closing.">
-                                    To Close
+                            <div t-if="!record.current_session_id.raw_value &amp;&amp; record.pos_session_username.value"
+                                 class="badge text-bg-info d-inline-block">Opened by
+                                <field name="pos_session_username"/>
+                            </div>
+                            <div t-if="record.pos_session_state.raw_value == 'opening_control'"
+                                 class="badge text-bg-info d-inline-block">Opening Control
+                            </div>
+                            <div t-if="record.pos_session_state.raw_value == 'closing_control'"
+                                 class="badge text-bg-info d-inline-block">Closing Control
+                            </div>
+                            <div t-if="record.pos_session_state.raw_value == 'opened' and record.pos_session_duration.raw_value > 1"
+                                 t-attf-class="badge bg-#{record.pos_session_duration.raw_value > 3 and 'danger' or 'warning'} d-inline-block"
+                                 title="The session has been opened for an unusually long period. Please consider closing.">
+                                To Close
                             </div>
                         </div>
                         <div class="row g-0 pb-4 ms-2 mt-auto">
                             <div name="card_left" class="col-6">
-                                <button t-if="record.current_session_state.raw_value != 'closing_control'" class="btn btn-primary" name="open_ui" type="object">
+                                <button t-if="record.current_session_state.raw_value != 'closing_control'"
+                                        class="btn btn-primary" name="open_ui" type="object">
                                     <t t-if="record.current_session_state.raw_value === 'opened'">Continue Selling</t>
                                     <t t-else="">Open Register</t>
                                 </button>
-                                <button t-else="" class="btn btn-secondary" name="open_existing_session_cb" type="object">Close</button>
+                                <button t-else="" class="btn btn-secondary" name="open_existing_session_cb"
+                                        type="object">Close
+                                </button>
                             </div>
                             <div class="col-6">
                                 <div t-if="record.last_session_closing_date.value" class="row">
@@ -125,15 +140,18 @@
                                     <field name="last_session_closing_date" class="col-6"/>
                                 </div>
 
-                                <div t-if="record.last_session_closing_date.value" invisible="not cash_control" class="row">
+                                <div t-if="record.last_session_closing_date.value" invisible="not cash_control"
+                                     class="row">
                                     <div class="col-6">
                                         <span>Balance</span>
                                     </div>
                                     <field name="last_session_closing_cash" widget="monetary" class="col-6"/>
                                 </div>
 
-                                <a t-if="record.number_of_rescue_session.value &gt; 0" class="col-12" name="open_opened_rescue_session_form" type="object">
-                                    <field name="number_of_rescue_session" /> outstanding rescue session
+                                <a t-if="record.number_of_rescue_session.value &gt; 0" class="col-12"
+                                   name="open_opened_rescue_session_form" type="object">
+                                    <field name="number_of_rescue_session"/>
+                                    outstanding rescue session
                                 </a>
                             </div>
                         </div>

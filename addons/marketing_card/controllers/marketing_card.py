@@ -1,5 +1,6 @@
 import base64
 from urllib.parse import quote
+
 from werkzeug.exceptions import BadRequest
 
 from odoo.http import Controller, content_disposition, request, route

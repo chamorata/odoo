@@ -25,7 +25,7 @@ class EventLeadRequest(models.Model):
 
     event_id = fields.Many2one('event.event', required=True, string="Event", ondelete="cascade")
     processed_registration_id = fields.Integer("Processed Registration",
-        help="The ID of the last processed event.registration, used to know where to resume.")
+                                               help="The ID of the last processed event.registration, used to know where to resume.")
 
     _sql_constraints = [
         ('uniq_event', 'unique(event_id)', 'You can only have one generation request per event at a time.'),

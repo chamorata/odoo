@@ -2,14 +2,14 @@
 
 import binascii
 
+from odoo.addons.payment import utils as payment_utils
+from odoo.addons.payment.controllers import portal as payment_portal
+from odoo.addons.portal.controllers.portal import pager as portal_pager
+
 from odoo import fields, http, _
 from odoo.exceptions import AccessError, MissingError, ValidationError
 from odoo.fields import Command
 from odoo.http import request
-
-from odoo.addons.payment import utils as payment_utils
-from odoo.addons.payment.controllers import portal as payment_portal
-from odoo.addons.portal.controllers.portal import pager as portal_pager
 
 
 class CustomerPortal(payment_portal.PaymentPortal):
@@ -46,7 +46,7 @@ class CustomerPortal(payment_portal.PaymentPortal):
         }
 
     def _prepare_sale_portal_rendering_values(
-        self, page=1, date_begin=None, date_end=None, sortby=None, quotation_page=False, **kwargs
+            self, page=1, date_begin=None, date_end=None, sortby=None, quotation_page=False, **kwargs
     ):
         SaleOrder = request.env['sale.order']
 
@@ -115,14 +115,14 @@ class CustomerPortal(payment_portal.PaymentPortal):
 
     @http.route(['/my/orders/<int:order_id>'], type='http', auth="public", website=True)
     def portal_order_page(
-        self,
-        order_id,
-        report_type=None,
-        access_token=None,
-        message=False,
-        download=False,
-        downpayment=None,
-        **kw
+            self,
+            order_id,
+            report_type=None,
+            access_token=None,
+            message=False,
+            download=False,
+            downpayment=None,
+            **kw
     ):
         try:
             order_sudo = self._document_check_access('sale.order', order_id, access_token=access_token)
@@ -289,7 +289,8 @@ class CustomerPortal(payment_portal.PaymentPortal):
         if not order_sudo._has_to_be_paid():
             order_sudo._validate_order()
 
-        pdf = request.env['ir.actions.report'].sudo()._render_qweb_pdf('sale.action_report_saleorder', [order_sudo.id])[0]
+        pdf = request.env['ir.actions.report'].sudo()._render_qweb_pdf('sale.action_report_saleorder', [order_sudo.id])[
+            0]
 
         order_sudo.message_post(
             attachments=[('%s.pdf' % order_sudo.name, pdf)],
@@ -422,7 +423,7 @@ class PaymentPortal(payment_portal.PaymentPortal):
             # Check the access token against the order values. Done after fetching the order as we
             # need the order fields to check the access token.
             if not payment_utils.check_access_token(
-                access_token, order_sudo.partner_invoice_id.id, amount, order_sudo.currency_id.id
+                    access_token, order_sudo.partner_invoice_id.id, amount, order_sudo.currency_id.id
             ):
                 raise ValidationError(_("The provided parameters are invalid."))
 
@@ -457,10 +458,10 @@ class PaymentPortal(payment_portal.PaymentPortal):
                 order_sudo = self._document_check_access('sale.order', sale_order_id, access_token)
             except AccessError:  # It is a payment access token computed on the payment context.
                 if not payment_utils.check_access_token(
-                    access_token,
-                    kwargs.get('partner_id'),
-                    kwargs.get('amount'),
-                    kwargs.get('currency_id'),
+                        access_token,
+                        kwargs.get('partner_id'),
+                        kwargs.get('amount'),
+                        kwargs.get('currency_id'),
                 ):
                     raise
                 order_sudo = request.env['sale.order'].sudo().browse(sale_order_id)

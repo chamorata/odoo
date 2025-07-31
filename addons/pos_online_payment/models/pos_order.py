@@ -8,7 +8,8 @@ class PosOrder(models.Model):
     _inherit = 'pos.order'
 
     online_payment_method_id = fields.Many2one('pos.payment.method', compute="_compute_online_payment_method_id")
-    next_online_payment_amount = fields.Float(string='Next online payment amount to pay', digits=0, required=False) # unlimited precision
+    next_online_payment_amount = fields.Float(string='Next online payment amount to pay', digits=0,
+                                              required=False)  # unlimited precision
 
     @api.depends('config_id.payment_method_ids')
     def _compute_online_payment_method_id(self):
@@ -21,7 +22,8 @@ class PosOrder(models.Model):
 
     def _clean_payment_lines(self):
         self.ensure_one()
-        order_payments = self.env['pos.payment'].search(['&', ('pos_order_id', '=', self.id), ('online_account_payment_id', '=', False)])
+        order_payments = self.env['pos.payment'].search(
+            ['&', ('pos_order_id', '=', self.id), ('online_account_payment_id', '=', False)])
         order_payments.unlink()
 
     def get_and_set_online_payments_data(self, next_online_payment_amount=False):
@@ -43,15 +45,19 @@ class PosOrder(models.Model):
                 'paid_order': self.read([], load=False)
             }
 
-        online_payments = self.sudo().env['pos.payment'].search_read(domain=['&', ('pos_order_id', '=', self.id), ('online_account_payment_id', '!=', False)], fields=['payment_method_id', 'amount'], load=False)
+        online_payments = self.sudo().env['pos.payment'].search_read(
+            domain=['&', ('pos_order_id', '=', self.id), ('online_account_payment_id', '!=', False)],
+            fields=['payment_method_id', 'amount'], load=False)
         return_data = {
             'id': self.id,
             'online_payments': online_payments,
             'amount_unpaid': self.get_amount_unpaid(),
         }
         if not isinstance(next_online_payment_amount, bool):
-            if tools.float_is_zero(next_online_payment_amount, precision_rounding=self.currency_id.rounding) and len(online_payments) == 0 and self.state == 'draft' and not self.config_id.module_pos_restaurant and len(self.config_id.trusted_config_ids) == 0:
-                self.sudo()._clean_payment_lines() # Needed to delete the order
+            if tools.float_is_zero(next_online_payment_amount, precision_rounding=self.currency_id.rounding) and len(
+                    online_payments) == 0 and self.state == 'draft' and not self.config_id.module_pos_restaurant and len(
+                    self.config_id.trusted_config_ids) == 0:
+                self.sudo()._clean_payment_lines()  # Needed to delete the order
                 return_data['deleted'] = True
             elif self._check_next_online_payment_amount(next_online_payment_amount):
                 self.next_online_payment_amount = next_online_payment_amount
@@ -60,7 +66,10 @@ class PosOrder(models.Model):
 
     def _check_next_online_payment_amount(self, amount):
         self.ensure_one()
-        return tools.float_compare(amount, 0.0, precision_rounding=self.currency_id.rounding) >= 0 and tools.float_compare(amount, self.get_amount_unpaid(), precision_rounding=self.currency_id.rounding) <= 0
+        return tools.float_compare(amount, 0.0,
+                                   precision_rounding=self.currency_id.rounding) >= 0 and tools.float_compare(amount,
+                                                                                                              self.get_amount_unpaid(),
+                                                                                                              precision_rounding=self.currency_id.rounding) <= 0
 
     def _get_checked_next_online_payment_amount(self):
         self.ensure_one()

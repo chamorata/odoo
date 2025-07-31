@@ -45,10 +45,10 @@ _default_encoding = sys.getdefaultencoding()
 
 
 def _to_str(
-    x: t.Optional[t.Any],
-    charset: t.Optional[str] = _default_encoding,
-    errors: str = "strict",
-    allow_none_charset: bool = False,
+        x: t.Optional[t.Any],
+        charset: t.Optional[str] = _default_encoding,
+        errors: str = "strict",
+        allow_none_charset: bool = False,
 ):
     if x is None or isinstance(x, str):
         return x
@@ -265,7 +265,7 @@ class BaseURL(_URLTuple):
         return rv
 
     def get_file_location(
-        self, pathformat: str | None = None
+            self, pathformat: str | None = None
     ) -> tuple[str | None, str | None]:
         """Returns a tuple with the location of the file in the form
         ``(server, location)``.  If the netloc is empty in the URL or
@@ -358,7 +358,7 @@ class BaseURL(_URLTuple):
             return rv, None
 
         host = rv[1:idx]
-        rest = rv[idx + 1 :]
+        rest = rv[idx + 1:]
         if rest.startswith(self._colon):
             return host, rest[1:]
         return host, None
@@ -464,10 +464,10 @@ def _unquote_to_bytes(string: str | bytes, unsafe: str | bytes = "") -> bytes:
 
 
 def _url_encode_impl(
-    obj: t.Mapping[str, str] | t.Iterable[tuple[str, str]],
-    charset: str,
-    sort: bool,
-    key: t.Callable[[tuple[str, str]], t.Any] | None,
+        obj: t.Mapping[str, str] | t.Iterable[tuple[str, str]],
+        charset: str,
+        sort: bool,
+        key: t.Callable[[tuple[str, str]], t.Any] | None,
 ) -> t.Iterator[str]:
     from werkzeug.datastructures import iter_multi_items
 
@@ -501,7 +501,7 @@ def _url_unquote_legacy(value: str, unsafe: str = "") -> str:
 
 
 def url_parse(
-    url: str, scheme: str | None = None, allow_fragments: bool = True
+        url: str, scheme: str | None = None, allow_fragments: bool = True
 ) -> BaseURL:
     """Parses a URL from a string into a :class:`URL` tuple.  If the URL
     is lacking a scheme it can be provided as second argument. Otherwise,
@@ -528,7 +528,7 @@ def url_parse(
     if i > 0 and _scheme_re.match(_to_str(url[:i], errors="replace")):
         # make sure "iri" is not actually a port number (in which case
         # "scheme" is really part of the path)
-        rest = url[i + 1 :]
+        rest = url[i + 1:]
         if not rest or any(c not in s("0123456789") for c in rest):
             # not a port number
             scheme, url = url[:i].lower(), rest
@@ -541,7 +541,7 @@ def url_parse(
                 delim = min(delim, wdelim)
         netloc, url = url[2:delim], url[delim:]
         if (s("[") in netloc and s("]") not in netloc) or (
-            s("]") in netloc and s("[") not in netloc
+                s("]") in netloc and s("[") not in netloc
         ):
             raise ValueError("Invalid IPv6 URL")
 
@@ -558,10 +558,10 @@ def url_parse(
 
 
 def _make_fast_url_quote(
-    charset: str = "utf-8",
-    errors: str = "strict",
-    safe: str | bytes = "/:",
-    unsafe: str | bytes = "",
+        charset: str = "utf-8",
+        errors: str = "strict",
+        safe: str | bytes = "/:",
+        unsafe: str | bytes = "",
 ) -> t.Callable[[bytes], str]:
     """Precompile the translation table for a URL encoding function.
 
@@ -597,11 +597,11 @@ def _fast_url_quote_plus(string: bytes) -> str:
 
 
 def url_quote(
-    string: str | bytes,
-    charset: str = "utf-8",
-    errors: str = "strict",
-    safe: str | bytes = "/:",
-    unsafe: str | bytes = "",
+        string: str | bytes,
+        charset: str = "utf-8",
+        errors: str = "strict",
+        safe: str | bytes = "/:",
+        unsafe: str | bytes = "",
 ) -> str:
     """URL encode a single string with a given encoding.
 
@@ -636,7 +636,7 @@ def url_quote(
 
 
 def url_quote_plus(
-    string: str, charset: str = "utf-8", errors: str = "strict", safe: str = ""
+        string: str, charset: str = "utf-8", errors: str = "strict", safe: str = ""
 ) -> str:
     """URL encode a single string with the given encoding and convert
     whitespace to "+".
@@ -690,10 +690,10 @@ def url_unparse(components: tuple[str, str, str, str, str]) -> str:
 
 
 def url_unquote(
-    s: str | bytes,
-    charset: str = "utf-8",
-    errors: str = "replace",
-    unsafe: str = "",
+        s: str | bytes,
+        charset: str = "utf-8",
+        errors: str = "replace",
+        unsafe: str = "",
 ) -> str:
     """URL decode a single string with a given encoding.  If the charset
     is set to `None` no decoding is performed and raw bytes are
@@ -714,7 +714,7 @@ def url_unquote(
 
 
 def url_unquote_plus(
-    s: str | bytes, charset: str = "utf-8", errors: str = "replace"
+        s: str | bytes, charset: str = "utf-8", errors: str = "replace"
 ) -> str:
     """URL decode a single string with the given `charset` and decode "+" to
     whitespace.
@@ -776,12 +776,12 @@ def url_fix(s: str, charset: str = "utf-8") -> str:
 
 
 def url_decode(
-    s: t.AnyStr,
-    charset: str = "utf-8",
-    include_empty: bool = True,
-    errors: str = "replace",
-    separator: str = "&",
-    cls: type[ds.MultiDict] | None = None,
+        s: t.AnyStr,
+        charset: str = "utf-8",
+        include_empty: bool = True,
+        errors: str = "replace",
+        separator: str = "&",
+        cls: type[ds.MultiDict] | None = None,
 ) -> ds.MultiDict[str, str]:
     """Parse a query string and return it as a :class:`MultiDict`.
 
@@ -823,13 +823,13 @@ def url_decode(
 
 
 def url_decode_stream(
-    stream: t.IO[bytes],
-    charset: str = "utf-8",
-    include_empty: bool = True,
-    errors: str = "replace",
-    separator: bytes = b"&",
-    cls: type[ds.MultiDict] | None = None,
-    limit: int | None = None,
+        stream: t.IO[bytes],
+        charset: str = "utf-8",
+        include_empty: bool = True,
+        errors: str = "replace",
+        separator: bytes = b"&",
+        cls: type[ds.MultiDict] | None = None,
+        limit: int | None = None,
 ) -> ds.MultiDict[str, str]:
     """Works like :func:`url_decode` but decodes a stream.  The behavior
     of stream and limit follows functions like
@@ -874,7 +874,7 @@ def url_decode_stream(
 
 
 def _url_decode_impl(
-    pair_iter: t.Iterable[t.AnyStr], charset: str, include_empty: bool, errors: str
+        pair_iter: t.Iterable[t.AnyStr], charset: str, include_empty: bool, errors: str
 ) -> t.Iterator[tuple[str, str]]:
     for pair in pair_iter:
         if not pair:
@@ -895,11 +895,11 @@ def _url_decode_impl(
 
 
 def url_encode(
-    obj: t.Mapping[str, str] | t.Iterable[tuple[str, str]],
-    charset: str = "utf-8",
-    sort: bool = False,
-    key: t.Callable[[tuple[str, str]], t.Any] | None = None,
-    separator: str = "&",
+        obj: t.Mapping[str, str] | t.Iterable[tuple[str, str]],
+        charset: str = "utf-8",
+        sort: bool = False,
+        key: t.Callable[[tuple[str, str]], t.Any] | None = None,
+        separator: str = "&",
 ) -> str:
     """URL encode a dict/`MultiDict`.  If a value is `None` it will not appear
     in the result string.  Per default only values are encoded into the target
@@ -926,12 +926,12 @@ def url_encode(
 
 
 def url_encode_stream(
-    obj: t.Mapping[str, str] | t.Iterable[tuple[str, str]],
-    stream: t.IO[str] | None = None,
-    charset: str = "utf-8",
-    sort: bool = False,
-    key: t.Callable[[tuple[str, str]], t.Any] | None = None,
-    separator: str = "&",
+        obj: t.Mapping[str, str] | t.Iterable[tuple[str, str]],
+        stream: t.IO[str] | None = None,
+        charset: str = "utf-8",
+        sort: bool = False,
+        key: t.Callable[[tuple[str, str]], t.Any] | None = None,
+        separator: str = "&",
 ) -> None:
     """Like :meth:`url_encode` but writes the results to a stream
     object.  If the stream is `None` a generator over all encoded
@@ -967,9 +967,9 @@ def url_encode_stream(
 
 
 def url_join(
-    base: str | tuple[str, str, str, str, str],
-    url: str | tuple[str, str, str, str, str],
-    allow_fragments: bool = True,
+        base: str | tuple[str, str, str, str, str],
+        url: str | tuple[str, str, str, str, str],
+        allow_fragments: bool = True,
 ) -> str:
     """Join a base URL and a possibly relative URL to form an absolute
     interpretation of the latter.
@@ -1025,7 +1025,7 @@ def url_join(
         n = len(segments) - 1
         while i < n:
             if segments[i] == s("..") and segments[i - 1] not in (s(""), s("..")):
-                del segments[i - 1 : i + 1]
+                del segments[i - 1: i + 1]
                 break
             i += 1
         else:
@@ -1057,6 +1057,7 @@ def patch_werkzeug():
         def _get_func_code(code, name):
             assert isinstance(code, CodeType)
             return Rule_get_func_code(code, name)
+
         Rule._get_func_code = _get_func_code
 
     if hasattr(urls, 'url_join'):

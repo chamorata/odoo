@@ -169,7 +169,7 @@
         <field name="state">code</field>
         <field name="code">
             if records:
-                records._l10n_gr_edi_try_send_batch()
+            records._l10n_gr_edi_try_send_batch()
         </field>
     </record>
 

@@ -241,9 +241,9 @@
                file="payment_mercado_pago/static/description/icon.png"/>
         <field name="module_id" ref="base.module_payment_mercado_pago"/>
 
-         <!-- Payment methods must be fetched from the API. See
-            https://www.mercadopago.com.ar/developers/en/reference/payment_methods/_payment_methods/
-        -->
+        <!-- Payment methods must be fetched from the API. See
+           https://www.mercadopago.com.ar/developers/en/reference/payment_methods/_payment_methods/
+       -->
         <field name="payment_method_ids"
                eval="[Command.set([
                          ref('payment.payment_method_card'),
@@ -334,7 +334,7 @@
                file="base/static/img/icons/payment_sepa_direct_debit.png"/>
         <field name="module_id" ref="base.module_payment_sepa_direct_debit"/>
         <field name="payment_method_ids"
-           eval="[Command.set([
+               eval="[Command.set([
                      ref('payment.payment_method_sepa_direct_debit'),
                  ])]"
         />

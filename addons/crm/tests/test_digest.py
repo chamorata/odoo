@@ -4,6 +4,7 @@
 from datetime import datetime, timedelta
 
 from odoo.addons.digest.tests.common import TestDigestCommon
+
 from odoo.tools import mute_logger
 
 
@@ -44,9 +45,9 @@ class TestCrmDigest(TestDigestCommon):
     def test_kpi_crm_lead_created_value(self):
         self.assertEqual(self.digest_1.kpi_crm_lead_created_value, 3)
         self.assertEqual(self.digest_2.kpi_crm_lead_created_value, 0,
-            msg='This digest is in a different company')
+                         msg='This digest is in a different company')
         self.assertEqual(self.digest_3.kpi_crm_lead_created_value, 3,
-            msg='This digest has no company, should take the current one')
+                         msg='This digest has no company, should take the current one')
 
         self.digest_3.invalidate_recordset()
         self.assertEqual(

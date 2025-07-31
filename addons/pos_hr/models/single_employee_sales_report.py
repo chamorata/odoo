@@ -22,7 +22,8 @@ class SingleEmployeeSalesReport(models.AbstractModel):
         return args, kwargs
 
     @api.model
-    def get_sale_details(self, date_start=False, date_stop=False, config_ids=False, session_ids=False, employee_id=False):
+    def get_sale_details(self, date_start=False, date_stop=False, config_ids=False, session_ids=False,
+                         employee_id=False):
         data = super().get_sale_details(config_ids=config_ids, session_ids=session_ids, employee_id=employee_id)
 
         if (employee_id):

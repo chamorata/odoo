@@ -34,7 +34,7 @@
         ],
         'spreadsheet.public_spreadsheet': [
             ('include', 'web.assets_frontend_minimal'),
-            ('include', 'web._assets_helpers'), # bootstrap variables
+            ('include', 'web._assets_helpers'),  # bootstrap variables
             'web/static/src/scss/bootstrap_overridden.scss',
             'web/static/src/scss/pre_variables.scss',
             'web/static/lib/bootstrap/scss/_variables.scss',

@@ -3,10 +3,12 @@
 
 from odoo.addons.mail.tests.common import mail_new_test_user
 from odoo.addons.project.tests.test_project_base import TestProjectCommon
+
 from odoo import Command
-from odoo.exceptions import AccessError, ValidationError
+from odoo.exceptions import AccessError
 from odoo.tests.common import users
 from odoo.tools import mute_logger
+
 
 class TestAccessRights(TestProjectCommon):
     def setUp(self):
@@ -18,6 +20,7 @@ class TestAccessRights(TestProjectCommon):
     def create_task(self, name, *, with_user=None, **kwargs):
         values = dict(name=name, project_id=self.project_pigs.id, **kwargs)
         return self.env['project.task'].with_user(with_user or self.env.user).create(values)
+
 
 class TestCRUDVisibilityFollowers(TestAccessRights):
 
@@ -112,6 +115,7 @@ class TestCRUDVisibilityFollowers(TestAccessRights):
         with self.assertRaises(AccessError, msg="%s should not be able to unlink the task" % self.env.user.name):
             self.task.with_user(self.env.user).unlink()
 
+
 class TestCRUDVisibilityPortal(TestAccessRights):
 
     def setUp(self):
@@ -138,6 +142,7 @@ class TestCRUDVisibilityPortal(TestAccessRights):
         self.task.invalidate_model()
         self.task.with_user(self.env.user).name
 
+
 class TestCRUDVisibilityEmployees(TestAccessRights):
 
     def setUp(self):
@@ -158,6 +163,7 @@ class TestCRUDVisibilityEmployees(TestAccessRights):
         self.task.flush_model()
         self.task.invalidate_model()
         self.task.with_user(self.env.user).name
+
 
 class TestAllowedUsers(TestAccessRights):
 
@@ -215,9 +221,11 @@ class TestAllowedUsers(TestAccessRights):
     def test_visibility_changed(self):
         self.project_pigs.privacy_visibility = 'portal'
         self.task.message_subscribe(partner_ids=[self.portal.partner_id.id])
-        self.assertNotIn(self.user.partner_id, self.task.message_partner_ids, "Internal user should have been removed from allowed users")
+        self.assertNotIn(self.user.partner_id, self.task.message_partner_ids,
+                         "Internal user should have been removed from allowed users")
         self.project_pigs.write({'privacy_visibility': 'employees'})
-        self.assertNotIn(self.portal.partner_id, self.task.message_partner_ids, "Portal user should have been removed from allowed users")
+        self.assertNotIn(self.portal.partner_id, self.task.message_partner_ids,
+                         "Portal user should have been removed from allowed users")
 
     def test_write_task(self):
         self.user.groups_id |= self.env.ref('project.group_project_user')
@@ -233,11 +241,13 @@ class TestAllowedUsers(TestAccessRights):
         with self.assertRaises(AccessError, msg="User should not be able to edit project"):
             self.project_pigs.with_user(self.user).name = "I can't edit a task!"
 
+
 class TestProjectPortalCommon(TestProjectCommon):
 
     def setUp(self):
         super(TestProjectPortalCommon, self).setUp()
-        self.user_noone = self.env['res.users'].with_context({'no_reset_password': True, 'mail_create_nosubscribe': True}).create({
+        self.user_noone = self.env['res.users'].with_context(
+            {'no_reset_password': True, 'mail_create_nosubscribe': True}).create({
             'name': 'Noemie NoOne',
             'login': 'noemie',
             'email': 'n.n@example.com',
@@ -254,6 +264,7 @@ class TestProjectPortalCommon(TestProjectCommon):
         self.task_6 = self.env['project.task'].with_context({'mail_create_nolog': True}).create({
             'name': 'Test5', 'user_ids': False, 'project_id': self.project_pigs.id})
 
+
 class TestPortalProject(TestProjectPortalCommon):
 
     @mute_logger('odoo.addons.base.models.ir_model')
@@ -265,7 +276,8 @@ class TestPortalProject(TestProjectPortalCommon):
         pigs.with_user(self.user_projectuser).read(['user_id'])
         # Test: all project tasks visible
         tasks = self.env['project.task'].with_user(self.user_projectuser).search([('project_id', '=', pigs.id)])
-        test_task_ids = set([self.task_1.id, self.task_2.id, self.task_3.id, self.task_4.id, self.task_5.id, self.task_6.id])
+        test_task_ids = set(
+            [self.task_1.id, self.task_2.id, self.task_3.id, self.task_4.id, self.task_5.id, self.task_6.id])
         self.assertEqual(set(tasks.ids), test_task_ids,
                          'access rights: project user cannot see all tasks of an employees project')
         # Do: Bert reads project -> crash, no group
@@ -273,7 +285,8 @@ class TestPortalProject(TestProjectPortalCommon):
         # Do: Donovan reads project -> ko (public ko employee)
         self.assertRaises(AccessError, pigs.with_user(self.user_public).read, ['user_id'])
         # Do: project user is employee and can create a task
-        tmp_task = self.env['project.task'].with_user(self.user_projectuser).with_context({'mail_create_nolog': True}).create({
+        tmp_task = self.env['project.task'].with_user(self.user_projectuser).with_context(
+            {'mail_create_nolog': True}).create({
             'name': 'Pigs task',
             'project_id': pigs.id})
         tmp_task.with_user(self.user_projectuser).unlink()
@@ -374,30 +387,40 @@ class TestAccessRightsPrivateTask(TestAccessRights):
     def test_project_current_user_is_added_in_private_task_assignees(self):
         task_values = {'name': 'Private task'}
         my_private_task = self.env['project.task'].create(task_values)
-        self.assertEqual(my_private_task.user_ids, self.env.user, 'When no assignee is set on a private task, the task should be assigned to the current user.')
-        user_projectuser_private_task = self.env['project.task'].create({**task_values, 'user_ids': [Command.set(self.user_projectuser.ids)]})
-        self.assertTrue(self.env.user in user_projectuser_private_task.user_ids, 'When creating a private task for another user, the current user should be added to the assignees.')
+        self.assertEqual(my_private_task.user_ids, self.env.user,
+                         'When no assignee is set on a private task, the task should be assigned to the current user.')
+        user_projectuser_private_task = self.env['project.task'].create(
+            {**task_values, 'user_ids': [Command.set(self.user_projectuser.ids)]})
+        self.assertTrue(self.env.user in user_projectuser_private_task.user_ids,
+                        'When creating a private task for another user, the current user should be added to the assignees.')
 
     @users('Project user')
     def test_project_current_user_is_added_in_task_assignees_when_project_id_is_set(self):
-        task_values = {'name': 'Private task', 'project_id': self.project_pigs.id, 'user_ids': [Command.set(self.user_projectuser.ids)]}
+        task_values = {'name': 'Private task', 'project_id': self.project_pigs.id,
+                       'user_ids': [Command.set(self.user_projectuser.ids)]}
         user_projectuser_task = self.env['project.task'].create(task_values)
-        self.assertFalse(self.env.user in user_projectuser_task.user_ids, "When creating a task that has a project for another user, the current user should not be added to the assignees.")
+        self.assertFalse(self.env.user in user_projectuser_task.user_ids,
+                         "When creating a task that has a project for another user, the current user should not be added to the assignees.")
 
     @users('Project user')
     def test_project_current_user_is_set_as_assignee_in_task_when_project_id_is_set_with_no_assignees(self):
         task = self.env['project.task'].create({'name': 'Private task', 'project_id': self.project_pigs.id})
-        self.assertEqual(task.user_ids, self.env.user, "When creating a task that has a project without assignees, the task will be assigned to the current user if no default_project_id is provided in the context (which is handled in _default_personal_stage_type_id).")
+        self.assertEqual(task.user_ids, self.env.user,
+                         "When creating a task that has a project without assignees, the task will be assigned to the current user if no default_project_id is provided in the context (which is handled in _default_personal_stage_type_id).")
 
     @users('Project user')
-    def test_project_current_user_is_not_added_in_private_task_assignees_when_default_project_id_is_in_the_context(self):
+    def test_project_current_user_is_not_added_in_private_task_assignees_when_default_project_id_is_in_the_context(
+            self):
         task_values = {'name': 'Private task'}
         context = {'default_project_id': self.project_pigs.id}
         ProjectTask_with_default_project_id = self.env['project.task'].with_context(context)
         task = ProjectTask_with_default_project_id.create(task_values)
-        self.assertNotEqual(task.user_ids, self.env.user, "When creating a task without assignees and providing default_project_id in the context, the task should not be assigned to the current user.")
-        user_projectuser_task = ProjectTask_with_default_project_id.create({**task_values, 'user_ids': [Command.set(self.user_projectuser.ids)]})
-        self.assertFalse(self.env.user in user_projectuser_task.user_ids, "When creating a task for another user and providing default_project_id in the context, the current user should not be added to the assignees.")
+        self.assertNotEqual(task.user_ids, self.env.user,
+                            "When creating a task without assignees and providing default_project_id in the context, the task should not be assigned to the current user.")
+        user_projectuser_task = ProjectTask_with_default_project_id.create(
+            {**task_values, 'user_ids': [Command.set(self.user_projectuser.ids)]})
+        self.assertFalse(self.env.user in user_projectuser_task.user_ids,
+                         "When creating a task for another user and providing default_project_id in the context, the current user should not be added to the assignees.")
 
     @users('Project user')
     def test_project_user_cannot_write_private_task_of_another_user(self):

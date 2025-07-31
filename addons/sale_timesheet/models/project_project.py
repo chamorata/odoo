@@ -3,9 +3,9 @@
 import json
 
 from odoo import api, fields, models
+from odoo.exceptions import ValidationError, UserError
 from odoo.osv import expression
 from odoo.tools import SQL
-from odoo.exceptions import ValidationError, UserError
 from odoo.tools.translate import _
 
 
@@ -16,7 +16,8 @@ class ProjectProject(models.Model):
     def default_get(self, fields):
         """ Pre-fill timesheet product as "Time" data product when creating new project allowing billable tasks by default. """
         result = super().default_get(fields)
-        if 'timesheet_product_id' in fields and result.get('allow_billable') and result.get('allow_timesheets') and not result.get('timesheet_product_id'):
+        if 'timesheet_product_id' in fields and result.get('allow_billable') and result.get(
+                'allow_timesheets') and not result.get('timesheet_product_id'):
             default_product = self.env.ref('sale_timesheet.time_product', False)
             if default_product:
                 result['timesheet_product_id'] = default_product.id
@@ -53,7 +54,8 @@ class ProjectProject(models.Model):
         check_company=True,
         compute="_compute_timesheet_product_id", store=True, readonly=False,
         default=_default_timesheet_product_id)
-    warning_employee_rate = fields.Boolean(compute='_compute_warning_employee_rate', compute_sudo=True, export_string_translation=False)
+    warning_employee_rate = fields.Boolean(compute='_compute_warning_employee_rate', compute_sudo=True,
+                                           export_string_translation=False)
     partner_id = fields.Many2one(
         compute='_compute_partner_id', store=True, readonly=False)
     allocated_hours = fields.Float()
@@ -111,7 +113,8 @@ class ProjectProject(models.Model):
         """
         if operator not in ('=', '!='):
             raise UserError(_('Operation not supported'))
-        if not ((isinstance(value, bool) and value is False) or (isinstance(value, str) and value in ('task_rate', 'fixed_rate', 'employee_rate'))):
+        if not ((isinstance(value, bool) and value is False) or (
+                isinstance(value, str) and value in ('task_rate', 'fixed_rate', 'employee_rate'))):
             raise UserError(_('Value does not exist in the pricing type'))
         if value is False:
             return [('allow_billable', operator, value)]
@@ -141,9 +144,11 @@ class ProjectProject(models.Model):
             elif not project.timesheet_product_id:
                 project.timesheet_product_id = default_product
 
-    @api.depends('pricing_type', 'allow_timesheets', 'allow_billable', 'sale_line_employee_ids', 'sale_line_employee_ids.employee_id')
+    @api.depends('pricing_type', 'allow_timesheets', 'allow_billable', 'sale_line_employee_ids',
+                 'sale_line_employee_ids.employee_id')
     def _compute_warning_employee_rate(self):
-        projects = self.filtered(lambda p: p.allow_billable and p.allow_timesheets and p.pricing_type == 'employee_rate')
+        projects = self.filtered(
+            lambda p: p.allow_billable and p.allow_timesheets and p.pricing_type == 'employee_rate')
         employees = self.env['account.analytic.line']._read_group(
             [('task_id', 'in', projects.task_ids.ids), ('employee_id', '!=', False)],
             ['project_id'],
@@ -172,14 +177,17 @@ class ProjectProject(models.Model):
     @api.depends('partner_id')
     def _compute_sale_line_id(self):
         super()._compute_sale_line_id()
-        for project in self.filtered(lambda p: not p.sale_line_id and p.partner_id and p.pricing_type == 'employee_rate'):
+        for project in self.filtered(
+                lambda p: not p.sale_line_id and p.partner_id and p.pricing_type == 'employee_rate'):
             # Give a SOL by default either the last SOL with service product and remaining_hours > 0
             SaleOrderLine = self.env['sale.order.line']
             sol = SaleOrderLine.search(expression.AND([
                 SaleOrderLine._domain_sale_line_service(),
-                [('order_partner_id', 'child_of', project.partner_id.commercial_partner_id.id), ('remaining_hours', '>', 0)],
+                [('order_partner_id', 'child_of', project.partner_id.commercial_partner_id.id),
+                 ('remaining_hours', '>', 0)],
             ]), limit=1)
-            project.sale_line_id = sol or project.sale_line_employee_ids.sale_line_id[:1]  # get the first SOL containing in the employee mappings if no sol found in the search
+            project.sale_line_id = sol or project.sale_line_employee_ids.sale_line_id[
+                                          :1]  # get the first SOL containing in the employee mappings if no sol found in the search
 
     @api.depends('sale_line_employee_ids.sale_line_id', 'allow_billable')
     def _compute_sale_order_count(self):
@@ -191,15 +199,18 @@ class ProjectProject(models.Model):
 
     @api.depends('allow_billable', 'allow_timesheets')
     def _compute_billing_type(self):
-        self.filtered(lambda project: (not project.allow_billable or not project.allow_timesheets) and project.billing_type == 'manually').billing_type = 'not_billable'
+        self.filtered(lambda project: (
+                                                  not project.allow_billable or not project.allow_timesheets) and project.billing_type == 'manually').billing_type = 'not_billable'
 
     @api.constrains('sale_line_id')
     def _check_sale_line_type(self):
         for project in self.filtered(lambda project: project.sale_line_id):
             if not project.sale_line_id.is_service:
-                raise ValidationError(_("You cannot link a billable project to a sales order item that is not a service."))
+                raise ValidationError(
+                    _("You cannot link a billable project to a sales order item that is not a service."))
             if project.sale_line_id.is_expense:
-                raise ValidationError(_("You cannot link a billable project to a sales order item that comes from an expense or a vendor bill."))
+                raise ValidationError(
+                    _("You cannot link a billable project to a sales order item that comes from an expense or a vendor bill."))
 
     def write(self, values):
         res = super().write(values)
@@ -211,11 +222,13 @@ class ProjectProject(models.Model):
 
     def _update_timesheets_sale_line_id(self):
         for project in self.filtered(lambda p: p.allow_billable and p.allow_timesheets):
-            timesheet_ids = project.mapped('timesheet_ids').filtered(lambda t: not t.is_so_line_edited and t._is_updatable_timesheet())
+            timesheet_ids = project.mapped('timesheet_ids').filtered(
+                lambda t: not t.is_so_line_edited and t._is_updatable_timesheet())
             if not timesheet_ids:
                 continue
             for employee_id in project.sale_line_employee_ids.filtered(lambda l: l.project_id == project).employee_id:
-                sale_line_id = project.sale_line_employee_ids.filtered(lambda l: l.project_id == project and l.employee_id == employee_id).sale_line_id
+                sale_line_id = project.sale_line_employee_ids.filtered(
+                    lambda l: l.project_id == project and l.employee_id == employee_id).sale_line_id
                 timesheet_ids.filtered(lambda t: t.employee_id == employee_id).sudo().so_line = sale_line_id
 
     def action_view_timesheet(self):
@@ -257,7 +270,8 @@ class ProjectProject(models.Model):
 
     def action_profitability_items(self, section_name, domain=None, res_id=False):
         self.ensure_one()
-        if section_name in ['billable_fixed', 'billable_time', 'billable_milestones', 'billable_manual', 'non_billable']:
+        if section_name in ['billable_fixed', 'billable_time', 'billable_milestones', 'billable_manual',
+                            'non_billable']:
             action = self.action_billable_time_button()
             if domain:
                 action['domain'] = expression.AND([[('project_id', '=', self.id)], domain])
@@ -272,10 +286,10 @@ class ProjectProject(models.Model):
             if res_id:
                 if 'views' in action:
                     action['views'] = [
-                        (view_id, view_type)
-                        for view_id, view_type in action['views']
-                        if view_type == 'form'
-                    ] or [False, 'form']
+                                          (view_id, view_type)
+                                          for view_id, view_type in action['views']
+                                          if view_type == 'form'
+                                      ] or [False, 'form']
                 action['view_mode'] = 'form'
                 action['res_id'] = res_id
             return action
@@ -312,7 +326,8 @@ class ProjectProject(models.Model):
         query = super()._get_sale_order_items_query(domain_per_model)
 
         Timesheet = self.env['account.analytic.line']
-        timesheet_domain = [('project_id', 'in', self.ids), ('so_line', '!=', False), ('project_id.allow_billable', '=', True)]
+        timesheet_domain = [('project_id', 'in', self.ids), ('so_line', '!=', False),
+                            ('project_id.allow_billable', '=', True)]
         if Timesheet._name in domain_per_model:
             timesheet_domain = expression.AND([
                 domain_per_model.get(Timesheet._name, []),
@@ -326,7 +341,8 @@ class ProjectProject(models.Model):
         )
 
         EmployeeMapping = self.env['project.sale.line.employee.map']
-        employee_mapping_domain = [('project_id', 'in', self.ids), ('project_id.allow_billable', '=', True), ('sale_line_id', '!=', False)]
+        employee_mapping_domain = [('project_id', 'in', self.ids), ('project_id.allow_billable', '=', True),
+                                   ('sale_line_id', '!=', False)]
         if EmployeeMapping._name in domain_per_model:
             employee_mapping_domain = expression.AND([
                 domain_per_model[EmployeeMapping._name],
@@ -425,7 +441,8 @@ class ProjectProject(models.Model):
             ['timesheet_invoice_type', 'timesheet_invoice_id', 'currency_id', 'category'],
             ['amount:sum', 'id:array_agg'],
         )
-        can_see_timesheets = with_action and len(self) == 1 and self.env.user.has_group('hr_timesheet.group_hr_timesheet_approver')
+        can_see_timesheets = with_action and len(self) == 1 and self.env.user.has_group(
+            'hr_timesheet.group_hr_timesheet_approver')
         revenues_dict = {}
         costs_dict = {}
         total_revenues = {'invoiced': 0.0, 'to_invoice': 0.0}
@@ -468,7 +485,8 @@ class ProjectProject(models.Model):
                 record_ids = vals.pop('record_ids', [])
                 data = {'id': invoice_type, 'sequence': sequence_per_invoice_type[invoice_type], **vals}
                 if record_ids:
-                    if invoice_type not in ['other_costs', 'other_revenues'] and can_see_timesheets:  # action to see the timesheets
+                    if invoice_type not in ['other_costs',
+                                            'other_revenues'] and can_see_timesheets:  # action to see the timesheets
                         action = get_timesheets_action(invoice_type, record_ids)
                         data['action'] = action
                 profitability_data.append(data)

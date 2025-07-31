@@ -108,7 +108,8 @@ class TestWebsiteSaleImage(HttpCase):
         value_green = line.product_template_value_ids[1]
 
         # set a different price on the variants to differentiate them
-        product_template_attribute_values = self.env['product.template.attribute.value'].search([('product_tmpl_id', '=', template.id)])
+        product_template_attribute_values = self.env['product.template.attribute.value'].search(
+            [('product_tmpl_id', '=', template.id)])
 
         for val in product_template_attribute_values:
             if val.name == name_red:
@@ -210,7 +211,8 @@ class TestWebsiteSaleImage(HttpCase):
 
         # Make sure we have zoom on click
         self.env['ir.ui.view'].with_context(active_test=False).search(
-            [('key', 'in', ('website_sale.product_picture_magnify_hover', 'website_sale.product_picture_magnify_click', 'website_sale.product_picture_magnify_both'))]
+            [('key', 'in', ('website_sale.product_picture_magnify_hover', 'website_sale.product_picture_magnify_click',
+                            'website_sale.product_picture_magnify_both'))]
         ).write({'active': False})
         self.env['ir.ui.view'].with_context(active_test=False).search(
             [('key', '=', 'website_sale.product_picture_magnify_click')]
@@ -336,6 +338,7 @@ class TestWebsiteSaleImage(HttpCase):
         # when there is a template image, the image must be obtained from the template
         self.assertEqual(template, template._get_image_holder())
 
+
 @tagged('post_install', '-at_install')
 class TestWebsiteSaleRemoveImage(HttpCase):
 
@@ -391,7 +394,8 @@ class TestWebsiteSaleRemoveImage(HttpCase):
             'product_tmpl_id': self.template.id,
         })
 
-        self.start_tour(self.env['website'].get_client_action_url('/'), 'add_and_remove_main_product_image_no_variant', login='admin')
+        self.start_tour(self.env['website'].get_client_action_url('/'), 'add_and_remove_main_product_image_no_variant',
+                        login='admin')
         self.assertFalse(self.template.image_1920)
         self.assertFalse(self.product.image_1920)
 
@@ -405,6 +409,7 @@ class TestWebsiteSaleRemoveImage(HttpCase):
         self.product = self.env['product.product'].create({
             'product_tmpl_id': self.template.id,
         })
-        self.start_tour(self.env['website'].get_client_action_url('/'), 'remove_main_product_image_with_variant', login='admin')
+        self.start_tour(self.env['website'].get_client_action_url('/'), 'remove_main_product_image_with_variant',
+                        login='admin')
         self.assertFalse(self.template.image_1920)
         self.assertFalse(self.product.image_1920)

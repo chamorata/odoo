@@ -5,9 +5,9 @@
             Only chart figures are displayed in small screens but this dashboard doesn't contain any
         </t>
         <div
-            t-foreach="figures" t-as="figure"
-            t-key="figure.id"
-            t-attf-style="min-height: #{figure.height}px; direction: ltr;"
+                t-foreach="figures" t-as="figure"
+                t-key="figure.id"
+                t-attf-style="min-height: #{figure.height}px; direction: ltr;"
         >
             <t t-component="getFigureComponent(figure)" figure="figure" onFigureDeleted="() => {}"/>
         </div>

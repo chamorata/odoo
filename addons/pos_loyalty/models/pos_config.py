@@ -4,6 +4,7 @@
 from odoo import _, fields, models
 from odoo.exceptions import UserError
 
+
 class PosConfig(models.Model):
     _inherit = 'pos.config'
 
@@ -61,9 +62,11 @@ class PosConfig(models.Model):
                 if reward.reward_type != 'discount' or reward.discount_mode != 'per_point' or reward.discount != 1:
                     raise UserError(_('Invalid gift card program reward. Use 1 currency per point discount.'))
                 if not gc_program.mail_template_id:
-                    raise UserError(_('There is no email template on the gift card program and your pos is set to print them.'))
+                    raise UserError(
+                        _('There is no email template on the gift card program and your pos is set to print them.'))
                 if not gc_program.pos_report_print_id:
-                    raise UserError(_('There is no print report on the gift card program and your pos is set to print them.'))
+                    raise UserError(
+                        _('There is no print report on the gift card program and your pos is set to print them.'))
 
         return super()._check_before_creating_new_session()
 
@@ -87,16 +90,16 @@ class PosConfig(models.Model):
         today_date = fields.Date.context_today(self)
         error_message = False
         if (
-            (coupon.expiration_date and coupon.expiration_date < check_date)
-            or (program.date_to and program.date_to < today_date)
-            or (program.limit_usage and program.total_order_count >= program.max_usage)
+                (coupon.expiration_date and coupon.expiration_date < check_date)
+                or (program.date_to and program.date_to < today_date)
+                or (program.limit_usage and program.total_order_count >= program.max_usage)
         ):
             error_message = _("This coupon is expired (%s).", code)
         elif program.date_from and program.date_from > today_date:
             error_message = _("This coupon is not yet valid (%s).", code)
         elif (
-            not program.reward_ids or
-            not any(r.required_points <= coupon.points for r in program.reward_ids)
+                not program.reward_ids or
+                not any(r.required_points <= coupon.points for r in program.reward_ids)
         ):
             error_message = _("No reward can be claimed with this coupon.")
         elif program.pricelist_ids and pricelist_id not in program.pricelist_ids.ids:

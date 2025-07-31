@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from odoo.tests import common
-from odoo.exceptions import ValidationError
 from odoo import Command
+from odoo.exceptions import ValidationError
+from odoo.tests import common
 
 
 class test_inherits(common.TransactionCase):
@@ -25,12 +25,12 @@ class test_inherits(common.TransactionCase):
             'size': 1,
         })
         ctx = {
-            'default_state': 'b',       # 'state' is inherited from 'test.unit'
-            'default_size': 2,          # 'size' is inherited from 'test.box'
+            'default_state': 'b',  # 'state' is inherited from 'test.unit'
+            'default_size': 2,  # 'size' is inherited from 'test.box'
         }
         pallet = self.env['test.pallet'].with_context(ctx).create({
             'name': 'P',
-            'unit_id': unit.id,         # grand-parent field is set
+            'unit_id': unit.id,  # grand-parent field is set
         })
         # default 'state' should be ignored, but default 'size' should not
         self.assertEqual(pallet.state, 'a')

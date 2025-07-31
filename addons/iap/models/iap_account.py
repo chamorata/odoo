@@ -4,10 +4,11 @@ import logging
 import secrets
 import threading
 import uuid
+
 import werkzeug.urls
+from odoo.addons.iap.tools import iap_tools
 
 from odoo import api, fields, models, _
-from odoo.addons.iap.tools import iap_tools
 from odoo.exceptions import AccessError, UserError
 from odoo.tools import get_lang
 
@@ -35,7 +36,8 @@ class IapAccount(models.Model):
     balance = fields.Char(readonly=True)
     warning_threshold = fields.Float("Email Alert Threshold")
     warning_user_ids = fields.Many2many('res.users', string="Email Alert Recipients")
-    state = fields.Selection([('banned', 'Banned'), ('registered', "Registered"), ('unregistered', "Unregistered")], readonly=True)
+    state = fields.Selection([('banned', 'Banned'), ('registered', "Registered"), ('unregistered', "Unregistered")],
+                             readonly=True)
 
     @api.constrains('warning_threshold', 'warning_user_ids')
     def validate_warning_alerts(self):
@@ -60,8 +62,8 @@ class IapAccount(models.Model):
     def write(self, values):
         res = super().write(values)
         if (
-            not self.env.context.get('disable_iap_update')
-            and any(warning_attribute in values for warning_attribute in ('warning_threshold', 'warning_user_ids'))
+                not self.env.context.get('disable_iap_update')
+                and any(warning_attribute in values for warning_attribute in ('warning_threshold', 'warning_user_ids'))
         ):
             route = '/iap/1/update-warning-email-alerts'
             endpoint = iap_tools.iap_get_endpoint(self.env)
@@ -143,8 +145,8 @@ class IapAccount(models.Model):
         domain = [
             ('service_name', '=', service_name),
             '|',
-                ('company_ids', 'in', self.env.companies.ids),
-                ('company_ids', '=', False)
+            ('company_ids', 'in', self.env.companies.ids),
+            ('company_ids', '=', False)
         ]
         accounts = self.search(domain, order='id desc')
         accounts_without_token = accounts.filtered(lambda acc: not acc.account_token)

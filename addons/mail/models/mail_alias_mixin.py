@@ -39,8 +39,8 @@ class AliasMixin(models.AbstractModel):
     def _init_column_alias_id(self):
         # both self and the alias model must be present in 'ir.model'
         child_ctx = {
-            'active_test': False,       # retrieve all records
-            'prefetch_fields': False,   # do not prefetch fields on records
+            'active_test': False,  # retrieve all records
+            'prefetch_fields': False,  # do not prefetch fields on records
         }
         child_model = self.sudo().with_context(child_ctx)
 

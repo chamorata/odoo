@@ -17,4 +17,5 @@ class PosConfig(models.Model):
     def _check_adyen_ask_customer_for_tip(self):
         for config in self:
             if config.adyen_ask_customer_for_tip and (not config.tip_product_id or not config.iface_tipproduct):
-                raise ValidationError(_("Please configure a tip product for POS %s to support tipping with Adyen.", config.name))
+                raise ValidationError(
+                    _("Please configure a tip product for POS %s to support tipping with Adyen.", config.name))

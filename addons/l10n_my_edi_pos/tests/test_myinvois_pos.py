@@ -4,15 +4,14 @@ from unittest.mock import patch
 
 from freezegun import freeze_time
 from lxml import etree
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+from odoo.addons.l10n_my_edi.tests.test_file_generation import NS_MAP
+from odoo.addons.point_of_sale.tests.common import TestPoSCommon
 
 from odoo import fields
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests import tagged
 from odoo.tools import file_open, mute_logger
-
-from odoo.addons.account.tests.common import AccountTestInvoicingCommon
-from odoo.addons.l10n_my_edi.tests.test_file_generation import NS_MAP
-from odoo.addons.point_of_sale.tests.common import TestPoSCommon
 
 CONTACT_PROXY_METHOD = 'odoo.addons.l10n_my_edi.models.account_edi_proxy_user.AccountEdiProxyClientUser._l10n_my_edi_contact_proxy'
 
@@ -60,7 +59,8 @@ class TestMyInvoisPoS(TestPoSCommon):
             'phone': '+60123456789',
             'email': 'info@company.myexample.com',
         })
-        cls.env.company.partner_id.l10n_my_edi_industrial_classification = cls.env['l10n_my_edi.industry_classification'].search([('code', '=', '01111')])
+        cls.env.company.partner_id.l10n_my_edi_industrial_classification = cls.env[
+            'l10n_my_edi.industry_classification'].search([('code', '=', '01111')])
         cls.invoicing_customer = cls.customer
         cls.invoicing_customer.write({
             'vat': 'C2584563201',
@@ -73,7 +73,8 @@ class TestMyInvoisPoS(TestPoSCommon):
             'phone': '+60123456786',
         })
 
-        cls.proxy_user = cls.env['account_edi_proxy_client.user']._register_proxy_user(cls.env.company, 'l10n_my_edi', 'demo')
+        cls.proxy_user = cls.env['account_edi_proxy_client.user']._register_proxy_user(cls.env.company, 'l10n_my_edi',
+                                                                                       'demo')
         cls.proxy_user.edi_mode = 'test'
 
         # Prepare a PoS config in USD
@@ -135,10 +136,12 @@ class TestMyInvoisPoS(TestPoSCommon):
             # Get the XML File, and assert the amount of lines
             consolidated_invoice.action_generate_xml_file()
             xml_tree = etree.fromstring(consolidated_invoice.myinvois_file_id.raw)
-            self.assertEqual(len(xml_tree.xpath("cac:InvoiceLine", namespaces=NS_MAP)), 1)  # Both orders are continuous, so they are merged in a single line.
+            self.assertEqual(len(xml_tree.xpath("cac:InvoiceLine", namespaces=NS_MAP)),
+                             1)  # Both orders are continuous, so they are merged in a single line.
             # Finally, assert a few nodes to make sure the file make sense (line amount, customer tin (general one), ...
             self._assert_node_values(xml_tree, "cac:InvoiceLine/cbc:LineExtensionAmount", '600.00')
-            self._assert_node_values(xml_tree, "cac:AccountingCustomerParty//cac:PartyIdentification/cbc:ID", 'EI00000000010')
+            self._assert_node_values(xml_tree, "cac:AccountingCustomerParty//cac:PartyIdentification/cbc:ID",
+                                     'EI00000000010')
 
     @mute_logger('odoo.addons.point_of_sale.models.pos_order')
     def test_consolidate_invoices_with_split(self):
@@ -147,7 +150,9 @@ class TestMyInvoisPoS(TestPoSCommon):
             # Create the orders
             with self.with_pos_session(), patch(CONTACT_PROXY_METHOD, new=self._mock_successful_submission):
                 first_order = self._create_order({'pos_order_lines_ui_args': [(self.product_one, 1.0)]})
-                self._create_order({'pos_order_lines_ui_args': [(self.product_two, 1.0)], 'customer': self.invoicing_customer, 'is_invoiced': True})
+                self._create_order(
+                    {'pos_order_lines_ui_args': [(self.product_two, 1.0)], 'customer': self.invoicing_customer,
+                     'is_invoiced': True})
                 third_order = self._create_order({'pos_order_lines_ui_args': [(self.product_two, 1.0)]})
             # Consolidate them
             wizard = self.env['myinvois.consolidate.invoice.wizard'].create({
@@ -190,10 +195,14 @@ class TestMyInvoisPoS(TestPoSCommon):
             # Create two orders split in the middle to create two lines.
             with self.with_pos_session(), patch(CONTACT_PROXY_METHOD, new=self._mock_successful_submission):
                 first_order = self._create_order({'pos_order_lines_ui_args': [(self.product_one, 1.0)]})
-                self._create_order({'pos_order_lines_ui_args': [(self.product_two, 1.0)], 'customer': self.invoicing_customer, 'is_invoiced': True})
+                self._create_order(
+                    {'pos_order_lines_ui_args': [(self.product_two, 1.0)], 'customer': self.invoicing_customer,
+                     'is_invoiced': True})
                 third_order = self._create_order({'pos_order_lines_ui_args': [(self.product_two, 1.0)]})
 
-            with patch('odoo.addons.l10n_my_edi_pos.wizard.myinvois_consolidate_invoice_wizard.MAX_LINE_COUNT_PER_INVOICE', 1):
+            with patch(
+                    'odoo.addons.l10n_my_edi_pos.wizard.myinvois_consolidate_invoice_wizard.MAX_LINE_COUNT_PER_INVOICE',
+                    1):
                 # Consolidate them
                 wizard = self.env['myinvois.consolidate.invoice.wizard'].create({
                     'date_from': '2025-01-01',
@@ -201,7 +210,8 @@ class TestMyInvoisPoS(TestPoSCommon):
                 })
                 wizard.button_consolidate_orders()
                 consolidated_invoice = (first_order | third_order).consolidated_invoice_ids
-                self.assertEqual(len(consolidated_invoice), 2)  # Two consolidated invoices of a single line due to the MAX_LINE_COUNT_PER_INVOICE
+                self.assertEqual(len(consolidated_invoice),
+                                 2)  # Two consolidated invoices of a single line due to the MAX_LINE_COUNT_PER_INVOICE
 
     @mute_logger('odoo.addons.point_of_sale.models.pos_order')
     def test_send_consolidated_invoice(self):
@@ -256,7 +266,9 @@ class TestMyInvoisPoS(TestPoSCommon):
     def test_invoice_from_pos(self):
         with freeze_time("2025-01-01"):
             with self.with_pos_session(), patch(CONTACT_PROXY_METHOD, new=self._mock_successful_submission):
-                order = self._create_order({'pos_order_lines_ui_args': [(self.product_two, 1.0)], 'customer': self.invoicing_customer, 'is_invoiced': True})
+                order = self._create_order(
+                    {'pos_order_lines_ui_args': [(self.product_two, 1.0)], 'customer': self.invoicing_customer,
+                     'is_invoiced': True})
             self.assertRecordValues(order.account_move, [{
                 'l10n_my_edi_submission_uid': '123456789',
                 'l10n_my_edi_external_uuid': '123458974513518',
@@ -335,7 +347,8 @@ class TestMyInvoisPoS(TestPoSCommon):
             # Get the XML File, and assert the amount of lines
             consolidated_invoice.action_generate_xml_file()
             xml_tree = etree.fromstring(consolidated_invoice.myinvois_file_id.raw)
-            self.assertEqual(len(xml_tree.xpath("cac:InvoiceLine", namespaces=NS_MAP)), 1)  # Both orders are continuous, so they are merged in a single line.
+            self.assertEqual(len(xml_tree.xpath("cac:InvoiceLine", namespaces=NS_MAP)),
+                             1)  # Both orders are continuous, so they are merged in a single line.
             # Finally, assert a few nodes to make sure the file make sense (line amount, customer tin (general one), ...
             self._assert_node_values(xml_tree, "cac:InvoiceLine/cbc:LineExtensionAmount", '1200.00')
             self._assert_node_values(xml_tree, "cac:TaxExchangeRate/cbc:CalculationRate", '0.5')
@@ -481,7 +494,9 @@ class TestMyInvoisPoS(TestPoSCommon):
         with freeze_time("2025-01-01"):
             # Create the orders
             with self.with_pos_session(), patch(CONTACT_PROXY_METHOD, new=self._mock_successful_submission):
-                first_order = self._create_order({'pos_order_lines_ui_args': [(self.product_one, 2.0)], 'customer': self.invoicing_customer, 'is_invoiced': True})
+                first_order = self._create_order(
+                    {'pos_order_lines_ui_args': [(self.product_one, 2.0)], 'customer': self.invoicing_customer,
+                     'is_invoiced': True})
 
             with self.with_pos_session(), patch(CONTACT_PROXY_METHOD, new=self._mock_successful_submission):
                 # Fails, the order should be invoiced in such a case
@@ -543,7 +558,8 @@ class TestMyInvoisPoS(TestPoSCommon):
         """
         with freeze_time("2025-01-01"):
             with self.with_pos_session(), patch(CONTACT_PROXY_METHOD, new=self._mock_successful_submission):
-                first_order = self._create_order({'pos_order_lines_ui_args': [(self.product_one, 2.0)], 'customer': self.invoicing_customer})
+                first_order = self._create_order(
+                    {'pos_order_lines_ui_args': [(self.product_one, 2.0)], 'customer': self.invoicing_customer})
 
             # Consolidate them
             wizard = self.env['myinvois.consolidate.invoice.wizard'].create({
@@ -570,7 +586,8 @@ class TestMyInvoisPoS(TestPoSCommon):
             self.assertEqual(refund.partner_id, self.invoicing_customer)  # We have the correct customer on the refund.
             xml_tree = etree.fromstring(refund.l10n_my_edi_file_id.raw)
             # But in the xml, we have the general public.
-            self._assert_node_values(xml_tree, "cac:AccountingCustomerParty//cac:PartyIdentification/cbc:ID", 'EI00000000010')
+            self._assert_node_values(xml_tree, "cac:AccountingCustomerParty//cac:PartyIdentification/cbc:ID",
+                                     'EI00000000010')
 
     ###########
     # Test XMLs
@@ -604,7 +621,9 @@ class TestMyInvoisPoS(TestPoSCommon):
                 third_order = self._create_order({'pos_order_lines_ui_args': [(product_1, 4.0, 25)]})
                 fourth_order = self._create_order({'pos_order_lines_ui_args': [(product_1, 1.0), (product_2, 2.0)]})
                 # This one is invoiced right away, so it will not be consolidated.
-                self._create_order({'pos_order_lines_ui_args': [(self.product_two, 1.0)], 'customer': self.invoicing_customer, 'is_invoiced': True})
+                self._create_order(
+                    {'pos_order_lines_ui_args': [(self.product_two, 1.0)], 'customer': self.invoicing_customer,
+                     'is_invoiced': True})
                 fifth_order = self._create_order({'pos_order_lines_ui_args': [(product_1, 1.0), (product_2, 1.0)]})
 
             # Consolidate them
@@ -613,7 +632,8 @@ class TestMyInvoisPoS(TestPoSCommon):
                 'date_to': '2025-01-31',
             })
             wizard.button_consolidate_orders()
-            consolidated_invoice = (first_order | second_order | third_order | fourth_order | fifth_order).consolidated_invoice_ids
+            consolidated_invoice = (
+                        first_order | second_order | third_order | fourth_order | fifth_order).consolidated_invoice_ids
             # We expect a single invoice
             self.assertEqual(len(consolidated_invoice), 1)
             # Add an export custom number; it doesn't make much sense in this flow but supporting it may be useful.
@@ -648,13 +668,16 @@ class TestMyInvoisPoS(TestPoSCommon):
         with freeze_time("2025-01-01"):
             with self.with_pos_session(), patch(CONTACT_PROXY_METHOD, new=self._mock_successful_submission):
                 # This one gets a customer, we will refund it later. It will cover refund + refund of consolidated order with customer
-                first_order = self._create_order({'pos_order_lines_ui_args': [(product_1, 2.0)], 'customer': self.invoicing_customer})
+                first_order = self._create_order(
+                    {'pos_order_lines_ui_args': [(product_1, 2.0)], 'customer': self.invoicing_customer})
                 second_order = self._create_order({'pos_order_lines_ui_args': [(product_1, 1.0), (product_2, 1.0)]})
                 # This one has a 25% discount
                 third_order = self._create_order({'pos_order_lines_ui_args': [(product_1, 4.0, 25)]})
                 fourth_order = self._create_order({'pos_order_lines_ui_args': [(product_1, 1.0), (product_2, 2.0)]})
                 # This one is invoiced right away, so it will not be consolidated.
-                self._create_order({'pos_order_lines_ui_args': [(self.product_two, 1.0)], 'customer': self.invoicing_customer, 'is_invoiced': True})
+                self._create_order(
+                    {'pos_order_lines_ui_args': [(self.product_two, 1.0)], 'customer': self.invoicing_customer,
+                     'is_invoiced': True})
                 fifth_order = self._create_order({'pos_order_lines_ui_args': [(product_1, 1.0), (product_2, 1.0)]})
 
             # Consolidate them
@@ -663,7 +686,8 @@ class TestMyInvoisPoS(TestPoSCommon):
                 'date_to': '2025-01-31',
             })
             wizard.button_consolidate_orders()
-            consolidated_invoice = (first_order | second_order | third_order | fourth_order | fifth_order).consolidated_invoice_ids
+            consolidated_invoice = (
+                        first_order | second_order | third_order | fourth_order | fifth_order).consolidated_invoice_ids
             # We expect a single invoice
             self.assertEqual(len(consolidated_invoice), 1)
             # Add an export custom number; it doesn't make much sense in this flow but supporting it may be useful.

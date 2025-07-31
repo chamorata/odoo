@@ -3,11 +3,11 @@
 
 import base64
 import urllib.parse
-import werkzeug
-
 from datetime import timedelta
-from markupsafe import Markup, escape
+
+import werkzeug
 from lxml import etree
+from markupsafe import Markup, escape
 from werkzeug.exceptions import BadRequest, NotFound, Unauthorized
 
 from odoo import _, fields, http, tools
@@ -46,7 +46,8 @@ class MassMailController(http.Controller):
             mailing_sudo = request.env['mailing.mailing'].sudo().browse(mailing_id)
             if not mailing_sudo.exists():
                 raise NotFound()
-            if hash_token and not consteq(mailing_sudo._generate_mailing_recipient_token(document_id, email), hash_token):
+            if hash_token and not consteq(mailing_sudo._generate_mailing_recipient_token(document_id, email),
+                                          hash_token):
                 raise Unauthorized()
         else:
             if required_mailing_id:
@@ -120,7 +121,8 @@ class MassMailController(http.Controller):
         unsubscribed_str = _('Are you sure you want to unsubscribe from our mailing list?')
         # Display list name if list is public
         if mailing.mailing_model_real == 'mailing.contact':
-            unsubscribed_lists = ', '.join(mailing_list.name for mailing_list in mailing.contact_list_ids if mailing_list.is_public)
+            unsubscribed_lists = ', '.join(
+                mailing_list.name for mailing_list in mailing.contact_list_ids if mailing_list.is_public)
             if unsubscribed_lists:
                 unsubscribed_str = _(
                     'Are you sure you want to unsubscribe from the mailing list "%(unsubscribed_lists)s"?',
@@ -296,7 +298,7 @@ class MassMailController(http.Controller):
         lists_public = request.env['mailing.list'].sudo().search(
             [('is_public', '=', True),
              ('id', 'not in', (lists_optin + lists_optout).ids)
-            ],
+             ],
             limit=10,
             order='create_date DESC, id DESC',
         )
@@ -413,7 +415,7 @@ class MassMailController(http.Controller):
         # contacts
         documents_for_post = []
         if (last_action in {'subscription_updated', 'subscription_updated_optout'} or
-            (not last_action and (not mailing_sudo or mailing_sudo.mailing_on_mailing_list))):
+                (not last_action and (not mailing_sudo or mailing_sudo.mailing_on_mailing_list))):
             contacts = self._fetch_contacts(email_found)
             contacts.subscription_ids.filtered(
                 lambda sub: sub.opt_out and sub.opt_out_datetime >= (fields.Datetime.now() - timedelta(minutes=10))
@@ -424,7 +426,7 @@ class MassMailController(http.Controller):
         elif mailing_sudo and message:
             documents_for_post = request.env[mailing_sudo.mailing_model_real].sudo().search(
                 [('id', '=', document_id)
-            ])
+                 ])
 
         for document_sudo in documents_for_post:
             document_sudo.message_post(body=message)
@@ -482,7 +484,7 @@ class MassMailController(http.Controller):
             raise BadRequest()
         user = request.env['res.users'].sudo().browse(int(user_id)).exists()
         if not user or not user.has_group('mass_mailing.group_mass_mailing_user') or \
-           not consteq(token, request.env['mailing.mailing']._generate_mailing_report_token(user.id)):
+                not consteq(token, request.env['mailing.mailing']._generate_mailing_report_token(user.id)):
             raise Unauthorized()
 
         request.env['ir.config_parameter'].sudo().set_param('mass_mailing.mass_mailing_reports', False)
@@ -595,7 +597,8 @@ class MassMailController(http.Controller):
     def _format_bl_request(self, mailing, document_id):
         mailing_model_name = request.env['ir.model']._get(mailing.mailing_model_real).display_name
         return {
-            'mailing_link': Markup(f'<a href="#" data-oe-model="mailing.mailing" data-oe-id="{mailing.id}">{escape(mailing.subject)}</a>'),
+            'mailing_link': Markup(
+                f'<a href="#" data-oe-model="mailing.mailing" data-oe-id="{mailing.id}">{escape(mailing.subject)}</a>'),
             'record_link': Markup(
                 f'<a href="#" data-oe-model="{escape(mailing.mailing_model_real)}" data-oe-id="{int(document_id)}">{escape(mailing_model_name)}</a>'
             ) if document_id else '',

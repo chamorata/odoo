@@ -1,6 +1,7 @@
 import re
-import requests
 from unittest.mock import patch
+
+import requests
 
 import odoo
 from odoo.modules.registry import Registry, DummyRLock
@@ -22,6 +23,7 @@ class TestAuthLDAP(BaseCase):
         def remove_ldap_user():
             with self.registry.cursor() as cr:
                 cr.execute("DELETE FROM res_users WHERE login = 'test_ldap_user'")
+
         self.addCleanup(remove_ldap_user)
 
     def test_auth_ldap(self):
@@ -60,8 +62,8 @@ class TestAuthLDAP(BaseCase):
         body = self.url_open("/web/login").text
         csrf = re.search(r'csrf_token: "(\w*?)"', body).group(1)
 
-        with patch.object(self.registry["res.company.ldap"], "_get_ldap_dicts", _get_ldap_dicts),\
-            patch.object(self.registry["res.company.ldap"], "_authenticate", _authenticate):
+        with patch.object(self.registry["res.company.ldap"], "_get_ldap_dicts", _get_ldap_dicts), \
+                patch.object(self.registry["res.company.ldap"], "_authenticate", _authenticate):
             res = self.opener.post(
                 f"{self.base_url()}/web/login",
                 data={

@@ -1,6 +1,6 @@
-from odoo.tests.common import tagged
-
 from odoo.addons.account.tests.common import AccountTestInvoicingHttpCommon
+
+from odoo.tests.common import tagged
 
 
 @tagged('post_install_l10n', 'post_install', '-at_install')

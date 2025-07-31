@@ -2,8 +2,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.mail.tests.common import mail_new_test_user
+
 from odoo.exceptions import AccessError
-from odoo.tests import tagged, common, new_test_user
+from odoo.tests import tagged, common
 from odoo.tools import mute_logger
 
 
@@ -38,7 +39,6 @@ class TestAccessRating(common.TransactionCase):
             "name": "Partner to Rate :("
         })
 
-
     @mute_logger('odoo.addons.base.models.ir_model')
     def test_rating_access(self):
         """ Security test : only a employee (user group) can create and write rating object """
@@ -71,6 +71,6 @@ class TestAccessRating(common.TransactionCase):
                 'feedback': 'You should not pass!'
             })
         with self.assertRaises(AccessError):
-            ratting.with_user(self.user_public).write({ 
+            ratting.with_user(self.user_public).write({
                 'feedback': 'You should not pass!'
             })

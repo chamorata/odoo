@@ -4,14 +4,15 @@
 from collections import defaultdict
 from contextlib import contextmanager
 from datetime import datetime
-from freezegun import freeze_time
 from unittest.mock import patch
 
-from odoo.addons.google_calendar.utils.google_calendar import GoogleCalendarService
+from freezegun import freeze_time
 from odoo.addons.google_account.models.google_service import GoogleService
-from odoo.addons.google_calendar.models.res_users import User
 from odoo.addons.google_calendar.models.google_sync import google_calendar_token, GoogleSync
+from odoo.addons.google_calendar.models.res_users import User
+from odoo.addons.google_calendar.utils.google_calendar import GoogleCalendarService
 from odoo.addons.mail.tests.common import mail_new_test_user
+
 from odoo.tests.common import HttpCase
 
 
@@ -19,7 +20,9 @@ def patch_api(func):
     def patched(self, *args, **kwargs):
         with self.mock_google_sync():
             return func(self, *args, **kwargs)
+
     return patched
+
 
 @patch.object(User, '_get_google_calendar_token', lambda user: 'dummy-token')
 class TestSyncGoogle(HttpCase):
@@ -67,9 +70,9 @@ class TestSyncGoogle(HttpCase):
                     self._gsync_patch_values[google_id].append((values, kwargs))
 
         with self.env.cr.savepoint(), \
-             patch.object(GoogleSync, '_google_insert', autospec=True, wraps=GoogleSync, side_effect=_mock_insert), \
-             patch.object(GoogleSync, '_google_delete', autospec=True, wraps=GoogleSync, side_effect=_mock_delete), \
-             patch.object(GoogleSync, '_google_patch', autospec=True, wraps=GoogleSync, side_effect=_mock_patch):
+                patch.object(GoogleSync, '_google_insert', autospec=True, wraps=GoogleSync, side_effect=_mock_insert), \
+                patch.object(GoogleSync, '_google_delete', autospec=True, wraps=GoogleSync, side_effect=_mock_delete), \
+                patch.object(GoogleSync, '_google_patch', autospec=True, wraps=GoogleSync, side_effect=_mock_patch):
             yield
 
     @contextmanager
@@ -80,7 +83,8 @@ class TestSyncGoogle(HttpCase):
             self._gservice_request_uris.append(uri)
             return (200, {}, datetime.now())
 
-        with patch.object(GoogleService, '_do_request', autospec=True, wraps=GoogleService, side_effect=_mock_do_request):
+        with patch.object(GoogleService, '_do_request', autospec=True, wraps=GoogleService,
+                          side_effect=_mock_do_request):
             yield
 
     def assertGoogleEventDeleted(self, google_id):

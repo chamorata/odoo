@@ -8,8 +8,8 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='display_type']" position="after">
                 <field name="channel_id"
-                    readonly="0"
-                    invisible="display_type != 'course'"/>
+                       readonly="0"
+                       invisible="display_type != 'course'"/>
                 <field name="course_url" invisible="1"/>
             </xpath>
         </field>

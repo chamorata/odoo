@@ -8,7 +8,8 @@
                 <field string='Hash' name="l10n_fr_hash" groups="base.group_no_one"/>
             </xpath>
             <field name="payment_ids" position="attributes">
-                <attribute name="readonly" add="country_code in ['FR', 'MF', 'MQ', 'NC', 'PF', 'RE', 'GF', 'GP', 'TF']" separator=" or " />
+                <attribute name="readonly" add="country_code in ['FR', 'MF', 'MQ', 'NC', 'PF', 'RE', 'GF', 'GP', 'TF']"
+                           separator=" or "/>
             </field>
         </field>
     </record>

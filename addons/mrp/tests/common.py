@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 
-from odoo.tests import Form
 from odoo.addons.mail.tests.common import mail_new_test_user
 from odoo.addons.stock.tests.common import TestStockCommon
+
+from odoo.tests import Form
 
 
 class TestMrpCommon(TestStockCommon):
 
     @classmethod
-    def generate_mo(cls, tracking_final='none', tracking_base_1='none', tracking_base_2='none', qty_final=5, qty_base_1=4, qty_base_2=1, picking_type_id=False, consumption=False):
+    def generate_mo(cls, tracking_final='none', tracking_base_1='none', tracking_base_2='none', qty_final=5,
+                    qty_base_1=4, qty_base_2=1, picking_type_id=False, consumption=False):
         """ This function generate a manufacturing order with one final
         product and two consumed product. Arguments allows to choose
         the tracking/qty for each different products. It returns the
@@ -40,8 +42,10 @@ class TestMrpCommon(TestStockCommon):
             'type': 'normal',
             'consumption': consumption if consumption else 'flexible',
             'bom_line_ids': [
-                (0, 0, {'product_id': product_to_use_2.id, 'product_qty': qty_base_2, 'manual_consumption': tracking_base_2 != 'none'}),
-                (0, 0, {'product_id': product_to_use_1.id, 'product_qty': qty_base_1, 'manual_consumption': tracking_base_1 != 'none'})
+                (0, 0, {'product_id': product_to_use_2.id, 'product_qty': qty_base_2,
+                        'manual_consumption': tracking_base_2 != 'none'}),
+                (0, 0, {'product_id': product_to_use_1.id, 'product_qty': qty_base_1,
+                        'manual_consumption': tracking_base_1 != 'none'})
             ]})
         mo_form = Form(cls.env['mrp.production'])
         mo_form.product_id = product_to_build
@@ -75,10 +79,12 @@ class TestMrpCommon(TestStockCommon):
         }])
 
         # Update demo products
-        (cls.product_2 | cls.product_3 | cls.product_4 | cls.product_5 | cls.product_6 | cls.product_7_3 | cls.product_8).write({
-            'type': 'consu',
-            'is_storable': True,
-        })
+        (
+                    cls.product_2 | cls.product_3 | cls.product_4 | cls.product_5 | cls.product_6 | cls.product_7_3 | cls.product_8).write(
+            {
+                'type': 'consu',
+                'is_storable': True,
+            })
 
         # User Data: mrp user and mrp manager
         cls.user_mrp_user = mail_new_test_user(
@@ -145,7 +151,8 @@ class TestMrpCommon(TestStockCommon):
             'consumption': 'flexible',
             'product_qty': 1.0,
             'operation_ids': [
-                (0, 0, {'name': 'Gift Wrap Maching', 'workcenter_id': cls.workcenter_1.id, 'time_cycle': 15, 'sequence': 1}),
+                (0, 0,
+                 {'name': 'Gift Wrap Maching', 'workcenter_id': cls.workcenter_1.id, 'time_cycle': 15, 'sequence': 1}),
             ],
             'type': 'phantom',
             'sequence': 2,
@@ -161,7 +168,8 @@ class TestMrpCommon(TestStockCommon):
             'consumption': 'flexible',
             'product_qty': 2.0,
             'operation_ids': [
-                (0, 0, {'name': 'Cutting Machine', 'workcenter_id': cls.workcenter_1.id, 'time_cycle': 12, 'sequence': 1}),
+                (0, 0,
+                 {'name': 'Cutting Machine', 'workcenter_id': cls.workcenter_1.id, 'time_cycle': 12, 'sequence': 1}),
                 (0, 0, {'name': 'Weld Machine', 'workcenter_id': cls.workcenter_1.id, 'time_cycle': 18, 'sequence': 2}),
             ],
             'type': 'normal',

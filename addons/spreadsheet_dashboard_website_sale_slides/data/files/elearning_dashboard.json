@@ -6,19 +6,48 @@
       "name": "Dashboard",
       "colNumber": 11,
       "rowNumber": 50,
-      "rows": { "6": { "size": 40 }, "22": { "size": 40 } },
+      "rows": {
+        "6": {
+          "size": 40
+        },
+        "22": {
+          "size": 40
+        }
+      },
       "cols": {
-        "0": { "size": 100 },
-        "1": { "size": 100 },
-        "2": { "size": 100 },
-        "3": { "size": 100 },
-        "4": { "size": 75 },
-        "5": { "size": 50 },
-        "6": { "size": 100 },
-        "7": { "size": 100 },
-        "8": { "size": 100 },
-        "9": { "size": 100 },
-        "10": { "size": 75 }
+        "0": {
+          "size": 100
+        },
+        "1": {
+          "size": 100
+        },
+        "2": {
+          "size": 100
+        },
+        "3": {
+          "size": 100
+        },
+        "4": {
+          "size": 75
+        },
+        "5": {
+          "size": 50
+        },
+        "6": {
+          "size": 100
+        },
+        "7": {
+          "size": 100
+        },
+        "8": {
+          "size": 100
+        },
+        "9": {
+          "size": 100
+        },
+        "10": {
+          "size": 75
+        }
       },
       "merges": [],
       "cells": {
@@ -32,7 +61,11 @@
           "content": "[Views by Course](odoo://view/{\"viewType\":\"graph\",\"action\":{\"domain\":[[\"is_category\",\"=\",false]],\"context\":{\"group_by\":[\"channel_id\",\"slide_category\"],\"graph_measure\":\"total_views\",\"graph_mode\":\"bar\",\"graph_groupbys\":[\"channel_id\",\"slide_category\"]},\"modelName\":\"slide.slide\",\"views\":[[false,\"graph\"],[false,\"list\"],[false,\"form\"],[false,\"pivot\"],[false,\"search\"]]},\"threshold\":0,\"name\":\"Views by Course\"})"
         }
       },
-      "styles": { "A7": 1, "A23": 1, "G23": 1 },
+      "styles": {
+        "A7": 1,
+        "A23": 1,
+        "G23": 1
+      },
       "formats": {},
       "borders": {
         "A23:E23": 1,
@@ -52,11 +85,15 @@
           "height": 344,
           "tag": "chart",
           "data": {
-            "title": { "text": "" },
+            "title": {
+              "text": ""
+            },
             "background": "#FFFFFF",
             "legendPosition": "none",
             "metaData": {
-              "groupBy": ["date:month"],
+              "groupBy": [
+                "date:month"
+              ],
               "measure": "price_subtotal",
               "order": null,
               "resModel": "sale.report",
@@ -65,11 +102,24 @@
             "searchParams": {
               "comparison": null,
               "context": {
-                "group_by": ["date", "product_id"],
-                "pivot_measures": ["price_total"]
+                "group_by": [
+                  "date",
+                  "product_id"
+                ],
+                "pivot_measures": [
+                  "price_total"
+                ]
               },
-              "domain": [["product_id.channel_ids", "!=", false]],
-              "groupBy": ["date:month"],
+              "domain": [
+                [
+                  "product_id.channel_ids",
+                  "!=",
+                  false
+                ]
+              ],
+              "groupBy": [
+                "date:month"
+              ],
               "orderBy": []
             },
             "type": "odoo_line",
@@ -96,7 +146,11 @@
             "baselineColorDown": "#DC6965",
             "baselineColorUp": "#00A04A",
             "baselineMode": "difference",
-            "title": { "text": "Courses", "bold": true, "color": "#434343" },
+            "title": {
+              "text": "Courses",
+              "bold": true,
+              "color": "#434343"
+            },
             "type": "scorecard",
             "background": "#EFF6FF",
             "keyValue": "Data!D2",
@@ -114,7 +168,11 @@
             "baselineColorDown": "#DC6965",
             "baselineColorUp": "#00A04A",
             "baselineMode": "difference",
-            "title": { "text": "Content", "bold": true, "color": "#434343" },
+            "title": {
+              "text": "Content",
+              "bold": true,
+              "color": "#434343"
+            },
             "type": "scorecard",
             "background": "#EFF6FF",
             "keyValue": "Data!D3",
@@ -132,7 +190,11 @@
             "baselineColorDown": "#DC6965",
             "baselineColorUp": "#00A04A",
             "baselineMode": "percentage",
-            "title": { "text": "Attendees", "bold": true, "color": "#434343" },
+            "title": {
+              "text": "Attendees",
+              "bold": true,
+              "color": "#434343"
+            },
             "type": "scorecard",
             "background": "#EFF6FF",
             "baseline": "Data!E4",
@@ -152,7 +214,11 @@
             "baselineColorDown": "#DC6965",
             "baselineColorUp": "#00A04A",
             "baselineMode": "percentage",
-            "title": { "text": "Revenue", "bold": true, "color": "#434343" },
+            "title": {
+              "text": "Revenue",
+              "bold": true,
+              "color": "#434343"
+            },
             "type": "scorecard",
             "background": "#FFF7ED",
             "baseline": "Data!E6",
@@ -172,7 +238,11 @@
             "baselineColorDown": "#DC6965",
             "baselineColorUp": "#00A04A",
             "baselineMode": "difference",
-            "title": { "text": "Rating", "bold": true, "color": "#434343" },
+            "title": {
+              "text": "Rating",
+              "bold": true,
+              "color": "#434343"
+            },
             "type": "scorecard",
             "background": "#EFF6FF",
             "keyValue": "Data!D5",
@@ -187,11 +257,15 @@
           "height": 400,
           "tag": "chart",
           "data": {
-            "title": { "text": "" },
+            "title": {
+              "text": ""
+            },
             "background": "#FFFFFF",
             "legendPosition": "none",
             "metaData": {
-              "groupBy": ["channel_id"],
+              "groupBy": [
+                "channel_id"
+              ],
               "measure": "__count",
               "order": "DESC",
               "resModel": "slide.channel.partner",
@@ -201,7 +275,9 @@
               "comparison": null,
               "context": {},
               "domain": [],
-              "groupBy": ["channel_id"],
+              "groupBy": [
+                "channel_id"
+              ],
               "orderBy": []
             },
             "type": "odoo_bar",
@@ -224,11 +300,16 @@
           "height": 400,
           "tag": "chart",
           "data": {
-            "title": { "text": "" },
+            "title": {
+              "text": ""
+            },
             "background": "#FFFFFF",
             "legendPosition": "top",
             "metaData": {
-              "groupBy": ["channel_id", "slide_category"],
+              "groupBy": [
+                "channel_id",
+                "slide_category"
+              ],
               "measure": "total_views",
               "order": "DESC",
               "resModel": "slide.slide",
@@ -237,8 +318,17 @@
             "searchParams": {
               "comparison": null,
               "context": {},
-              "domain": [["is_category", "=", false]],
-              "groupBy": ["channel_id", "slide_category"],
+              "domain": [
+                [
+                  "is_category",
+                  "=",
+                  false
+                ]
+              ],
+              "groupBy": [
+                "channel_id",
+                "slide_category"
+              ],
               "orderBy": []
             },
             "type": "odoo_bar",
@@ -257,7 +347,10 @@
       "tables": [],
       "areGridLinesVisible": true,
       "isVisible": true,
-      "headerGroups": { "ROW": [], "COL": [] },
+      "headerGroups": {
+        "ROW": [],
+        "COL": []
+      },
       "dataValidationRules": [],
       "comments": {}
     },
@@ -267,36 +360,99 @@
       "colNumber": 26,
       "rowNumber": 96,
       "rows": {},
-      "cols": { "0": { "size": 114 }, "1": { "size": 89 } },
+      "cols": {
+        "0": {
+          "size": 114
+        },
+        "1": {
+          "size": 89
+        }
+      },
       "merges": [],
       "cells": {
-        "A2": { "content": "=_t(\"Courses\")" },
-        "A3": { "content": "=_t(\"Content\")" },
-        "A4": { "content": "=_t(\"Attendees\")" },
-        "A5": { "content": "=_t(\"Rating\")" },
-        "A6": { "content": "=_t(\"Revenue\")" },
-        "B1": { "content": "=_t(\"Current\")" },
-        "B2": { "content": "=PIVOT.VALUE(4,\"__count\")" },
-        "B3": { "content": "=PIVOT.VALUE(5,\"__count\")" },
-        "B4": { "content": "=PIVOT.VALUE(6,\"__count\")" },
-        "B5": { "content": "=PIVOT.VALUE(9,\"rating\")" },
-        "B6": { "content": "=PIVOT.VALUE(10,\"price_total\")" },
-        "C1": { "content": "=_t(\"Previous\")" },
-        "C2": { "content": "/" },
-        "C3": { "content": "/" },
-        "C4": { "content": "=PIVOT.VALUE(7,\"__count\")" },
-        "C6": { "content": "=PIVOT.VALUE(11,\"price_total\")" },
-        "D1": { "content": "=_t(\"Current\")" },
-        "D2": { "content": "=FORMAT.LARGE.NUMBER(B2)" },
-        "D3": { "content": "=FORMAT.LARGE.NUMBER(B3)" },
-        "D4": { "content": "=FORMAT.LARGE.NUMBER(B4)" },
-        "D5": { "content": "=CONCATENATE(B5,\"/5\")" },
-        "D6": { "content": "=FORMAT.LARGE.NUMBER(B6)" },
-        "E1": { "content": "=_t(\"Previous\")" },
-        "E4": { "content": "=FORMAT.LARGE.NUMBER(C4)" },
-        "E6": { "content": "=FORMAT.LARGE.NUMBER(C6)" }
+        "A2": {
+          "content": "=_t(\"Courses\")"
+        },
+        "A3": {
+          "content": "=_t(\"Content\")"
+        },
+        "A4": {
+          "content": "=_t(\"Attendees\")"
+        },
+        "A5": {
+          "content": "=_t(\"Rating\")"
+        },
+        "A6": {
+          "content": "=_t(\"Revenue\")"
+        },
+        "B1": {
+          "content": "=_t(\"Current\")"
+        },
+        "B2": {
+          "content": "=PIVOT.VALUE(4,\"__count\")"
+        },
+        "B3": {
+          "content": "=PIVOT.VALUE(5,\"__count\")"
+        },
+        "B4": {
+          "content": "=PIVOT.VALUE(6,\"__count\")"
+        },
+        "B5": {
+          "content": "=PIVOT.VALUE(9,\"rating\")"
+        },
+        "B6": {
+          "content": "=PIVOT.VALUE(10,\"price_total\")"
+        },
+        "C1": {
+          "content": "=_t(\"Previous\")"
+        },
+        "C2": {
+          "content": "/"
+        },
+        "C3": {
+          "content": "/"
+        },
+        "C4": {
+          "content": "=PIVOT.VALUE(7,\"__count\")"
+        },
+        "C6": {
+          "content": "=PIVOT.VALUE(11,\"price_total\")"
+        },
+        "D1": {
+          "content": "=_t(\"Current\")"
+        },
+        "D2": {
+          "content": "=FORMAT.LARGE.NUMBER(B2)"
+        },
+        "D3": {
+          "content": "=FORMAT.LARGE.NUMBER(B3)"
+        },
+        "D4": {
+          "content": "=FORMAT.LARGE.NUMBER(B4)"
+        },
+        "D5": {
+          "content": "=CONCATENATE(B5,\"/5\")"
+        },
+        "D6": {
+          "content": "=FORMAT.LARGE.NUMBER(B6)"
+        },
+        "E1": {
+          "content": "=_t(\"Previous\")"
+        },
+        "E4": {
+          "content": "=FORMAT.LARGE.NUMBER(C4)"
+        },
+        "E6": {
+          "content": "=FORMAT.LARGE.NUMBER(C6)"
+        }
       },
-      "styles": { "B1:E1": 2, "D2:D4": 3, "E4": 3, "D6:E6": 3, "D5": 4 },
+      "styles": {
+        "B1:E1": 2,
+        "D2:D4": 3,
+        "E4": 3,
+        "D6:E6": 3,
+        "D5": 4
+      },
       "formats": {},
       "borders": {},
       "conditionalFormats": [],
@@ -304,21 +460,45 @@
       "tables": [],
       "areGridLinesVisible": true,
       "isVisible": true,
-      "headerGroups": { "ROW": [], "COL": [] },
+      "headerGroups": {
+        "ROW": [],
+        "COL": []
+      },
       "dataValidationRules": [],
       "comments": {}
     }
   ],
   "styles": {
-    "1": { "textColor": "#01666b", "bold": true, "fontSize": 16 },
-    "2": { "bold": true },
-    "3": { "fillColor": "#f2f2f2" },
-    "4": { "fillColor": "#f2f2f2", "align": "right" }
+    "1": {
+      "textColor": "#01666b",
+      "bold": true,
+      "fontSize": 16
+    },
+    "2": {
+      "bold": true
+    },
+    "3": {
+      "fillColor": "#f2f2f2"
+    },
+    "4": {
+      "fillColor": "#f2f2f2",
+      "align": "right"
+    }
   },
   "formats": {},
   "borders": {
-    "1": { "bottom": { "style": "thin", "color": "#CCCCCC" } },
-    "2": { "top": { "style": "thin", "color": "#CCCCCC" } }
+    "1": {
+      "bottom": {
+        "style": "thin",
+        "color": "#CCCCCC"
+      }
+    },
+    "2": {
+      "top": {
+        "style": "thin",
+        "color": "#CCCCCC"
+      }
+    }
   },
   "revisionId": "START_REVISION",
   "uniqueFigureIds": true,
@@ -339,13 +519,27 @@
       "type": "ODOO",
       "fieldMatching": {},
       "context": {},
-      "domain": [["is_published", "=", true]],
+      "domain": [
+        [
+          "is_published",
+          "=",
+          true
+        ]
+      ],
       "id": "4",
-      "measures": [{ "id": "__count", "fieldName": "__count" }],
+      "measures": [
+        {
+          "id": "__count",
+          "fieldName": "__count"
+        }
+      ],
       "model": "slide.channel",
       "name": "courses",
       "sortedColumn": {
-        "groupId": [[], []],
+        "groupId": [
+          [],
+          []
+        ],
         "measure": "create_date",
         "order": "desc"
       },
@@ -362,9 +556,26 @@
         }
       },
       "context": {},
-      "domain": ["&", ["is_category", "=", false], ["is_published", "=", true]],
+      "domain": [
+        "&",
+        [
+          "is_category",
+          "=",
+          false
+        ],
+        [
+          "is_published",
+          "=",
+          true
+        ]
+      ],
       "id": "5",
-      "measures": [{ "id": "__count", "fieldName": "__count" }],
+      "measures": [
+        {
+          "id": "__count",
+          "fieldName": "__count"
+        }
+      ],
       "model": "slide.slide",
       "name": "content",
       "sortedColumn": null,
@@ -384,7 +595,12 @@
       "context": {},
       "domain": [],
       "id": "6",
-      "measures": [{ "id": "__count", "fieldName": "__count" }],
+      "measures": [
+        {
+          "id": "__count",
+          "fieldName": "__count"
+        }
+      ],
       "model": "slide.channel.partner",
       "name": "attendees - current",
       "sortedColumn": null,
@@ -404,7 +620,12 @@
       "context": {},
       "domain": [],
       "id": "7",
-      "measures": [{ "id": "__count", "fieldName": "__count" }],
+      "measures": [
+        {
+          "id": "__count",
+          "fieldName": "__count"
+        }
+      ],
       "model": "slide.channel.partner",
       "name": "attendees - previous",
       "sortedColumn": null,
@@ -418,11 +639,24 @@
       "context": {},
       "domain": [
         "&",
-        ["consumed", "=", true],
-        ["res_model", "=", "slide.channel"]
+        [
+          "consumed",
+          "=",
+          true
+        ],
+        [
+          "res_model",
+          "=",
+          "slide.channel"
+        ]
       ],
       "id": "9",
-      "measures": [{ "id": "rating", "fieldName": "rating" }],
+      "measures": [
+        {
+          "id": "rating",
+          "fieldName": "rating"
+        }
+      ],
       "model": "rating.rating",
       "name": "rating",
       "sortedColumn": null,
@@ -440,16 +674,38 @@
         }
       },
       "context": {
-        "group_by": ["date", "product_id"],
-        "pivot_measures": ["price_total"]
+        "group_by": [
+          "date",
+          "product_id"
+        ],
+        "pivot_measures": [
+          "price_total"
+        ]
       },
       "domain": [
         "&",
-        ["product_id.channel_ids", "!=", false],
-        ["state", "not in", ["draft", "sent", "cancel"]]
+        [
+          "product_id.channel_ids",
+          "!=",
+          false
+        ],
+        [
+          "state",
+          "not in",
+          [
+            "draft",
+            "sent",
+            "cancel"
+          ]
+        ]
       ],
       "id": "10",
-      "measures": [{ "id": "price_total", "fieldName": "price_total" }],
+      "measures": [
+        {
+          "id": "price_total",
+          "fieldName": "price_total"
+        }
+      ],
       "model": "sale.report",
       "name": "revenue - current",
       "sortedColumn": null,
@@ -467,16 +723,38 @@
         }
       },
       "context": {
-        "group_by": ["date", "product_id"],
-        "pivot_measures": ["price_total"]
+        "group_by": [
+          "date",
+          "product_id"
+        ],
+        "pivot_measures": [
+          "price_total"
+        ]
       },
       "domain": [
         "&",
-        ["product_id.channel_ids", "!=", false],
-        ["state", "not in", ["draft", "sent", "cancel"]]
+        [
+          "product_id.channel_ids",
+          "!=",
+          false
+        ],
+        [
+          "state",
+          "not in",
+          [
+            "draft",
+            "sent",
+            "cancel"
+          ]
+        ]
       ],
       "id": "11",
-      "measures": [{ "id": "price_total", "fieldName": "price_total" }],
+      "measures": [
+        {
+          "id": "price_total",
+          "fieldName": "price_total"
+        }
+      ],
       "model": "sale.report",
       "name": "revenue - previous",
       "sortedColumn": null,

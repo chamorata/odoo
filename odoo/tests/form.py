@@ -14,8 +14,8 @@ from datetime import datetime, date
 from lxml import etree
 
 import odoo
-from odoo.models import BaseModel
 from odoo.fields import Command
+from odoo.models import BaseModel
 from odoo.tools.safe_eval import safe_eval
 
 _logger = logging.getLogger(__name__)
@@ -102,6 +102,7 @@ class Form:
 
     .. versionadded:: 12.0
     """
+
     def __init__(self, record: BaseModel, view: None | int | str | BaseModel = None) -> None:
         assert isinstance(record, BaseModel)
         assert len(record) <= 1
@@ -160,8 +161,8 @@ class Form:
         context = action.get('context', {})
         if isinstance(context, str):
             context = ast.literal_eval(context)
-        record = env[action['res_model']]\
-            .with_context(context)\
+        record = env[action['res_model']] \
+            .with_context(context) \
             .browse(action.get('res_id'))
 
         return cls(record, view_id)
@@ -300,7 +301,7 @@ class Form:
             view_type = 'form'
 
         # don't recursively process o2ms in o2ms
-        return self._process_view(views[view_type], submodel, level=level-1)
+        return self._process_view(views[view_type], submodel, level=level - 1)
 
     def __str__(self):
         return f"<{type(self).__name__} {self._record}>"
@@ -494,13 +495,13 @@ class Form:
 
             # note: maybe `invisible` should not skip `required` if model attribute
             if (
-                mode == 'save'
-                and value is False
-                and field_name != parent_link
-                and field_info['type'] != 'boolean'
-                and not self._get_modifier(field_name, 'invisible', view=view, vals=modifiers_values)
-                and not self._get_modifier(field_name, 'column_invisible', view=view, vals=modifiers_values)
-                and self._get_modifier(field_name, 'required', view=view, vals=modifiers_values)
+                    mode == 'save'
+                    and value is False
+                    and field_name != parent_link
+                    and field_info['type'] != 'boolean'
+                    and not self._get_modifier(field_name, 'invisible', view=view, vals=modifiers_values)
+                    and not self._get_modifier(field_name, 'column_invisible', view=view, vals=modifiers_values)
+                    and self._get_modifier(field_name, 'required', view=view, vals=modifiers_values)
             ):
                 raise AssertionError(f"{field_name} is a required field ({view['modifiers'][field_name]})")
 
@@ -682,8 +683,8 @@ class O2MForm(Form):
 
         for field_name in self._view['fields']:
             if self._get_modifier(field_name, 'required') and not (
-                self._get_modifier(field_name, 'column_invisible')
-                or self._get_modifier(field_name, 'invisible')
+                    self._get_modifier(field_name, 'column_invisible')
+                    or self._get_modifier(field_name, 'invisible')
             ):
                 assert values[field_name] is not False, f"{field_name!r} is a required field"
 
@@ -828,8 +829,8 @@ class X2MProxy:
     """ A proxy represents the value of an x2many field, but not directly.
     Instead, it provides an API to add, remove or edit records in the value.
     """
-    _form = None        # Form containing the corresponding x2many field
-    _field = None       # name of the x2many field
+    _form = None  # Form containing the corresponding x2many field
+    _field = None  # name of the x2many field
     _field_info = None  # field info
 
     def __init__(self, form, field_name):
@@ -849,6 +850,7 @@ class X2MProxy:
 
 class O2MProxy(X2MProxy):
     """ Proxy object for editing the value of a one2many field. """
+
     def __len__(self):
         return len(self._field_value)
 
@@ -904,6 +906,7 @@ class M2MProxy(X2MProxy, collections.abc.Sequence):
     Behaves as a :class:`~collection.Sequence` of recordsets, can be
     indexed or sliced to get actual underlying recordsets.
     """
+
     def __getitem__(self, index):
         comodel_name = self._field_info['relation']
         return self._form._env[comodel_name].browse(self._field_value[index])

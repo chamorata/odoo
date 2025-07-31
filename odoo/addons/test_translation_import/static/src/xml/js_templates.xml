@@ -8,6 +8,6 @@
         <t t-component="ComponentB" title="no export" t-att-title="no export">
             <div>slot 2</div>
         </t>
-        <img title="do export" />
+        <img title="do export"/>
     </div>
 </template>

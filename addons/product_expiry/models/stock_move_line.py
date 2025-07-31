@@ -13,7 +13,7 @@ class StockMoveLine(models.Model):
     expiration_date = fields.Datetime(
         string='Expiration Date', compute='_compute_expiration_date', store=True,
         help='This is the date on which the goods with this Serial Number may'
-        ' become dangerous and must not be consumed.')
+             ' become dangerous and must not be consumed.')
     is_expired = fields.Boolean(related='lot_id.product_expiry_alert')
     use_expiration_date = fields.Boolean(
         string='Use Expiration Date', related='product_id.use_expiration_date')
@@ -37,7 +37,8 @@ class StockMoveLine(models.Model):
                 if move_line.product_id.use_expiration_date:
                     if not move_line.expiration_date:
                         from_date = move_line.picking_id.scheduled_date or fields.Datetime.today()
-                        move_line.expiration_date = from_date + datetime.timedelta(days=move_line.product_id.expiration_time)
+                        move_line.expiration_date = from_date + datetime.timedelta(
+                            days=move_line.product_id.expiration_time)
                 else:
                     move_line.expiration_date = False
 

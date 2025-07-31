@@ -12,13 +12,15 @@
             <field name="sequence">1200</field>
             <field name="group_id" ref="project.group_project_user"/>
             <field name="tip_description" type="html">
-            <div>
-                <p class="tip_title">Tip: Use task states to keep track of your tasks' progression</p>
-                <p class="tip_content">
-                Quickly check the status of tasks for approvals or change requests and identify those on hold until dependencies are resolved with the hourglass icon.
-                </p>
-                <img src="https://download.odoocdn.com/digests/project/static/src/img/task-state-img.png" width="720" class="illustration_border" />
-            </div>
+                <div>
+                    <p class="tip_title">Tip: Use task states to keep track of your tasks' progression</p>
+                    <p class="tip_content">
+                        Quickly check the status of tasks for approvals or change requests and identify those on hold
+                        until dependencies are resolved with the hourglass icon.
+                    </p>
+                    <img src="https://download.odoocdn.com/digests/project/static/src/img/task-state-img.png"
+                         width="720" class="illustration_border"/>
+                </div>
             </field>
         </record>
 
@@ -27,16 +29,24 @@
             <field name="sequence">1300</field>
             <field name="group_id" ref="project.group_project_user"/>
             <field name="tip_description" type="html">
-<div>
-    <t t-set="project_record" t-value="object.env['project.project'].search([('alias_name', '!=', False), ('alias_domain_id', '!=', False)], limit=1, order='sequence asc')"/>
-    <p class="tip_title">Tip: Create tasks from incoming emails</p>
-    <t t-if="project_record.alias_email">
-        <p class="tip_content">Emails sent to <a t-attf-href="mailto:{{project_record.alias_email}}" target="_blank" style="color: #714B67; text-decoration: none;"><t t-out="project_record.alias_email" /></a> will generate tasks in your <t t-out="project_record.name"></t> project.</p>
-    </t>
-    <t t-else="">
-        <p class="tip_content">Create tasks by sending an email to the email address of your project.</p>
-    </t>
-</div>
+                <div>
+                    <t t-set="project_record"
+                       t-value="object.env['project.project'].search([('alias_name', '!=', False), ('alias_domain_id', '!=', False)], limit=1, order='sequence asc')"/>
+                    <p class="tip_title">Tip: Create tasks from incoming emails</p>
+                    <t t-if="project_record.alias_email">
+                        <p class="tip_content">Emails sent to
+                            <a t-attf-href="mailto:{{project_record.alias_email}}" target="_blank"
+                               style="color: #714B67; text-decoration: none;">
+                                <t t-out="project_record.alias_email"/>
+                            </a>
+                            will generate tasks in your <t t-out="project_record.name"></t> project.
+                        </p>
+                    </t>
+                    <t t-else="">
+                        <p class="tip_content">Create tasks by sending an email to the email address of your project.
+                        </p>
+                    </t>
+                </div>
             </field>
         </record>
 
@@ -45,11 +55,12 @@
             <field name="sequence">3200</field>
             <field name="group_id" ref="project.group_project_user"/>
             <field name="tip_description" type="html">
-<div>
-    <p class="tip_title">Tip: Your Own Personal Kanban</p>
-    <p class="tip_content">Use personal stages to organize your tasks and create your own workflow.</p>
-    <img src="https://download.odoocdn.com/digests/project/static/src/img/18-project-personal-stages.gif" width="540" class="illustration_border"/>
-</div>
+                <div>
+                    <p class="tip_title">Tip: Your Own Personal Kanban</p>
+                    <p class="tip_content">Use personal stages to organize your tasks and create your own workflow.</p>
+                    <img src="https://download.odoocdn.com/digests/project/static/src/img/18-project-personal-stages.gif"
+                         width="540" class="illustration_border"/>
+                </div>
             </field>
         </record>
 
@@ -58,11 +69,14 @@
             <field name="sequence">3900</field>
             <field name="group_id" ref="project.group_project_manager"/>
             <field name="tip_description" type="html">
-<div>
-    <p class="tip_title">Tip: Project-Specific Fields</p>
-    <p class="tip_content">Add project-specific property fields on tasks to customize your project management process.</p>
-    <img src="https://download.odoocdn.com/digests/project/static/src/img/18-project-property-fields.gif" width="540" class="illustration_border"/>
-</div>
+                <div>
+                    <p class="tip_title">Tip: Project-Specific Fields</p>
+                    <p class="tip_content">Add project-specific property fields on tasks to customize your project
+                        management process.
+                    </p>
+                    <img src="https://download.odoocdn.com/digests/project/static/src/img/18-project-property-fields.gif"
+                         width="540" class="illustration_border"/>
+                </div>
             </field>
         </record>
     </data>

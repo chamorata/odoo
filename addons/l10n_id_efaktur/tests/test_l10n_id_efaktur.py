@@ -1,13 +1,15 @@
 import csv
+from unittest.mock import patch
 
-from odoo import Command
-from odoo.exceptions import UserError, ValidationError, RedirectWarning
-from odoo.tests import tagged
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.addons.l10n_id_efaktur.models.account_move import AccountMove
 from odoo.addons.l10n_id_efaktur.models.efaktur_document import FK_HEAD_LIST, LT_HEAD_LIST, OF_HEAD_LIST, _csv_row
+
+from odoo import Command
 from odoo.exceptions import RedirectWarning
-from unittest.mock import patch
+from odoo.exceptions import UserError, ValidationError
+from odoo.tests import tagged
+
 
 @tagged('post_install', '-at_install', 'post_install_l10n')
 class TestIndonesianEfaktur(AccountTestInvoicingCommon):
@@ -22,9 +24,14 @@ class TestIndonesianEfaktur(AccountTestInvoicingCommon):
             'phone': '12345',
         })
         indonesia = cls.env.ref('base.id')
-        cls.partner_id = cls.env['res.partner'].create({"name": "l10ntest", "l10n_id_pkp": True, "l10n_id_kode_transaksi": "01", "l10n_id_nik": "12345", "vat": "000000000000000", "country_id": indonesia.id})
-        cls.partner_id_vat = cls.env['res.partner'].create({"name": "l10ntest3", "l10n_id_pkp": True, "l10n_id_kode_transaksi": "01", "l10n_id_nik": "67890", "vat": "010000000000000"})
-        cls.tax_id = cls.env['account.tax'].create({"name": "test tax", "type_tax_use": "sale", "amount": 10.0, "price_include_override": "tax_included"})
+        cls.partner_id = cls.env['res.partner'].create(
+            {"name": "l10ntest", "l10n_id_pkp": True, "l10n_id_kode_transaksi": "01", "l10n_id_nik": "12345",
+             "vat": "000000000000000", "country_id": indonesia.id})
+        cls.partner_id_vat = cls.env['res.partner'].create(
+            {"name": "l10ntest3", "l10n_id_pkp": True, "l10n_id_kode_transaksi": "01", "l10n_id_nik": "67890",
+             "vat": "010000000000000"})
+        cls.tax_id = cls.env['account.tax'].create(
+            {"name": "test tax", "type_tax_use": "sale", "amount": 10.0, "price_include_override": "tax_included"})
 
         cls.efaktur = cls.env['l10n_id_efaktur.efaktur.range'].create({'min': '0000000000001', 'max': '0000000000010'})
         cls.maxDiff = None
@@ -35,11 +42,13 @@ class TestIndonesianEfaktur(AccountTestInvoicingCommon):
         # For the sake of unit test of this module, we want to retain the the compute method for field
         # l10n_id_need_kode_transaksi of this module. In the coretax module, l10n_id_need_kode_transaksi
         # is always set to False to prevent the flows of old module to be triggered
-        patch_kode_transaksi = patch('odoo.addons.l10n_id_efaktur_coretax.models.account_move.AccountMove._compute_need_kode_transaksi',
-                                AccountMove._compute_need_kode_transaksi)
+        patch_kode_transaksi = patch(
+            'odoo.addons.l10n_id_efaktur_coretax.models.account_move.AccountMove._compute_need_kode_transaksi',
+            AccountMove._compute_need_kode_transaksi)
         cls.startClassPatcher(patch_kode_transaksi)
-        patch_download_efaktur = patch("odoo.addons.l10n_id_efaktur_coretax.models.account_move.AccountMove.download_efaktur",
-                                AccountMove.download_efaktur)
+        patch_download_efaktur = patch(
+            "odoo.addons.l10n_id_efaktur_coretax.models.account_move.AccountMove.download_efaktur",
+            AccountMove.download_efaktur)
         cls.startClassPatcher(patch_download_efaktur)
 
     def test_posting_without_code(self):
@@ -105,7 +114,8 @@ class TestIndonesianEfaktur(AccountTestInvoicingCommon):
             'street': 'Jalan Legian',
             'zip': '80361',
             'city': 'Bali',
-            'is_company': True,  # If true of it a commercial partner is set, the name would be in the address unless said not to add it.
+            'is_company': True,
+            # If true of it a commercial partner is set, the name would be in the address unless said not to add it.
         })
 
         out_invoice = self.env['account.move'].create({
@@ -200,7 +210,8 @@ class TestIndonesianEfaktur(AccountTestInvoicingCommon):
 
     def test_efaktur_no_vat_nik(self):
         """ Test to ensure that when no VAT and NIK is supplied, a RedirectWarning should be raised """
-        partner_no_vat_nik = self.env['res.partner'].create({"name": "l10ntest4", "l10n_id_pkp": True, "l10n_id_kode_transaksi": "01"})
+        partner_no_vat_nik = self.env['res.partner'].create(
+            {"name": "l10ntest4", "l10n_id_pkp": True, "l10n_id_kode_transaksi": "01"})
         out_invoice = self.env['account.move'].create({
             'move_type': 'out_invoice',
             'partner_id': partner_no_vat_nik.id,
@@ -220,7 +231,8 @@ class TestIndonesianEfaktur(AccountTestInvoicingCommon):
 
         NPWP would contain NIK, NAMA contains customer's name, REFERENSI would contain invoice name with customer's NIK"""
 
-        partner_nik_no_vat = self.env['res.partner'].create({"name": "l10ntest4", "l10n_id_pkp": True, "l10n_id_kode_transaksi": "01", "l10n_id_nik": "1532167"})
+        partner_nik_no_vat = self.env['res.partner'].create(
+            {"name": "l10ntest4", "l10n_id_pkp": True, "l10n_id_kode_transaksi": "01", "l10n_id_nik": "1532167"})
         out_invoice = self.env['account.move'].create({
             'move_type': 'out_invoice',
             'partner_id': partner_nik_no_vat.id,
@@ -335,7 +347,8 @@ class TestIndonesianEfaktur(AccountTestInvoicingCommon):
         # No codes have been consumed.
         self.assertEqual(self.efaktur.available, available_code)
 
-        with self.assertRaises(ValidationError, msg='E-faktur is not available for invoices without any taxes.'), self.cr.savepoint():
+        with self.assertRaises(ValidationError,
+                               msg='E-faktur is not available for invoices without any taxes.'), self.cr.savepoint():
             out_invoice_no_taxes.download_efaktur()
 
     def test_efaktur_consume_code(self):
@@ -395,12 +408,17 @@ class TestIndonesianEfaktur(AccountTestInvoicingCommon):
         """ Test on the correctness of l10n_id_available_range_count computation given ranges
         across multi-company setup """
         company_2 = self.company_data_2['company']
-        tax_id = self.env['account.tax'].create({"name": "test tax", "type_tax_use": "sale", "amount": 10.0, "price_include": True, "company_id": company_2.id})
+        tax_id = self.env['account.tax'].create(
+            {"name": "test tax", "type_tax_use": "sale", "amount": 10.0, "price_include": True,
+             "company_id": company_2.id})
 
         # create 3 ranges on the other company where one has no availability
-        self.env['l10n_id_efaktur.efaktur.range'].create({'min': "%013d" % 21, 'max': '%013d' % 30, 'company_id': company_2.id})
-        self.env['l10n_id_efaktur.efaktur.range'].create({'min': "%013d" % 31, 'max': '%013d' % 40, 'company_id': company_2.id})
-        self.env['l10n_id_efaktur.efaktur.range'].create({'min': "%013d" % 41, 'max': '%013d' % 50, 'available': 0, 'company_id': company_2.id})
+        self.env['l10n_id_efaktur.efaktur.range'].create(
+            {'min': "%013d" % 21, 'max': '%013d' % 30, 'company_id': company_2.id})
+        self.env['l10n_id_efaktur.efaktur.range'].create(
+            {'min': "%013d" % 31, 'max': '%013d' % 40, 'company_id': company_2.id})
+        self.env['l10n_id_efaktur.efaktur.range'].create(
+            {'min': "%013d" % 41, 'max': '%013d' % 50, 'available': 0, 'company_id': company_2.id})
 
         # Create separate invoice on each company
         invoices = self.env["account.move"].create([{
@@ -615,7 +633,8 @@ class TestIndonesianEfaktur(AccountTestInvoicingCommon):
         })
 
         # Create another range, and there should be 2 ranges available
-        efaktur_range = self.env['l10n_id_efaktur.efaktur.range'].create({'min': '0000000000011', 'max': '0000000000020'})
+        efaktur_range = self.env['l10n_id_efaktur.efaktur.range'].create(
+            {'min': '0000000000011', 'max': '0000000000020'})
         self.assertEqual(out_invoice_1.l10n_id_available_range_count, 2)
 
         # if no range selected for it, we auto-assign the smallest range
@@ -663,7 +682,8 @@ class TestIndonesianEfaktur(AccountTestInvoicingCommon):
         self.assertEqual(out_invoice_1.l10n_id_tax_number, "0100000000000001")
 
         # Reverse and create the replacement invoice
-        move_reversal = self.env['account.move.reversal'].with_context(active_model="account.move", active_ids=out_invoice_1.ids).create({
+        move_reversal = self.env['account.move.reversal'].with_context(active_model="account.move",
+                                                                       active_ids=out_invoice_1.ids).create({
             "reason": "Correcting Price",
             "journal_id": out_invoice_1.journal_id.id,
         })
@@ -700,7 +720,8 @@ class TestIndonesianEfaktur(AccountTestInvoicingCommon):
         out_invoice_1.action_post()
 
         # Reverse move and create replacement invoice
-        move_reversal = self.env['account.move.reversal'].with_context(active_model="account.move", active_ids=out_invoice_1.ids).create({
+        move_reversal = self.env['account.move.reversal'].with_context(active_model="account.move",
+                                                                       active_ids=out_invoice_1.ids).create({
             "reason": "Correcting Price",
             "journal_id": out_invoice_1.journal_id.id,
         })
@@ -718,8 +739,11 @@ class TestIndonesianEfaktur(AccountTestInvoicingCommon):
         """ Ensure that generating efaktur document for invoices across multi company is not allowed """
         # Setup company
         company_2 = self.company_data_2['company']
-        tax_id = self.env['account.tax'].create({"name": "test tax", "type_tax_use": "sale", "amount": 10.0, "price_include": True, "company_id": company_2.id})
-        self.env['l10n_id_efaktur.efaktur.range'].create({'min': "%013d" % 21, 'max': '%013d' % 30, 'company_id': company_2.id})
+        tax_id = self.env['account.tax'].create(
+            {"name": "test tax", "type_tax_use": "sale", "amount": 10.0, "price_include": True,
+             "company_id": company_2.id})
+        self.env['l10n_id_efaktur.efaktur.range'].create(
+            {'min': "%013d" % 21, 'max': '%013d' % 30, 'company_id': company_2.id})
 
         # Setup company across 2 companies
         invoices = self.env["account.move"].create([{

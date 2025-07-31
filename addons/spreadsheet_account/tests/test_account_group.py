@@ -1,5 +1,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
 from odoo.tests import tagged
 
 
@@ -13,8 +14,8 @@ class SpreadsheetAccountGroupTest(AccountTestInvoicingCommon):
         self.assertEqual(self.env["account.account"].get_account_group(['income_other']), [['450000']])
 
     def test_group_with_no_account(self):
-        self.env['account.account']\
-            .search([('account_type', '=', 'income_other'), ('company_ids', '=', self.env.company.id)])\
+        self.env['account.account'] \
+            .search([('account_type', '=', 'income_other'), ('company_ids', '=', self.env.company.id)]) \
             .unlink()
         self.assertEqual(self.env["account.account"].get_account_group(['income_other']), [[]])
 

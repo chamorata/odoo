@@ -4,24 +4,24 @@
     <t t-name="web.PivotHeader">
         <Dropdown state="this.dropdownState" manual="true" position="props.isXAxis ? 'bottom-start' : 'bottom-end'">
             <th
-                class="bg-view text-nowrap cursor-pointer fw-normal user-select-none"
-                t-att-colspan="props.isXAxis ? cell.width : undefined"
-                t-att-rowspan="props.isXAxis ? cell.height : undefined"
-                t-att-class="{
+                    class="bg-view text-nowrap cursor-pointer fw-normal user-select-none"
+                    t-att-colspan="props.isXAxis ? cell.width : undefined"
+                    t-att-rowspan="props.isXAxis ? cell.height : undefined"
+                    t-att-class="{
                     o_pivot_header_cell_closed: cell.isLeaf,
                     o_pivot_header_cell_opened: !cell.isLeaf,
                     'border-top': props.isInHead,
                 }"
-                t-attf-style="{{
+                    t-attf-style="{{
                     props.isXAxis
                         ? undefined
                         : l10n.direction === 'ltr'
                             ? 'padding-left: ' + padding + 'px;'
                             : 'padding-right: ' + padding + 'px;'
                 }}"
-                t-att-data-tooltip="cell.label"
-                t-attf-data-tooltip-position="{{ l10n.direction === 'ltr' ? 'right' : 'left' }}"
-                t-on-click.stop="this.onClick"
+                    t-att-data-tooltip="cell.label"
+                    t-attf-data-tooltip-position="{{ l10n.direction === 'ltr' ? 'right' : 'left' }}"
+                    t-on-click.stop="this.onClick"
             >
                 <i t-attf-class="fa fa-{{ cell.isLeaf ? 'plus-square' : 'minus-square-o' }} me-1"/>
                 <span t-esc="cell.title"/>
@@ -48,9 +48,9 @@
                                         <div class="dropdown-divider" role="separator"/>
                                     </t>
                                     <CheckboxItem class="{ o_item_option: true, selected: option.isActive }"
-                                        checked="option.isActive ? true : false"
-                                        t-esc="option.description"
-                                        onSelected="() => this.onGroupBySelected({ itemId: item.id, optionId: option.id})"
+                                                  checked="option.isActive ? true : false"
+                                                  t-esc="option.description"
+                                                  onSelected="() => this.onGroupBySelected({ itemId: item.id, optionId: option.id})"
                                     />
                                     <t t-set="subGroup" t-value="option.groupNumber"/>
                                 </t>
@@ -59,9 +59,9 @@
                     </t>
                     <t t-else="">
                         <CheckboxItem class="{ o_menu_item: true, selected: item.isActive }"
-                            checked="item.isActive"
-                            t-esc="item.description"
-                            onSelected="() => this.onGroupBySelected({ itemId: item.id })"
+                                      checked="item.isActive"
+                                      t-esc="item.description"
+                                      onSelected="() => this.onGroupBySelected({ itemId: item.id })"
                         />
                     </t>
                     <t t-set="currentGroup" t-value="item.groupNumber"/>

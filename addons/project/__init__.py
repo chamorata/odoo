@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.tools.sql import create_index
 from . import controllers
 from . import models
 from . import report
 from . import wizard
-
-from odoo.tools.sql import create_index
 
 
 def _check_exists_collaborators_for_project_sharing(env):
@@ -35,6 +34,7 @@ def _project_post_init(env):
 
     # Create analytic plan fields on project model for existing plans
     env['account.analytic.plan'].search([])._sync_plan_column('project.project')
+
 
 def _project_uninstall_hook(env):
     """Since the m2m table for the project share wizard's `partner_ids` field is not dropped at uninstall, it is

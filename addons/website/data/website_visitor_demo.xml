@@ -10,7 +10,8 @@
     <record id="website_visitor_1" model="website.visitor">
         <field name="country_id" ref="base.us"/>
         <field name="page_ids" eval="[(4, ref('website.contactus_page'))]"/>
-        <field name="website_track_ids" eval="[(0, 0, {'page_id': ref('website.contactus_page'), 'url': '/contactus'})]"/>
+        <field name="website_track_ids"
+               eval="[(0, 0, {'page_id': ref('website.contactus_page'), 'url': '/contactus'})]"/>
         <field name="access_token" ref="base.res_partner_address_11"/>
     </record>
     <record id="website_visitor_2" model="website.visitor">

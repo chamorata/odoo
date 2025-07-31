@@ -1,11 +1,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import fields
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.addons.account_edi.tests.common import AccountEdiTestCommon
+
+from odoo import fields
 from odoo.exceptions import UserError
 from odoo.tests import tagged, Form
-
-from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 
 
 @tagged('post_install_l10n', 'post_install', '-at_install')
@@ -37,5 +37,6 @@ class TestEcAccountMove(AccountTestInvoicingCommon):
 
         move_form.save()
 
-        with self.assertRaises(UserError, msg="Ecuadorian Document (04) Nota de Crédito must be like 001-001-123456789"):
+        with self.assertRaises(UserError,
+                               msg="Ecuadorian Document (04) Nota de Crédito must be like 001-001-123456789"):
             move_form.partner_id = self.partner_b

@@ -1,10 +1,13 @@
+from lxml import etree
+
+from odoo.addons.base.models.ir_actions_report import _split_table
 from odoo.tests.common import TransactionCase
 from odoo.tools import file_open
-from odoo.addons.base.models.ir_actions_report import _split_table
-from lxml import etree
+
 
 def cleanup_string(s):
     return ''.join(s.split())
+
 
 class TestSplitTable(TransactionCase):
     def test_split_table(self):
@@ -21,9 +24,8 @@ class TestSplitTable(TransactionCase):
 
         for description, actual, expected, max_rows in CASES:
             with self.subTest(description), \
-                file_open(f"base/tests/split_table/{actual}.xml") as actual, \
-                file_open(f"base/tests/split_table/{expected}.xml") as expected:
-
+                    file_open(f"base/tests/split_table/{actual}.xml") as actual, \
+                    file_open(f"base/tests/split_table/{expected}.xml") as expected:
                 tree = etree.fromstring(actual.read())
                 _split_table(tree, max_rows)
                 processed = etree.tostring(tree, encoding='unicode')

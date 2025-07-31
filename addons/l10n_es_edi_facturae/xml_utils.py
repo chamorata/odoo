@@ -1,6 +1,7 @@
 import base64
 import hashlib
 from copy import deepcopy
+
 from lxml import etree
 
 from odoo.exceptions import UserError

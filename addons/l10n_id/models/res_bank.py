@@ -1,8 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import datetime
-import requests
-import pytz
 from urllib.parse import urljoin
+
+import requests
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
@@ -46,18 +46,21 @@ class ResBank(models.Model):
             if currency.name not in ['IDR']:
                 return _("You cannot generate a QRIS QR code with a currency other than IDR")
             if not (self.sudo().l10n_id_qris_api_key and self.sudo().l10n_id_qris_mid):
-                return _("To use QRIS QR code, Please setup the QRIS API Key and Merchant ID on the bank's configuration")
+                return _(
+                    "To use QRIS QR code, Please setup the QRIS API Key and Merchant ID on the bank's configuration")
             return None
 
         return super()._get_error_messages_for_qr(qr_method, debtor_partner, currency)
 
-    def _check_for_qr_code_errors(self, qr_method, amount, currency, debtor_partner, free_communication, structured_communication):
+    def _check_for_qr_code_errors(self, qr_method, amount, currency, debtor_partner, free_communication,
+                                  structured_communication):
         # EXTENDS account
         if qr_method == 'id_qr':
             if not amount:
                 return _("The amount must be set to generate a QR code.")
 
-        return super()._check_for_qr_code_errors(qr_method, amount, currency, debtor_partner, free_communication, structured_communication)
+        return super()._check_for_qr_code_errors(qr_method, amount, currency, debtor_partner, free_communication,
+                                                 structured_communication)
 
     def _get_qr_vals(self, qr_method, amount, currency, debtor_partner, free_communication, structured_communication):
         """ Getting content for the QR through calling QRIS API and storing the QRIS transaction as a record"""
@@ -103,7 +106,8 @@ class ResBank(models.Model):
                     'qris_invoice_id': data.get('qris_invoiceid'),
                     'qris_amount': int(amount),
                     # Since the QRIS response is always returned with "Asia/Jakarta" timezone which is UTC+07:00
-                    'qris_creation_datetime': fields.Datetime.to_datetime(data.get('qris_request_date')) - datetime.timedelta(hours=7),
+                    'qris_creation_datetime': fields.Datetime.to_datetime(
+                        data.get('qris_request_date')) - datetime.timedelta(hours=7),
                     'qris_content': data.get('qris_content'),
                     'bank_id': self.id
                 })
@@ -115,9 +119,11 @@ class ResBank(models.Model):
 
             return data.get('qris_content')
 
-        return super()._get_qr_vals(qr_method, amount, currency, debtor_partner, free_communication, structured_communication)
+        return super()._get_qr_vals(qr_method, amount, currency, debtor_partner, free_communication,
+                                    structured_communication)
 
-    def _get_qr_code_generation_params(self, qr_method, amount, currency, debtor_partner, free_communication, structured_communication):
+    def _get_qr_code_generation_params(self, qr_method, amount, currency, debtor_partner, free_communication,
+                                       structured_communication):
         # EXTENDS account
         if qr_method == 'id_qr':
             if not self._context.get('is_online_qr'):
@@ -126,9 +132,11 @@ class ResBank(models.Model):
                 'barcode_type': 'QR',
                 'width': 120,
                 'height': 120,
-                'value': self._get_qr_vals(qr_method, amount, currency, debtor_partner, free_communication, structured_communication),
+                'value': self._get_qr_vals(qr_method, amount, currency, debtor_partner, free_communication,
+                                           structured_communication),
             }
-        return super()._get_qr_code_generation_params(qr_method, amount, currency, debtor_partner, free_communication, structured_communication)
+        return super()._get_qr_code_generation_params(qr_method, amount, currency, debtor_partner, free_communication,
+                                                      structured_communication)
 
     def _l10n_id_qris_fetch_status(self, qr_data):
         """

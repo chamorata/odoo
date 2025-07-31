@@ -9,10 +9,10 @@
             <block id="website_info_settings" position="after">
                 <block title="Shop - Payment" id="div_website_payment">
                     <setting
-                        id="website_payment"
-                        string="Activate Payments"
-                        help="Support most payment methods; Visa, Mastercard, Maestro, Google Pay, Apple Pay, etc. as well as recurring charges."
-                        documentation="/applications/finance/payment_providers.html"
+                            id="website_payment"
+                            string="Activate Payments"
+                            help="Support most payment methods; Visa, Mastercard, Maestro, Google Pay, Apple Pay, etc. as well as recurring charges."
+                            documentation="/applications/finance/payment_providers.html"
                     >
                         <div class="content-group">
                             <div class="row" invisible="providers_state == 'other_than_paypal'">
@@ -20,7 +20,8 @@
                                 <field name="is_stripe_supported_country" invisible="1"/>
                                 <div class="oe_inline"
                                      invisible="not is_stripe_supported_country">
-                                    <button string="Activate Stripe" name="action_activate_stripe" type="object" class="btn-primary"/>
+                                    <button string="Activate Stripe" name="action_activate_stripe" type="object"
+                                            class="btn-primary"/>
                                 </div>
                                 <div class="oe_inline"
                                      title="Stripe Connect is not available in your country, please use another payment provider."

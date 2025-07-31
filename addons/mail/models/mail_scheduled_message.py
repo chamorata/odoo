@@ -1,16 +1,16 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import json
+import logging
 import threading
 from collections import defaultdict
+
 from markupsafe import Markup
+from odoo.addons.mail.tools.discuss import Store
 
 from odoo import _, api, fields, models
-from odoo.addons.mail.tools.discuss import Store
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools.misc import clean_context
-
-import logging
 
 _logger = logging.getLogger(__name__)
 
@@ -59,7 +59,8 @@ class ScheduledMessage(models.Model):
 
     @api.constrains('model')
     def _check_model(self):
-        if not all(model in self.pool and issubclass(self.pool[model], self.pool['mail.thread']) for model in self.mapped("model")):
+        if not all(model in self.pool and issubclass(self.pool[model], self.pool['mail.thread']) for model in
+                   self.mapped("model")):
             raise ValidationError(_("A message cannot be scheduled on a model that does not have a mail thread."))
 
     @api.constrains('scheduled_date')
@@ -78,7 +79,8 @@ class ScheduledMessage(models.Model):
             self._check(vals)
 
         # clean context to prevent usage of default_model and default_res_id
-        scheduled_messages = super(ScheduledMessage, self.with_context(clean_context(self.env.context))).create(vals_list)
+        scheduled_messages = super(ScheduledMessage, self.with_context(clean_context(self.env.context))).create(
+            vals_list)
         # transfer attachments from composer to scheduled messages
         for scheduled_message in scheduled_messages:
             if attachments := scheduled_message.attachment_ids:
@@ -142,7 +144,8 @@ class ScheduledMessage(models.Model):
         self._check()
         res = super().write(vals)
         if new_scheduled_date := vals.get('scheduled_date'):
-            self.env.ref('mail.ir_cron_post_scheduled_message')._trigger(fields.Datetime.to_datetime(new_scheduled_date))
+            self.env.ref('mail.ir_cron_post_scheduled_message')._trigger(
+                fields.Datetime.to_datetime(new_scheduled_date))
         return res
 
     # ------------------------------------------------------
@@ -183,14 +186,16 @@ class ScheduledMessage(models.Model):
             message_creator = scheduled_message.create_uid
             try:
                 scheduled_message.with_user(message_creator)._check()
-                self.env[scheduled_message.model].browse(scheduled_message.res_id).with_user(message_creator).message_post(
+                self.env[scheduled_message.model].browse(scheduled_message.res_id).with_user(
+                    message_creator).message_post(
                     attachment_ids=list(scheduled_message.attachment_ids.ids),
                     author_id=scheduled_message.author_id.id,
                     subject=scheduled_message.subject,
                     body=scheduled_message.body,
                     partner_ids=list(scheduled_message.partner_ids.ids),
                     subtype_xmlid='mail.mt_note' if scheduled_message.is_note else 'mail.mt_comment',
-                    **{k: v for k, v in json.loads(scheduled_message.notification_parameters or '{}').items() if k in notification_parameters_whitelist},
+                    **{k: v for k, v in json.loads(scheduled_message.notification_parameters or '{}').items() if
+                       k in notification_parameters_whitelist},
                 )
                 if auto_commit:
                     self.env.cr.commit()
@@ -205,11 +210,12 @@ class ScheduledMessage(models.Model):
                     self.env['mail.thread'].message_notify(
                         partner_ids=[message_creator.partner_id.id],
                         subject=_("A scheduled message could not be sent"),
-                        body=_("The message scheduled on %(model)s(%(id)s) with the following content could not be sent:%(original_message)s",
+                        body=_(
+                            "The message scheduled on %(model)s(%(id)s) with the following content could not be sent:%(original_message)s",
                             model=scheduled_message.model,
                             id=scheduled_message.res_id,
                             original_message=Markup("<br>-----<br>%s<br>-----<br>") % scheduled_message.body,
-                        )
+                            )
                     )
                     if auto_commit:
                         self.env.cr.commit()

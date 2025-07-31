@@ -6,12 +6,14 @@ def upgrade(file_manager):
     if not files:
         return
 
-    reg_tree_to_list_xml_mode = re.compile(r"""(<field[^>]* name=["'](view_mode|name|binding_view_types)["'][^>]*>([^<>]+,)?\s*)tree(\s*(,[^<>]+)?</field>)""")
+    reg_tree_to_list_xml_mode = re.compile(
+        r"""(<field[^>]* name=["'](view_mode|name|binding_view_types)["'][^>]*>([^<>]+,)?\s*)tree(\s*(,[^<>]+)?</field>)""")
     reg_tree_to_list_tag = re.compile(r'(\n(?:[^:\n]|:(?!//))+)([<,/])tree([ \n\r,>/])')
     reg_tree_to_list_xpath = re.compile(r"""(<xpath[^>]* expr=['"])([^<>]*/)?tree(/|[\['"])""")
     reg_tree_to_list_ref = re.compile(r'tree_view_ref')
     reg_tree_to_list_mode = re.compile(r"""(mode=['"][^'"]*)tree([^'"]*['"])""")
-    reg_tree_to_list_view_mode = re.compile(r"""(['"]view_mode['"][^'":=]*[:=].*['"]([^'"]+,)?\s*)tree(\s*(,[^'"]+)?['"])""")
+    reg_tree_to_list_view_mode = re.compile(
+        r"""(['"]view_mode['"][^'":=]*[:=].*['"]([^'"]+,)?\s*)tree(\s*(,[^'"]+)?['"])""")
     reg_tree_to_list_view = re.compile(r"""(['"]views['"][^'":]*[:=].*['"])tree(['"])""")
     reg_tree_to_list_string = re.compile(r"""([ '">)])tree( [vV]iews?[ '"<.)])""")
     reg_tree_to_list_String = re.compile(r"""([ '">)])Tree( [vV]iews?[ '"<.)])""")

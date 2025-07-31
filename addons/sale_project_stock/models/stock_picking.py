@@ -17,7 +17,8 @@ class StockPicking(models.Model):
             sale_order = project.sudo().reinvoiced_sale_order_id
             if not (sale_order and picking.picking_type_id.analytic_costs):
                 continue
-            reinvoicable_stock_moves = picking.move_ids.filtered(lambda m: m.product_id.expense_policy in {'sales_price', 'cost'})
+            reinvoicable_stock_moves = picking.move_ids.filtered(
+                lambda m: m.product_id.expense_policy in {'sales_price', 'cost'})
             if not reinvoicable_stock_moves:
                 continue
             # raise if the sale order is not currently open
@@ -56,7 +57,8 @@ class StockPicking(models.Model):
                 # Get price
                 price = stock_move._sale_get_invoice_price(sale_order)
                 # Create the sale lines in batch
-                sale_line_values_to_create.append(stock_move._sale_prepare_sale_line_values(sale_order, price, last_sequence))
+                sale_line_values_to_create.append(
+                    stock_move._sale_prepare_sale_line_values(sale_order, price, last_sequence))
                 last_sequence += 1
             self.env['sale.order.line'].with_context(skip_procurement=True).sudo().create(sale_line_values_to_create)
         return res

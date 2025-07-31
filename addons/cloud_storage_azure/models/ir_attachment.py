@@ -6,7 +6,6 @@ from urllib.parse import unquote, quote
 
 from odoo import models
 from odoo.exceptions import ValidationError
-
 from ..utils.cloud_storage_azure_utils import generate_blob_sas, get_user_delegation_key, ClientAuthenticationError
 
 CloudStorageAzureUserDelegationKeys = {}  # {db_name: (config, user_delegation_key or exception)}
@@ -27,7 +26,8 @@ def get_cloud_storage_azure_user_delegation_key(env):
     :return: A valid and unexpired UserDelegationKey which is compatible
             with azure.storage.blob.UserDelegationKey
     """
-    cached_config, cached_user_delegation_key = CloudStorageAzureUserDelegationKeys.get(env.registry.db_name, (None, None))
+    cached_config, cached_user_delegation_key = CloudStorageAzureUserDelegationKeys.get(env.registry.db_name,
+                                                                                        (None, None))
     db_config = env['res.config.settings']._get_cloud_storage_configuration()
     db_config.pop('container_name')
     ICP = env['ir.config_parameter'].sudo()
@@ -36,7 +36,8 @@ def get_cloud_storage_azure_user_delegation_key(env):
         if isinstance(cached_user_delegation_key, Exception):
             raise cached_user_delegation_key
         if cached_user_delegation_key:
-            expiry = datetime.strptime(cached_user_delegation_key.signed_expiry, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=timezone.utc)
+            expiry = datetime.strptime(cached_user_delegation_key.signed_expiry, '%Y-%m-%dT%H:%M:%SZ').replace(
+                tzinfo=timezone.utc)
             if expiry > datetime.now(timezone.utc) + timedelta(days=1):
                 return cached_user_delegation_key
     key_start_time = datetime.now(timezone.utc)
@@ -98,7 +99,8 @@ class IrAttachment(models.Model):
         info = self._get_cloud_storage_azure_info()
         expiry = datetime.now(timezone.utc) + timedelta(seconds=self._cloud_storage_download_url_time_to_expiry)
         return {
-            'url': self._generate_cloud_storage_azure_sas_url(**info, permission='r', expiry=expiry, cache_control=f'private, max-age={self._cloud_storage_download_url_time_to_expiry}'),
+            'url': self._generate_cloud_storage_azure_sas_url(**info, permission='r', expiry=expiry,
+                                                              cache_control=f'private, max-age={self._cloud_storage_download_url_time_to_expiry}'),
             'time_to_expiry': self._cloud_storage_download_url_time_to_expiry,
         }
 

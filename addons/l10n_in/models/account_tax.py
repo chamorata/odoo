@@ -4,11 +4,11 @@ from odoo import api, fields, models
 from odoo.tools import frozendict
 
 
-
 class AccountTax(models.Model):
     _inherit = 'account.tax'
 
-    l10n_in_reverse_charge = fields.Boolean("Reverse charge", help="Tick this if this tax is reverse charge. Only for Indian accounting")
+    l10n_in_reverse_charge = fields.Boolean("Reverse charge",
+                                            help="Tick this if this tax is reverse charge. Only for Indian accounting")
     l10n_in_tax_type = fields.Selection(
         selection=[('igst', 'igst'), ('cgst', 'cgst'), ('sgst', 'sgst'), ('cess', 'cess')],
         compute='_compute_l10n_in_tax_type',
@@ -41,7 +41,8 @@ class AccountTax(models.Model):
     def _prepare_base_line_for_taxes_computation(self, record, **kwargs):
         # EXTENDS 'account'
         results = super()._prepare_base_line_for_taxes_computation(record, **kwargs)
-        results['l10n_in_hsn_code'] = self._get_base_line_field_value_from_record(record, 'l10n_in_hsn_code', kwargs, False)
+        results['l10n_in_hsn_code'] = self._get_base_line_field_value_from_record(record, 'l10n_in_hsn_code', kwargs,
+                                                                                  False)
         return results
 
     @api.model
@@ -79,8 +80,8 @@ class AccountTax(models.Model):
             item = items_map[key]
             item['quantity'] += base_line['quantity']
             item['amount_untaxed'] += (
-                base_line['tax_details']['total_excluded_currency']
-                + base_line['tax_details']['delta_total_excluded_currency']
+                    base_line['tax_details']['total_excluded_currency']
+                    + base_line['tax_details']['delta_total_excluded_currency']
             )
 
         # Tax amounts.
@@ -94,9 +95,9 @@ class AccountTax(models.Model):
         values_per_grouping_key = self._aggregate_base_lines_aggregated_values(base_lines_aggregated_values)
         for grouping_key, values in values_per_grouping_key.items():
             if (
-                not grouping_key
-                or not grouping_key['l10n_in_hsn_code']
-                or not grouping_key['l10n_in_tax_type']
+                    not grouping_key
+                    or not grouping_key['l10n_in_hsn_code']
+                    or not grouping_key['l10n_in_tax_type']
             ):
                 continue
 

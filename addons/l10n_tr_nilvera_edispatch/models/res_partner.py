@@ -34,8 +34,8 @@ class ResPartner(models.Model):
                 msg.append(_("%s is required", ', '.join(missing_fields)))
 
             if country_code != "TR" and (
-                not record.l10n_tr_nilvera_edispatch_customs_zip
-                or len(record.l10n_tr_nilvera_edispatch_customs_zip) != 5
+                    not record.l10n_tr_nilvera_edispatch_customs_zip
+                    or len(record.l10n_tr_nilvera_edispatch_customs_zip) != 5
             ):
                 msg.append(_("Customs ZIP of 5 characters must be present"))
 

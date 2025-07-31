@@ -8,7 +8,7 @@
         'data/barcodes_data.xml',
         'views/barcodes_view.xml',
         'security/ir.model.access.csv',
-        ],
+    ],
     'installable': True,
     'post_init_hook': '_assign_default_nomeclature_id',
     'assets': {

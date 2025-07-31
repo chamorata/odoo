@@ -2,9 +2,9 @@
 <templates id="template" xml:space="preserve">
     <t t-name="point_of_sale.CustomerFacingQR">
         <Dialog
-            footer="false"
-            header="false"
-            bodyClass="'w-100 h-100 d-flex flex-column justify-content-center align-items-center'"
+                footer="false"
+                header="false"
+                bodyClass="'w-100 h-100 d-flex flex-column justify-content-center align-items-center'"
         >
             <div class="text-center">
                 <p t-out="title"/>

@@ -42,7 +42,9 @@
                         </field>
                     </record>
                     <record id="tax_report_11a" model="account.report.line">
-                        <field name="name">11a. Supplies of goods and services in Slovenia, of which VAT is charged by the recipient</field>
+                        <field name="name">11a. Supplies of goods and services in Slovenia, of which VAT is charged by
+                            the recipient
+                        </field>
                         <field name="code">c11a</field>
                         <field name="expression_ids">
                             <record id="tax_report_11a_tag" model="account.report.expression">
@@ -168,7 +170,8 @@
                         </field>
                     </record>
                     <record id="tax_report_23a" model="account.report.line">
-                        <field name="name">23a. Of the services received from other EU Member States at a rate of 22%</field>
+                        <field name="name">23a. Of the services received from other EU Member States at a rate of 22%
+                        </field>
                         <field name="code">c23a</field>
                         <field name="expression_ids">
                             <record id="tax_report_23a_tag" model="account.report.expression">
@@ -190,7 +193,9 @@
                         </field>
                     </record>
                     <record id="tax_report_24a" model="account.report.line">
-                        <field name="name">24a. Of the services received from other EU Member States at the rate of 9,5%</field>
+                        <field name="name">24a. Of the services received from other EU Member States at the rate of
+                            9,5%
+                        </field>
                         <field name="code">c24a</field>
                         <field name="expression_ids">
                             <record id="tax_report_24a_tag" model="account.report.expression">
@@ -201,7 +206,8 @@
                         </field>
                     </record>
                     <record id="tax_report_24b" model="account.report.line">
-                        <field name="name">24b. Acquisitions of goods from other EU Member States at the rate of 5%</field>
+                        <field name="name">24b. Acquisitions of goods from other EU Member States at the rate of 5%
+                        </field>
                         <field name="code">c24b</field>
                         <field name="expression_ids">
                             <record id="tax_report_24b_tag" model="account.report.expression">
@@ -212,7 +218,8 @@
                         </field>
                     </record>
                     <record id="tax_report_24c" model="account.report.line">
-                        <field name="name">24c. Of the services received from other EU Member States at the rate of 5%</field>
+                        <field name="name">24c. Of the services received from other EU Member States at the rate of 5%
+                        </field>
                         <field name="code">c24c</field>
                         <field name="expression_ids">
                             <record id="tax_report_24c_tag" model="account.report.expression">
@@ -223,7 +230,9 @@
                         </field>
                     </record>
                     <record id="tax_report_25" model="account.report.line">
-                        <field name="name">25. On the basis of self-assessment as a recipient of goods and services at a rate of 22%</field>
+                        <field name="name">25. On the basis of self-assessment as a recipient of goods and services at a
+                            rate of 22%
+                        </field>
                         <field name="code">c25</field>
                         <field name="expression_ids">
                             <record id="tax_report_25_tag" model="account.report.expression">
@@ -234,7 +243,9 @@
                         </field>
                     </record>
                     <record id="tax_report_25a" model="account.report.line">
-                        <field name="name">25a. On the basis of self-assessment as a recipient of goods and services at a rate of 9,5%</field>
+                        <field name="name">25a. On the basis of self-assessment as a recipient of goods and services at
+                            a rate of 9,5%
+                        </field>
                         <field name="code">c25a</field>
                         <field name="expression_ids">
                             <record id="tax_report_25a_tag" model="account.report.expression">
@@ -245,7 +256,9 @@
                         </field>
                     </record>
                     <record id="tax_report_25b" model="account.report.line">
-                        <field name="name">25b. On the basis of self-assessment as a recipient of goods and services at a rate of 5%</field>
+                        <field name="name">25b. On the basis of self-assessment as a recipient of goods and services at
+                            a rate of 5%
+                        </field>
                         <field name="code">c25b</field>
                         <field name="expression_ids">
                             <record id="tax_report_25b_tag" model="account.report.expression">
@@ -299,7 +312,9 @@
                         </field>
                     </record>
                     <record id="tax_report_31a" model="account.report.line">
-                        <field name="name">31a. Purchases of goods and services in Slovenia, of which the recipient charges VAT</field>
+                        <field name="name">31a. Purchases of goods and services in Slovenia, of which the recipient
+                            charges VAT
+                        </field>
                         <field name="code">c31a</field>
                         <field name="expression_ids">
                             <record id="tax_report_31a_tag" model="account.report.expression">
@@ -332,7 +347,8 @@
                         </field>
                     </record>
                     <record id="tax_report_33" model="account.report.line">
-                        <field name="name">33. Exempt purchases of goods and services and exempt acquisitions of goods</field>
+                        <field name="name">33. Exempt purchases of goods and services and exempt acquisitions of goods
+                        </field>
                         <field name="code">c33</field>
                         <field name="expression_ids">
                             <record id="tax_report_33_tag" model="account.report.expression">
@@ -378,7 +394,9 @@
                 </field>
                 <field name="children_ids">
                     <record id="tax_report_41" model="account.report.line">
-                        <field name="name">41. From purchases of goods and services, acquisition of goods and services received from other EU Member States and from imports at a rate of 22%</field>
+                        <field name="name">41. From purchases of goods and services, acquisition of goods and services
+                            received from other EU Member States and from imports at a rate of 22%
+                        </field>
                         <field name="code">c41</field>
                         <field name="expression_ids">
                             <record id="tax_report_41_tag" model="account.report.expression">
@@ -389,7 +407,9 @@
                         </field>
                     </record>
                     <record id="tax_report_42" model="account.report.line">
-                        <field name="name">42. From purchases of goods and services, acquisition of goods and services received from other EU Member States and from imports at a rate of 9,5%</field>
+                        <field name="name">42. From purchases of goods and services, acquisition of goods and services
+                            received from other EU Member States and from imports at a rate of 9,5%
+                        </field>
                         <field name="code">c42</field>
                         <field name="expression_ids">
                             <record id="tax_report_42_tag" model="account.report.expression">
@@ -400,7 +420,9 @@
                         </field>
                     </record>
                     <record id="tax_report_42a" model="account.report.line">
-                        <field name="name">42a. From purchases of goods and services, acquisition of goods and services received from other EU Member States and from imports at a rate of 5%</field>
+                        <field name="name">42a. From purchases of goods and services, acquisition of goods and services
+                            received from other EU Member States and from imports at a rate of 5%
+                        </field>
                         <field name="code">c42a</field>
                         <field name="expression_ids">
                             <record id="tax_report_42a_tag" model="account.report.expression">

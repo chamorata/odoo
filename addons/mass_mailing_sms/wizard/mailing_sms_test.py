@@ -2,10 +2,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from markupsafe import Markup
+from odoo.addons.sms.tools.sms_api import SmsApi
 from werkzeug.urls import url_join
 
 from odoo import fields, models, _
-from odoo.addons.sms.tools.sms_api import SmsApi
 
 
 class MassSMSTest(models.TransientModel):
@@ -30,9 +30,11 @@ class MassSMSTest(models.TransientModel):
         body = self.mailing_id.body_plaintext
         if record:
             # Returns a proper error if there is a syntax error with qweb
-            body = self.env['mail.render.mixin']._render_template(body, self.mailing_id.mailing_model_real, record.ids)[record.id]
+            body = self.env['mail.render.mixin']._render_template(body, self.mailing_id.mailing_model_real, record.ids)[
+                record.id]
 
-        new_sms_messages_sudo = self.env['sms.sms'].sudo().create([{'body': body, 'number': number} for number in sanitized_numbers])
+        new_sms_messages_sudo = self.env['sms.sms'].sudo().create(
+            [{'body': body, 'number': number} for number in sanitized_numbers])
         sms_api = SmsApi(self.env)
         sent_sms_list = sms_api._send_sms_batch([{
             'content': body,
@@ -46,7 +48,7 @@ class MassSMSTest(models.TransientModel):
         notification_messages = []
         if invalid_numbers:
             notification_messages.append(_('The following numbers are not correctly encoded: %s',
-                ', '.join(invalid_numbers)))
+                                           ', '.join(invalid_numbers)))
 
         for sent_sms in sent_sms_list:
             if sent_sms.get('state') == 'success':

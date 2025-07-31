@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from collections import defaultdict
+
 from pytz import utc
 
 from odoo import api, fields, models
@@ -79,7 +80,7 @@ class ResourceMixin(models.AbstractModel):
         return vals_list
 
     def _get_calendars(self, date_from=None):
-        return { resource.id: resource.resource_calendar_id or False for resource in self }
+        return {resource.id: resource.resource_calendar_id or False for resource in self}
 
     def _get_work_days_data_batch(self, from_datetime, to_datetime, compute_leaves=True, calendar=None, domain=None):
         """
@@ -121,7 +122,8 @@ class ResourceMixin(models.AbstractModel):
                 intervals = calendar._attendance_intervals_batch(from_datetime, to_datetime, calendar_resources)
 
             for calendar_resource in calendar_resources:
-                result[calendar_resource.id] = calendar._get_attendance_intervals_days_data(intervals[calendar_resource.id])
+                result[calendar_resource.id] = calendar._get_attendance_intervals_days_data(
+                    intervals[calendar_resource.id])
 
         # convert "resource: result" into "employee: result"
         return {mapped_employees[r.id]: result[r.id] for r in resources}
@@ -193,7 +195,8 @@ class ResourceMixin(models.AbstractModel):
         result = {}
         records_by_calendar = defaultdict(lambda: self.env[self._name])
         for record in self:
-            records_by_calendar[calendar or record.resource_calendar_id or record.company_id.resource_calendar_id] += record
+            records_by_calendar[
+                calendar or record.resource_calendar_id or record.company_id.resource_calendar_id] += record
 
         # naive datetimes are made explicit in UTC
         if not from_datetime.tzinfo:
@@ -204,7 +207,8 @@ class ResourceMixin(models.AbstractModel):
 
         for calendar, records in records_by_calendar.items():
             resources = self.resource_id
-            all_intervals = calendar._work_intervals_batch(from_datetime, to_datetime, resources, domain, compute_leaves=compute_leaves)
+            all_intervals = calendar._work_intervals_batch(from_datetime, to_datetime, resources, domain,
+                                                           compute_leaves=compute_leaves)
             for record in records:
                 intervals = all_intervals[record.resource_id.id]
                 record_result = defaultdict(float)

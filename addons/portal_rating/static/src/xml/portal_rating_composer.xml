@@ -5,7 +5,8 @@
         It can also be used to modify a message
     -->
     <t t-name="portal_rating.PopupComposer">
-        <div t-if="widget.options['display_composer']" class="modal fade" id="ratingpopupcomposer" tabindex="-1" role="dialog" aria-labelledby="ratingpopupcomposerlabel" aria-hidden="true">
+        <div t-if="widget.options['display_composer']" class="modal fade" id="ratingpopupcomposer" tabindex="-1"
+             role="dialog" aria-labelledby="ratingpopupcomposerlabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content bg-white">
                     <div class="modal-header">

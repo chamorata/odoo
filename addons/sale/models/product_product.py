@@ -33,7 +33,8 @@ class ProductProduct(models.Model):
             ('product_id', 'in', self.ids),
             ('date', '>=', date_from),
         ]
-        for product, product_uom_qty in self.env['sale.report']._read_group(domain, ['product_id'], ['product_uom_qty:sum']):
+        for product, product_uom_qty in self.env['sale.report']._read_group(domain, ['product_id'],
+                                                                            ['product_uom_qty:sum']):
             r[product.id] = product_uom_qty
         for product in self:
             if not product.id:
@@ -105,8 +106,10 @@ class ProductAttributeCustomValue(models.Model):
     sale_order_line_id = fields.Many2one('sale.order.line', string="Sales Order Line", ondelete='cascade')
 
     _sql_constraints = [
-        ('sol_custom_value_unique', 'unique(custom_product_template_attribute_value_id, sale_order_line_id)', "Only one Custom Value is allowed per Attribute Value per Sales Order Line.")
+        ('sol_custom_value_unique', 'unique(custom_product_template_attribute_value_id, sale_order_line_id)',
+         "Only one Custom Value is allowed per Attribute Value per Sales Order Line.")
     ]
+
 
 class ProductPackaging(models.Model):
     _inherit = 'product.packaging'

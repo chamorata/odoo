@@ -8,7 +8,7 @@
         <field name="arch" type="xml">
             <group name="upsell" position="after">
                 <group
-                    string="Gelato" invisible="not gelato_product_uid" groups="base.group_no_one"
+                        string="Gelato" invisible="not gelato_product_uid" groups="base.group_no_one"
                 >
                     <field string="Product UID" name="gelato_product_uid"/>
                 </group>
@@ -23,7 +23,7 @@
         <field name="arch" type="xml">
             <group name="packaging" position="after">
                 <group
-                    string="Gelato" invisible="not gelato_product_uid" groups="base.group_no_one"
+                        string="Gelato" invisible="not gelato_product_uid" groups="base.group_no_one"
                 >
                     <field string="Product UID" name="gelato_product_uid"/>
                 </group>

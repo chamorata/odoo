@@ -6,6 +6,7 @@ from odoo.exceptions import UserError
 from odoo.tools import create_index
 from odoo.tools.misc import formatLang
 
+
 class AccountBankStatement(models.Model):
     _name = "account.bank.statement"
     _description = "Bank Statement"
@@ -125,7 +126,7 @@ class AccountBankStatement(models.Model):
             name = ''
             if stmt.journal_id:
                 name = stmt.journal_id.code + ' '
-            stmt.name = name +_("Statement %(date)s", date=stmt.date or fields.Date.to_date(stmt.create_date))
+            stmt.name = name + _("Statement %(date)s", date=stmt.date or fields.Date.to_date(stmt.create_date))
 
     @api.depends('line_ids.internal_index', 'line_ids.state')
     def _compute_date_index(self):
@@ -188,7 +189,8 @@ class AccountBankStatement(models.Model):
     @api.depends('balance_end', 'balance_end_real', 'line_ids.amount', 'line_ids.state')
     def _compute_is_complete(self):
         for stmt in self:
-            stmt.is_complete = stmt.line_ids.filtered(lambda l: l.state == 'posted') and stmt.currency_id.compare_amounts(
+            stmt.is_complete = stmt.line_ids.filtered(
+                lambda l: l.state == 'posted') and stmt.currency_id.compare_amounts(
                 stmt.balance_end, stmt.balance_end_real) == 0
 
     @api.depends('balance_end', 'balance_end_real')
@@ -209,9 +211,11 @@ class AccountBankStatement(models.Model):
         for stmt in self:
             description = None
             if not stmt.is_valid:
-                description = _("The starting balance doesn't match the ending balance of the previous statement, or an earlier statement is missing.")
+                description = _(
+                    "The starting balance doesn't match the ending balance of the previous statement, or an earlier statement is missing.")
             elif not stmt.is_complete:
-                description = _("The running balance (%s) doesn't match the specified ending balance.", formatLang(self.env, stmt.balance_end, currency_obj=stmt.currency_id))
+                description = _("The running balance (%s) doesn't match the specified ending balance.",
+                                formatLang(self.env, stmt.balance_end, currency_obj=stmt.currency_id))
             stmt.problem_description = description
 
     def _search_is_valid(self, operator, value):
@@ -320,7 +324,8 @@ class AccountBankStatement(models.Model):
             ])
             canceled_lines = lines_between.filtered(lambda l: l.state == 'cancel')
             if len(lines) != len(lines_between - canceled_lines):
-                raise UserError(_("Unable to create a statement due to missing transactions. You may want to reorder the transactions before proceeding."))
+                raise UserError(
+                    _("Unable to create a statement due to missing transactions. You may want to reorder the transactions before proceeding."))
             lines |= canceled_lines
 
         if lines:

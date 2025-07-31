@@ -18,14 +18,15 @@
             <form string="Phone Blacklist" duplicate="false">
                 <header>
                     <button name="phone_action_blacklist_remove" string="Unblacklist"
-                        type="object" class="oe_highlight" context="{'default_phone': number}"
-                        invisible="not active or not number"/>
+                            type="object" class="oe_highlight" context="{'default_phone': number}"
+                            invisible="not active or not number"/>
                     <button name="action_add" string="Blacklist"
-                        type="object" class="oe_highlight"
-                        invisible="active or not number"/>
+                            type="object" class="oe_highlight"
+                            invisible="active or not number"/>
                 </header>
                 <sheet>
-                    <div class="badge rounded-pill text-bg-danger float-end fs-6 border-0" invisible="active">Archived</div>
+                    <div class="badge rounded-pill text-bg-danger float-end fs-6 border-0" invisible="active">Archived
+                    </div>
                     <group>
                         <field name="number"/>
                     </group>
@@ -54,7 +55,8 @@
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Add a phone number in the blacklist
-            </p><p>
+            </p>
+            <p>
                 Blacklisted phone numbers won't receive SMS Mailings anymore.
             </p>
         </field>
@@ -62,14 +64,14 @@
 
     <!-- Technical Menu -->
     <menuitem id="phone_menu_main"
-        name="Phone / SMS"
-        parent="base.menu_custom"
-        sequence="3"/>
+              name="Phone / SMS"
+              parent="base.menu_custom"
+              sequence="3"/>
 
     <menuitem id="phone_blacklist_menu"
-        name="Phone Blacklist"
-        parent="phone_validation.phone_menu_main"
-        sequence="3"
-        action="phone_blacklist_action"/>
+              name="Phone Blacklist"
+              parent="phone_validation.phone_menu_main"
+              sequence="3"
+              action="phone_blacklist_action"/>
 
 </odoo>

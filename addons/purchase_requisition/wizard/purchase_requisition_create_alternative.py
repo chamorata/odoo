@@ -40,14 +40,17 @@ class PurchaseRequisitionCreateAlternative(models.TransientModel):
         if partner and partner.purchase_warn == 'no-message':
             partner = partner.parent_id
         if partner and partner.purchase_warn != 'no-message':
-            self.purchase_warn_msg = _("Warning for %(partner)s:\n%(warning_message)s\n", partner=partner.name, warning_message=partner.purchase_warn_msg)
+            self.purchase_warn_msg = _("Warning for %(partner)s:\n%(warning_message)s\n", partner=partner.name,
+                                       warning_message=partner.purchase_warn_msg)
             if partner.purchase_warn == 'block':
                 self.creation_blocked = True
                 self.purchase_warn_msg += _("This is a blocking warning!\n")
         if self.copy_products and self.origin_po_id.order_line:
             for line in self.origin_po_id.order_line:
                 if line.product_id.purchase_line_warn != 'no-message':
-                    self.purchase_warn_msg += _("Warning for %(product)s:\n%(warning_message)s\n", product=line.product_id.name, warning_message=line.product_id.purchase_line_warn_msg)
+                    self.purchase_warn_msg += _("Warning for %(product)s:\n%(warning_message)s\n",
+                                                product=line.product_id.name,
+                                                warning_message=line.product_id.purchase_line_warn_msg)
                     if line.product_id.purchase_line_warn == 'block':
                         self.creation_blocked = True
                         self.purchase_warn_msg += _("This is a blocking warning!\n")
@@ -59,7 +62,8 @@ class PurchaseRequisitionCreateAlternative(models.TransientModel):
                   'order has a blocking warning on it and cannot be selected to create an alternative.')
             )
         vals = self._get_alternative_values()
-        alt_po = self.env['purchase.order'].with_context(origin_po_id=self.origin_po_id.id, default_requisition_id=False).create(vals)
+        alt_po = self.env['purchase.order'].with_context(origin_po_id=self.origin_po_id.id,
+                                                         default_requisition_id=False).create(vals)
         alt_po.order_line._compute_tax_id()
         return {
             'type': 'ir.actions.act_window',
@@ -80,7 +84,8 @@ class PurchaseRequisitionCreateAlternative(models.TransientModel):
             'origin': self.origin_po_id.origin,
         }
         if self.copy_products and self.origin_po_id:
-            vals['order_line'] = [Command.create(self._get_alternative_line_value(line)) for line in self.origin_po_id.order_line]
+            vals['order_line'] = [Command.create(self._get_alternative_line_value(line)) for line in
+                                  self.origin_po_id.order_line]
         return vals
 
     @api.model

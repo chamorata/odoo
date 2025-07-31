@@ -67,7 +67,7 @@ class AccountPaymentRegister(models.TransientModel):
                     ('partner_id', '=', wizard.partner_id.id),
                     ('provider_id.capture_manually', '=', False),
                     ('provider_id', '=', wizard.payment_method_line_id.payment_provider_id.id),
-                 ], limit=1)
+                ], limit=1)
             else:
                 wizard.payment_token_id = False
 

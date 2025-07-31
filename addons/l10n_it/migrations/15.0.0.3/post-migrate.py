@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 def migrate(cr, version):
-
     cr.execute("""
         INSERT INTO account_account_account_tag
         SELECT DISTINCT account.id, template_tag.account_account_tag_id

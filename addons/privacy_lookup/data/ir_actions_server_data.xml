@@ -7,7 +7,7 @@
         <field name="binding_view_types">list</field>
         <field name="state">code</field>
         <field name="code">
-records.action_archive_all()
+            records.action_archive_all()
         </field>
     </record>
 
@@ -18,7 +18,7 @@ records.action_archive_all()
         <field name="binding_view_types">list</field>
         <field name="state">code</field>
         <field name="code">
-records.action_unlink_all()
+            records.action_unlink_all()
         </field>
     </record>
 </odoo>

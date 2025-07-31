@@ -9,4 +9,4 @@ class EmployeePublic(models.Model):
 
     resume_line_ids = fields.One2many('hr.resume.line', 'employee_id', string="Resume lines")
     employee_skill_ids = fields.One2many('hr.employee.skill', 'employee_id', string="Skills",
-        domain=[('skill_type_id.active', '=', True)])
+                                         domain=[('skill_type_id.active', '=', True)])

@@ -3,7 +3,6 @@
 
 from odoo import api, fields, models
 
-
 ONBOARDING_PROGRESS_STATES = [
     ('not_done', 'Not done'),
     ('just_done', 'Just done'),
@@ -37,8 +36,8 @@ class OnboardingProgress(models.Model):
         for progress in self:
             progress.onboarding_state = (
                 'not_done' if (
-                    len(progress.progress_step_ids.filtered(lambda p: p.step_state in {'just_done', 'done'}))
-                    != len(progress.onboarding_id.step_ids)
+                        len(progress.progress_step_ids.filtered(lambda p: p.step_state in {'just_done', 'done'}))
+                        != len(progress.onboarding_id.step_ids)
                 )
                 else 'done'
             )

@@ -80,7 +80,8 @@ class AccountMergeWizard(models.TransientModel):
     @api.depends('wizard_line_ids.is_selected', 'wizard_line_ids.info')
     def _compute_disable_merge_button(self):
         for wizard in self:
-            wizard_lines_to_merge = wizard.wizard_line_ids.filtered(lambda l: l.display_type == 'account' and l.is_selected and not l.info)
+            wizard_lines_to_merge = wizard.wizard_line_ids.filtered(
+                lambda l: l.display_type == 'account' and l.is_selected and not l.info)
             wizard.disable_merge_button = all(
                 len(wizard_line_group) < 2
                 for wizard_line_group in wizard_lines_to_merge.grouped('grouping_key').values()
@@ -104,7 +105,8 @@ class AccountMergeWizard(models.TransientModel):
         self._check_access_rights(self.account_ids)
 
         for wizard in self:
-            wizard_lines_selected = wizard.wizard_line_ids.filtered(lambda l: l.display_type == 'account' and l.is_selected and not l.info)
+            wizard_lines_selected = wizard.wizard_line_ids.filtered(
+                lambda l: l.display_type == 'account' and l.is_selected and not l.info)
             for wizard_lines_group in wizard_lines_selected.grouped('grouping_key').values():
                 if len(wizard_lines_group) > 1:
                     # This ensures that if one account in the group has hashed entries, it appears first, ensuring
@@ -279,7 +281,8 @@ class AccountMergeWizardLine(models.TransientModel):
         """
         for wizard_line in self.filtered(lambda l: l.display_type == 'line_section'):
             wizard_line.info = wizard_line._get_group_name()
-        for wizard_line_group in self.filtered(lambda l: l.display_type == 'account').grouped(lambda l: (l.wizard_id, l.grouping_key)).values():
+        for wizard_line_group in self.filtered(lambda l: l.display_type == 'account').grouped(
+                lambda l: (l.wizard_id, l.grouping_key)).values():
             # Reset the error messages for the wizard lines in the group to False, then
             # re-compute them for the whole group.
             wizard_line_group.info = False
@@ -292,9 +295,11 @@ class AccountMergeWizardLine(models.TransientModel):
         """
         self.ensure_one()
 
-        account_type_label = dict(self.pool['account.account'].account_type._description_selection(self.env))[self.account_id.account_type]
+        account_type_label = dict(self.pool['account.account'].account_type._description_selection(self.env))[
+            self.account_id.account_type]
         if self.account_id.account_type in ['asset_receivable', 'liability_payable']:
-            account_type_label = _("Non-trade %s", account_type_label) if self.account_id.non_trade else _("Trade %s", account_type_label)
+            account_type_label = _("Non-trade %s", account_type_label) if self.account_id.non_trade else _("Trade %s",
+                                                                                                           account_type_label)
 
         other_name_elements = []
         if self.account_id.currency_id:

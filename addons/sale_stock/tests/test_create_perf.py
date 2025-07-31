@@ -6,13 +6,13 @@ import time
 
 from decorator import decorator
 
+from odoo.addons.base.tests.common import TransactionCaseWithUserDemo
 from odoo.fields import Command
 from odoo.tests import tagged
 from odoo.tests.common import users, warmup
 
-from odoo.addons.base.tests.common import TransactionCaseWithUserDemo
-
 _logger = logging.getLogger(__name__)
+
 
 @decorator
 def prepare(func, self):
@@ -141,10 +141,10 @@ class TestPERF(TransactionCaseWithUserDemo):
             "partner_id": self.partners[i].id,
             "user_id": self.salesmans[i % 2].id,
             "order_line": [
-                (0, 0, {"display_type": "line_note", "name": "NOTE"})
-            ] + [
-                (0, 0, {'product_id': product.id}) for product in self.products
-            ],
+                              (0, 0, {"display_type": "line_note", "name": "NOTE"})
+                          ] + [
+                              (0, 0, {'product_id': product.id}) for product in self.products
+                          ],
         } for i in range(self.ENTITIES)]
 
         with self.assertQueryCount(admin=query_count):
@@ -166,13 +166,13 @@ class TestPERF(TransactionCaseWithUserDemo):
             "partner_id": self.partners[i].id,
             "user_id": self.salesmans[i % 2].id,
             "order_line": [
-                (0, 0, {"display_type": "line_note", "name": "NOTE"})
-            ] + [
-                (0, 0, {
-                    'product_id': product.id,
-                    'product_uom_qty': random.random()
-                }) for product in self.products
-            ],
+                              (0, 0, {"display_type": "line_note", "name": "NOTE"})
+                          ] + [
+                              (0, 0, {
+                                  'product_id': product.id,
+                                  'product_uom_qty': random.random()
+                              }) for product in self.products
+                          ],
         } for i in range(self.ENTITIES)]
 
         # 1592 locally, 1593 in nightly runbot, 1954 sometimes

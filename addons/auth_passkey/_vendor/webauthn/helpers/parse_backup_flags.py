@@ -1,8 +1,7 @@
-from enum import Enum
 from dataclasses import dataclass
 
-from .structs import AuthenticatorDataFlags, CredentialDeviceType
 from .exceptions import InvalidBackupFlags
+from .structs import AuthenticatorDataFlags, CredentialDeviceType
 
 
 @dataclass

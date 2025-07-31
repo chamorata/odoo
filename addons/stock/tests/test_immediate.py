@@ -28,7 +28,8 @@ class StockMove(TransactionCase):
         product. The consumable product should not create move line from quants.
         """
         # create a delivery order
-        picking = Form(self.env['stock.picking'].with_context(default_picking_type_id=self.ref('stock.picking_type_out')))
+        picking = Form(
+            self.env['stock.picking'].with_context(default_picking_type_id=self.ref('stock.picking_type_out')))
         with picking.move_ids_without_package.new() as move:
             move.product_id = self.product
             move.product_uom_qty = 1.0
@@ -45,7 +46,8 @@ class StockMove(TransactionCase):
         The move line should be reserved.
         """
         # create a delivery order
-        picking = Form(self.env['stock.picking'].with_context(default_picking_type_id=self.ref('stock.picking_type_out')))
+        picking = Form(
+            self.env['stock.picking'].with_context(default_picking_type_id=self.ref('stock.picking_type_out')))
         with picking.move_ids_without_package.new() as move:
             move.product_id = self.product
             move.product_uom_qty = 2.0

@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-# decorator makes wrappers that have the same API as their wrapped function
-from collections import Counter, defaultdict
-from decorator import decorator
-from inspect import signature, Parameter
 import logging
 import time
 import warnings
+# decorator makes wrappers that have the same API as their wrapped function
+from collections import Counter, defaultdict
+from inspect import signature, Parameter
+
+from decorator import decorator
 
 unsafe_eval = eval
 
@@ -28,6 +29,7 @@ class ormcache_counter(object):
     @property
     def ratio(self):
         return 100.0 * self.hit / (self.hit + self.miss or 1)
+
 
 # statistic counters dictionary, maps (dbname, modelname, method) to counter
 STAT = defaultdict(ormcache_counter)
@@ -53,6 +55,7 @@ class ormcache(object):
     because the underlying cursor will eventually be closed and raise a
     `psycopg2.InterfaceError`.
     """
+
     def __init__(self, *args, **kwargs):
         self.args = args
         self.skiparg = kwargs.get('skiparg')
@@ -120,12 +123,14 @@ class ormcache(object):
         warnings.warn('Deprecated method ormcache.clear(model, *args), use registry.clear_cache() instead')
         model.pool.clear_all_caches()
 
+
 class ormcache_context(ormcache):
     """ This LRU cache decorator is a variant of :class:`ormcache`, with an
     extra parameter ``keys`` that defines a sequence of dictionary keys. Those
     keys are looked up in the ``context`` parameter and combined to the cache
     key made by :class:`ormcache`.
     """
+
     def __init__(self, *args, **kwargs):
         super(ormcache_context, self).__init__(*args, **kwargs)
         self.keys = kwargs['keys']
@@ -148,18 +153,19 @@ class ormcache_context(ormcache):
         self.key = unsafe_eval(code)
 
 
-def log_ormcache_stats(sig=None, frame=None):   # noqa: ARG001 (arguments are there for signals)
+def log_ormcache_stats(sig=None, frame=None):  # noqa: ARG001 (arguments are there for signals)
     """ Log statistics of ormcache usage by database, model, and method. """
     from odoo.modules.registry import Registry
     cache_entries = {}
     current_db = None
     cache_stats = ['Caches stats:']
-    for (dbname, model, method), stat in sorted(STAT.items(), key=lambda k: (k[0][0] or '~', k[0][1], k[0][2].__name__)):
+    for (dbname, model, method), stat in sorted(STAT.items(),
+                                                key=lambda k: (k[0][0] or '~', k[0][1], k[0][2].__name__)):
         dbname_display = dbname or "<no_db>"
         if current_db != dbname_display:
             current_db = dbname_display
             cache_stats.append(f"Database {dbname_display}")
-        if dbname:   # mainly for MockPool
+        if dbname:  # mainly for MockPool
             if (dbname, stat.cache_name) not in cache_entries:
                 cache = Registry.registries.d[dbname]._Registry__caches[stat.cache_name]
                 cache_entries[dbname, stat.cache_name] = Counter(k[:2] for k in cache.d)
@@ -180,6 +186,7 @@ def get_cache_key_counter(bound_method, *args, **kwargs):
     cache, key0, counter = ormcache.lru(model)
     key = key0 + ormcache.key(model, *args, **kwargs)
     return cache, key, counter
+
 
 # For backward compatibility
 cache = ormcache

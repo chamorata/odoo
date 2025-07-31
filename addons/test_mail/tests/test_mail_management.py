@@ -3,6 +3,7 @@
 
 from odoo.addons.mail.tests.common import MailCommon
 from odoo.addons.test_mail.tests.common import TestRecipients
+
 from odoo.tests import tagged
 
 

@@ -19,7 +19,9 @@
                     Are you sure you want to cancel the selected item?
                 </div>
                 <div invisible="sale_orders_count == 1">
-                    Are you sure you want to cancel the <field name="sale_orders_count"/> selected
+                    Are you sure you want to cancel the
+                    <field name="sale_orders_count"/>
+                    selected
                     items?
                 </div>
                 <footer>

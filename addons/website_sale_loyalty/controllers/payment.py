@@ -1,9 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.website_sale.controllers import payment
+
 from odoo import _
 from odoo.exceptions import ValidationError
-
-from odoo.addons.website_sale.controllers import payment
 
 
 class PaymentPortal(payment.PaymentPortal):

@@ -3,6 +3,7 @@
 
 from odoo.tests import tagged, TransactionCase
 
+
 @tagged('recruitment')
 class TestRecruitment(TransactionCase):
 
@@ -115,7 +116,6 @@ class TestRecruitment(TransactionCase):
         self.assertEqual(partner_count, 1)
 
     def test_applicant_refuse_reason(self):
-
         refuse_reason = self.env['hr.applicant.refuse.reason'].create([{'name': 'Fired'}])
 
         dup1, dup2, no_dup = self.env['hr.applicant'].create([
@@ -159,7 +159,8 @@ class TestRecruitment(TransactionCase):
         self.assertEqual(application1.other_applications_count, 2)
         application2.action_archive()
         self.env.invalidate_all()
-        self.assertEqual(application1.other_applications_count, 2, 'The other_applications_count should not change when archiving an application')
+        self.assertEqual(application1.other_applications_count, 2,
+                         'The other_applications_count should not change when archiving an application')
         # refuse application3
         refuse_reason = self.env['hr.applicant.refuse.reason'].create([{'name': 'Fired'}])
         applicant_get_refuse_reason = self.env['applicant.get.refuse.reason'].create([{
@@ -168,7 +169,8 @@ class TestRecruitment(TransactionCase):
         }])
         applicant_get_refuse_reason.action_refuse_reason_apply()
         self.env.invalidate_all()
-        self.assertEqual(application1.other_applications_count, 2, 'The other_applications_count should not change when refusing an application')
+        self.assertEqual(application1.other_applications_count, 2,
+                         'The other_applications_count should not change when refusing an application')
 
     def test_open_other_applications_count(self):
         """
@@ -200,4 +202,5 @@ class TestRecruitment(TransactionCase):
         self.assertEqual(candidate.application_count, 2, "The application_count should return 2 applications")
         application2.action_archive()
         self.env.invalidate_all()
-        self.assertEqual(candidate.application_count, 2, 'The applications_count should not change after archiving an application')
+        self.assertEqual(candidate.application_count, 2,
+                         'The applications_count should not change after archiving an application')

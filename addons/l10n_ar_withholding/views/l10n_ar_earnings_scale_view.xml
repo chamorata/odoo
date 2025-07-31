@@ -18,31 +18,46 @@
             <form>
                 <sheet>
                     <group>
-                    <field name="name"/>
-                    <field name="line_ids">
-                        <list editable="bottom">
-                            <field name="from_amount"/>
-                            <field name="to_amount"/>
-                            <field name="fixed_amount"/>
-                            <field name="percentage"/>
-                            <field name="excess_amount"/>
-                        </list>
-                    </field>
+                        <field name="name"/>
+                        <field name="line_ids">
+                            <list editable="bottom">
+                                <field name="from_amount"/>
+                                <field name="to_amount"/>
+                                <field name="fixed_amount"/>
+                                <field name="percentage"/>
+                                <field name="excess_amount"/>
+                            </list>
+                        </field>
                     </group>
-                    <b><u>Formula Earnings with Scale</u></b><br/>
+                    <b>
+                        <u>Formula Earnings with Scale</u>
+                    </b>
+                    <br/>
                     <div>
                         <ul>
-                            <li>Base amount = Tax base + tax bases applied this month to the same tax and partner - non-taxable amount</li>
-                            <li>Withholding amount = (Base amount - immediately previous amount of the column 'S/ Exceeding $') * row percentage / 100 + row fixed amount ('$' column)</li>
+                            <li>Base amount = Tax base + tax bases applied this month to the same tax and partner -
+                                non-taxable amount
+                            </li>
+                            <li>Withholding amount = (Base amount - immediately previous amount of the column 'S/
+                                Exceeding $') * row percentage / 100 + row fixed amount ('$' column)
+                            </li>
                             <li>If the base amount is lower than 0.0 then the withholding is 0.0</li>
-                            <li>If the withholding amount is lower than the minimum threshold on the tax then the final withholding amount is 0.0</li>
+                            <li>If the withholding amount is lower than the minimum threshold on the tax then the final
+                                withholding amount is 0.0
+                            </li>
                         </ul>
                     </div>
-                    <b><u>AFIP Sources</u></b><br/>
-                    <span>Calculator of the Withholding Amount: </span>
-                    <a href="https://servicioscf.afip.gob.ar/calc-rg830/" target="_blank">AFIP Calculator</a><br/>
-                    <span>Link to AFIP aditional info: </span>
-                    <a href="https://servicioscf.afip.gob.ar/publico/abc/ABCpaso2.aspx?id_nivel1=3269&amp;id_nivel2=3304&amp;p=R%C3%A9g.%20General%20de%20Retenci%C3%B3n%20del%20Impuesto%20a%20las%20Ganancias%20-%20RG%20830" target="_blank">AFIP Additional info</a>
+                    <b>
+                        <u>AFIP Sources</u>
+                    </b>
+                    <br/>
+                    <span>Calculator of the Withholding Amount:</span>
+                    <a href="https://servicioscf.afip.gob.ar/calc-rg830/" target="_blank">AFIP Calculator</a>
+                    <br/>
+                    <span>Link to AFIP aditional info:</span>
+                    <a href="https://servicioscf.afip.gob.ar/publico/abc/ABCpaso2.aspx?id_nivel1=3269&amp;id_nivel2=3304&amp;p=R%C3%A9g.%20General%20de%20Retenci%C3%B3n%20del%20Impuesto%20a%20las%20Ganancias%20-%20RG%20830"
+                       target="_blank">AFIP Additional info
+                    </a>
                 </sheet>
             </form>
         </field>
@@ -56,6 +71,7 @@
         <field name="view_id" ref="view_afip_earnings_table_scale_tree"/>
     </record>
 
-    <menuitem name="Earnings Scale" action="act_afip_earnings_table_scale" id="menu_action_afip_earnings_table_scale_line" sequence="95" parent="l10n_ar.menu_afip_config"/>
+    <menuitem name="Earnings Scale" action="act_afip_earnings_table_scale"
+              id="menu_action_afip_earnings_table_scale_line" sequence="95" parent="l10n_ar.menu_afip_config"/>
 
 </odoo>

@@ -1,8 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+import logging
 from contextlib import nullcontext
 from datetime import datetime
-import logging
 
 from odoo import api, fields, models, tools
 from odoo.http import GeoIP, request, root
@@ -29,7 +29,7 @@ class ResDeviceLog(models.Model):
     first_activity = fields.Datetime("First Activity")
     last_activity = fields.Datetime("Last Activity", index='btree')
     revoked = fields.Boolean("Revoked",
-                            help="""If True, the session file corresponding to this device
+                             help="""If True, the session file corresponding to this device
                                     no longer exists on the filesystem.""")
     is_current = fields.Boolean("Current Device", compute="_compute_is_current")
     linked_ip_addresses = fields.Text("Linked IP address", compute="_compute_linked_ip_addresses")
@@ -39,8 +39,8 @@ class ResDeviceLog(models.Model):
             CREATE INDEX IF NOT EXISTS res_device_log__composite_idx ON %s
             (user_id, session_identifier, platform, browser, last_activity, id) WHERE revoked = False
         """,
-            SQL.identifier(self._table)
-        ))
+                                SQL.identifier(self._table)
+                                ))
 
     def _compute_display_name(self):
         for device in self:
@@ -55,9 +55,9 @@ class ResDeviceLog(models.Model):
     def _compute_linked_ip_addresses(self):
         device_group_map = {}
         for *device_info, ip_array in self.env['res.device.log']._read_group(
-            domain=[('session_identifier', 'in', self.mapped('session_identifier'))],
-            groupby=['session_identifier', 'platform', 'browser'],
-            aggregates=['ip_address:array_agg']
+                domain=[('session_identifier', 'in', self.mapped('session_identifier'))],
+                groupby=['session_identifier', 'platform', 'browser'],
+                aggregates=['ip_address:array_agg']
         ):
             device_group_map[tuple(device_info)] = ip_array
         for device in self:
@@ -104,18 +104,18 @@ class ResDeviceLog(models.Model):
                 INSERT INTO res_device_log (session_identifier, platform, browser, ip_address, country, city, device_type, user_id, first_activity, last_activity, revoked)
                 VALUES (%(session_identifier)s, %(platform)s, %(browser)s, %(ip_address)s, %(country)s, %(city)s, %(device_type)s, %(user_id)s, %(first_activity)s, %(last_activity)s, %(revoked)s)
             """,
-                session_identifier=session_identifier,
-                platform=trace['platform'],
-                browser=trace['browser'],
-                ip_address=trace['ip_address'],
-                country=geoip.get('country_name'),
-                city=geoip.get('city'),
-                device_type='mobile' if self._is_mobile(trace['platform']) else 'computer',
-                user_id=user_id,
-                first_activity=datetime.fromtimestamp(trace['first_activity']),
-                last_activity=datetime.fromtimestamp(trace['last_activity']),
-                revoked=False,
-            ))
+                           session_identifier=session_identifier,
+                           platform=trace['platform'],
+                           browser=trace['browser'],
+                           ip_address=trace['ip_address'],
+                           country=geoip.get('country_name'),
+                           city=geoip.get('city'),
+                           device_type='mobile' if self._is_mobile(trace['platform']) else 'computer',
+                           user_id=user_id,
+                           first_activity=datetime.fromtimestamp(trace['first_activity']),
+                           last_activity=datetime.fromtimestamp(trace['last_activity']),
+                           revoked=False,
+                           ))
         _logger.info("User %d inserts device log (%s)", user_id, session_identifier)
 
     @api.autovacuum
@@ -198,6 +198,6 @@ class ResDevice(models.Model):
         self.env.cr.execute(SQL("""
             CREATE or REPLACE VIEW %s as (%s)
         """,
-            SQL.identifier(self._table),
-            SQL(self._query)
-        ))
+                                SQL.identifier(self._table),
+                                SQL(self._query)
+                                ))

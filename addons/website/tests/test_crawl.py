@@ -8,7 +8,6 @@ import lxml.html
 from werkzeug import urls
 
 import odoo
-
 from odoo.addons.base.tests.common import HttpCaseWithUserDemo
 
 _logger = logging.getLogger(__name__)
@@ -97,11 +96,11 @@ class Crawler(HttpCaseWithUserDemo):
 
                 # FIXME: handle relative link (not parts.path.startswith /)
                 if parts.netloc or \
-                    not parts.path.startswith('/') or \
-                    parts.path == '/odoo' or\
-                    parts.path.startswith('/web/') or \
-                    parts.path.startswith('/en/') or \
-                   (parts.scheme and parts.scheme not in ('http', 'https')):
+                        not parts.path.startswith('/') or \
+                        parts.path == '/odoo' or \
+                        parts.path.startswith('/web/') or \
+                        parts.path.startswith('/en/') or \
+                        (parts.scheme and parts.scheme not in ('http', 'https')):
                     continue
 
                 self.crawl(href, seen, msg)
@@ -115,12 +114,14 @@ class Crawler(HttpCaseWithUserDemo):
             ("/my/19#a=b", "/my/<slug>"),
             ("/my/19/?access_token=www-xxx-yyy-zzz", "/my/<slug>?access_token=<param>"),
             ("/my/19?access_token=www-xxx-yyy-zzz", "/my/<slug>?access_token=<param>"),
-            ("/my/19?access_token=www-xxx-yyy-zzz&report_type=pdf", "/my/<slug>?access_token=<param>&report_type=<param>"),
+            ("/my/19?access_token=www-xxx-yyy-zzz&report_type=pdf",
+             "/my/<slug>?access_token=<param>&report_type=<param>"),
             ("/my/slug-19/", "/my/<slug>"),
             ("/my/slug-19#a=b", "/my/<slug>"),
             ("/my/slug-19/?access_token=www-xxx-yyy-zzz", "/my/<slug>?access_token=<param>"),
             ("/my/slug-19?access_token=www-xxx-yyy-zzz", "/my/<slug>?access_token=<param>"),
-            ("/my/slug-19?access_token=www-xxx-yyy-zzz&report_type=pdf", "/my/<slug>?access_token=<param>&report_type=<param>"),
+            ("/my/slug-19?access_token=www-xxx-yyy-zzz&report_type=pdf",
+             "/my/<slug>?access_token=<param>&report_type=<param>"),
             ("/my/page/2?order=website_sequence+asc", "/my/page/<slug>?order=<param>"),
             ("/my/page/2", "/my/page/<slug>"),
             ("/my/page/2/", "/my/page/<slug>"),
@@ -151,7 +152,8 @@ class Crawler(HttpCaseWithUserDemo):
         count = len(seen)
         duration = time.time() - t0
         sql = self.registry.test_cr.sql_log_count - t0_sql
-        _logger.runbot("public crawled %s urls in %.2fs %s queries, %.3fs %.2fq per request, ", count, duration, sql, duration / count, float(sql) / count)
+        _logger.runbot("public crawled %s urls in %.2fs %s queries, %.3fs %.2fq per request, ", count, duration, sql,
+                       duration / count, float(sql) / count)
 
     def test_20_crawl_demo(self):
         # Demo user without sales/crm/helpdesk/... rights won't be able to access to
@@ -174,4 +176,5 @@ class Crawler(HttpCaseWithUserDemo):
         count = len(seen)
         duration = time.time() - t0
         sql = self.registry.test_cr.sql_log_count - t0_sql
-        _logger.runbot("demo crawled %s urls in %.2fs %s queries, %.3fs %.2fq per request", count, duration, sql, duration / count, float(sql) / count)
+        _logger.runbot("demo crawled %s urls in %.2fs %s queries, %.3fs %.2fq per request", count, duration, sql,
+                       duration / count, float(sql) / count)

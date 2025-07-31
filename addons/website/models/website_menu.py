@@ -2,7 +2,6 @@
 
 import werkzeug.exceptions
 import werkzeug.urls
-
 from werkzeug.urls import url_parse
 
 from odoo import api, fields, models, _
@@ -13,7 +12,6 @@ from odoo.tools.translate import html_translate
 
 
 class Menu(models.Model):
-
     _name = "website.menu"
     _description = "Website Menu"
 
@@ -50,7 +48,7 @@ class Menu(models.Model):
     parent_path = fields.Char(index=True)
     is_visible = fields.Boolean(compute='_compute_visible', string='Is Visible')
     group_ids = fields.Many2many('res.groups', string='Visible Groups',
-        help="User needs to be at least in one of these groups to see the menu")
+                                 help="User needs to be at least in one of these groups to see the menu")
     is_mega_menu = fields.Boolean(compute=_compute_field_is_mega_menu, inverse=_set_field_is_mega_menu)
     mega_menu_content = fields.Html(translate=html_translate, sanitize=False, prefetch=True)
     mega_menu_classes = fields.Char()
@@ -137,7 +135,8 @@ class Menu(models.Model):
     def _unlink_except_master_tags(self):
         main_menu = self.env.ref('website.main_menu', raise_if_not_found=False)
         if main_menu and main_menu in self:
-            raise UserError(_("You cannot delete this website menu as this serves as the default parent menu for new websites (e.g., /shop, /event, ...)."))
+            raise UserError(
+                _("You cannot delete this website menu as this serves as the default parent menu for new websites (e.g., /shop, /event, ...)."))
 
     def _compute_visible(self):
         for menu in self:
@@ -145,15 +144,15 @@ class Menu(models.Model):
             if menu.page_id and not menu.env.user._is_internal():
                 page_sudo = menu.page_id.sudo()
                 if (not page_sudo.is_visible
-                    or (not page_sudo.view_id._handle_visibility(do_raise=False)
-                        and page_sudo.view_id._get_cached_visibility() != "password")):
+                        or (not page_sudo.view_id._handle_visibility(do_raise=False)
+                            and page_sudo.view_id._get_cached_visibility() != "password")):
                     visible = False
 
             if menu.controller_page_id and not menu.env.user._is_internal():
                 controller_page_sudo = menu.controller_page_id.sudo()
                 if (not controller_page_sudo.is_published
-                    or (not controller_page_sudo.view_id._handle_visibility(do_raise=False)
-                        and controller_page_sudo.view_id._get_cached_visibility() != "password")):
+                        or (not controller_page_sudo.view_id._handle_visibility(do_raise=False)
+                            and controller_page_sudo.view_id._get_cached_visibility() != "password")):
                     visible = False
 
             menu.is_visible = visible
@@ -211,8 +210,8 @@ class Menu(models.Model):
             unslug_url = self.env['ir.http']._unslug_url
             if unslug_url(menu_url.path) == unslug_url(request_url.path):
                 if not (
-                    set(menu_url.decode_query().items(multi=True))
-                    <= set(request_url.decode_query().items(multi=True))
+                        set(menu_url.decode_query().items(multi=True))
+                        <= set(request_url.decode_query().items(multi=True))
                 ):
                     # correct path but query arguments does not match
                     return False
@@ -263,6 +262,7 @@ class Menu(models.Model):
                     menu['id'] = new_id
                 if menu['parent_id'] == old_id:
                     menu['parent_id'] = new_id
+
         to_delete = data.get('to_delete')
         if to_delete:
             self.browse(to_delete).unlink()

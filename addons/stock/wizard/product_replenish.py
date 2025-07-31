@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import datetime
-
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 from odoo.osv import expression
@@ -18,12 +16,14 @@ class ProductReplenish(models.TransientModel):
     product_id = fields.Many2one('product.product', string='Product', required=True)
     product_tmpl_id = fields.Many2one('product.template', string='Product Template', required=True)
     product_has_variants = fields.Boolean('Has variants', default=False, required=True)
-    product_uom_category_id = fields.Many2one('uom.category', related='product_id.uom_id.category_id', readonly=True, required=True)
+    product_uom_category_id = fields.Many2one('uom.category', related='product_id.uom_id.category_id', readonly=True,
+                                              required=True)
     product_uom_id = fields.Many2one('uom.uom', string='Unity of measure', required=True)
     forecast_uom_id = fields.Many2one(related='product_id.uom_id')
     quantity = fields.Float('Quantity', default=1, required=True)
     date_planned = fields.Datetime('Scheduled Date', required=True, compute="_compute_date_planned", readonly=False,
-        help="Date at which the replenishment should take place.", store=True, precompute=True)
+                                   help="Date at which the replenishment should take place.", store=True,
+                                   precompute=True)
     warehouse_id = fields.Many2one(
         'stock.warehouse', string='Warehouse', required=True,
         check_company=True,
@@ -75,7 +75,9 @@ class ProductReplenish(models.TransientModel):
             res['route_id'] = self.env['stock.route'].search(self._get_route_domain(product_tmpl_id), limit=1).id
             if not res['route_id']:
                 if product_tmpl_id.route_ids:
-                    res['route_id'] = product_tmpl_id.route_ids.filtered(lambda r: r.company_id == self.env.company or not r.company_id)[0].id
+                    res['route_id'] = \
+                    product_tmpl_id.route_ids.filtered(lambda r: r.company_id == self.env.company or not r.company_id)[
+                        0].id
         return res
 
     def _get_date_planned(self, route_id, **kwargs):
@@ -167,8 +169,10 @@ class ProductReplenish(models.TransientModel):
 
     def _get_route_domain(self, product_tmpl_id):
         company = product_tmpl_id.company_id or self.env.company
-        domain = expression.AND([self._get_allowed_route_domain(), self.env['stock.route']._check_company_domain(company)])
-        domain = expression.AND([domain, [('id', 'not in', self.env['stock.warehouse'].search([]).crossdock_route_id.ids)]])
+        domain = expression.AND(
+            [self._get_allowed_route_domain(), self.env['stock.route']._check_company_domain(company)])
+        domain = expression.AND(
+            [domain, [('id', 'not in', self.env['stock.warehouse'].search([]).crossdock_route_id.ids)]])
         if product_tmpl_id.route_ids:
             domain = expression.AND([domain, [('product_ids', '=', product_tmpl_id.id)]])
         return domain

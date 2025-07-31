@@ -1,7 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import Command
 from odoo.addons.test_mail_sms.tests.test_sms_management import TestSMSActionsCommon
+
+from odoo import Command
 from odoo.tests.common import JsonRpcException
 from odoo.tools import mute_logger
 
@@ -52,7 +53,8 @@ class TestSmsController(TestSMSActionsCommon):
 
     @mute_logger('odoo.addons.base.models.ir_http')
     def test_webhook_update_notification_from_pending_to_bounced(self):
-        statuses = [{'sms_status': 'invalid_destination', 'uuids': [self.notification_pending.sms_tracker_ids.sms_uuid]}]
+        statuses = [
+            {'sms_status': 'invalid_destination', 'uuids': [self.notification_pending.sms_tracker_ids.sms_uuid]}]
         self.assertEqual(self._make_webhook_jsonrpc_request(statuses), 'OK')
         self.assertEqual(self.notification_pending.notification_status, 'bounce')
 

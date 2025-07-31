@@ -1,12 +1,13 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from contextlib import contextmanager
-from freezegun import freeze_time
 from unittest.mock import patch
 
-from odoo import exceptions
+from freezegun import freeze_time
 from odoo.addons.mail.models.mail_activity import MailActivity
 from odoo.addons.mail.tests.common import MailCommon
+
+from odoo import exceptions
 from odoo.tests import Form, tagged, HttpCase
 from odoo.tools.misc import format_date
 
@@ -49,7 +50,7 @@ class ActivityScheduleCase(MailCommon):
         with patch.object(
                 MailActivity, 'create', autospec=True, wraps=MailActivity,
                 side_effect=_activity_create
-             ) as activity_create_mocked:
+        ) as activity_create_mocked:
             self.activity_create_mocked = activity_create_mocked
             yield
 

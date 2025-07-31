@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import exceptions
 from odoo.addons.crm.tests.common import TestCrmCommon
 from odoo.addons.crm_iap_mine.tests.common import MockIAPReveal
+
+from odoo import exceptions
 from odoo.tests.common import users
 
 
@@ -27,7 +28,7 @@ class TestLeadMine(TestCrmCommon, MockIAPReveal):
             'search_type': 'people',
             'state': 'draft',
             'tag_ids': [(6, 0, cls.test_crm_tags.ids)],
-            'team_id':  cls.sales_team_1.id,
+            'team_id': cls.sales_team_1.id,
             'user_id': cls.user_sales_leads.id,
         })
 

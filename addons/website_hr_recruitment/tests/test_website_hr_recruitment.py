@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.api import Environment
+from odoo.addons.website.tools import MockRequest
+from odoo.addons.website_hr_recruitment.controllers.main import WebsiteHrRecruitment
+
 import odoo.tests
 from odoo.tools import html2plaintext
 
-from odoo.addons.website.tools import MockRequest
-from odoo.addons.website_hr_recruitment.controllers.main import WebsiteHrRecruitment
 
 @odoo.tests.tagged('post_install', '-at_install')
 class TestWebsiteHrRecruitmentForm(odoo.tests.HttpCase):
@@ -22,9 +22,11 @@ class TestWebsiteHrRecruitmentForm(odoo.tests.HttpCase):
             'is_published': True,
             'department_id': department.id,
         })
-        self.start_tour(self.env['website'].get_client_action_url('/jobs'), 'model_required_field_should_have_action_name', login='admin')
+        self.start_tour(self.env['website'].get_client_action_url('/jobs'),
+                        'model_required_field_should_have_action_name', login='admin')
 
-        self.start_tour(self.env['website'].get_client_action_url('/jobs'), 'website_hr_recruitment_tour_edit_form', login='admin')
+        self.start_tour(self.env['website'].get_client_action_url('/jobs'), 'website_hr_recruitment_tour_edit_form',
+                        login='admin')
 
         with odoo.tests.RecordCapturer(self.env['hr.applicant'], []) as capt:
             self.start_tour("/", 'website_hr_recruitment_tour')
@@ -43,7 +45,8 @@ class TestWebsiteHrRecruitmentForm(odoo.tests.HttpCase):
         self.assertEqual(internship_applicant.partner_name, 'Jack Doe')
         self.assertEqual(internship_applicant.email_from, 'jack@doe.com')
         self.assertEqual(internship_applicant.partner_phone, '118.712')
-        self.assertEqual(html2plaintext(internship_applicant.applicant_notes), '### HR [INTERN] RECRUITMENT TEST DATA ###')
+        self.assertEqual(html2plaintext(internship_applicant.applicant_notes),
+                         '### HR [INTERN] RECRUITMENT TEST DATA ###')
         self.assertEqual(internship_applicant.job_id, job_intern)
 
     def test_jobs_listing_city_unspecified(self):
@@ -106,7 +109,8 @@ class TestWebsiteHrRecruitmentForm(odoo.tests.HttpCase):
         self.assertEqual(applicant.partner_phone, '12345678')
         self.assertTrue(
             any(
-                html2plaintext(message.body) == 'Other Information:\n___________\n\ndescription : This is a short introduction\nAdditional info : Test'
+                html2plaintext(
+                    message.body) == 'Other Information:\n___________\n\ndescription : This is a short introduction\nAdditional info : Test'
                 for message in applicant.message_ids
             ),
             "One message in the chatter should contain the extra information filled in by the applicant"

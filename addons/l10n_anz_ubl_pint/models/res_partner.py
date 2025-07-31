@@ -16,5 +16,6 @@ class ResPartner(models.Model):
     def _get_ubl_cii_formats_info(self):
         # EXTENDS 'account_edi_ubl_cii'
         formats_info = super()._get_ubl_cii_formats_info()
-        formats_info['pint_anz'] = {'countries': ['AU', 'NZ'], 'on_peppol': True, 'sequence': 90}  # has priority over UBL_ANZ from 'account_edi_ubl_cii'
+        formats_info['pint_anz'] = {'countries': ['AU', 'NZ'], 'on_peppol': True,
+                                    'sequence': 90}  # has priority over UBL_ANZ from 'account_edi_ubl_cii'
         return formats_info

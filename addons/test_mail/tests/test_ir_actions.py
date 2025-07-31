@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.addons.base.tests.test_ir_actions import TestServerActionsBase
 from odoo.addons.mail.tests.common import MailCommon
+
+from odoo.addons.base.tests.test_ir_actions import TestServerActionsBase
 from odoo.tests import tagged
 from odoo.tools import mute_logger
 
@@ -14,9 +15,10 @@ class TestServerActionsEmail(MailCommon, TestServerActionsBase):
         super(TestServerActionsEmail, self).setUp()
         self.template = self._create_template(
             'res.partner',
-            {'email_from': '{{ object.user_id.email_formatted or object.company_id.email_formatted or user.email_formatted }}',
-             'partner_to': '%s' % self.test_partner.id,
-            }
+            {
+                'email_from': '{{ object.user_id.email_formatted or object.company_id.email_formatted or user.email_formatted }}',
+                'partner_to': '%s' % self.test_partner.id,
+                }
         )
 
     @mute_logger('odoo.addons.mail.models.mail_mail', 'odoo.models.unlink')
@@ -79,12 +81,12 @@ class TestServerActionsEmail(MailCommon, TestServerActionsBase):
                 [{'partner': self.test_partner, 'type': 'email', 'status': 'ready'}],
                 message_info={'content': 'Hello %s' % self.test_partner.name,
                               'mail_mail_values': {
-                                'author_id': self.env.user.partner_id,
+                                  'author_id': self.env.user.partner_id,
                               },
                               'message_type': 'auto_comment',
                               'subtype': 'mail.mt_comment',
-                             }
-            ):
+                              }
+        ):
             self.action.with_context(self.context).run()
         # NOTE: template using current user will have funny email_from
         self.assertEqual(self.test_partner.message_ids[0].email_from, self.partner_root.email_formatted)
@@ -100,8 +102,8 @@ class TestServerActionsEmail(MailCommon, TestServerActionsBase):
                 message_info={'content': 'Hello %s' % self.test_partner.name,
                               'message_type': 'auto_comment',
                               'subtype': 'mail.mt_note',
-                             }
-            ):
+                              }
+        ):
             self.action.with_context(self.context).run()
         self.assertEqual(len(self.test_partner.message_ids), 3,
                          '2 new messages produced')
@@ -116,7 +118,8 @@ class TestServerActionsEmail(MailCommon, TestServerActionsBase):
         })
         before_count = self.env['mail.activity'].search_count([])
         run_res = self.action.with_context(self.context).run()
-        self.assertFalse(run_res, 'ir_actions_server: create next activity action correctly finished should return False')
+        self.assertFalse(run_res,
+                         'ir_actions_server: create next activity action correctly finished should return False')
         self.assertEqual(self.env['mail.activity'].search_count([]), before_count + 1)
         self.assertEqual(self.env['mail.activity'].search_count([('summary', '=', 'TestNew')]), 1)
 
@@ -132,14 +135,16 @@ class TestServerActionsEmail(MailCommon, TestServerActionsBase):
         })
         before_count = self.env['mail.activity'].search_count([])
         run_res = self.action.with_context(self.context).run()
-        self.assertFalse(run_res, 'ir_actions_server: create next activity action correctly finished should return False')
+        self.assertFalse(run_res,
+                         'ir_actions_server: create next activity action correctly finished should return False')
         self.assertEqual(self.env['mail.activity'].search_count([]), before_count + 1)
         self.assertEqual(self.env['mail.activity'].search_count([('summary', '=', 'TestNew')]), 1)
 
     @mute_logger('odoo.addons.mail.models.mail_mail', 'odoo.models.unlink')
     def test_action_send_mail_without_mail_thread(self):
         """ Check running a server action to send an email with custom layout on a non mail.thread model """
-        no_thread_record = self.env['mail.test.nothread'].create({'name': 'Test NoMailThread', 'customer_id': self.test_partner.id})
+        no_thread_record = self.env['mail.test.nothread'].create(
+            {'name': 'Test NoMailThread', 'customer_id': self.test_partner.id})
         no_thread_template = self._create_template(
             'mail.test.nothread',
             {

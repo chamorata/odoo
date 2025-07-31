@@ -1,5 +1,6 @@
-from odoo import fields
 from odoo.addons.website_forum.tests.common import TestForumCommon
+
+from odoo import fields
 
 
 class TestForumPost(TestForumCommon):
@@ -8,19 +9,19 @@ class TestForumPost(TestForumCommon):
         """Test the method returns 5 related posts based on tag similarity."""
         # Create forum posts and associate them tags
         forum_tags = self.env['forum.tag'].create([{
-                'name': f'tag_{i}',
-                'forum_id': self.forum.id,
-            }
+            'name': f'tag_{i}',
+            'forum_id': self.forum.id,
+        }
             for i in range(10)])
         forum_posts = self.env['forum.post'].create([{
-                    'content': 'A post ...',
-                    'forum_id': self.forum.id,
-                    'name': 'Post...',
-                    'tag_ids': forum_tags[:i],
-                    'last_activity_date': fields.Datetime.subtract(fields.Datetime.now(), days=i)
-                }
-                for i in range(len(forum_tags) + 1)  # 11 posts with 0 to 10 tags
-            ])
+            'content': 'A post ...',
+            'forum_id': self.forum.id,
+            'name': 'Post...',
+            'tag_ids': forum_tags[:i],
+            'last_activity_date': fields.Datetime.subtract(fields.Datetime.now(), days=i)
+        }
+            for i in range(len(forum_tags) + 1)  # 11 posts with 0 to 10 tags
+        ])
         # First post (no tags), should return an empty record set
         self.assertFalse(forum_posts[0].tag_ids)
         self.assertEqual(forum_posts[0]._get_related_posts(), self.env['forum.post'])
@@ -28,7 +29,7 @@ class TestForumPost(TestForumCommon):
         self.assertEqual(forum_posts[1]._get_related_posts(), forum_posts[2:7])
         # Last post, most similar posts should be the 5 preceding posts in descending order
         self.assertEqual(forum_posts[-1]._get_related_posts(),
-                            forum_posts[len(forum_posts) - 6: -1][::-1])
+                         forum_posts[len(forum_posts) - 6: -1][::-1])
         # A post with a unique tag, should return an empty record set
         self.assertEqual(self.post.tag_ids.post_ids, self.post)
         self.assertEqual(forum_posts[0]._get_related_posts(), self.env['forum.post'])

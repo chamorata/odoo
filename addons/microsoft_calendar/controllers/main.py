@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.calendar.controllers.main import CalendarController
+
 from odoo import http
 from odoo.http import request
-from odoo.addons.calendar.controllers.main import CalendarController
 
 
 class MicrosoftCalendarController(CalendarController):

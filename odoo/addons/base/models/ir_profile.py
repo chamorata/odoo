@@ -93,12 +93,12 @@ class IrProfile(models.Model):
                 request.session.profile_session = None
                 if self.env.user._is_system():
                     return {
-                            'type': 'ir.actions.act_window',
-                            'view_mode': 'form',
-                            'res_model': 'base.enable.profiling.wizard',
-                            'target': 'new',
-                            'views': [[False, 'form']],
-                        }
+                        'type': 'ir.actions.act_window',
+                        'view_mode': 'form',
+                        'res_model': 'base.enable.profiling.wizard',
+                        'target': 'new',
+                        'views': [[False, 'form']],
+                    }
                 raise UserError(_('Profiling is not enabled on this database. Please contact an administrator.'))
             if not request.session.profile_session:
                 request.session.profile_session = make_session(self.env.user.name)

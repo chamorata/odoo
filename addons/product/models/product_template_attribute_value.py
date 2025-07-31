@@ -37,7 +37,7 @@ class ProductTemplateAttributeValue(models.Model):
         default=0.0,
         digits='Product Price',
         help="Extra price for the variant with this attribute value on sale price."
-            " eg. 200 price extra, 1000 + 200 = 1200.")
+             " eg. 200 price extra, 1000 + 200 = 1200.")
     currency_id = fields.Many2one(related='attribute_line_id.product_tmpl_id.currency_id')
 
     exclude_for = fields.One2many(
@@ -85,14 +85,16 @@ class ProductTemplateAttributeValue(models.Model):
         if any('ptav_product_variant_ids' in v for v in vals_list):
             # Force write on this relation from `product.product` to properly
             # trigger `_compute_combination_indices`.
-            raise UserError(_("You cannot update related variants from the values. Please update related values from the variants."))
+            raise UserError(
+                _("You cannot update related variants from the values. Please update related values from the variants."))
         return super().create(vals_list)
 
     def write(self, values):
         if 'ptav_product_variant_ids' in values:
             # Force write on this relation from `product.product` to properly
             # trigger `_compute_combination_indices`.
-            raise UserError(_("You cannot update related variants from the values. Please update related values from the variants."))
+            raise UserError(
+                _("You cannot update related variants from the values. Please update related values from the variants."))
         pav_in_values = 'product_attribute_value_id' in values
         product_in_values = 'product_tmpl_id' in values
         if pav_in_values or product_in_values:

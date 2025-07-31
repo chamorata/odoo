@@ -6,13 +6,13 @@ requirement is explained in the [FAQ](#faq).
 
 ## If you are an individual
 
-1.  Read the [Individual Contributor License Agreement](icla-1.0.md)
+1. Read the [Individual Contributor License Agreement](icla-1.0.md)
 
-2.  Modify your current pull request, or make a new pull request on
-    [odoo/odoo](https://github.com/odoo/odoo), adding a new file
-    `<lowercase-github-login>.md` under the [`doc/cla/individual`](individual/) directory.
-    If your GitHub login is `ODony`, the file would be
-    `doc/cla/individual/odony.md`. The file should contain:
+2. Modify your current pull request, or make a new pull request on
+   [odoo/odoo](https://github.com/odoo/odoo), adding a new file
+   `<lowercase-github-login>.md` under the [`doc/cla/individual`](individual/) directory.
+   If your GitHub login is `ODony`, the file would be
+   `doc/cla/individual/odony.md`. The file should contain:
 
 ```
 <country>, <date>
@@ -37,18 +37,18 @@ Signed,
     * `<login>`: your GitHub login
 
 3. An Odoo R&D Team member will verify and accept your Pull Request. You can
-make other pull requests, but we won't be able to merge them until your CLA
-signature is merged.
+   make other pull requests, but we won't be able to merge them until your CLA
+   signature is merged.
 
 ## If you work for a company
 
-1.  Read the [Corporate Contributor License Agreement](ccla-1.0.md)
+1. Read the [Corporate Contributor License Agreement](ccla-1.0.md)
 
-2.  Modify your current pull request, or make a new pull request on
-    [odoo/odoo](/odoo/odoo), adding a new file `<lowercase-company-name>.md`
-    under the [`doc/cla/corporate`](corporate/) directory.
-    If the name of the company is Odoo, the file would be
-    `doc/cla/corporate/odoo.md`. The file should contain:
+2. Modify your current pull request, or make a new pull request on
+   [odoo/odoo](/odoo/odoo), adding a new file `<lowercase-company-name>.md`
+   under the [`doc/cla/corporate`](corporate/) directory.
+   If the name of the company is Odoo, the file would be
+   `doc/cla/corporate/odoo.md`. The file should contain:
 
 ```
 <country>, <date>
@@ -80,14 +80,14 @@ List of contributors:
     * `<login>`: your GitHub login
 
 3. An Odoo R&D Team member will verify and accept your Pull Request. You can
-make other pull requests, but we won't be able to merge them until your CLA
-signature is merged.
+   make other pull requests, but we won't be able to merge them until your CLA
+   signature is merged.
 
 ## If you don't have a github account
 
 If you cannot submit your signature using a pull request, you may alternatively
 print the CLA, complete it, sign it, scan it and send it by email to
-`cla-submission` `at` `odoo.com`.  In that case someone from the Odoo team will
+`cla-submission` `at` `odoo.com`. In that case someone from the Odoo team will
 make the pull request on your behalf.
 
 * Printable Odoo CCLA v1.0 https://www.odoo.com/files/legal/Odoo-CCLA-v1.0.pdf
@@ -129,7 +129,7 @@ distribute your contributions without further restrictions.
 
 Each individual contributor (making contributions only on their own behalf) is
 required to sign and submit the Individual Contributor License Agreement
-(ICLA) of Odoo.  The agreement is executed by adding your name and
+(ICLA) of Odoo. The agreement is executed by adding your name and
 signature to the list of validated contributors inside the project source code.
 
 If someone is unable to sign the CLA, their contributions will have to be

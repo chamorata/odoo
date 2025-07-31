@@ -4,6 +4,7 @@
 from unittest.mock import patch
 
 from odoo.addons.mail.tests.common import MailCommon
+
 from odoo.tests import tagged, users
 from odoo.tools import config, mute_logger
 
@@ -29,15 +30,15 @@ class TestIrMailServer(MailCommon):
     def test_default_email_from(self, *args):
         """ Check that default_from parameter of alias domain respected. """
         for (default_from, domain_name), expected_from in zip(
-            [
-                ('icp', 'test.mycompany.com'),
-                (False, 'test.mycompany.com'),
-                (False, False),
-            ], [
-                "icp@test.mycompany.com",
-                "settings@example.com",
-                "settings@example.com",
-            ],
+                [
+                    ('icp', 'test.mycompany.com'),
+                    (False, 'test.mycompany.com'),
+                    (False, False),
+                ], [
+                    "icp@test.mycompany.com",
+                    "settings@example.com",
+                    "settings@example.com",
+                ],
         ):
             with self.subTest(default_from=default_from, domain_name=domain_name):
                 if domain_name:
@@ -72,27 +73,27 @@ class TestIrMailServer(MailCommon):
         self.assertFalse(IrMailServer.search([]))
 
         for mail_from, (expected_smtp_from, expected_msg_from) in zip(
-            [
-                # inside "from_filter" domain
-                'specific_user@test.mycompany.com',
-                '"Formatted Name" <specific_user@test.mycompany.com>',
-                '"Formatted Name" <specific_user@test.MYCOMPANY.com>',
-                '"Formatted Name" <SPECIFIC_USER@test.mycompany.com>',
-                # outside "from_filter" domain
-                'test@unknown_domain.com',
-                '"Formatted Name" <test@unknown_domain.com>',
-            ], [
-                # inside "from_filter" domain: no rewriting
-                (self.default_bounce_address, 'specific_user@test.mycompany.com'),
-                (self.default_bounce_address, '"Formatted Name" <specific_user@test.mycompany.com>'),
-                (self.default_bounce_address, '"Formatted Name" <specific_user@test.MYCOMPANY.com>'),
-                (self.default_bounce_address, '"Formatted Name" <SPECIFIC_USER@test.mycompany.com>'),
-                # outside "from_filter" domain: we will use notifications emails in the
-                # headers, and bounce address in the envelope because the "from_filter"
-                # allows to use the entire domain
-                (self.default_bounce_address, f'"test" <{self.default_from}@{self.alias_domain}>'),
-                (self.default_bounce_address, f'"Formatted Name" <{self.default_from}@{self.alias_domain}>'),
-            ]
+                [
+                    # inside "from_filter" domain
+                    'specific_user@test.mycompany.com',
+                    '"Formatted Name" <specific_user@test.mycompany.com>',
+                    '"Formatted Name" <specific_user@test.MYCOMPANY.com>',
+                    '"Formatted Name" <SPECIFIC_USER@test.mycompany.com>',
+                    # outside "from_filter" domain
+                    'test@unknown_domain.com',
+                    '"Formatted Name" <test@unknown_domain.com>',
+                ], [
+                    # inside "from_filter" domain: no rewriting
+                    (self.default_bounce_address, 'specific_user@test.mycompany.com'),
+                    (self.default_bounce_address, '"Formatted Name" <specific_user@test.mycompany.com>'),
+                    (self.default_bounce_address, '"Formatted Name" <specific_user@test.MYCOMPANY.com>'),
+                    (self.default_bounce_address, '"Formatted Name" <SPECIFIC_USER@test.mycompany.com>'),
+                    # outside "from_filter" domain: we will use notifications emails in the
+                    # headers, and bounce address in the envelope because the "from_filter"
+                    # allows to use the entire domain
+                    (self.default_bounce_address, f'"test" <{self.default_from}@{self.alias_domain}>'),
+                    (self.default_bounce_address, f'"Formatted Name" <{self.default_from}@{self.alias_domain}>'),
+                ]
         ):
             for provide_smtp in [False, True]:  # providing smtp session should ont impact test
                 with self.subTest(mail_from=mail_from, provide_smtp=provide_smtp):
@@ -140,27 +141,27 @@ class TestIrMailServer(MailCommon):
 
         # check default.from / filter matching
         for (default_from, from_filter), expected_test_email in zip(
-            [
-                ('notifications', 'dummy.com, full_email@example_2.com, dummy2.com'),
-                ('notifications', self.mail_alias_domain.name),
-                ('notifications', f'{self.mail_alias_domain.name}, example_2.com'),
-                # default relies on "odoo"
-                (False, self.mail_alias_domain.name),
-                # fallback on user email if no from_filter
-                ('notifications', ' '),
-                ('notifications', ','),
-                ('notifications', False),
-                (False, False),
-            ], [
-                'full_email@example_2.com',
-                f'notifications@{self.mail_alias_domain.name}',
-                f'notifications@{self.mail_alias_domain.name}',
-                f'odoo@{self.mail_alias_domain.name}',
-                self.env.user.email,
-                self.env.user.email,
-                self.env.user.email,
-                self.env.user.email,
-            ],
+                [
+                    ('notifications', 'dummy.com, full_email@example_2.com, dummy2.com'),
+                    ('notifications', self.mail_alias_domain.name),
+                    ('notifications', f'{self.mail_alias_domain.name}, example_2.com'),
+                    # default relies on "odoo"
+                    (False, self.mail_alias_domain.name),
+                    # fallback on user email if no from_filter
+                    ('notifications', ' '),
+                    ('notifications', ','),
+                    ('notifications', False),
+                    (False, False),
+                ], [
+                    'full_email@example_2.com',
+                    f'notifications@{self.mail_alias_domain.name}',
+                    f'notifications@{self.mail_alias_domain.name}',
+                    f'odoo@{self.mail_alias_domain.name}',
+                    self.env.user.email,
+                    self.env.user.email,
+                    self.env.user.email,
+                    self.env.user.email,
+                ],
         ):
             with self.subTest(default_from=default_from, from_filter=from_filter):
                 self.mail_alias_domain.default_from = default_from
@@ -187,41 +188,41 @@ class TestIrMailServer(MailCommon):
         self.mail_server_user.from_filter = "domain1.com, specific_user@test.mycompany.com, domain2.com"
 
         for email_from, (expected_mail_server, expected_email_from) in zip(
-            [
-                # matches user-specific server
-                'specific_user@test.mycompany.com',
-                # matches user-specific server (with formatting') -> should extract
-                # email from full name, must keep the given email_from
-                '"Name name@strange.name" <specific_user@test.mycompany.com>',
-                # case check
-                'SPECIFIC_USER@test.mycompany.com',
-                'specific_user@test.MYCOMPANY.com',
-                # matches domain-based server: domain is case insensitive
-                'unknown_email@test.mycompany.com',
-                'unknown_email@TEST.MYCOMPANY.COM',
-                '"Unknown" <unknown_email@test.mycompany.com>',
-                # fallback on notification email
-                '"Test" <test@unknown_domain.com>',
-                # fallback when email_from is False, should default to notification email
-                False,
-                # mail_server_user multiple from_filter check: can be used for a
-                # specific email and 2 domain names -> check other domains in filter
-                '"Example" <test@domain2.com>',
-                '"Example" <test@domain1.com>',
-            ], [
-                (self.mail_server_user, 'specific_user@test.mycompany.com'),
-                (self.mail_server_user, '"Name name@strange.name" <specific_user@test.mycompany.com>'),
-                (self.mail_server_user, 'SPECIFIC_USER@test.mycompany.com'),
-                (self.mail_server_user, 'specific_user@test.MYCOMPANY.com'),
-                (self.mail_server_domain, 'unknown_email@test.mycompany.com'),
-                (self.mail_server_domain, 'unknown_email@TEST.MYCOMPANY.COM'),
-                (self.mail_server_domain, '"Unknown" <unknown_email@test.mycompany.com>'),
-                (self.mail_server_notification, f'{self.default_from}@test.mycompany.com'),
-                (self.mail_server_notification, f'{self.default_from}@test.mycompany.com'),
-                # mail_server_user multiple from_filter check
-                (self.mail_server_user, '"Example" <test@domain2.com>'),
-                (self.mail_server_user, '"Example" <test@domain1.com>'),
-            ],
+                [
+                    # matches user-specific server
+                    'specific_user@test.mycompany.com',
+                    # matches user-specific server (with formatting') -> should extract
+                    # email from full name, must keep the given email_from
+                    '"Name name@strange.name" <specific_user@test.mycompany.com>',
+                    # case check
+                    'SPECIFIC_USER@test.mycompany.com',
+                    'specific_user@test.MYCOMPANY.com',
+                    # matches domain-based server: domain is case insensitive
+                    'unknown_email@test.mycompany.com',
+                    'unknown_email@TEST.MYCOMPANY.COM',
+                    '"Unknown" <unknown_email@test.mycompany.com>',
+                    # fallback on notification email
+                    '"Test" <test@unknown_domain.com>',
+                    # fallback when email_from is False, should default to notification email
+                    False,
+                    # mail_server_user multiple from_filter check: can be used for a
+                    # specific email and 2 domain names -> check other domains in filter
+                    '"Example" <test@domain2.com>',
+                    '"Example" <test@domain1.com>',
+                ], [
+                    (self.mail_server_user, 'specific_user@test.mycompany.com'),
+                    (self.mail_server_user, '"Name name@strange.name" <specific_user@test.mycompany.com>'),
+                    (self.mail_server_user, 'SPECIFIC_USER@test.mycompany.com'),
+                    (self.mail_server_user, 'specific_user@test.MYCOMPANY.com'),
+                    (self.mail_server_domain, 'unknown_email@test.mycompany.com'),
+                    (self.mail_server_domain, 'unknown_email@TEST.MYCOMPANY.COM'),
+                    (self.mail_server_domain, '"Unknown" <unknown_email@test.mycompany.com>'),
+                    (self.mail_server_notification, f'{self.default_from}@test.mycompany.com'),
+                    (self.mail_server_notification, f'{self.default_from}@test.mycompany.com'),
+                    # mail_server_user multiple from_filter check
+                    (self.mail_server_user, '"Example" <test@domain2.com>'),
+                    (self.mail_server_user, '"Example" <test@domain1.com>'),
+                ],
         ):
             with self.subTest(email_from=email_from):
                 mail_server, mail_from = self.env['ir.mail_server']._find_mail_server(email_from=email_from)
@@ -235,23 +236,25 @@ class TestIrMailServer(MailCommon):
         IrMailServer = self.env['ir.mail_server']
 
         for mail_from, (expected_smtp_from, expected_msg_from, expected_mail_server) in zip(
-            [
-                'specific_user@test.mycompany.com',
-                '"Name" <test@unknown_domain.com>',
-                'test@unknown_domain.com',
-                '"Name" <unknown_name@test.mycompany.com>'
-            ], [
-                # A mail server is configured for the email
-                ('specific_user@test.mycompany.com', 'specific_user@test.mycompany.com', self.mail_server_user),
-                # No mail server are configured for the email address, so it will use the
-                # notifications email instead and encapsulate the old email
-                (f'{self.default_from}@{self.alias_domain}', f'"Name" <{self.default_from}@{self.alias_domain}>', self.mail_server_notification),
-                # same situation, but the original email has no name part
-                (f'{self.default_from}@{self.alias_domain}', f'"test" <{self.default_from}@{self.alias_domain}>', self.mail_server_notification),
-                # A mail server is configured for the entire domain name, so we can use the bounce
-                # email address because the mail server supports it
-                (self.default_bounce_address, '"Name" <unknown_name@test.mycompany.com>', self.mail_server_domain),
-            ],
+                [
+                    'specific_user@test.mycompany.com',
+                    '"Name" <test@unknown_domain.com>',
+                    'test@unknown_domain.com',
+                    '"Name" <unknown_name@test.mycompany.com>'
+                ], [
+                    # A mail server is configured for the email
+                    ('specific_user@test.mycompany.com', 'specific_user@test.mycompany.com', self.mail_server_user),
+                    # No mail server are configured for the email address, so it will use the
+                    # notifications email instead and encapsulate the old email
+                    (f'{self.default_from}@{self.alias_domain}', f'"Name" <{self.default_from}@{self.alias_domain}>',
+                     self.mail_server_notification),
+                    # same situation, but the original email has no name part
+                    (f'{self.default_from}@{self.alias_domain}', f'"test" <{self.default_from}@{self.alias_domain}>',
+                     self.mail_server_notification),
+                    # A mail server is configured for the entire domain name, so we can use the bounce
+                    # email address because the mail server supports it
+                    (self.default_bounce_address, '"Name" <unknown_name@test.mycompany.com>', self.mail_server_domain),
+                ],
         ):
             # test with and without providing an SMTP session, which should not impact test
             for provide_smtp in [True, False]:

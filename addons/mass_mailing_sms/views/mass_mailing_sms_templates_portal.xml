@@ -12,7 +12,8 @@
                             <div class="mb-3 row">
                                 <label for="sms_number" class="col-sm-2 col-form-label">Number</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" name="sms_number" id="sms_number" t-att-required="true"/>
+                                    <input type="text" class="form-control" name="sms_number" id="sms_number"
+                                           t-att-required="true"/>
                                 </div>
                             </div>
                             <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
@@ -38,18 +39,25 @@
                         <h3>SMS Subscription</h3>
 
                         <div t-if="unsubscribe_error" class="alert alert-danger text-center" role="alert">
-                            <p>There was an error when trying to unsubscribe <strong t-esc="sms_number"/></p>
+                            <p>There was an error when trying to unsubscribe
+                                <strong t-esc="sms_number"/>
+                            </p>
                             <p t-esc="unsubscribe_error"/>
                         </div>
                         <div t-else="" class="alert alert-success text-center" role="status">
                             <t t-if="lists_optout">
-                                <p><strong t-esc="sms_number"/> has been successfully removed from</p>
+                                <p>
+                                    <strong t-esc="sms_number"/>
+                                    has been successfully removed from
+                                </p>
                                 <t t-foreach="lists_optout" t-as="list_id">
-                                    <strong t-esc="list_id.name"/><br />
+                                    <strong t-esc="list_id.name"/>
+                                    <br/>
                                 </t>
                             </t>
                             <p t-else="">
-                                <strong t-esc="sms_number"/> has been successfully blacklisted
+                                <strong t-esc="sms_number"/>
+                                has been successfully blacklisted
                             </p>
                         </div>
                     </div>

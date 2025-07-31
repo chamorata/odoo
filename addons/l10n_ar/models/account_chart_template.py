@@ -1,8 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import models, api, _
-from odoo.exceptions import ValidationError
 from odoo.addons.account.models.chart_template import template
+
+from odoo import models, api
+from odoo.exceptions import ValidationError
 
 
 class AccountChartTemplate(models.AbstractModel):
@@ -19,7 +20,7 @@ class AccountChartTemplate(models.AbstractModel):
         }
         return match.get(chart_template)
 
-    def _load(self, template_code, company, install_demo,force_create=True):
+    def _load(self, template_code, company, install_demo, force_create=True):
         """ Set companies AFIP Responsibility and Country if AR CoA is installed, also set tax calculation rounding
         method required in order to properly validate match AFIP invoices.
 
@@ -43,7 +44,7 @@ class AccountChartTemplate(models.AbstractModel):
                 # put back previous value if we could not validate the CUIT
                 company.partner_id.l10n_latam_identification_type_id = current_identification_type
 
-        res = super()._load(template_code, company, install_demo,force_create)
+        res = super()._load(template_code, company, install_demo, force_create)
 
         # If Responsable Monotributista remove the default purchase tax
         if template_code in ('ar_base', 'ar_ex'):

@@ -2,13 +2,12 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from markupsafe import Markup
-
-from .test_project_base import TestProjectCommon
-from odoo import Command
-from odoo.tools import mute_logger
 from odoo.addons.mail.tests.common import MailCommon
-from odoo.exceptions import AccessError
 
+from odoo import Command
+from odoo.exceptions import AccessError
+from odoo.tools import mute_logger
+from .test_project_base import TestProjectCommon
 
 EMAIL_TPL = """Return-Path: <whatever-2a840@postmaster.twitter.com>
 X-Original-To: {to}
@@ -77,7 +76,8 @@ class TestProjectFlow(TestProjectCommon, MailCommon):
             self.flush_tracking()
 
         self.assertIn("<p>Test</p>", str(self._new_mails.body), "Stage tracking email should be sent to authors")
-        self.assertEqual(self._new_mails.partner_ids, self.user_portal.partner_id, "Stage tracking email should be sent to authors")
+        self.assertEqual(self._new_mails.partner_ids, self.user_portal.partner_id,
+                         "Stage tracking email should be sent to authors")
 
     @mute_logger('odoo.addons.mail.models.mail_thread')
     def test_task_process_without_stage(self):
@@ -91,7 +91,8 @@ class TestProjectFlow(TestProjectCommon, MailCommon):
         # Test: one task created by mailgateway administrator
         self.assertEqual(len(task), 1, 'project: message_process: a new project.task should have been created')
         # Test: check partner in message followers
-        self.assertIn(self.partner_2, task.message_partner_ids, "Partner in message cc is not added as a task followers.")
+        self.assertIn(self.partner_2, task.message_partner_ids,
+                      "Partner in message cc is not added as a task followers.")
         # Test: messages
         self.assertEqual(len(task.message_ids), 1,
                          'project: message_process: newly created task should have 1 message: email')
@@ -118,7 +119,8 @@ class TestProjectFlow(TestProjectCommon, MailCommon):
         # Test: one task created by mailgateway administrator
         self.assertEqual(len(task), 1, 'project: message_process: a new project.task should have been created')
         # Test: check partner in message followers
-        self.assertIn(self.partner_2, task.message_partner_ids, "Partner in message cc is not added as a task followers.")
+        self.assertIn(self.partner_2, task.message_partner_ids,
+                      "Partner in message cc is not added as a task followers.")
         # Test: messages
         self.assertEqual(len(task.message_ids), 1,
                          'project: message_process: newly created task should have 1 messages: email')
@@ -145,7 +147,8 @@ class TestProjectFlow(TestProjectCommon, MailCommon):
         # Test: one task created by mailgateway administrator
         self.assertEqual(len(task), 1, 'project: message_process: a new project.task should have been created')
         # Test: check partner in message followers
-        self.assertIn(self.partner_2, task.message_partner_ids, "Partner in message cc is not added as a task followers.")
+        self.assertIn(self.partner_2, task.message_partner_ids,
+                      "Partner in message cc is not added as a task followers.")
         # Test: check partner has not been assgined
         self.assertFalse(task.user_ids, "Partner is not added as an assignees")
         # Test: messages
@@ -177,12 +180,12 @@ class TestProjectFlow(TestProjectCommon, MailCommon):
 
         task = self.format_and_process(
             EMAIL_TPL, to=f'project+pigs@{self.alias_domain}, valid.lelitre@agrolait.com',
-                cc='valid.other@gmail.com',
-                email_from=email,
-                subject='subject',
-                msg_id='<1198923581.41972151344608186760.JavaMail@agrolait.com>',
-                target_model='project.task'
-            )
+            cc='valid.other@gmail.com',
+            email_from=email,
+            subject='subject',
+            msg_id='<1198923581.41972151344608186760.JavaMail@agrolait.com>',
+            target_model='project.task'
+        )
 
         self.assertEqual(len(task), 1)
         new_partner = self.env['res.partner'].search([('email', '=', email)])
@@ -229,7 +232,8 @@ class TestProjectFlow(TestProjectCommon, MailCommon):
         })
 
         # the child task 1 is linked to a project without partner_id (goats project)
-        child_task_1 = Task.with_context(default_project_id=self.project_goats.id, default_parent_id=parent_task.id).create({
+        child_task_1 = Task.with_context(default_project_id=self.project_goats.id,
+                                         default_parent_id=parent_task.id).create({
             'name': 'Task Child with project',
             'allocated_hours': 3,
         })
@@ -339,13 +343,17 @@ class TestProjectFlow(TestProjectCommon, MailCommon):
 
         self.assertEqual(rating_good.rating_text, 'top')
         self.assertEqual(rating_bad.rating_text, 'ok')
-        self.assertEqual(first_task.rating_count, 1, "Task should have only one rating associated, since one is not consumed")
+        self.assertEqual(first_task.rating_count, 1,
+                         "Task should have only one rating associated, since one is not consumed")
         self.assertEqual(rating_good.parent_res_id, self.project_pigs.id)
 
         self.assertEqual(self.project_goats.rating_percentage_satisfaction, -1)
-        self.assertEqual(self.project_goats.rating_avg, 0, 'Since there is no rating in this project, the Average Rating should be equal to 0.')
-        self.assertEqual(self.project_pigs.rating_percentage_satisfaction, 0)  # There is a rating but not a "great" on, just an "okay".
-        self.assertEqual(self.project_pigs.rating_avg, rating_bad.rating, 'Since there is only one rating the Average Rating should be equal to the rating value of this one.')
+        self.assertEqual(self.project_goats.rating_avg, 0,
+                         'Since there is no rating in this project, the Average Rating should be equal to 0.')
+        self.assertEqual(self.project_pigs.rating_percentage_satisfaction,
+                         0)  # There is a rating but not a "great" on, just an "okay".
+        self.assertEqual(self.project_pigs.rating_avg, rating_bad.rating,
+                         'Since there is only one rating the Average Rating should be equal to the rating value of this one.')
 
         # Consuming rating_good
         first_task.rating_apply(5, rating_good.access_token)
@@ -392,13 +400,15 @@ class TestProjectFlow(TestProjectCommon, MailCommon):
             try:
                 task_without_project[field]
             except Exception as e:
-                raise AssertionError("Error raised unexpectedly while computing a field of the task ! Exception : " + e.args[0])
+                raise AssertionError(
+                    "Error raised unexpectedly while computing a field of the task ! Exception : " + e.args[0])
 
         for field in self.project_pigs._fields.keys():
             try:
                 self.project_pigs[field]
             except Exception as e:
-                raise AssertionError("Error raised unexpectedly while computing a field of the project ! Exception : " + e.args[0])
+                raise AssertionError(
+                    "Error raised unexpectedly while computing a field of the project ! Exception : " + e.args[0])
 
         # tasks with no project set should only be visible to the users assigned to them
         task_without_project.user_ids = [Command.link(self.user_projectuser.id)]
@@ -412,7 +422,8 @@ class TestProjectFlow(TestProjectCommon, MailCommon):
             'user_ids': [Command.link(self.env.user.id)],
         })
         stages = task._get_default_personal_stage_create_vals(self.env.user.id)
-        self.assertEqual(task.personal_stage_id.stage_id.name, stages[0].get('name'), "tasks assigned to the current user should be in the right default stage")
+        self.assertEqual(task.personal_stage_id.stage_id.name, stages[0].get('name'),
+                         "tasks assigned to the current user should be in the right default stage")
 
     def test_send_rating_review(self):
         project_settings = self.env["res.config.settings"].create({'group_project_rating': True})
@@ -422,7 +433,8 @@ class TestProjectFlow(TestProjectCommon, MailCommon):
         won_stage = self.project_goats.type_ids[-1]
         rating_request_mail_template = self.env.ref('project.rating_project_request_email_template')
         won_stage.write({'rating_template_id': rating_request_mail_template.id})
-        tasks = self.env['project.task'].with_context(mail_create_nolog=True, default_project_id=self.project_goats.id).create([
+        tasks = self.env['project.task'].with_context(mail_create_nolog=True,
+                                                      default_project_id=self.project_goats.id).create([
             {'name': 'Goat Task 1', 'user_ids': [Command.set([])]},
             {'name': 'Goat Task 2', 'user_ids': [Command.link(self.user_projectuser.id)]},
             {
@@ -439,15 +451,21 @@ class TestProjectFlow(TestProjectCommon, MailCommon):
 
         tasks.invalidate_model(['rating_ids'])
         for task in tasks:
-            self.assertEqual(len(task.rating_ids), 1, 'This task should have a generated rating when it arrives in the Won stage.')
+            self.assertEqual(len(task.rating_ids), 1,
+                             'This task should have a generated rating when it arrives in the Won stage.')
             rating_request_message = task.message_ids[:1]
             if not task.user_ids or len(task.user_ids) > 1:
-                self.assertFalse(task.rating_ids.rated_partner_id, 'This rating should have no assigned user if the task related have no assignees or more than one assignee.')
-                self.assertEqual(rating_request_message.email_from, self.user_projectmanager.partner_id.email_formatted, 'The message should have the email of the Project Manager as email from.')
+                self.assertFalse(task.rating_ids.rated_partner_id,
+                                 'This rating should have no assigned user if the task related have no assignees or more than one assignee.')
+                self.assertEqual(rating_request_message.email_from, self.user_projectmanager.partner_id.email_formatted,
+                                 'The message should have the email of the Project Manager as email from.')
             else:
-                self.assertEqual(task.rating_ids.rated_partner_id, task.user_ids.partner_id, 'The rating should have an assigned user if the task has only one assignee.')
-                self.assertEqual(rating_request_message.email_from, task.user_ids.partner_id.email_formatted, 'The message should have the email of the assigned user in the task as email from.')
-            self.assertTrue(self.partner_1 in rating_request_message.partner_ids, 'The customer of the task should be in the partner_ids of the rating request message.')
+                self.assertEqual(task.rating_ids.rated_partner_id, task.user_ids.partner_id,
+                                 'The rating should have an assigned user if the task has only one assignee.')
+                self.assertEqual(rating_request_message.email_from, task.user_ids.partner_id.email_formatted,
+                                 'The message should have the email of the assigned user in the task as email from.')
+            self.assertTrue(self.partner_1 in rating_request_message.partner_ids,
+                            'The customer of the task should be in the partner_ids of the rating request message.')
 
     def test_email_track_template(self):
         """ Update some tracked fields linked to some template -> message with onchange """
@@ -481,7 +499,7 @@ class TestProjectFlow(TestProjectCommon, MailCommon):
         self.assertNotEqual(init_stage, project_A.stage_id.name)
 
         self.assertEqual(len(project_A.message_ids), init_nb_log + 2,
-            "should have 2 new messages: one for tracking, one for template")
+                         "should have 2 new messages: one for tracking, one for template")
 
     def test_project_notify_get_recipients_groups(self):
         projects = self.env['project.project'].create([
@@ -536,8 +554,9 @@ class TestProjectFlow(TestProjectCommon, MailCommon):
     def test_task_copy_no_mail_assignement(self):
         """ This test will check that no assignement mail is sent to assignees of a duplicated task """
         with self.mock_mail_gateway():
-            self.task_1.copy() # if the feature that prevents assignement mails from being sent when copying a task is broken, this will create a mail
-        self.assertNotSentEmail(self.user_projectuser.email_formatted) # check that no mail was received for the assignee of the task
+            self.task_1.copy()  # if the feature that prevents assignement mails from being sent when copying a task is broken, this will create a mail
+        self.assertNotSentEmail(
+            self.user_projectuser.email_formatted)  # check that no mail was received for the assignee of the task
 
     def test_copy_project_with_default_name(self):
         """ Test the new project after the duplication got the exepected name
@@ -563,7 +582,8 @@ class TestProjectFlow(TestProjectCommon, MailCommon):
             'description': 'Hello',
         })
         task.description = False
-        self.assertEqual(task.html_field_history_get_content_at_revision('description', 1), '<p>Hello</p>', "should recover previous text for description")
+        self.assertEqual(task.html_field_history_get_content_at_revision('description', 1), '<p>Hello</p>',
+                         "should recover previous text for description")
 
     def test_copy_project_with_embedded_actions(self):
         project_pigs_milestone_action = self.env['ir.actions.act_window'].create({
@@ -649,4 +669,5 @@ class TestProjectFlow(TestProjectCommon, MailCommon):
         stage = self.env['project.project.stage'].create({'name': 'Custom stage'})  # Default sequence is 50
         self.project_pigs.stage_id = stage.id
         project_copy = self.project_pigs.with_context(default_stage_id=stage.id).copy()
-        self.assertNotEqual(project_copy.stage_id, self.project_pigs.stage_id, 'Copied project should have lowest sequence stage')
+        self.assertNotEqual(project_copy.stage_id, self.project_pigs.stage_id,
+                            'Copied project should have lowest sequence stage')

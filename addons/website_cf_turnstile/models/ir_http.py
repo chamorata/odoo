@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import logging
+
 import requests
 
 from odoo import api, models, _
-from odoo.http import request
 from odoo.exceptions import UserError, ValidationError
+from odoo.http import request
 
 logger = logging.getLogger(__name__)
 
@@ -90,12 +91,14 @@ class Http(models.AbstractModel):
 
         if res_success:
             if res_action and res_action != action:
-                logger.warning("Turnstile verification for ip address %s failed with action %f, expected: %s.", ip_addr, res_action, action)
+                logger.warning("Turnstile verification for ip address %s failed with action %f, expected: %s.", ip_addr,
+                               res_action, action)
                 return 'wrong_action'
             logger.info("Turnstile verification for ip address %s succeeded", ip_addr)
             return 'is_human'
         errors = result.get('error-codes', [])
-        logger.warning("Turnstile verification for ip address %s failed error codes %r. token was: [%s]", ip_addr, errors, token)
+        logger.warning("Turnstile verification for ip address %s failed error codes %r. token was: [%s]", ip_addr,
+                       errors, token)
         for error in errors:
             if error in ['missing-input-secret', 'invalid-input-secret']:
                 return 'wrong_secret'

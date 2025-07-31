@@ -27,7 +27,7 @@ class TestEventProductCommon(EventCase):
                 (0, 0, {'name': 'First Ticket',
                         'product_id': cls.event_product.id,
                         'seats_max': 5,
-                       })
+                        })
             ],
             'event_type_mail_ids': [],
         })

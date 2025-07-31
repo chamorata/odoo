@@ -17,24 +17,24 @@
         <t t-if="props.readonly">
             <t t-if="!props.canOpen">
                 <span>
-                    <span t-esc="displayName" />
+                    <span t-esc="displayName"/>
                     <t t-foreach="extraLines" t-as="extraLine" t-key="extraLine_index">
-                        <br />
-                        <span t-esc="extraLine" />
+                        <br/>
+                        <span t-esc="extraLine"/>
                     </t>
                 </span>
             </t>
             <t t-else="">
                 <a
-                    t-if="value"
-                    t-attf-class="o_form_uri #{classFromDecoration}"
-                    t-att-href="value ? `/odoo/${urlRelation}/${value[0]}` : '/'"
-                    t-on-click.prevent="onClick"
+                        t-if="value"
+                        t-attf-class="o_form_uri #{classFromDecoration}"
+                        t-att-href="value ? `/odoo/${urlRelation}/${value[0]}` : '/'"
+                        t-on-click.prevent="onClick"
                 >
-                    <span t-esc="displayName" />
+                    <span t-esc="displayName"/>
                     <t t-foreach="extraLines" t-as="extraLine" t-key="extraLine_index">
-                        <br />
-                        <span t-esc="extraLine" />
+                        <br/>
+                        <span t-esc="extraLine"/>
                     </t>
                 </a>
             </t>
@@ -44,32 +44,32 @@
                 <Many2XAutocomplete t-props="Many2XAutocompleteProps"/>
                 <t t-if="hasExternalButton">
                     <button
-                        type="button"
-                        class="btn btn-link text-action oi o_external_button px-1"
-                        t-att-class="env.inDialog ? 'oi-launch' : 'oi-arrow-right'"
-                        tabindex="-1"
-                        draggable="false"
-                        aria-label="Internal link"
-                        data-tooltip="Internal link"
-                        t-on-click="onExternalBtnClick"
+                            type="button"
+                            class="btn btn-link text-action oi o_external_button px-1"
+                            t-att-class="env.inDialog ? 'oi-launch' : 'oi-arrow-right'"
+                            tabindex="-1"
+                            draggable="false"
+                            aria-label="Internal link"
+                            data-tooltip="Internal link"
+                            t-on-click="onExternalBtnClick"
                     />
                 </t>
                 <button
-                    t-if="hasBarcodeButton"
-                    t-on-click="onBarcodeBtnClick"
-                    type="button"
-                    class="btn ms-3 o_barcode"
-                    tabindex="-1"
-                    draggable="false"
-                    aria-label="Scan barcode"
-                    title="Scan barcode"
-                    data-tooltip="Scan barcode"
+                        t-if="hasBarcodeButton"
+                        t-on-click="onBarcodeBtnClick"
+                        type="button"
+                        class="btn ms-3 o_barcode"
+                        tabindex="-1"
+                        draggable="false"
+                        aria-label="Scan barcode"
+                        title="Scan barcode"
+                        data-tooltip="Scan barcode"
                 />
             </div>
             <div class="o_field_many2one_extra d-empty-none">
                 <t t-foreach="extraLines" t-as="extraLine" t-key="extraLine_index">
-                    <br t-if="!extraLine_first" />
-                    <span t-esc="extraLine" />
+                    <br t-if="!extraLine_first"/>
+                    <span t-esc="extraLine"/>
                 </t>
             </div>
         </t>

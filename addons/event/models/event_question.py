@@ -40,7 +40,8 @@ class EventQuestion(models.Model):
         if 'question_type' in vals:
             questions_new_type = self.filtered(lambda question: question.question_type != vals['question_type'])
             if questions_new_type:
-                answer_count = self.env['event.registration.answer'].search_count([('question_id', 'in', questions_new_type.ids)])
+                answer_count = self.env['event.registration.answer'].search_count(
+                    [('question_id', 'in', questions_new_type.ids)])
                 if answer_count > 0:
                     raise UserError(_("You cannot change the question type of a question that already has answers!"))
         return super().write(vals)

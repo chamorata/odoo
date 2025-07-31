@@ -8,10 +8,14 @@ class AccountMoveReversal(models.TransientModel):
     _inherit = "account.move.reversal"
 
     l10n_latam_use_documents = fields.Boolean(compute='_compute_documents_info')
-    l10n_latam_document_type_id = fields.Many2one('l10n_latam.document.type', 'Document Type', ondelete='cascade', domain="[('id', 'in', l10n_latam_available_document_type_ids)]", compute='_compute_document_type', readonly=False, store=True)
-    l10n_latam_available_document_type_ids = fields.Many2many('l10n_latam.document.type', compute='_compute_documents_info')
+    l10n_latam_document_type_id = fields.Many2one('l10n_latam.document.type', 'Document Type', ondelete='cascade',
+                                                  domain="[('id', 'in', l10n_latam_available_document_type_ids)]",
+                                                  compute='_compute_document_type', readonly=False, store=True)
+    l10n_latam_available_document_type_ids = fields.Many2many('l10n_latam.document.type',
+                                                              compute='_compute_documents_info')
     l10n_latam_document_number = fields.Char(string='Document Number')
-    l10n_latam_manual_document_number = fields.Boolean(compute='_compute_l10n_latam_manual_document_number', string='Manual Number')
+    l10n_latam_manual_document_number = fields.Boolean(compute='_compute_l10n_latam_manual_document_number',
+                                                       string='Manual Number')
 
     @api.depends('l10n_latam_document_type_id', 'journal_id')
     def _compute_l10n_latam_manual_document_number(self):
@@ -41,7 +45,7 @@ class AccountMoveReversal(models.TransientModel):
     def _compute_document_type(self):
         for record in self.filtered(
                 lambda x: not x.l10n_latam_document_type_id or
-                x.l10n_latam_document_type_id not in x.l10n_latam_available_document_type_ids):
+                          x.l10n_latam_document_type_id not in x.l10n_latam_available_document_type_ids):
             document_types = record.l10n_latam_available_document_type_ids._origin
             record.l10n_latam_document_type_id = document_types[0] if document_types else False
 
@@ -53,7 +57,9 @@ class AccountMoveReversal(models.TransientModel):
             if len(record.move_ids) > 1:
                 move_ids_use_document = record.move_ids._origin.filtered(lambda move: move.l10n_latam_use_documents)
                 if move_ids_use_document:
-                    raise UserError(_('You can only reverse documents with legal invoicing documents from Latin America one at a time.\nProblematic documents: %s', ", ".join(move_ids_use_document.mapped('name'))))
+                    raise UserError(
+                        _('You can only reverse documents with legal invoicing documents from Latin America one at a time.\nProblematic documents: %s',
+                          ", ".join(move_ids_use_document.mapped('name'))))
             else:
                 record.l10n_latam_use_documents = record.journal_id.l10n_latam_use_documents
 

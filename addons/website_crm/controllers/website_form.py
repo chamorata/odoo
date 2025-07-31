@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import tools
 from odoo.addons.phone_validation.tools import phone_validation
 from odoo.addons.website.controllers import form
+
+from odoo import tools
 from odoo.http import request
 
 
@@ -23,7 +24,8 @@ class WebsiteForm(form.WebsiteForm):
 
     # Check and insert values from the form on the model <model> + validation phone fields
     def _handle_website_form(self, model_name, **kwargs):
-        model_record = request.env['ir.model'].sudo().search([('model', '=', model_name), ('website_form_access', '=', True)])
+        model_record = request.env['ir.model'].sudo().search(
+            [('model', '=', model_name), ('website_form_access', '=', True)])
         if model_record:
             try:
                 data = self.extract_data(model_record, request.params)
@@ -51,7 +53,8 @@ class WebsiteForm(form.WebsiteForm):
             geoip_country_code = request.geoip.country_code
             geoip_state_code = request.geoip.subdivisions[0].iso_code if request.geoip.subdivisions else None
             if geoip_country_code and geoip_state_code:
-                state = request.env['res.country.state'].search([('code', '=', geoip_state_code), ('country_id.code', '=', geoip_country_code)])
+                state = request.env['res.country.state'].search(
+                    [('code', '=', geoip_state_code), ('country_id.code', '=', geoip_country_code)])
                 if state:
                     request.params['state_id'] = state.id
         return super(WebsiteForm, self)._handle_website_form(model_name, **kwargs)

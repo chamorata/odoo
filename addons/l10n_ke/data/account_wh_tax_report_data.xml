@@ -22,7 +22,8 @@
                         <field name="name">Total purchases subject to WH VAT</field>
                         <field name="code">ke_total_purchases_selected_month</field>
                         <field name="expression_ids">
-                            <record id="wh_tax_report_ke_to_be_paid_selected_month_expr" model="account.report.expression">
+                            <record id="wh_tax_report_ke_to_be_paid_selected_month_expr"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">WH base</field>
@@ -34,7 +35,8 @@
                         <field name="name">Total WH VAT</field>
                         <field name="code">ke_total_wh_vat_selected_month</field>
                         <field name="expression_ids">
-                            <record id="wh_tax_report_total_wh_vat_selected_month_expr" model="account.report.expression">
+                            <record id="wh_tax_report_total_wh_vat_selected_month_expr"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">WH 2%</field>

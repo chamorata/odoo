@@ -2,19 +2,19 @@
 
 import contextlib
 import logging
-import requests
-from lxml import etree
-from markupsafe import Markup
 from hashlib import md5
 from urllib import parse
 
-from odoo import api, fields, models
-from odoo.addons.account_peppol.tools.demo_utils import handle_demo
+import requests
+from lxml import etree
+from markupsafe import Markup
 from odoo.addons.account.models.company import PEPPOL_LIST
+from odoo.addons.account_peppol.tools.demo_utils import handle_demo
+
+from odoo import api, fields, models
 
 TIMEOUT = 10
 _logger = logging.getLogger(__name__)
-
 
 
 class ResPartner(models.Model):
@@ -29,7 +29,8 @@ class ResPartner(models.Model):
         selection=[
             ('not_verified', 'Not verified yet'),
             ('not_valid', 'Not on Peppol'),  # does not exist on Peppol at all
-            ('not_valid_format', 'Cannot receive this format'),  # registered on Peppol but cannot receive the selected document type
+            ('not_valid_format', 'Cannot receive this format'),
+            # registered on Peppol but cannot receive the selected document type
             ('valid', 'Valid'),
         ],
         string='Peppol endpoint verification',
@@ -130,7 +131,8 @@ class ResPartner(models.Model):
                 response = requests.get(service_href, timeout=TIMEOUT)
                 if response.status_code == 200:
                     access_point_info = etree.fromstring(response.content)
-                    access_point_contact = access_point_info.findtext('.//{*}TechnicalContactUrl') or access_point_info.findtext('.//{*}TechnicalInformationUrl')
+                    access_point_contact = access_point_info.findtext(
+                        './/{*}TechnicalContactUrl') or access_point_info.findtext('.//{*}TechnicalInformationUrl')
             return access_point_contact
 
         return True
@@ -148,7 +150,8 @@ class ResPartner(models.Model):
     def _update_peppol_state_per_company(self, vals=None):
         partners = self.env['res.partner']
         if vals is None:
-            partners = self.filtered(lambda p: all([p.peppol_eas, p.peppol_endpoint, p.is_ubl_format, p.country_code in PEPPOL_LIST]))
+            partners = self.filtered(
+                lambda p: all([p.peppol_eas, p.peppol_endpoint, p.is_ubl_format, p.country_code in PEPPOL_LIST]))
         elif {'peppol_eas', 'peppol_endpoint', 'invoice_edi_format'}.intersection(vals.keys()):
             partners = self.filtered(lambda p: p.country_code in PEPPOL_LIST)
 

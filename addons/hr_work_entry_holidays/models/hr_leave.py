@@ -1,14 +1,11 @@
 # -*- coding:utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from collections import defaultdict
 from datetime import datetime, time
+
 from dateutil.relativedelta import relativedelta
 
-from odoo import api, fields, models, _
-from odoo.exceptions import ValidationError
-from odoo.osv.expression import AND
-from odoo.tools import format_date
+from odoo import api, fields, models
 
 
 class HrLeaveType(models.Model):
@@ -44,7 +41,8 @@ class HrLeave(models.Model):
         # 1. Create a work entry for each leave
         work_entries_vals_list = []
         for leave in self:
-            contracts = leave.employee_id.sudo()._get_contracts(leave.date_from, leave.date_to, states=['open', 'close'])
+            contracts = leave.employee_id.sudo()._get_contracts(leave.date_from, leave.date_to,
+                                                                states=['open', 'close'])
             for contract in contracts:
                 # Generate only if it has aleady been generated
                 if leave.date_to >= contract.date_generated_from and leave.date_from <= contract.date_generated_to:
@@ -99,11 +97,14 @@ class HrLeave(models.Model):
         # can lie in this range due to time zone reasons.
         # (We can't use date_from and date_to as they are not yet computed at
         # this point.)
-        start_dates = self.filtered('request_date_from').mapped('request_date_from') + [fields.Date.to_date(vals.get('request_date_from', False)) or datetime.max.date()]
-        stop_dates = self.filtered('request_date_to').mapped('request_date_to') + [fields.Date.to_date(vals.get('request_date_to', False)) or datetime.min.date()]
+        start_dates = self.filtered('request_date_from').mapped('request_date_from') + [
+            fields.Date.to_date(vals.get('request_date_from', False)) or datetime.max.date()]
+        stop_dates = self.filtered('request_date_to').mapped('request_date_to') + [
+            fields.Date.to_date(vals.get('request_date_to', False)) or datetime.min.date()]
         start = datetime.combine(min(start_dates) - relativedelta(days=1), time.min)
         stop = datetime.combine(max(stop_dates) + relativedelta(days=1), time.max)
-        with self.env['hr.work.entry']._error_checking(start=start, stop=stop, skip=skip_check, employee_ids=employee_ids):
+        with self.env['hr.work.entry']._error_checking(start=start, stop=stop, skip=skip_check,
+                                                       employee_ids=employee_ids):
             return super().write(vals)
 
     @api.model_create_multi
@@ -167,7 +168,8 @@ class HrLeave(models.Model):
         super()._compute_can_cancel()
 
         cancellable_leaves = self.filtered('can_cancel')
-        work_entries = self.env['hr.work.entry'].sudo().search([('state', '=', 'validated'), ('leave_id', 'in', cancellable_leaves.ids)])
+        work_entries = self.env['hr.work.entry'].sudo().search(
+            [('state', '=', 'validated'), ('leave_id', 'in', cancellable_leaves.ids)])
         leave_ids = work_entries.mapped('leave_id').ids
 
         for leave in cancellable_leaves:

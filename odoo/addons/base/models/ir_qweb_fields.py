@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
 import base64
 import binascii
-from datetime import time
 import logging
 import re
+from datetime import time
 from io import BytesIO
 
 import babel
 import babel.dates
-from markupsafe import Markup, escape, escape_silent
 from PIL import Image
 from lxml import etree, html
+from markupsafe import Markup, escape, escape_silent
 
 from odoo import api, fields, models, tools
 from odoo.tools import posix_to_ldml, float_utils, format_date, format_duration
 from odoo.tools.mail import safe_attrs
-from odoo.tools.misc import get_lang, babel_locale_parse
 from odoo.tools.mimetypes import guess_mimetype
+from odoo.tools.misc import get_lang, babel_locale_parse
 from odoo.tools.translate import _, LazyTranslate
 
 _lt = LazyTranslate(__name__)
@@ -39,9 +39,10 @@ def nl2br_enclose(string: str, enclosure_tag: str = 'div') -> Markup:
         converted=nl2br(string),
     )
 
-#--------------------------------------------------------------------
+
+# --------------------------------------------------------------------
 # QWeb Fields converters
-#--------------------------------------------------------------------
+# --------------------------------------------------------------------
 
 class FieldConverter(models.AbstractModel):
     """ Used to convert a t-field specification into an output HTML field.
@@ -310,10 +311,12 @@ class SelectionConverter(models.AbstractModel):
     def get_available_options(self):
         options = super(SelectionConverter, self).get_available_options()
         options.update(
-            selection=dict(type='selection', string=_('Selection'), description=_('By default the widget uses the field information'), required=True)
+            selection=dict(type='selection', string=_('Selection'),
+                           description=_('By default the widget uses the field information'), required=True)
         )
         options.update(
-            selection=dict(type='json', string=_('Json'), description=_('By default the widget uses the field information'), required=True)
+            selection=dict(type='json', string=_('Json'),
+                           description=_('By default the widget uses the field information'), required=True)
         )
         return options
 
@@ -406,7 +409,7 @@ class ImageConverter(models.AbstractModel):
             image.verify()
         except IOError:
             raise ValueError("Non-image binary fields can not be converted to HTML") from None
-        except: # image.verify() throws "suitable exceptions", I have no idea what they are
+        except:  # image.verify() throws "suitable exceptions", I have no idea what they are
             raise ValueError("Invalid image content") from None
 
         return "data:%s;base64,%s" % (Image.MIME[image.format], value.decode('ascii'))
@@ -414,6 +417,7 @@ class ImageConverter(models.AbstractModel):
     @api.model
     def value_to_html(self, value, options):
         return Markup('<img src="%s">') % self._get_src_data_b64(value, options)
+
 
 class ImageUrlConverter(models.AbstractModel):
     """ ``image_url`` widget rendering, inserts an image tag in the
@@ -426,6 +430,7 @@ class ImageUrlConverter(models.AbstractModel):
     @api.model
     def value_to_html(self, value, options):
         return Markup('<img src="%s">' % (value))
+
 
 class MonetaryConverter(models.AbstractModel):
     """ ``monetary`` converter, has a mandatory option
@@ -450,9 +455,12 @@ class MonetaryConverter(models.AbstractModel):
         options = super(MonetaryConverter, self).get_available_options()
         options.update(
             from_currency=dict(type='model', params='res.currency', string=_('Original currency')),
-            display_currency=dict(type='model', params='res.currency', string=_('Display currency'), required="value_to_html"),
-            date=dict(type='date', string=_('Date'), description=_('Date used for the original currency (only used for t-esc). by default use the current date.')),
-            company_id=dict(type='model', params='res.company', string=_('Company'), description=_('Company used for the original currency (only used for t-esc). By default use the user company')),
+            display_currency=dict(type='model', params='res.currency', string=_('Display currency'),
+                                  required="value_to_html"),
+            date=dict(type='date', string=_('Date'), description=_(
+                'Date used for the original currency (only used for t-esc). by default use the current date.')),
+            company_id=dict(type='model', params='res.company', string=_('Company'), description=_(
+                'Company used for the original currency (only used for t-esc). By default use the user company')),
         )
         return options
 
@@ -480,7 +488,7 @@ class MonetaryConverter(models.AbstractModel):
             value = options['from_currency']._convert(value, display_currency, company, date)
 
         lang = self.user_lang()
-        formatted_amount = lang.format(fmt, display_currency.round(value), grouping=True)\
+        formatted_amount = lang.format(fmt, display_currency.round(value), grouping=True) \
             .replace(r' ', '\N{NO-BREAK SPACE}').replace(r'-', '-\N{ZERO WIDTH NO-BREAK SPACE}')
 
         pre = post = ''
@@ -493,14 +501,17 @@ class MonetaryConverter(models.AbstractModel):
             sep = lang.decimal_point
             integer_part, decimal_part = formatted_amount.split(sep)
             integer_part += sep
-            return Markup('{pre}<span class="oe_currency_value">{0}</span><span class="oe_currency_value" style="font-size:0.5em">{1}</span>{post}').format(integer_part, decimal_part, pre=pre, post=post)
+            return Markup(
+                '{pre}<span class="oe_currency_value">{0}</span><span class="oe_currency_value" style="font-size:0.5em">{1}</span>{post}').format(
+                integer_part, decimal_part, pre=pre, post=post)
 
-        return Markup('{pre}<span class="oe_currency_value">{0}</span>{post}').format(formatted_amount, pre=pre, post=post)
+        return Markup('{pre}<span class="oe_currency_value">{0}</span>{post}').format(formatted_amount, pre=pre,
+                                                                                      post=post)
 
     @api.model
     def record_to_html(self, record, field_name, options):
         options = dict(options)
-        #currency should be specified by monetary field
+        # currency should be specified by monetary field
         field = record._fields[field_name]
 
         if not options.get('display_currency') and field.type == 'monetary' and field.get_currency_field(record):
@@ -520,11 +531,11 @@ class MonetaryConverter(models.AbstractModel):
 
 
 TIMEDELTA_UNITS = (
-    ('year',   _lt('year'),   3600 * 24 * 365),
-    ('month',  _lt('month'),  3600 * 24 * 30),
-    ('week',   _lt('week'),   3600 * 24 * 7),
-    ('day',    _lt('day'),    3600 * 24),
-    ('hour',   _lt('hour'),   3600),
+    ('year', _lt('year'), 3600 * 24 * 365),
+    ('month', _lt('month'), 3600 * 24 * 30),
+    ('week', _lt('week'), 3600 * 24 * 7),
+    ('day', _lt('day'), 3600 * 24),
+    ('hour', _lt('hour'), 3600),
     ('minute', _lt('minute'), 60),
     ('second', _lt('second'), 1)
 )
@@ -597,8 +608,12 @@ class DurationConverter(models.AbstractModel):
         unit = [(value, str(label)) for value, label, ratio in TIMEDELTA_UNITS]
         options.update(
             digital=dict(type="boolean", string=_('Digital formatting')),
-            unit=dict(type="selection", params=unit, string=_('Date unit'), description=_('Date unit used for comparison and formatting'), default_value='second', required=True),
-            round=dict(type="selection", params=unit, string=_('Rounding unit'), description=_("Date unit used for the rounding. The value must be smaller than 'hour' if you use the digital formatting."), default_value='second'),
+            unit=dict(type="selection", params=unit, string=_('Date unit'),
+                      description=_('Date unit used for comparison and formatting'), default_value='second',
+                      required=True),
+            round=dict(type="selection", params=unit, string=_('Rounding unit'), description=_(
+                "Date unit used for the rounding. The value must be smaller than 'hour' if you use the digital formatting."),
+                       default_value='second'),
             format=dict(
                 type="selection",
                 params=[
@@ -652,7 +667,7 @@ class DurationConverter(models.AbstractModel):
                 continue
             try:
                 section = babel.dates.format_timedelta(
-                    v*secs_per_unit,
+                    v * secs_per_unit,
                     granularity=round_to,
                     add_direction=options.get('add_direction'),
                     format=options.get('format', 'long'),
@@ -664,7 +679,7 @@ class DurationConverter(models.AbstractModel):
                 # Some bugs already fixed in 2.10 but ubuntu22 is 2.8
                 localeUS = babel_locale_parse('en_US')
                 section = babel.dates.format_timedelta(
-                    v*secs_per_unit,
+                    v * secs_per_unit,
                     granularity=round_to,
                     add_direction=options.get('add_direction'),
                     format=options.get('format', 'long'),
@@ -687,7 +702,8 @@ class RelativeDatetimeConverter(models.AbstractModel):
     def get_available_options(self):
         options = super(RelativeDatetimeConverter, self).get_available_options()
         options.update(
-            now=dict(type='datetime', string=_('Reference date'), description=_('Date to compare with the field value, by default use the current date.'))
+            now=dict(type='datetime', string=_('Reference date'),
+                     description=_('Date to compare with the field value, by default use the current date.'))
         )
         return options
 
@@ -723,7 +739,8 @@ class BarcodeConverter(models.AbstractModel):
     def get_available_options(self):
         options = super(BarcodeConverter, self).get_available_options()
         options.update(
-            symbology=dict(type='string', string=_('Barcode symbology'), description=_('Barcode type, eg: UPCA, EAN13, Code128'), default_value='Code128'),
+            symbology=dict(type='string', string=_('Barcode symbology'),
+                           description=_('Barcode type, eg: UPCA, EAN13, Code128'), default_value='Code128'),
             width=dict(type='integer', string=_('Width'), default_value=600),
             height=dict(type='integer', string=_('Height'), default_value=100),
             humanreadable=dict(type='integer', string=_('Human Readable'), default_value=0),
@@ -742,7 +759,8 @@ class BarcodeConverter(models.AbstractModel):
         barcode = self.env['ir.actions.report'].barcode(
             barcode_symbology,
             value,
-            **{key: value for key, value in options.items() if key in ['width', 'height', 'humanreadable', 'quiet', 'mask']})
+            **{key: value for key, value in options.items() if
+               key in ['width', 'height', 'humanreadable', 'quiet', 'mask']})
 
         img_element = html.Element('img')
         for k, v in options.items():
@@ -772,16 +790,25 @@ class Contact(models.AbstractModel):
         ]
         separator_params = dict(
             type='selection',
-            selection=[[" ", _("Space")], [",", _("Comma")], ["-", _("Dash")], ["|", _("Vertical bar")], ["/", _("Slash")]],
+            selection=[[" ", _("Space")], [",", _("Comma")], ["-", _("Dash")], ["|", _("Vertical bar")],
+                       ["/", _("Slash")]],
             placeholder=_('Linebreak'),
         )
         options.update(
-            fields=dict(type='array', params=dict(type='selection', params=contact_fields), string=_('Displayed fields'), description=_('List of contact fields to display in the widget'), default_value=[param.get('field_name') for param in contact_fields if param.get('default')]),
-            separator=dict(type='selection', params=separator_params, string=_('Address separator'), description=_('Separator use to split the address from the display_name.'), default_value=False),
-            no_marker=dict(type='boolean', string=_('Hide badges'), description=_("Don't display the font awesome marker")),
-            no_tag_br=dict(type='boolean', string=_('Use comma'), description=_("Use comma instead of the <br> tag to display the address")),
-            phone_icons=dict(type='boolean', string=_('Display phone icons'), description=_("Display the phone icons even if no_marker is True")),
-            country_image=dict(type='boolean', string=_('Display country image'), description=_("Display the country image if the field is present on the record")),
+            fields=dict(type='array', params=dict(type='selection', params=contact_fields),
+                        string=_('Displayed fields'), description=_('List of contact fields to display in the widget'),
+                        default_value=[param.get('field_name') for param in contact_fields if param.get('default')]),
+            separator=dict(type='selection', params=separator_params, string=_('Address separator'),
+                           description=_('Separator use to split the address from the display_name.'),
+                           default_value=False),
+            no_marker=dict(type='boolean', string=_('Hide badges'),
+                           description=_("Don't display the font awesome marker")),
+            no_tag_br=dict(type='boolean', string=_('Use comma'),
+                           description=_("Use comma instead of the <br> tag to display the address")),
+            phone_icons=dict(type='boolean', string=_('Display phone icons'),
+                             description=_("Display the phone icons even if no_marker is True")),
+            country_image=dict(type='boolean', string=_('Display country image'),
+                               description=_("Display the country image if the field is present on the record")),
         )
         return options
 

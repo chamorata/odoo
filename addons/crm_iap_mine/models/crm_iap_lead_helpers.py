@@ -1,4 +1,3 @@
-from math import floor, log10
 from odoo import api, models
 
 
@@ -44,7 +43,8 @@ class CRMHelpers(models.Model):
             'name': company_data['name'] or company_data['domain'],
             'partner_name': company_data['legal_name'] or company_data['name'],
             'email_from': next(iter(company_data.get('email', [])), ''),
-            'phone': company_data['phone'] or (company_data['phone_numbers'] and company_data['phone_numbers'][0]) or '',
+            'phone': company_data['phone'] or (
+                        company_data['phone_numbers'] and company_data['phone_numbers'][0]) or '',
             'website': website_url,
             'street': company_data['location'],
             'city': company_data['city'],

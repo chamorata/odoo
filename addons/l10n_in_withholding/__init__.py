@@ -1,9 +1,8 @@
-from . import models
-from . import wizard
-
 import logging
 
 from odoo.exceptions import ValidationError
+from . import models
+from . import wizard
 
 _logger = logging.getLogger(__name__)
 
@@ -29,5 +28,6 @@ def _l10n_in_withholding_post_init(env):
             _logger.warning("Error while updating Chart of Accounts for company %s: %s", company.name, e.args[0])
         tds_group_id = ChartTemplate.ref("tds_group", raise_if_not_found=False)
         if tds_group_id:
-            tds_purchase_taxes = env['account.tax'].with_context(active_test=False).search([('tax_group_id', '=', tds_group_id.id), ('type_tax_use', '=', 'purchase')])
+            tds_purchase_taxes = env['account.tax'].with_context(active_test=False).search(
+                [('tax_group_id', '=', tds_group_id.id), ('type_tax_use', '=', 'purchase')])
             tds_purchase_taxes.write({'l10n_in_tds_tax_type': 'purchase', 'type_tax_use': 'none'})

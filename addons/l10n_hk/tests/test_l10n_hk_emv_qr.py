@@ -1,8 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
 from odoo.exceptions import UserError
 from odoo.fields import Command
-from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.tests import tagged
 
 
@@ -71,7 +72,8 @@ class TestL10nHKEmvQrCode(AccountTestInvoicingCommon):
         # Without fps infomation should fail
         self.company_data['company'].partner_id.city = 'HK'
         self.emv_qr_invoice.partner_bank_id = self.acc_emv_hk_without_fps_info
-        with self.assertRaises(UserError, msg="The account receiving the payment must have a FPS type and a FPS identifier set."):
+        with self.assertRaises(UserError,
+                               msg="The account receiving the payment must have a FPS type and a FPS identifier set."):
             self.emv_qr_invoice._generate_qr_code()
 
     def test_emv_qr_vals(self):
@@ -88,7 +90,8 @@ class TestL10nHKEmvQrCode(AccountTestInvoicingCommon):
 
         # Check the whole qr code string
         qr_code_string = ''.join(emv_qr_vals)
-        self.assertEqual(qr_code_string, '00020101021226330012hk.com.hkicl0313+852-6789123452040000530334454031005802HK5914company_1_data6002HK62170513INV/TEST/00016304A154')
+        self.assertEqual(qr_code_string,
+                         '00020101021226330012hk.com.hkicl0313+852-6789123452040000530334454031005802HK5914company_1_data6002HK62170513INV/TEST/00016304A154')
 
     def test_emv_qr_vals_with_non_integer_amount(self):
         self.emv_qr_invoice_with_non_integer_amount.qr_code_method = 'emv_qr'
@@ -103,7 +106,8 @@ class TestL10nHKEmvQrCode(AccountTestInvoicingCommon):
         )
 
         # Check the whole qr code string
-        self.assertEqual(emv_qr_vals, '00020101021226330012hk.com.hkicl0313+852-678912345204000053033445405100.55802HK5914company_1_data6002HK62170513INV/TEST/000263049E64')
+        self.assertEqual(emv_qr_vals,
+                         '00020101021226330012hk.com.hkicl0313+852-678912345204000053033445405100.55802HK5914company_1_data6002HK62170513INV/TEST/000263049E64')
 
     def test_invoice_default_code(self):
         """ If no QR method is selected by default, and the country does not match, it should not be selecting the EMV QR method. """

@@ -2,13 +2,12 @@
 
 from unittest.mock import patch
 
+from odoo.addons.payment_nuvei.controllers.main import NuveiController
+from odoo.addons.payment_nuvei.tests.common import NuveiCommon
 from werkzeug import urls
 
 from odoo.tests import tagged
 from odoo.tools import mute_logger
-
-from odoo.addons.payment_nuvei.controllers.main import NuveiController
-from odoo.addons.payment_nuvei.tests.common import NuveiCommon
 
 
 @tagged('post_install', '-at_install')
@@ -16,6 +15,7 @@ class TestPaymentTransaction(NuveiCommon):
 
     def test_no_item_missing_from_rendering_values(self):
         """ Test that the rendering values match what we expect. """
+
         def make_uuid():
             return "0000-0000-0000-0000"
 
@@ -68,7 +68,7 @@ class TestPaymentTransaction(NuveiCommon):
         expected_values['checksum'] = checksum
 
         with patch(
-            'odoo.addons.payment.utils.generate_access_token', new=self._generate_test_access_token
+                'odoo.addons.payment.utils.generate_access_token', new=self._generate_test_access_token
         ), patch('odoo.addons.payment_nuvei.models.payment_transaction.uuid4', make_uuid):
             processing_values = tx._get_specific_rendering_values(None)
         self.assertDictEqual(processing_values, expected_values)
@@ -111,7 +111,7 @@ class TestPaymentTransaction(NuveiCommon):
         ]
         expected_input_keys.sort()
         with patch(
-            'odoo.addons.payment.utils.generate_access_token', new=self._generate_test_access_token
+                'odoo.addons.payment.utils.generate_access_token', new=self._generate_test_access_token
         ):
             processing_values = tx._get_processing_values()
 
@@ -162,7 +162,7 @@ class TestPaymentTransaction(NuveiCommon):
             'redirect', amount=1000.50, currency_id=currency_usd.id, payment_method_id=webpay_id.id
         )
         with patch(
-            'odoo.addons.payment.utils.generate_access_token', new=self._generate_test_access_token
+                'odoo.addons.payment.utils.generate_access_token', new=self._generate_test_access_token
         ):
             processing_values = tx._get_specific_rendering_values(None)
         self.assertEqual(processing_values.get('url_params').get('total_amount'), 1000)

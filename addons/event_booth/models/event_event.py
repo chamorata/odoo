@@ -2,8 +2,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from collections import defaultdict
 
-from odoo import api, fields, models
 from odoo import Command
+from odoo import api, fields, models
 
 
 class Event(models.Model):
@@ -47,7 +47,9 @@ class Event(models.Model):
             if event.event_type_id.event_type_booth_ids:
                 command += [
                     Command.create({
-                        attribute_name: line[attribute_name] if not isinstance(line[attribute_name], models.BaseModel) else line[attribute_name].id
+                        attribute_name: line[attribute_name] if not isinstance(line[attribute_name],
+                                                                               models.BaseModel) else line[
+                            attribute_name].id
                         for attribute_name in self.env['event.type.booth']._get_event_booth_fields_whitelist()
                     }) for line in event.event_type_id.event_type_booth_ids
                 ]
@@ -76,7 +78,8 @@ class Event(models.Model):
         else:
             for event in self:
                 event.event_booth_count = len(event.event_booth_ids)
-                event.event_booth_count_available = len(event.event_booth_ids.filtered(lambda booth: booth.is_available))
+                event.event_booth_count_available = len(
+                    event.event_booth_ids.filtered(lambda booth: booth.is_available))
 
     @api.depends('event_booth_ids.booth_category_id')
     def _compute_event_booth_category_ids(self):
@@ -86,4 +89,5 @@ class Event(models.Model):
     @api.depends('event_booth_ids.is_available')
     def _compute_event_booth_category_available_ids(self):
         for event in self:
-            event.event_booth_category_available_ids = event.event_booth_ids.filtered(lambda booth: booth.is_available).mapped('booth_category_id')
+            event.event_booth_category_available_ids = event.event_booth_ids.filtered(
+                lambda booth: booth.is_available).mapped('booth_category_id')

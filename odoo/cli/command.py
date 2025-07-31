@@ -1,6 +1,5 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import logging
-import os
 import sys
 from pathlib import Path
 
@@ -8,8 +7,11 @@ import odoo
 from odoo.modules import get_modules, get_module_path, initialize_sys_path
 
 commands = {}
+
+
 class Command:
     name = None
+
     def __init_subclass__(cls):
         cls.name = cls.name or cls.__name__.lower()
         commands[cls.name] = cls
@@ -23,8 +25,10 @@ Available commands:
 
 Use '{odoo_bin} <command> --help' for individual command help."""
 
+
 class Help(Command):
     """ Display the list of available commands """
+
     def run(self, args):
         padding = max([len(cmd) for cmd in commands]) + 2
         command_list = "\n    ".join([
@@ -35,6 +39,7 @@ class Help(Command):
             odoo_bin=Path(sys.argv[0]).name,
             command_list=command_list
         ))
+
 
 def main():
     args = sys.argv[1:]

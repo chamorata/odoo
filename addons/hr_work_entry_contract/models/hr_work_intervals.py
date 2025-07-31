@@ -26,6 +26,7 @@ class WorkIntervals(object):
         Here: they remain two different intervals.
         To implement this behaviour, the main implementation change is the way boundaries are sorted.
     """
+
     def __init__(self, intervals=()):
         self._items = []
         if intervals:
@@ -76,9 +77,9 @@ class WorkIntervals(object):
         bounds1 = _boundaries(sorted(self), 'start', 'stop')
         bounds2 = _boundaries(sorted(other), 'switch', 'switch')
 
-        start = None                    # set by start/stop
-        recs1 = None                    # set by start
-        enabled = difference            # changed by switch
+        start = None  # set by start/stop
+        recs1 = None  # set by start
+        enabled = difference  # changed by switch
         for value, flag, recs in sorted(chain(bounds1, bounds2), key=lambda i: i[0]):
             if flag == 'start':
                 start = value

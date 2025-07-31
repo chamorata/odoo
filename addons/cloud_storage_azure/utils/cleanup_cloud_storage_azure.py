@@ -1,11 +1,11 @@
 import logging
-import requests
 import xmlrpc.client
-
 from concurrent.futures import ThreadPoolExecutor
 from itertools import islice
-from lxml import etree
 from urllib.parse import quote
+
+import requests
+from lxml import etree
 
 # This is a script to manually clean up unused azure blobs.
 

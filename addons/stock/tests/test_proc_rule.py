@@ -3,10 +3,10 @@
 
 from datetime import date, datetime, timedelta
 
+from odoo.exceptions import UserError
 from odoo.fields import Command
 from odoo.tests import Form, TransactionCase
 from odoo.tools import mute_logger
-from odoo.exceptions import UserError
 
 
 class TestProcRule(TransactionCase):
@@ -128,7 +128,8 @@ class TestProcRule(TransactionCase):
             ('location_dest_id', '=', self.ref('stock.stock_location_output')),
             ('move_dest_ids', 'in', [pick_output.move_ids[0].id])
         ])
-        self.assertEqual(len(moves.ids), 1, "It should have created a picking from Stock to Output with the original picking as destination")
+        self.assertEqual(len(moves.ids), 1,
+                         "It should have created a picking from Stock to Output with the original picking as destination")
 
     def test_get_rule_respects_sequence_order(self):
         """Test that _get_rule selects the rule associated with the route of the lowest sequence."""
@@ -676,7 +677,8 @@ class TestProcRule(TransactionCase):
     def test_replenishment_creation(self):
         """Test that the default replenishment order values
         are computed correctly in the tree view."""
-        orderpoint_list_view = Form(self.env['stock.warehouse.orderpoint'], view='stock.view_warehouse_orderpoint_tree_editable')
+        orderpoint_list_view = Form(self.env['stock.warehouse.orderpoint'],
+                                    view='stock.view_warehouse_orderpoint_tree_editable')
         self.assertEqual(orderpoint_list_view.qty_to_order, 0)
         self.assertFalse(orderpoint_list_view.product_id)
 

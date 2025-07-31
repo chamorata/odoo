@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from freezegun import freeze_time
-
 from odoo.addons.stock.tests.common import TestStockCommon
 
 from odoo import fields
@@ -42,7 +41,8 @@ class TestReplenishWizard(TestStockCommon):
         """
         self.product_uom_qty = 42
 
-        replenish_wizard = self.env['product.replenish'].with_context(default_product_tmpl_id=self.product1.product_tmpl_id.id).create({
+        replenish_wizard = self.env['product.replenish'].with_context(
+            default_product_tmpl_id=self.product1.product_tmpl_id.id).create({
             'product_id': self.product1.id,
             'product_tmpl_id': self.product1.product_tmpl_id.id,
             'product_uom_id': self.uom_unit.id,
@@ -95,7 +95,8 @@ class TestReplenishWizard(TestStockCommon):
             'sequence': 2,
         })
 
-        replenish_wizard = self.env['product.replenish'].with_context(default_product_tmpl_id=product_to_buy.product_tmpl_id.id).create({
+        replenish_wizard = self.env['product.replenish'].with_context(
+            default_product_tmpl_id=product_to_buy.product_tmpl_id.id).create({
             'product_id': product_to_buy.id,
             'product_tmpl_id': product_to_buy.product_tmpl_id.id,
             'product_uom_id': self.uom_unit.id,
@@ -154,7 +155,8 @@ class TestReplenishWizard(TestStockCommon):
             'sequence': 3,
         })
 
-        replenish_wizard = self.env['product.replenish'].with_context(default_product_tmpl_id=product_to_buy.product_tmpl_id.id).create({
+        replenish_wizard = self.env['product.replenish'].with_context(
+            default_product_tmpl_id=product_to_buy.product_tmpl_id.id).create({
             'product_id': product_to_buy.id,
             'product_tmpl_id': product_to_buy.product_tmpl_id.id,
             'product_uom_id': self.uom_unit.id,
@@ -203,7 +205,8 @@ class TestReplenishWizard(TestStockCommon):
             'sequence': 1,
         })
 
-        replenish_wizard = self.env['product.replenish'].with_context(default_product_tmpl_id=product_to_buy.product_tmpl_id.id).create({
+        replenish_wizard = self.env['product.replenish'].with_context(
+            default_product_tmpl_id=product_to_buy.product_tmpl_id.id).create({
             'product_id': product_to_buy.id,
             'product_tmpl_id': product_to_buy.product_tmpl_id.id,
             'product_uom_id': self.uom_unit.id,
@@ -256,7 +259,8 @@ class TestReplenishWizard(TestStockCommon):
             'product_tmpl_id': product_to_buy.product_tmpl_id.id,
             'min_qty': 5
         })
-        replenish_wizard = self.env['product.replenish'].with_context(default_product_tmpl_id=product_to_buy.product_tmpl_id.id).create({
+        replenish_wizard = self.env['product.replenish'].with_context(
+            default_product_tmpl_id=product_to_buy.product_tmpl_id.id).create({
             'product_id': product_to_buy.id,
             'product_tmpl_id': product_to_buy.product_tmpl_id.id,
             'product_uom_id': self.uom_unit.id,
@@ -294,7 +298,8 @@ class TestReplenishWizard(TestStockCommon):
             'discount': 20.0,
         })
 
-        replenish_wizard = self.env['product.replenish'].with_context(default_product_tmpl_id=self.product1.product_tmpl_id.id).create({
+        replenish_wizard = self.env['product.replenish'].with_context(
+            default_product_tmpl_id=self.product1.product_tmpl_id.id).create({
             'product_id': self.product1.id,
             'product_tmpl_id': self.product1.product_tmpl_id.id,
             'product_uom_id': self.uom_unit.id,
@@ -333,7 +338,7 @@ class TestReplenishWizard(TestStockCommon):
             'price': 100,
             'product_tmpl_id': product_to_buy.product_tmpl_id.id,
             'min_qty': 2,
-            'delay' : 0
+            'delay': 0
         })
         with freeze_time("2023-01-01"):
             wizard = self.env['product.replenish'].create({
@@ -369,7 +374,7 @@ class TestReplenishWizard(TestStockCommon):
             'price': 100,
             'product_tmpl_id': product_to_buy.product_tmpl_id.id,
             'min_qty': 2,
-            'delay' : 0
+            'delay': 0
         })
         self.env['ir.config_parameter'].sudo().set_param('purchase.use_po_lead', True)
         self.env.company.days_to_purchase = 0
@@ -518,11 +523,13 @@ class TestReplenishWizard(TestStockCommon):
         main_warehouse.write({
             'resupply_wh_ids': [Command.set(second_warehouse.ids)]
         })
-        interwh_route = self.env['stock.route'].search([('supplied_wh_id', '=', main_warehouse.id), ('supplier_wh_id', '=', second_warehouse.id)])
+        interwh_route = self.env['stock.route'].search(
+            [('supplied_wh_id', '=', main_warehouse.id), ('supplier_wh_id', '=', second_warehouse.id)])
 
         self.product1.route_ids = [Command.link(interwh_route.id)]
 
-        wizard_form = Form(self.env['product.replenish'].with_context(default_product_tmpl_id=self.product1.product_tmpl_id.id))
+        wizard_form = Form(
+            self.env['product.replenish'].with_context(default_product_tmpl_id=self.product1.product_tmpl_id.id))
         wizard_form.route_id = interwh_route
         wizard = wizard_form.save()
         generated_picking = wizard.launch_replenishment()

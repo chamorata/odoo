@@ -2,14 +2,14 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import base64
+import math
+from operator import itemgetter
+
 import werkzeug
 import werkzeug.exceptions
 import werkzeug.urls
 import werkzeug.wrappers
-import math
-
 from dateutil.relativedelta import relativedelta
-from operator import itemgetter
 
 from odoo import _, fields, http, tools
 from odoo.http import request
@@ -57,7 +57,7 @@ class WebsiteProfile(http.Controller):
         return user_sudo, False
 
     def _prepare_user_values(self, **kwargs):
-        kwargs.pop('edit_translations', None) # avoid nuking edit_translations
+        kwargs.pop('edit_translations', None)  # avoid nuking edit_translations
         values = {
             'user': request.env.user,
             'is_public_user': request.website.is_public_user(),
@@ -208,7 +208,8 @@ class WebsiteProfile(http.Controller):
         return user_values
 
     @http.route(['/profile/users',
-                 '/profile/users/page/<int:page>'], type='http', auth="public", website=True, sitemap=True, readonly=True)
+                 '/profile/users/page/<int:page>'], type='http', auth="public", website=True, sitemap=True,
+                readonly=True)
     def view_all_users_page(self, page=1, **kwargs):
         User = request.env['res.users']
         dom = [('karma', '>', 1), ('website_published', '=', True)]
@@ -221,7 +222,9 @@ class WebsiteProfile(http.Controller):
             'group_by': group_by or 'all',
         }
         if search_term:
-            dom = expression.AND([['|', ('name', 'ilike', search_term), ('partner_id.commercial_company_name', 'ilike', search_term)], dom])
+            dom = expression.AND(
+                [['|', ('name', 'ilike', search_term), ('partner_id.commercial_company_name', 'ilike', search_term)],
+                 dom])
 
         user_count = User.sudo().search_count(dom)
         my_user = request.env.user
@@ -285,7 +288,9 @@ class WebsiteProfile(http.Controller):
             from_date = to_date - relativedelta(months=1)
         else:
             from_date = None
-        results = request.env['res.users'].browse(user_ids)._get_tracking_karma_gain_position(domain, from_date=from_date, to_date=to_date)
+        results = request.env['res.users'].browse(user_ids)._get_tracking_karma_gain_position(domain,
+                                                                                              from_date=from_date,
+                                                                                              to_date=to_date)
         return dict((item['user_id'], dict(item)) for item in results)
 
     # User and validation

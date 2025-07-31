@@ -1,30 +1,35 @@
 # coding: utf-8
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import base64
-from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 import hashlib
 import logging
-import requests
 import secrets
 import string
-
-from odoo.exceptions import UserError
-from odoo import fields, models, api, _
 from datetime import datetime
+
+import requests
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from dateutil import tz
+
+from odoo import fields, models, api, _
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 REQUEST_TIMEOUT = 30
 iv = b'@@@@&&&&####$$$$'
+
 
 class PosPaymentMethod(models.Model):
     _inherit = 'pos.payment.method'
 
     paytm_tid = fields.Char(string='PayTM Terminal ID', help="Terminal model or Activation code \n ex: 70000123")
     channel_id = fields.Char(string='PayTM Channel ID', default='EDC')
-    accept_payment = fields.Selection(selection=[('auto', 'Automatically'), ('manual', 'Manually')], default='auto', help="Choose accept payment mode: \n Manually or Automatically")
-    allowed_payment_modes = fields.Selection(selection=[('all', 'All'), ('card', 'Card'), ('qr', 'QR')], default='all', help="Choose allow payment mode: \n All/Card or QR")
-    paytm_mid = fields.Char(string="PayTM Merchant ID", help="Go to https://business.paytm.com/ and create the merchant account")
+    accept_payment = fields.Selection(selection=[('auto', 'Automatically'), ('manual', 'Manually')], default='auto',
+                                      help="Choose accept payment mode: \n Manually or Automatically")
+    allowed_payment_modes = fields.Selection(selection=[('all', 'All'), ('card', 'Card'), ('qr', 'QR')], default='all',
+                                             help="Choose allow payment mode: \n All/Card or QR")
+    paytm_mid = fields.Char(string="PayTM Merchant ID",
+                            help="Go to https://business.paytm.com/ and create the merchant account")
     paytm_merchant_key = fields.Char(string="PayTM Merchant API Key", help="Merchant/AES key \n ex: B1o6Ivjy8L1@abc9")
     paytm_test_mode = fields.Boolean(string="PayTM Test Mode", default=False, help="Turn it on when in Test Mode")
 
@@ -44,7 +49,7 @@ class PosPaymentMethod(models.Model):
                 api_url = 'https://securegw-stage.paytm.in/ecr/'
             else:
                 api_url = 'https://securegw-edc.paytm.in/ecr/'
-            response = requests.post(api_url+url, json=payload, timeout=REQUEST_TIMEOUT)
+            response = requests.post(api_url + url, json=payload, timeout=REQUEST_TIMEOUT)
             response.raise_for_status()
         except (requests.exceptions.Timeout, requests.exceptions.RequestException) as error:
             _logger.warning("Cannot connect with PayTM. Error: %s", error)
@@ -95,15 +100,15 @@ class PosPaymentMethod(models.Model):
             # Only sending essential data when the transaction is successful
             data = response['resultInfo']
             data.update({
-                    'authCode': response.get('authCode'),
-                    'issuerMaskCardNo': response.get('issuerMaskCardNo'),
-                    'issuingBankName': response.get('issuingBankName'),
-                    'payMethod': response.get('payMethod'),
-                    'cardType': response.get('cardType'),
-                    'cardScheme': response.get('cardScheme'),
-                    'merchantReferenceNo': response.get('merchantReferenceNo'),
-                    'merchantTransactionId': response.get('merchantTransactionId'),
-                    'transactionDateTime': response.get('transactionDateTime'),
+                'authCode': response.get('authCode'),
+                'issuerMaskCardNo': response.get('issuerMaskCardNo'),
+                'issuingBankName': response.get('issuingBankName'),
+                'payMethod': response.get('payMethod'),
+                'cardType': response.get('cardType'),
+                'cardScheme': response.get('cardScheme'),
+                'merchantReferenceNo': response.get('merchantReferenceNo'),
+                'merchantTransactionId': response.get('merchantTransactionId'),
+                'transactionDateTime': response.get('transactionDateTime'),
             })
             return data
         elif result_code == 'F':
@@ -126,7 +131,7 @@ class PosPaymentMethod(models.Model):
         params_with_salt = '|'.join(params_list)
         hashed_params = hashlib.sha256(params_with_salt.encode())
         hashed_params_with_salt = hashed_params.hexdigest() + salt
-        padding = 12 #the padding value is a constant
+        padding = 12  # the padding value is a constant
         padded_hashed_params_with_salt = bytes(hashed_params_with_salt + padding * chr(padding), 'utf-8')
         try:
             cipher = Cipher(algorithms.AES(key.encode()), modes.CBC(iv))
@@ -154,9 +159,9 @@ class PosPaymentMethod(models.Model):
         if error:
             return {'error': '%s' % error}
         return {
-            'requestTimeStamp' : body["transactionDateTime"],
-            'channelId' : self.channel_id,
-            'checksum' : paytm_signature,
+            'requestTimeStamp': body["transactionDateTime"],
+            'channelId': self.channel_id,
+            'checksum': paytm_signature,
         }
 
     @api.constrains('use_payment_terminal')

@@ -1,6 +1,5 @@
 from odoo import models, _
 
-
 CHORUS_PRO_PEPPOL_ID = "0009:11000201100044"
 
 
@@ -49,9 +48,11 @@ class AccountEdiXmlUBLBIS3(models.AbstractModel):
         customer, supplier = vals['customer'].commercial_partner_id, vals['supplier']
         if customer.peppol_eas and customer.peppol_endpoint and customer.peppol_eas + ":" + customer.peppol_endpoint == CHORUS_PRO_PEPPOL_ID:
             if 'siret' not in customer._fields or not customer.siret:
-                constraints['chorus_customer'] = _("The siret is mandatory for the customer when invoicing to Chorus Pro.")
+                constraints['chorus_customer'] = _(
+                    "The siret is mandatory for the customer when invoicing to Chorus Pro.")
             if supplier.country_code == 'FR' and ('siret' not in supplier._fields or not supplier.siret):
-                constraints['chorus_supplier'] = _("The siret is mandatory for french suppliers when invoicing to Chorus Pro.")
+                constraints['chorus_supplier'] = _(
+                    "The siret is mandatory for french suppliers when invoicing to Chorus Pro.")
         return constraints
 
     # -------------------------------------------------------------------------
@@ -84,9 +85,9 @@ class AccountEdiXmlUBLBIS3(models.AbstractModel):
         partner = vals['partner'].commercial_partner_id
 
         if (
-            customer.peppol_eas and
-            customer.peppol_endpoint and
-            customer.peppol_eas + ":" + customer.peppol_endpoint == CHORUS_PRO_PEPPOL_ID
+                customer.peppol_eas and
+                customer.peppol_endpoint and
+                customer.peppol_eas + ":" + customer.peppol_endpoint == CHORUS_PRO_PEPPOL_ID
         ):
             party_node['cac:PartyIdentification'] = {
                 'cbc:ID': {

@@ -14,50 +14,76 @@
                             <t t-elif="show_project">
                                 <t t-set="timesheet_record_label">Project</t>
                             </t>
-                            <th class="text-start align-middle"><span>Date</span></th>
-                            <th class="text-start align-middle"><span>Employee</span></th>
-                            <th class="text-start align-middle" t-if="timesheet_record_label"><span t-out="timesheet_record_label"/></th>
-                            <th class="text-start align-middle"><span>Description</span></th>
+                            <th class="text-start align-middle">
+                                <span>Date</span>
+                            </th>
+                            <th class="text-start align-middle">
+                                <span>Employee</span>
+                            </th>
+                            <th class="text-start align-middle" t-if="timesheet_record_label">
+                                <span t-out="timesheet_record_label"/>
+                            </th>
+                            <th class="text-start align-middle">
+                                <span>Description</span>
+                            </th>
                             <th class="text-end">
                                 <span>Time Spent</span>
                             </th>
                         </tr>
-                   </thead>
-                   <tbody>
-                        <tr t-foreach="lines" t-as="line" t-att-style="'background-color: #F1F1F1;' if line_index % 2 == 0 else ''">
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="lines" t-as="line"
+                            t-att-style="'background-color: #F1F1F1;' if line_index % 2 == 0 else ''">
                             <td class="align-middle">
-                               <span t-field="line.date">2021-09-01</span>
+                                <span t-field="line.date">2021-09-01</span>
                             </td>
                             <td class="align-middle">
-                               <span t-if="line.user_id.partner_id.name" t-field="line.user_id.partner_id.name">Audrey Peterson</span>
-                               <span t-else="" t-field="line.employee_id">Audrey Peterson</span>
+                                <span t-if="line.user_id.partner_id.name" t-field="line.user_id.partner_id.name">Audrey
+                                    Peterson
+                                </span>
+                                <span t-else="" t-field="line.employee_id">Audrey Peterson</span>
                             </td>
                             <t t-set="timesheet_record_info" t-value="False"/>
                             <t t-if="show_project">
                                 <t t-set="timesheet_record_info" t-value="line.project_id.sudo().name"/>
-                                <t t-if="show_task and line.task_id" t-set="timesheet_record_info" t-value="'%s / %s' % (timesheet_record_info, line.task_id.sudo().name)"/>
+                                <t t-if="show_task and line.task_id" t-set="timesheet_record_info"
+                                   t-value="'%s / %s' % (timesheet_record_info, line.task_id.sudo().name)"/>
                             </t>
                             <t t-elif="show_task" t-set="timesheet_record_info" t-value="line.task_id.sudo().name"/>
                             <td t-if="show_task or show_project" class="align-middle">
-                                <span t-if="timesheet_record_info" t-out="timesheet_record_info">Research and Development/New Portal System</span>
+                                <span t-if="timesheet_record_info" t-out="timesheet_record_info">Research and
+                                    Development/New Portal System
+                                </span>
                             </td>
                             <td class="align-middle">
-                                <span t-field="line.name" t-options="{'widget': 'text'}">Call client and discuss project</span>
+                                <span t-field="line.name" t-options="{'widget': 'text'}">Call client and discuss
+                                    project
+                                </span>
                             </td>
                             <td class="text-end align-middle">
-                                <span t-if="not is_uom_day" t-field="line.unit_amount" t-options="{'widget': 'duration', 'digital': True, 'unit': 'hour', 'round': 'minute'}">2 hours</span>
-                                <span t-else="" t-esc="line._get_timesheet_time_day()" t-options="{'widget': 'timesheet_uom'}">1 day</span>
+                                <span t-if="not is_uom_day" t-field="line.unit_amount"
+                                      t-options="{'widget': 'duration', 'digital': True, 'unit': 'hour', 'round': 'minute'}">
+                                    2 hours
+                                </span>
+                                <span t-else="" t-esc="line._get_timesheet_time_day()"
+                                      t-options="{'widget': 'timesheet_uom'}">1 day
+                                </span>
                             </td>
                         </tr>
                         <tr>
                             <td class="text-end" colspan="100">
                                 <strong t-if="not is_uom_day">
                                     <span style="margin-right: 15px;">Total (Hours)</span>
-                                    <t t-esc="sum(lines.mapped('unit_amount'))" t-options="{'widget': 'duration', 'digital': True, 'unit': 'hour', 'round': 'minute'}">2 hours</t>
+                                    <t t-esc="sum(lines.mapped('unit_amount'))"
+                                       t-options="{'widget': 'duration', 'digital': True, 'unit': 'hour', 'round': 'minute'}">
+                                        2 hours
+                                    </t>
                                 </strong>
                                 <strong t-else="">
                                     <span style="margin-right: 15px;">Total (Days)</span>
-                                    <t t-esc="lines._convert_hours_to_days(sum(lines.mapped('unit_amount')))" t-options="{'widget': 'timesheet_uom'}">1 day</t>
+                                    <t t-esc="lines._convert_hours_to_days(sum(lines.mapped('unit_amount')))"
+                                       t-options="{'widget': 'timesheet_uom'}">1 day
+                                    </t>
                                 </strong>
                             </td>
                         </tr>
@@ -84,9 +110,11 @@
                     <t t-foreach="docs" t-as="doc">
                         <div class="oe_structure"/>
                         <div class="mt8">
-                            <t t-set="lines" t-value="doc.timesheet_ids if from_project else timesheets_per_task.get(doc, doc.env['account.analytic.line'])"/>
+                            <t t-set="lines"
+                               t-value="doc.timesheet_ids if from_project else timesheets_per_task.get(doc, doc.env['account.analytic.line'])"/>
                             <h1 t-if="lines">
-                                <t t-out="title"/>: <t t-out="doc.name"/>
+                                <t t-out="title"/>:
+                                <t t-out="doc.name"/>
                             </h1>
                             <t t-if="lines" t-call="hr_timesheet.timesheet_table"/>
                             <t t-if="not from_project">
@@ -105,7 +133,8 @@
         <t t-foreach="subtasks.sorted('sequence')" t-as="subtask">
             <t t-if="subtask in timesheets_per_task">
                 <h2 class="my-4">
-                    Sub-Task of '<t t-out="doc.name"/>': <t t-out="subtask.name"/>
+                    Sub-Task of '<t t-out="doc.name"/>':
+                    <t t-out="subtask.name"/>
                 </h2>
                 <t t-set="lines" t-value="timesheets_per_task[subtask]"/>
                 <t t-call="hr_timesheet.timesheet_table"/>
@@ -118,7 +147,8 @@
     <template id="report_timesheet">
         <t t-call="web.html_container">
             <t t-call="web.internal_layout">
-                <t t-set="company" t-value="docs.project_id.company_id if len(docs.project_id) == 1 else docs.env.company"/>
+                <t t-set="company"
+                   t-value="docs.project_id.company_id if len(docs.project_id) == 1 else docs.env.company"/>
                 <t t-set="show_task" t-value="bool(docs.task_id)"/>
                 <t t-set="show_project" t-value="len(docs.project_id) > 1"/>
                 <div class="page">
@@ -146,7 +176,8 @@
     <template id="report_timesheet_task">
         <t t-call="web.html_container">
             <t t-call="web.internal_layout">
-                <t t-set="company" t-value="docs.project_id.company_id if len(docs.project_id) == 1 else docs.env.company"/>
+                <t t-set="company"
+                   t-value="docs.project_id.company_id if len(docs.project_id) == 1 else docs.env.company"/>
                 <t t-set="show_task" t-value="len(docs.task_id) > 1"/>
                 <t t-set="show_project" t-value="False"/>
                 <div class="page">
@@ -156,7 +187,8 @@
                             <h2>
                                 <span>Timesheets
                                     <t t-if="len(docs.task_id) == 1">
-                                        for <t t-out="docs.task_id.name"/>
+                                        for
+                                        <t t-out="docs.task_id.name"/>
                                     </t>
                                 </span>
                             </h2>

@@ -18,7 +18,7 @@ class TestProjectConfig(TestProjectCommon):
         cls.features = (
             # Pairs of associated (config_flag, project_flag)
             ("group_project_rating", "rating_active"),
-            )
+        )
 
         # Start with a known value on feature flags to ensure validity of tests
         cls._set_feature_status(is_enabled=False)
@@ -62,7 +62,7 @@ class TestProjectConfig(TestProjectCommon):
         """Check that the Gantt, Calendar and Activities views are
         enabled when the 'Project Stage' feature is enabled.
         """
-        self.Settings.create({"group_project_stages": True}).execute() # enabling feature
+        self.Settings.create({"group_project_stages": True}).execute()  # enabling feature
         menu_ids = set([self.env.ref('project.menu_projects').id, self.env.ref('project.menu_projects_config').id])
         menu_loaded = set(self.env['ir.ui.menu']._load_menus_blacklist())
         self.assertTrue(menu_ids.issubset(menu_loaded), "The menu project and menu projects config should be loaded")

@@ -4,18 +4,19 @@ import io
 import logging
 import unittest
 import zipfile
-from odoo.fields import Command
-
-from odoo.tests.common import HttpCase, tagged
 from base64 import b64decode
 
+from odoo.fields import Command
+from odoo.tests.common import HttpCase, tagged
 from odoo.tools import mute_logger
+
 _logger = logging.getLogger(__name__)
 
 try:
     import vobject
 except ImportError:
-    _logger.warning("`vobject` Python module not found, vcard file generation disabled. Consider installing this module if you want to generate vcard files")
+    _logger.warning(
+        "`vobject` Python module not found, vcard file generation disabled. Consider installing this module if you want to generate vcard files")
     vobject = None
 
 
@@ -61,7 +62,8 @@ class TestPartnerVCard(HttpCase):
         self.assertEqual(vcard.contents["adr"][0].value.street, partner.street, "Vcard should have the same street")
         self.assertEqual(vcard.contents["adr"][0].value.city, partner.city, "Vcard should have the same city")
         self.assertEqual(vcard.contents["adr"][0].value.code, partner.zip, "Vcard should have the same zip")
-        self.assertEqual(vcard.contents["adr"][0].value.country, self.env.ref('base.us').name, "Vcard should have the same country")
+        self.assertEqual(vcard.contents["adr"][0].value.country, self.env.ref('base.us').name,
+                         "Vcard should have the same country")
         self.assertEqual(vcard.contents["email"][0].value, partner.email, "Vcard should have the same email")
         self.assertEqual(vcard.contents["url"][0].value, partner.website, "Vcard should have the same website")
         self.assertEqual(vcard.contents["tel"][0].params['TYPE'], ["work"], "Vcard should have the same phone")
@@ -69,7 +71,8 @@ class TestPartnerVCard(HttpCase):
         self.assertEqual(vcard.contents["tel"][1].params['TYPE'], ["cell"], "Vcard should have the same mobile")
         self.assertEqual(vcard.contents["tel"][1].value, partner.mobile, "Vcard should have the same mobile")
         self.assertEqual(vcard.contents["title"][0].value, partner.function, "Vcard should have the same function")
-        self.assertEqual(len(vcard.contents['photo'][0].value), len(b64decode(partner.avatar_512)), "Vcard should have the same photo")
+        self.assertEqual(len(vcard.contents['photo'][0].value), len(b64decode(partner.avatar_512)),
+                         "Vcard should have the same photo")
 
     def test_fetch_single_partner_vcard(self):
         res = self.url_open('/web_enterprise/partner/%d/vcard' % self.partners[0].id)
@@ -103,7 +106,7 @@ class TestPartnerVCard(HttpCase):
         self.authenticate('testuser', 'testuser')
         with mute_logger('odoo.http'):  # mute 403 warning
             res = self.url_open('/web/partner/vcard?partner_ids=%s,%s' %
-                            (self.partners[0].id, self.partners[1].id))
+                                (self.partners[0].id, self.partners[1].id))
         self.assertEqual(res.status_code, 403)
 
     def test_fetch_single_partner_vcard_without_name(self):
@@ -114,4 +117,5 @@ class TestPartnerVCard(HttpCase):
         partner = self.partners[1].child_ids[0]
         res = self.url_open('/web/partner/vcard?partner_ids=%s' % partner.id)
         vcard = vobject.readOne(res.text)
-        self.assertEqual(vcard.contents["n"][0].value.family, partner.complete_name, "Vcard will have the complete name when it dosen't have name")
+        self.assertEqual(vcard.contents["n"][0].value.family, partner.complete_name,
+                         "Vcard will have the complete name when it dosen't have name")

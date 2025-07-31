@@ -51,7 +51,8 @@ class AccountPaymentRegisterWithholdingLine(models.TransientModel):
                 # We need to care about partial payment; for example if paid in two times.
                 # In this case, the full amount is going to be the residual amount; and the factor would be wrongly "1"
                 split_factor = abs(total_amounts_to_pay['full_amount'] / moves_total_amount)
-                lines.comodel_percentage_paid_factor = abs(wizard.amount / total_amounts_to_pay['full_amount']) * split_factor
+                lines.comodel_percentage_paid_factor = abs(
+                    wizard.amount / total_amounts_to_pay['full_amount']) * split_factor
             else:
                 lines.comodel_percentage_paid_factor = 0.0
 
@@ -84,7 +85,8 @@ class AccountPaymentRegisterWithholdingLine(models.TransientModel):
         Simply adds a check to ensure that we don't call this method on lines belonging to multiple payment register; as it
         is not intended.
         """
-        assert len(self.payment_register_id) == 1, self.env._("All withholding lines in self must have the same payment register.")
+        assert len(self.payment_register_id) == 1, self.env._(
+            "All withholding lines in self must have the same payment register.")
         return super()._prepare_withholding_amls_create_values()
 
     # ----------------
@@ -98,9 +100,9 @@ class AccountPaymentRegisterWithholdingLine(models.TransientModel):
         account against these to avoid such issue.
         """
         return (
-            self.payment_register_id.journal_id.default_account_id |
-            self.payment_register_id.payment_method_line_id.payment_account_id |
-            self.payment_register_id.journal_id.inbound_payment_method_line_ids.payment_account_id |
-            self.payment_register_id.journal_id.outbound_payment_method_line_ids.payment_account_id |
-            self.payment_register_id.withholding_outstanding_account_id
+                self.payment_register_id.journal_id.default_account_id |
+                self.payment_register_id.payment_method_line_id.payment_account_id |
+                self.payment_register_id.journal_id.inbound_payment_method_line_ids.payment_account_id |
+                self.payment_register_id.journal_id.outbound_payment_method_line_ids.payment_account_id |
+                self.payment_register_id.withholding_outstanding_account_id
         )

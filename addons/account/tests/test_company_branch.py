@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
 from contextlib import nullcontext
-from freezegun import freeze_time
 from functools import partial
 
-from odoo import Command, fields
+from freezegun import freeze_time
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
+from odoo import Command, fields
 from odoo.exceptions import UserError
 from odoo.tests import tagged, Form
 
@@ -138,34 +139,34 @@ class TestCompanyBranch(AccountTestInvoicingCommon):
             ('purchase_lock_date', False, True),
         ]:
             for root_lock, branch_lock, invoice_date, company, move_type, failure_expected in (
-                # before both locks
-                ('3021-01-01', '3022-01-01', '3020-01-01', self.root_company, 'in_invoice', lock_purchase),
-                ('3021-01-01', '3022-01-01', '3020-01-01', self.root_company, 'out_invoice', lock_sale),
-                ('3021-01-01', '3022-01-01', '3020-01-01', self.branch_a, 'in_invoice', lock_purchase),
-                ('3021-01-01', '3022-01-01', '3020-01-01', self.branch_a, 'out_invoice', lock_sale),
-                # between root and branch lock
-                ('3020-01-01', '3022-01-01', '3021-01-01', self.root_company, 'in_invoice', False),
-                ('3020-01-01', '3022-01-01', '3021-01-01', self.root_company, 'out_invoice', False),
-                ('3020-01-01', '3022-01-01', '3021-01-01', self.branch_a, 'in_invoice', lock_purchase),
-                ('3020-01-01', '3022-01-01', '3021-01-01', self.branch_a, 'out_invoice', lock_sale),
-                # between branch and root lock
-                ('3022-01-01', '3020-01-01', '3021-01-01', self.root_company, 'in_invoice', lock_purchase),
-                ('3022-01-01', '3020-01-01', '3021-01-01', self.root_company, 'out_invoice', lock_sale),
-                ('3022-01-01', '3020-01-01', '3021-01-01', self.branch_a, 'in_invoice', lock_purchase),
-                ('3022-01-01', '3020-01-01', '3021-01-01', self.branch_a, 'out_invoice', lock_sale),
-                # after both locks
-                ('3020-01-01', '3021-01-01', '3022-01-01', self.root_company, 'in_invoice', False),
-                ('3020-01-01', '3021-01-01', '3022-01-01', self.root_company, 'out_invoice', False),
-                ('3020-01-01', '3021-01-01', '3022-01-01', self.branch_a, 'in_invoice', False),
-                ('3020-01-01', '3021-01-01', '3022-01-01', self.branch_a, 'out_invoice', False),
-               ):
+                    # before both locks
+                    ('3021-01-01', '3022-01-01', '3020-01-01', self.root_company, 'in_invoice', lock_purchase),
+                    ('3021-01-01', '3022-01-01', '3020-01-01', self.root_company, 'out_invoice', lock_sale),
+                    ('3021-01-01', '3022-01-01', '3020-01-01', self.branch_a, 'in_invoice', lock_purchase),
+                    ('3021-01-01', '3022-01-01', '3020-01-01', self.branch_a, 'out_invoice', lock_sale),
+                    # between root and branch lock
+                    ('3020-01-01', '3022-01-01', '3021-01-01', self.root_company, 'in_invoice', False),
+                    ('3020-01-01', '3022-01-01', '3021-01-01', self.root_company, 'out_invoice', False),
+                    ('3020-01-01', '3022-01-01', '3021-01-01', self.branch_a, 'in_invoice', lock_purchase),
+                    ('3020-01-01', '3022-01-01', '3021-01-01', self.branch_a, 'out_invoice', lock_sale),
+                    # between branch and root lock
+                    ('3022-01-01', '3020-01-01', '3021-01-01', self.root_company, 'in_invoice', lock_purchase),
+                    ('3022-01-01', '3020-01-01', '3021-01-01', self.root_company, 'out_invoice', lock_sale),
+                    ('3022-01-01', '3020-01-01', '3021-01-01', self.branch_a, 'in_invoice', lock_purchase),
+                    ('3022-01-01', '3020-01-01', '3021-01-01', self.branch_a, 'out_invoice', lock_sale),
+                    # after both locks
+                    ('3020-01-01', '3021-01-01', '3022-01-01', self.root_company, 'in_invoice', False),
+                    ('3020-01-01', '3021-01-01', '3022-01-01', self.root_company, 'out_invoice', False),
+                    ('3020-01-01', '3021-01-01', '3022-01-01', self.branch_a, 'in_invoice', False),
+                    ('3020-01-01', '3021-01-01', '3022-01-01', self.branch_a, 'out_invoice', False),
+            ):
                 with self.subTest(
-                    lock=lock,
-                    root_lock=root_lock,
-                    branch_lock=branch_lock,
-                    invoice_date=invoice_date,
-                    move_type=move_type,
-                    company=company.name,
+                        lock=lock,
+                        root_lock=root_lock,
+                        branch_lock=branch_lock,
+                        invoice_date=invoice_date,
+                        move_type=move_type,
+                        company=company.name,
                 ), self.env.cr.savepoint() as sp:
                     check = partial(self.assertRaises, UserError) if failure_expected else nullcontext
                     move = self.init_invoice(
@@ -200,8 +201,8 @@ class TestCompanyBranch(AccountTestInvoicingCommon):
             'name': 'name',
         })]
         for record, lines, company_field in (
-            (account, account_lines, 'company_ids'),
-            (tax, tax_lines, 'company_id'),
+                (account, account_lines, 'company_ids'),
+                (tax, tax_lines, 'company_id'),
         ):
             with self.subTest(model=record._name):
                 self.env['account.move'].create({'company_id': self.branch_a.id, 'line_ids': lines})
@@ -251,7 +252,8 @@ class TestCompanyBranch(AccountTestInvoicingCommon):
                 }),
             ],
         })
-        self.env['account.chart.template'].try_loading('generic_coa', company=root_company.child_ids[0], install_demo=False)
+        self.env['account.chart.template'].try_loading('generic_coa', company=root_company.child_ids[0],
+                                                       install_demo=False)
         self.assertEqual(root_company.currency_id, root_company.child_ids[0].currency_id)
 
     def test_switch_company_currency(self):

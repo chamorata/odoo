@@ -2,6 +2,7 @@
 
 from freezegun import freeze_time
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
 from odoo.tests import tagged
 
 
@@ -43,4 +44,5 @@ class TestAccountFleet(AccountTestInvoicingCommon):
         })
         result_action = wizard.do_action()
         transfer_moves = self.env['account.move'].search(result_action['domain'])
-        self.assertEqual(transfer_moves.line_ids.filtered(lambda l: l.account_id == expense_account).vehicle_id, car_1, "Vehicle info is missing")
+        self.assertEqual(transfer_moves.line_ids.filtered(lambda l: l.account_id == expense_account).vehicle_id, car_1,
+                         "Vehicle info is missing")

@@ -20,7 +20,8 @@ class AccountEdiDocument(models.Model):
             move_first_index = 0
             for index, job in enumerate(jobs):
                 documents = job['documents']
-                if any(d.edi_format_id.code == 'sa_zatca' and d.state == 'to_send' and d.move_id.l10n_sa_chain_index for d in documents):
+                if any(d.edi_format_id.code == 'sa_zatca' and d.state == 'to_send' and d.move_id.l10n_sa_chain_index for
+                       d in documents):
                     move_first_index = index
                     break
             jobs = [jobs[move_first_index]] + jobs[:move_first_index] + jobs[move_first_index + 1:]

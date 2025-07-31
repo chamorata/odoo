@@ -1,12 +1,12 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.exceptions import UserError
-from odoo.models import Command
-from odoo.tests import tagged
-
 from odoo.addons.payment import utils as payment_utils
 from odoo.addons.payment.const import REPORT_REASONS_MAPPING
 from odoo.addons.payment.tests.common import PaymentCommon
+
+from odoo.exceptions import UserError
+from odoo.models import Command
+from odoo.tests import tagged
 
 
 @tagged('-at_install', 'post_install')
@@ -209,22 +209,22 @@ class TestPaymentMethod(PaymentCommon):
                 'available': False,
                 'reason': REPORT_REASONS_MAPPING['provider_not_available'],
                 'supported_providers': [(unavailable_provider, False)],
-             },
+            },
             invalid_country_pm: {
                 'available': False,
                 'reason': REPORT_REASONS_MAPPING['incompatible_country'],
                 'supported_providers': [(self.provider, True)],
-             },
+            },
             invalid_currency_pm: {
                 'available': False,
                 'reason': REPORT_REASONS_MAPPING['incompatible_currency'],
                 'supported_providers': [(self.provider, True)],
-             },
+            },
             no_tokenization_pm: {
                 'available': False,
                 'reason': REPORT_REASONS_MAPPING['tokenization_not_supported'],
                 'supported_providers': [(self.provider, True)],
-             },
+            },
             no_express_checkout_pm: {
                 'available': False,
                 'reason': REPORT_REASONS_MAPPING['express_checkout_not_supported'],

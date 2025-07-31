@@ -4,8 +4,9 @@
 from ast import literal_eval
 from uuid import uuid4
 
-from odoo import api, fields, models, _
 from odoo.addons.sms.tools.sms_tools import sms_content_to_rendered_html
+
+from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
 
@@ -20,7 +21,8 @@ class SendSMS(models.TransientModel):
         result['res_model'] = result.get('res_model') or self.env.context.get('active_model')
 
         if not result.get('res_ids'):
-            if not result.get('res_id') and self.env.context.get('active_ids') and len(self.env.context.get('active_ids')) > 1:
+            if not result.get('res_id') and self.env.context.get('active_ids') and len(
+                    self.env.context.get('active_ids')) > 1:
                 result['res_ids'] = repr(self.env.context.get('active_ids'))
         if not result.get('res_id'):
             if not result.get('res_ids') and self.env.context.get('active_id'):
@@ -51,8 +53,10 @@ class SendSMS(models.TransientModel):
     # recipients
     recipient_valid_count = fields.Integer('# Valid recipients', compute='_compute_recipients', compute_sudo=False)
     recipient_invalid_count = fields.Integer('# Invalid recipients', compute='_compute_recipients', compute_sudo=False)
-    recipient_single_description = fields.Text('Recipients (Partners)', compute='_compute_recipient_single_non_stored', compute_sudo=False)
-    recipient_single_number = fields.Char('Stored Recipient Number', compute='_compute_recipient_single_non_stored', compute_sudo=False)
+    recipient_single_description = fields.Text('Recipients (Partners)', compute='_compute_recipient_single_non_stored',
+                                               compute_sudo=False)
+    recipient_single_number = fields.Char('Stored Recipient Number', compute='_compute_recipient_single_non_stored',
+                                          compute_sudo=False)
     recipient_single_number_itf = fields.Char(
         'Recipient Number', compute='_compute_recipient_single_stored',
         readonly=False, compute_sudo=False, store=True,
@@ -104,12 +108,14 @@ class SendSMS(models.TransientModel):
 
             records = composer._get_records()
             if records:
-                res = records._sms_get_recipients_info(force_field=composer.number_field_name, partner_fallback=not composer.comment_single_recipient)
+                res = records._sms_get_recipients_info(force_field=composer.number_field_name,
+                                                       partner_fallback=not composer.comment_single_recipient)
                 composer.recipient_valid_count = len([rid for rid, rvalues in res.items() if rvalues['sanitized']])
-                composer.recipient_invalid_count = len([rid for rid, rvalues in res.items() if not rvalues['sanitized']])
+                composer.recipient_invalid_count = len(
+                    [rid for rid, rvalues in res.items() if not rvalues['sanitized']])
             else:
                 composer.recipient_invalid_count = 0 if (
-                    composer.sanitized_numbers or composer.composition_mode == 'mass'
+                        composer.sanitized_numbers or composer.composition_mode == 'mass'
                 ) else 1
 
     @api.depends('res_model', 'number_field_name')
@@ -136,7 +142,8 @@ class SendSMS(models.TransientModel):
                 continue
             records.ensure_one()
             res = records._sms_get_recipients_info(force_field=composer.number_field_name, partner_fallback=True)
-            composer.recipient_single_description = res[records.id]['partner'].name or records._mail_get_partners()[records[0].id].display_name
+            composer.recipient_single_description = res[records.id]['partner'].name or records._mail_get_partners()[
+                records[0].id].display_name
             composer.recipient_single_number = res[records.id]['sanitized'] or res[records.id]['number'] or ''
 
     @api.depends('recipient_single_number', 'recipient_single_number_itf')
@@ -145,7 +152,8 @@ class SendSMS(models.TransientModel):
             value = composer.recipient_single_number_itf or composer.recipient_single_number
             if value:
                 records = composer._get_records()
-                composer.recipient_single_valid = bool(records._phone_format(number=value)) if len(records) == 1 else False
+                composer.recipient_single_valid = bool(records._phone_format(number=value)) if len(
+                    records) == 1 else False
             else:
                 composer.recipient_single_valid = False
 
@@ -167,7 +175,8 @@ class SendSMS(models.TransientModel):
     def _compute_body(self):
         for record in self:
             if record.template_id and record.composition_mode == 'comment' and record.res_id:
-                record.body = record.template_id._render_field('body', [record.res_id], compute_lang=True)[record.res_id]
+                record.body = record.template_id._render_field('body', [record.res_id], compute_lang=True)[
+                    record.res_id]
             elif record.template_id:
                 record.body = record.template_id.body
 
@@ -209,7 +218,8 @@ class SendSMS(models.TransientModel):
                 'body': self.body,
                 'number': number
             } for number in (
-                self.sanitized_numbers.split(',') if self.sanitized_numbers else [self.recipient_single_number_itf or self.recipient_single_number or '']
+                self.sanitized_numbers.split(',') if self.sanitized_numbers else [
+                    self.recipient_single_number_itf or self.recipient_single_number or '']
             )
         ]
         self.env['sms.sms'].sudo().create(sms_values).send()

@@ -13,11 +13,12 @@ def _set_fiscal_country(env):
 def _account_post_init(env):
     _set_fiscal_country(env)
 
+
 # imported here to avoid dependency cycle issues
 # pylint: disable=wrong-import-position
 from . import controllers
-from . import models
 from . import demo
-from . import wizard
+from . import models
 from . import report
 from . import tools
+from . import wizard

@@ -4,15 +4,14 @@ import collections
 import datetime
 import time
 
-from odoo.exceptions import AccessDenied, AccessError
-from odoo.http import _request_stack
-
 import odoo
 import odoo.tools
-from odoo.tests import common
-from odoo.service import common as auth, model
-from odoo.tools import DotDict
 from odoo.api import call_kw
+from odoo.exceptions import AccessDenied, AccessError
+from odoo.http import _request_stack
+from odoo.service import common as auth, model
+from odoo.tests import common
+from odoo.tools import DotDict
 
 
 @common.tagged('post_install', '-at_install')
@@ -148,7 +147,8 @@ class TestXMLRPC(common.HttpCase):
             common.get_db_name(), self.admin_uid, 'admin',
             'ir.attachment', 'read', ids, ['raw'])
         self.assertEqual(att['raw'], '\t',
-            "on read, binary data should be decoded as a string and stripped from control character")
+                         "on read, binary data should be decoded as a string and stripped from control character")
+
 
 # really just for the test cursor
 @common.tagged('post_install', '-at_install')
@@ -168,6 +168,7 @@ class TestAPIKeys(common.HttpCase):
 
         def get_json_data():
             raise ValueError("There is no json here")
+
         # needs a fake request in order to call methods protected with check_identity
         fake_req = DotDict({
             # various things go and access request items
@@ -234,9 +235,9 @@ class TestAPIKeys(common.HttpCase):
 
     def test_delete(self):
         env = self.env(user=self._user)
-        env['res.users.apikeys.description'].create({'name': 'b',}).make_key()
-        env['res.users.apikeys.description'].create({'name': 'b',}).make_key()
-        env['res.users.apikeys.description'].create({'name': 'b',}).make_key()
+        env['res.users.apikeys.description'].create({'name': 'b', }).make_key()
+        env['res.users.apikeys.description'].create({'name': 'b', }).make_key()
+        env['res.users.apikeys.description'].create({'name': 'b', }).make_key()
         k0, k1, k2 = env['res.users.apikeys'].search([])
 
         # user can remove their own keys
@@ -244,7 +245,7 @@ class TestAPIKeys(common.HttpCase):
         self.assertFalse(k0.exists())
 
         # admin can remove user keys
-        k1.with_user(self.env.ref('base.user_admin')).remove    ()
+        k1.with_user(self.env.ref('base.user_admin')).remove()
         self.assertFalse(k1.exists())
 
         # other user can't remove user keys
@@ -258,7 +259,7 @@ class TestAPIKeys(common.HttpCase):
 
     def test_disabled(self):
         env = self.env(user=self._user)
-        k = env['res.users.apikeys.description'].create({'name': 'b',}).make_key()['context']['default_key']
+        k = env['res.users.apikeys.description'].create({'name': 'b', }).make_key()['context']['default_key']
 
         self._user.active = False
 

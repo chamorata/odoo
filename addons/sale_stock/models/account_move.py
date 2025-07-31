@@ -19,13 +19,17 @@ class AccountMove(models.Model):
             if invoice.move_type not in ['out_invoice', 'out_refund']:
                 continue
             if (invoice.move_type == 'out_invoice' or (
-                invoice.move_type == 'out_refund' and any(invoice.invoice_line_ids.sale_line_ids.mapped('is_downpayment')))
+                    invoice.move_type == 'out_refund' and any(
+                invoice.invoice_line_ids.sale_line_ids.mapped('is_downpayment')))
             ):
-                rslt += invoice.mapped('invoice_line_ids.sale_line_ids.move_ids').filtered(lambda x: x.state == 'done' and x.location_dest_id.usage == 'customer')
+                rslt += invoice.mapped('invoice_line_ids.sale_line_ids.move_ids').filtered(
+                    lambda x: x.state == 'done' and x.location_dest_id.usage == 'customer')
             else:
-                rslt += invoice.mapped('reversed_entry_id.invoice_line_ids.sale_line_ids.move_ids').filtered(lambda x: x.state == 'done' and x.location_id.usage == 'customer')
+                rslt += invoice.mapped('reversed_entry_id.invoice_line_ids.sale_line_ids.move_ids').filtered(
+                    lambda x: x.state == 'done' and x.location_id.usage == 'customer')
                 # Add refunds generated from the SO
-                rslt += invoice.mapped('invoice_line_ids.sale_line_ids.move_ids').filtered(lambda x: x.state == 'done' and x.location_id.usage == 'customer')
+                rslt += invoice.mapped('invoice_line_ids.sale_line_ids.move_ids').filtered(
+                    lambda x: x.state == 'done' and x.location_id.usage == 'customer')
         return rslt
 
     def _get_invoiced_lot_values(self):
@@ -37,9 +41,12 @@ class AccountMove(models.Model):
         if self.state == 'draft' or not self.invoice_date or self.move_type not in ('out_invoice', 'out_refund'):
             return res
 
-        current_invoice_amls = self.invoice_line_ids.filtered(lambda aml: aml.display_type == 'product' and aml.product_id and aml.product_id.type == 'consu' and aml.quantity)
-        all_invoices_amls = current_invoice_amls.sale_line_ids.invoice_lines.filtered(lambda aml: aml._filter_aml_lot_valuation()).sorted(lambda aml: (aml.date, aml.move_name, aml.id))
-        index = all_invoices_amls.ids.index(current_invoice_amls[:1].id) if current_invoice_amls[:1] in all_invoices_amls else 0
+        current_invoice_amls = self.invoice_line_ids.filtered(lambda
+                                                                  aml: aml.display_type == 'product' and aml.product_id and aml.product_id.type == 'consu' and aml.quantity)
+        all_invoices_amls = current_invoice_amls.sale_line_ids.invoice_lines.filtered(
+            lambda aml: aml._filter_aml_lot_valuation()).sorted(lambda aml: (aml.date, aml.move_name, aml.id))
+        index = all_invoices_amls.ids.index(current_invoice_amls[:1].id) if current_invoice_amls[
+                                                                            :1] in all_invoices_amls else 0
         previous_amls = all_invoices_amls[:index]
         invoiced_qties = current_invoice_amls._get_invoiced_qty_per_product()
         invoiced_products = invoiced_qties.keys()
@@ -60,7 +67,8 @@ class AccountMove(models.Model):
 
         qties_per_lot = defaultdict(float)
         previous_qties_delivered = defaultdict(float)
-        stock_move_lines = current_invoice_amls.sale_line_ids.move_ids.move_line_ids.filtered(lambda sml: sml.state == 'done' and sml.lot_id).sorted(lambda sml: (sml.date, sml.id))
+        stock_move_lines = current_invoice_amls.sale_line_ids.move_ids.move_line_ids.filtered(
+            lambda sml: sml.state == 'done' and sml.lot_id).sorted(lambda sml: (sml.date, sml.id))
         for sml in stock_move_lines:
             if sml.product_id not in invoiced_products or not sml._should_show_lot_in_invoice():
                 continue
@@ -70,9 +78,11 @@ class AccountMove(models.Model):
 
             # is it a stock return considering the document type (should it be it thought of as positively or negatively?)
             is_stock_return = (
-                    self.move_type == 'out_invoice' and (sml.location_id.usage, sml.location_dest_id.usage) == ('customer', 'internal')
+                    self.move_type == 'out_invoice' and (sml.location_id.usage, sml.location_dest_id.usage) == (
+                'customer', 'internal')
                     or
-                    self.move_type == 'out_refund' and (sml.location_id.usage, sml.location_dest_id.usage) == ('internal', 'customer')
+                    self.move_type == 'out_refund' and (sml.location_id.usage, sml.location_dest_id.usage) == (
+                        'internal', 'customer')
             )
             if is_stock_return:
                 returned_qty = min(qties_per_lot[sml.lot_id], quantity)
@@ -85,8 +95,10 @@ class AccountMove(models.Model):
             # from the previously delivered (and quantity becomes zero). If it's a delivery, we first
             # try to reach the previous_qty_invoiced
             if float_compare(quantity, 0, precision_rounding=product_uom.rounding) < 0 or \
-                    float_compare(previous_qty_delivered, previous_qty_invoiced, precision_rounding=product_uom.rounding) < 0:
-                previously_done = quantity if is_stock_return else min(previous_qty_invoiced - previous_qty_delivered, quantity)
+                    float_compare(previous_qty_delivered, previous_qty_invoiced,
+                                  precision_rounding=product_uom.rounding) < 0:
+                previously_done = quantity if is_stock_return else min(previous_qty_invoiced - previous_qty_delivered,
+                                                                       quantity)
                 previous_qties_delivered[product] += previously_done
                 quantity -= previously_done
 
@@ -117,7 +129,8 @@ class AccountMove(models.Model):
         # EXTENDS 'account'
         super()._compute_delivery_date()
         for move in self:
-            sale_order_effective_date = list(filter(None, move.line_ids.sale_line_ids.order_id.mapped('effective_date')))
+            sale_order_effective_date = list(
+                filter(None, move.line_ids.sale_line_ids.order_id.mapped('effective_date')))
             effective_date_res = max(sale_order_effective_date) if sale_order_effective_date else False
             # if multiple sale order we take the bigger effective_date
             if effective_date_res:
@@ -146,7 +159,8 @@ class AccountMoveLine(models.Model):
 
     def _sale_can_be_reinvoice(self):
         self.ensure_one()
-        return self.move_type != 'entry' and self.display_type != 'cogs' and super(AccountMoveLine, self)._sale_can_be_reinvoice()
+        return self.move_type != 'entry' and self.display_type != 'cogs' and super(AccountMoveLine,
+                                                                                   self)._sale_can_be_reinvoice()
 
     def _stock_account_get_anglo_saxon_price_unit(self):
         self.ensure_one()
@@ -156,8 +170,8 @@ class AccountMoveLine(models.Model):
         move_is_downpayment = self.env.context.get("move_is_downpayment")
         if move_is_downpayment is None:
             move_is_downpayment = self.move_id.invoice_line_ids.filtered(
-            lambda line: any(line.sale_line_ids.mapped("is_downpayment"))
-        )
+                lambda line: any(line.sale_line_ids.mapped("is_downpayment"))
+            )
         if so_line:
             is_line_reversing = False
             if self.move_id.move_type == 'out_refund' and not move_is_downpayment:
@@ -165,7 +179,8 @@ class AccountMoveLine(models.Model):
             qty_to_invoice = self.product_uom_id._compute_quantity(self.quantity, self.product_id.uom_id)
             if self.move_id.move_type == 'out_refund' and move_is_downpayment:
                 qty_to_invoice = -qty_to_invoice
-            account_moves = so_line.invoice_lines.move_id.filtered(lambda m: m.state == 'posted' and bool(m.reversed_entry_id) == is_line_reversing)
+            account_moves = so_line.invoice_lines.move_id.filtered(
+                lambda m: m.state == 'posted' and bool(m.reversed_entry_id) == is_line_reversing)
 
             posted_cogs = self.env['account.move.line'].search([
                 ('move_id', 'in', account_moves.ids),
@@ -177,7 +192,9 @@ class AccountMoveLine(models.Model):
             qty_invoiced = 0
             product_uom = self.product_id.uom_id
             for line in posted_cogs:
-                if float_compare(line.quantity, 0, precision_rounding=product_uom.rounding) and line.move_id.move_type == 'out_refund' and any(line.move_id.invoice_line_ids.sale_line_ids.mapped('is_downpayment')):
+                if float_compare(line.quantity, 0,
+                                 precision_rounding=product_uom.rounding) and line.move_id.move_type == 'out_refund' and any(
+                        line.move_id.invoice_line_ids.sale_line_ids.mapped('is_downpayment')):
                     qty_invoiced += line.product_uom_id._compute_quantity(abs(line.quantity), line.product_id.uom_id)
                 else:
                     qty_invoiced += line.product_uom_id._compute_quantity(line.quantity, line.product_id.uom_id)
@@ -190,13 +207,17 @@ class AccountMoveLine(models.Model):
                 ('balance', '>', 0)
             ])
             for line in reversal_cogs:
-                if float_compare(line.quantity, 0, precision_rounding=product_uom.rounding) and line.move_id.move_type == 'out_refund' and any(line.move_id.invoice_line_ids.sale_line_ids.mapped('is_downpayment')):
+                if float_compare(line.quantity, 0,
+                                 precision_rounding=product_uom.rounding) and line.move_id.move_type == 'out_refund' and any(
+                        line.move_id.invoice_line_ids.sale_line_ids.mapped('is_downpayment')):
                     qty_invoiced -= line.product_uom_id._compute_quantity(abs(line.quantity), line.product_id.uom_id)
                 else:
                     qty_invoiced -= line.product_uom_id._compute_quantity(line.quantity, line.product_id.uom_id)
             value_invoiced -= sum(reversal_cogs.mapped('balance'))
 
             product = self.product_id.with_company(self.company_id).with_context(value_invoiced=value_invoiced)
-            average_price_unit = product._compute_average_price(qty_invoiced, qty_to_invoice, so_line.move_ids, is_returned=is_line_reversing)
-            price_unit = self.product_id.uom_id.with_company(self.company_id)._compute_price(average_price_unit, self.product_uom_id)
+            average_price_unit = product._compute_average_price(qty_invoiced, qty_to_invoice, so_line.move_ids,
+                                                                is_returned=is_line_reversing)
+            price_unit = self.product_id.uom_id.with_company(self.company_id)._compute_price(average_price_unit,
+                                                                                             self.product_uom_id)
         return price_unit

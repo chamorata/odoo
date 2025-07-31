@@ -1,11 +1,12 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import re
+
+from odoo.addons.account.models.company import PEPPOL_LIST
 from stdnum import get_cc_module, ean
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
-from odoo.addons.account.models.company import PEPPOL_LIST
 
 try:
     import phonenumbers
@@ -120,7 +121,8 @@ class ResCompany(models.Model):
         self.ensure_one()
         peppol_dict = PEPPOL_ENDPOINT_WARNINGS if warning else PEPPOL_ENDPOINT_RULES
 
-        return True if (endpoint_rule := peppol_dict.get(self.peppol_eas)) is None else endpoint_rule(self.peppol_endpoint)
+        return True if (endpoint_rule := peppol_dict.get(self.peppol_eas)) is None else endpoint_rule(
+            self.peppol_endpoint)
 
     # -------------------------------------------------------------------------
     # CONSTRAINTS
@@ -153,7 +155,8 @@ class ResCompany(models.Model):
     @api.depends('account_peppol_proxy_state')
     def _compute_peppol_purchase_journal_id(self):
         for company in self:
-            if not company.peppol_purchase_journal_id and company.account_peppol_proxy_state not in ('not_registered', 'rejected'):
+            if not company.peppol_purchase_journal_id and company.account_peppol_proxy_state not in ('not_registered',
+                                                                                                     'rejected'):
                 company.peppol_purchase_journal_id = self.env['account.journal'].search([
                     *self.env['account.journal']._check_company_domain(company),
                     ('type', '=', 'purchase'),
@@ -197,7 +200,8 @@ class ResCompany(models.Model):
     @api.model
     def _sanitize_peppol_endpoint(self, vals, eas=False, endpoint=False):
         # TODO: remove in master
-        if not (peppol_eas := vals.get('peppol_eas', eas)) or not (peppol_endpoint := vals.get('peppol_endpoint', endpoint)):
+        if not (peppol_eas := vals.get('peppol_eas', eas)) or not (
+        peppol_endpoint := vals.get('peppol_endpoint', endpoint)):
             return vals
 
         if sanitizer := PEPPOL_ENDPOINT_SANITIZERS.get(peppol_eas):

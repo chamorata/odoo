@@ -3,10 +3,9 @@
 import hashlib
 import logging
 
-from odoo import fields, models
-
 from odoo.addons.payment_aps import const
 
+from odoo import fields, models
 
 _logger = logging.getLogger(__name__)
 
@@ -39,7 +38,7 @@ class PaymentProvider(models.Model):
         groups='base.group_system',
     )
 
-    #=== BUSINESS METHODS ===#
+    # === BUSINESS METHODS ===#
 
     def _aps_get_api_url(self):
         if self.state == 'enabled':

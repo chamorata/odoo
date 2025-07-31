@@ -3,6 +3,7 @@
 
 from odoo.addons.crm.tests.test_crm_lead_merge import TestLeadMergeCommon
 from odoo.addons.event_crm.tests.common import TestEventCrmCommon
+
 from odoo.tests.common import tagged, users
 
 

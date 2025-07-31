@@ -109,7 +109,7 @@
         <field name="state">code</field>
         <field name="code">
             if records:
-                records._l10n_ro_edi_fetch_invoice_sent_documents()
+            records._l10n_ro_edi_fetch_invoice_sent_documents()
         </field>
     </record>
 

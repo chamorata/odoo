@@ -2,16 +2,16 @@
 <odoo>
 
     <template
-        id="website_sale.s_mega_menu_odoo_menu"
-        name="eCommerce: Odoo Menu"
-        groups="base.group_user"
+            id="website_sale.s_mega_menu_odoo_menu"
+            name="eCommerce: Odoo Menu"
+            groups="base.group_user"
     >
         <section class="s_mega_menu_odoo_menu pt16 o_colored_level o_cc o_cc1">
             <div class="container">
                 <div class="row">
                     <t
-                        t-set="categories"
-                        t-value="request.env['product.public.category'].search([
+                            t-set="categories"
+                            t-value="request.env['product.public.category'].search([
                             ('parent_id', '=', False)
                         ])[:4]"
                     />
@@ -19,9 +19,9 @@
                         <div class="col-12 col-lg-3 pt16 pb24">
                             <h4 class="o_default_snippet_text text-uppercase h5 fw-bold mt-0">
                                 <a
-                                    t-att-href="'/shop/category/%s' % category.id"
-                                    class="nav-link o_default_snippet_text p-0 text-black"
-                                    t-esc="category.name"
+                                        t-att-href="'/shop/category/%s' % category.id"
+                                        class="nav-link o_default_snippet_text p-0 text-black"
+                                        t-esc="category.name"
                                 />
                             </h4>
                             <div class="s_hr pt4 pb16">
@@ -32,8 +32,8 @@
                             <nav class="nav flex-column">
                                 <t t-foreach="category.child_id" t-as="sub_category">
                                     <a t-att-href="'/shop/category/%s' % sub_category.id"
-                                        class="nav-link o_default_snippet_text px-0"
-                                        t-esc="sub_category.name"/>
+                                       class="nav-link o_default_snippet_text px-0"
+                                       t-esc="sub_category.name"/>
                                 </t>
                             </nav>
                         </div>

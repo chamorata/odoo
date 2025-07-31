@@ -3,15 +3,13 @@
 import logging
 import pprint
 
+from odoo.addons.payment import utils as payment_utils
+from odoo.addons.payment_worldline import const
+from odoo.addons.payment_worldline.controllers.main import WorldlineController
 from werkzeug import urls
 
 from odoo import _, models
 from odoo.exceptions import UserError, ValidationError
-
-from odoo.addons.payment import utils as payment_utils
-from odoo.addons.payment_worldline import const
-from odoo.addons.payment_worldline.controllers.main import WorldlineController
-
 
 _logger = logging.getLogger(__name__)
 
@@ -58,10 +56,10 @@ class PaymentTransaction(models.Model):
         """
         res = super()._get_specific_processing_values(processing_values)
         if (
-            self.provider_code == 'worldline'
-            and self.operation == 'online_token'
-            and self.state == 'error'
-            and self.state_message.endswith('AUTHORIZATION_REQUESTED')
+                self.provider_code == 'worldline'
+                and self.operation == 'online_token'
+                and self.state == 'error'
+                and self.state_message.endswith('AUTHORIZATION_REQUESTED')
         ):
             # Tokenized payment failed due to 3-D Secure authentication request.
             # Reset transaction to draft and switch to redirect flow.
@@ -304,10 +302,10 @@ class PaymentTransaction(models.Model):
             if status == 'AUTHORIZATION_REQUESTED':
                 self._set_error("Worldline: " + status)
             elif self.operation == 'validation' \
-                 and status in {'PENDING_CAPTURE', 'CAPTURE_REQUESTED'} \
-                 and has_token_data:
-                    self._worldline_tokenize_from_notification_data(payment_method_data)
-                    self._set_done()
+                    and status in {'PENDING_CAPTURE', 'CAPTURE_REQUESTED'} \
+                    and has_token_data:
+                self._worldline_tokenize_from_notification_data(payment_method_data)
+                self._set_done()
             else:
                 self._set_pending()
         elif status in const.PAYMENT_STATUS_MAPPING['done']:

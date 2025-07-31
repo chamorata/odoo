@@ -1,8 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.http import request
-
 from odoo.addons.website_sale.controllers.main import WebsiteSale
+
+from odoo.http import request
 
 
 class L10nARWebsiteSale(WebsiteSale):
@@ -22,7 +22,8 @@ class L10nARWebsiteSale(WebsiteSale):
         rendering_values = super()._prepare_address_form_values(
             *args, address_type=address_type, **kwargs
         )
-        if (kwargs.get('use_delivery_as_billing') and address_type == 'delivery' or address_type == 'billing') and request.website.sudo().company_id.account_fiscal_country_id.code == 'AR':
+        if (kwargs.get(
+                'use_delivery_as_billing') and address_type == 'delivery' or address_type == 'billing') and request.website.sudo().company_id.account_fiscal_country_id.code == 'AR':
             can_edit_vat = rendering_values['can_edit_vat']
             LatamIdentificationType = request.env['l10n_latam.identification.type'].sudo()
             rendering_values.update({
@@ -54,10 +55,10 @@ class L10nARWebsiteSale(WebsiteSale):
         # Identification type and AFIP Responsibility Combination
         if address_type == 'billing' and request.website.sudo().company_id.country_id.code == 'AR':
             if missing_fields and any(
-                fname in missing_fields
-                for fname in [
-                    'l10n_latam_identification_type_id', 'l10n_ar_afip_responsibility_type_id'
-                ]
+                    fname in missing_fields
+                    for fname in [
+                        'l10n_latam_identification_type_id', 'l10n_ar_afip_responsibility_type_id'
+                    ]
             ):
                 return invalid_fields, missing_fields, error_messages
 

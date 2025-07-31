@@ -21,7 +21,8 @@ class Goal(models.Model):
     _rec_name = 'definition_id'
     _order = 'start_date desc, end_date desc, definition_id, id'
 
-    definition_id = fields.Many2one('gamification.goal.definition', string="Goal Definition", required=True, ondelete="cascade")
+    definition_id = fields.Many2one('gamification.goal.definition', string="Goal Definition", required=True,
+                                    ondelete="cascade")
     user_id = fields.Many2one('res.users', string="User", required=True, auto_join=True, ondelete="cascade")
     line_id = fields.Many2one('gamification.challenge.line', string="Challenge Line", ondelete="cascade")
     challenge_id = fields.Many2one(
@@ -31,7 +32,7 @@ class Goal(models.Model):
     start_date = fields.Date("Start Date", default=fields.Date.today)
     end_date = fields.Date("End Date")  # no start and end = always active
     target_goal = fields.Float('To Reach', required=True)
-# no goal = global index
+    # no goal = global index
     current = fields.Float("Current Value", required=True, default=0)
     completeness = fields.Float("Completeness", compute='_get_completion')
     state = fields.Selection([
@@ -57,7 +58,8 @@ class Goal(models.Model):
              "case of non-manual goal or goal not linked to a challenge.")
 
     definition_description = fields.Text("Definition Description", related='definition_id.description', readonly=True)
-    definition_condition = fields.Selection(string="Definition Condition", related='definition_id.condition', readonly=True)
+    definition_condition = fields.Selection(string="Definition Condition", related='definition_id.condition',
+                                            readonly=True)
     definition_suffix = fields.Char("Suffix", related='definition_id.full_suffix', readonly=True)
     definition_display = fields.Selection(string="Display Mode", related='definition_id.display_mode', readonly=True)
 
@@ -102,7 +104,8 @@ class Goal(models.Model):
             return {}
 
         # generate a reminder report
-        body_html = self.env.ref('gamification.email_template_goal_reminder')._render_field('body_html', self.ids, compute_lang=True)[self.id]
+        body_html = self.env.ref('gamification.email_template_goal_reminder')._render_field('body_html', self.ids,
+                                                                                            compute_lang=True)[self.id]
         self.message_notify(
             body=body_html,
             partner_ids=[self.user_id.partner_id.id],
@@ -120,7 +123,7 @@ class Goal(models.Model):
 
         result = {'current': new_value}
         if (self.definition_id.condition == 'higher' and new_value >= self.target_goal) \
-          or (self.definition_id.condition == 'lower' and new_value <= self.target_goal):
+                or (self.definition_id.condition == 'lower' and new_value <= self.target_goal):
             # success, do no set closed as can still change
             result['state'] = 'reached'
 
@@ -185,7 +188,8 @@ class Goal(models.Model):
                     for goal in goals:
                         start_date = field_date_name and goal.start_date or False
                         end_date = field_date_name and goal.end_date or False
-                        subqueries.setdefault((start_date, end_date), {}).update({goal.id:safe_eval(definition.batch_user_expression, {'user': goal.user_id})})
+                        subqueries.setdefault((start_date, end_date), {}).update(
+                            {goal.id: safe_eval(definition.batch_user_expression, {'user': goal.user_id})})
 
                     # the global query should be split by time periods (especially for recurrent goals)
                     for (start_date, end_date), query_goals in subqueries.items():
@@ -201,7 +205,8 @@ class Goal(models.Model):
 
                         else:  # sum
                             value_field_name = definition.field_id.name
-                            user_values = Obj._read_group(subquery_domain, groupby=[field_name], aggregates=[f'{value_field_name}:sum'])
+                            user_values = Obj._read_group(subquery_domain, groupby=[field_name],
+                                                          aggregates=[f'{value_field_name}:sum'])
 
                         # user_values has format of _read_group: [(<partner>, <aggregate>), ...]
                         for goal in [g for g in goals if g.id in query_goals]:
@@ -314,10 +319,10 @@ class Goal(models.Model):
 
                 # if one element to display, should see it in form mode if possible
                 action['views'] = [
-                    (view_id, mode)
-                    for (view_id, mode) in action['views']
-                    if mode == 'form'
-                ] or action['views']
+                                      (view_id, mode)
+                                      for (view_id, mode) in action['views']
+                                      if mode == 'form'
+                                  ] or action['views']
             return action
 
         if self.computation_mode == 'manually':

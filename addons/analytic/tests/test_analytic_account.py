@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from odoo.tests import Form, tagged
+from odoo.addons.analytic.tests.common import AnalyticCommon
+
 from odoo import Command
 from odoo.exceptions import RedirectWarning
-
-from odoo.addons.analytic.tests.common import AnalyticCommon
+from odoo.tests import Form, tagged
 
 
 @tagged('post_install', '-at_install')
@@ -31,7 +31,8 @@ class TestAnalyticAccount(AnalyticCommon):
 
     def test_aggregates(self):
         # debit and credit are hidden by the group when account is installed
-        fields_to_agg = ['balance', 'debit', 'credit'] if self.env.user.has_group('account.group_account_readonly') else ['balance']
+        fields_to_agg = ['balance', 'debit', 'credit'] if self.env.user.has_group(
+            'account.group_account_readonly') else ['balance']
         model = self.env['account.analytic.account']
         self.assertEqual(
             model.fields_get(fields_to_agg, ['aggregator']),
@@ -43,7 +44,8 @@ class TestAnalyticAccount(AnalyticCommon):
         """ Test that the plans with the good appliability are returned without if no options are given """
         kwargs = {}
         plans_json = self.env['account.analytic.plan'].get_relevant_plans(**kwargs)
-        self.assertEqual(1, len(plans_json) - self.analytic_plan_offset, "Only the Default plan and the demo data plans should be available")
+        self.assertEqual(1, len(plans_json) - self.analytic_plan_offset,
+                         "Only the Default plan and the demo data plans should be available")
 
         self.analytic_plan_1.write({'default_applicability': 'mandatory'})
         plans_json = self.env['account.analytic.plan'].get_relevant_plans(**kwargs)
@@ -53,7 +55,8 @@ class TestAnalyticAccount(AnalyticCommon):
         """ Test the plans returned with applicability rules and options """
         kwargs = {'business_domain': 'general'}
         plans_json = self.env['account.analytic.plan'].get_relevant_plans(**kwargs)
-        self.assertEqual(1, len(plans_json) - self.analytic_plan_offset, "Only the Default plan and the demo data plans should be available")
+        self.assertEqual(1, len(plans_json) - self.analytic_plan_offset,
+                         "Only the Default plan and the demo data plans should be available")
 
         applicability = self.env['account.analytic.applicability'].create({
             'business_domain': 'general',
@@ -105,7 +108,8 @@ class TestAnalyticAccount(AnalyticCommon):
             "partner_id": self.partner_a.id,
             "company_id": self.company.id,
         })
-        self.assertEqual(distribution_json, distribution_3.analytic_distribution | self.distribution_1.analytic_distribution,
+        self.assertEqual(distribution_json,
+                         distribution_3.analytic_distribution | self.distribution_1.analytic_distribution,
                          "Distribution 3 & 1 should be given, as the company and partner are specified in the models")
 
         distribution_json = self.env['account.analytic.distribution.model']._get_distribution({
@@ -133,7 +137,8 @@ class TestAnalyticAccount(AnalyticCommon):
             "partner_category_id": partner_category.ids,
         })
 
-        self.assertEqual(distribution_json, distribution_4.analytic_distribution | self.distribution_1.analytic_distribution,
+        self.assertEqual(distribution_json,
+                         distribution_4.analytic_distribution | self.distribution_1.analytic_distribution,
                          "Distribution 4 & 1 should be given based on sequence")
 
     def test_analytic_plan_account_child(self):
@@ -154,7 +159,8 @@ class TestAnalyticAccount(AnalyticCommon):
         })
         self.env['account.analytic.account'].create({'name': 'Account', 'plan_id': self.analytic_plan.id})
         self.env['account.analytic.account'].create({'name': 'Child Account', 'plan_id': self.analytic_sub_plan.id})
-        self.env['account.analytic.account'].create({'name': 'Grand Child Account', 'plan_id': self.analytic_sub_sub_plan.id})
+        self.env['account.analytic.account'].create(
+            {'name': 'Grand Child Account', 'plan_id': self.analytic_sub_sub_plan.id})
         plans_json = self.env['account.analytic.plan'].get_relevant_plans()
         self.assertEqual(2, len(plans_json) - self.analytic_plan_offset,
                          "The parent plan should be available even if the analytic account is set on child of third generation")

@@ -1,11 +1,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import io
 import re
-import xlwt
+
 import xlsxwriter
+import xlwt
 
 from odoo.tools.misc import format_date
-
 
 COLUMN_HEADER_MAP = {
     "Reporting_Month": "invoice_date",
@@ -41,7 +41,8 @@ def _export_bir_2307(sheet_title, moves, file_format='xlsx'):
     else:
         workbook = xlsxwriter.Workbook(output, {
             'in_memory': True,
-            'strings_to_formulas': False,  # As we need to give a default value when using formulas, we need to handle them manually so this is not needed.
+            'strings_to_formulas': False,
+            # As we need to give a default value when using formulas, we need to handle them manually so this is not needed.
         })
         worksheet = workbook.add_worksheet(sheet_title)
 
@@ -49,7 +50,8 @@ def _export_bir_2307(sheet_title, moves, file_format='xlsx'):
     worksheet_row = 1
     for move in moves:
         partner = move.partner_id
-        partner_address_info = [partner.street, partner.street2, partner.city, partner.state_id.name, partner.country_id.name]
+        partner_address_info = [partner.street, partner.street2, partner.city, partner.state_id.name,
+                                partner.country_id.name]
         values = {
             'invoice_date': format_date(move.env, move.invoice_date, date_format="MM/dd/yyyy"),
             'vat': re.sub(r'-', '', partner.vat)[:9] if partner.vat else '',

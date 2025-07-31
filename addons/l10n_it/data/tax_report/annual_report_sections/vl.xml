@@ -76,7 +76,9 @@
                                 <field name="tax_tags_formula">vl10</field>
                             </record>
                             <record id="tax_annual_report_line_vl11" model="account.report.line">
-                                <field name="name">VL11 - Credits art. 8, paragraph 6-quater, Presidential Decree. n. 322/98</field>
+                                <field name="name">VL11 - Credits art. 8, paragraph 6-quater, Presidential Decree. n.
+                                    322/98
+                                </field>
                                 <field name="code">VL11</field>
                                 <field name="tax_tags_formula">vl11</field>
                             </record>
@@ -88,7 +90,8 @@
                         </field>
                     </record>
                     <record id="tax_annual_report_line_comp_fram_3" model="account.report.line">
-                        <field name="name">Determination of debit or credit VAT relating to all activities carried out</field>
+                        <field name="name">Determination of debit or credit VAT relating to all activities carried out
+                        </field>
                         <field name="code">VL_3</field>
                         <field name="children_ids">
                             <record id="tax_annual_report_line_vl20" model="account.report.line">
@@ -122,22 +125,30 @@
                                 <field name="aggregation_formula">VL8.balance - VL9.balance</field>
                             </record>
                             <record id="tax_annual_report_line_vl26" model="account.report.line">
-                                <field name="name">VL26 - Credit requested for reimbursement in previous years computable as a deduction following refusal by the office</field>
+                                <field name="name">VL26 - Credit requested for reimbursement in previous years
+                                    computable as a deduction following refusal by the office
+                                </field>
                                 <field name="code">VL26</field>
                                 <field name="tax_tags_formula">vl26</field>
                             </record>
                             <record id="tax_annual_report_line_vl27" model="account.report.line">
-                                <field name="name">VL27 - Tax credits used in periodic payments and for the advance payment</field>
+                                <field name="name">VL27 - Tax credits used in periodic payments and for the advance
+                                    payment
+                                </field>
                                 <field name="code">VL27</field>
                                 <field name="tax_tags_formula">vl27</field>
                             </record>
                             <record id="tax_annual_report_line_vl28" model="account.report.line">
-                                <field name="name">VL28 - Credits received from savings management companies used in periodic payments and for the advance payment</field>
+                                <field name="name">VL28 - Credits received from savings management companies used in
+                                    periodic payments and for the advance payment
+                                </field>
                                 <field name="code">VL28</field>
                                 <field name="tax_tags_formula">vl28</field>
                             </record>
                             <record id="tax_annual_report_line_vl29" model="account.report.line">
-                                <field name="name">VL29 - EU car payments relating to sales carried out during the year</field>
+                                <field name="name">VL29 - EU car payments relating to sales carried out during the
+                                    year
+                                </field>
                                 <field name="code">VL29</field>
                                 <field name="tax_tags_formula">vl29</field>
                             </record>
@@ -156,7 +167,8 @@
                                         <field name="tax_tags_formula">vl30_ii</field>
                                     </record>
                                     <record id="tax_annual_report_line_vl30_III" model="account.report.line">
-                                        <field name="name">Periodic VAT paid following notification of irregularities</field>
+                                        <field name="name">Periodic VAT paid following notification of irregularities
+                                        </field>
                                         <field name="code">VL30_III</field>
                                         <field name="tax_tags_formula">vl30_iii</field>
                                     </record>
@@ -175,18 +187,22 @@
                             <record id="tax_annual_report_line_vl32" model="account.report.line">
                                 <field name="name">VL32 - VAT DUE</field>
                                 <field name="code">VL32</field>
-                                <field name="aggregation_formula">(VL3.balance + VL20.balance + VL21.balance + VL22.balance + VL23.balance)
-                                                    - (VL4.balance + VL11.balance + VL24.balance + VL25.balance + VL26.balance +
-                                                        VL27.balance + VL28.balance + VL29.balance + VL30_I.balance + VL30_II.balance +
-                                                        VL30_III.balance + VL30_IV.balance + VL31.balance)</field>
+                                <field name="aggregation_formula">(VL3.balance + VL20.balance + VL21.balance +
+                                    VL22.balance + VL23.balance)
+                                    - (VL4.balance + VL11.balance + VL24.balance + VL25.balance + VL26.balance +
+                                    VL27.balance + VL28.balance + VL29.balance + VL30_I.balance + VL30_II.balance +
+                                    VL30_III.balance + VL30_IV.balance + VL31.balance)
+                                </field>
                             </record>
                             <record id="tax_annual_report_line_vl33" model="account.report.line">
                                 <field name="name">VL33 - VAT CREDIT</field>
                                 <field name="code">VL33</field>
-                                <field name="aggregation_formula">(VL4.balance + VL11.balance + VL24.balance + VL25.balance + VL26.balance +
-                                                        VL27.balance + VL28.balance + VL29.balance + VL30_I.balance + VL30_II.balance +
-                                                        VL30_III.balance + VL30_IV.balance + VL31.balance) - (VL3.balance + VL20.balance +
-                                                        VL21.balance + VL22.balance + VL23.balance)</field>
+                                <field name="aggregation_formula">(VL4.balance + VL11.balance + VL24.balance +
+                                    VL25.balance + VL26.balance +
+                                    VL27.balance + VL28.balance + VL29.balance + VL30_I.balance + VL30_II.balance +
+                                    VL30_III.balance + VL30_IV.balance + VL31.balance) - (VL3.balance + VL20.balance +
+                                    VL21.balance + VL22.balance + VL23.balance)
+                                </field>
                             </record>
                             <record id="tax_annual_report_line_vl34" model="account.report.line">
                                 <field name="name">VL34 - Tax credits used in the annual return</field>
@@ -194,7 +210,9 @@
                                 <field name="tax_tags_formula">vl34</field>
                             </record>
                             <record id="tax_annual_report_line_vl35" model="account.report.line">
-                                <field name="name">VL35 - Credits received from asset management companies used in the annual declaration</field>
+                                <field name="name">VL35 - Credits received from asset management companies used in the
+                                    annual declaration
+                                </field>
                                 <field name="code">VL35</field>
                                 <field name="tax_tags_formula">vl35</field>
                             </record>
@@ -204,14 +222,18 @@
                                 <field name="tax_tags_formula">vl36</field>
                             </record>
                             <record id="tax_annual_report_line_vl37" model="account.report.line">
-                                <field name="name">VL37 - Credit transferred by savings management companies pursuant to art. 8 of the legislative decree n. 351/2001</field>
+                                <field name="name">VL37 - Credit transferred by savings management companies pursuant to
+                                    art. 8 of the legislative decree n. 351/2001
+                                </field>
                                 <field name="code">VL37</field>
                                 <field name="tax_tags_formula">vl37</field>
                             </record>
                             <record id="tax_annual_report_line_vl38" model="account.report.line">
                                 <field name="name">VL38 - TOTAL VAT DUE</field>
                                 <field name="code">VL38</field>
-                                <field name="aggregation_formula">VL32.balance - VL34.balance - VL35.balance + VL36.balance</field>
+                                <field name="aggregation_formula">VL32.balance - VL34.balance - VL35.balance +
+                                    VL36.balance
+                                </field>
                             </record>
                             <record id="tax_annual_report_line_vl39" model="account.report.line">
                                 <field name="name">VL39 - TOTAL VAT INPUT</field>
@@ -224,17 +246,22 @@
                                 <field name="tax_tags_formula">vl40</field>
                             </record>
                             <record id="tax_annual_report_line_vl41_I" model="account.report.line">
-                                <field name="name">VL41 - Difference between periodic VAT due and periodic VAT paid</field>
+                                <field name="name">VL41 - Difference between periodic VAT due and periodic VAT paid
+                                </field>
                                 <field name="code">VL41_I</field>
-                                <field name="aggregation_formula">VL30_I.balance - (VL30_II.balance + VL30_III.balance + VL30_IV.balance)</field>
+                                <field name="aggregation_formula">VL30_I.balance - (VL30_II.balance + VL30_III.balance +
+                                    VL30_IV.balance)
+                                </field>
                             </record>
                             <record id="tax_annual_report_line_vl41_II" model="account.report.line">
                                 <field name="name">VL41 - Difference between credit potential and actual credit</field>
                                 <field name="code">VL41_II</field>
-                                <field name="aggregation_formula">(VL4.balance + VL11.balance + VL12.balance + VL24.balance +
-                                                        VL25.balance + VL26.balance + VL27.balance + VL28.balance +
-                                                        VL29.balance + VL30_I.balance + VL31.balance) - (VL3.balance + VL20.balance +
-                                                        VL21.balance + VL22.balance + VL23.balance)</field>
+                                <field name="aggregation_formula">(VL4.balance + VL11.balance + VL12.balance +
+                                    VL24.balance +
+                                    VL25.balance + VL26.balance + VL27.balance + VL28.balance +
+                                    VL29.balance + VL30_I.balance + VL31.balance) - (VL3.balance + VL20.balance +
+                                    VL21.balance + VL22.balance + VL23.balance)
+                                </field>
                             </record>
                         </field>
                     </record>

@@ -57,6 +57,7 @@ class MailBlackList(models.Model):
     def _search(self, domain, offset=0, limit=None, order=None):
         """ Override _search in order to grep search on email field and make it
         lower-case and sanitized """
+
         def normalize(arg):
             if isinstance(arg, (list, tuple)) and arg[0] == 'email' and isinstance(arg[2], str):
                 normalized = tools.email_normalize(arg[2])

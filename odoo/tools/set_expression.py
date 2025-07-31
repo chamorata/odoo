@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import ast
-from abc import ABC, abstractmethod
 import typing
+from abc import ABC, abstractmethod
 
 if typing.TYPE_CHECKING:
     from collections.abc import Collection, Iterable
@@ -142,6 +142,7 @@ class SetExpression(ABC):
     """ An object that represents a combination of named sets with union,
     intersection and complement.
     """
+
     @abstractmethod
     def is_empty(self) -> bool:
         """ Returns whether ``self`` is the empty set, that contains nothing. """
@@ -203,6 +204,7 @@ class Union(SetExpression):
     """ Implementation of a set expression, that represents it as a union of
     intersections of named sets or their complement.
     """
+
     def __init__(self, inters: Iterable[Inter] = (), optimal=False):
         if inters and not optimal:
             inters = self.__combine((), inters)
@@ -476,9 +478,9 @@ class Leaf:
         self.negative = bool(negative)
         self.key: tuple[LeafIdType, bool] = (leaf_id, self.negative)
 
-        self.subsets: set[LeafIdType] = {leaf_id}       # all the leaf ids that are <= self
-        self.supersets: set[LeafIdType] = {leaf_id}     # all the leaf ids that are >= self
-        self.disjoints: set[LeafIdType] = set()         # all the leaf ids disjoint from self
+        self.subsets: set[LeafIdType] = {leaf_id}  # all the leaf ids that are <= self
+        self.supersets: set[LeafIdType] = {leaf_id}  # all the leaf ids that are >= self
+        self.disjoints: set[LeafIdType] = set()  # all the leaf ids disjoint from self
         self.inverse: Leaf | None = None
 
     def __invert__(self) -> Leaf:

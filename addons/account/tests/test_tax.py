@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-from odoo import Command
 from odoo.addons.account.tests.common import TestTaxCommon
+
+from odoo import Command
 from odoo.tests import tagged
 
 
@@ -34,7 +35,8 @@ class TestTax(TestTaxCommon):
 
     def test_forced_price_exclude_context_key(self):
         """ Test the 'force_price_include' context key that force all taxes to act as price excluded taxes. """
-        taxes = (self.percent_tax(10.0, price_include_override='tax_included') + self.percent_tax(10.0, price_include_override='tax_included'))\
+        taxes = (self.percent_tax(10.0, price_include_override='tax_included') + self.percent_tax(10.0,
+                                                                                                  price_include_override='tax_included')) \
             .with_context({'force_price_include': False})
         self._check_compute_all_results(
             taxes,

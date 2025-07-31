@@ -3,12 +3,12 @@
 import logging
 import pprint
 
-from odoo import _, fields, models
-from odoo.exceptions import ValidationError
-
 from odoo.addons.payment import utils as payment_utils
 from odoo.addons.payment_paypal import utils as paypal_utils
 from odoo.addons.payment_paypal.const import PAYMENT_STATUS_MAPPING
+
+from odoo import _, fields, models
+from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -78,7 +78,7 @@ class PaymentTransaction(models.Model):
                         'currency_code': self.currency_id.name,
                         'value': self.amount,
                     },
-                    'payee':  {
+                    'payee': {
                         'display_data': {
                             'brand_name': self.provider_id.company_id.name,
                         },

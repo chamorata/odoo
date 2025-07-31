@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo.addons.stock_account.tests.test_anglo_saxon_valuation_reconciliation_common import ValuationReconciliationTestCommon
+from odoo.addons.stock_account.tests.test_anglo_saxon_valuation_reconciliation_common import \
+    ValuationReconciliationTestCommon
+
 from odoo.tests import tagged, Form
 
 
@@ -64,8 +66,10 @@ class TestStockLandedCostsMrp(ValuationReconciliationTestCommon):
 
         cls.product_refrigerator.categ_id.property_cost_method = 'fifo'
         cls.product_refrigerator.categ_id.property_valuation = 'real_time'
-        cls.product_refrigerator.categ_id.property_stock_account_input_categ_id = cls.company_data['default_account_stock_in']
-        cls.product_refrigerator.categ_id.property_stock_account_output_categ_id = cls.company_data['default_account_stock_out']
+        cls.product_refrigerator.categ_id.property_stock_account_input_categ_id = cls.company_data[
+            'default_account_stock_in']
+        cls.product_refrigerator.categ_id.property_stock_account_output_categ_id = cls.company_data[
+            'default_account_stock_out']
 
         # Create service type product 1.Labour 2.Brokerage 3.Transportation 4.Packaging
         cls.landed_cost = cls.env['product.product'].create({
@@ -76,7 +80,8 @@ class TestStockLandedCostsMrp(ValuationReconciliationTestCommon):
             'name': "Adviser",
             'login': "fm",
             'email': "accountmanager@yourcompany.com",
-            'groups_id': [(6, 0, [cls.env.ref('account.group_account_manager').id, cls.env.ref('mrp.group_mrp_user').id, cls.env.ref('stock.group_stock_manager').id])]
+            'groups_id': [(6, 0, [cls.env.ref('account.group_account_manager').id, cls.env.ref('mrp.group_mrp_user').id,
+                                  cls.env.ref('stock.group_stock_manager').id])]
         })
 
     def test_landed_cost_on_mrp(self):
@@ -123,10 +128,12 @@ class TestStockLandedCostsMrp(ValuationReconciliationTestCommon):
 
         # Check domain of the views
         self.assertTrue(man_order in self.env['mrp.production'].search([
-            ('move_finished_ids.stock_valuation_layer_ids', '!=', False), ('company_id', '=', landed_cost.company_id.id)]))
+            ('move_finished_ids.stock_valuation_layer_ids', '!=', False),
+            ('company_id', '=', landed_cost.company_id.id)]))
 
         landed_cost.mrp_production_ids = [(6, 0, [man_order.id])]
-        landed_cost.cost_lines = [(0, 0, {'product_id': self.landed_cost.id, 'price_unit': 5.0, 'split_method': 'equal'})]
+        landed_cost.cost_lines = [
+            (0, 0, {'product_id': self.landed_cost.id, 'price_unit': 5.0, 'split_method': 'equal'})]
         landed_cost.button_validate()
 
         self.assertEqual(landed_cost.state, 'done')
@@ -173,7 +180,8 @@ class TestStockLandedCostsMrp(ValuationReconciliationTestCommon):
 
         # Check that the MO can be selected by the stock_manger user
         self.assertTrue(man_order in self.env['mrp.production'].search([
-            ('move_finished_ids.stock_valuation_layer_ids', '!=', False), ('company_id', '=', landed_cost.company_id.id)]))
+            ('move_finished_ids.stock_valuation_layer_ids', '!=', False),
+            ('company_id', '=', landed_cost.company_id.id)]))
         landed_cost.mrp_production_ids = [(6, 0, [man_order.id])]
 
         # Check that he can validate the landed cost without an access error

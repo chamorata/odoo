@@ -21,7 +21,8 @@ class AccountMoveSend(models.AbstractModel):
     def _get_alerts(self, moves, moves_data):
         # EXTENDS 'account'
         alerts = super()._get_alerts(moves, moves_data)
-        if non_eligible_jo_moves := moves.filtered(lambda m: 'jo_edi' in moves_data[m]['extra_edis'] and not self._l10n_jo_is_edi_applicable(m)):
+        if non_eligible_jo_moves := moves.filtered(
+                lambda m: 'jo_edi' in moves_data[m]['extra_edis'] and not self._l10n_jo_is_edi_applicable(m)):
             alerts['l10n_jo_edi_non_eligible_moves'] = {
                 'message': _(
                     "JoFotara e-invoicing was enabled but the following invoices cannot be e-invoiced:\n%(moves)s\n",
@@ -42,7 +43,8 @@ class AccountMoveSend(models.AbstractModel):
 
     def _get_placeholder_mail_attachments_data(self, move, invoice_edi_format=None, extra_edis=None):
         # EXTENDS 'account'
-        res = super()._get_placeholder_mail_attachments_data(move, invoice_edi_format=invoice_edi_format, extra_edis=extra_edis)
+        res = super()._get_placeholder_mail_attachments_data(move, invoice_edi_format=invoice_edi_format,
+                                                             extra_edis=extra_edis)
 
         if not move.l10n_jo_edi_xml_attachment_id and 'jo_edi' in extra_edis:
             attachment_name = move._l10n_jo_edi_get_xml_attachment_name()

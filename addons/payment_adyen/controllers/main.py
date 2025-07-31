@@ -7,6 +7,8 @@ import hmac
 import logging
 import pprint
 
+from odoo.addons.payment import utils as payment_utils
+from odoo.addons.payment_adyen import utils as adyen_utils
 from werkzeug import urls
 from werkzeug.exceptions import Forbidden
 
@@ -15,14 +17,10 @@ from odoo.exceptions import ValidationError
 from odoo.http import request
 from odoo.tools import py_to_js_locale
 
-from odoo.addons.payment import utils as payment_utils
-from odoo.addons.payment_adyen import utils as adyen_utils
-
 _logger = logging.getLogger(__name__)
 
 
 class AdyenController(http.Controller):
-
     _webhook_url = '/payment/adyen/notification'
 
     @http.route('/payment/adyen/payment_methods', type='json', auth='public')
@@ -45,7 +43,7 @@ class AdyenController(http.Controller):
         lang_code = py_to_js_locale(request.context.get('lang')) or 'en-US'
         shopper_reference = partner_sudo and f'ODOO_PARTNER_{partner_sudo.id}'
         partner_country_code = (
-            partner_sudo.country_id.code or provider_sudo.company_id.country_id.code or 'NL'
+                partner_sudo.country_id.code or provider_sudo.company_id.country_id.code or 'NL'
         )
         data = {
             'merchantAccount': provider_sudo.adyen_merchant_account,
@@ -64,8 +62,8 @@ class AdyenController(http.Controller):
 
     @http.route('/payment/adyen/payments', type='json', auth='public')
     def adyen_payments(
-        self, provider_id, reference, converted_amount, currency_id, partner_id, payment_method,
-        access_token, browser_info=None
+            self, provider_id, reference, converted_amount, currency_id, partner_id, payment_method,
+            access_token, browser_info=None
     ):
         """ Make a payment request and handle the notification data.
 
@@ -83,7 +81,7 @@ class AdyenController(http.Controller):
         # Check that the transaction details have not been altered. This allows preventing users
         # from validating transactions by paying less than agreed upon.
         if not payment_utils.check_access_token(
-            access_token, reference, converted_amount, currency_id, partner_id
+                access_token, reference, converted_amount, currency_id, partner_id
         ):
             raise ValidationError("Adyen: " + _("Received tampered payment request data."))
 
@@ -314,6 +312,7 @@ class AdyenController(http.Controller):
         :return: The computed signature
         :rtype: str
         """
+
         def _flatten_dict(_value, _path_base='', _separator='.'):
             """ Recursively generate a flat representation of a dict.
 

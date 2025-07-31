@@ -4,10 +4,10 @@
 import datetime
 import logging
 
+from odoo.addons.iap.tools import iap_tools
 from psycopg2 import OperationalError
 
 from odoo import _, api, fields, models, tools
-from odoo.addons.iap.tools import iap_tools
 
 _logger = logging.getLogger(__name__)
 
@@ -15,7 +15,8 @@ _logger = logging.getLogger(__name__)
 class Lead(models.Model):
     _inherit = 'crm.lead'
 
-    iap_enrich_done = fields.Boolean(string='Enrichment done', help='Whether IAP service for lead enrichment based on email has been performed on this lead.')
+    iap_enrich_done = fields.Boolean(string='Enrichment done',
+                                     help='Whether IAP service for lead enrichment based on email has been performed on this lead.')
     show_enrich_button = fields.Boolean(string='Allow manual enrich', compute="_compute_show_enrich_button")
 
     @api.depends('email_from', 'probability', 'iap_enrich_done', 'reveal_id')
@@ -120,7 +121,8 @@ class Lead(models.Model):
 
         :param iap_response: dict{lead_id: company data or False}
         """
-        for lead in self.search([('id', 'in', list(iap_response.keys()))]):  # handle unlinked data by performing a search
+        for lead in self.search(
+                [('id', 'in', list(iap_response.keys()))]):  # handle unlinked data by performing a search
             iap_data = iap_response.get(str(lead.id))
             if not iap_data:
                 lead.write({'iap_enrich_done': True})
@@ -165,6 +167,6 @@ class Lead(models.Model):
 
     def _merge_get_fields_specific(self):
         return {
-            ** super(Lead, self)._merge_get_fields_specific(),
+            **super(Lead, self)._merge_get_fields_specific(),
             'iap_enrich_done': lambda fname, leads: any(lead.iap_enrich_done for lead in leads),
         }

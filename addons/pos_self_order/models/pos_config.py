@@ -1,12 +1,13 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-import uuid
 import base64
+import uuid
 from os.path import join as opj
 from typing import Optional, List, Dict
+
 from werkzeug.urls import url_quote
-from odoo.exceptions import UserError, ValidationError, AccessError
 
 from odoo import api, fields, models, _, service
+from odoo.exceptions import UserError, ValidationError, AccessError
 from odoo.tools import file_open, split_every
 
 
@@ -17,7 +18,8 @@ class PosConfig(models.Model):
         return self.env["res.lang"].get_installed()
 
     def _self_order_default_user(self):
-        users = self.env["res.users"].search(['|', ('company_ids', 'in', self.env.company.id), ('company_id', '=', False)])
+        users = self.env["res.users"].search(
+            ['|', ('company_ids', 'in', self.env.company.id), ('company_id', '=', False)])
         for user in users:
             if user.sudo().has_group("point_of_sale.group_pos_manager"):
                 return user
@@ -133,13 +135,18 @@ class PosConfig(models.Model):
         self._prepare_self_order_splash_screen([vals])
 
         for record in self:
-            if vals.get('self_ordering_mode') == 'kiosk' or (vals.get('pos_self_ordering_mode') == 'mobile' and vals.get('pos_self_ordering_service_mode') == 'counter'):
+            if vals.get('self_ordering_mode') == 'kiosk' or (
+                    vals.get('pos_self_ordering_mode') == 'mobile' and vals.get(
+                    'pos_self_ordering_service_mode') == 'counter'):
                 vals['self_ordering_pay_after'] = 'each'
 
-            if (not vals.get('module_pos_restaurant') and not record.module_pos_restaurant) and vals.get('self_ordering_mode') == 'mobile':
+            if (not vals.get('module_pos_restaurant') and not record.module_pos_restaurant) and vals.get(
+                    'self_ordering_mode') == 'mobile':
                 vals['self_ordering_pay_after'] = 'each'
 
-            if (vals.get('self_ordering_service_mode') == 'counter' or record.self_ordering_service_mode == 'counter') and vals.get('self_ordering_mode') == 'mobile':
+            if (vals.get(
+                    'self_ordering_service_mode') == 'counter' or record.self_ordering_service_mode == 'counter') and vals.get(
+                    'self_ordering_mode') == 'mobile':
                 vals['self_ordering_pay_after'] = 'each'
 
             if vals.get('self_ordering_mode') == 'mobile' and vals.get('self_ordering_pay_after') == 'meal':
@@ -166,17 +173,18 @@ class PosConfig(models.Model):
     def _check_default_user(self):
         for record in self:
             if (
-                record.self_ordering_mode != 'nothing' and (
-                not record.self_ordering_default_user_id or (
-                record.self_ordering_default_user_id
-                and not record.self_ordering_default_user_id.sudo().has_group("point_of_sale.group_pos_user")
-                and not record.self_ordering_default_user_id.sudo().has_group("point_of_sale.group_pos_manager")))
+                    record.self_ordering_mode != 'nothing' and (
+                    not record.self_ordering_default_user_id or (
+                    record.self_ordering_default_user_id
+                    and not record.self_ordering_default_user_id.sudo().has_group("point_of_sale.group_pos_user")
+                    and not record.self_ordering_default_user_id.sudo().has_group("point_of_sale.group_pos_manager")))
             ):
                 raise UserError(_("The Self-Order default user must be a POS user"))
 
     @api.constrains("payment_method_ids", "self_ordering_mode")
     def _onchange_payment_method_ids(self):
-        if any(record.self_ordering_mode == 'kiosk' and any(pm.is_cash_count for pm in record.payment_method_ids) for record in self):
+        if any(record.self_ordering_mode == 'kiosk' and any(pm.is_cash_count for pm in record.payment_method_ids) for
+               record in self):
             raise ValidationError(_("You cannot add cash payment methods in kiosk mode."))
 
     def _get_qr_code_data(self):
@@ -185,18 +193,18 @@ class PosConfig(models.Model):
         table_qr_code = []
         if self.self_ordering_mode == 'mobile' and self.module_pos_restaurant and self.self_ordering_service_mode == 'table':
             table_qr_code.extend([{
-                    'name': floor.name,
-                    'type': 'table',
-                    'tables': [
-                        {
-                            'identifier': table.identifier,
-                            'id': table.id,
-                            'name': table.table_number,
-                            'url': self._get_self_order_url(table.id),
-                        }
-                        for table in floor.table_ids.filtered("active")
-                    ]
-                }
+                'name': floor.name,
+                'type': 'table',
+                'tables': [
+                    {
+                        'identifier': table.identifier,
+                        'id': table.id,
+                        'name': table.table_number,
+                        'url': self._get_self_order_url(table.id),
+                    }
+                    for table in floor.table_ids.filtered("active")
+                ]
+            }
                 for floor in self.floor_ids]
             )
         else:
@@ -253,10 +261,14 @@ class PosConfig(models.Model):
         return encoded_images
 
     def _load_self_data_models(self):
-        return ['pos.session', 'pos.order', 'pos.order.line', 'pos.payment', 'pos.payment.method', 'res.currency', 'pos.category', 'product.product', 'product.combo', 'product.combo.item',
-            'res.company', 'account.tax', 'account.tax.group', 'pos.printer', 'res.country', 'product.pricelist', 'product.pricelist.item', 'account.fiscal.position', 'account.fiscal.position.tax',
-            'res.lang', 'product.template.attribute.line', 'product.attribute', 'product.attribute.custom.value', 'product.template.attribute.value',
-            'decimal.precision', 'uom.uom', 'pos.printer', 'pos_self_order.custom_link', 'restaurant.floor', 'restaurant.table', 'account.cash.rounding']
+        return ['pos.session', 'pos.order', 'pos.order.line', 'pos.payment', 'pos.payment.method', 'res.currency',
+                'pos.category', 'product.product', 'product.combo', 'product.combo.item',
+                'res.company', 'account.tax', 'account.tax.group', 'pos.printer', 'res.country', 'product.pricelist',
+                'product.pricelist.item', 'account.fiscal.position', 'account.fiscal.position.tax',
+                'res.lang', 'product.template.attribute.line', 'product.attribute', 'product.attribute.custom.value',
+                'product.template.attribute.value',
+                'decimal.precision', 'uom.uom', 'pos.printer', 'pos_self_order.custom_link', 'restaurant.floor',
+                'restaurant.table', 'account.cash.rounding']
 
     def load_self_data(self):
         # Init our first record, in case of self_order is pos_config
@@ -267,7 +279,8 @@ class PosConfig(models.Model):
                 'fields': config_fields,
             }
         }
-        response['pos.config']['data'][0]['_self_ordering_image_home_ids'] = self._get_self_ordering_attachment(self.self_ordering_image_home_ids)
+        response['pos.config']['data'][0]['_self_ordering_image_home_ids'] = self._get_self_ordering_attachment(
+            self.self_ordering_image_home_ids)
         response['pos.config']['data'][0]['_pos_special_products_ids'] = self._get_special_products().ids
         self.env['pos.session']._load_pos_data_relations('pos.config', response)
 

@@ -158,9 +158,12 @@ class TestStockPickingTour(HttpCase):
             {'name': 'LOT002', 'product_id': product_lot.id, 'company_id': warehouse.company_id.id},
             {'name': 'LOT003', 'product_id': product_lot.id, 'company_id': warehouse.company_id.id},
         ])
-        self.env['stock.quant']._update_available_quantity(product_lot, warehouse.lot_stock_id, quantity=10, lot_id=lot_1)
-        self.env['stock.quant']._update_available_quantity(product_lot, warehouse.lot_stock_id, quantity=15, lot_id=lot_2)
-        self.env['stock.quant']._update_available_quantity(product_lot, warehouse.lot_stock_id, quantity=10, lot_id=lot_3)
+        self.env['stock.quant']._update_available_quantity(product_lot, warehouse.lot_stock_id, quantity=10,
+                                                           lot_id=lot_1)
+        self.env['stock.quant']._update_available_quantity(product_lot, warehouse.lot_stock_id, quantity=15,
+                                                           lot_id=lot_2)
+        self.env['stock.quant']._update_available_quantity(product_lot, warehouse.lot_stock_id, quantity=10,
+                                                           lot_id=lot_3)
         partner = self.env['res.partner'].create({'name': 'Bob'})
         delivery = self.picking_in = self.env['stock.picking'].create({
             'picking_type_id': warehouse.out_type_id.id,

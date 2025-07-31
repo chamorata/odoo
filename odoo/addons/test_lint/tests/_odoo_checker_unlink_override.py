@@ -2,10 +2,12 @@ import astroid
 import pylint.interfaces
 from pylint import checkers
 
+
 def parse_version(s):
     # can't use odoo.tools.parse_version because pythonpath is screwed from
     # inside pylint on runbot
     return [s.rjust(3, '0') for s in s.split('.')]
+
 
 class OdooBaseChecker(checkers.BaseChecker):
     if parse_version(pylint.__version__) < parse_version('2.14.0'):
@@ -37,6 +39,7 @@ class OdooBaseChecker(checkers.BaseChecker):
                     break
                 continue
             parent = parent.parent
+
 
 def register(linter):
     linter.register_checker(OdooBaseChecker(linter))

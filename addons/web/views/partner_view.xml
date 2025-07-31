@@ -8,9 +8,9 @@
         <field name="state">code</field>
         <field name="code">
             action = {
-                'type': 'ir.actions.act_url',
-                'url': '/web/partner/vcard?partner_ids=' + ','.join(map(str, records.ids)),
-                'target': 'download',
+            'type': 'ir.actions.act_url',
+            'url': '/web/partner/vcard?partner_ids=' + ','.join(map(str, records.ids)),
+            'target': 'download',
             }
         </field>
     </record>

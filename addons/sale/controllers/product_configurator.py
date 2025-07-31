@@ -9,17 +9,17 @@ class SaleProductConfiguratorController(Controller):
 
     @route(route='/sale/product_configurator/get_values', type='json', auth='user')
     def sale_product_configurator_get_values(
-        self,
-        product_template_id,
-        quantity,
-        currency_id,
-        so_date,
-        product_uom_id=None,
-        company_id=None,
-        pricelist_id=None,
-        ptav_ids=None,
-        only_main_product=False,
-        **kwargs,
+            self,
+            product_template_id,
+            quantity,
+            currency_id,
+            so_date,
+            product_uom_id=None,
+            company_id=None,
+            pricelist_id=None,
+            ptav_ids=None,
+            only_main_product=False,
+            **kwargs,
     ):
         """ Return all product information needed for the product configurator.
 
@@ -50,7 +50,7 @@ class SaleProductConfiguratorController(Controller):
             )
             # Set missing attributes (unsaved no_variant attributes, or new attribute on existing product)
             unconfigured_ptals = (
-                product_template.attribute_line_ids - combination.attribute_line_id).filtered(
+                    product_template.attribute_line_ids - combination.attribute_line_id).filtered(
                 lambda ptal: ptal.attribute_id.display_type != 'multi')
             combination += unconfigured_ptals.mapped(
                 lambda ptal: ptal.product_template_value_ids._only_active()[:1]
@@ -87,7 +87,7 @@ class SaleProductConfiguratorController(Controller):
                         pricelist,
                         so_date,
                         # giving all the ptav of the parent product to get all the exclusions
-                        parent_combination=product_template.attribute_line_ids.\
+                        parent_combination=product_template.attribute_line_ids. \
                             product_template_value_ids,
                         **kwargs,
                     ),
@@ -126,16 +126,16 @@ class SaleProductConfiguratorController(Controller):
         methods=['POST'],
     )
     def sale_product_configurator_update_combination(
-        self,
-        product_template_id,
-        ptav_ids,
-        currency_id,
-        so_date,
-        quantity,
-        product_uom_id=None,
-        company_id=None,
-        pricelist_id=None,
-        **kwargs,
+            self,
+            product_template_id,
+            ptav_ids,
+            currency_id,
+            so_date,
+            quantity,
+            product_uom_id=None,
+            company_id=None,
+            pricelist_id=None,
+            **kwargs,
     ):
         """ Return the updated combination information.
 
@@ -179,15 +179,15 @@ class SaleProductConfiguratorController(Controller):
 
     @route(route='/sale/product_configurator/get_optional_products', type='json', auth='user')
     def sale_product_configurator_get_optional_products(
-        self,
-        product_template_id,
-        ptav_ids,
-        parent_ptav_ids,
-        currency_id,
-        so_date,
-        company_id=None,
-        pricelist_id=None,
-        **kwargs,
+            self,
+            product_template_id,
+            ptav_ids,
+            parent_ptav_ids,
+            currency_id,
+            so_date,
+            company_id=None,
+            pricelist_id=None,
+            **kwargs,
     ):
         """ Return information about optional products for the given `product.template`.
 
@@ -236,16 +236,16 @@ class SaleProductConfiguratorController(Controller):
         return request.env['product.template'].browse(product_template_id)
 
     def _get_product_information(
-        self,
-        product_template,
-        combination,
-        currency,
-        pricelist,
-        so_date,
-        quantity=1,
-        product_uom_id=None,
-        parent_combination=None,
-        **kwargs,
+            self,
+            product_template,
+            combination,
+            currency,
+            pricelist,
+            so_date,
+            quantity=1,
+            product_uom_id=None,
+            parent_combination=None,
+            **kwargs,
     ):
         """ Return complete information about a product.
 

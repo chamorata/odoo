@@ -3,6 +3,7 @@
 
 from odoo import fields, models
 
+
 # Allow promo programs to send mails upon certain triggers
 # Like : 'At creation' and 'When reaching X points'
 
@@ -17,4 +18,5 @@ class LoyaltyMail(models.Model):
         ('points_reach', 'When Reaching')], string='When', required=True
     )
     points = fields.Float()
-    mail_template_id = fields.Many2one('mail.template', string="Email Template", required=True, domain=[('model', '=', 'loyalty.card')], ondelete='cascade')
+    mail_template_id = fields.Many2one('mail.template', string="Email Template", required=True,
+                                       domain=[('model', '=', 'loyalty.card')], ondelete='cascade')

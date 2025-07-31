@@ -25,10 +25,10 @@ class TestHrAttendanceDomainTranslation(TransactionCase):
         self.assertEqual(
             self.hr_attendance.search([
                 '&',
-                    ('check_out', "!=", False),
-                    '|',
-                        ('employee_id', 'ilike', 'Musa'),
-                        ('employee_id', 'ilike', 'Flora')
+                ('check_out', "!=", False),
+                '|',
+                ('employee_id', 'ilike', 'Musa'),
+                ('employee_id', 'ilike', 'Flora')
             ]),
             self.hr_attendance
         )
@@ -40,14 +40,14 @@ class TestHrAttendanceDomainTranslation(TransactionCase):
                 allowed_company_ids=companies_ids,
                 user_domain=[
                     '|',
-                        ('employee_id', 'ilike', 'Musa'),
-                        ('employee_id', 'ilike', 'Flora')
+                    ('employee_id', 'ilike', 'Musa'),
+                    ('employee_id', 'ilike', 'Flora')
                 ])._read_group_employee_id(self.hr_employee, [
-                    '&',
-                        ('check_out', "!=", False),
-                        '|',
-                            ('employee_id', 'ilike', 'Musa'),
-                            ('employee_id', 'ilike', 'Flora')
-                    ]),
+                '&',
+                ('check_out', "!=", False),
+                '|',
+                ('employee_id', 'ilike', 'Musa'),
+                ('employee_id', 'ilike', 'Flora')
+            ]),
             self.employee_musa
         )

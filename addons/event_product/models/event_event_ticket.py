@@ -24,7 +24,8 @@ class EventTicket(models.Model):
         for event in self:
             # sudo necessary here since the field is most probably accessed through the website
             tax_ids = event.product_id.taxes_id.filtered(lambda r: r.company_id == event.event_id.company_id)
-            taxes = tax_ids.compute_all(event.price_reduce, event.event_id.company_id.currency_id, 1.0, product=event.product_id)
+            taxes = tax_ids.compute_all(event.price_reduce, event.event_id.company_id.currency_id, 1.0,
+                                        product=event.product_id)
             event.price_reduce_taxinc = taxes['total_included']
 
     @api.depends('product_id', 'product_id.taxes_id', 'price')

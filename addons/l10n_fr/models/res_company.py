@@ -7,7 +7,8 @@ from odoo import fields, models, api, _
 class ResCompany(models.Model):
     _inherit = 'res.company'
 
-    l10n_fr_closing_sequence_id = fields.Many2one('ir.sequence', 'Sequence to use to build sale closings', readonly=True)
+    l10n_fr_closing_sequence_id = fields.Many2one('ir.sequence', 'Sequence to use to build sale closings',
+                                                  readonly=True)
     siret = fields.Char(related='partner_id.siret', string='SIRET', size=14, readonly=False)
     ape = fields.Char(string='APE')
     is_france_country = fields.Boolean(
@@ -24,7 +25,8 @@ class ResCompany(models.Model):
     def _get_france_country_codes(self):
         """Returns every country code that can be used to represent France
         """
-        return ['FR', 'MF', 'MQ', 'NC', 'PF', 'RE', 'GF', 'GP', 'TF', 'BL', 'PM', 'YT', 'WF']  # These codes correspond to France and DOM-TOM.
+        return ['FR', 'MF', 'MQ', 'NC', 'PF', 'RE', 'GF', 'GP', 'TF', 'BL', 'PM', 'YT',
+                'WF']  # These codes correspond to France and DOM-TOM.
 
     def _is_accounting_unalterable(self):
         if not self.vat and not self.country_id:
@@ -35,7 +37,7 @@ class ResCompany(models.Model):
     def create(self, vals_list):
         companies = super().create(vals_list)
         for company in companies:
-            #when creating a new french company, create the securisation sequence as well
+            # when creating a new french company, create the securisation sequence as well
             if company._is_accounting_unalterable():
                 sequence_fields = ['l10n_fr_closing_sequence_id']
                 company._create_secure_sequence(sequence_fields)
@@ -43,7 +45,7 @@ class ResCompany(models.Model):
 
     def write(self, vals):
         res = super(ResCompany, self).write(vals)
-        #if country changed to fr, create the securisation sequence
+        # if country changed to fr, create the securisation sequence
         for company in self:
             if company._is_accounting_unalterable():
                 sequence_fields = ['l10n_fr_closing_sequence_id']

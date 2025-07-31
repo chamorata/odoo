@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+import uuid
+
 from . import controllers
 from . import models
 from . import utils
 from . import wizard
-
-import uuid
 
 
 def init_initiating_microsoft_uuid(env):

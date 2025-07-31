@@ -98,7 +98,8 @@ class EventLeadRule(models.Model):
     company_id = fields.Many2one(
         'res.company', string='Company',
         help="Restrict the trigger of this rule to events belonging to a specific company.\nIf not set, no company restriction will be applied.")
-    event_registration_filter = fields.Text(string="Registrations Domain", help="Filter the attendees that will or not generate leads.")
+    event_registration_filter = fields.Text(string="Registrations Domain",
+                                            help="Filter the attendees that will or not generate leads.")
     # Lead default_value fields
     lead_type = fields.Selection([
         ('lead', 'Lead'), ('opportunity', 'Opportunity')], string="Lead Type", required=True,
@@ -107,7 +108,8 @@ class EventLeadRule(models.Model):
     lead_sales_team_id = fields.Many2one(
         'crm.team', string='Sales Team', ondelete="set null",
         help="Automatically assign the created leads to this Sales Team.")
-    lead_user_id = fields.Many2one('res.users', string='Salesperson', help="Automatically assign the created leads to this Salesperson.")
+    lead_user_id = fields.Many2one('res.users', string='Salesperson',
+                                   help="Automatically assign the created leads to this Salesperson.")
     lead_tag_ids = fields.Many2many('crm.tag', string='Tags', help="Automatically add these tags to the created leads.")
 
     def _run_on_registrations(self, registrations):
@@ -175,7 +177,8 @@ class EventLeadRule(models.Model):
                 # check if registrations are part of a group, for example a sale order, to know if we update or create leads
                 for (toupdate_leads, group_key, group_registrations) in rule_group_info[rule]:
                     if toupdate_leads:
-                        additionnal_description = group_registrations._get_lead_description(_("New registrations"), line_counter=True)
+                        additionnal_description = group_registrations._get_lead_description(_("New registrations"),
+                                                                                            line_counter=True)
                         for lead in toupdate_leads:
                             lead.write({
                                 'description': "%s<br/>%s" % (lead.description, additionnal_description),
@@ -211,6 +214,6 @@ class EventLeadRule(models.Model):
         event_or_event_type_ok = \
             lambda registration: \
                 registration.event_id == self.event_id or registration.event_id.event_type_id in self.event_type_ids \
-                if (self.event_id or self.event_type_ids) else True
+                    if (self.event_id or self.event_type_ids) else True
 
         return registrations.filtered(lambda r: company_ok(r) and event_or_event_type_ok(r))

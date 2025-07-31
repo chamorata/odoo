@@ -2,15 +2,16 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
-from psycopg2 import IntegrityError
+
 import pytz
+from dateutil.relativedelta import relativedelta
+from odoo.addons.hr_work_entry_contract.tests.common import TestWorkEntryBase
+from psycopg2 import IntegrityError
 
 from odoo.exceptions import ValidationError
 from odoo.tests import Form
 from odoo.tests.common import tagged
 from odoo.tools import mute_logger
-from odoo.addons.hr_work_entry_contract.tests.common import TestWorkEntryBase
 
 
 @tagged('work_entry')
@@ -44,12 +45,15 @@ class TestWorkEntry(TestWorkEntryBase):
 
     def test_work_entry(self):
         self.richard_emp.generate_work_entries(self.start, self.end)
-        attendance_nb = len(self.resource_calendar_id._attendance_intervals_batch(self.start.replace(tzinfo=pytz.utc), self.end.replace(tzinfo=pytz.utc))[False])
+        attendance_nb = len(self.resource_calendar_id._attendance_intervals_batch(self.start.replace(tzinfo=pytz.utc),
+                                                                                  self.end.replace(tzinfo=pytz.utc))[
+                                False])
         work_entry_nb = self.env['hr.work.entry'].search_count([
             ('employee_id', '=', self.richard_emp.id),
             ('date_start', '>=', self.start),
             ('date_stop', '<=', self.end)])
-        self.assertEqual(attendance_nb, work_entry_nb, "One work_entry should be generated for each calendar attendance")
+        self.assertEqual(attendance_nb, work_entry_nb,
+                         "One work_entry should be generated for each calendar attendance")
 
     def test_approve_multiple_day_work_entry(self):
         start = datetime(2015, 11, 1, 9, 0, 0)
@@ -216,17 +220,27 @@ class TestWorkEntry(TestWorkEntryBase):
             'tz': 'Asia/Hong_Kong',
             'hours_per_day': 8,
             'attendance_ids': [(5, 0, 0),
-                (0, 0, {'name': 'Monday Morning', 'dayofweek': '0', 'hour_from': 7, 'hour_to': 11, 'day_period': 'morning'}),
-                (0, 0, {'name': 'Monday Afternoon', 'dayofweek': '0', 'hour_from': 13, 'hour_to': 17, 'day_period': 'afternoon'}),
-                (0, 0, {'name': 'Tuesday Morning', 'dayofweek': '1', 'hour_from': 7, 'hour_to': 11, 'day_period': 'morning'}),
-                (0, 0, {'name': 'Tuesday Afternoon', 'dayofweek': '1', 'hour_from': 13, 'hour_to': 17, 'day_period': 'afternoon'}),
-                (0, 0, {'name': 'Wednesday Morning', 'dayofweek': '2', 'hour_from': 7, 'hour_to': 11, 'day_period': 'morning'}),
-                (0, 0, {'name': 'Wednesday Afternoon', 'dayofweek': '2', 'hour_from': 13, 'hour_to': 17, 'day_period': 'afternoon'}),
-                (0, 0, {'name': 'Thursday Morning', 'dayofweek': '3', 'hour_from': 7, 'hour_to': 11, 'day_period': 'morning'}),
-                (0, 0, {'name': 'Thursday Afternoon', 'dayofweek': '3', 'hour_from': 13, 'hour_to': 17, 'day_period': 'afternoon'}),
-                (0, 0, {'name': 'Friday Morning', 'dayofweek': '4', 'hour_from': 7, 'hour_to': 11, 'day_period': 'morning'}),
-                (0, 0, {'name': 'Friday Afternoon', 'dayofweek': '4', 'hour_from': 13, 'hour_to': 17, 'day_period': 'afternoon'})
-            ]
+                               (0, 0, {'name': 'Monday Morning', 'dayofweek': '0', 'hour_from': 7, 'hour_to': 11,
+                                       'day_period': 'morning'}),
+                               (0, 0, {'name': 'Monday Afternoon', 'dayofweek': '0', 'hour_from': 13, 'hour_to': 17,
+                                       'day_period': 'afternoon'}),
+                               (0, 0, {'name': 'Tuesday Morning', 'dayofweek': '1', 'hour_from': 7, 'hour_to': 11,
+                                       'day_period': 'morning'}),
+                               (0, 0, {'name': 'Tuesday Afternoon', 'dayofweek': '1', 'hour_from': 13, 'hour_to': 17,
+                                       'day_period': 'afternoon'}),
+                               (0, 0, {'name': 'Wednesday Morning', 'dayofweek': '2', 'hour_from': 7, 'hour_to': 11,
+                                       'day_period': 'morning'}),
+                               (0, 0, {'name': 'Wednesday Afternoon', 'dayofweek': '2', 'hour_from': 13, 'hour_to': 17,
+                                       'day_period': 'afternoon'}),
+                               (0, 0, {'name': 'Thursday Morning', 'dayofweek': '3', 'hour_from': 7, 'hour_to': 11,
+                                       'day_period': 'morning'}),
+                               (0, 0, {'name': 'Thursday Afternoon', 'dayofweek': '3', 'hour_from': 13, 'hour_to': 17,
+                                       'day_period': 'afternoon'}),
+                               (0, 0, {'name': 'Friday Morning', 'dayofweek': '4', 'hour_from': 7, 'hour_to': 11,
+                                       'day_period': 'morning'}),
+                               (0, 0, {'name': 'Friday Afternoon', 'dayofweek': '4', 'hour_from': 13, 'hour_to': 17,
+                                       'day_period': 'afternoon'})
+                               ]
         })
         hk_employee = self.env['hr.employee'].create({
             'name': 'HK Employee',

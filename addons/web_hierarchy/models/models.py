@@ -29,7 +29,8 @@ class Base(models.AbstractModel):
             children_ids_per_record_id = {
                 record.id: child_ids
                 for record, child_ids in self._read_group(
-                    [(parent_field, 'in', records.ids if fetch_child_ids_for_all_records else (records - records[parent_field]).ids)],
+                    [(parent_field, 'in',
+                      records.ids if fetch_child_ids_for_all_records else (records - records[parent_field]).ids)],
                     (parent_field,),
                     ('id:array_agg',),
                     order=order

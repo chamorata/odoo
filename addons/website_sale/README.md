@@ -114,28 +114,28 @@ And much more...
 
 ### Online Sales
 
--   Mobile Interface
--   Sell products, events or services
--   Flexible pricelists
--   Product multi-variants
--   Multiple stores
--   Great checkout process
+- Mobile Interface
+- Sell products, events or services
+- Flexible pricelists
+- Product multi-variants
+- Multiple stores
+- Great checkout process
 
 ### Customer Service
 
--   Customer Portal to track orders
--   Assisted shopping with website live chats
--   Returns management
--   Advanced shipping rules
--   Coupons or gift certificates
+- Customer Portal to track orders
+- Assisted shopping with website live chats
+- Returns management
+- Advanced shipping rules
+- Coupons or gift certificates
 
 ### Order Management
 
--   Advanced warehouse management features
--   Invoicing and accounting integration
--   Mass mailing and customer segmentations
--   Lead automation and marketing campaigns
--   Persistent shopping cart
+- Advanced warehouse management features
+- Invoicing and accounting integration
+- Mass mailing and customer segmentations
+- Lead automation and marketing campaigns
+- Persistent shopping cart
 
 Fully Integrated With Other Apps
 --------------------------------

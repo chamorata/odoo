@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import fields, models, _, Command
 from odoo.addons.mail.models.discuss.mail_guest import add_guest_to_context
+
+from odoo import fields, models, _, Command
 
 
 class Website(models.Model):
-
     _inherit = "website"
 
     channel_id = fields.Many2one('im_livechat.channel', string='Website Live Chat Channel')
@@ -60,7 +60,8 @@ class Website(models.Model):
                         ]})
                     if not current_guest and channel_guest_member:
                         channel_guest_member.guest_id._set_auth_cookie()
-                        chat_request_channel = chat_request_channel.with_context(guest=channel_guest_member.guest_id.sudo(False))
+                        chat_request_channel = chat_request_channel.with_context(
+                            guest=channel_guest_member.guest_id.sudo(False))
                 if chat_request_channel.is_member:
                     chat_request_session = {
                         "id": chat_request_channel.id,

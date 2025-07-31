@@ -1,8 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.http import request
 from odoo.addons.mail.controllers.message_reaction import MessageReactionController
 from odoo.addons.portal.utils import get_portal_partner
+
+from odoo.http import request
 
 
 class PortalMessageReactionController(MessageReactionController):
@@ -11,7 +12,7 @@ class PortalMessageReactionController(MessageReactionController):
         if not partner and message.model and message.res_id:
             thread = request.env[message.model].browse(message.res_id)
             if partner := get_portal_partner(
-                thread, kwargs.get("hash"), kwargs.get("pid"), kwargs.get("token")
+                    thread, kwargs.get("hash"), kwargs.get("pid"), kwargs.get("token")
             ):
                 guest = request.env["mail.guest"]
         return partner, guest

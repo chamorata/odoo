@@ -1,5 +1,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from datetime import date, datetime
+
 from odoo.tests.common import tagged, TransactionCase, HttpCase, freeze_time
 
 
@@ -39,7 +40,8 @@ class TestHttpCaseFreezeTimeClassDecorator(HttpCase):
 class TestFreezeTimeContextManager(TransactionCase):
 
     def test_freeze_time_context_manager(self):
-        self.assertNotEqual(datetime.now().strftime('%Y-%m-%d %H:%M:%S'), '2024-04-04 04:04:00', "The datetime should not be altered by a freeze_time from the previous class")
+        self.assertNotEqual(datetime.now().strftime('%Y-%m-%d %H:%M:%S'), '2024-04-04 04:04:00',
+                            "The datetime should not be altered by a freeze_time from the previous class")
         with freeze_time('2025-05-05 05:05') as frozen_time:
             self.assertEqual(datetime.now().strftime('%Y-%m-%d %H:%M:%S'), '2025-05-05 05:05:00')
             frozen_time.move_to('2026-06-06 06:06')

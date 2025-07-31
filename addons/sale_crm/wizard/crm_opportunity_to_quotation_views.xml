@@ -14,7 +14,7 @@
                 <group invisible="action != 'exist'" required="action == 'exist'">
                     <group>
                         <field name="partner_id" invisible="action != 'exist'" required="action == 'exist'"
-                               context="{'res_partner_search_mode': 'customer'}" />
+                               context="{'res_partner_search_mode': 'customer'}"/>
                     </group>
                 </group>
                 <footer>

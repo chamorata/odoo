@@ -56,7 +56,8 @@ class EventTicket(models.Model):
     @api.model
     def default_get(self, fields):
         res = super(EventTicket, self).default_get(fields)
-        if 'name' in fields and (not res.get('name') or res['name'] == _('Registration')) and self.env.context.get('default_event_name'):
+        if 'name' in fields and (not res.get('name') or res['name'] == _('Registration')) and self.env.context.get(
+                'default_event_name'):
             res['name'] = _('Registration for %s', self.env.context['default_event_name'])
         return res
 
@@ -147,8 +148,8 @@ class EventTicket(models.Model):
     def _compute_is_sold_out(self):
         for ticket in self:
             ticket.is_sold_out = (
-                (ticket.seats_limited and not ticket.seats_available)
-                or ticket.event_id.event_registrations_sold_out
+                    (ticket.seats_limited and not ticket.seats_available)
+                    or ticket.event_id.event_registrations_sold_out
             )
 
     @api.constrains('start_sale_datetime', 'end_sale_datetime')

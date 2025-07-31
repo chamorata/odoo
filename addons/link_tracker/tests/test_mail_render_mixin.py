@@ -64,7 +64,8 @@ class TestMailRenderMixin(common.HttpCase):
                 ("label", "=", "label"),
             ],
             [("url", "=", self.base_url + '#')],
-            [("url", "=", "https://www.odoo.com?test=%20+3&this=that"), ("label", "=", "THERE > there")],  # lxml unescaped
+            [("url", "=", "https://www.odoo.com?test=%20+3&this=that"), ("label", "=", "THERE > there")],
+            # lxml unescaped
         ]
         trackers_to_fail = [
             [("url", "=", "https://test_542152qsdqsd.com"), ("label", "ilike", "_")],
@@ -258,11 +259,16 @@ And a last, with question mark: {self.base_url}/r/(\w+)"""
 
     def test_shorten_blacklisted_links(self):
         test_links = [
-            ('This link should not be shortened: <a href="https://www.example.com/page/blacklist">text</a>', 'blacklist', False),
-            ('Neither should this link: <a href="https://www.example.com/page/view?param=true">text</a>', 'view', False),
-            ('But this link should be shortened: <a href="https://www.example.com/page/viewform">text</a>', 'view', True),
-            ('This link should not be shortened: <a href="https://www.example.com/page/blacklist/">text</a>', 'blacklist', False),
-            ('This link should not get shortened: <a href="https://example.com/blacklist/somepage">text</a>', 'blacklist', False),
+            ('This link should not be shortened: <a href="https://www.example.com/page/blacklist">text</a>',
+             'blacklist', False),
+            ('Neither should this link: <a href="https://www.example.com/page/view?param=true">text</a>', 'view',
+             False),
+            ('But this link should be shortened: <a href="https://www.example.com/page/viewform">text</a>', 'view',
+             True),
+            ('This link should not be shortened: <a href="https://www.example.com/page/blacklist/">text</a>',
+             'blacklist', False),
+            ('This link should not get shortened: <a href="https://example.com/blacklist/somepage">text</a>',
+             'blacklist', False),
         ]
         blacklist = ['/blacklist', '/view']
 

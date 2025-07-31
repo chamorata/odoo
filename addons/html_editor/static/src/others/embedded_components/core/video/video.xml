@@ -6,7 +6,7 @@
     </t>
     <t t-name="html_editor.EmbeddedVideoIframe">
         <iframe t-att-src="props.src" title="Video player" frameborder="0" allowfullscreen="allowfullscreen"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share">
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share">
             Your browser does not support iframe.
         </iframe>
     </t>

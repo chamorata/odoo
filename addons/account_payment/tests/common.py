@@ -1,7 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from unittest.mock import patch
 from contextlib import contextmanager
+from unittest.mock import patch
 
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.addons.payment.tests.common import PaymentCommon
@@ -42,13 +42,14 @@ class AccountPaymentCommon(PaymentCommon, AccountTestInvoicingCommon):
             ],
         })
 
-        cls.provider.journal_id.inbound_payment_method_line_ids.filtered(lambda l: l.payment_provider_id == cls.provider).payment_account_id = cls.inbound_payment_method_line.payment_account_id
+        cls.provider.journal_id.inbound_payment_method_line_ids.filtered(lambda
+                                                                             l: l.payment_provider_id == cls.provider).payment_account_id = cls.inbound_payment_method_line.payment_account_id
 
     def setUp(self):
         self.enable_post_process_patcher = False
         super().setUp()
 
-    #=== Utils ===#
+    # === Utils ===#
 
     @contextmanager
     def mocked_get_payment_method_information(self):
@@ -59,5 +60,6 @@ class AccountPaymentCommon(PaymentCommon, AccountTestInvoicingCommon):
             res['none'] = {'mode': 'electronic', 'type': ('bank',)}
             return res
 
-        with patch.object(self.env.registry['account.payment.method'], '_get_payment_method_information', _get_payment_method_information):
+        with patch.object(self.env.registry['account.payment.method'], '_get_payment_method_information',
+                          _get_payment_method_information):
             yield

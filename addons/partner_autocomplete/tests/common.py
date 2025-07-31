@@ -4,9 +4,10 @@
 from contextlib import contextmanager
 from unittest.mock import patch
 
-from odoo import exceptions
 from odoo.addons.iap.tools import iap_tools
 from odoo.addons.partner_autocomplete.models.iap_autocomplete_api import IapAutocompleteEnrichAPI
+
+from odoo import exceptions
 from odoo.tests import common
 
 
@@ -33,7 +34,8 @@ class MockIAPPartnerAutocomplete(common.BaseCase):
     def _init_mock_partner_autocomplete(cls):
         cls.base_de = cls.env.ref('base.de')
         cls.base_be = cls.env.ref('base.be')
-        cls.be_state_bw = cls.env['res.country.state'].create({'name': 'Béwééé dis', 'code': 'bw', 'country_id': cls.base_be.id})
+        cls.be_state_bw = cls.env['res.country.state'].create(
+            {'name': 'Béwééé dis', 'code': 'bw', 'country_id': cls.base_be.id})
 
     @contextmanager
     def mockPartnerAutocomplete(self, default_data=None, sim_error=None):

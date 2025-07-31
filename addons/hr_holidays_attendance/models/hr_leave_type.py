@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.tools.misc import format_duration
 from odoo import _, api, fields, models
+from odoo.tools.misc import format_duration
 
 
 class HRLeaveType(models.Model):
@@ -23,12 +23,13 @@ class HRLeaveType(models.Model):
         if employee.total_overtime <= 0:
             return super()._compute_display_name()
 
-        overtime_leaves = self.filtered(lambda l_type: l_type.overtime_deductible and l_type.requires_allocation == 'no')
+        overtime_leaves = self.filtered(
+            lambda l_type: l_type.overtime_deductible and l_type.requires_allocation == 'no')
         for leave_type in overtime_leaves:
             leave_type.display_name = "%(name)s (%(count)s)" % {
                 'name': leave_type.name,
                 'count': _('%s hours available',
-                    format_duration(employee.total_overtime)),
+                           format_duration(employee.total_overtime)),
             }
         super(HRLeaveType, self - overtime_leaves)._compute_display_name()
 

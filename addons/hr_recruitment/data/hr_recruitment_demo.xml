@@ -12,34 +12,34 @@
     <record id="hr.job_developer" model="hr.job">
         <field name="no_of_recruitment">4</field>
         <field name="no_of_hired_employee">56</field>
-        <field name="user_id" ref="base.user_admin" />
+        <field name="user_id" ref="base.user_admin"/>
     </record>
     <record id="hr.job_ceo" model="hr.job">
         <field name="no_of_hired_employee">1</field>
-        <field name="user_id" ref="base.user_admin" />
+        <field name="user_id" ref="base.user_admin"/>
     </record>
     <record id="hr.job_cto" model="hr.job">
         <field name="no_of_hired_employee">1</field>
-        <field name="user_id" ref="base.user_admin" />
+        <field name="user_id" ref="base.user_admin"/>
     </record>
     <record id="hr.job_consultant" model="hr.job">
         <field name="no_of_recruitment">1</field>
         <field name="no_of_hired_employee">17</field>
-        <field name="user_id" ref="base.user_demo" />
+        <field name="user_id" ref="base.user_demo"/>
     </record>
     <record id="hr.job_hrm" model="hr.job">
         <field name="no_of_recruitment">1</field>
         <field name="no_of_hired_employee">5</field>
-        <field name="user_id" ref="base.user_admin" />
+        <field name="user_id" ref="base.user_admin"/>
     </record>
     <record id="hr.job_marketing" model="hr.job">
         <field name="no_of_recruitment">3</field>
         <field name="no_of_hired_employee">2</field>
-        <field name="user_id" ref="base.user_demo" />
+        <field name="user_id" ref="base.user_demo"/>
     </record>
     <record id="hr.job_trainee" model="hr.job">
         <field name="no_of_recruitment">6</field>
-        <field name="user_id" ref="base.user_admin" />
+        <field name="user_id" ref="base.user_admin"/>
     </record>
 
     <record id="hr_recruitment_linkedin_developer" model="hr.recruitment.source">
@@ -399,7 +399,7 @@
         <field name="res_id" ref="hr_recruitment.hr_candidate_salesman0"/>
     </record>
 
-        <record id="hr_case_mkt1_cv" model="ir.attachment">
+    <record id="hr_case_mkt1_cv" model="ir.attachment">
         <field name="name">Hubert_Blank_CV.pdf</field>
         <field name="datas" type="base64" file="hr_recruitment/static/applicant_cvs/Hubert_Blank_CV.pdf"></field>
         <field name="res_model">hr.candidate</field>
@@ -503,17 +503,21 @@
         <field name="res_id" ref="hr_case_advertisement"/>
         <field name="date" eval="DateTime.now() - relativedelta(days=3)"/>
         <field name="body" type="html">
-            <p>Hello!<br />
-            I will surely refer to this application as it is by your reference and <br />
-            will try to conduct an interview within a very short time<br />
-            Thanks,</p>
+            <p>Hello!
+                <br/>
+                I will surely refer to this application as it is by your reference and
+                <br/>
+                will try to conduct an interview within a very short time
+                <br/>
+                Thanks,
+            </p>
         </field>
         <field name="message_type">comment</field>
         <field name="subtype_id" ref="mail.mt_comment"/>
         <field name="author_id" ref="base.partner_demo"/>
     </record>
     <function model="mail.message" name="toggle_message_starred"
-            eval="[ref('msg_case18_aplicant')]"
+              eval="[ref('msg_case18_aplicant')]"
     />
     <record id="msg_case_salesman0_aplicant" model="mail.message">
         <field name="subject">Refuse Application</field>
@@ -521,7 +525,9 @@
         <field name="res_id" ref="hr_case_salesman0"/>
         <field name="body" type="html">
             <p>Hello,</p>
-            <p>I have checked this application but it does not match with our requirements. We don't need to proceed further and we should refuse this application.</p>
+            <p>I have checked this application but it does not match with our requirements. We don't need to proceed
+                further and we should refuse this application.
+            </p>
             <p>Kind regards,</p>
         </field>
         <field name="message_type">comment</field>
@@ -591,63 +597,63 @@
         <field name="author_id" ref="base.partner_admin"/>
     </record>
     <record id="mail_activity_0" model="mail.activity">
-        <field name="res_id" ref="hr_recruitment.hr_case_dev0" />
+        <field name="res_id" ref="hr_recruitment.hr_case_dev0"/>
         <field name="res_model_id" ref="model_hr_applicant"/>
-        <field name="activity_type_id" ref="mail.mail_activity_data_email" />
+        <field name="activity_type_id" ref="mail.mail_activity_data_email"/>
         <field name="date_deadline" eval="time.strftime('%Y-%m-27 18:15:00')"/>
         <field name="summary">Send mail regarding our interview</field>
         <field name="create_uid" ref="base.user_admin"/>
         <field name="user_id" ref="base.user_admin"/>
     </record>
     <record id="mail_activity_1" model="mail.activity">
-        <field name="res_id" ref="hr_recruitment.hr_case_dev1" />
+        <field name="res_id" ref="hr_recruitment.hr_case_dev1"/>
         <field name="res_model_id" ref="model_hr_applicant"/>
-        <field name="activity_type_id" ref="mail.mail_activity_data_email" />
+        <field name="activity_type_id" ref="mail.mail_activity_data_email"/>
         <field name="date_deadline" eval="time.strftime('%Y-%m-%d')"/>
         <field name="summary">Send mail for first interview</field>
         <field name="create_uid" ref="base.user_admin"/>
         <field name="user_id" ref="base.user_admin"/>
     </record>
     <record id="mail_activity_2" model="mail.activity">
-        <field name="res_id" ref="hr_recruitment.hr_case_salesman0" />
+        <field name="res_id" ref="hr_recruitment.hr_case_salesman0"/>
         <field name="res_model_id" ref="model_hr_applicant"/>
-        <field name="activity_type_id" ref="mail.mail_activity_data_email" />
+        <field name="activity_type_id" ref="mail.mail_activity_data_email"/>
         <field name="date_deadline" eval="time.strftime('%Y-%m-15 18:15:00')"/>
         <field name="summary">Send mail regarding our interview</field>
         <field name="create_uid" ref="base.user_admin"/>
         <field name="user_id" ref="base.user_admin"/>
     </record>
     <record id="mail_activity_3" model="mail.activity">
-        <field name="res_id" ref="hr_recruitment.hr_case_traineemca0" />
+        <field name="res_id" ref="hr_recruitment.hr_case_traineemca0"/>
         <field name="res_model_id" ref="model_hr_applicant"/>
-        <field name="activity_type_id" ref="mail.mail_activity_data_call" />
+        <field name="activity_type_id" ref="mail.mail_activity_data_call"/>
         <field name="date_deadline" eval="time.strftime('%Y-%m-10 18:15:00')"/>
         <field name="summary">Call to define real needs about training</field>
         <field name="create_uid" ref="base.user_admin"/>
         <field name="user_id" ref="base.user_admin"/>
     </record>
     <record id="mail_activity_4" model="mail.activity">
-        <field name="res_id" ref="hr_recruitment.hr_case_yrsexperienceinphp0" />
+        <field name="res_id" ref="hr_recruitment.hr_case_yrsexperienceinphp0"/>
         <field name="res_model_id" ref="model_hr_applicant"/>
-        <field name="activity_type_id" ref="mail.mail_activity_data_call" />
+        <field name="activity_type_id" ref="mail.mail_activity_data_call"/>
         <field name="date_deadline" eval="time.strftime('%Y-%m-24 18:15:00')"/>
         <field name="summary">Call to define real needs about training</field>
         <field name="create_uid" ref="base.user_admin"/>
         <field name="user_id" ref="base.user_admin"/>
     </record>
     <record id="mail_activity_5" model="mail.activity">
-        <field name="res_id" ref="hr_recruitment.hr_case_advertisement" />
+        <field name="res_id" ref="hr_recruitment.hr_case_advertisement"/>
         <field name="res_model_id" ref="model_hr_applicant"/>
-        <field name="activity_type_id" ref="mail.mail_activity_data_call" />
+        <field name="activity_type_id" ref="mail.mail_activity_data_call"/>
         <field name="date_deadline" eval="time.strftime('%Y-%m-26 18:15:00')"/>
         <field name="summary">Call to schedule a second interview</field>
         <field name="create_uid" ref="base.user_admin"/>
         <field name="user_id" ref="base.user_admin"/>
     </record>
     <record id="mail_activity_6" model="mail.activity">
-        <field name="res_id" ref="hr_recruitment.hr_case_mkt1" />
+        <field name="res_id" ref="hr_recruitment.hr_case_mkt1"/>
         <field name="res_model_id" ref="model_hr_applicant"/>
-        <field name="activity_type_id" ref="mail.mail_activity_data_call" />
+        <field name="activity_type_id" ref="mail.mail_activity_data_call"/>
         <field name="date_deadline" eval="time.strftime('%Y-%m-18 17:15:00')"/>
         <field name="summary">Call to propose a contract</field>
         <field name="create_uid" ref="base.user_admin"/>
@@ -655,63 +661,63 @@
     </record>
 
     <record id="mail_activity_candidate_0" model="mail.activity">
-        <field name="res_id" ref="hr_recruitment.hr_candidate_dev0" />
+        <field name="res_id" ref="hr_recruitment.hr_candidate_dev0"/>
         <field name="res_model_id" ref="model_hr_candidate"/>
-        <field name="activity_type_id" ref="mail.mail_activity_data_email" />
+        <field name="activity_type_id" ref="mail.mail_activity_data_email"/>
         <field name="date_deadline" eval="time.strftime('%Y-%m-27 18:15:00')"/>
         <field name="summary">Send mail regarding our interview</field>
         <field name="create_uid" ref="base.user_admin"/>
         <field name="user_id" ref="base.user_admin"/>
     </record>
     <record id="mail_activity_candidate_1" model="mail.activity">
-        <field name="res_id" ref="hr_recruitment.hr_candidate_dev1" />
+        <field name="res_id" ref="hr_recruitment.hr_candidate_dev1"/>
         <field name="res_model_id" ref="model_hr_candidate"/>
-        <field name="activity_type_id" ref="mail.mail_activity_data_email" />
+        <field name="activity_type_id" ref="mail.mail_activity_data_email"/>
         <field name="date_deadline" eval="time.strftime('%Y-%m-%d')"/>
         <field name="summary">Send mail for first interview</field>
         <field name="create_uid" ref="base.user_admin"/>
         <field name="user_id" ref="base.user_admin"/>
     </record>
     <record id="mail_activity_candidate_2" model="mail.activity">
-        <field name="res_id" ref="hr_recruitment.hr_candidate_salesman0" />
+        <field name="res_id" ref="hr_recruitment.hr_candidate_salesman0"/>
         <field name="res_model_id" ref="model_hr_candidate"/>
-        <field name="activity_type_id" ref="mail.mail_activity_data_email" />
+        <field name="activity_type_id" ref="mail.mail_activity_data_email"/>
         <field name="date_deadline" eval="time.strftime('%Y-%m-15 18:15:00')"/>
         <field name="summary">Send mail regarding our interview</field>
         <field name="create_uid" ref="base.user_admin"/>
         <field name="user_id" ref="base.user_admin"/>
     </record>
     <record id="mail_activity_candidate_3" model="mail.activity">
-        <field name="res_id" ref="hr_recruitment.hr_candidate_traineemca0" />
+        <field name="res_id" ref="hr_recruitment.hr_candidate_traineemca0"/>
         <field name="res_model_id" ref="model_hr_candidate"/>
-        <field name="activity_type_id" ref="mail.mail_activity_data_call" />
+        <field name="activity_type_id" ref="mail.mail_activity_data_call"/>
         <field name="date_deadline" eval="time.strftime('%Y-%m-10 18:15:00')"/>
         <field name="summary">Call to define real needs about training</field>
         <field name="create_uid" ref="base.user_admin"/>
         <field name="user_id" ref="base.user_admin"/>
     </record>
     <record id="mail_activity_candidate_4" model="mail.activity">
-        <field name="res_id" ref="hr_recruitment.hr_candidate_yrsexperienceinphp0" />
+        <field name="res_id" ref="hr_recruitment.hr_candidate_yrsexperienceinphp0"/>
         <field name="res_model_id" ref="model_hr_candidate"/>
-        <field name="activity_type_id" ref="mail.mail_activity_data_call" />
+        <field name="activity_type_id" ref="mail.mail_activity_data_call"/>
         <field name="date_deadline" eval="time.strftime('%Y-%m-24 18:15:00')"/>
         <field name="summary">Call to define real needs about training</field>
         <field name="create_uid" ref="base.user_admin"/>
         <field name="user_id" ref="base.user_admin"/>
     </record>
     <record id="mail_activity_candidate_5" model="mail.activity">
-        <field name="res_id" ref="hr_recruitment.hr_candidate_advertisement" />
+        <field name="res_id" ref="hr_recruitment.hr_candidate_advertisement"/>
         <field name="res_model_id" ref="model_hr_candidate"/>
-        <field name="activity_type_id" ref="mail.mail_activity_data_call" />
+        <field name="activity_type_id" ref="mail.mail_activity_data_call"/>
         <field name="date_deadline" eval="time.strftime('%Y-%m-26 18:15:00')"/>
         <field name="summary">Call to schedule a second interview</field>
         <field name="create_uid" ref="base.user_admin"/>
         <field name="user_id" ref="base.user_admin"/>
     </record>
     <record id="mail_activity_candidate_6" model="mail.activity">
-        <field name="res_id" ref="hr_recruitment.hr_candidate_mkt1" />
+        <field name="res_id" ref="hr_recruitment.hr_candidate_mkt1"/>
         <field name="res_model_id" ref="model_hr_candidate"/>
-        <field name="activity_type_id" ref="mail.mail_activity_data_call" />
+        <field name="activity_type_id" ref="mail.mail_activity_data_call"/>
         <field name="date_deadline" eval="time.strftime('%Y-%m-18 17:15:00')"/>
         <field name="summary">Call to propose a contract</field>
         <field name="create_uid" ref="base.user_admin"/>

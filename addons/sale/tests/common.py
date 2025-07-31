@@ -1,15 +1,15 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.fields import Command
-from odoo.tests import TransactionCase
-
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon, TestTaxCommon
 from odoo.addons.product.tests.common import ProductCommon
 from odoo.addons.sales_team.tests.common import SalesTeamCommon
 
+from odoo.fields import Command
+from odoo.tests import TransactionCase
+
 
 class SaleCommon(
-    ProductCommon, # BaseCommon, UomCommon
+    ProductCommon,  # BaseCommon, UomCommon
     SalesTeamCommon,
 ):
 
@@ -23,7 +23,7 @@ class SaleCommon(
         cls.group_discount_per_so_line = cls.env.ref('sale.group_discount_per_so_line')
 
         (cls.product + cls.service_product).write({
-                'taxes_id': [Command.clear()],
+            'taxes_id': [Command.clear()],
         })
 
         cls.empty_order = cls.env['sale.order'].create({

@@ -4,7 +4,6 @@
 from datetime import date
 
 from odoo.tests.common import SingleTransactionCase
-from odoo.tools import DEFAULT_SERVER_DATE_FORMAT as DATE_FORMAT
 
 
 class TestIrSequenceDateRangeStandard(SingleTransactionCase):

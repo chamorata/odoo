@@ -1,8 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.tools import LazyTranslate
-_lt = LazyTranslate(__name__)
 
+_lt = LazyTranslate(__name__)
 
 # Currency codes of the currencies supported by Mercado Pago in ISO 4217 format.
 # See https://api.mercadopago.com/currencies. Last seen online: 2024-10-29.

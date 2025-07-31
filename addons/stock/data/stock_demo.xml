@@ -10,7 +10,7 @@
             <field name="tracking">lot</field>
         </record>
 
-         <record id="lot_product_27" model="stock.lot">
+        <record id="lot_product_27" model="stock.lot">
             <field name="name">0000000000029</field>
             <field name="product_id" ref="product.product_product_27"/>
         </record>

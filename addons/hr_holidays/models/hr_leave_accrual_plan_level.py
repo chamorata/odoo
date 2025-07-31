@@ -5,12 +5,12 @@ from dateutil.relativedelta import relativedelta
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
-
 DAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat']
 MONTHS = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
 # Used for displaying the days and reversing selection -> integer
 DAY_SELECT_VALUES = [str(i) for i in range(1, 29)] + ['last']
 DAY_SELECT_SELECTION_NO_LAST = tuple(zip(DAY_SELECT_VALUES, (str(i) for i in range(1, 29))))
+
 
 def _get_selection_days(self):
     return DAY_SELECT_SELECTION_NO_LAST + (("last", _("last day")),)
@@ -28,7 +28,8 @@ class AccrualPlanLevel(models.Model):
     accrued_gain_time = fields.Selection(related='accrual_plan_id.accrued_gain_time')
     start_count = fields.Integer(
         "Start after",
-        help="The accrual starts after a defined period from the allocation start date. This field defines the number of days, months or years after which accrual is used.", default="1")
+        help="The accrual starts after a defined period from the allocation start date. This field defines the number of days, months or years after which accrual is used.",
+        default="1")
     start_type = fields.Selection(
         [('day', 'Days'),
          ('month', 'Months'),
@@ -108,12 +109,12 @@ class AccrualPlanLevel(models.Model):
     yearly_day_display = fields.Selection(
         _get_selection_days, compute='_compute_days_display', inverse='_inverse_yearly_day_display')
     cap_accrued_time = fields.Boolean("Cap accrued time", default=True,
-        help="When the field is checked the balance of an allocation using this accrual plan will never exceed the specified amount.")
+                                      help="When the field is checked the balance of an allocation using this accrual plan will never exceed the specified amount.")
     maximum_leave = fields.Float(
         'Limit to', digits=(16, 2), compute="_compute_maximum_leave", readonly=False, store=True,
         help="Choose a cap for this accrual.")
     cap_accrued_time_yearly = fields.Boolean(string="Milestone cap",
-        help="When the field is checked the total amount accrued each year will be capped at the specified amount")
+                                             help="When the field is checked the total amount accrued each year will be capped at the specified amount")
     maximum_leave_yearly = fields.Float(string="Yearly limit to", digits=(16, 2))
     action_with_unused_accruals = fields.Selection(
         [('lost', 'None. Accrued time reset to 0'),
@@ -122,10 +123,10 @@ class AccrualPlanLevel(models.Model):
         string="Carry over",
         default='all', required=True,
         help="When the Carry-Over Time is reached, according to Plan's setting, select what you want "
-        "to happen with the unused time off: None (time will be reset to zero), All accrued time carried over to "
-        "the next period; or Carryover with a maximum).")
+             "to happen with the unused time off: None (time will be reset to zero), All accrued time carried over to "
+             "the next period; or Carryover with a maximum).")
     postpone_max_days = fields.Integer("Maximum amount of accruals to transfer",
-        help="Set a maximum of accruals an allocation keeps at the end of the year.")
+                                       help="Set a maximum of accruals an allocation keeps at the end of the year.")
     can_modify_value_type = fields.Boolean(compute="_compute_can_modify_value_type")
     accrual_validity = fields.Boolean(string="Accrual Validity")
     accrual_validity_count = fields.Integer(
@@ -147,7 +148,8 @@ class AccrualPlanLevel(models.Model):
          "(yearly_day > 0 AND yearly_day <= 31 AND frequency = 'yearly'))",
          "The dates you've set up aren't correct. Please check them."),
         ('start_count_check', "CHECK( start_count >= 0 )", "You can not start an accrual in the past."),
-        ('added_value_greater_than_zero', 'CHECK(added_value > 0)', "You must give a rate greater than 0 in accrual plan levels."),
+        ('added_value_greater_than_zero', 'CHECK(added_value > 0)',
+         "You must give a rate greater than 0 in accrual plan levels."),
         (
             'valid_yearly_cap_value',
             'CHECK(cap_accrued_time_yearly IS NOT TRUE OR COALESCE(maximum_leave_yearly, 0) > 0)',
@@ -175,13 +177,15 @@ class AccrualPlanLevel(models.Model):
     @api.depends('accrual_plan_id', 'accrual_plan_id.level_ids', 'accrual_plan_id.time_off_type_id')
     def _compute_can_modify_value_type(self):
         for level in self:
-            level.can_modify_value_type = not level.accrual_plan_id.time_off_type_id and level.accrual_plan_id.level_ids and level.accrual_plan_id.level_ids[0] == level
+            level.can_modify_value_type = not level.accrual_plan_id.time_off_type_id and level.accrual_plan_id.level_ids and \
+                                          level.accrual_plan_id.level_ids[0] == level
 
     @api.depends('accrual_plan_id', 'accrual_plan_id.level_ids', 'accrual_plan_id.time_off_type_id')
     def _compute_added_value_type(self):
         for level in self:
             if level.accrual_plan_id.time_off_type_id:
-                level.added_value_type = "day" if level.accrual_plan_id.time_off_type_id.request_unit in ["day", "half_day"] else "hour"
+                level.added_value_type = "day" if level.accrual_plan_id.time_off_type_id.request_unit in ["day",
+                                                                                                          "half_day"] else "hour"
             elif level.accrual_plan_id.level_ids and level.accrual_plan_id.level_ids[0] != level:
                 level.added_value_type = level.accrual_plan_id.level_ids[0].added_value_type
 

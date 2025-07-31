@@ -3,13 +3,13 @@
 
 import math
 
-from odoo import http
 from odoo.addons.website_event.controllers.community import EventCommunityController
+
+from odoo import http
 from odoo.http import request
 
 
 class WebsiteEventTrackQuizCommunityController(EventCommunityController):
-
     _visitors_per_page = 30
     _pager_max_pages = 5
 
@@ -47,7 +47,8 @@ class WebsiteEventTrackQuizCommunityController(EventCommunityController):
             pager = request.website.pager(url=url, total=user_count, page=page, step=self._visitors_per_page,
                                           scope=page_count if page_count < self._pager_max_pages else self._pager_max_pages,
                                           url_args={'search': search_term})
-            values['visitors'] = values['visitors'][(page - 1) * self._visitors_per_page: (page) * self._visitors_per_page]
+            values['visitors'] = values['visitors'][
+                                 (page - 1) * self._visitors_per_page: (page) * self._visitors_per_page]
         else:
             pager = {'page_count': 0}
         values.update({'pager': pager})

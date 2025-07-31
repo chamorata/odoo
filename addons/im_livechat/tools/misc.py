@@ -1,7 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.http import request
 from werkzeug.exceptions import NotFound
+
+from odoo.http import request
+
 
 def downgrade_to_public_user():
     """Replace the request user by the public one. All the cookies are removed

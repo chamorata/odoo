@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-   <record id="view_purchase_bill_union_filter" model="ir.ui.view">
+    <record id="view_purchase_bill_union_filter" model="ir.ui.view">
         <field name="name">purchase.bill.union.select</field>
         <field name="model">purchase.bill.union</field>
         <field name="arch" type="xml">
             <search string="Search Reference Document">
-                <field name="name" string="Reference" filter_domain="['|', ('name','ilike',self), ('reference','=like',self+'%')]"/>
+                <field name="name" string="Reference"
+                       filter_domain="['|', ('name','ilike',self), ('reference','=like',self+'%')]"/>
                 <field name="amount"/>
                 <separator/>
                 <field name="partner_id" operator="child_of"/>

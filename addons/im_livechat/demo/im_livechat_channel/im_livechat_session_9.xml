@@ -65,7 +65,9 @@
             <field name="date" eval="datetime.now() - timedelta(days=1, seconds=-33)"/>
             <field name="create_date" eval="datetime.now() - timedelta(days=1, seconds=-33)"/>
             <field name="write_date" eval="datetime.now() - timedelta(days=1, seconds=-33)"/>
-            <field name="body">The CRM application helps you to track leads, close opportunities and get accurate forecasts. You can test it for free on our website.</field>
+            <field name="body">The CRM application helps you to track leads, close opportunities and get accurate
+                forecasts. You can test it for free on our website.
+            </field>
             <field name="message_type">comment</field>
             <field name="subtype_id" ref="mail.mt_comment"/>
             <field name="res_id" ref="im_livechat.livechat_channel_session_9"/>
@@ -116,6 +118,6 @@
             <field name="res_id" ref="im_livechat.livechat_channel_session_9"/>
         </record>
         <function model="discuss.channel" name="rating_apply"
-            eval="([ref('im_livechat.livechat_channel_session_9')], 5, 'LIVECHAT_9', None, 'Super Job')"/>
+                  eval="([ref('im_livechat.livechat_channel_session_9')], 5, 'LIVECHAT_9', None, 'Super Job')"/>
     </data>
 </odoo>

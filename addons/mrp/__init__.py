@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from . import models
-from . import wizard
-from . import report
 from . import controller
+from . import models
+from . import report
+from . import wizard
 
 
 def _pre_init_mrp(env):
@@ -20,6 +20,7 @@ def _pre_init_mrp(env):
     env.cr.execute("""UPDATE stock_move
                      SET unit_factor=1;""")
 
+
 def _create_warehouse_data(env):
     """ This hook is used to add a default manufacture_pull_id, manufacture
     picking_type on every warehouse. It is necessary if the mrp module is
@@ -27,6 +28,7 @@ def _create_warehouse_data(env):
     """
     warehouse_ids = env['stock.warehouse'].search([('manufacture_pull_id', '=', False)])
     warehouse_ids.write({'manufacture_to_resupply': True})
+
 
 def uninstall_hook(env):
     warehouses = env["stock.warehouse"].search([])

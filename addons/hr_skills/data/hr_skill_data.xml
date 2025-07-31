@@ -7,7 +7,7 @@
         <record id="hr_skill_type_softskill" model="hr.skill.type">
             <field name="name">Soft Skills</field>
         </record>
-        
+
         <!-- Skills -->
         <!-- Languages -->
         <record id="hr_skill_french" model="hr.skill">

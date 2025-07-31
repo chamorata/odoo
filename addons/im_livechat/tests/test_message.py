@@ -2,14 +2,14 @@
 
 from freezegun import freeze_time
 from markupsafe import Markup
+from odoo.addons.im_livechat.tests.chatbot_common import ChatbotCase
+from odoo.addons.mail.tests.common import MailCommon
+from odoo.addons.mail.tools.discuss import Store
 
 from odoo import Command, fields
 from odoo.exceptions import AccessError
-from odoo.tools.misc import limited_field_access_token
 from odoo.tests.common import users, tagged
-from odoo.addons.mail.tests.common import MailCommon
-from odoo.addons.mail.tools.discuss import Store
-from odoo.addons.im_livechat.tests.chatbot_common import ChatbotCase
+from odoo.tools.misc import limited_field_access_token
 
 
 @tagged('post_install', '-at_install')
@@ -126,8 +126,10 @@ class TestImLivechatMessage(ChatbotCase, MailCommon):
 
     @users('emp')
     def test_message_to_store(self):
-        im_livechat_channel = self.env['im_livechat.channel'].sudo().create({'name': 'support', 'user_ids': [Command.link(self.users[0].id)]})
-        self.env['bus.presence'].create({'user_id': self.users[0].id, 'status': 'online'})  # make available for livechat (ignore leave)
+        im_livechat_channel = self.env['im_livechat.channel'].sudo().create(
+            {'name': 'support', 'user_ids': [Command.link(self.users[0].id)]})
+        self.env['bus.presence'].create(
+            {'user_id': self.users[0].id, 'status': 'online'})  # make available for livechat (ignore leave)
         self.authenticate(self.users[1].login, self.password)
         channel_livechat_1 = self.env["discuss.channel"].browse(
             self.make_jsonrpc_request(
@@ -153,7 +155,7 @@ class TestImLivechatMessage(ChatbotCase, MailCommon):
         message = channel_livechat_1.message_post(
             author_id=record_rating.partner_id.id,
             body=Markup("<img src='%s' alt=':%s/5' style='width:18px;height:18px;float:left;margin-right: 5px;'/>%s")
-            % (record_rating.rating_image_url, record_rating.rating, record_rating.feedback),
+                 % (record_rating.rating_image_url, record_rating.rating, record_rating.feedback),
             rating_id=record_rating.id,
         )
         self.assertEqual(

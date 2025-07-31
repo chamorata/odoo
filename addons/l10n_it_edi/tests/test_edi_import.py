@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+import logging
 import uuid
-from freezegun import freeze_time
 from unittest.mock import patch
+
+from freezegun import freeze_time
+from odoo.addons.l10n_it_edi.tests.common import TestItEdi
 
 from odoo import fields, sql_db, tools, Command
 from odoo.tests import new_test_user, tagged
-from odoo.addons.l10n_it_edi.tests.common import TestItEdi
 
-import logging
 _logger = logging.getLogger(__name__)
 
 
@@ -84,18 +85,18 @@ class TestItEdiImport(TestItEdi):
                 'discount': 0,
                 'debit': 5.0,
             },
-            {
-                'quantity': 5.0,
-                'price_unit': 10.0,
-                'discount': 52.5,
-                'debit': 23.75,
-            },
-            {
-                'quantity': 1.0,
-                'price_unit': 0.0,
-                'discount': 0.0,
-                'debit': 0.0,
-            }],
+                {
+                    'quantity': 5.0,
+                    'price_unit': 10.0,
+                    'discount': 52.5,
+                    'debit': 23.75,
+                },
+                {
+                    'quantity': 1.0,
+                    'price_unit': 0.0,
+                    'discount': 0.0,
+                    'debit': 0.0,
+                }],
         }])
 
     def test_receive_negative_vendor_bill(self):
@@ -155,6 +156,7 @@ class TestItEdiImport(TestItEdi):
 
     def test_receive_bill_sequence(self):
         """ Ensure that the received bill gets assigned the right sequence. """
+
         def mock_commit(self):
             pass
 
@@ -186,6 +188,7 @@ class TestItEdiImport(TestItEdi):
         import isn't impeded because of conflicts with the filename """
         other_company = self.company_data['company']
         filename = 'IT01234567890_FPR02.xml'
+
         def mock_commit(self):
             pass
 

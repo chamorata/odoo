@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.osv.expression import AND
 
 
@@ -19,7 +19,9 @@ class ProductReplenish(models.TransientModel):
                 res['warehouse_id'] = self.env['stock.warehouse'].search([
                     *self.env['stock.warehouse']._check_company_domain(company),
                 ], limit=1).id
-            orderpoint = self.env['stock.warehouse.orderpoint'].search([('product_id', 'in', [product_tmpl_id.product_variant_id.id, product_id.id]), ("warehouse_id", "=", res['warehouse_id'])], limit=1)
+            orderpoint = self.env['stock.warehouse.orderpoint'].search(
+                [('product_id', 'in', [product_tmpl_id.product_variant_id.id, product_id.id]),
+                 ("warehouse_id", "=", res['warehouse_id'])], limit=1)
             if orderpoint.route_id:
                 res['route_id'] = orderpoint.route_id.id
             if orderpoint.supplier_id:
@@ -38,7 +40,8 @@ class ProductReplenish(models.TransientModel):
         super()._compute_date_planned()
         for rec in self:
             if 'buy' in rec.route_id.rule_ids.mapped('action'):
-                rec.date_planned = rec._get_date_planned(rec.route_id, supplier=rec.supplier_id, show_vendor=rec.show_vendor)
+                rec.date_planned = rec._get_date_planned(rec.route_id, supplier=rec.supplier_id,
+                                                         show_vendor=rec.show_vendor)
 
     def _prepare_run_values(self):
         res = super()._prepare_run_values()
@@ -49,7 +52,8 @@ class ProductReplenish(models.TransientModel):
 
     def action_stock_replenishment_info(self):
         self.ensure_one()
-        orderpoint = self.env["stock.warehouse.orderpoint"].search([("product_id", "=", self.product_id.id), ("warehouse_id", "=", self.warehouse_id.id)], limit=1)
+        orderpoint = self.env["stock.warehouse.orderpoint"].search(
+            [("product_id", "=", self.product_id.id), ("warehouse_id", "=", self.warehouse_id.id)], limit=1)
         if not orderpoint:
             orderpoint = self.env["stock.warehouse.orderpoint"].create({
                 "product_id": self.product_id.id,

@@ -21,8 +21,8 @@ class ProjectSharingCollaboratorWizard(models.TransientModel):
         default='read',
         required=True,
         help="Read: collaborators can view tasks but cannot edit them.\n"
-            "Edit with limited access: collaborators can view and edit tasks they follow in the Kanban view.\n"
-            "Edit: collaborators can view and edit all tasks in the Kanban view. Additionally, they can choose which tasks they want to follow."
+             "Edit with limited access: collaborators can view and edit tasks they follow in the Kanban view.\n"
+             "Edit: collaborators can view and edit all tasks in the Kanban view. Additionally, they can choose which tasks they want to follow."
     )
     send_invitation = fields.Boolean(
         string='Send Invitation',
@@ -37,7 +37,8 @@ class ProjectSharingCollaboratorWizard(models.TransientModel):
         project = self.parent_wizard_id.resource_ref
         for collaborator in self:
             if (
-                collaborator.partner_id not in project.message_partner_ids
-                or (collaborator.access_mode != 'read' and collaborator.partner_id not in project.collaborator_ids.partner_id)
+                    collaborator.partner_id not in project.message_partner_ids
+                    or (
+                    collaborator.access_mode != 'read' and collaborator.partner_id not in project.collaborator_ids.partner_id)
             ):
                 collaborator.send_invitation = True

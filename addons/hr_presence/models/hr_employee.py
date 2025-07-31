@@ -2,7 +2,6 @@
 
 import logging
 
-from ast import literal_eval
 from odoo import fields, models, _, api
 from odoo.exceptions import UserError
 from odoo.fields import Datetime
@@ -24,7 +23,7 @@ class Employee(models.AbstractModel):
         ('out_of_working_hour', 'Out of Working Hours'),
         ('present', 'Present'),
         ('absent', 'Absent'),
-        ], default='out_of_working_hour')
+    ], default='out_of_working_hour')
 
     @api.model
     def _check_presence(self):
@@ -40,7 +39,6 @@ class Employee(models.AbstractModel):
 
         all_employees = employees
 
-
         # Check on IP
         if company.hr_presence_control_ip:
             ip_list = company.hr_presence_control_ip_list
@@ -50,7 +48,8 @@ class Employee(models.AbstractModel):
                 employee_ips = self.env['res.users.log'].sudo().search([
                     ('create_uid', '=', employee.user_id.id),
                     ('ip', '!=', False),
-                    ('create_date', '>=', Datetime.to_string(Datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)))]
+                    ('create_date', '>=',
+                     Datetime.to_string(Datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)))]
                 ).mapped('ip')
                 if any(ip in ip_list for ip in employee_ips):
                     ip_employees |= employee
@@ -64,7 +63,8 @@ class Employee(models.AbstractModel):
             for employee in employees:
                 sent_emails = self.env['mail.message'].search_count([
                     ('author_id', '=', employee.user_id.partner_id.id),
-                    ('date', '>=', Datetime.to_string(Datetime.now().replace(hour=0, minute=0, second=0, microsecond=0))),
+                    ('date', '>=',
+                     Datetime.to_string(Datetime.now().replace(hour=0, minute=0, second=0, microsecond=0))),
                     ('date', '<=', Datetime.to_string(Datetime.now()))])
                 if sent_emails >= threshold:
                     email_employees |= employee
@@ -140,7 +140,8 @@ class Employee(models.AbstractModel):
             raise UserError(_("You don't have the right to do this. Please contact an Administrator."))
 
         context = dict(self.env.context)
-        context.update(default_res_model='hr.employee', default_res_ids=self.ids, default_composition_mode='mass', default_number_field_name='mobile_phone', default_mass_keep_log=True)
+        context.update(default_res_model='hr.employee', default_res_ids=self.ids, default_composition_mode='mass',
+                       default_number_field_name='mobile_phone', default_mass_keep_log=True)
 
         template = self.env.ref('hr_presence.sms_template_presence', False)
         if not template:

@@ -2,8 +2,8 @@
 import logging
 import subprocess
 from enum import Enum
-from odoo.addons.hw_drivers.tools import helpers
 
+from odoo.addons.hw_drivers.tools import helpers
 
 _logger = logging.getLogger(__name__)
 MIN_IMAGE_VERSION = 24.10
@@ -13,11 +13,11 @@ CHROMIUM_ARGS = [
     '--disable-infobars',
     '--noerrdialogs',
     '--no-first-run',
-    '--bwsi',                       # Use chromium without signing in
-    '--disable-extensions',         # Disable extensions as they fill up /tmp
-    '--disk-cache-dir=/dev/null',   # Disable disk cache
-    '--disk-cache-size=1',          # Set disk cache size to 1 byte
-    '--log-level=3',                # Reduce amount of logs
+    '--bwsi',  # Use chromium without signing in
+    '--disable-extensions',  # Disable extensions as they fill up /tmp
+    '--disk-cache-dir=/dev/null',  # Disable disk cache
+    '--disk-cache-size=1',  # Set disk cache size to 1 byte
+    '--log-level=3',  # Reduce amount of logs
 ]
 
 

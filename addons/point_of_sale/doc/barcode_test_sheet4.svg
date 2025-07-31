@@ -2,61 +2,60 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:xlink="http://www.w3.org/1999/xlink"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="297mm"
-   height="210mm"
-   id="svg3298"
-   version="1.1"
-   inkscape:version="0.48.3.1 r9886"
-   sodipodi:docname="New document 5">
-  <defs
-     id="defs3300" />
-  <sodipodi:namedview
-     inkscape:document-units="mm"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageopacity="0.0"
-     inkscape:pageshadow="2"
-     inkscape:zoom="0.61399264"
-     inkscape:cx="476.4606"
-     inkscape:cy="245.10408"
-     inkscape:current-layer="layer1"
-     id="namedview3302"
-     showgrid="false"
-     inkscape:window-width="1312"
-     inkscape:window-height="776"
-     inkscape:window-x="805"
-     inkscape:window-y="268"
-     inkscape:window-maximized="0" />
-  <metadata
-     id="metadata3304">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
-  <g
-     inkscape:label="Layer 1"
-     inkscape:groupmode="layer"
-     id="layer1">
-    <image
-       y="550.11414"
-       x="317.29758"
-       id="image3447"
-       xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAABQCAIAAAC72Xj2AAAAA3NCSVQICAjb4U/gAAAI70lEQVR4
+        xmlns:dc="http://purl.org/dc/elements/1.1/"
+        xmlns:cc="http://creativecommons.org/ns#"
+        xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+        xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+        xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+        width="297mm"
+        height="210mm"
+        id="svg3298"
+        version="1.1"
+        inkscape:version="0.48.3.1 r9886"
+        sodipodi:docname="New document 5">
+    <defs
+            id="defs3300"/>
+    <sodipodi:namedview
+            inkscape:document-units="mm"
+            pagecolor="#ffffff"
+            bordercolor="#666666"
+            borderopacity="1.0"
+            inkscape:pageopacity="0.0"
+            inkscape:pageshadow="2"
+            inkscape:zoom="0.61399264"
+            inkscape:cx="476.4606"
+            inkscape:cy="245.10408"
+            inkscape:current-layer="layer1"
+            id="namedview3302"
+            showgrid="false"
+            inkscape:window-width="1312"
+            inkscape:window-height="776"
+            inkscape:window-x="805"
+            inkscape:window-y="268"
+            inkscape:window-maximized="0"/>
+    <metadata
+            id="metadata3304">
+        <rdf:RDF>
+            <cc:Work
+                    rdf:about="">
+                <dc:format>image/svg+xml</dc:format>
+                <dc:type
+                        rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+                <dc:title></dc:title>
+            </cc:Work>
+        </rdf:RDF>
+    </metadata>
+    <g
+            inkscape:label="Layer 1"
+            inkscape:groupmode="layer"
+            id="layer1">
+        <image
+                y="550.11414"
+                x="317.29758"
+                id="image3447"
+                xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAABQCAIAAAC72Xj2AAAAA3NCSVQICAjb4U/gAAAI70lEQVR4
 nO3ca0jT3x8H8PP10prOXMtb2nRI1iptliynqatUFpVGF8MkiR6kohFCT6LLgx5kkAlSJBXlE30Q
 FUUkKIEYIZLRxZCal8oboWglNq+s3O/B+f0Ostn+O/O7yx/er0dfz/l+P+dz9o23m9+RYLFYCAAA
 Dx9PNwAA/38QHADADcEBANwQHADADcEBANwQHADADcEBANxcEhz19fWCIAiCIJFI2GBubi4dLCws
@@ -99,13 +98,13 @@ R42NjREREYIgEEIiIyObmpqcq8NFsFgsjr89mZmZ6enpCQ4Odsd7IS/gVfsVpRlP7cirmveeZsTa
 0e/fv7u6ugRBUKvVvr6+SynlIL7gAAAg+P84AMAJCA4A4IbgAABuCA4A4IbgAABuCA4A4IbgAABu
 /wCMwdtAmXYtOgAAAABJRU5ErkJggg==
 "
-       height="40.830791"
-       width="183.73856" />
-    <image
-       y="485.14542"
-       x="317.29758"
-       id="image3458"
-       xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAABQCAIAAAC72Xj2AAAAA3NCSVQICAjb4U/gAAAJPElEQVR4
+                height="40.830791"
+                width="183.73856"/>
+        <image
+                y="485.14542"
+                x="317.29758"
+                id="image3458"
+                xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAABQCAIAAAC72Xj2AAAAA3NCSVQICAjb4U/gAAAJPElEQVR4
 nO3cfUiTXxsH8HP7NtSZtnQW6TTJMnvZrNRp5iqVQaWQaaW2IigsDZMigso/KrLIlCAIerMHjAiC
 /lEwDFtCSGaaEOFbZVqiqVRi+dK0PX+c5zn422ztrHtuz8P389e969z3da6zMy633SvBaDQSAAAe
 Lo4uAAD+96BxAAA3NA4A4IbGAQDc0DgAgBsaBwBwQ+MAAG52aRx3794VBEEQBIlEwoJpaWk0qNPp
@@ -149,13 +148,13 @@ d8Z/GeGoYmZ5B8WdV6zinacYUZJotVr2unJzczt06NDw8LANeXgJRqPR+rcnY2NjHR0dvr6+5v9y
 7P+SU61XlGIctSKnKt55ihElyZcvXz59+iSRSBYtWuTh4WFzHi58jQMAgOD/4wAAG6BxAAA3NA4A
 4IbGAQDc0DgAgBsaBwBwQ+MAAG7/BoIC7zCPCNNJAAAAAElFTkSuQmCC
 "
-       height="40.830791"
-       width="183.73856" />
-    <image
-       y="420.17667"
-       x="317.29758"
-       id="image3469"
-       xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAABQCAIAAAC72Xj2AAAAA3NCSVQICAjb4U/gAAAIw0lEQVR4
+                height="40.830791"
+                width="183.73856"/>
+        <image
+                y="420.17667"
+                x="317.29758"
+                id="image3469"
+                xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAABQCAIAAAC72Xj2AAAAA3NCSVQICAjb4U/gAAAIw0lEQVR4
 nO3cb0hTXRwH8HN1NnTzD3NqsTaHZK1/bhXmNHWViVBpZFYmWfQiDA0RIoisICKlLBCiXkT6IqM3
 Qm8SjECUCMnIEiI0tUxDHLMSNf/EqD0vzvMcxlZ7dua9u3sevp9X19+553d+d8f7c/NagsvlIgAA
 PMLkLgAA/nvQOACAGxoHAHBD4wAAbmgcAMANjQMAuKFxAAA3SRrHgwcPBEEQBEGpVLJgUVERDZaX
@@ -197,13 +196,13 @@ uhPleouLi9kjN0EQ9u3bNzw8LFcxQd5BcdcVq/jQKUb07Qhm4xBcLpf/b08WFhYGBwdjY2O9/+XY
 /5Io1zs3N0f/jCo5Odn938jJUoxcOxhSxYdOMf/dG4qvcQAAEPx/HAAQADQOAOCGxgEA3NA4AIAb
 GgcAcEPjAABuaBwAwO0v1kEBJ9CurYwAAAAASUVORK5CYII=
 "
-       height="40.830791"
-       width="183.73856" />
-    <image
-       y="355.20795"
-       x="317.29758"
-       id="image3480"
-       xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAABQCAIAAAC72Xj2AAAAA3NCSVQICAjb4U/gAAAIuklEQVR4
+                height="40.830791"
+                width="183.73856"/>
+        <image
+                y="355.20795"
+                x="317.29758"
+                id="image3480"
+                xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAABQCAIAAAC72Xj2AAAAA3NCSVQICAjb4U/gAAAIuklEQVR4
 nO3cX0iTXxgH8HN0NnQzZU0tTB2SJf1x9secpi4yESqNTMskiy7C0BAhIsgKIlLIAiHoItKLjG6E
 bhKMwJQIy8gSIjQ1TUMcWojZdDRqv4vz6yCbrp3tvLrfj+/n6t1z3vc5z9lZj5vvjDocDgIAICJg
 uQsAgP8eNA4AEIbGAQDC0DgAQBgaBwAIQ+MAAGFoHAAgTJHG8eDBA0oppVStVvNgfn4+C5aWlrLI
@@ -245,13 +244,13 @@ d1DuvLKK959ipCQpKCjg93QppQcPHhwcHPQijyjqcDg8f3syNzfX398fFhbm+pdj/0t+tV4pxSzX
 ivyqeP8pRkoSq9XKvqcXFxc3/48wFSXWOAAACP4/DgDwAhoHAAhD4wAAYWgcACAMjQMAhKFxAIAw
 NA4AEPYPxQz1KjysjN4AAAAASUVORK5CYII=
 "
-       height="40.830791"
-       width="183.73856" />
-    <image
-       y="290.23923"
-       x="317.29758"
-       id="image3491"
-       xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAABQCAIAAAC72Xj2AAAAA3NCSVQICAjb4U/gAAAJVElEQVR4
+                height="40.830791"
+                width="183.73856"/>
+        <image
+                y="290.23923"
+                x="317.29758"
+                id="image3491"
+                xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAABQCAIAAAC72Xj2AAAAA3NCSVQICAjb4U/gAAAJVElEQVR4
 nO3cfUiTXxsH8HPny1I3taWzUKdJllm2WfmauUpFqBQyrdQsgsLSMCkiqPyjIotMCaKgMnvAiCDo
 HwXBMBNCMtOECN8q0xJNpRLzrWl7/jjPc/C32dqZ99yeh+/nr3vXuc91rrPbLrfdM0Gn0xEAAB4L
 rF0AAPzvQeMAAG5oHADADY0DALihcQAANzQOAOCGxgEA3CzSOB48eCAIgiAIEomEBZOTk2kwKyuL
@@ -296,13 +295,13 @@ eHjYjDy8BJ1OZ/rLk/Hx8Y6ODjc3t5l3kv6P2dR+RSnGWjuyqeJtpxhRknz79u3Lly8SiWTZsmWO
 jo5m5+HC1zgAAAj+Pw4AMAMaBwBwQ+MAAG5oHADADY0DALihcQAANzQOAOD2bwso61izjY0SAAAA
 AElFTkSuQmCC
 "
-       height="40.830791"
-       width="183.73856" />
-    <image
-       y="225.27045"
-       x="317.29758"
-       id="image3502"
-       xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAABQCAIAAAC72Xj2AAAAA3NCSVQICAjb4U/gAAAIg0lEQVR4
+                height="40.830791"
+                width="183.73856"/>
+        <image
+                y="225.27045"
+                x="317.29758"
+                id="image3502"
+                xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAABQCAIAAAC72Xj2AAAAA3NCSVQICAjb4U/gAAAIg0lEQVR4
 nO3cW0hUWxgH8LW9ZDozOk06FeY4SJZaZhfMS+pUKkKlkGmlZtFDGAoh9VB0eYjILqZIQQ9hvthD
 EPQkCIKZEJLdoQfTLuZEKCqEWanM2JyHdc7CM6PDfOPaOufw/z3t+dbsb31rL/en47YUh8PBAAAo
 /Ba7AAD470HjAAAyNA4AIEPjAAAyNA4AIEPjAAAyNA4AIFOlcdy/f19RFEVRgoKCRLCgoIAHy8vL
@@ -343,13 +342,13 @@ HlavLMc8rsKs/xhhfHycmkfKemctxos8UopZ4B2UO6+s4n2nGOnbsZCNQ3E4HJ7/eDIxMdHX1xcW
 FjbzSdL/mE+tV0oxi7Uinyred4rxqS8wElrjAABg+P84AMALaBwAQIbGAQBkaBwAQIbGAQBkaBwA
 QIbGAQBkfwGMfBx9p8Zw1QAAAABJRU5ErkJggg==
 "
-       height="40.830791"
-       width="183.73856" />
-    <image
-       y="160.30176"
-       x="317.29758"
-       id="image3513"
-       xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAABQCAIAAAC72Xj2AAAAA3NCSVQICAjb4U/gAAAIZ0lEQVR4
+                height="40.830791"
+                width="183.73856"/>
+        <image
+                y="160.30176"
+                x="317.29758"
+                id="image3513"
+                xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAABQCAIAAAC72Xj2AAAAA3NCSVQICAjb4U/gAAAIZ0lEQVR4
 nO3aW0hUWxgH8LXVZlJHHUdTSxyHyPBSTRmmlTbdxIdUQrqQZhEUhkZIPRRdHiKyiylSEHR/sIcg
 6CkQBDUhhuwqRHirTCsUNcImTVOb8/B1FnNmp8zS7Zk9w//3tOZbe3+z9hr9O+MeyW63MwAAET7u
 XgAAeB4EBwAIQ3AAgDAEBwAIQ3AAgDAEBwAIQ3AAgLBZCY579+5JkiRJklar5cXc3FwqFhYWyk/J
@@ -390,13 +389,13 @@ okifjo4OpbZXlJftpKqaOPo/g0Oy/+3X1Qv8/Pmzvb09JCTE8aaX5zZRsI9beN9OqqeJW3htcADA
 7FHptz8BQM0QHAAgDMEBAMIQHAAgDMEBAMIQHAAgDMEBAML+AdQ3y3GMdcKPAAAAAElFTkSuQmCC
 
 "
-       height="40.830791"
-       width="183.73856" />
-    <image
-       y="616.89185"
-       x="756.41528"
-       id="image3524"
-       xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAABQCAIAAAC72Xj2AAAAA3NCSVQICAjb4U/gAAAKDElEQVR4
+                height="40.830791"
+                width="183.73856"/>
+        <image
+                y="616.89185"
+                x="756.41528"
+                id="image3524"
+                xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAABQCAIAAAC72Xj2AAAAA3NCSVQICAjb4U/gAAAKDElEQVR4
 nO3bWUxTWxsG4LWlUIrFlgIFUaCSEBWlDIqgovU4BI2gBiWOaIKIY9DohYlDYjRRImq80QRxOAZi
 jNEY4wWKImJII+I8lcGATAFBVKwgSKH/xTr/Cqf1kK62nJaT97na/dZeX9fepS8teyMYjUYCAMBj
 hKMXAADDD4IDALghOACAG4IDALghOACAG4IDALghOACA25AER35+viAIgiCIxWJWXLJkCS2mpqaa
@@ -444,13 +443,13 @@ XOa3Z8aWhhYSjL97u/4H/Pz5s6qqSiaTWfcZ0tma2LGPQzjP4r98+dLY2CgWi8eNG/fbf6S0kMFg
 qKioEARhwoQJLi4udlzhsPCfDQ4AGDpOevcnADgzBAcAcENwAAA3BAcAcENwAAA3BAcAcENwAAC3
 /wGl0FVoZvDCKwAAAABJRU5ErkJggg==
 "
-       height="40.830791"
-       width="183.73856" />
-    <image
-       y="95.332993"
-       x="317.29758"
-       id="image3535"
-       xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAABQCAIAAAC72Xj2AAAAA3NCSVQICAjb4U/gAAAIa0lEQVR4
+                height="40.830791"
+                width="183.73856"/>
+        <image
+                y="95.332993"
+                x="317.29758"
+                id="image3535"
+                xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAABQCAIAAAC72Xj2AAAAA3NCSVQICAjb4U/gAAAIa0lEQVR4
 nO3aW0hUXRsH8LXVZlJHHcdjyYxDaJRWk5pppY0dxItUQjqQhyIoDI2QuvAiuojIIlOkIOh8YRdB
 0FUgCGpCDNnRiPAUmRYoaoSYpqnNe7Heb+E3O2WecdnMvPx/V3uetfczax/8OzN7K3a7nQEAUPi4
 ewIA4H0QHABAhuAAADIEBwCQITgAgAzBAQBkCA4AIFuS4Hjw4IGiKIqiaLVaUczPz+fFkpIS9Sa5
@@ -491,13 +490,13 @@ knUQhEePHjFXb8d6zmn1qGvDBc4Gxx+f8B8bG5M8G5WOjg4X+tTX1wcHB/N7VFardWhoyKubSOnT
 Z4MDAJaOhz79CQCeDMEBAGQIDgAgQ3AAABmCAwDIEBwAQIbgAACyfwCN9r8FuibJ1gAAAABJRU5E
 rkJggg==
 "
-       height="40.830791"
-       width="183.73856" />
-    <image
-       y="551.9231"
-       x="756.41528"
-       id="image3546"
-       xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAABQCAIAAAC72Xj2AAAAA3NCSVQICAjb4U/gAAAIiUlEQVR4
+                height="40.830791"
+                width="183.73856"/>
+        <image
+                y="551.9231"
+                x="756.41528"
+                id="image3546"
+                xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAABQCAIAAAC72Xj2AAAAA3NCSVQICAjb4U/gAAAIiUlEQVR4
 nO3ab0hTXRwH8HPSNnTT6ZxaiDokwzRdWaaVa/ZHfJFWDMPSNIKiqIj+vBCygpA0sqS3/SPIiKCX
 BYFkswjLygp6YS7TlERRI8pWM7U9L87zHPbsquzoVe/G9/Pq7nfu/e3ce9bXrXupy+UiAAAi5s31
 BADA9yA4AEAYggMAhCE4AEAYggMAhCE4AEAYggMAhM1IcNy+fZtSSilVq9W8uGXLFlYsLS2VHpKf
@@ -538,13 +537,13 @@ UHavy2Kx9Pf3+3QTWfrMzgqOy8+upKKaWK1Wfk+XUrp169b29vYp9BFFXeP9c/UDv3//ttvtOp3O
 /aaX7zaRsc+c8L8rqZwmDoeDPacXHx+v0Wim3EeI3wYHAMwchT79CQBKhuAAAGEIDgAQhuAAAGEI
 DgAQhuAAAGEIDgAQ9g8gquH2n03rCAAAAABJRU5ErkJggg==
 "
-       height="40.830791"
-       width="183.73856" />
-    <image
-       y="486.95435"
-       x="756.41528"
-       id="image3557"
-       xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAABQCAIAAAC72Xj2AAAAA3NCSVQICAjb4U/gAAAJkElEQVR4
+                height="40.830791"
+                width="183.73856"/>
+        <image
+                y="486.95435"
+                x="756.41528"
+                id="image3557"
+                xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAABQCAIAAAC72Xj2AAAAA3NCSVQICAjb4U/gAAAJkElEQVR4
 nO3bW0hU2x8H8LVTZxwdb6OOlXktozQbNbxQ1ngsmQe1QrJSmyIw7EYXI4TKiCSLNN/VwD8YFr2F
 D4FlJoTktSjBC3lF0bxUYt7H5jys81/MmTGZZVsdD9/P05611v7NWnvZ1xn3TtDr9QQAgMe61Z4A
 AKw9CA4A4IbgAABuCA4A4IbgAABuCA4A4IbgAABuyxIcT548EQRBEASpVMoaDx48SBu1Wq3pKQkJ
@@ -590,13 +589,13 @@ Qv9c/wOmpqba29udnJwMb3qt3SIi1lkVlnMlv3371tfXJ5VK/fz8FvyPlCs5GbH2dHx8vLu728HB
 wcvLiybIcvvPBgcALB8LffoTACwZggMAuCE4AIAbggMAuCE4AIAbggMAuCE4AIDb35dk94l+Z3As
 AAAAAElFTkSuQmCC
 "
-       height="40.830791"
-       width="183.73856" />
-    <image
-       y="421.9856"
-       x="756.41528"
-       id="image3568"
-       xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAABQCAIAAAC72Xj2AAAAA3NCSVQICAjb4U/gAAAJKElEQVR4
+                height="40.830791"
+                width="183.73856"/>
+        <image
+                y="421.9856"
+                x="756.41528"
+                id="image3568"
+                xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAABQCAIAAAC72Xj2AAAAA3NCSVQICAjb4U/gAAAJKElEQVR4
 nO3bWUxTTR8G8DmyNIWWQoGiQdaIRhDKEpYoWlxIYwRjQGIA0YgY1+B2YaJygxEXlDsvEJXPYIw3
 XnFhRBFJDBFRMBoDVAUhNCCLkSCVpdDvYr5v0rdV0mkPUN48v6vTmTP/zumMD9RzEEwmEwEA4LFs
 sScAAEsPggMAuCE4AIAbggMAuCE4AIAbggMAuCE4AIDbvATHgwcPBEEQBEEikbDGnTt30saCggLr
@@ -640,13 +639,13 @@ PTo6OspbxORke2NoaMjNza20tNS+4fYRTH/65/ov8Pv3b51Op1AozG96Ld0iItZZFM4z+R8/fvT1
 9UkkkrCwsD/+IaWNnGpvLLx/bXAAwPxx0qc/AcCZITgAgBuCAwC4ITgAgBuCAwC4ITgAgBuCAwC4
 /Rd1zqZZsxMHwwAAAABJRU5ErkJggg==
 "
-       height="40.830791"
-       width="183.73856" />
-    <image
-       y="357.01688"
-       x="756.41528"
-       id="image3579"
-       xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAABQCAIAAAC72Xj2AAAAA3NCSVQICAjb4U/gAAAJh0lEQVR4
+                height="40.830791"
+                width="183.73856"/>
+        <image
+                y="357.01688"
+                x="756.41528"
+                id="image3579"
+                xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAABQCAIAAAC72Xj2AAAAA3NCSVQICAjb4U/gAAAJh0lEQVR4
 nO3caUhUXx8H8HNdxm3cxnFJGTXLMC2nDJdKmzLEF2qCaG5pBIVREWGEkCXFkEaa+FYrggyLehUW
 gWRahKRpBRnuK4nikpi55dh9XpznOfifKZkz//FxlO/n1Znfuec3Z+7Y1xnvJUEURQIAwMNsrTcA
 AOsPggMAuCE4AIAbggMAuCE4AIAbggMAuCE4AIDbqgTHw4cPBUEQBMHKyooVjxw5QotZWVm0Mjc3
@@ -692,13 +691,13 @@ MzMz9KYjHx8fOzs7g/vMzc11dnY6Ojouv+i1fpsYsc+a2Hhn0nSaEEKmp6f7+/vt7e0VCgVNkNVm
 csEBAKYP/x8HAHBDcAAANwQHAHBDcAAANwQHAHBDcAAANwQHAHD7D6vNDk78iVEhAAAAAElFTkSu
 QmCC
 "
-       height="40.830791"
-       width="183.73856" />
-    <image
-       y="292.04813"
-       x="756.41528"
-       id="image3590"
-       xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAABQCAIAAAC72Xj2AAAAA3NCSVQICAjb4U/gAAAKoklEQVR4
+                height="40.830791"
+                width="183.73856"/>
+        <image
+                y="292.04813"
+                x="756.41528"
+                id="image3590"
+                xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAABQCAIAAAC72Xj2AAAAA3NCSVQICAjb4U/gAAAKoklEQVR4
 nO3cWUwT3x4H8DOCrdCybyphNS5YpYqiqCB/MYQHXBJwQRBNjEajxhhNxLhFJYKRJTzog6jRiFtM
 fHCLCQkCxqAoKA8atSwqYkAKbljWYu/DufeE2yq3vzpcpPl+nqa/M/ObM9PO19KZKJlMJgYAQDFq
 uCcAACMPggMAyBAcAECG4AAAMgQHAJAhOACADMEBAGRDEhyXLl2SJEmSJKVSKYrLli3jxfT0dF7p
@@ -749,13 +748,13 @@ ri6dTufm5hYcHGwHTWTsMyzs70x2dHS8e/fOxcUlICCAJwhVZ2dnQ0ODJEmTJ08WF78N5LpkSP66
 4ACAvx/+Pw4AIENwAAAZggMAyBAcAECG4AAAMgQHAJAhOACA7F84bBzpObR0dgAAAABJRU5ErkJg
 gg==
 "
-       height="40.830791"
-       width="183.73856" />
-    <image
-       y="227.07941"
-       x="756.41528"
-       id="image3601"
-       xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAABQCAIAAAC72Xj2AAAAA3NCSVQICAjb4U/gAAAKXklEQVR4
+                height="40.830791"
+                width="183.73856"/>
+        <image
+                y="227.07941"
+                x="756.41528"
+                id="image3601"
+                xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAABQCAIAAAC72Xj2AAAAA3NCSVQICAjb4U/gAAAKXklEQVR4
 nO3ce0iT3x8H8PPkck1nzmXTNHUJRlpeMrxkl3WTBWWCKF1MI7CrUVF/BJkRSWkXxb8Cs/BHikQF
 ERaFZWrE6GYXorySZg3N1NKlaZvu98f5/Q5+N/O7s2ZOeL/+Ojtn5/Oc5+z7vNt6nr6C0WgkAAA8
 pkz0AgBg8kFwAAA3BAcAcENwAAA3BAcAcENwAAA3BAcAcBuX4CgpKREEQRAEsVjMOjds2EA7U1JS
@@ -804,13 +803,13 @@ IIR4eXndu3fPiiKjXphW1OElGI1G3i8p46qvr48+dOTn5+fs7Gx1nZ8/fzY0NLi6ulrx9c8Oi9iw
 zoSwq538c93d3Z8/fxaLxXPmzHF0dLS6jsFgqKurEwRh3rx5Dg4ONlzheLO74AAA+4f/HwcAcENw
 AAA3BAcAcENwAAA3BAcAcENwAAA3BAcAcPsvM8fJsdB6QeMAAAAASUVORK5CYII=
 "
-       height="40.830791"
-       width="183.73856" />
-    <image
-       y="162.11064"
-       x="756.41528"
-       id="image3612"
-       xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAABQCAIAAAC72Xj2AAAAA3NCSVQICAjb4U/gAAAKdUlEQVR4
+                height="40.830791"
+                width="183.73856"/>
+        <image
+                y="162.11064"
+                x="756.41528"
+                id="image3612"
+                xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAABQCAIAAAC72Xj2AAAAA3NCSVQICAjb4U/gAAAKdUlEQVR4
 nO3ceUhUXxsH8Ofq6HXUbNQat9RRKi0tK7O9bMWoDCKMNgmixRJKCCLaoKCFtLIiyRaLjIqK+iPD
 SKKFiGw1gkwrLVO0bNEs0ya7vz/O+x58nV8yZ+ZM4wvfz193nnPv956ZOTzd8V5SNE0jAAARLs6e
 AAD8/0HjAABhaBwAIAyNAwCEoXEAgDA0DgAQhsYBAMIc0jhOnTqlKIqiKKqq8uLMmTNZMTU1lVV+
@@ -860,13 +859,13 @@ nLfrfJJS1oasBaZpWmFhYWBgoKIoRBQcHHz16lWbo6ynaJpm5bXJ58+fq6urVVWNiIhwd3e380qn
 HR3t6upqT5SVBBoHAACD/48DAIShcQCAMDQOABCGxgEAwtA4AEAYGgcACEPjAABh/wDX1GYKY/rD
 9gAAAABJRU5ErkJggg==
 "
-       height="40.830791"
-       width="183.73856" />
-    <image
-       y="97.141937"
-       x="756.41528"
-       id="image3623"
-       xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAABQCAIAAAC72Xj2AAAAA3NCSVQICAjb4U/gAAALmklEQVR4
+                height="40.830791"
+                width="183.73856"/>
+        <image
+                y="97.141937"
+                x="756.41528"
+                id="image3623"
+                xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAABQCAIAAAC72Xj2AAAAA3NCSVQICAjb4U/gAAALmklEQVR4
 nO3cfUxbVR8H8HOhtEARymth2NI2zs2AlA2LOKc1OsOcskUQXVA0ok7cDFtiXIzoXLYomcyMZC8Z
 cWxT5jSZWzLBoFsW2EJQNJv42g0QNlYCUnkfHdCN+sd5nhMeO3n6u1xEk+/nr3vPued7T3vvftzb
 ezPJ6/UyAACKgLmeAAD8+6BwAAAZCgcAkKFwAAAZCgcAkKFwAAAZCgcAkM1K4Th06JAkSZIkaTQa
@@ -921,13 +920,13 @@ oKCgLVu2yBvO1dbWxsfH88c68+bN++KLL2SEKHI4lDpRqSSv1+vntUl/f7/T6dRoNGazWa1Wk69t
 85IkLVy4MDAwUF6IIodDqROVhFA4AAA4/H8cAECGwgEAZCgcAECGwgEAZCgcAECGwgEAZCgcAED2
 B0ILempS29CcAAAAAElFTkSuQmCC
 "
-       height="40.830791"
-       width="183.73856" />
-    <image
-       y="615.08289"
-       x="317.29758"
-       id="image3634"
-       xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAABQCAIAAAC72Xj2AAAAA3NCSVQICAjb4U/gAAAM20lEQVR4
+                height="40.830791"
+                width="183.73856"/>
+        <image
+                y="615.08289"
+                x="317.29758"
+                id="image3634"
+                xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAABQCAIAAAC72Xj2AAAAA3NCSVQICAjb4U/gAAAM20lEQVR4
 nO3bfUxTVx8H8HOxUCrl/U1kCCVhoBjBYRVfsFv8o1NhbAUciszNTWWIL5mLLJKRKclYBqKJY5kv
 6DKMM87tH4hsOFdYjFE3ELMJWORFBoGBgKWAYCl9/jjPc9LBHuy5LY/uyffz173n3PO7p7e3X+69
 LYLZbCYAADwcnvYEAOCfB8EBANwQHADADcEBANwQHADADcEBANwQHADAbUaC4+zZs4IgCIIglUpZ
@@ -988,223 +987,223 @@ S/5BDAZDW1ubq6trUFCQuMmPjIy0tLQIghAeHs7+MIjz6NEjnU7n7u4u7nbvGWT74eX1/xkcADCj
 nq1fjgLAPwKCAwC4ITgAgBuCAwC4ITgAgBuCAwC4ITgAgNu/AAuHr5qD38PCAAAAAElFTkSuQmCC
 
 "
-       height="40.830791"
-       width="183.73856" />
-    <text
-       xml:space="preserve"
-       style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
-       x="295.97495"
-       y="121.04993"
-       id="text3637"
-       sodipodi:linespacing="125%"><tspan
+                height="40.830791"
+                width="183.73856"/>
+        <text
+                xml:space="preserve"
+                style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
+                x="295.97495"
+                y="121.04993"
+                id="text3637"
+                sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan3639"
          x="295.97495"
          y="121.04993"
          style="font-size:20px">Oignons 4Kg</tspan></text>
-    <text
-       sodipodi:linespacing="125%"
-       id="text3641"
-       y="186.69418"
-       x="295.97495"
-       style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
-       xml:space="preserve"><tspan
+        <text
+                sodipodi:linespacing="125%"
+                id="text3641"
+                y="186.69418"
+                x="295.97495"
+                style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
+                xml:space="preserve"><tspan
          style="font-size:20px"
          y="186.69418"
          x="295.97495"
          id="tspan3643"
          sodipodi:role="line">Oignons</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
-       x="295.97495"
-       y="249.39851"
-       id="text3645"
-       sodipodi:linespacing="125%"><tspan
+        <text
+                xml:space="preserve"
+                style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
+                x="295.97495"
+                y="249.39851"
+                id="text3645"
+                sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan3647"
          x="295.97495"
          y="249.39851"
          style="font-size:20px">Bob Soap (Client)</tspan></text>
-    <text
-       sodipodi:linespacing="125%"
-       id="text3649"
-       y="316.17456"
-       x="295.97495"
-       style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
-       xml:space="preserve"><tspan
+        <text
+                sodipodi:linespacing="125%"
+                id="text3649"
+                y="316.17456"
+                x="295.97495"
+                style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
+                xml:space="preserve"><tspan
          style="font-size:20px"
          y="316.17456"
          x="295.97495"
          id="tspan3651"
          sodipodi:role="line">Joe Bloggs (Client)</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
-       x="295.97495"
-       y="376.43588"
-       id="text3653"
-       sodipodi:linespacing="125%"><tspan
+        <text
+                xml:space="preserve"
+                style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
+                x="295.97495"
+                y="376.43588"
+                id="text3653"
+                sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan3655"
          x="295.97495"
          y="376.43588"
          style="font-size:20px">J.Doe (Cashier)</tspan></text>
-    <text
-       sodipodi:linespacing="125%"
-       id="text3657"
-       y="441.58325"
-       x="295.97495"
-       style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
-       xml:space="preserve"><tspan
+        <text
+                sodipodi:linespacing="125%"
+                id="text3657"
+                y="441.58325"
+                x="295.97495"
+                style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
+                xml:space="preserve"><tspan
          style="font-size:20px"
          y="441.58325"
          x="295.97495"
          id="tspan3659"
          sodipodi:role="line">J.Smith (Cashier)</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
-       x="295.97495"
-       y="511.61667"
-       id="text3661"
-       sodipodi:linespacing="125%"><tspan
+        <text
+                xml:space="preserve"
+                style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
+                x="295.97495"
+                y="511.61667"
+                id="text3661"
+                sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan3663"
          x="295.97495"
          y="511.61667"
          style="font-size:20px">Demo User (Cashier)</tspan></text>
-    <text
-       sodipodi:linespacing="125%"
-       id="text3665"
-       y="575.94971"
-       x="295.97495"
-       style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
-       xml:space="preserve"><tspan
+        <text
+                sodipodi:linespacing="125%"
+                id="text3665"
+                y="575.94971"
+                x="295.97495"
+                style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
+                xml:space="preserve"><tspan
          style="font-size:20px"
          y="575.94971"
          x="295.97495"
          id="tspan3667"
          sodipodi:role="line">Admin (Cashier)</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
-       x="295.97495"
-       y="641.09705"
-       id="text3669"
-       sodipodi:linespacing="125%"><tspan
+        <text
+                xml:space="preserve"
+                style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
+                x="295.97495"
+                y="641.09705"
+                id="text3669"
+                sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan3671"
          x="295.97495"
          y="641.09705"
          style="font-size:20px">Unknown</tspan></text>
-    <text
-       sodipodi:linespacing="125%"
-       id="text3673"
-       y="121.04993"
-       x="735.90662"
-       style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
-       xml:space="preserve"><tspan
+        <text
+                sodipodi:linespacing="125%"
+                id="text3673"
+                y="121.04993"
+                x="735.90662"
+                style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
+                xml:space="preserve"><tspan
          style="font-size:20px"
          y="121.04993"
          x="735.90662"
          id="tspan3675"
          sodipodi:role="line">Coca Cola Zero 1.5l</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
-       x="735.90662"
-       y="185.54253"
-       id="text3677"
-       sodipodi:linespacing="125%"><tspan
+        <text
+                xml:space="preserve"
+                style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
+                x="735.90662"
+                y="185.54253"
+                id="text3677"
+                sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan3679"
          x="735.90662"
          y="185.54253"
          style="font-size:20px">Coca Cola 33cl</tspan></text>
-    <text
-       sodipodi:linespacing="125%"
-       id="text3681"
-       y="252.33842"
-       x="735.90662"
-       style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
-       xml:space="preserve"><tspan
+        <text
+                sodipodi:linespacing="125%"
+                id="text3681"
+                y="252.33842"
+                x="735.90662"
+                style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
+                xml:space="preserve"><tspan
          style="font-size:20px"
          y="252.33842"
          x="735.90662"
          id="tspan3683"
          sodipodi:role="line">Peaches 1.56€</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
-       x="735.90662"
-       y="315.67938"
-       id="text3685"
-       sodipodi:linespacing="125%"><tspan
+        <text
+                xml:space="preserve"
+                style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
+                x="735.90662"
+                y="315.67938"
+                id="text3685"
+                sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan3687"
          x="735.90662"
          y="315.67938"
          style="font-size:20px">Peaches 0.89€</tspan></text>
-    <text
-       sodipodi:linespacing="125%"
-       id="text3689"
-       y="383.62695"
-       x="735.90662"
-       style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
-       xml:space="preserve"><tspan
+        <text
+                sodipodi:linespacing="125%"
+                id="text3689"
+                y="383.62695"
+                x="735.90662"
+                style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
+                xml:space="preserve"><tspan
          style="font-size:20px"
          y="383.62695"
          x="735.90662"
          id="tspan3691"
          sodipodi:role="line">Peaches</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
-       x="735.90662"
-       y="448.11954"
-       id="text3693"
-       sodipodi:linespacing="125%"><tspan
+        <text
+                xml:space="preserve"
+                style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
+                x="735.90662"
+                y="448.11954"
+                id="text3693"
+                sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan3695"
          x="735.90662"
          y="448.11954"
          style="font-size:20px">Oranges 1.5Kg</tspan></text>
-    <text
-       sodipodi:linespacing="125%"
-       id="text3697"
-       y="510.88464"
-       x="735.90662"
-       style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
-       xml:space="preserve"><tspan
+        <text
+                sodipodi:linespacing="125%"
+                id="text3697"
+                y="510.88464"
+                x="735.90662"
+                style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
+                xml:space="preserve"><tspan
          style="font-size:20px"
          y="510.88464"
          x="735.90662"
          id="tspan3699"
          sodipodi:role="line">Oranges 0.5Kg</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
-       x="735.90662"
-       y="577.10474"
-       id="text3701"
-       sodipodi:linespacing="125%"><tspan
+        <text
+                xml:space="preserve"
+                style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
+                x="735.90662"
+                y="577.10474"
+                id="text3701"
+                sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan3703"
          x="735.90662"
          y="577.10474"
          style="font-size:20px">Oranges</tspan></text>
-    <text
-       sodipodi:linespacing="125%"
-       id="text3705"
-       y="642.17316"
-       x="735.90662"
-       style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
-       xml:space="preserve"><tspan
+        <text
+                sodipodi:linespacing="125%"
+                id="text3705"
+                y="642.17316"
+                x="735.90662"
+                style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
+                xml:space="preserve"><tspan
          style="font-size:20px"
          y="642.17316"
          x="735.90662"
          id="tspan3707"
          sodipodi:role="line">Oignons 1.567Kg</tspan></text>
-  </g>
+    </g>
 </svg>

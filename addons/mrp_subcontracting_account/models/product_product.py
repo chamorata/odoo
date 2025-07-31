@@ -3,6 +3,7 @@
 
 from odoo import models, fields
 
+
 class ProductProduct(models.Model):
     _inherit = 'product.product'
 
@@ -11,8 +12,10 @@ class ProductProduct(models.Model):
         """
         price = super()._compute_bom_price(bom, boms_to_recompute, byproduct_bom)
         if bom and bom.type == 'subcontract':
-            seller = self._select_seller(quantity=bom.product_qty, uom_id=bom.product_uom_id, params={'subcontractor_ids': bom.subcontractor_ids})
+            seller = self._select_seller(quantity=bom.product_qty, uom_id=bom.product_uom_id,
+                                         params={'subcontractor_ids': bom.subcontractor_ids})
             if seller:
-                seller_price = seller.currency_id._convert(seller.price, self.env.company.currency_id, (bom.company_id or self.env.company), fields.Date.today())
+                seller_price = seller.currency_id._convert(seller.price, self.env.company.currency_id,
+                                                           (bom.company_id or self.env.company), fields.Date.today())
                 price += seller.product_uom._compute_price(seller_price, self.uom_id)
         return price

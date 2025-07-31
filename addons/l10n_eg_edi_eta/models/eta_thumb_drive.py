@@ -5,7 +5,6 @@ import hashlib
 import json
 
 import pytz
-
 from asn1crypto import cms, core, x509, algos, tsp
 
 from odoo import models, fields, _
@@ -132,7 +131,7 @@ class EtaThumbDrive(models.Model):
             cms.CMSAttribute({
                 'type': cms.CMSAttributeType('signing_time'),
                 'values': (
-                cms.Time({'utc_time': core.UTCTime(signing_time.replace(tzinfo=pytz.UTC))}),)
+                    cms.Time({'utc_time': core.UTCTime(signing_time.replace(tzinfo=pytz.UTC))}),)
             }),
         ])
 
@@ -171,5 +170,6 @@ class EtaThumbDrive(models.Model):
                 self._generate_signer_info__(eta_invoice, signing_time, signature),
             ],
         }
-        content_info = cms.ContentInfo({'content_type': cms.ContentType('signed_data'), 'content': cms.SignedData(signed_data)})
+        content_info = cms.ContentInfo(
+            {'content_type': cms.ContentType('signed_data'), 'content': cms.SignedData(signed_data)})
         return base64.b64encode(content_info.dump()).decode()

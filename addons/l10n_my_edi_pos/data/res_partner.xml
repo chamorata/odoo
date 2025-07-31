@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<odoo >
+<odoo>
     <data>
         <!-- When refunding an order included in a consolidated invoice, we need to issue the invoice to the general public -->
         <record model='res.partner' id='general_public'>

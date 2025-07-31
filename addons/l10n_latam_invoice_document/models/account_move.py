@@ -8,7 +8,6 @@ from odoo.tools.sql import column_exists, create_column, drop_index, index_exist
 
 
 class AccountMove(models.Model):
-
     _inherit = "account.move"
 
     _sql_constraints = [(
@@ -62,14 +61,17 @@ class AccountMove(models.Model):
             """)
         return super()._auto_init()
 
-    l10n_latam_available_document_type_ids = fields.Many2many('l10n_latam.document.type', compute='_compute_l10n_latam_available_document_types')
+    l10n_latam_available_document_type_ids = fields.Many2many('l10n_latam.document.type',
+                                                              compute='_compute_l10n_latam_available_document_types')
     l10n_latam_document_type_id = fields.Many2one(
-        'l10n_latam.document.type', string='Document Type', readonly=False, auto_join=True, index='btree_not_null', compute='_compute_l10n_latam_document_type', store=True)
+        'l10n_latam.document.type', string='Document Type', readonly=False, auto_join=True, index='btree_not_null',
+        compute='_compute_l10n_latam_document_type', store=True)
     l10n_latam_document_number = fields.Char(
         compute='_compute_l10n_latam_document_number', inverse='_inverse_l10n_latam_document_number',
         string='Document Number', readonly=False)
     l10n_latam_use_documents = fields.Boolean(related='journal_id.l10n_latam_use_documents')
-    l10n_latam_manual_document_number = fields.Boolean(compute='_compute_l10n_latam_manual_document_number', string='Manual Number')
+    l10n_latam_manual_document_number = fields.Boolean(compute='_compute_l10n_latam_manual_document_number',
+                                                       string='Manual Number')
     l10n_latam_document_type_id_code = fields.Char(related='l10n_latam_document_type_id.code', string='Doc Type')
 
     @api.depends('l10n_latam_document_type_id')
@@ -80,8 +82,10 @@ class AccountMove(models.Model):
         * If move use document and are numbered manually do not compute name at all (will be set manually)
         * If move use document and is in draft state and has not been posted before we restart name to False (this is
            when we change the document type) """
-        without_doc_type = self.filtered(lambda x: x.journal_id.l10n_latam_use_documents and not x.l10n_latam_document_type_id)
-        manual_documents = self.filtered(lambda x: x.journal_id.l10n_latam_use_documents and x.l10n_latam_manual_document_number)
+        without_doc_type = self.filtered(
+            lambda x: x.journal_id.l10n_latam_use_documents and not x.l10n_latam_document_type_id)
+        manual_documents = self.filtered(
+            lambda x: x.journal_id.l10n_latam_use_documents and x.l10n_latam_manual_document_number)
         (without_doc_type + manual_documents.filtered(lambda x: not x.name)).name = False
         # we need to group moves by document type as _compute_name will apply the same name prefix of the first record to the others
         group_by_document_type = defaultdict(self.env['account.move'].browse)
@@ -128,7 +132,8 @@ class AccountMove(models.Model):
             else:
                 l10n_latam_document_number = rec.l10n_latam_document_number
                 if not rec._skip_format_document_number():
-                    l10n_latam_document_number = rec.l10n_latam_document_type_id._format_document_number(rec.l10n_latam_document_number)
+                    l10n_latam_document_number = rec.l10n_latam_document_type_id._format_document_number(
+                        rec.l10n_latam_document_number)
                 if rec.l10n_latam_document_number != l10n_latam_document_number:
                     rec.l10n_latam_document_number = l10n_latam_document_number
                 rec.name = "%s %s" % (rec.l10n_latam_document_type_id.doc_code_prefix, l10n_latam_document_number)
@@ -137,7 +142,7 @@ class AccountMove(models.Model):
     def _onchange_l10n_latam_document_type_id(self):
         # if we change document or journal and we are in draft and not posted, we clean number so that is recomputed
         if (self.journal_id.l10n_latam_use_documents and self.l10n_latam_document_type_id
-              and not self.l10n_latam_manual_document_number and self.state == 'draft' and not self.posted_before):
+                and not self.l10n_latam_manual_document_number and self.state == 'draft' and not self.posted_before):
             self.name = False
             self._compute_name()
 
@@ -215,17 +220,20 @@ class AccountMove(models.Model):
         if self.debit_origin_id:
             internal_types = ['debit_note']
         internal_types += ['all']
-        return [('internal_type', 'in', internal_types), ('country_id', '=', self.company_id.account_fiscal_country_id.id)]
+        return [('internal_type', 'in', internal_types),
+                ('country_id', '=', self.company_id.account_fiscal_country_id.id)]
 
     @api.depends('journal_id', 'partner_id', 'company_id', 'move_type', 'debit_origin_id')
     def _compute_l10n_latam_available_document_types(self):
         self.l10n_latam_available_document_type_ids = False
         for rec in self.filtered(lambda x: x.journal_id and x.l10n_latam_use_documents and x.partner_id):
-            rec.l10n_latam_available_document_type_ids = self.env['l10n_latam.document.type'].search(rec._get_l10n_latam_documents_domain())
+            rec.l10n_latam_available_document_type_ids = self.env['l10n_latam.document.type'].search(
+                rec._get_l10n_latam_documents_domain())
 
     @api.depends('l10n_latam_available_document_type_ids')
     def _compute_l10n_latam_document_type(self):
-        for rec in self.filtered(lambda x: x.state == 'draft' and (not x.posted_before if x.move_type in ['out_invoice', 'out_refund'] else True)):
+        for rec in self.filtered(lambda x: x.state == 'draft' and (
+        not x.posted_before if x.move_type in ['out_invoice', 'out_refund'] else True)):
             document_types = rec.l10n_latam_available_document_type_ids._origin
             if rec.l10n_latam_document_type_id not in document_types:
                 rec.l10n_latam_document_type_id = document_types and document_types[0].id

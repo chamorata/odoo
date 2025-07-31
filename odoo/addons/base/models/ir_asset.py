@@ -2,6 +2,7 @@
 import os
 from glob import glob
 from logging import getLogger
+
 from werkzeug import urls
 
 import odoo
@@ -179,19 +180,23 @@ class IrAsset(models.Model):
         assets = self._get_related_assets([('bundle', '=', bundle)], **assets_params).filtered('active')
         # 1. Process the first sequence of 'ir.asset' records
         for asset in assets.filtered(lambda a: a.sequence < DEFAULT_SEQUENCE):
-            self._process_path(bundle, asset.directive, asset.target, asset.path, asset_paths, seen, addons, installed, bundle_start_index, **assets_params)
+            self._process_path(bundle, asset.directive, asset.target, asset.path, asset_paths, seen, addons, installed,
+                               bundle_start_index, **assets_params)
 
         # 2. Process all addons' manifests.
         for addon in addons:
             for command in odoo.modules.module._get_manifest_cached(addon)['assets'].get(bundle, ()):
                 directive, target, path_def = self._process_command(command)
-                self._process_path(bundle, directive, target, path_def, asset_paths, seen, addons, installed, bundle_start_index, **assets_params)
+                self._process_path(bundle, directive, target, path_def, asset_paths, seen, addons, installed,
+                                   bundle_start_index, **assets_params)
 
         # 3. Process the rest of 'ir.asset' records
         for asset in assets.filtered(lambda a: a.sequence >= DEFAULT_SEQUENCE):
-            self._process_path(bundle, asset.directive, asset.target, asset.path, asset_paths, seen, addons, installed, bundle_start_index, **assets_params)
+            self._process_path(bundle, asset.directive, asset.target, asset.path, asset_paths, seen, addons, installed,
+                               bundle_start_index, **assets_params)
 
-    def _process_path(self, bundle, directive, target, path_def, asset_paths, seen, addons, installed, bundle_start_index, **assets_params):
+    def _process_path(self, bundle, directive, target, path_def, asset_paths, seen, addons, installed,
+                      bundle_start_index, **assets_params):
         """
         This sub function is meant to take a directive and a set of
         arguments and apply them to the current asset_paths list
@@ -389,6 +394,7 @@ class IrAsset(models.Model):
 
 class AssetPaths:
     """ A list of asset paths (path, addon, bundle) with efficient operations. """
+
     def __init__(self):
         self.list = []
         self.memo = set()

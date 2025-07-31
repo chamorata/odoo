@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo.addons.stock_account.tests.test_anglo_saxon_valuation_reconciliation_common import ValuationReconciliationTestCommon
 from odoo.addons.sale.tests.common import TestSaleCommon
+from odoo.addons.stock_account.tests.test_anglo_saxon_valuation_reconciliation_common import \
+    ValuationReconciliationTestCommon
+
 from odoo.tests import tagged
 
 
@@ -30,7 +32,6 @@ class TestSaleStockMultiCompany(TestSaleCommon, ValuationReconciliationTestCommo
         cls.env.user.with_company(cls.company_data_2['company']).property_warehouse_id = cls.warehouse_B.id
 
     def test_warehouse_definition_on_so(self):
-
         partner = self.partner_a
         product = self.test_product_order
 

@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import odoo.tests
-
-from odoo import Command
 from odoo.addons.mail.tests.common import mail_new_test_user
 from odoo.addons.point_of_sale.tests.common import archive_products
+
+import odoo.tests
+from odoo import Command
 
 
 @odoo.tests.tagged("post_install", "-at_install")
@@ -63,7 +63,7 @@ class SelfOrderCommonTest(odoo.tests.HttpCase):
             'pos_categ_ids': [(4, pos_categ_misc.id)],
         })
 
-        #desk organizer
+        # desk organizer
         cls.desk_organizer = cls.env['product.product'].create({
             'name': 'Desk Organizer',
             'available_in_pos': True,

@@ -29,7 +29,7 @@ class SMSTemplate(models.Model):
     # Use to create contextual action (same as for email template)
     sidebar_action_id = fields.Many2one('ir.actions.act_window', 'Sidebar action', readonly=True, copy=False,
                                         help="Sidebar action to make this template available on records "
-                                        "of the related document model")
+                                             "of the related document model")
 
     # Overrides of mail.render.mixin
     @api.depends('model')
@@ -60,7 +60,8 @@ class SMSTemplate(models.Model):
                 'type': 'ir.actions.act_window',
                 'res_model': 'sms.composer',
                 # Add default_composition_mode to guess to determine if need to use mass or comment composer
-                'context': "{'default_template_id' : %d, 'sms_composition_mode': 'guess', 'default_res_ids': active_ids, 'default_res_id': active_id}" % (template.id),
+                'context': "{'default_template_id' : %d, 'sms_composition_mode': 'guess', 'default_res_ids': active_ids, 'default_res_id': active_id}" % (
+                    template.id),
                 'view_mode': 'form',
                 'view_id': view.id,
                 'target': 'new',

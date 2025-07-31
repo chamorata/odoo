@@ -24,7 +24,7 @@ Allow users to sign up and reset their password
         'views/auth_signup_login_templates.xml',
         'views/auth_signup_templates_email.xml',
         'views/webclient_templates.xml',
-        ],
+    ],
     'bootstrap': True,
     'assets': {
         'web.assets_frontend': [

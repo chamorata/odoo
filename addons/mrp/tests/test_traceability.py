@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.tests import Form
-from odoo.addons.mrp.tests.common import TestMrpCommon
-from odoo.exceptions import UserError
-
-from datetime import datetime
 import logging
+from datetime import datetime
+
 from freezegun import freeze_time
+from odoo.addons.mrp.tests.common import TestMrpCommon
+
+from odoo.exceptions import UserError
+from odoo.tests import Form
 
 _logger = logging.getLogger(__name__)
 
@@ -96,7 +97,8 @@ class TestTraceability(TestMrpCommon):
             mo_form = Form(mo)
             mo_form.qty_producing = 1
             if finished_product.tracking != 'none':
-                mo_form.lot_producing_id = self.env['stock.lot'].create({'name': 'Serial or Lot finished', 'product_id': finished_product.id})
+                mo_form.lot_producing_id = self.env['stock.lot'].create(
+                    {'name': 'Serial or Lot finished', 'product_id': finished_product.id})
             mo = mo_form.save()
 
             details_operation_form = Form(mo.move_raw_ids[1], view=self.env.ref('stock.view_stock_move_operations'))
@@ -133,7 +135,8 @@ class TestTraceability(TestMrpCommon):
             for line in lines:
                 tracking = line['columns'][1].split(' ')[1]
                 self.assertEqual(
-                    line['columns'][-1], "1.00 Test-Unit", 'Part with tracking type "%s", should have quantity = 1' % (tracking)
+                    line['columns'][-1], "1.00 Test-Unit",
+                    'Part with tracking type "%s", should have quantity = 1' % (tracking)
                 )
                 unfoldable = False if tracking == 'none' else True
                 self.assertEqual(
@@ -292,25 +295,30 @@ class TestTraceability(TestMrpCommon):
         mo = mo | mo_backorder
         raw_move_lines = mo.move_raw_ids.mapped('move_line_ids')
         raw_line_raw_1_lot_1 = raw_move_lines.filtered(lambda ml: ml.lot_id.name == 'Raw_1_lot_1')
-        self.assertEqual(set(raw_line_raw_1_lot_1.produce_line_ids.lot_id.mapped('name')), set(['Final_lot_1', 'Byproduct_1_lot_1', 'Byproduct_2_lot_1']))
+        self.assertEqual(set(raw_line_raw_1_lot_1.produce_line_ids.lot_id.mapped('name')),
+                         set(['Final_lot_1', 'Byproduct_1_lot_1', 'Byproduct_2_lot_1']))
         raw_line_raw_2_lot_1 = raw_move_lines.filtered(lambda ml: ml.lot_id.name == 'Raw_2_lot_1')
-        self.assertEqual(set(raw_line_raw_2_lot_1.produce_line_ids.lot_id.mapped('name')), set(['Final_lot_1', 'Byproduct_1_lot_1', 'Byproduct_2_lot_1']))
+        self.assertEqual(set(raw_line_raw_2_lot_1.produce_line_ids.lot_id.mapped('name')),
+                         set(['Final_lot_1', 'Byproduct_1_lot_1', 'Byproduct_2_lot_1']))
 
         finished_move_lines = mo.move_finished_ids.mapped('move_line_ids')
         finished_move_line_lot_1 = finished_move_lines.filtered(lambda ml: ml.lot_id.name == 'Final_lot_1')
-        self.assertEqual(finished_move_line_lot_1.consume_line_ids.filtered(lambda l: l.quantity), raw_line_raw_1_lot_1 | raw_line_raw_2_lot_1)
+        self.assertEqual(finished_move_line_lot_1.consume_line_ids.filtered(lambda l: l.quantity),
+                         raw_line_raw_1_lot_1 | raw_line_raw_2_lot_1)
         finished_move_line_lot_2 = finished_move_lines.filtered(lambda ml: ml.lot_id.name == 'Final_lot_2')
         raw_line_raw_1_lot_2 = raw_move_lines.filtered(lambda ml: ml.lot_id.name == 'Raw_1_lot_2')
         raw_line_raw_2_lot_2 = raw_move_lines.filtered(lambda ml: ml.lot_id.name == 'Raw_2_lot_2')
         self.assertEqual(finished_move_line_lot_2.consume_line_ids, raw_line_raw_1_lot_2 | raw_line_raw_2_lot_2)
 
         byproduct_move_line_1_lot_1 = finished_move_lines.filtered(lambda ml: ml.lot_id.name == 'Byproduct_1_lot_1')
-        self.assertEqual(byproduct_move_line_1_lot_1.consume_line_ids.filtered(lambda l: l.quantity), raw_line_raw_1_lot_1 | raw_line_raw_2_lot_1)
+        self.assertEqual(byproduct_move_line_1_lot_1.consume_line_ids.filtered(lambda l: l.quantity),
+                         raw_line_raw_1_lot_1 | raw_line_raw_2_lot_1)
         byproduct_move_line_1_lot_2 = finished_move_lines.filtered(lambda ml: ml.lot_id.name == 'Byproduct_1_lot_2')
         self.assertEqual(byproduct_move_line_1_lot_2.consume_line_ids, raw_line_raw_1_lot_2 | raw_line_raw_2_lot_2)
 
         byproduct_move_line_2_lot_1 = finished_move_lines.filtered(lambda ml: ml.lot_id.name == 'Byproduct_2_lot_1')
-        self.assertEqual(byproduct_move_line_2_lot_1.consume_line_ids.filtered(lambda l: l.quantity), raw_line_raw_1_lot_1 | raw_line_raw_2_lot_1)
+        self.assertEqual(byproduct_move_line_2_lot_1.consume_line_ids.filtered(lambda l: l.quantity),
+                         raw_line_raw_1_lot_1 | raw_line_raw_2_lot_1)
         byproduct_move_line_2_lot_2 = finished_move_lines.filtered(lambda ml: ml.lot_id.name == 'Byproduct_2_lot_2')
         self.assertEqual(byproduct_move_line_2_lot_2.consume_line_ids, raw_line_raw_1_lot_2 | raw_line_raw_2_lot_2)
 
@@ -661,7 +669,8 @@ class TestTraceability(TestMrpCommon):
             production.action_confirm()
             production.qty_producing = 1
             production.button_mark_done()
-            self.assertEqual(production.move_finished_ids.date, datetime(2024, 1, 15), "Stock move should be availbale after the production is done.")
+            self.assertEqual(production.move_finished_ids.date, datetime(2024, 1, 15),
+                             "Stock move should be availbale after the production is done.")
 
     def test_use_lot_already_consumed(self):
         """

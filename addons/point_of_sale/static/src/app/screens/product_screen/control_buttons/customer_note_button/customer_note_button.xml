@@ -3,8 +3,8 @@
 
     <t t-name="point_of_sale.OrderlineNoteButton">
         <button
-            t-attf-class="{{this.props.class}} flex-shrink-0"
-            t-att-disabled="!pos.get_order()?.get_selected_orderline()" t-on-click="onClick">
+                t-attf-class="{{this.props.class}} flex-shrink-0"
+                t-att-disabled="!pos.get_order()?.get_selected_orderline()" t-on-click="onClick">
             <t t-if="this.props.icon">
                 <i t-attf-class="{{this.props.icon}} me-1"/>
             </t>

@@ -3,11 +3,10 @@
 
 from lxml import etree
 
-from odoo.exceptions import AccessError
-from odoo.addons.base.tests.common import TransactionCaseWithUserDemo
-from odoo.tests.common import TransactionCase
-from odoo.tools.misc import mute_logger
 from odoo import Command
+from odoo.addons.base.tests.common import TransactionCaseWithUserDemo
+from odoo.exceptions import AccessError
+from odoo.tools.misc import mute_logger
 
 
 class TestACL(TransactionCaseWithUserDemo):
@@ -62,11 +61,12 @@ class TestACL(TransactionCaseWithUserDemo):
         view_arch = etree.fromstring(form_view.get('arch'))
         has_group_test = self.user_demo.has_group(self.TEST_GROUP)
         self.assertFalse(has_group_test, "`demo` user should not belong to the restricted group before the test")
-        self.assertIn('decimal_places', original_fields, "'decimal_places' field must be properly visible before the test")
+        self.assertIn('decimal_places', original_fields,
+                      "'decimal_places' field must be properly visible before the test")
         self.assertNotEqual(view_arch.xpath("//field[@name='decimal_places'][@nolabel='1']"), [],
-                             "Field 'decimal_places' must be found in view definition before the test")
+                            "Field 'decimal_places' must be found in view definition before the test")
         self.assertNotEqual(view_arch.xpath("//label[@for='decimal_places']"), [],
-                             "Label for 'decimal_places' must be found in view definition before the test")
+                            "Label for 'decimal_places' must be found in view definition before the test")
 
         # restrict access to the field and check it's gone
         self._set_field_groups(currency, 'decimal_places', self.TEST_GROUP)
@@ -76,9 +76,9 @@ class TestACL(TransactionCaseWithUserDemo):
         view_arch = etree.fromstring(form_view.get('arch'))
         self.assertNotIn('decimal_places', fields, "'decimal_places' field should be gone")
         self.assertEqual(view_arch.xpath("//field[@name='decimal_places']"), [],
-                          "Field 'decimal_places' must not be found in view definition")
+                         "Field 'decimal_places' must not be found in view definition")
         self.assertEqual(view_arch.xpath("//label[@for='decimal_places']"), [],
-                          "Label for 'decimal_places' must not be found in view definition")
+                         "Label for 'decimal_places' must not be found in view definition")
 
         # Make demo user a member of the restricted group and check that the field is back
         self.test_group.users += self.user_demo
@@ -89,9 +89,9 @@ class TestACL(TransactionCaseWithUserDemo):
         self.assertTrue(has_group_test, "`demo` user should now belong to the restricted group")
         self.assertIn('decimal_places', fields, "'decimal_places' field must be properly visible again")
         self.assertNotEqual(view_arch.xpath("//field[@name='decimal_places']"), [],
-                             "Field 'decimal_places' must be found in view definition again")
+                            "Field 'decimal_places' must be found in view definition again")
         self.assertNotEqual(view_arch.xpath("//label[@for='decimal_places']"), [],
-                             "Label for 'decimal_places' must be found in view definition again")
+                            "Label for 'decimal_places' must be found in view definition again")
 
     @mute_logger('odoo.models')
     def test_field_crud_restriction(self):

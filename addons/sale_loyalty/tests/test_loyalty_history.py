@@ -1,9 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.sale_loyalty.tests.common import TestSaleCouponCommon
+
 from odoo.fields import Command
 from odoo.tests import tagged
-
-from odoo.addons.sale_loyalty.tests.common import TestSaleCouponCommon
 
 
 @tagged('post_install', '-at_install')
@@ -48,10 +48,10 @@ class TestLoyaltyhistory(TestSaleCouponCommon):
         order.write({
             'order_line': [
                 Command.create({
-                'product_id': self.product_A.id,
-                'name': 'Ordinary Product A',
-                'product_uom': self.uom_unit.id,
-                'product_uom_qty': 1.0,
+                    'product_id': self.product_A.id,
+                    'name': 'Ordinary Product A',
+                    'product_uom': self.uom_unit.id,
+                    'product_uom_qty': 1.0,
                 }),
             ],
         })
@@ -79,7 +79,7 @@ class TestLoyaltyhistory(TestSaleCouponCommon):
         self._claim_reward(order, self.loyalty_program)
         history_records = self.loyalty_card.history_ids.filtered(lambda history: history.order_id == order.id)
         self.assertEqual(history_records.used, 1.0,
-                        "The history line should be updated on change of order lines in a confirmed order")
+                         "The history line should be updated on change of order lines in a confirmed order")
 
     def test_delete_loyalty_history_line_on_cancel(self):
         order = self.empty_order

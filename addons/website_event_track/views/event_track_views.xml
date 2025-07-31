@@ -31,7 +31,8 @@
         <field name="name">event.track.kanban</field>
         <field name="model">event.track</field>
         <field name="arch" type="xml">
-            <kanban highlight_color="color" default_group_by="stage_id" quick_create_view="website_event_track.event_track_view_form_quick_create">
+            <kanban highlight_color="color" default_group_by="stage_id"
+                    quick_create_view="website_event_track.event_track_view_form_quick_create">
                 <field name="website_url"/>
                 <field name="legend_blocked"/>
                 <field name="legend_normal"/>
@@ -40,13 +41,18 @@
                     <progressbar field="kanban_state" colors='{"done": "success", "blocked": "danger"}'/>
                     <t t-name="menu" groups="base.group_user">
                         <a role="menuitem" t-att-href="record.website_url.value" class="dropdown-item">View Track</a>
-                        <t t-if="widget.editable"><a role="menuitem" type="open" class="dropdown-item">Edit Track</a></t>
-                        <t t-if="widget.deletable"><a role="menuitem" type="delete" class="dropdown-item">Delete</a></t>
+                        <t t-if="widget.editable">
+                            <a role="menuitem" type="open" class="dropdown-item">Edit Track</a>
+                        </t>
+                        <t t-if="widget.deletable">
+                            <a role="menuitem" type="delete" class="dropdown-item">Delete</a>
+                        </t>
                         <field name="color" widget="kanban_color_picker"/>
                     </t>
                     <t t-name="card">
                         <field name="name" class="fw-medium fs-5"/>
-                        <div t-if="duration" class="d-flex"><field name="duration" widget="float_time"/>hours</div>
+                        <div t-if="duration" class="d-flex"><field name="duration" widget="float_time"/>hours
+                        </div>
                         <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
                         <footer class="pt-0">
                             <div class="d-flex align-items-center">
@@ -56,7 +62,8 @@
                             <div class="d-flex ms-auto align-items-center">
                                 <field name="kanban_state" widget="state_selection" groups="base.group_user"/>
                                 <div t-att-title="record.partner_id.value">
-                                    <field name="partner_id" widget="image" options="{'preview_image': 'avatar_128'}" class="o_avatar rounded ms-1"/>
+                                    <field name="partner_id" widget="image" options="{'preview_image': 'avatar_128'}"
+                                           class="o_avatar rounded ms-1"/>
                                 </div>
                             </div>
                         </footer>
@@ -98,21 +105,23 @@
                 <separator/>
                 <filter string="Published" name="filter_published" domain="[('website_published', '=', True)]"/>
                 <separator/>
-                <filter string="Unread Messages" name="message_needaction" domain="[('message_needaction', '=', True)]" groups="mail.group_mail_notification_type_inbox"/>
+                <filter string="Unread Messages" name="message_needaction" domain="[('message_needaction', '=', True)]"
+                        groups="mail.group_mail_notification_type_inbox"/>
                 <separator/>
-                <filter string="Always Wishlisted" name="filter_wishlisted_by_default" domain="[('wishlisted_by_default', '=', True)]"/>
+                <filter string="Always Wishlisted" name="filter_wishlisted_by_default"
+                        domain="[('wishlisted_by_default', '=', True)]"/>
                 <separator/>
                 <filter name="filter_date" date="date"/>
                 <separator/>
                 <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
                 <separator/>
                 <filter invisible="1" string="Late Activities" name="activities_overdue"
-                    domain="[('my_activity_date_deadline', '&lt;', context_today().strftime('%Y-%m-%d'))]"
-                    help="Show all records which has next action date is before today"/>
+                        domain="[('my_activity_date_deadline', '&lt;', context_today().strftime('%Y-%m-%d'))]"
+                        help="Show all records which has next action date is before today"/>
                 <filter invisible="1" string="Today Activities" name="activities_today"
-                    domain="[('my_activity_date_deadline', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                        domain="[('my_activity_date_deadline', '=', context_today().strftime('%Y-%m-%d'))]"/>
                 <filter invisible="1" string="Future Activities" name="activities_upcoming_all"
-                    domain="[('my_activity_date_deadline', '&gt;', context_today().strftime('%Y-%m-%d'))]"/>
+                        domain="[('my_activity_date_deadline', '&gt;', context_today().strftime('%Y-%m-%d'))]"/>
                 <group expand="0" string="Group By">
                     <filter string="Responsible" name="responsible" context="{'group_by': 'user_id'}"/>
                     <filter string="Stage" name="stage" context="{'group_by': 'stage_id'}"/>
@@ -137,8 +146,8 @@
                         <field name="website_url" invisible="1"/>
                         <field name="wishlist_visitor_count" invisible="1"/>
                         <button name="%(website_event_track.website_visitor_action_from_track)d"
-                            type="action" class="oe_stat_button" icon="fa-bell"
-                            groups="event.group_event_user" invisible="wishlist_visitor_count == 0">
+                                type="action" class="oe_stat_button" icon="fa-bell"
+                                groups="event.group_event_user" invisible="wishlist_visitor_count == 0">
                             <field name="wishlist_visitor_count" string="Wishlisted By" widget="statinfo"/>
                         </button>
                         <field name="is_published" widget="website_redirect_button"/>
@@ -177,7 +186,8 @@
                         <page string="Speaker" name="speaker">
                             <group string="Contact Details" class="display-flex justify-content-between">
                                 <group>
-                                    <field name="partner_id" context="{'default_phone': contact_phone, 'default_email': contact_email}"/>
+                                    <field name="partner_id"
+                                           context="{'default_phone': contact_phone, 'default_email': contact_email}"/>
                                     <field name="contact_email" readonly="partner_id"/>
                                     <field name="contact_phone" class="o_force_ltr" readonly="partner_id"/>
                                 </group>
@@ -195,7 +205,8 @@
                                 </group>
                             </group>
                             <group>
-                                <field name="partner_biography" string="Biography" placeholder='e.g. "John Doe was born in..."'/>
+                                <field name="partner_biography" string="Biography"
+                                       placeholder='e.g. "John Doe was born in..."'/>
                             </group>
                         </page>
                         <page string="Description" name="description">
@@ -206,16 +217,17 @@
                                 <group name="event_track_cta_group">
                                     <field name="website_cta"/>
                                     <field name="website_cta_title" placeholder="e.g. Get Yours Now!"
-                                        invisible="not website_cta"
-                                        required="website_cta"/>
+                                           invisible="not website_cta"
+                                           required="website_cta"/>
                                     <field name="website_cta_url" placeholder="e.g. http://www.example.com"
-                                        invisible="not website_cta"
-                                        required="website_cta"/>
+                                           invisible="not website_cta"
+                                           required="website_cta"/>
                                     <label for="website_cta_delay"
-                                        invisible="not website_cta"/>
+                                           invisible="not website_cta"/>
                                     <div invisible="not website_cta">
                                         <field name="website_cta_delay" class="oe_inline"
-                                            required="website_cta"/> minutes after Track start
+                                               required="website_cta"/>
+                                        minutes after Track start
                                     </div>
                                 </group>
                             </group>
@@ -267,9 +279,10 @@
         <field name="view_mode">kanban,list,form,calendar,graph,activity</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-              Create a Track
-            </p><p>
-              Tracks define your event schedule. They can be talks, workshops or any similar activity.
+                Create a Track
+            </p>
+            <p>
+                Tracks define your event schedule. They can be talks, workshops or any similar activity.
             </p>
         </field>
     </record>
@@ -280,11 +293,12 @@
         <field name="view_mode">kanban,list,form,calendar,graph,activity</field>
         <field name="context">{'search_default_event_id': active_id, 'default_event_id': active_id}</field>
         <field name="help" type="html">
-          <p class="o_view_nocontent_smiling_face">
-            Create a Track
-          </p><p>
-            Tracks define your event schedule. They can be talks, workshops or any similar activity.
-          </p>
+            <p class="o_view_nocontent_smiling_face">
+                Create a Track
+            </p>
+            <p>
+                Tracks define your event schedule. They can be talks, workshops or any similar activity.
+            </p>
         </field>
     </record>
 

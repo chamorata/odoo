@@ -2,17 +2,16 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import fields, models, api
-from odoo.osv import expression
 
 
 class SurveyUserInput(models.Model):
     _inherit = 'survey.user_input'
 
     slide_id = fields.Many2one('slide.slide', 'Related course slide',
-        help="The related course slide when there is no membership information")
+                               help="The related course slide when there is no membership information")
     slide_partner_id = fields.Many2one('slide.slide.partner', 'Subscriber information',
-        help="Slide membership information for the logged in user",
-        index='btree_not_null') # index useful for deletions in comodel
+                                       help="Slide membership information for the logged in user",
+                                       index='btree_not_null')  # index useful for deletions in comodel
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -46,7 +45,8 @@ class SurveyUserInput(models.Model):
             if user_inputs:
                 for user_input in user_inputs:
                     removed_memberships_per_partner = {}
-                    if user_input.survey_id._has_attempts_left(user_input.partner_id, user_input.email, user_input.invite_token):
+                    if user_input.survey_id._has_attempts_left(user_input.partner_id, user_input.email,
+                                                               user_input.invite_token):
                         # skip if user still has attempts left
                         continue
 

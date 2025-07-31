@@ -2,12 +2,12 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import datetime
-from freezegun import freeze_time
+
 from dateutil.relativedelta import relativedelta
+from freezegun import freeze_time
+from odoo.addons.hr_holidays.tests.common import TestHrHolidaysCommon
 
 from odoo.tests import Form, tagged
-
-from odoo.addons.hr_holidays.tests.common import TestHrHolidaysCommon
 
 
 @tagged('post_install', '-at_install', 'accruals')
@@ -39,7 +39,8 @@ class TestAccrualAllocationsAttendance(TestHrHolidaysCommon):
                     'maximum_leave': 10000
                 })],
             })
-            allocation = self.env['hr.leave.allocation'].with_user(self.user_hrmanager_id).with_context(tracking_disable=True).create({
+            allocation = self.env['hr.leave.allocation'].with_user(self.user_hrmanager_id).with_context(
+                tracking_disable=True).create({
                 'name': 'Accrual allocation for employee',
                 'accrual_plan_id': accrual_plan.id,
                 'employee_id': self.employee_emp.id,
@@ -52,7 +53,8 @@ class TestAccrualAllocationsAttendance(TestHrHolidaysCommon):
             self.assertEqual(allocation.number_of_days, 0, 'There should be no days allocated yet.')
             allocation._update_accrual()
             tomorrow = datetime.date.today() + relativedelta(days=2)
-            self.assertEqual(allocation.number_of_days, 0, 'There should be no days allocated yet. The accrual starts tomorrow.')
+            self.assertEqual(allocation.number_of_days, 0,
+                             'There should be no days allocated yet. The accrual starts tomorrow.')
 
             self.env['hr.attendance'].create({
                 'employee_id': self.employee_emp.id,
@@ -85,10 +87,10 @@ class TestAccrualAllocationsAttendance(TestHrHolidaysCommon):
             })],
         })
         self.env['hr.attendance'].create({
-                'employee_id': self.employee_emp.id,
-                'check_in': datetime.datetime(2024, 4, 1, 8, 0, 0),
-                'check_out': datetime.datetime(2024, 4, 1, 17, 0, 0),
-            })
+            'employee_id': self.employee_emp.id,
+            'check_in': datetime.datetime(2024, 4, 1, 8, 0, 0),
+            'check_out': datetime.datetime(2024, 4, 1, 17, 0, 0),
+        })
         with Form(self.env['hr.leave.allocation'].with_user(self.user_hrmanager)) as allocation_form:
             allocation_form.allocation_type = 'accrual'
             allocation_form.employee_id = self.employee_emp

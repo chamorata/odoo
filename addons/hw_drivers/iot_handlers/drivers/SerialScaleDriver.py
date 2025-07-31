@@ -3,15 +3,15 @@
 
 import logging
 import re
-import serial
 import threading
 import time
 
-from odoo import http
+import serial
 from odoo.addons.hw_drivers.controllers.proxy import proxy_drivers
 from odoo.addons.hw_drivers.event_manager import event_manager
 from odoo.addons.hw_drivers.iot_handlers.drivers.SerialBaseDriver import SerialDriver, SerialProtocol, serial_connection
 
+from odoo import http
 
 _logger = logging.getLogger(__name__)
 
@@ -232,9 +232,11 @@ class Toledo8217Driver(ScaleDriver):
         if status_match:
             status_char = status_match.group(1).decode()  # Example: b'D' extracted from b'\x02?D\r'
             binary_status_char = format(ord(status_char), '08b')  # Example: '00001101'
-            for index, bit in enumerate(binary_status_char[1:][::-1]):  # Read the bits in reverse order (LSB is at the last char) + ignore the first "parity" bit
+            for index, bit in enumerate(binary_status_char[1:][
+                                        ::-1]):  # Read the bits in reverse order (LSB is at the last char) + ignore the first "parity" bit
                 if int(bit):
-                    _logger.debug("Scale error: %s. Status string: %s. Scale answer: %s.", status_char_error_bits[index], binary_status_char, answer)
+                    _logger.debug("Scale error: %s. Status string: %s. Scale answer: %s.",
+                                  status_char_error_bits[index], binary_status_char, answer)
                     self.data = {
                         'value': 0,
                         'status': self._status,

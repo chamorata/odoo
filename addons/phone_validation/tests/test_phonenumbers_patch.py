@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from typing import NamedTuple, Iterable
+
 try:
     import phonenumbers
 except ImportError:
@@ -9,8 +10,8 @@ except ImportError:
 
 from odoo.tests.common import BaseCase
 
-class TestPhonenumbersPatch(BaseCase):
 
+class TestPhonenumbersPatch(BaseCase):
     class PhoneInputOutputLine(NamedTuple):
         """ Datastructure to store data for phone number parsing tests. Consist of single set of:
         - input phone data to be parsed
@@ -62,19 +63,19 @@ class TestPhonenumbersPatch(BaseCase):
             with self.subTest(**parse_test_line._asdict()):
                 parsed_phone = phonenumbers.parse(parse_test_line.number, region=parse_test_line.region)
                 self.assertTrue(phonenumbers.is_valid_number(parsed_phone),
-                    "Phone number does not match any patterns in the metadata.")
+                                "Phone number does not match any patterns in the metadata.")
                 if parse_test_line.gt_national_number:
                     self.assertEqual(parsed_phone.national_number, parse_test_line.gt_national_number,
-                        "Parsed national number differs from expected national number")
+                                     "Parsed national number differs from expected national number")
                 if parse_test_line.gt_country_code:
                     self.assertEqual(parsed_phone.country_code, parse_test_line.gt_country_code,
-                        "Parsed country code number differs from expected country code")
+                                     "Parsed country code number differs from expected country code")
                 if parse_test_line.gt_italian_leading_zero:
                     self.assertEqual(parsed_phone.italian_leading_zero, parse_test_line.gt_italian_leading_zero,
-                        "Parsed country code number differs from expected country code")
+                                     "Parsed country code number differs from expected country code")
                 if parse_test_line.gt_number_of_leading_zeros:
                     self.assertEqual(parsed_phone.number_of_leading_zeros, parse_test_line.gt_number_of_leading_zeros,
-                        "Parsed country code number differs from expected country code")
+                                     "Parsed country code number differs from expected country code")
 
     def test_region_BR_monkey_patch(self):
         """ Test Brazil phone numbers patch for added 9 in mobile numbers
@@ -96,8 +97,10 @@ class TestPhonenumbersPatch(BaseCase):
         """Makes sure that patch for Ivory Coast phone numbers work"""
         parse_test_lines_CI = (
             self.PhoneInputOutputLine("+2250506007995"),
-            self.PhoneInputOutputLine("0506007995", region='CI', gt_national_number=506007995, gt_country_code=225, gt_italian_leading_zero=True),
-            self.PhoneInputOutputLine("+225 05 20 963 777", gt_national_number=520963777, gt_country_code=225, gt_italian_leading_zero=True),
+            self.PhoneInputOutputLine("0506007995", region='CI', gt_national_number=506007995, gt_country_code=225,
+                                      gt_italian_leading_zero=True),
+            self.PhoneInputOutputLine("+225 05 20 963 777", gt_national_number=520963777, gt_country_code=225,
+                                      gt_italian_leading_zero=True),
         )
         self._assert_parsing_phonenumbers(parse_test_lines_CI)
 
@@ -137,8 +140,10 @@ class TestPhonenumbersPatch(BaseCase):
         parse_test_lines_MU = (
             self.PhoneInputOutputLine("+23057654321", gt_national_number=gt_MU_number, gt_country_code=gt_MU_code),
             self.PhoneInputOutputLine("+2305 76/54 3-21 ", gt_national_number=gt_MU_number, gt_country_code=gt_MU_code),
-            self.PhoneInputOutputLine("57654321", region="MU", gt_national_number=gt_MU_number, gt_country_code=gt_MU_code),
-            self.PhoneInputOutputLine("5 76/54 3-21 ", region="MU", gt_national_number=gt_MU_number, gt_country_code=gt_MU_code),
+            self.PhoneInputOutputLine("57654321", region="MU", gt_national_number=gt_MU_number,
+                                      gt_country_code=gt_MU_code),
+            self.PhoneInputOutputLine("5 76/54 3-21 ", region="MU", gt_national_number=gt_MU_number,
+                                      gt_country_code=gt_MU_code),
         )
         self._assert_parsing_phonenumbers(parse_test_lines_MU)
 
@@ -167,10 +172,14 @@ class TestPhonenumbersPatch(BaseCase):
             self.PhoneInputOutputLine("+254 711 123 456", gt_national_number=gt_KE_number, gt_country_code=gt_KE_code),
             self.PhoneInputOutputLine("+254-711-123-456", gt_national_number=gt_KE_number, gt_country_code=gt_KE_code),
             self.PhoneInputOutputLine("+254 711/123/456", gt_national_number=gt_KE_number, gt_country_code=gt_KE_code),
-            self.PhoneInputOutputLine("0711123456", region="KE", gt_national_number=gt_KE_number, gt_country_code=gt_KE_code),
-            self.PhoneInputOutputLine("0711 123 456", region="KE", gt_national_number=gt_KE_number, gt_country_code=gt_KE_code),
-            self.PhoneInputOutputLine("0711-123-456", region="KE", gt_national_number=gt_KE_number, gt_country_code=gt_KE_code),
-            self.PhoneInputOutputLine("0711/123/456", region="KE", gt_national_number=gt_KE_number, gt_country_code=gt_KE_code),
+            self.PhoneInputOutputLine("0711123456", region="KE", gt_national_number=gt_KE_number,
+                                      gt_country_code=gt_KE_code),
+            self.PhoneInputOutputLine("0711 123 456", region="KE", gt_national_number=gt_KE_number,
+                                      gt_country_code=gt_KE_code),
+            self.PhoneInputOutputLine("0711-123-456", region="KE", gt_national_number=gt_KE_number,
+                                      gt_country_code=gt_KE_code),
+            self.PhoneInputOutputLine("0711/123/456", region="KE", gt_national_number=gt_KE_number,
+                                      gt_country_code=gt_KE_code),
         )
         self._assert_parsing_phonenumbers(parse_test_lines_KE)
 

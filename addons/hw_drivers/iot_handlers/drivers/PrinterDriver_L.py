@@ -1,17 +1,16 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from base64 import b64decode
-from cups import IPPError, IPP_PRINTER_IDLE, IPP_PRINTER_PROCESSING, IPP_PRINTER_STOPPED
-import dbus
 import io
 import logging
-import netifaces as ni
-from PIL import Image, ImageOps
 import re
 import subprocess
+from base64 import b64decode
 
-from odoo import http
+import dbus
+import netifaces as ni
+from PIL import Image, ImageOps
+from cups import IPPError, IPP_PRINTER_IDLE, IPP_PRINTER_PROCESSING, IPP_PRINTER_STOPPED
 from odoo.addons.hw_drivers.connection_manager import connection_manager
 from odoo.addons.hw_drivers.controllers.proxy import proxy_drivers
 from odoo.addons.hw_drivers.driver import Driver
@@ -21,11 +20,13 @@ from odoo.addons.hw_drivers.main import iot_devices
 from odoo.addons.hw_drivers.tools import helpers
 from odoo.addons.hw_drivers.websocket_client import send_to_controller
 
+from odoo import http
+
 _logger = logging.getLogger(__name__)
 
 RECEIPT_PRINTER_COMMANDS = {
     'star': {
-        'center': b'\x1b\x1d\x61\x01', # ESC GS a n
+        'center': b'\x1b\x1d\x61\x01',  # ESC GS a n
         'cut': b'\x1b\x64\x02',  # ESC d n
         'title': b'\x1b\x69\x01\x01%s\x1b\x69\x00\x00',  # ESC i n1 n2
         'drawers': [b'\x07', b'\x1a']  # BEL & SUB
@@ -37,6 +38,7 @@ RECEIPT_PRINTER_COMMANDS = {
         'drawers': [b'\x1b\x3d\x01', b'\x1b\x70\x00\x19\x19', b'\x1b\x70\x01\x19\x19']  # ESC = n then ESC p m t1 t2
     }
 }
+
 
 def cups_notification_handler(message, uri, device_identifier, state, reason, accepting_jobs):
     if device_identifier in iot_devices:
@@ -61,7 +63,8 @@ except IPPError:
 
 # Listen for notifications from Cups
 bus = dbus.SystemBus()
-bus.add_signal_receiver(cups_notification_handler, signal_name="PrinterStateChanged", dbus_interface="org.cups.cupsd.Notifier")
+bus.add_signal_receiver(cups_notification_handler, signal_name="PrinterStateChanged",
+                        dbus_interface="org.cups.cupsd.Notifier")
 
 
 class PrinterDriver(Driver):
@@ -93,7 +96,8 @@ class PrinterDriver(Driver):
             self.device_subtype = "label_printer"
         else:
             self.device_subtype = "office_printer"
-        if 'direct' in self.device_connection and any(cmd in device['device-id'] for cmd in ['CMD:STAR;', 'CMD:ESC/POS;']):
+        if 'direct' in self.device_connection and any(
+                cmd in device['device-id'] for cmd in ['CMD:STAR;', 'CMD:ESC/POS;']):
             self.print_status()
 
     @classmethod
@@ -239,10 +243,10 @@ class PrinterDriver(Driver):
         raster_data = b''
         dots = im.tobytes()
         while len(dots):
-            im_slice = dots[:width*max_slice_height]
+            im_slice = dots[:width * max_slice_height]
             slice_height = int(len(im_slice) / width)
             raster_data += raster_send + width.to_bytes(2, 'little') + slice_height.to_bytes(2, 'little') + im_slice
-            dots = dots[width*max_slice_height:]
+            dots = dots[width * max_slice_height:]
 
         return raster_data
 
@@ -388,7 +392,9 @@ class PrinterDriver(Driver):
 
         commands = RECEIPT_PRINTER_COMMANDS[self.receipt_protocol]
         title = commands['title'] % b'IoTBox Status'
-        self.print_raw(commands['center'] + title + b'\n' + wlan.encode() + mac.encode() + ip.encode() + homepage.encode() + pairing_code.encode() + commands['cut'])
+        self.print_raw(commands[
+                           'center'] + title + b'\n' + wlan.encode() + mac.encode() + ip.encode() + homepage.encode() + pairing_code.encode() +
+                       commands['cut'])
 
     def open_cashbox(self, data):
         """Sends a signal to the current printer to open the connected cashbox."""
@@ -401,14 +407,16 @@ class PrinterDriver(Driver):
     def _action_default(self, data):
         _logger.debug("_action_default called for printer %s", self.device_name)
         self.print_raw(b64decode(data['document']))
-        send_to_controller(self.connection_type, {'print_id': data['print_id'], 'device_identifier': self.device_identifier})
+        send_to_controller(self.connection_type,
+                           {'print_id': data['print_id'], 'device_identifier': self.device_identifier})
 
 
 class PrinterController(http.Controller):
 
     @http.route('/hw_proxy/default_printer_action', type='json', auth='none', cors='*')
     def default_printer_action(self, data):
-        printer = next((d for d in iot_devices if iot_devices[d].device_type == 'printer' and iot_devices[d].device_connection == 'direct'), None)
+        printer = next((d for d in iot_devices if
+                        iot_devices[d].device_type == 'printer' and iot_devices[d].device_connection == 'direct'), None)
         if printer:
             iot_devices[printer].action(data)
             return True

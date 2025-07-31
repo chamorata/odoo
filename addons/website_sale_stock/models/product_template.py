@@ -1,10 +1,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.website.models import ir_http
+
 from odoo import api, fields, models
 from odoo.http import request
 from odoo.tools.translate import html_translate
-
-from odoo.addons.website.models import ir_http
 
 
 class ProductTemplate(models.Model):
@@ -35,9 +35,9 @@ class ProductTemplate(models.Model):
             product = product_or_template
             free_qty = website._get_product_available_qty(product)
             has_stock_notification = (
-                product._has_stock_notification(self.env.user.partner_id)
-                or request and product.id in request.session.get(
-                    'product_with_stock_notification_enabled', set())
+                    product._has_stock_notification(self.env.user.partner_id)
+                    or request and product.id in request.session.get(
+                'product_with_stock_notification_enabled', set())
             )
             stock_notification_email = request and request.session.get('stock_notification_email', '')
             res.update({
@@ -70,7 +70,7 @@ class ProductTemplate(models.Model):
 
     @api.model
     def _get_additional_configurator_data(
-        self, product_or_template, date, currency, pricelist, **kwargs
+            self, product_or_template, date, currency, pricelist, **kwargs
     ):
         """ Override of `website_sale` to append stock data.
 

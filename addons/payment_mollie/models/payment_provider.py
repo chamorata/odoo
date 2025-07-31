@@ -4,12 +4,11 @@ import logging
 import pprint
 
 import requests
+from odoo.addons.payment_mollie import const
 from werkzeug import urls
 
 from odoo import _, fields, models, service
 from odoo.exceptions import ValidationError
-
-from odoo.addons.payment_mollie import const
 
 _logger = logging.getLogger(__name__)
 
@@ -26,7 +25,7 @@ class PaymentProvider(models.Model):
         required_if_provider="mollie", groups="base.group_system"
     )
 
-    #=== BUSINESS METHODS ===#
+    # === BUSINESS METHODS ===#
 
     def _get_supported_currencies(self):
         """ Override of `payment` to return the supported currencies. """

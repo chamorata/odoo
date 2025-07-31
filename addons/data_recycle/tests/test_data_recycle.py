@@ -4,7 +4,6 @@
 from dateutil.relativedelta import relativedelta
 
 from odoo.fields import Date
-
 from odoo.tests.common import TransactionCase, tagged
 
 
@@ -20,7 +19,8 @@ class TestDataRecycle(TransactionCase):
         cls.recycle_model = cls.env['data_recycle.model'].create({
             'name': 'Recycle Test Server',
             'res_model_id': cls.server_model.id,
-            'time_field_id': cls.env['ir.model.fields'].search([('name', '=', 'date'), ('model_id', '=', cls.server_model.id)], limit=1).id,
+            'time_field_id': cls.env['ir.model.fields'].search(
+                [('name', '=', 'date'), ('model_id', '=', cls.server_model.id)], limit=1).id,
             'time_field_delta': 1,
             'time_field_delta_unit': 'years',
             'recycle_action': 'archive',

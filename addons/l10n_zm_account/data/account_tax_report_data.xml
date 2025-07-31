@@ -108,7 +108,9 @@
                         </field>
                     </record>
                     <record id="zm_tax_report_line_14" model="account.report.line">
-                        <field name="name">14 - Other zero-rated outputs (e.g. supplies to donor funded projects or supplies to diplomatic missions etc.)</field>
+                        <field name="name">14 - Other zero-rated outputs (e.g. supplies to donor funded projects or
+                            supplies to diplomatic missions etc.)
+                        </field>
                         <field name="code">zm_vat_14</field>
                         <field name="expression_ids">
                             <record id="zm_tax_report_line_14_no_vat" model="account.report.expression">
@@ -219,7 +221,9 @@
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
                     <record id="zm_tax_report_line_24" model="account.report.line">
-                        <field name="name">24 - Standard rated local purchases and allowable administrative expenses taxed at normal taxable value</field>
+                        <field name="name">24 - Standard rated local purchases and allowable administrative expenses
+                            taxed at normal taxable value
+                        </field>
                         <field name="code">zm_vat_24</field>
                         <field name="expression_ids">
                             <record id="zm_tax_report_line_24_no_vat" model="account.report.expression">
@@ -311,12 +315,15 @@
                             <record id="zm_tax_report_line_30_no_vat" model="account.report.expression">
                                 <field name="label">no_vat</field>
                                 <field name="engine">aggregation</field>
-                                <field name="formula">zm_vat_24.no_vat + zm_vat_25.no_vat + zm_vat_26.no_vat + zm_vat_27.no_vat + zm_vat_28.no_vat + zm_vat_29.no_vat</field>
+                                <field name="formula">zm_vat_24.no_vat + zm_vat_25.no_vat + zm_vat_26.no_vat +
+                                    zm_vat_27.no_vat + zm_vat_28.no_vat + zm_vat_29.no_vat
+                                </field>
                             </record>
                             <record id="zm_tax_report_line_30_vat" model="account.report.expression">
                                 <field name="label">vat</field>
                                 <field name="engine">aggregation</field>
-                                <field name="formula">zm_vat_24.vat + zm_vat_25.vat + zm_vat_27.vat + zm_vat_29.vat</field>
+                                <field name="formula">zm_vat_24.vat + zm_vat_25.vat + zm_vat_27.vat + zm_vat_29.vat
+                                </field>
                             </record>
                         </field>
                     </record>
@@ -371,7 +378,9 @@
                             <record id="zm_tax_report_line_35_no_vat" model="account.report.expression">
                                 <field name="label">no_vat</field>
                                 <field name="engine">aggregation</field>
-                                <field name="formula">zm_vat_30.no_vat + zm_vat_31.no_vat + zm_vat_32.no_vat + zm_vat_33.no_vat + zm_vat_34.no_vat</field>
+                                <field name="formula">zm_vat_30.no_vat + zm_vat_31.no_vat + zm_vat_32.no_vat +
+                                    zm_vat_33.no_vat + zm_vat_34.no_vat
+                                </field>
                             </record>
                         </field>
                     </record>
@@ -407,7 +416,9 @@
                         </field>
                     </record>
                     <record id="zm_tax_report_line39selection" model="account.report.line">
-                        <field name="name">39 - Apportionment of input tax (Please indicate whether or not to use Apportionment of input tax.)</field>
+                        <field name="name">39 - Apportionment of input tax (Please indicate whether or not to use
+                            Apportionment of input tax.)
+                        </field>
                         <field name="code">zm_vat_39</field>
                         <field name="expression_ids">
                             <record id="zm_tax_report_line39selection_vat" model="account.report.expression">
@@ -420,7 +431,9 @@
                         </field>
                     </record>
                     <record id="zm_tax_report_line_39a" model="account.report.line">
-                        <field name="name">39a - First Method of apportionment (Please select which method of apportionment to use. Yes is 39a, No is 39b.)</field>
+                        <field name="name">39a - First Method of apportionment (Please select which method of
+                            apportionment to use. Yes is 39a, No is 39b.)
+                        </field>
                         <field name="code">zm_vat_39a</field>
                         <field name="expression_ids">
                             <record id="zm_tax_report_line_39a_no_vat" model="account.report.expression">
@@ -445,7 +458,9 @@
                             <record id="zm_tax_report_line_39b_vat" model="account.report.expression">
                                 <field name="label">vat</field>
                                 <field name="engine">aggregation</field>
-                                <field name="formula">( zm_vat_37.vat + ( zm_vat_30.vat - zm_vat_37.vat - zm_vat_38.no_vat ) * ( zm_vat_16.no_vat / zm_vat_22.no_vat ))</field>
+                                <field name="formula">( zm_vat_37.vat + ( zm_vat_30.vat - zm_vat_37.vat -
+                                    zm_vat_38.no_vat ) * ( zm_vat_16.no_vat / zm_vat_22.no_vat ))
+                                </field>
                                 <field name="subformula">ignore_zero_division</field>
                             </record>
                         </field>
@@ -457,7 +472,9 @@
                             <record id="zm_tax_report_line_40_vat" model="account.report.expression">
                                 <field name="label">vat</field>
                                 <field name="engine">aggregation</field>
-                                <field name="formula">(1 - zm_vat_39.vat) * zm_vat_37.vat + zm_vat_39.vat * ((zm_vat_39a.no_vat * zm_vat_39a.vat) + ((1 - zm_vat_39a.no_vat) * zm_vat_39b.vat))</field>
+                                <field name="formula">(1 - zm_vat_39.vat) * zm_vat_37.vat + zm_vat_39.vat *
+                                    ((zm_vat_39a.no_vat * zm_vat_39a.vat) + ((1 - zm_vat_39a.no_vat) * zm_vat_39b.vat))
+                                </field>
                             </record>
                         </field>
                     </record>

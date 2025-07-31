@@ -4,11 +4,10 @@ from datetime import datetime
 from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
-
-from odoo.tests import tagged
+from odoo.addons.mail.models.mail_template import MailTemplate
 
 from odoo.addons.base.tests.common import TransactionCaseWithUserPortal
-from odoo.addons.mail.models.mail_template import MailTemplate
+from odoo.tests import tagged
 
 
 class TestWebsiteSaleCartAbandonedCommon(TransactionCaseWithUserPortal):
@@ -24,6 +23,7 @@ class TestWebsiteSaleCartAbandonedCommon(TransactionCaseWithUserPortal):
         with patch.object(MailTemplate, 'send_mail', check_send_mail_called):
             self.env['website']._send_abandoned_cart_email()
         return email_got_sent
+
 
 @tagged('post_install', '-at_install')
 class TestWebsiteSaleCartAbandoned(TestWebsiteSaleCartAbandonedCommon):
@@ -166,7 +166,8 @@ class TestWebsiteSaleCartAbandoned(TestWebsiteSaleCartAbandonedCommon):
             'partner_id': self.customer.id,
             'website_id': website.id,
             'state': 'draft',
-            'date_order': (datetime.utcnow() - relativedelta(hours=website.cart_abandoned_delay)) - relativedelta(minutes=1),
+            'date_order': (datetime.utcnow() - relativedelta(hours=website.cart_abandoned_delay)) - relativedelta(
+                minutes=1),
             'order_line': order_line
         })
         self.assertTrue(abandoned_sale_order.is_abandoned_cart)

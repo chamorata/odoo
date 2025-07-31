@@ -2,10 +2,10 @@
 
 from collections import defaultdict
 
+from odoo.addons.hr_homeworking.models.hr_homeworking import DAYS
+
 from odoo import models
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
-
-from odoo.addons.hr_homeworking.models.hr_homeworking import DAYS
 
 
 class HrEmployeeBase(models.AbstractModel):

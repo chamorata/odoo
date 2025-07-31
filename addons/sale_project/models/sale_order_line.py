@@ -1,11 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from collections import defaultdict
-
 from odoo import api, Command, fields, models, _
 from odoo.exceptions import AccessError, UserError, ValidationError
-from odoo.tools import format_list
-from odoo.tools.sql import column_exists, create_column
 
 
 class SaleOrderLine(models.Model):
@@ -18,7 +14,8 @@ class SaleOrderLine(models.Model):
     task_id = fields.Many2one(
         'project.task', 'Generated Task',
         index=True, copy=False, export_string_translation=False)
-    reached_milestones_ids = fields.One2many('project.milestone', 'sale_line_id', string='Reached Milestones', domain=[('is_reached', '=', True)], export_string_translation=False)
+    reached_milestones_ids = fields.One2many('project.milestone', 'sale_line_id', string='Reached Milestones',
+                                             domain=[('is_reached', '=', True)], export_string_translation=False)
 
     def _get_product_from_sol_name_domain(self, product_name):
         return [
@@ -60,7 +57,8 @@ class SaleOrderLine(models.Model):
                     sale_order = self.env['sale.order'].create(so_create_values)
                 default_values['order_id'] = sale_order.id
             if product_name := self.env.context.get('sol_product_name') or self.env.context.get('default_name'):
-                product = self.env['product.product'].search(self._get_product_from_sol_name_domain(product_name), limit=1)
+                product = self.env['product.product'].search(self._get_product_from_sol_name_domain(product_name),
+                                                             limit=1)
                 if product:
                     default_values['product_id'] = product.id
                     # We need to remove the name from the defaults so that the
@@ -79,7 +77,9 @@ class SaleOrderLine(models.Model):
         # To get the right product when creating a SOL on the fly, we need to get
         # the name that was entered in the field from the `default_get` method.
         # The easiest way of doing that is to store it in the context.
-        if self.env.context.get('form_view_ref') == 'sale_project.sale_order_line_view_form_editable' and not self.env.context.get('action_view_sols'):
+        if self.env.context.get(
+                'form_view_ref') == 'sale_project.sale_order_line_view_form_editable' and not self.env.context.get(
+                'action_view_sols'):
             self = self.with_context(sol_product_name=name)
             ensure_is_service_product = True
         result = super().name_create(name)
@@ -93,7 +93,9 @@ class SaleOrderLine(models.Model):
         # called with whatever was typed in the field. However, we don't want
         # that value to overwrite the computed SOL name if we find a product.
         defaults = super()._add_missing_default_values(values)
-        if self.env.context.get('form_view_ref') == 'sale_project.sale_order_line_view_form_editable' and not self.env.context.get('action_view_sols'):
+        if self.env.context.get(
+                'form_view_ref') == 'sale_project.sale_order_line_view_form_editable' and not self.env.context.get(
+                'action_view_sols'):
             if "name" in defaults and "product_id" in defaults:
                 del defaults["name"]
         return defaults
@@ -108,10 +110,10 @@ class SaleOrderLine(models.Model):
     @api.depends('product_id')
     def _compute_qty_delivered_method(self):
         milestones_lines = self.filtered(lambda sol:
-            not sol.is_expense
-            and sol.product_id.type == 'service'
-            and sol.product_id.service_type == 'milestones'
-        )
+                                         not sol.is_expense
+                                         and sol.product_id.type == 'service'
+                                         and sol.product_id.service_type == 'milestones'
+                                         )
         milestones_lines.qty_delivered_method = 'milestones'
         super(SaleOrderLine, self - milestones_lines)._compute_qty_delivered_method()
 
@@ -128,7 +130,8 @@ class SaleOrderLine(models.Model):
             ['sale_line_id'],
             ['quantity_percentage:sum'],
         )
-        reached_milestones_per_sol = {sale_line.id: percentage_sum for sale_line, percentage_sum in project_milestone_read_group}
+        reached_milestones_per_sol = {sale_line.id: percentage_sum for sale_line, percentage_sum in
+                                      project_milestone_read_group}
         for line in lines_by_milestones:
             sol_id = line.id or line._origin.id
             line.qty_delivered = reached_milestones_per_sol.get(sol_id, 0.0) * line.product_uom_qty
@@ -146,7 +149,7 @@ class SaleOrderLine(models.Model):
                     list({int(account_id) for ids in line.analytic_distribution for account_id in ids.split(",")})
                 ).root_plan_id
                 if accounts_to_add := project._get_analytic_accounts().filtered(
-                    lambda account: account.root_plan_id not in applied_root_plans
+                        lambda account: account.root_plan_id not in applied_root_plans
                 ):
                     # project account is added to each analytic distribution line
                     line.analytic_distribution = {
@@ -168,7 +171,8 @@ class SaleOrderLine(models.Model):
         # if the SO line created a task, post a message on the order
         for line in confirmed_lines - has_task_lines:
             if line.task_id:
-                msg_body = _("Task Created (%(name)s): %(link)s", name=line.product_id.name, link=line.task_id._get_html_link())
+                msg_body = _("Task Created (%(name)s): %(link)s", name=line.product_id.name,
+                             link=line.task_id._get_html_link())
                 line.order_id.message_post(body=msg_body)
 
         # Set a service SOL on the project, if any is given
@@ -187,7 +191,8 @@ class SaleOrderLine(models.Model):
         if 'product_uom_qty' in values and not self.env.context.get('no_update_allocated_hours', False):
             for line in self:
                 if line.task_id and line.product_id.type == 'service':
-                    allocated_hours = line._convert_qty_company_hours(line.task_id.company_id or self.env.user.company_id)
+                    allocated_hours = line._convert_qty_company_hours(
+                        line.task_id.company_id or self.env.user.company_id)
                     line.task_id.write({'allocated_hours': allocated_hours})
         return result
 
@@ -209,8 +214,10 @@ class SaleOrderLine(models.Model):
         """Generate project values"""
         # create the project or duplicate one
         return {
-            'name': '%s - %s' % (self.order_id.client_order_ref, self.order_id.name) if self.order_id.client_order_ref else self.order_id.name,
-            'account_id': self.env.context.get('project_account_id') or self.order_id.project_account_id.id or self.env['account.analytic.account'].create(self.order_id._prepare_analytic_account_data()).id,
+            'name': '%s - %s' % (self.order_id.client_order_ref,
+                                 self.order_id.name) if self.order_id.client_order_ref else self.order_id.name,
+            'account_id': self.env.context.get('project_account_id') or self.order_id.project_account_id.id or self.env[
+                'account.analytic.account'].create(self.order_id._prepare_analytic_account_data()).id,
             'partner_id': self.order_id.partner_id.id,
             'sale_line_id': self.id,
             'active': True,
@@ -245,7 +252,9 @@ class SaleOrderLine(models.Model):
                 ('product_id.service_tracking', 'in', ['project_only', 'task_in_project']),
             ])
             if project_only_sol_count == 1:
-                values['name'] = "%s - [%s] %s" % (values['name'], self.product_id.default_code, self.product_id.name) if self.product_id.default_code else "%s - %s" % (values['name'], self.product_id.name)
+                values['name'] = "%s - [%s] %s" % (values['name'], self.product_id.default_code,
+                                                   self.product_id.name) if self.product_id.default_code else "%s - %s" % (
+                    values['name'], self.product_id.name)
             values.update(self._timesheet_create_project_account_vals(self.order_id.project_id))
             project = self.env['project.project'].create(values)
 
@@ -288,9 +297,9 @@ class SaleOrderLine(models.Model):
                 lang=self.order_id._get_lang(),
             )._get_sale_order_line_multiline_description_sale()
             if (
-                self.name != default_name
-                and len(sale_line_name_parts) > 1
-                and sale_line_name_parts[1]
+                    self.name != default_name
+                    and len(sale_line_name_parts) > 1
+                    and sale_line_name_parts[1]
             ):
                 # if there's a custom line description, skip the product name part when possible
                 sale_line_name_parts.pop(0)
@@ -319,9 +328,9 @@ class SaleOrderLine(models.Model):
         self.task_id = task
         # post message on task
         task_msg = _("This task has been created from: %(order_link)s (%(product_name)s)",
-            order_link=self.order_id._get_html_link(),
-            product_name=self.product_id.name,
-        )
+                     order_link=self.order_id._get_html_link(),
+                     product_name=self.product_id.name,
+                     )
         task.message_post(body=task_msg)
         return task
 
@@ -329,7 +338,8 @@ class SaleOrderLine(models.Model):
         return self.filtered(lambda sol: sol.is_service and sol.product_id.service_tracking == 'task_global_project')
 
     def _get_so_lines_new_project(self):
-        return self.filtered(lambda sol: sol.is_service and sol.product_id.service_tracking in ['project_only', 'task_in_project'])
+        return self.filtered(
+            lambda sol: sol.is_service and sol.product_id.service_tracking in ['project_only', 'task_in_project'])
 
     def _timesheet_service_generation(self):
         """ For service lines, create the task or the project. If already exists, it simply links
@@ -346,15 +356,23 @@ class SaleOrderLine(models.Model):
         map_so_project = {}
         if so_line_new_project:
             order_ids = self.mapped('order_id').ids
-            so_lines_with_project = self.search([('order_id', 'in', order_ids), ('project_id', '!=', False), ('product_id.service_tracking', 'in', ['project_only', 'task_in_project']), ('product_id.project_template_id', '=', False)])
+            so_lines_with_project = self.search([('order_id', 'in', order_ids), ('project_id', '!=', False),
+                                                 ('product_id.service_tracking', 'in',
+                                                  ['project_only', 'task_in_project']),
+                                                 ('product_id.project_template_id', '=', False)])
             map_so_project = {sol.order_id.id: sol.project_id for sol in so_lines_with_project}
-            so_lines_with_project_templates = self.search([('order_id', 'in', order_ids), ('project_id', '!=', False), ('product_id.service_tracking', 'in', ['project_only', 'task_in_project']), ('product_id.project_template_id', '!=', False)])
-            map_so_project_templates = {(sol.order_id.id, sol.product_id.project_template_id.id): sol.project_id for sol in so_lines_with_project_templates}
+            so_lines_with_project_templates = self.search([('order_id', 'in', order_ids), ('project_id', '!=', False),
+                                                           ('product_id.service_tracking', 'in',
+                                                            ['project_only', 'task_in_project']),
+                                                           ('product_id.project_template_id', '!=', False)])
+            map_so_project_templates = {(sol.order_id.id, sol.product_id.project_template_id.id): sol.project_id for sol
+                                        in so_lines_with_project_templates}
 
         # search the global project of current SO lines, in which create their task
         map_sol_project = {}
         if so_line_task_global_project:
-            map_sol_project = {sol.id: sol.product_id.with_company(sol.company_id).project_id for sol in so_line_task_global_project}
+            map_sol_project = {sol.id: sol.product_id.with_company(sol.company_id).project_id for sol in
+                               so_line_task_global_project}
 
         def _can_create_project(sol):
             if not sol.project_id:
@@ -377,7 +395,8 @@ class SaleOrderLine(models.Model):
                 # If no reference analytic account exists, set the account of the generated project to the account of the project's SO or create a new one
                 account = map_account_per_so.get(so_line.order_id.id)
                 if not account:
-                    account = so_line.order_id.project_account_id or self.env['account.analytic.account'].create(so_line.order_id._prepare_analytic_account_data())
+                    account = so_line.order_id.project_account_id or self.env['account.analytic.account'].create(
+                        so_line.order_id._prepare_analytic_account_data())
                     map_account_per_so[so_line.order_id.id] = account
                 project = so_line.with_context(project_account_id=account.id)._timesheet_create_project()
                 # If the SO generates projects on confirmation and the project's SO is not set, set it to the project's SOL with the lowest (sequence, id)
@@ -390,13 +409,14 @@ class SaleOrderLine(models.Model):
             elif not project:
                 # Attach subsequent SO lines to the created project
                 so_line.project_id = (
-                    map_so_project_templates.get((so_line.order_id.id, so_line.product_id.project_template_id.id))
-                    or map_so_project.get(so_line.order_id.id)
+                        map_so_project_templates.get((so_line.order_id.id, so_line.product_id.project_template_id.id))
+                        or map_so_project.get(so_line.order_id.id)
                 )
             if so_line.product_id.service_tracking == 'task_in_project':
                 if not project:
                     if so_line.product_id.project_template_id:
-                        project = map_so_project_templates[(so_line.order_id.id, so_line.product_id.project_template_id.id)]
+                        project = map_so_project_templates[
+                            (so_line.order_id.id, so_line.product_id.project_template_id.id)]
                     else:
                         project = map_so_project[so_line.order_id.id]
                 if not so_line.task_id:
@@ -457,8 +477,8 @@ class SaleOrderLine(models.Model):
                 [accounts] = self.env['project.project']._read_group([
                     ('account_id', '!=', False),
                     '|',
-                        ('sale_line_id', '=', self.id),
-                        ('tasks.sale_line_id', '=', self.id),
+                    ('sale_line_id', '=', self.id),
+                    ('tasks.sale_line_id', '=', self.id),
                 ], aggregates=['account_id:recordset'])[0]
                 if len(accounts) == 1:
                     values['analytic_distribution'] = {accounts.id: 100}

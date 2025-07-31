@@ -22,7 +22,7 @@ class SaleOrder(models.Model):
         string="Optional Products Lines",
         copy=True)
 
-    #=== COMPUTE METHODS ===#
+    # === COMPUTE METHODS ===#
 
     # Do not make it depend on `company_id` field
     # It is triggered manually by the _onchange_company_id below iff the SO has not been saved.
@@ -75,14 +75,15 @@ class SaleOrder(models.Model):
         for order in self.filtered('sale_order_template_id'):
             order.journal_id = order.sale_order_template_id.journal_id
 
-    #=== CONSTRAINT METHODS ===#
+    # === CONSTRAINT METHODS ===#
 
     @api.constrains('company_id', 'sale_order_option_ids')
     def _check_optional_product_company_id(self):
         for order in self:
             companies = order.sale_order_option_ids.product_id.company_id
             if companies and companies != order.company_id:
-                bad_products = order.sale_order_option_ids.product_id.filtered(lambda p: p.company_id and p.company_id != order.company_id)
+                bad_products = order.sale_order_option_ids.product_id.filtered(
+                    lambda p: p.company_id and p.company_id != order.company_id)
                 raise ValidationError(_(
                     "Your quotation contains products from company %(product_company)s whereas your quotation belongs to company %(quote_company)s. \n Please change the company of your quotation or remove the products from other companies (%(bad_products)s).",
                     product_company=', '.join(companies.mapped('display_name')),
@@ -90,7 +91,7 @@ class SaleOrder(models.Model):
                     bad_products=', '.join(bad_products.mapped('display_name')),
                 ))
 
-    #=== ONCHANGE METHODS ===#
+    # === ONCHANGE METHODS ===#
 
     @api.onchange('company_id')
     def _onchange_company_id(self):
@@ -136,10 +137,10 @@ class SaleOrder(models.Model):
 
         def line_eqv(line, t_line):
             return line and t_line and (
-                line.product_id == t_line.product_id
-                and line.display_type == t_line.display_type
-                and line.product_uom == t_line.product_uom_id
-                and line.product_uom_qty == t_line.product_uom_qty
+                    line.product_id == t_line.product_id
+                    and line.display_type == t_line.display_type
+                    and line.product_uom == t_line.product_uom_id
+                    and line.product_uom_qty == t_line.product_uom_qty
             )
 
         def option_eqv(option, t_option):
@@ -154,12 +155,12 @@ class SaleOrder(models.Model):
         t_options = self.sale_order_template_id.sale_order_template_option_ids
 
         if all(chain(
-            starmap(line_eqv, zip_longest(lines, t_lines)),
-            starmap(option_eqv, zip_longest(options, t_options)),
+                starmap(line_eqv, zip_longest(lines, t_lines)),
+                starmap(option_eqv, zip_longest(options, t_options)),
         )):
             self._onchange_sale_order_template_id()
 
-    #=== ACTION METHODS ===#
+    # === ACTION METHODS ===#
 
     def _get_confirmation_template(self):
         self.ensure_one()

@@ -9,6 +9,7 @@ class ProxyAttr:
     Used with the `Proxy` class, this class is used to set exposed attributes of the wrapped instance while providing
     optional type casting.
     """
+
     def __init__(self, cast=False):
         self._cast__ = cast
 
@@ -35,6 +36,7 @@ class ProxyFunc:
     Used with the `Proxy` class, this class is used to set exposed functions of the wrapped instance
     while also allowing optional type casting on return values.
     """
+
     def __init__(self, cast=False):
         self._cast__ = cast
 

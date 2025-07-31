@@ -6,16 +6,15 @@ import logging
 import pprint
 from datetime import datetime
 
+from odoo.addons.payment import utils as payment_utils
+from odoo.addons.payment_stripe import utils as stripe_utils
+from odoo.addons.payment_stripe.const import HANDLED_WEBHOOK_EVENTS
 from werkzeug.exceptions import Forbidden
 
 from odoo import http
 from odoo.exceptions import ValidationError
 from odoo.http import request
 from odoo.tools import file_open, mute_logger
-
-from odoo.addons.payment import utils as payment_utils
-from odoo.addons.payment_stripe import utils as stripe_utils
-from odoo.addons.payment_stripe.const import HANDLED_WEBHOOK_EVENTS
 
 _logger = logging.getLogger(__name__)
 
@@ -24,7 +23,7 @@ class StripeController(http.Controller):
     _return_url = '/payment/stripe/return'
     _webhook_url = '/payment/stripe/webhook'
     _apple_pay_domain_association_url = '/.well-known/apple-developer-merchantid-domain-association'
-    WEBHOOK_AGE_TOLERANCE = 10*60  # seconds
+    WEBHOOK_AGE_TOLERANCE = 10 * 60  # seconds
 
     @http.route(_return_url, type='http', methods=['GET'], auth='public')
     def stripe_return(self, **data):

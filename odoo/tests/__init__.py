@@ -6,6 +6,6 @@ See https://github.com/python/cpython/tree/3.10/Lib/unittest for reference files
 """
 
 from . import common
+from . import test_parse_inline_template
 from .common import *
 from .form import Form, O2MProxy, M2MProxy
-from . import test_parse_inline_template

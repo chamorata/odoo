@@ -1,15 +1,15 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import date, datetime, timezone
-from dateutil.relativedelta import relativedelta
 
+from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
+from odoo.addons.hr_holidays.tests.common import TestHrHolidaysCommon
+from odoo.addons.mail.tools.discuss import Store
 
 from odoo import fields
 from odoo.addons.base.tests.common import TransactionCaseWithUserDemo
 from odoo.tests.common import tagged, users, warmup
-from odoo.addons.hr_holidays.tests.common import TestHrHolidaysCommon
-from odoo.addons.mail.tools.discuss import Store
 
 
 @tagged("post_install", "-at_install", "out_of_office")
@@ -27,7 +27,8 @@ class TestOutOfOffice(TestHrHolidaysCommon):
     @freeze_time('2024-06-06')
     def test_leave_ooo(self):
         self.assertNotEqual(self.employee_hruser.user_id.im_status, 'leave_offline', 'user should not be on leave')
-        self.assertNotEqual(self.employee_hruser.user_id.partner_id.im_status, 'leave_offline', 'user should not be on leave')
+        self.assertNotEqual(self.employee_hruser.user_id.partner_id.im_status, 'leave_offline',
+                            'user should not be on leave')
         first_leave_date_end = (date.today() + relativedelta(days=1))
         first_leave = self.env['hr.leave'].create({
             'name': 'Christmas',
@@ -49,7 +50,8 @@ class TestOutOfOffice(TestHrHolidaysCommon):
         second_leave.action_approve()
         # validate a leave from 2024-06-10 (Monday) to 2024-06-11 (Tuesday)
         self.assertEqual(self.employee_hruser.user_id.im_status, 'leave_offline', 'user should be out (leave_offline)')
-        self.assertEqual(self.employee_hruser.user_id.partner_id.im_status, 'leave_offline', 'user should be out (leave_offline)')
+        self.assertEqual(self.employee_hruser.user_id.partner_id.im_status, 'leave_offline',
+                         'user should be out (leave_offline)')
 
         partner = self.employee_hruser.user_id.partner_id
         partner2 = self.user_employee.partner_id

@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo.tools.json import scriptsafe as json_scriptsafe
-
 from odoo import api, exceptions, fields, models, _
-
+from odoo.tools.json import scriptsafe as json_scriptsafe
 from .base_automation import get_webhook_request_payload
+
 
 class ServerAction(models.Model):
     _inherit = "ir.actions.server"
@@ -24,7 +23,7 @@ class ServerAction(models.Model):
                     _("Model of action %(action_name)s should match the one from automated rule %(rule_name)s.",
                       action_name=action.name,
                       rule_name=action.base_automation_id.name
-                     )
+                      )
                 )
 
     @api.depends('usage')
@@ -36,7 +35,8 @@ class ServerAction(models.Model):
             rule_model = action.base_automation_id.model_id
             action.available_model_ids = rule_model.ids if rule_model in action.available_model_ids else []
 
-    @api.depends('state', 'update_field_id', 'crud_model_id', 'value', 'evaluation_type', 'template_id', 'partner_ids', 'activity_summary', 'sms_template_id', 'webhook_url')
+    @api.depends('state', 'update_field_id', 'crud_model_id', 'value', 'evaluation_type', 'template_id', 'partner_ids',
+                 'activity_summary', 'sms_template_id', 'webhook_url')
     def _compute_name(self):
         ''' Only server actions linked to a base_automation get an automatic name. '''
         to_update = self.filtered('base_automation_id')
@@ -47,7 +47,7 @@ class ServerAction(models.Model):
                     action.name = f"{action_type} {action._stringify_path()}"
                 case 'object_create':
                     action.name = _(
-                    "Create %(model_name)s with name %(value)s",
+                        "Create %(model_name)s with name %(value)s",
                         model_name=action.crud_model_id.name,
                         value=action.value
                     )
@@ -55,9 +55,9 @@ class ServerAction(models.Model):
                     action.name = _("Send Webhook Notification")
                 case 'sms':
                     action.name = _(
-                    'Send SMS: %(template_name)s',
-                    template_name=action.sms_template_id.name
-                )
+                        'Send SMS: %(template_name)s',
+                        template_name=action.sms_template_id.name
+                    )
                 case 'mail_post':
                     action.name = _(
                         'Send email: %(template_name)s',

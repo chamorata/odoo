@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import odoo.tests
 from odoo.addons.point_of_sale.tests.test_frontend import TestPointOfSaleHttpCommon
+
+import odoo.tests
 from odoo import Command
 
 
@@ -28,15 +29,20 @@ class TestUi(TestPointOfSaleHttpCommon):
             'company_id': self._get_main_company().id,
             'code': 'SIMP',
         })
+
         def get_number_of_regular_invoices():
-            return self.env['account.move'].search_count([('journal_id', '=', self.main_pos_config.invoice_journal_id.id), ('l10n_es_is_simplified', '=', False), ('pos_order_ids', '!=', False)])
+            return self.env['account.move'].search_count(
+                [('journal_id', '=', self.main_pos_config.invoice_journal_id.id), ('l10n_es_is_simplified', '=', False),
+                 ('pos_order_ids', '!=', False)])
+
         initial_number_of_regular_invoices = get_number_of_regular_invoices()
         self.main_pos_config.l10n_es_simplified_invoice_journal_id = simp
         # this `limit` value is linked to the `SIMPLIFIED_INVOICE_LIMIT` const in the tour
         self._get_main_company().l10n_es_simplified_invoice_limit = 1000
         self.main_pos_config.with_user(self.pos_user).open_ui()
         self.start_pos_tour("spanish_pos_tour")
-        num_of_simp_invoices = self.env['account.move'].search_count([('journal_id', '=', simp.id), ('l10n_es_is_simplified', '=', True)])
+        num_of_simp_invoices = self.env['account.move'].search_count(
+            [('journal_id', '=', simp.id), ('l10n_es_is_simplified', '=', True)])
         num_of_regular_invoices = get_number_of_regular_invoices() - initial_number_of_regular_invoices
         self.assertEqual(num_of_simp_invoices, 3)
         self.assertEqual(num_of_regular_invoices, 1)
@@ -91,7 +97,8 @@ class TestUi(TestPointOfSaleHttpCommon):
         current_session.action_pos_session_closing_control()
 
         self.main_pos_config.with_user(self.pos_admin).open_ui()
-        self.start_tour("/pos/ui?config_id=%d" % self.main_pos_config.id, 'l10n_es_pos_settle_account_due', login="accountman")
+        self.start_tour("/pos/ui?config_id=%d" % self.main_pos_config.id, 'l10n_es_pos_settle_account_due',
+                        login="accountman")
 
     def test_spanish_pos_invoice_no_certificate(self):
         """This test make sure that the invoice generated in spanish PoS are not proforma invoices when no certificate exists"""
@@ -137,9 +144,11 @@ class TestUi(TestPointOfSaleHttpCommon):
         self.pos_make_payment_0.with_context(context_payment).check()
 
         self.pos_order_pos0.action_pos_order_invoice()
-        attachment_proforma = self.pos_order_pos0.account_move.attachment_ids.filtered(lambda att: "proforma" in att.name)
+        attachment_proforma = self.pos_order_pos0.account_move.attachment_ids.filtered(
+            lambda att: "proforma" in att.name)
         self.assertFalse(attachment_proforma)
-        invoice_str = str(self.pos_order_pos0.account_move._get_invoice_legal_documents('pdf', allow_fallback=True).get('content'))
+        invoice_str = str(
+            self.pos_order_pos0.account_move._get_invoice_legal_documents('pdf', allow_fallback=True).get('content'))
         self.assertTrue("invoice" in invoice_str)
         self.assertTrue("proforma" not in invoice_str)
 
@@ -150,6 +159,7 @@ class TestUi(TestPointOfSaleHttpCommon):
         self.assertTrue(len(self.main_pos_config.available_pricelist_ids.ids) > 1)
         self.main_pos_config.l10n_es_simplified_invoice_journal_id = self.main_pos_config.journal_id
         self.main_pos_config.open_ui()
-        self.start_tour("/pos/ui?config_id=%d" % self.main_pos_config.id, 'test_simplified_invoice_not_override_set_pricelist', login="pos_user")
+        self.start_tour("/pos/ui?config_id=%d" % self.main_pos_config.id,
+                        'test_simplified_invoice_not_override_set_pricelist', login="pos_user")
         order = self.env['pos.order'].search([('partner_id', '=', self.main_pos_config.simplified_partner_id.id)])
         self.assertNotEqual(order.pricelist_id, self.main_pos_config.simplified_partner_id.property_product_pricelist)

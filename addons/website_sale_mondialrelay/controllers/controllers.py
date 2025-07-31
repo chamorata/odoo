@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-from odoo import http, _
-from odoo.addons.website_sale.controllers.main import WebsiteSale
 from odoo.addons.website_sale.controllers.delivery import Delivery
+from odoo.addons.website_sale.controllers.main import WebsiteSale
 
+from odoo import http, _
 from odoo.exceptions import AccessDenied, UserError
 from odoo.http import request
 
@@ -17,7 +17,8 @@ class MondialRelay(http.Controller):
             raise AccessDenied('Customer of the order cannot be the public user at this step.')
 
         if order.carrier_id.country_ids:
-            country_is_allowed = data['Pays'][:2].upper() in order.carrier_id.country_ids.mapped(lambda c: c.code.upper())
+            country_is_allowed = data['Pays'][:2].upper() in order.carrier_id.country_ids.mapped(
+                lambda c: c.code.upper())
             assert country_is_allowed, _("%s is not allowed for this delivery carrier.", data['Pays'])
 
         partner_shipping = order.partner_id.sudo()._mondialrelay_search_or_create({

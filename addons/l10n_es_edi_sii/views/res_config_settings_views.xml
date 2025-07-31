@@ -35,7 +35,9 @@
                             </div>
                             <br/>
                             <div>
-                                <button name="%(l10n_es_edi_sii_certificate_action)d" type="action" class="oe_link">Manage certificates (SII)</button>
+                                <button name="%(l10n_es_edi_sii_certificate_action)d" type="action" class="oe_link">
+                                    Manage certificates (SII)
+                                </button>
                             </div>
                         </div>
                     </div>

@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from markupsafe import Markup
+
 from odoo import _, fields, models
 
 
@@ -27,7 +28,8 @@ class PaymentTransaction(models.Model):
     def _send_donation_email(self, is_internal_notification=False, comment=None, recipient_email=None):
         self.ensure_one()
         if is_internal_notification or self.state == 'done':
-            subject = _('A donation has been made on your website') if is_internal_notification else _('Donation confirmation')
+            subject = _('A donation has been made on your website') if is_internal_notification else _(
+                'Donation confirmation')
             body = self.env['ir.qweb']._render('website_payment.donation_mail_body', {
                 'is_internal_notification': is_internal_notification,
                 'tx': self,

@@ -59,7 +59,8 @@ class Speedscope:
         if complete:
             start_stack = []
             end_stack = []
-            init_stack_trace_ids = self.stack_to_ids(self.init_stack_trace, use_context and entries[0].get('exec_context'))
+            init_stack_trace_ids = self.stack_to_ids(self.init_stack_trace,
+                                                     use_context and entries[0].get('exec_context'))
             for frame_id in init_stack_trace_ids:
                 start_stack.append({
                     "type": "O",

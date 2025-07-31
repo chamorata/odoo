@@ -1,9 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.sale_loyalty.tests.common import TestSaleCouponCommon
+
 from odoo.fields import Command
 from odoo.tests import Form, tagged
-
-from odoo.addons.sale_loyalty.tests.common import TestSaleCouponCommon
 
 
 @tagged('post_install', '-at_install')
@@ -50,7 +50,6 @@ class TestSaleCouponProgramRules(TestSaleCouponCommon):
             'variable': 'price',
             'list_base_price': 0,
         }])
-
 
     # Test a free shipping reward + some expected behavior
     # (automatic line addition or removal)
@@ -169,7 +168,8 @@ class TestSaleCouponProgramRules(TestSaleCouponCommon):
             'order_id': order.id,
         })
         self._auto_rewards(order, programs)
-        self.assertEqual(len(order.order_line.ids), 3, "We should get the 10% discount line since we bought 872.73$ and a free shipping line with a value of 0")
+        self.assertEqual(len(order.order_line.ids), 3,
+                         "We should get the 10% discount line since we bought 872.73$ and a free shipping line with a value of 0")
         self.assertEqual(order.order_line.filtered(lambda l: l.reward_id.reward_type == 'shipping').price_unit, 0)
         self.assertEqual(order.amount_total, 960 * 0.9)
         order.carrier_id = self.env['delivery.carrier'].search([])[1]
@@ -251,7 +251,8 @@ class TestSaleCouponProgramRules(TestSaleCouponCommon):
 
         self._apply_promo_code(order, 'free_shipping')
         self._auto_rewards(order, programs)
-        self.assertEqual(len(order.order_line.ids), 3, "We should get the delivery line and the free delivery since we are below 872.73$")
+        self.assertEqual(len(order.order_line.ids), 3,
+                         "We should get the delivery line and the free delivery since we are below 872.73$")
         self.assertEqual(order.reward_amount, -20)
         self.assertEqual(sum([line.price_total for line in order._get_no_effect_on_threshold_lines()]), 0)
         self.assertEqual(order.amount_untaxed, 872.73)
@@ -292,9 +293,9 @@ class TestSaleCouponProgramRules(TestSaleCouponCommon):
             'applies_on': 'both',
             'trigger': 'auto',
             'rule_ids': [(0, 0, {
-                    'reward_point_mode': 'money',
-                    'reward_point_amount': 1,
-                })],
+                'reward_point_mode': 'money',
+                'reward_point_amount': 1,
+            })],
             'reward_ids': [(0, 0, {
                 'reward_type': 'shipping',
                 'required_points': 100,
@@ -356,7 +357,6 @@ class TestSaleCouponProgramRules(TestSaleCouponCommon):
         self.assertEqual(order.invoice_status, 'no')
 
     def test_delivery_shant_count_toward_quantity_bought(self):
-
         # Create promotion: 10% for everything
         discount_program = self.env['loyalty.program'].create({
             'name': '10 percent off order with min. 2 products',
@@ -365,9 +365,9 @@ class TestSaleCouponProgramRules(TestSaleCouponCommon):
             'applies_on': 'current',
             'rule_ids': [(0, 0, {
                 'minimum_qty': 2,
-                'minimum_amount':0,
+                'minimum_amount': 0,
             })],
-           'reward_ids': [(0, 0, {
+            'reward_ids': [(0, 0, {
                 'reward_type': 'discount',
                 'discount_mode': 'percent',
                 'discount': 10.0,
@@ -437,14 +437,16 @@ class TestSaleCouponProgramRules(TestSaleCouponCommon):
 
         self._apply_promo_code(order, 'free_shipping')
         self._auto_rewards(order, programs)
-        self.assertEqual(len(order.order_line.ids), 3, "We should get the delivery line and the free delivery since we are below 872.73$")
+        self.assertEqual(len(order.order_line.ids), 3,
+                         "We should get the delivery line and the free delivery since we are below 872.73$")
         self.assertEqual(order.reward_amount, -20)
         self.assertEqual(sum(line.price_total for line in order._get_no_effect_on_threshold_lines()), 0)
         self.assertEqual(order.amount_untaxed, 872.73)
 
         sol1.product_uom_qty = 1
         self._auto_rewards(order, programs)
-        self.assertEqual(len(order.order_line.ids), 2, "We should loose the free delivery reward since we are above 872.73$")
+        self.assertEqual(len(order.order_line.ids), 2,
+                         "We should loose the free delivery reward since we are above 872.73$")
         self.assertEqual(order.reward_amount, 0)
 
     def test_discount_reward_claimable_when_shipping_reward_already_claimed_from_same_coupon(self):

@@ -4,13 +4,13 @@
 
     <t t-name="mail.StatusBarDurationField.Dropdown" t-inherit="web.StatusBarField.Dropdown" t-inherit-mode="primary">
         <xpath expr="//*[@t-esc='item.label']" position="inside">
-            <span t-esc="item.label" />
+            <span t-esc="item.label"/>
             <span t-if="item.shortTimeInStage" t-att-title="item.fullTimeInStage" class="ms-2 text-muted small">
-                <t t-esc="item.shortTimeInStage" />
+                <t t-esc="item.shortTimeInStage"/>
             </span>
         </xpath>
         <xpath expr="//*[@t-esc='item.label']" position="attributes">
-            <attribute name="t-esc" />
+            <attribute name="t-esc"/>
         </xpath>
     </t>
 
@@ -20,13 +20,13 @@
         </xpath>
 
         <xpath expr="//*[@t-esc='item.label']" position="inside">
-            <span t-esc="item.label" />
+            <span t-esc="item.label"/>
             <span t-if="item.shortTimeInStage" t-att-title="item.fullTimeInStage" class="ms-2 text-muted small">
-                <t t-esc="item.shortTimeInStage" />
+                <t t-esc="item.shortTimeInStage"/>
             </span>
         </xpath>
         <xpath expr="//*[@t-esc='item.label']" position="attributes">
-            <attribute name="t-esc" />
+            <attribute name="t-esc"/>
         </xpath>
     </t>
 </templates>

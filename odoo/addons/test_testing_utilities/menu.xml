@@ -241,8 +241,8 @@
                 <field name="x" invisible="True" readonly="True"/>
                 <field name="value"/>
                 <field name="subs"
-                    invisible="value == 666"
-                    context="{
+                       invisible="value == 666"
+                       context="{
                         'list_view_ref': 'test_testing_utilities.o2m_modifier_ref_sub_tree',
                         'hide_c': True
                     }"/>

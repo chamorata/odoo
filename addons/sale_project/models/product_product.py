@@ -19,8 +19,8 @@ class ProductProduct(models.Model):
     def _inverse_service_policy(self):
         for product in self:
             if product.service_policy:
-
-                product.invoice_policy, product.service_type = self.product_tmpl_id._get_service_to_general(product.service_policy)
+                product.invoice_policy, product.service_type = self.product_tmpl_id._get_service_to_general(
+                    product.service_policy)
 
     def write(self, vals):
         if 'type' in vals and vals['type'] != 'service':

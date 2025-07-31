@@ -7,7 +7,6 @@ from datetime import date
 from odoo import api, fields, models, _, exceptions
 from odoo.tools import SQL
 
-
 _logger = logging.getLogger(__name__)
 
 
@@ -32,11 +31,11 @@ class GamificationBadge(models.Model):
         string='Forum Badge Level', default='bronze')
 
     rule_auth = fields.Selection([
-            ('everyone', 'Everyone'),
-            ('users', 'A selected list of users'),
-            ('having', 'People having some badges'),
-            ('nobody', 'No one, assigned through challenges'),
-        ], default='everyone',
+        ('everyone', 'Everyone'),
+        ('users', 'A selected list of users'),
+        ('having', 'People having some badges'),
+        ('nobody', 'No one, assigned through challenges'),
+    ], default='everyone',
         string="Allowance to Grant", help="Who can grant this badge", required=True)
     rule_auth_user_ids = fields.Many2many(
         'res.users', 'rel_badge_auth_users',
@@ -47,8 +46,10 @@ class GamificationBadge(models.Model):
         string='Required Badges',
         help="Only the people having these badges can give this badge")
 
-    rule_max = fields.Boolean('Monthly Limited Sending', help="Check to set a monthly limit per person of sending this badge")
-    rule_max_number = fields.Integer('Limitation Number', help="The maximum number of time this badge can be sent per month per person.")
+    rule_max = fields.Boolean('Monthly Limited Sending',
+                              help="Check to set a monthly limit per person of sending this badge")
+    rule_max_number = fields.Integer('Limitation Number',
+                                     help="The maximum number of time this badge can be sent per month per person.")
     challenge_ids = fields.One2many('gamification.challenge', 'reward_id', string="Reward of Challenges")
 
     goal_definition_ids = fields.Many2many(
@@ -59,8 +60,10 @@ class GamificationBadge(models.Model):
         'gamification.badge.user', 'badge_id',
         string='Owners', help='The list of instances of this badge granted to users')
 
-    granted_count = fields.Integer("Total", compute='_get_owners_info', help="The number of time this badge has been received.")
-    granted_users_count = fields.Integer("Number of users", compute='_get_owners_info', help="The number of time this badge has been received by unique users.")
+    granted_count = fields.Integer("Total", compute='_get_owners_info',
+                                   help="The number of time this badge has been received.")
+    granted_users_count = fields.Integer("Number of users", compute='_get_owners_info',
+                                         help="The number of time this badge has been received by unique users.")
     unique_owner_ids = fields.Many2many(
         'res.users', string="Unique Owners", compute='_get_owners_info',
         help="The list of unique users having received this badge.")
@@ -210,7 +213,8 @@ class GamificationBadge(models.Model):
         elif self.rule_auth == 'users' and self.env.user not in self.rule_auth_user_ids:
             return self.USER_NOT_VIP
         elif self.rule_auth == 'having':
-            all_user_badges = self.env['gamification.badge.user'].search([('user_id', '=', self.env.uid)]).mapped('badge_id')
+            all_user_badges = self.env['gamification.badge.user'].search([('user_id', '=', self.env.uid)]).mapped(
+                'badge_id')
             if self.rule_auth_badge_ids - all_user_badges:
                 return self.BADGE_REQUIRED
 

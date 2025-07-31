@@ -19,22 +19,28 @@
                     <t t-foreach="content.products" t-as="product" t-key="product_index">
                         <tr class="js_product">
                             <td t-if="product.has_image" class="td-img">
-                                <img class="product_detail_img" t-att-alt="product.name" t-attf-src="/web/image/product.product/{{product.product_id}}/image_128"/>
+                                <img class="product_detail_img" t-att-alt="product.name"
+                                     t-attf-src="/web/image/product.product/{{product.product_id}}/image_128"/>
                             </td>
                             <td t-att-colspan="product.has_image ? '1' : '2'">
-                                <h5><t t-esc="product.name"/></h5>
-                                <span class="text-muted d-none d-md-inline-block" t-if="product.description_sale" t-out="product.description_sale"/>
+                                <h5>
+                                    <t t-esc="product.name"/>
+                                </h5>
+                                <span class="text-muted d-none d-md-inline-block" t-if="product.description_sale"
+                                      t-out="product.description_sale"/>
                                 <ul
-                                    t-if="product.selected_combo_items.length"
-                                    class="list-unstyled mb-0 small text-muted mt-1"
+                                        t-if="product.selected_combo_items.length"
+                                        class="list-unstyled mb-0 small text-muted mt-1"
                                 >
                                     <t
-                                        t-foreach="product.selected_combo_items"
-                                        t-as="comboItem"
-                                        t-key="comboItem.combo_item_id"
+                                            t-foreach="product.selected_combo_items"
+                                            t-as="comboItem"
+                                            t-key="comboItem.combo_item_id"
                                     >
                                         <li>
-                                            <t t-esc="product.qty"/> x <t t-esc="comboItem.combinationInfo.display_name"/>
+                                            <t t-esc="product.qty"/>
+                                            x
+                                            <t t-esc="comboItem.combinationInfo.display_name"/>
                                         </li>
                                     </t>
                                 </ul>
@@ -42,16 +48,22 @@
                             <t t-if="product.add_to_cart_allowed">
                                 <td class="text-center td-qty">
                                     <div class="css_quantity input-group input-group-sm justify-content-center">
-                                        <a href="#" class="btn btn-link d-none d-md-inline-block" aria-label="Remove one" title="Remove one" t-on-click.stop.prevent="() => this.changeProductQty(product, product.qty - 1)">
+                                        <a href="#" class="btn btn-link d-none d-md-inline-block"
+                                           aria-label="Remove one" title="Remove one"
+                                           t-on-click.stop.prevent="() => this.changeProductQty(product, product.qty - 1)">
                                             <i class="fa fa-minus"/>
                                         </a>
-                                        <input type="text" class="js_quantity text-center form-control quantity" t-on-change="(ev) => this.onChangeProductQtyInput(ev, product)"
-                                            t-att-value="product.qty"/>
-                                        <a href="#" class="btn btn-link d-none d-md-inline-block" aria-label="Add one" title="Add one" t-on-click.stop.prevent="() => this.changeProductQty(product, product.qty + 1)">
+                                        <input type="text" class="js_quantity text-center form-control quantity"
+                                               t-on-change="(ev) => this.onChangeProductQtyInput(ev, product)"
+                                               t-att-value="product.qty"/>
+                                        <a href="#" class="btn btn-link d-none d-md-inline-block" aria-label="Add one"
+                                           title="Add one"
+                                           t-on-click.stop.prevent="() => this.changeProductQty(product, product.qty + 1)">
                                             <i class="fa fa-plus"/>
                                         </a>
                                     </div>
-                                    <div t-if="product.qty_warning and product.qty_warning !== ''" class="text-warning fw-bold">
+                                    <div t-if="product.qty_warning and product.qty_warning !== ''"
+                                         class="text-warning fw-bold">
                                         <i class="fa fa-exclamation-triangle"/>
                                         <span t-esc="product.qty_warning"/>
                                     </div>
@@ -87,7 +99,8 @@
                 </div>
             </div>
             <t t-set-slot="footer">
-                <button class="btn btn-primary o_wsale_reorder_confirm" t-att-disabled="!hasBuyableProducts" t-on-click="confirmReorder">
+                <button class="btn btn-primary o_wsale_reorder_confirm" t-att-disabled="!hasBuyableProducts"
+                        t-on-click="confirmReorder">
                     Add To Cart
                 </button>
                 <button class="btn btn-secondary o_wsale_reorder_cancel" t-on-click.stop.prevent="props.close">
@@ -100,12 +113,12 @@
     <t t-name="website_sale.ReorderConfirmationDialog" t-inherit="web.ConfirmationDialog" t-inherit-mode="primary">
         <xpath expr="//button[1]" position="replace">
             <button class="btn btn-primary" t-on-click="_confirm">
-              Yes
+                Yes
             </button>
         </xpath>
         <xpath expr="//button[2]" position="replace">
             <button class="btn btn-secondary" t-on-click="_cancel">
-              No
+                No
             </button>
         </xpath>
     </t>

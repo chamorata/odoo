@@ -3,12 +3,13 @@
 
 import random
 import re
-import werkzeug
 
-from odoo.tools import mail
+import werkzeug
 from odoo.addons.link_tracker.tests.common import MockLinkTracker
 from odoo.addons.mass_mailing.tests.common import MassMailCommon
 from odoo.addons.sms.tests.common import SMSCase, SMSCommon
+
+from odoo.tools import mail
 
 
 class MassSMSCase(SMSCase, MockLinkTracker):
@@ -120,10 +121,13 @@ class MassSMSCase(SMSCase, MockLinkTracker):
             record = record or recipient_info.get('record')
 
             trace = traces.filtered(
-                lambda t: t.sms_number == number and t.trace_status == status and (t.res_id == record.id if record else True)
+                lambda t: t.sms_number == number and t.trace_status == status and (
+                    t.res_id == record.id if record else True)
             )
             self.assertTrue(len(trace) == 1,
-                            'SMS: found %s notification for number %s, (status: %s) (1 expected)\n%s' % (len(trace), number, status, debug_info))
+                            'SMS: found %s notification for number %s, (status: %s) (1 expected)\n%s' % (len(trace),
+                                                                                                         number, status,
+                                                                                                         debug_info))
             self.assertTrue(bool(trace.sms_id_int))
 
             if check_sms:

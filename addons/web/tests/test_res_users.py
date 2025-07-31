@@ -27,7 +27,8 @@ class TestResUsers(TransactionCase):
         user_ids = [id_ for id_, __ in ResUsers.with_user(jean).name_search('')]
         self.assertEqual(jean.id, user_ids[0], "The current user, Jean, should be the first in the result.")
         user_ids = [id_ for id_, __ in ResUsers.with_user(jean).name_search('Claude')]
-        self.assertNotIn(jean.id, user_ids, "The current user, Jean, should not be in the result because his name does not fit the condition.")
+        self.assertNotIn(jean.id, user_ids,
+                         "The current user, Jean, should not be in the result because his name does not fit the condition.")
         pascal = self.users[-1]
         user_ids = [id_ for id_, __ in ResUsers.with_user(pascal).name_search('')]
         self.assertEqual(pascal.id, user_ids[0], "The current user, Pascal, should be the first in the result.")
@@ -54,7 +55,9 @@ class TestResUsers(TransactionCase):
             'password': 'password',
             'groups_id': [self.env.ref('base.group_user').id],
         })
-        with Form(self.env['change.password.wizard'].with_context(active_model='res.users', active_ids=user_internal.ids), view='base.change_password_wizard_view') as form:
+        with Form(
+                self.env['change.password.wizard'].with_context(active_model='res.users', active_ids=user_internal.ids),
+                view='base.change_password_wizard_view') as form:
             with form.user_ids.edit(0) as line:
                 line.new_passwd = 'bla'
         rec = form.save()

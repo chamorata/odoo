@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.fields import Command
 from odoo.addons.sale.tests.common import SaleCommon
+
+from odoo.fields import Command
 
 
 class TestSaleMargin(SaleCommon):
@@ -51,7 +52,8 @@ class TestSaleMargin(SaleCommon):
         self.assertEqual(order.order_line[0].margin, -20.00, "Sales order profit should be -20.00")
         self.assertEqual(order.order_line[0].margin_percent, -1, "Sales order margin percentage should be -100%")
         self.assertEqual(order.order_line[1].margin, -100.00, "Sales order profit should be -100.00")
-        self.assertEqual(order.order_line[1].margin_percent, 1.00, "Sales order margin should be 100% when the cost is zero and price defined")
+        self.assertEqual(order.order_line[1].margin_percent, 1.00,
+                         "Sales order margin should be 100% when the cost is zero and price defined")
         # Verify that margin field gets bind with the value.
         self.assertEqual(order.margin, -120.00, "Sales order margin should be -120.00")
         self.assertEqual(order.margin_percent, 1.5, "Sales order margin should be 150%")

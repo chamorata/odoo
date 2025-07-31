@@ -1,4 +1,5 @@
-<lrpjframp:LROEPJ240FacturasRecibidasAltaModifPeticion xmlns:lrpjframp="https://www.batuz.eus/fitxategiak/batuz/LROE/esquemas/LROE_PJ_240_2_FacturasRecibidas_AltaModifPeticion_V1_0_1.xsd">
+<lrpjframp:LROEPJ240FacturasRecibidasAltaModifPeticion
+        xmlns:lrpjframp="https://www.batuz.eus/fitxategiak/batuz/LROE/esquemas/LROE_PJ_240_2_FacturasRecibidas_AltaModifPeticion_V1_0_1.xsd">
     <Cabecera>
         <Modelo>240</Modelo>
         <Capitulo>2</Capitulo>

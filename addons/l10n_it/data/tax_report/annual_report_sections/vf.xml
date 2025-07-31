@@ -233,12 +233,16 @@
                                 </field>
                             </record>
                             <record id="tax_annual_report_line_VF17" model="account.report.line">
-                                <field name="name">VF17 - Purchases and imports without payment of tax, with use of the ceiling</field>
+                                <field name="name">VF17 - Purchases and imports without payment of tax, with use of the
+                                    ceiling
+                                </field>
                                 <field name="code">VF17</field>
                                 <field name="tax_tags_formula">vf17</field>
                             </record>
                             <record id="tax_annual_report_line_VF18_I" model="account.report.line">
-                                <field name="name">VF18 - Other non-tax purchases, not subject to tax and relating to certain special regimes</field>
+                                <field name="name">VF18 - Other non-tax purchases, not subject to tax and relating to
+                                    certain special regimes
+                                </field>
                                 <field name="code">VF18_I</field>
                                 <field name="tax_tags_formula">vf18_I</field>
                             </record>
@@ -248,27 +252,37 @@
                                 <field name="tax_tags_formula">vf18_II</field>
                             </record>
                             <record id="tax_annual_report_line_VF19" model="account.report.line">
-                                <field name="name">VF19 - Purchases from subjects who have made use of concessional schemes</field>
+                                <field name="name">VF19 - Purchases from subjects who have made use of concessional
+                                    schemes
+                                </field>
                                 <field name="code">VF19</field>
                                 <field name="tax_tags_formula">vf19</field>
                             </record>
                             <record id="tax_annual_report_line_VF20" model="account.report.line">
-                                <field name="name">VF20 - Purchases and imports not subject to the tax made by earthquake victims</field>
+                                <field name="name">VF20 - Purchases and imports not subject to the tax made by
+                                    earthquake victims
+                                </field>
                                 <field name="code">VF20</field>
                                 <field name="tax_tags_formula">vf20</field>
                             </record>
                             <record id="tax_annual_report_line_VF21" model="account.report.line">
-                                <field name="name">VF21 - Purchases and imports for which the deduction is excluded or reduced (art. 19-bis1)</field>
+                                <field name="name">VF21 - Purchases and imports for which the deduction is excluded or
+                                    reduced (art. 19-bis1)
+                                </field>
                                 <field name="code">VF21</field>
                                 <field name="tax_tags_formula">vf21</field>
                             </record>
                             <record id="tax_annual_report_line_VF22" model="account.report.line">
-                                <field name="name">VF22 - Purchases and imports for which the deduction is not permitted</field>
+                                <field name="name">VF22 - Purchases and imports for which the deduction is not
+                                    permitted
+                                </field>
                                 <field name="code">VF22</field>
                                 <field name="tax_tags_formula">vf22</field>
                             </record>
                             <record id="tax_annual_report_line_VF23" model="account.report.line">
-                                <field name="name">VF23 - Purchases recorded in the year but with tax deduction deferred to subsequent years</field>
+                                <field name="name">VF23 - Purchases recorded in the year but with tax deduction deferred
+                                    to subsequent years
+                                </field>
                                 <field name="code">VF23</field>
                                 <field name="tax_tags_formula">vf23</field>
                             </record>
@@ -280,27 +294,34 @@
                         </field>
                     </record>
                     <record id="tax_annual_report_line_passive_op_2" model="account.report.line">
-                        <field name="name">Total purchases and imports, total tax, purchases intra-community, imports and purchases</field>
+                        <field name="name">Total purchases and imports, total tax, purchases intra-community, imports
+                            and purchases
+                        </field>
                         <field name="code">VF_2</field>
                         <field name="children_ids">
                             <record id="tax_annual_report_line_VF25" model="account.report.line">
                                 <field name="name">VF25 - Total purchases and imports</field>
                                 <field name="code">VF25</field>
-                                <field name="aggregation_formula">VF1.tax + VF2.tax + VF3.tax + VF4.tax + VF5.tax + VF6.tax
-                                                    + VF7.tax + VF8.tax + VF9.tax + VF10.tax + VF11.tax + VF12.tax
-                                                    + VF13.tax + VF17.balance + VF18_I.balance + VF18_II.balance + VF19.balance
-                                                    + VF20.balance + VF21.balance + VF22.balance + VF23.balance - VF24.balance</field>
+                                <field name="aggregation_formula">VF1.tax + VF2.tax + VF3.tax + VF4.tax + VF5.tax +
+                                    VF6.tax
+                                    + VF7.tax + VF8.tax + VF9.tax + VF10.tax + VF11.tax + VF12.tax
+                                    + VF13.tax + VF17.balance + VF18_I.balance + VF18_II.balance + VF19.balance
+                                    + VF20.balance + VF21.balance + VF22.balance + VF23.balance - VF24.balance
+                                </field>
                                 <field name="expression_ids">
                                     <record id="tax_annual_report_line_VF25_tax" model="account.report.expression">
                                         <field name="label">tax</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">VF1.tax + VF2.tax + VF3.tax + VF4.tax + VF5.tax + VF6.tax + VF7.tax
-                                                            + VF8.tax + VF9.tax + VF10.tax + VF11.tax + VF12.tax + VF13.tax</field>
+                                        <field name="formula">VF1.tax + VF2.tax + VF3.tax + VF4.tax + VF5.tax + VF6.tax
+                                            + VF7.tax
+                                            + VF8.tax + VF9.tax + VF10.tax + VF11.tax + VF12.tax + VF13.tax
+                                        </field>
                                     </record>
                                 </field>
                             </record>
                             <record id="tax_annual_report_line_VF26" model="account.report.line">
-                                <field name="name">VF26 - Tax variations and roundings (indicate with the +/- sign)</field>
+                                <field name="name">VF26 - Tax variations and roundings (indicate with the +/- sign)
+                                </field>
                                 <field name="code">VF26</field>
                                 <field name="expression_ids">
                                     <record id="tax_annual_report_line_VF26_tag" model="account.report.expression">
@@ -384,7 +405,9 @@
                                         <field name="tax_tags_formula">vf29_ii</field>
                                     </record>
                                     <record id="tax_annual_report_line_VF29_III" model="account.report.line">
-                                        <field name="name">Goods intended for resale or for the production of goods and services</field>
+                                        <field name="name">Goods intended for resale or for the production of goods and
+                                            services
+                                        </field>
                                         <field name="code">VF29_III</field>
                                         <field name="tax_tags_formula">vf29_iii</field>
                                     </record>
@@ -413,8 +436,10 @@
                                     <record id="tax_annual_report_line_VF31_tax" model="account.report.expression">
                                         <field name="label">tax</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">VF1.tax + VF2.tax + VF3.tax + VF4.tax + VF5.tax + VF6.tax + VF7.tax
-                                                            + VF8.tax + VF9.tax + VF10.tax + VF11.tax + VF12.tax + VF13.tax</field>
+                                        <field name="formula">VF1.tax + VF2.tax + VF3.tax + VF4.tax + VF5.tax + VF6.tax
+                                            + VF7.tax
+                                            + VF8.tax + VF9.tax + VF10.tax + VF11.tax + VF12.tax + VF13.tax
+                                        </field>
                                     </record>
                                 </field>
                             </record>
@@ -423,17 +448,23 @@
                                 <field name="code">VF34</field>
                                 <field name="children_ids">
                                     <record id="tax_annual_report_line_VF34_I" model="account.report.line">
-                                        <field name="name">Exempt transactions relating to gold from investments made by the subjects referred to in the art. 19, co. 3, letter. d)</field>
+                                        <field name="name">Exempt transactions relating to gold from investments made by
+                                            the subjects referred to in the art. 19, co. 3, letter. d)
+                                        </field>
                                         <field name="code">VF34_I</field>
                                         <field name="tax_tags_formula">vf34_i</field>
                                     </record>
                                     <record id="tax_annual_report_line_VF34_II" model="account.report.line">
-                                        <field name="name">Exempt operations referred to in nos. from 1 to 9 of the art. 10 not included in their own business of the company or ancillary to taxable operations</field>
+                                        <field name="name">Exempt operations referred to in nos. from 1 to 9 of the art.
+                                            10 not included in their own business of the company or ancillary to taxable
+                                            operations
+                                        </field>
                                         <field name="code">VF34_II</field>
                                         <field name="tax_tags_formula">vf34_ii</field>
                                     </record>
                                     <record id="tax_annual_report_line_VF34_III" model="account.report.line">
-                                        <field name="name">Exempt operations referred to in art. 10, n. 27-quinquies</field>
+                                        <field name="name">Exempt operations referred to in art. 10, n. 27-quinquies
+                                        </field>
                                         <field name="code">VF34_III</field>
                                         <field name="tax_tags_formula">vf34_iii</field>
                                     </record>
@@ -453,12 +484,15 @@
                                         <field name="tax_tags_formula">vf34_vi</field>
                                     </record>
                                     <record id="tax_annual_report_line_VF34_VII" model="account.report.line">
-                                        <field name="name">Exempt operations art. 19, co. 3, letter. a-bis) and d-bis)</field>
+                                        <field name="name">Exempt operations art. 19, co. 3, letter. a-bis) and d-bis)
+                                        </field>
                                         <field name="code">VF34_VII</field>
                                         <field name="tax_tags_formula">vf34_vii</field>
                                     </record>
                                     <record id="tax_annual_report_line_VF34_VIII" model="account.report.line">
-                                        <field name="name">Article operations 7 to 7-septies without right to deduction</field>
+                                        <field name="name">Article operations 7 to 7-septies without right to
+                                            deduction
+                                        </field>
                                         <field name="code">VF34_VIII</field>
                                         <field name="tax_tags_formula">vf34_viii</field>
                                     </record>
@@ -481,7 +515,9 @@
                                 </field>
                             </record>
                             <record id="tax_annual_report_line_VF36" model="account.report.line">
-                                <field name="name">VF36 - VAT deductible for gold purchases made by parties other than producers and transformers pursuant to art. 19, paragraph 5 bis</field>
+                                <field name="name">VF36 - VAT deductible for gold purchases made by parties other than
+                                    producers and transformers pursuant to art. 19, paragraph 5 bis
+                                </field>
                                 <field name="code">VF36</field>
                                 <field name="expression_ids">
                                     <record id="tax_annual_report_line_VF36_tax" model="account.report.expression">
@@ -499,9 +535,11 @@
                                         <field name="label">tax</field>
                                         <field name="engine">aggregation</field>
                                         <field name="formula">((VF27.tax + VF35.tax - VF36.tax) * (
-                                            VF34_I.balance + VF34_II.balance + VF34_III.balance + VF34_IV.balance + VF34_V.balance +
+                                            VF34_I.balance + VF34_II.balance + VF34_III.balance + VF34_IV.balance +
+                                            VF34_V.balance +
                                             VF34_VI.balance + VF34_VII.balance + VF34_VIII.balance + VF34_IX.balance
-                                        )) - VF35.tax + VF36.tax</field>
+                                            )) - VF35.tax + VF36.tax
+                                        </field>
                                     </record>
                                 </field>
                             </record>
@@ -704,7 +742,8 @@
                                 </field>
                             </record>
                             <record id="tax_annual_report_line_VF51" model="account.report.line">
-                                <field name="name">VF51 - Tax variations and roundings (indicate with the +/- sign)</field>
+                                <field name="name">VF51 - Tax variations and roundings (indicate with the +/- sign)
+                                </field>
                                 <field name="code">VF51</field>
                                 <field name="expression_ids">
                                     <record id="tax_annual_report_line_VF51_tax" model="account.report.expression">
@@ -717,21 +756,26 @@
                             <record id="tax_annual_report_line_VF52" model="account.report.line">
                                 <field name="name">VF52 - TOTALS Algebraic sum of lines from VF39 to VF51</field>
                                 <field name="code">VF52</field>
-                                <field name="aggregation_formula">VF39.balance + VF40.balance + VF41.balance + VF42.balance + VF43.balance +
-                                                        VF44.balance + VF45.balance + VF46.balance + VF47.balance + VF48.balance + 
-                                                        VF49.balance + VF51.tax</field>
+                                <field name="aggregation_formula">VF39.balance + VF40.balance + VF41.balance +
+                                    VF42.balance + VF43.balance +
+                                    VF44.balance + VF45.balance + VF46.balance + VF47.balance + VF48.balance +
+                                    VF49.balance + VF51.tax
+                                </field>
                                 <field name="expression_ids">
                                     <record id="tax_annual_report_line_VF52_tax" model="account.report.expression">
                                         <field name="label">tax</field>
                                         <field name="engine">aggregation</field>
                                         <field name="formula">VF39.tax + VF40.tax + VF41.tax + VF42.tax + VF43.tax +
-                                                              VF44.tax + VF45.tax + VF46.tax + VF47.tax + VF48.tax +
-                                                              VF49.tax + VF51.tax</field>
+                                            VF44.tax + VF45.tax + VF46.tax + VF47.tax + VF48.tax +
+                                            VF49.tax + VF51.tax
+                                        </field>
                                     </record>
                                 </field>
                             </record>
                             <record id="tax_annual_report_line_VF53" model="account.report.line">
-                                <field name="name">VF53 - Deductible VAT charged to the operations referred to in line VF38</field>
+                                <field name="name">VF53 - Deductible VAT charged to the operations referred to in line
+                                    VF38
+                                </field>
                                 <field name="code">VF53</field>
                                 <field name="expression_ids">
                                     <record id="tax_annual_report_line_VF53_tax" model="account.report.expression">
@@ -742,7 +786,9 @@
                                 </field>
                             </record>
                             <record id="tax_annual_report_line_VF54" model="account.report.line">
-                                <field name="name">VF54 - Deductible amount for transfers, including intra-community, of agricultural products referred to in art. 34</field>
+                                <field name="name">VF54 - Deductible amount for transfers, including intra-community, of
+                                    agricultural products referred to in art. 34
+                                </field>
                                 <field name="code">VF54</field>
                                 <field name="expression_ids">
                                     <record id="tax_annual_report_line_VF54_tax" model="account.report.expression">
@@ -809,7 +855,8 @@
                                     <record id="tax_annual_report_line_VF71_tax" model="account.report.expression">
                                         <field name="label">tax</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">VF26.tax + VF27.tax + VF37.tax + VF55.tax + VF70.tax</field>
+                                        <field name="formula">VF26.tax + VF27.tax + VF37.tax + VF55.tax + VF70.tax
+                                        </field>
                                     </record>
                                 </field>
                             </record>

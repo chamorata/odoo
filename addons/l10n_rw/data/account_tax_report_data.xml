@@ -68,7 +68,7 @@
                     <record id="tax_report_total_not_taxable_expr" model="account.report.expression">
                         <field name="label">base</field>
                         <field name="engine">aggregation</field>
-                        <field name="formula">rw_exempted_sales.base + rw_zero_rated_sales.base + rw_export.base </field>
+                        <field name="formula">rw_exempted_sales.base + rw_zero_rated_sales.base + rw_export.base</field>
                     </record>
                 </field>
             </record>
@@ -167,7 +167,9 @@
                     <record id="tax_report_vat_refund_expr" model="account.report.expression">
                         <field name="label">tax</field>
                         <field name="engine">aggregation</field>
-                        <field name="formula">rw_vat_payable.tax - (rw_vat_paid_on_input.tax + rw_vat_reverse_charge_deductible.tax)</field>
+                        <field name="formula">rw_vat_payable.tax - (rw_vat_paid_on_input.tax +
+                            rw_vat_reverse_charge_deductible.tax)
+                        </field>
                     </record>
                 </field>
             </record>

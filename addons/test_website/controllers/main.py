@@ -2,12 +2,13 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import json
+
 import werkzeug
+from odoo.addons.portal.controllers.web import Home
 
 from odoo import http
-from odoo.http import request
-from odoo.addons.portal.controllers.web import Home
 from odoo.exceptions import UserError, ValidationError, AccessError, MissingError, AccessDenied
+from odoo.http import request
 
 
 class WebsiteTest(Home):
@@ -44,7 +45,8 @@ class WebsiteTest(Home):
     def test_company_context(self):
         return request.make_response(json.dumps(request.context.get('allowed_company_ids')))
 
-    @http.route('/test_lang_url/<model("res.country"):country>', type='http', auth='public', website=True, sitemap=False)
+    @http.route('/test_lang_url/<model("res.country"):country>', type='http', auth='public', website=True,
+                sitemap=False)
     def test_lang_url(self, **kwargs):
         return request.render('test_website.test_view')
 
@@ -120,7 +122,8 @@ class WebsiteTest(Home):
     def get_post_method(self, **kw):
         return request.make_response('get_post')
 
-    @http.route(['/get_post_nomultilang'], type='http', auth="public", methods=['GET', 'POST'], website=True, multilang=False, sitemap=False)
+    @http.route(['/get_post_nomultilang'], type='http', auth="public", methods=['GET', 'POST'], website=True,
+                multilang=False, sitemap=False)
     def get_post_method_no_multilang(self, **kw):
         return request.make_response('get_post_nomultilang')
 
@@ -131,15 +134,18 @@ class WebsiteTest(Home):
         return 'Basic Controller Content'
 
     # Test Redirects
-    @http.route(['/test_website/country/<model("res.country"):country>'], type='http', auth="public", website=True, sitemap=True)
+    @http.route(['/test_website/country/<model("res.country"):country>'], type='http', auth="public", website=True,
+                sitemap=True)
     def test_model_converter_country(self, country, **kw):
         return request.render('test_website.test_redirect_view', {'country': country})
 
-    @http.route(['/test_website/200/<model("test.model"):rec>'], type='http', auth="public", website=True, sitemap=False)
+    @http.route(['/test_website/200/<model("test.model"):rec>'], type='http', auth="public", website=True,
+                sitemap=False)
     def test_model_converter_seoname(self, rec, **kw):
         return request.make_response('ok')
 
-    @http.route(['/test_website/model_item/<int:record_id>'], type='http', methods=['GET'], auth="public", website=True, sitemap=False)
+    @http.route(['/test_website/model_item/<int:record_id>'], type='http', methods=['GET'], auth="public", website=True,
+                sitemap=False)
     def test_model_item(self, record_id):
         record = request.env['test.model'].browse(record_id)
         values = {
@@ -149,7 +155,8 @@ class WebsiteTest(Home):
         }
         return request.render("test_website.model_item", values)
 
-    @http.route(['/test_website/model_item_sudo/<int:record_id>'], type='http', methods=['GET'], auth="public", website=True, sitemap=False)
+    @http.route(['/test_website/model_item_sudo/<int:record_id>'], type='http', methods=['GET'], auth="public",
+                website=True, sitemap=False)
     def test_model_item_sudo(self, record_id):
         values = {
             'record': request.env['test.model'].sudo().browse(record_id),
@@ -181,4 +188,5 @@ class WebsiteTest(Home):
 
     @http.route('/test_model/<model("test.model"):test_model>', type='http', auth='public', website=True, sitemap=False)
     def test_model(self, test_model, **kwargs):
-        return request.render('test_website.test_model_page_layout', {'main_object': test_model, 'test_model': test_model})
+        return request.render('test_website.test_model_page_layout',
+                              {'main_object': test_model, 'test_model': test_model})

@@ -28,8 +28,10 @@ class TestResConfigSettings(TestSaleProjectCommon):
                 })
             ]
         })
-        cls.product_milestone_sale_line = cls.sale_order.order_line.filtered(lambda sol: sol.product_id == cls.product_milestone)
-        cls.product_delivery_manual1_sale_line = cls.sale_order.order_line.filtered(lambda sol: sol.product_id == cls.product_delivery_manual1)
+        cls.product_milestone_sale_line = cls.sale_order.order_line.filtered(
+            lambda sol: sol.product_id == cls.product_milestone)
+        cls.product_delivery_manual1_sale_line = cls.sale_order.order_line.filtered(
+            lambda sol: sol.product_id == cls.product_delivery_manual1)
         cls.sale_order.action_confirm()
 
         cls.milestone = cls.env['project.milestone'].create({
@@ -39,10 +41,12 @@ class TestResConfigSettings(TestSaleProjectCommon):
         })
 
     def test_disable_and_enable_project_milestone_feature(self):
-        self.assertTrue(self.env.user.has_group('project.group_project_milestone'), 'The Project Milestones feature should be enabled.')
+        self.assertTrue(self.env.user.has_group('project.group_project_milestone'),
+                        'The Project Milestones feature should be enabled.')
 
         self.set_project_milestone_feature(False)
-        self.assertFalse(self.env.user.has_group('project.group_project_milestone'), 'The Project Milestones feature should be disabled.')
+        self.assertFalse(self.env.user.has_group('project.group_project_milestone'),
+                         'The Project Milestones feature should be disabled.')
         product_milestones = self.product_milestone + self.product_milestone2
         self.assertEqual(
             product_milestones.mapped('service_policy'),
@@ -85,4 +89,5 @@ class TestResConfigSettings(TestSaleProjectCommon):
             self.product_milestone_sale_line.qty_delivered_method,
             'manual',
             'The quantity delivered method of SOL containing milestone product should keep the same quantity delivered method even if the project milestones feature is renabled.')
-        self.assertEqual(self.product_milestone_sale_line.qty_delivered, 2, 'The quantity delivered should be the one set by the user.')
+        self.assertEqual(self.product_milestone_sale_line.qty_delivered, 2,
+                         'The quantity delivered should be the one set by the user.')

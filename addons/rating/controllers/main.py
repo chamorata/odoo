@@ -2,12 +2,13 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import logging
+
 import werkzeug
 
 from odoo import http
 from odoo.http import request
-from odoo.tools.translate import _
 from odoo.tools.misc import get_lang
+from odoo.tools.translate import _
 
 _logger = logging.getLogger(__name__)
 
@@ -16,6 +17,7 @@ MAPPED_RATES = {
     5: 3,
     10: 5,
 }
+
 
 class Rating(http.Controller):
 
@@ -38,18 +40,20 @@ class Rating(http.Controller):
             })
 
         lang = rating.partner_id.lang or get_lang(request.env).code
-        return request.env['ir.ui.view'].with_context(lang=lang)._render_template('rating.rating_external_page_submit', {
-            'rating': rating,
-            'token': token,
-            'rate_names': {
-                5: _("Satisfied"),
-                3: _("Okay"),
-                1: _("Dissatisfied"),
-            },
-            'rate': rate,
-        })
+        return request.env['ir.ui.view'].with_context(lang=lang)._render_template('rating.rating_external_page_submit',
+                                                                                  {
+                                                                                      'rating': rating,
+                                                                                      'token': token,
+                                                                                      'rate_names': {
+                                                                                          5: _("Satisfied"),
+                                                                                          3: _("Okay"),
+                                                                                          1: _("Dissatisfied"),
+                                                                                      },
+                                                                                      'rate': rate,
+                                                                                  })
 
-    @http.route(['/rate/<string:token>/submit_feedback'], type="http", auth="public", methods=['post', 'get'], website=True)
+    @http.route(['/rate/<string:token>/submit_feedback'], type="http", auth="public", methods=['post', 'get'],
+                website=True)
     def action_submit_rating(self, token, rate=0, **kwargs):
 
         rating, record_sudo = self._get_rating_and_record(token)

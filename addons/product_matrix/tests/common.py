@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo.tests import tagged, common
+from odoo.tests import common
 
 
 class TestMatrixCommon(common.HttpCase):
@@ -43,8 +43,10 @@ class TestMatrixCommon(common.HttpCase):
                 'value_ids': [(6, 0, attribute.value_ids.ids)]
             }) for attribute in product_attributes],
         })
+
         def get_ptav(pav_name):
-            return self.env['product.template.attribute.value']\
+            return self.env['product.template.attribute.value'] \
                 .search([('product_attribute_value_id.name', '=', pav_name)])
+
         get_ptav('PAV12').price_extra = 50
         get_ptav('PAV31').price_extra = -25

@@ -12,6 +12,7 @@ class TestFloatExport(common.TransactionCase):
         def converter(value, options=None):
             record = self.env['decimal.precision.test'].new({name: value})
             return FloatField.record_to_html(record, name, options or {})
+
         return converter
 
     def test_basic_float(self):
@@ -31,7 +32,8 @@ class TestFloatExport(common.TransactionCase):
             converter(42.12345),
             "42.12")
 
-        converter = self.get_converter('float') # don't use float_4 because the field value 42.12345 is already orm converted to 42.1235
+        converter = self.get_converter(
+            'float')  # don't use float_4 because the field value 42.12345 is already orm converted to 42.1235
         self.assertEqual(
             converter(42.0, {'precision': 4}),
             '42.0000')
@@ -57,7 +59,8 @@ class TestFloatExport(common.TransactionCase):
             converter(42.0, {'decimal_precision': 'B'}),
             '42.000000')
 
-        converter = self.get_converter('float') # don't use float_4 because the field value 42.12345 is orm converted to 42.1235
+        converter = self.get_converter(
+            'float')  # don't use float_4 because the field value 42.12345 is orm converted to 42.1235
         self.assertEqual(
             converter(42.12345, {'decimal_precision': 'A'}),
             '42.12')

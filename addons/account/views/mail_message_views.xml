@@ -42,10 +42,13 @@
                     '|', ('tracking_value_ids.old_value_text', 'ilike', self),
                          ('tracking_value_ids.new_value_text', 'ilike', self),
                 ]"/>
-                <field string="Field" name="tracking_value_ids" filter_domain="[('tracking_value_ids.field_id', 'ilike', self)]"/>
+                <field string="Field" name="tracking_value_ids"
+                       filter_domain="[('tracking_value_ids.field_id', 'ilike', self)]"/>
                 <separator/>
-                <filter string="Update Only" name="update_only" domain="[('tracking_value_ids', '!=', False)]" groups="base.group_system"/>
-                <filter string="Create Only" name="create_only" domain="[('tracking_value_ids', '=', False)]" groups="base.group_system"/>
+                <filter string="Update Only" name="update_only" domain="[('tracking_value_ids', '!=', False)]"
+                        groups="base.group_system"/>
+                <filter string="Create Only" name="create_only" domain="[('tracking_value_ids', '=', False)]"
+                        groups="base.group_system"/>
                 <separator/>
                 <filter name="date" string="Date" date="date"/>
                 <group expand="0" string="Group By">
@@ -69,9 +72,11 @@
         <field name="domain">[
             ('message_type', '=', 'notification'),
             ('account_audit_log_activated', '=', True),
-        ]</field>
+            ]
+        </field>
         <field name="search_view_id" ref="view_message_tree_audit_log_search"/>
     </record>
 
-    <menuitem id="account_audit_trail_menu" name="Audit Trail" action="action_account_audit_trail_report" parent="account.account_reports_management_menu"/>
+    <menuitem id="account_audit_trail_menu" name="Audit Trail" action="action_account_audit_trail_report"
+              parent="account.account_reports_management_menu"/>
 </odoo>

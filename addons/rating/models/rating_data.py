@@ -28,6 +28,7 @@ OPERATOR_MAPPING = {
     '>=': operator.ge,
 }
 
+
 def _rating_avg_to_text(rating_avg):
     if float_compare(rating_avg, RATING_AVG_TOP, 2) >= 0:
         return 'top'
@@ -37,8 +38,10 @@ def _rating_avg_to_text(rating_avg):
         return 'ko'
     return 'none'
 
+
 def _rating_assert_value(rating_value):
     assert 0 <= rating_value <= 5
+
 
 def _rating_to_grade(rating_value):
     """ From a rating value give a text-based mean value. """
@@ -48,6 +51,7 @@ def _rating_to_grade(rating_value):
     if rating_value >= RATING_LIMIT_OK:
         return 'okay'
     return 'bad'
+
 
 def _rating_to_text(rating_value):
     """ From a rating value give a text-based mean value. """
@@ -59,6 +63,7 @@ def _rating_to_text(rating_value):
     if rating_value >= RATING_LIMIT_MIN:
         return 'ko'
     return 'none'
+
 
 def _rating_to_threshold(rating_value):
     """ From a rating value, return the thresholds in form of 0-1-3-5 used

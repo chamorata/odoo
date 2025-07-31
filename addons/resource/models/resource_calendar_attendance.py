@@ -19,12 +19,12 @@ class ResourceCalendarAttendance(models.Model):
         ('4', 'Friday'),
         ('5', 'Saturday'),
         ('6', 'Sunday')
-        ], 'Day of Week', required=True, index=True, default='0')
+    ], 'Day of Week', required=True, index=True, default='0')
     date_from = fields.Date(string='Starting Date')
     date_to = fields.Date(string='End Date')
     hour_from = fields.Float(string='Work from', required=True, index=True,
-        help="Start and End time of working.\n"
-             "A specific value of 24:00 is interpreted as 23:59:59.999999.")
+                             help="Start and End time of working.\n"
+                                  "A specific value of 24:00 is interpreted as 23:59:59.999999.")
     hour_to = fields.Float(string='Work to', required=True)
     # For the hour duration, the compute function is used to compute the value
     # unambiguously, while the duration in days is computed for the default
@@ -40,12 +40,12 @@ class ResourceCalendarAttendance(models.Model):
     week_type = fields.Selection([
         ('1', 'Second'),
         ('0', 'First')
-        ], 'Week Number', default=False)
+    ], 'Week Number', default=False)
     two_weeks_calendar = fields.Boolean("Calendar in 2 weeks mode", related='calendar_id.two_weeks_calendar')
     display_type = fields.Selection([
         ('line_section', "Section")], default=False, help="Technical field for UX purpose.")
     sequence = fields.Integer(default=10,
-        help="Gives the sequence of this line when displaying the resource calendar.")
+                              help="Gives the sequence of this line when displaying the resource calendar.")
 
     @api.onchange('hour_from', 'hour_to')
     def _onchange_hours(self):
@@ -71,7 +71,8 @@ class ResourceCalendarAttendance(models.Model):
     @api.depends('hour_from', 'hour_to')
     def _compute_duration_hours(self):
         for attendance in self:
-            attendance.duration_hours = (attendance.hour_to - attendance.hour_from) if attendance.day_period != 'lunch' else 0
+            attendance.duration_hours = (
+                        attendance.hour_to - attendance.hour_from) if attendance.day_period != 'lunch' else 0
 
     @api.depends('day_period', 'duration_hours')
     def _compute_duration_days(self):

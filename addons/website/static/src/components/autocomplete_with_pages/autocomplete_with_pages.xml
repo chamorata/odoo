@@ -2,7 +2,7 @@
 <templates xml:space="preserve">
     <t t-name="website.AutoCompleteWithPages" t-inherit="web.AutoComplete">
         <xpath expr="//input[@t-ref='input']" position="attributes">
-            <attribute name="class" add="d-none" separator=" " />
+            <attribute name="class" add="d-none" separator=" "/>
         </xpath>
     </t>
 </templates>

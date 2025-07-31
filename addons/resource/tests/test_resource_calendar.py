@@ -1,6 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-import pytz
 from datetime import datetime
+
+import pytz
 
 from odoo.tests.common import TransactionCase
 
@@ -24,8 +25,8 @@ class TestResourceCalendar(TransactionCase):
             'name': 'TEMP',
             'calendar_id': calendar.id,
             'dayofweek': '2',  # Wednesday
-            'hour_from': 14,   # 18:00 UTC
-            'hour_to': 17,     # 21:00 UTC
+            'hour_from': 14,  # 18:00 UTC
+            'hour_to': 17,  # 21:00 UTC
             'date_from': datetime(2025, 6, 4, 0, 0, 0).date(),
         })
         UTC = pytz.timezone('UTC')

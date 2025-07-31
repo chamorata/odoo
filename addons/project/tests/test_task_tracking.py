@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from odoo.tests import tagged
-
 from odoo.addons.project.tests.test_project_base import TestProjectCommon
+
+from odoo.tests import tagged
 
 
 @tagged('-at_install', 'post_install')
@@ -20,17 +20,17 @@ class TestTaskTracking(TestProjectCommon):
         self.task_1.user_ids += self.user_projectmanager
         self.flush_tracking()
         self.assertEqual(len(self.task_1.message_ids), 1,
-            "Assigning a new user should log a message.")
+                         "Assigning a new user should log a message.")
         # No change
         self.task_1.user_ids += self.user_projectmanager
         self.flush_tracking()
         self.assertEqual(len(self.task_1.message_ids), 1,
-            "Assigning an already assigned user should not log a message.")
+                         "Assigning an already assigned user should not log a message.")
         # Removing assigness
         self.task_1.user_ids = False
         self.flush_tracking()
         self.assertEqual(len(self.task_1.message_ids), 2,
-            "Removing both assignees should only log one message.")
+                         "Removing both assignees should only log one message.")
 
     def test_many2many_tracking_context(self):
         # Test that the many2many tracking does not throw an error when using

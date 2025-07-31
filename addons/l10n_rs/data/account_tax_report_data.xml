@@ -21,7 +21,9 @@
                         <field name="name">I. Trade of goods and services</field>
                         <field name="children_ids">
                             <record id="tax_report_line_001" model="account.report.line">
-                                <field name="name">001 - Turnover of goods and services exempt from VAT with the right to deduct previous tax</field>
+                                <field name="name">001 - Turnover of goods and services exempt from VAT with the right
+                                    to deduct previous tax
+                                </field>
                                 <field name="code">c001</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_line_001_tag" model="account.report.expression">
@@ -32,7 +34,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_002" model="account.report.line">
-                                <field name="name">002 - Turnover of goods and services exempt from VAT without the right to deduct previous tax</field>
+                                <field name="name">002 - Turnover of goods and services exempt from VAT without the
+                                    right to deduct previous tax
+                                </field>
                                 <field name="code">c002</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_line_002_tag" model="account.report.expression">
@@ -71,7 +75,9 @@
                                     <record id="tax_report_line_005_formula" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">c001.balance + c002.balance + c003.balance + c004.balance</field>
+                                        <field name="formula">c001.balance + c002.balance + c003.balance +
+                                            c004.balance
+                                        </field>
                                     </record>
                                 </field>
                             </record>
@@ -103,7 +109,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_008" model="account.report.line">
-                                <field name="name">008 - Previous tax, except for the previous tax with item no. 6. and 7</field>
+                                <field name="name">008 - Previous tax, except for the previous tax with item no. 6. and
+                                    7
+                                </field>
                                 <field name="code">c008</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_line_008_tag" model="account.report.expression">
@@ -196,7 +204,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_108" model="account.report.line">
-                                <field name="name">108 - Previous tax, except for the previous tax with item no. 6. and 7</field>
+                                <field name="name">108 - Previous tax, except for the previous tax with item no. 6. and
+                                    7
+                                </field>
                                 <field name="code">c108</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_line_108_tag" model="account.report.expression">

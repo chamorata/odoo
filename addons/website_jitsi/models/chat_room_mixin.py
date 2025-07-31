@@ -6,6 +6,7 @@ import re
 from odoo import api, fields, models
 from odoo.tools import remove_accents
 
+
 class ChatRoomMixin(models.AbstractModel):
     """Add the chat room configuration (`chat.room`) on the needed models.
 
@@ -27,8 +28,10 @@ class ChatRoomMixin(models.AbstractModel):
     room_name = fields.Char("Room Name", related="chat_room_id.name")
     room_is_full = fields.Boolean("Room Is Full", related="chat_room_id.is_full")
     room_lang_id = fields.Many2one("res.lang", "Language", related="chat_room_id.lang_id", readonly=False)
-    room_max_capacity = fields.Selection(string="Max capacity", related="chat_room_id.max_capacity", readonly=False, required=True)
-    room_participant_count = fields.Integer("Participant count", related="chat_room_id.participant_count", readonly=False)
+    room_max_capacity = fields.Selection(string="Max capacity", related="chat_room_id.max_capacity", readonly=False,
+                                         required=True)
+    room_participant_count = fields.Integer("Participant count", related="chat_room_id.participant_count",
+                                            readonly=False)
     room_last_activity = fields.Datetime("Last activity", related="chat_room_id.last_activity")
     room_max_participant_reached = fields.Integer("Peak participants", related="chat_room_id.max_participant_reached")
 
@@ -38,7 +41,8 @@ class ChatRoomMixin(models.AbstractModel):
             if any(values.get(fmatch[0]) for fmatch in self.ROOM_CONFIG_FIELDS) and not values.get('chat_room_id'):
                 if values.get('room_name'):
                     values['room_name'] = self._jitsi_sanitize_name(values['room_name'])
-                room_values = dict((fmatch[1], values[fmatch[0]]) for fmatch in self.ROOM_CONFIG_FIELDS if values.get(fmatch[0]))
+                room_values = dict(
+                    (fmatch[1], values[fmatch[0]]) for fmatch in self.ROOM_CONFIG_FIELDS if values.get(fmatch[0]))
                 values['chat_room_id'] = self.env['chat.room'].create(room_values).id
         return super(ChatRoomMixin, self).create(values_list)
 
@@ -47,7 +51,8 @@ class ChatRoomMixin(models.AbstractModel):
             if values.get('room_name'):
                 values['room_name'] = self._jitsi_sanitize_name(values['room_name'])
             for document in self.filtered(lambda doc: not doc.chat_room_id):
-                room_values = dict((fmatch[1], values[fmatch[0]]) for fmatch in self.ROOM_CONFIG_FIELDS if values.get(fmatch[0]))
+                room_values = dict(
+                    (fmatch[1], values[fmatch[0]]) for fmatch in self.ROOM_CONFIG_FIELDS if values.get(fmatch[0]))
                 document.chat_room_id = self.env['chat.room'].create(room_values).id
         return super(ChatRoomMixin, self).write(values)
 

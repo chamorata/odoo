@@ -14,12 +14,12 @@ class TestAccountMoveAttachment(HttpCase):
         })
         self.assertFalse(invoice.attachment_ids)
         response = self.url_open("/mail/attachment/upload",
-            {
-                "csrf_token": http.Request.csrf_token(self),
-                "thread_id": invoice.id,
-                "thread_model": "account.move",
-            },
-            files={'ufile': ('salut.txt', b"Salut !\n", 'text/plain')},
-        )
+                                 {
+                                     "csrf_token": http.Request.csrf_token(self),
+                                     "thread_id": invoice.id,
+                                     "thread_model": "account.move",
+                                 },
+                                 files={'ufile': ('salut.txt', b"Salut !\n", 'text/plain')},
+                                 )
         self.assertEqual(response.status_code, 200)
         self.assertTrue(invoice.attachment_ids)

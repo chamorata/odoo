@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from setuptools import find_packages, setup
 from os.path import join, dirname
 
+from setuptools import find_packages, setup
 
 exec(open(join(dirname(__file__), 'odoo', 'release.py'), 'rb').read())  # Load release variables
 lib_name = 'odoo'

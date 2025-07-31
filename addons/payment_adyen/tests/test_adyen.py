@@ -2,17 +2,15 @@
 
 from unittest.mock import patch
 
-from werkzeug.exceptions import Forbidden
-
-from odoo.exceptions import UserError
-from odoo.tests import tagged
-from odoo.tools import mute_logger
-
 from odoo.addons.payment import utils as payment_utils
 from odoo.addons.payment.tests.http_common import PaymentHttpCommon
 from odoo.addons.payment_adyen import utils as adyen_utils
 from odoo.addons.payment_adyen.controllers.main import AdyenController
 from odoo.addons.payment_adyen.tests.common import AdyenCommon
+from werkzeug.exceptions import Forbidden
+
+from odoo.tests import tagged
+from odoo.tools import mute_logger
 
 
 @tagged('post_install', '-at_install')
@@ -21,10 +19,10 @@ class AdyenTest(AdyenCommon, PaymentHttpCommon):
     def test_processing_values(self):
         tx = self._create_transaction(flow='direct')
         with mute_logger('odoo.addons.payment.models.payment_transaction'), \
-            patch(
-                'odoo.addons.payment.utils.generate_access_token',
-                new=self._generate_test_access_token
-            ):
+                patch(
+                    'odoo.addons.payment.utils.generate_access_token',
+                    new=self._generate_test_access_token
+                ):
             processing_values = tx._get_processing_values()
 
         converted_amount = 111111
@@ -34,7 +32,7 @@ class AdyenTest(AdyenCommon, PaymentHttpCommon):
         )
         self.assertEqual(processing_values['converted_amount'], converted_amount)
         with patch(
-            'odoo.addons.payment.utils.generate_access_token', new=self._generate_test_access_token
+                'odoo.addons.payment.utils.generate_access_token', new=self._generate_test_access_token
         ):
             self.assertTrue(payment_utils.check_access_token(
                 processing_values['access_token'], self.reference, converted_amount, self.currency.id, self.partner.id
@@ -50,8 +48,8 @@ class AdyenTest(AdyenCommon, PaymentHttpCommon):
 
         # Send the refund request
         with patch(
-            'odoo.addons.payment_adyen.models.payment_provider.PaymentProvider._adyen_make_request',
-            new=lambda *args, **kwargs: {'pspReference': "refund_reference", 'status': "received"}
+                'odoo.addons.payment_adyen.models.payment_provider.PaymentProvider._adyen_make_request',
+                new=lambda *args, **kwargs: {'pspReference': "refund_reference", 'status': "received"}
         ):
             tx._send_refund_request()
 
@@ -125,7 +123,7 @@ class AdyenTest(AdyenCommon, PaymentHttpCommon):
             'direct',
             reference='CaptureTx',
             provider_reference=self.psp_reference,
-            amount=source_tx.amount-10,
+            amount=source_tx.amount - 10,
             operation=source_tx.operation,
             source_transaction_id=source_tx.id,
         )
@@ -134,7 +132,7 @@ class AdyenTest(AdyenCommon, PaymentHttpCommon):
             amount={
                 'currency': 'USD',
                 'value': payment_utils.to_minor_currency_units(
-                    source_tx.amount-10, capture_tx.currency_id
+                    source_tx.amount - 10, capture_tx.currency_id
                 ),
             },
             eventCode='CAPTURE',
@@ -212,8 +210,8 @@ class AdyenTest(AdyenCommon, PaymentHttpCommon):
         self.provider.capture_manually = True
         source_tx = self._create_transaction(flow='direct', state='authorized')
         with patch(
-            'odoo.addons.payment_adyen.models.payment_provider.PaymentProvider._adyen_make_request',
-            return_value={'status': 'received', 'pspreference': 'dummy ref'},
+                'odoo.addons.payment_adyen.models.payment_provider.PaymentProvider._adyen_make_request',
+                return_value={'status': 'received', 'pspreference': 'dummy ref'},
         ):
             child_tx = source_tx._send_capture_request()
         self.assertFalse(
@@ -224,8 +222,8 @@ class AdyenTest(AdyenCommon, PaymentHttpCommon):
         self.provider.capture_manually = True
         source_tx = self._create_transaction(flow='direct', state='authorized')
         with patch(
-            'odoo.addons.payment_adyen.models.payment_provider.PaymentProvider._adyen_make_request',
-            return_value={'status': 'received', 'pspreference': 'dummy ref'},
+                'odoo.addons.payment_adyen.models.payment_provider.PaymentProvider._adyen_make_request',
+                return_value={'status': 'received', 'pspreference': 'dummy ref'},
         ):
             child_tx = source_tx._send_capture_request(amount_to_capture=10)
         self.assertTrue(
@@ -245,8 +243,8 @@ class AdyenTest(AdyenCommon, PaymentHttpCommon):
         tx = self._create_transaction('direct', state='authorized')
 
         with patch(
-            'odoo.addons.payment_adyen.models.payment_provider.PaymentProvider._adyen_make_request',
-            return_value={'status': 'received'},
+                'odoo.addons.payment_adyen.models.payment_provider.PaymentProvider._adyen_make_request',
+                return_value={'status': 'received'},
         ):
             tx._send_capture_request()
         self.assertEqual(
@@ -262,8 +260,8 @@ class AdyenTest(AdyenCommon, PaymentHttpCommon):
         tx = self._create_transaction('direct', state='authorized')
 
         with patch(
-            'odoo.addons.payment_adyen.models.payment_provider.PaymentProvider._adyen_make_request',
-            return_value={'status': 'received'},
+                'odoo.addons.payment_adyen.models.payment_provider.PaymentProvider._adyen_make_request',
+                return_value={'status': 'received'},
         ):
             tx._send_capture_request(amount_to_capture=10)
         self.assertEqual(
@@ -283,8 +281,8 @@ class AdyenTest(AdyenCommon, PaymentHttpCommon):
         self.provider.capture_manually = True
         source_tx = self._create_transaction(flow='direct', state='authorized')
         with patch(
-            'odoo.addons.payment_adyen.models.payment_provider.PaymentProvider._adyen_make_request',
-            return_value={'status': 'received', 'pspreference': 'dummy ref'},
+                'odoo.addons.payment_adyen.models.payment_provider.PaymentProvider._adyen_make_request',
+                return_value={'status': 'received', 'pspreference': 'dummy ref'},
         ):
             child_tx = source_tx._send_void_request()
         self.assertFalse(
@@ -295,8 +293,8 @@ class AdyenTest(AdyenCommon, PaymentHttpCommon):
         self.provider.capture_manually = True
         source_tx = self._create_transaction(flow='direct', state='authorized')
         with patch(
-            'odoo.addons.payment_adyen.models.payment_provider.PaymentProvider._adyen_make_request',
-            return_value={'status': 'received', 'pspreference': 'dummy ref'},
+                'odoo.addons.payment_adyen.models.payment_provider.PaymentProvider._adyen_make_request',
+                return_value={'status': 'received', 'pspreference': 'dummy ref'},
         ):
             child_tx = source_tx._send_void_request(amount_to_void=10)
         self.assertTrue(
@@ -316,8 +314,8 @@ class AdyenTest(AdyenCommon, PaymentHttpCommon):
         tx = self._create_transaction('direct', state='authorized')
 
         with patch(
-            'odoo.addons.payment_adyen.models.payment_provider.PaymentProvider._adyen_make_request',
-            return_value={'status': 'received'},
+                'odoo.addons.payment_adyen.models.payment_provider.PaymentProvider._adyen_make_request',
+                return_value={'status': 'received'},
         ):
             tx._send_void_request()
         self.assertEqual(
@@ -466,8 +464,8 @@ class AdyenTest(AdyenCommon, PaymentHttpCommon):
         """ Send a notification to the webhook, ignore the signature, and check the response. """
         url = self._build_url(AdyenController._webhook_url)
         with patch(
-            'odoo.addons.payment_adyen.controllers.main.AdyenController'
-            '._verify_notification_signature'
+                'odoo.addons.payment_adyen.controllers.main.AdyenController'
+                '._verify_notification_signature'
         ):
             response = self._make_json_request(url, data=payload).json()
         self.assertEqual(
@@ -480,8 +478,8 @@ class AdyenTest(AdyenCommon, PaymentHttpCommon):
         self._create_transaction('direct')
         url = self._build_url(AdyenController._webhook_url)
         with patch(
-            'odoo.addons.payment_adyen.controllers.main.AdyenController'
-            '._verify_notification_signature'
+                'odoo.addons.payment_adyen.controllers.main.AdyenController'
+                '._verify_notification_signature'
         ) as signature_check_mock, patch(
             'odoo.addons.payment.models.payment_transaction.PaymentTransaction'
             '._handle_notification_data'

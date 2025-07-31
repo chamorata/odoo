@@ -20,12 +20,13 @@ class ResPartner(models.Model):
     def _check_l10n_rs_edi_public_funds(self):
         for record in self:
             if record.l10n_rs_edi_public_funds and \
-                (len(record.l10n_rs_edi_public_funds) < 5 or not record.l10n_rs_edi_public_funds.isdigit()):
+                    (len(record.l10n_rs_edi_public_funds) < 5 or not record.l10n_rs_edi_public_funds.isdigit()):
                 raise ValidationError(_('Public Funds ID(JBKJS) must be exactly five digits'))
 
     @api.constrains('l10n_rs_edi_registration_number')
     def _check_l10n_rs_edi_registration_number(self):
         for record in self:
             if record.l10n_rs_edi_registration_number and \
-                (len(record.l10n_rs_edi_registration_number) not in [8, 13] or not record.l10n_rs_edi_registration_number.isdigit()):
+                    (len(record.l10n_rs_edi_registration_number) not in [8,
+                                                                         13] or not record.l10n_rs_edi_registration_number.isdigit()):
                 raise ValidationError(_('Customer identification number should be 8 or 13 digits'))

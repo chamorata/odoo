@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from dateutil import relativedelta
+
 from odoo import fields, models, api
 
 
@@ -35,8 +36,8 @@ class LeadTest(models.Model):
         for task in self:
             if not task.stage_id and task.state == 'draft':
                 task.stage_id = (
-                    Stage.search([('name', 'ilike', 'new')], limit=1)
-                    or Stage.create({'name': 'New'})
+                        Stage.search([('name', 'ilike', 'new')], limit=1)
+                        or Stage.create({'name': 'New'})
                 )
 
     @api.depends('partner_id.employee', 'priority')
@@ -124,6 +125,7 @@ class Stage(models.Model):
 class Tag(models.Model):
     _name = _description = 'test_base_automation.tag'
     name = fields.Char()
+
 
 class LeadThread(models.Model):
     _inherit = ["base.automation.lead.test", "mail.thread"]

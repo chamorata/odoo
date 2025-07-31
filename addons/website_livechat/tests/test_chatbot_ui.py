@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import Command, tests
 from odoo.addons.im_livechat.tests.chatbot_common import ChatbotCase
-from odoo.addons.website_livechat.tests.common import TestLivechatCommon as TestWebsiteLivechatCommon
 from odoo.addons.im_livechat.tests.common import TestImLivechatCommon
+from odoo.addons.website_livechat.tests.common import TestLivechatCommon as TestWebsiteLivechatCommon
+
+from odoo import Command, tests
 
 
 @tests.tagged('post_install', '-at_install')
@@ -50,7 +51,8 @@ class TestLivechatChatbotUI(TestImLivechatCommon, TestWebsiteLivechatCommon, Cha
             ("I\'d like to buy the software", False, False),
             ("Can you give us your email please?", operator, False),
             ("No, you won't get my email!", False, False),
-            ("'No, you won't get my email!' does not look like a valid email. Can you please try again?", operator, False),
+            ("'No, you won't get my email!' does not look like a valid email. Can you please try again?", operator,
+             False),
             ("okfine@fakeemail.com", False, False),
             ("Your email is validated, thank you!", operator, False),
             ("Would you mind providing your website address?", operator, False),
@@ -126,7 +128,8 @@ class TestLivechatChatbotUI(TestImLivechatCommon, TestWebsiteLivechatCommon, Cha
         self.start_tour("/", "website_livechat_chatbot_after_reload_tour")
 
     def test_chatbot_test_page_tour(self):
-        bob_operator = tests.new_test_user(self.env, login="bob_user", groups="im_livechat.im_livechat_group_user,base.group_user")
+        bob_operator = tests.new_test_user(self.env, login="bob_user",
+                                           groups="im_livechat.im_livechat_group_user,base.group_user")
         self.livechat_channel.user_ids += bob_operator
         test_page_url = f"/chatbot/{'-'.join(self.chatbot_script.title.split(' '))}-{self.chatbot_script.id}/test"
         self.start_tour(test_page_url, "website_livechat_chatbot_test_page_tour", login="bob_user")

@@ -3,13 +3,13 @@
 import logging
 import pprint
 
+from odoo.addons.payment import utils as payment_utils
+from odoo.addons.payment_adyen import const
+from odoo.addons.payment_adyen import utils as adyen_utils
+
 from odoo import _, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import format_amount
-
-from odoo.addons.payment import utils as payment_utils
-from odoo.addons.payment_adyen import utils as adyen_utils
-from odoo.addons.payment_adyen import const
 
 _logger = logging.getLogger(__name__)
 
@@ -17,7 +17,7 @@ _logger = logging.getLogger(__name__)
 class PaymentTransaction(models.Model):
     _inherit = 'payment.transaction'
 
-    #=== BUSINESS METHODS ===#
+    # === BUSINESS METHODS ===#
 
     def _get_specific_processing_values(self, processing_values):
         """ Override of payment to return Adyen-specific processing values.
@@ -335,7 +335,7 @@ class PaymentTransaction(models.Model):
         return tx
 
     def _adyen_create_child_tx_from_notification_data(
-        self, source_tx, notification_data, is_refund=False
+            self, source_tx, notification_data, is_refund=False
     ):
         """ Create a child transaction based on Adyen data.
 

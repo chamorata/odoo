@@ -11,7 +11,8 @@ class Bill(models.Model):
 
     name = fields.Char("Name")
     value = fields.Float("Coin/Bill Value", required=True, digits=(16, 4))
-    for_all_config = fields.Boolean("For All PoS", default=True, help="If checked, this coin/bill will be available in all PoS.")
+    for_all_config = fields.Boolean("For All PoS", default=True,
+                                    help="If checked, this coin/bill will be available in all PoS.")
     pos_config_ids = fields.Many2many("pos.config", string="Point of Sales")
 
     @api.model

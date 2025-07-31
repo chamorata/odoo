@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.addons.phone_validation.tools import phone_validation
-
 from odoo.addons.mass_mailing_sms.tests.common import MassSMSCommon
+from odoo.addons.phone_validation.tools import phone_validation
 
 
 class TestMassMailCommon(MassSMSCommon):
@@ -125,7 +124,8 @@ class TestMassSMSCommon(TestMassMailCommon):
                 'phone_nbr': '045600%s%s44' % (x, x)
             })
         cls.records = cls._reset_mail_context(records)
-        cls.records_numbers = [phone_validation.phone_format(r.phone_nbr, 'BE', '32', force_format='E164') for r in cls.records]
+        cls.records_numbers = [phone_validation.phone_format(r.phone_nbr, 'BE', '32', force_format='E164') for r in
+                               cls.records]
         cls.partners = partners
 
         cls.sms_template = cls.env['sms.template'].create({
@@ -135,7 +135,8 @@ class TestMassSMSCommon(TestMassMailCommon):
         })
 
         cls.partner_numbers = [
-            phone_validation.phone_format(partner.mobile, partner.country_id.code, partner.country_id.phone_code, force_format='E164')
+            phone_validation.phone_format(partner.mobile, partner.country_id.code, partner.country_id.phone_code,
+                                          force_format='E164')
             for partner in partners
         ]
 

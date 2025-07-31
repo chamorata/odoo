@@ -13,7 +13,8 @@
                     <field name="mailing_id" invisible="1"/>
                 </group>
                 <footer>
-                    <button string="Send Test" name="action_send_sms" type="object" class="btn-primary" data-hotkey="q"/>
+                    <button string="Send Test" name="action_send_sms" type="object" class="btn-primary"
+                            data-hotkey="q"/>
                     <button string="Discard" class="btn btn-secondary" special="cancel" data-hotkey="x"/>
                 </footer>
             </form>

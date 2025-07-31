@@ -3,7 +3,6 @@
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
-from odoo.osv import expression
 
 
 class AccountPaymentMethodLine(models.Model):
@@ -38,11 +37,11 @@ class AccountPaymentMethodLine(models.Model):
             journal = line.journal_id
             company = journal.company_id
             if (
-                company
-                and line.payment_method_id
-                and not line.payment_provider_id
-                and manage_providers
-                and method_information_mapping.get(line.payment_method_id.id, {}).get('mode') == 'electronic'
+                    company
+                    and line.payment_method_id
+                    and not line.payment_provider_id
+                    and manage_providers
+                    and method_information_mapping.get(line.payment_method_id.id, {}).get('mode') == 'electronic'
             ):
                 provider_ids = providers_per_code.get(company.id, {}).get(line.code, set())
 
@@ -53,8 +52,9 @@ class AccountPaymentMethodLine(models.Model):
                     for journal_line in lines:
                         if journal_line.payment_method_id:
                             if (
-                                manage_providers
-                                and method_information_mapping.get(journal_line.payment_method_id.id, {}).get('mode') == 'electronic'
+                                    manage_providers
+                                    and method_information_mapping.get(journal_line.payment_method_id.id, {}).get(
+                                'mode') == 'electronic'
                             ):
                                 protected_provider_ids.add(journal_line.payment_provider_id.id)
 

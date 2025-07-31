@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+import time
 from datetime import datetime
+
 from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
+from odoo.addons.hr_timesheet.tests.test_timesheet import TestCommonTimesheet
 
 from odoo import fields, SUPERUSER_ID
-
 from odoo.exceptions import UserError
 from odoo.tests import common, new_test_user
-from odoo.addons.hr_timesheet.tests.test_timesheet import TestCommonTimesheet
-import time
 
 
 class TestTimesheetHolidaysCreate(common.TransactionCase):
@@ -22,8 +22,10 @@ class TestTimesheetHolidaysCreate(common.TransactionCase):
             'requires_allocation': 'no'
         })
 
-        self.assertEqual(status.timesheet_project_id, status.company_id.internal_project_id, 'The default project linked to the status should be the same as the company')
-        self.assertEqual(status.timesheet_task_id, status.company_id.leave_timesheet_task_id, 'The default task linked to the status should be the same as the company')
+        self.assertEqual(status.timesheet_project_id, status.company_id.internal_project_id,
+                         'The default project linked to the status should be the same as the company')
+        self.assertEqual(status.timesheet_task_id, status.company_id.leave_timesheet_task_id,
+                         'The default task linked to the status should be the same as the company')
 
     def test_company_create(self):
         main_company = self.env.ref('base.main_company')
@@ -35,7 +37,9 @@ class TestTimesheetHolidaysCreate(common.TransactionCase):
         Company = Company.with_user(user)
         Company = Company.with_company(main_company)
         company = Company.create({'name': "Wall Company"})
-        self.assertEqual(company.internal_project_id.sudo().company_id, company, "It should have created a project for the company")
+        self.assertEqual(company.internal_project_id.sudo().company_id, company,
+                         "It should have created a project for the company")
+
 
 class TestTimesheetHolidays(TestCommonTimesheet):
 
@@ -115,11 +119,15 @@ class TestTimesheetHolidays(TestCommonTimesheet):
         self.assertEqual(holiday.timesheet_ids.project_id.id, self.hr_leave_type_with_ts.timesheet_project_id.id)
         self.assertEqual(holiday.timesheet_ids.task_id.id, self.hr_leave_type_with_ts.timesheet_task_id.id)
 
-        self.assertEqual(len(holiday.timesheet_ids), holiday.number_of_days, 'Number of generated timesheets should be the same as the leave duration (1 per day between %s and %s)' % (fields.Datetime.to_string(self.leave_start_datetime), fields.Datetime.to_string(self.leave_end_datetime)))
+        self.assertEqual(len(holiday.timesheet_ids), holiday.number_of_days,
+                         'Number of generated timesheets should be the same as the leave duration (1 per day between %s and %s)' % (
+                             fields.Datetime.to_string(self.leave_start_datetime),
+                             fields.Datetime.to_string(self.leave_end_datetime)))
 
         # manager refuse the leave
         holiday.with_user(SUPERUSER_ID).action_refuse()
-        self.assertEqual(len(holiday.timesheet_ids), 0, 'Number of linked timesheets should be zero, since the leave is refused.')
+        self.assertEqual(len(holiday.timesheet_ids), 0,
+                         'Number of linked timesheets should be zero, since the leave is refused.')
 
         company = self.env['res.company'].create({"name": "new company"})
         self.empl_employee.write({
@@ -155,7 +163,8 @@ class TestTimesheetHolidays(TestCommonTimesheet):
             'request_date_to': self.leave_end_datetime,
         })
         holiday.with_user(SUPERUSER_ID).action_validate()
-        self.assertEqual(len(holiday.timesheet_ids), 0, 'Number of generated timesheets should be zero since the leave type does not generate timesheet')
+        self.assertEqual(len(holiday.timesheet_ids), 0,
+                         'Number of generated timesheets should be zero since the leave type does not generate timesheet')
 
     @freeze_time('2018-02-05')  # useful to be able to cancel the validated time off
     def test_cancel_validate_holidays(self):
@@ -167,7 +176,10 @@ class TestTimesheetHolidays(TestCommonTimesheet):
             'request_date_to': self.leave_end_datetime,
         })
         holiday.with_user(self.env.user).action_validate()
-        self.assertEqual(len(holiday.timesheet_ids), holiday.number_of_days, 'Number of generated timesheets should be the same as the leave duration (1 per day between %s and %s)' % (fields.Datetime.to_string(self.leave_start_datetime), fields.Datetime.to_string(self.leave_end_datetime)))
+        self.assertEqual(len(holiday.timesheet_ids), holiday.number_of_days,
+                         'Number of generated timesheets should be the same as the leave duration (1 per day between %s and %s)' % (
+                             fields.Datetime.to_string(self.leave_start_datetime),
+                             fields.Datetime.to_string(self.leave_end_datetime)))
 
         self.env['hr.holidays.cancel.leave'].with_user(self.user_employee).with_context(default_leave_id=holiday.id) \
             .new({'reason': 'Test remove holiday'}) \
@@ -186,7 +198,7 @@ class TestTimesheetHolidays(TestCommonTimesheet):
                the public one.
         """
 
-        leave_start_datetime = datetime(2022, 1, 24, 7, 0, 0, 0) # Monday
+        leave_start_datetime = datetime(2022, 1, 24, 7, 0, 0, 0)  # Monday
         leave_end_datetime = datetime(2022, 1, 28, 18, 0, 0, 0)
 
         # Create a public holiday
@@ -227,7 +239,8 @@ class TestTimesheetHolidays(TestCommonTimesheet):
                 'unit_amount': 8.0,
             })
 
-        self.assertEqual(len(timesheets.filtered('holiday_id')), 4, "4 timesheet should be linked to employee's timeoff")
+        self.assertEqual(len(timesheets.filtered('holiday_id')), 4,
+                         "4 timesheet should be linked to employee's timeoff")
         self.assertEqual(len(timesheets.filtered('global_leave_id')), 1, '1 timesheet should be linked to global leave')
 
     def test_delete_timesheet_after_new_holiday_covers_whole_timeoff(self):
@@ -240,7 +253,7 @@ class TestTimesheetHolidays(TestCommonTimesheet):
             3) Delete the new timesheet associated with the public holiday.
         """
 
-        leave_start_datetime = datetime(2022, 1, 31, 7, 0, 0, 0)    # Monday
+        leave_start_datetime = datetime(2022, 1, 31, 7, 0, 0, 0)  # Monday
         leave_end_datetime = datetime(2022, 1, 31, 18, 0, 0, 0)
 
         # (1) Create a timeoff and validate it
@@ -257,7 +270,7 @@ class TestTimesheetHolidays(TestCommonTimesheet):
         self.env['resource.calendar.leaves'].create({
             'name': 'New Public Holiday',
             'calendar_id': self.employee_working_calendar.id,
-            'date_from': datetime(2022, 1, 31, 5, 0, 0, 0),     # Covers the whole time off
+            'date_from': datetime(2022, 1, 31, 5, 0, 0, 0),  # Covers the whole time off
             'date_to': datetime(2022, 1, 31, 23, 0, 0, 0),
         })
 
@@ -300,8 +313,9 @@ class TestTimesheetHolidays(TestCommonTimesheet):
             ('employee_id', '=', self.empl_employee.id),
         ])
         self.assertEqual(len(timesheet), 3, "Three timesheets should be created for each leave day")
-        self.assertEqual(sum(timesheet.mapped('unit_amount')), 24, "The duration of the timesheet for flexible employee leave "
-                                                        "should be number of days * hours per day")
+        self.assertEqual(sum(timesheet.mapped('unit_amount')), 24,
+                         "The duration of the timesheet for flexible employee leave "
+                         "should be number of days * hours per day")
 
     def test_one_day_timesheet_timeoff_flexible_employee(self):
         flex_40h_calendar = self.env['resource.calendar'].create({
@@ -328,5 +342,6 @@ class TestTimesheetHolidays(TestCommonTimesheet):
             ('employee_id', '=', self.empl_employee.id),
         ])
         self.assertEqual(len(timesheet), 1, "One timesheet should be created")
-        self.assertEqual(sum(timesheet.mapped('unit_amount')), 10, "The duration of the timesheet for flexible employee leave "
-                                                        "should be 10 hours")
+        self.assertEqual(sum(timesheet.mapped('unit_amount')), 10,
+                         "The duration of the timesheet for flexible employee leave "
+                         "should be 10 hours")

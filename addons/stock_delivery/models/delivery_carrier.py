@@ -20,8 +20,8 @@ class DeliveryCarrier(models.Model):
         selection_add=[('real', 'Real cost')],
         ondelete={'real': 'set default'},
         help="Estimated Cost: the customer will be invoiced the estimated cost of the shipping.\n"
-        "Real Cost: the customer will be invoiced the real cost of the shipping, the cost of the"
-        "shipping will be updated on the SO after the delivery."
+             "Real Cost: the customer will be invoiced the real cost of the shipping, the cost of the"
+             "shipping will be updated on the SO after the delivery."
     )
 
     route_ids = fields.Many2many(
@@ -111,7 +111,9 @@ class DeliveryCarrier(models.Model):
         total_weight = order_weight or total_weight
         if total_weight == 0.0:
             weight_uom_name = self.env['product.template']._get_weight_uom_name_from_ir_config_parameter()
-            raise UserError(_("The package cannot be created because the total weight of the products in the picking is 0.0 %s", weight_uom_name))
+            raise UserError(
+                _("The package cannot be created because the total weight of the products in the picking is 0.0 %s",
+                  weight_uom_name))
         # If max weight == 0 => division by 0. If this happens, we want to have
         # more in the max weight than in the total weight, so that it only
         # creates ONE package with everything.
@@ -201,7 +203,8 @@ class DeliveryCarrier(models.Model):
     def _get_commodities_from_order(self, order):
         commodities = []
 
-        for line in order.order_line.filtered(lambda line: not line.is_delivery and not line.display_type and line.product_id.type == 'consu'):
+        for line in order.order_line.filtered(
+                lambda line: not line.is_delivery and not line.display_type and line.product_id.type == 'consu'):
             unit_quantity = line.product_uom._compute_quantity(line.product_uom_qty, line.product_id.uom_id)
             rounded_qty = max(1, float_round(unit_quantity, precision_digits=0))
             country_of_origin = line.product_id.country_of_origin.code or order.warehouse_id.partner_id.country_id.code
@@ -225,14 +228,17 @@ class DeliveryCarrier(models.Model):
                     product.uom_id)
                 for line in lines)
             rounded_qty = max(1, float_round(unit_quantity, precision_digits=0))
-            country_of_origin = product.country_of_origin.code or lines[0].picking_id.picking_type_id.warehouse_id.partner_id.country_id.code
+            country_of_origin = product.country_of_origin.code or lines[
+                0].picking_id.picking_type_id.warehouse_id.partner_id.country_id.code
             unit_price = sum(line.sale_price for line in lines) / rounded_qty
-            commodities.append(DeliveryCommodity(product, amount=rounded_qty, monetary_value=unit_price, country_of_origin=country_of_origin))
+            commodities.append(DeliveryCommodity(product, amount=rounded_qty, monetary_value=unit_price,
+                                                 country_of_origin=country_of_origin))
 
         return commodities
 
     def _product_price_to_company_currency(self, quantity, product, company):
-        return company.currency_id._convert(quantity * product.standard_price, product.currency_id, company, fields.Date.today())
+        return company.currency_id._convert(quantity * product.standard_price, product.currency_id, company,
+                                            fields.Date.today())
 
     # ------------------------------------------------ #
     # Fixed price shipping, aka a very simple provider #
@@ -263,8 +269,9 @@ class DeliveryCarrier(models.Model):
             carrier = self._match_address(p.partner_id)
             if not carrier:
                 raise ValidationError(_('There is no matching delivery rule.'))
-            res = res + [{'exact_price': p.carrier_id._get_price_available(p.sale_id) if p.sale_id else 0.0,  # TODO cleanme
-                          'tracking_number': False}]
+            res = res + [
+                {'exact_price': p.carrier_id._get_price_available(p.sale_id) if p.sale_id else 0.0,  # TODO cleanme
+                 'tracking_number': False}]
         return res
 
     def base_on_rule_get_tracking_link(self, picking):

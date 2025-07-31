@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+import pytz
+
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
-
-import pytz
 
 
 class HolidaysType(models.Model):
@@ -13,19 +13,21 @@ class HolidaysType(models.Model):
     timesheet_generate = fields.Boolean(
         'Generate Timesheets', compute='_compute_timesheet_generate', store=True, readonly=False,
         help="If checked, when validating a time off, timesheet will be generated in the Vacation Project of the company.")
-    timesheet_project_id = fields.Many2one('project.project', string="Project", domain="[('company_id', 'in', [False, company_id])]",
-        compute="_compute_timesheet_project_id", store=True, readonly=False)
+    timesheet_project_id = fields.Many2one('project.project', string="Project",
+                                           domain="[('company_id', 'in', [False, company_id])]",
+                                           compute="_compute_timesheet_project_id", store=True, readonly=False)
     timesheet_task_id = fields.Many2one(
         'project.task', string="Task", compute='_compute_timesheet_task_id',
         store=True, readonly=False,
         domain="[('project_id', '=', timesheet_project_id),"
-                "('project_id', '!=', False),"
-                "('company_id', 'in', [False, company_id])]")
+               "('project_id', '!=', False),"
+               "('company_id', 'in', [False, company_id])]")
 
     @api.depends('timesheet_task_id', 'timesheet_project_id')
     def _compute_timesheet_generate(self):
         for leave_type in self:
-            leave_type.timesheet_generate = not leave_type.company_id or (leave_type.timesheet_task_id and leave_type.timesheet_project_id)
+            leave_type.timesheet_generate = not leave_type.company_id or (
+                        leave_type.timesheet_task_id and leave_type.timesheet_project_id)
 
     @api.depends('company_id')
     def _compute_timesheet_project_id(self):
@@ -48,8 +50,8 @@ class HolidaysType(models.Model):
             if holiday_status.timesheet_generate and holiday_status.company_id:
                 if not holiday_status.timesheet_project_id or not holiday_status.timesheet_task_id:
                     raise ValidationError(_("Both the internal project and task are required to "
-                    "generate a timesheet for the time off %s. If you don't want a timesheet, you should "
-                    "leave the internal project and task empty.", holiday_status.name))
+                                            "generate a timesheet for the time off %s. If you don't want a timesheet, you should "
+                                            "leave the internal project and task empty.", holiday_status.name))
 
 
 class Holidays(models.Model):
@@ -85,7 +87,8 @@ class Holidays(models.Model):
             calendar = leave.employee_id.resource_calendar_id
             calendar_timezone = pytz.timezone(calendar.tz)
 
-            if calendar.flexible_hours and (leave.request_unit_hours or leave.request_unit_half or leave.date_from.date() == leave.date_to.date()):
+            if calendar.flexible_hours and (
+                    leave.request_unit_hours or leave.request_unit_half or leave.date_from.date() == leave.date_to.date()):
                 leave_date = leave.date_from.astimezone(calendar_timezone).date()
                 if leave.request_unit_hours:
                     hours = leave.request_hour_to - leave.request_hour_from
@@ -100,10 +103,13 @@ class Holidays(models.Model):
                     leave.date_to)[leave.employee_id.id]
 
             for index, (day_date, work_hours_count) in enumerate(work_hours_data):
-                vals_list.append(leave._timesheet_prepare_line_values(index, work_hours_data, day_date, work_hours_count, project, task))
+                vals_list.append(
+                    leave._timesheet_prepare_line_values(index, work_hours_data, day_date, work_hours_count, project,
+                                                         task))
 
         # Unlink previous timesheets to avoid doublon (shouldn't happen on the interface but meh)
-        old_timesheets = self.env["account.analytic.line"].sudo().search([('project_id', '!=', False), ('holiday_id', 'in', leave_ids)])
+        old_timesheets = self.env["account.analytic.line"].sudo().search(
+            [('project_id', '!=', False), ('holiday_id', 'in', leave_ids)])
         if old_timesheets:
             old_timesheets.holiday_id = False
             old_timesheets.unlink()

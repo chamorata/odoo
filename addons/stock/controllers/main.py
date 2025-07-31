@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
+import json
+
 import werkzeug
 from werkzeug.exceptions import InternalServerError
 
 from odoo import http
 from odoo.http import request
 from odoo.tools.misc import html_escape
-
-import json
 
 
 class StockReportController(http.Controller):
@@ -20,7 +20,8 @@ class StockReportController(http.Controller):
         try:
             if output_format == 'pdf':
                 response = request.make_response(
-                    stock_traceability.with_context(active_id=kw['active_id'], active_model=kw['active_model']).get_pdf(line_data),
+                    stock_traceability.with_context(active_id=kw['active_id'], active_model=kw['active_model']).get_pdf(
+                        line_data),
                     headers=[
                         ('Content-Type', 'application/pdf'),
                         ('Content-Disposition', 'attachment; filename=' + 'stock_traceability' + '.pdf;')

@@ -1,11 +1,6 @@
-from lxml import etree
 from urllib.parse import urlencode
 
-from odoo import api, fields, models, _
-from odoo.exceptions import UserError
-from odoo.tools import cleanup_xml_node
-from odoo.tools.sql import column_exists, create_column
-
+from lxml import etree
 from odoo.addons.l10n_gr_edi.models.l10n_gr_edi_document import _make_mydata_request
 from odoo.addons.l10n_gr_edi.models.preferred_classification import (
     CLASSIFICATION_CATEGORY_EXPENSE,
@@ -25,6 +20,11 @@ from odoo.addons.l10n_gr_edi.models.preferred_classification import (
     VALID_TAX_AMOUNTS,
     VALID_TAX_CATEGORY_MAP,
 )
+
+from odoo import api, fields, models, _
+from odoo.exceptions import UserError
+from odoo.tools import cleanup_xml_node
+from odoo.tools.sql import column_exists, create_column
 
 
 class AccountMove(models.Model):
@@ -92,12 +92,12 @@ class AccountMove(models.Model):
         Create all compute-stored fields here to avoid MemoryError when initializing on large databases.
         """
         for column_name, column_type in (
-            ('l10n_gr_edi_mark', 'varchar'),
-            ('l10n_gr_edi_cls_mark', 'varchar'),
-            ('l10n_gr_edi_state', 'varchar'),
-            ('l10n_gr_edi_inv_type', 'varchar'),
-            ('l10n_gr_edi_payment_method', 'varchar'),
-            ('l10n_gr_edi_attachment_id', 'int4'),
+                ('l10n_gr_edi_mark', 'varchar'),
+                ('l10n_gr_edi_cls_mark', 'varchar'),
+                ('l10n_gr_edi_state', 'varchar'),
+                ('l10n_gr_edi_inv_type', 'varchar'),
+                ('l10n_gr_edi_payment_method', 'varchar'),
+                ('l10n_gr_edi_attachment_id', 'int4'),
         ):
             if not column_exists(self.env.cr, 'account_move', column_name):
                 create_column(self.env.cr, 'account_move', column_name, column_type)
@@ -354,8 +354,10 @@ class AccountMove(models.Model):
         partner_not_from_greece = self.partner_id.country_code != 'GR'
         inv_type_require_counterpart = self.l10n_gr_edi_inv_type in TYPES_WITH_MANDATORY_COUNTERPART
 
-        conditional_address_keys = ('issuer_name', 'issuer_postal_code', 'issuer_city', 'counterpart_vat', 'counterpart_country',
-                                    'counterpart_branch', 'counterpart_name', 'counterpart_postal_code', 'counterpart_city')
+        conditional_address_keys = ('issuer_name', 'issuer_postal_code', 'issuer_city', 'counterpart_vat',
+                                    'counterpart_country',
+                                    'counterpart_branch', 'counterpart_name', 'counterpart_postal_code',
+                                    'counterpart_city')
         values.update({
             'issuer_vat_number': self.company_id.vat.replace('EL', '').replace('GR', ''),
             'issuer_country': self.company_id.country_code,
@@ -424,7 +426,8 @@ class AccountMove(models.Model):
         cls_vals = {'ecls': [], 'icls': []}
 
         if line.l10n_gr_edi_cls_category:
-            cls_vals_list = cls_vals['ecls'] if line.l10n_gr_edi_cls_category in CLASSIFICATION_CATEGORY_EXPENSE else cls_vals['icls']
+            cls_vals_list = cls_vals['ecls'] if line.l10n_gr_edi_cls_category in CLASSIFICATION_CATEGORY_EXPENSE else \
+            cls_vals['icls']
             cls_type = line.l10n_gr_edi_cls_type or ''
             if len(cls_type) > 0 and cls_type[0] == 'X':  # handle duplicate E3 type on inv type 17.5
                 cls_type = cls_type[1:]
@@ -485,8 +488,8 @@ class AccountMove(models.Model):
                 ecls_vals[category_type] += ecls['amount']
 
         for summary_key, cls_vals in (
-            ('summary_icls', icls_vals),
-            ('summary_ecls', ecls_vals),
+                ('summary_icls', icls_vals),
+                ('summary_ecls', ecls_vals),
         ):
             values[summary_key] = [
                 {
@@ -513,7 +516,8 @@ class AccountMove(models.Model):
                 vat_category = 8
                 vat_exemption_category = ''
                 if line.tax_ids and move.l10n_gr_edi_inv_type not in TYPES_WITH_VAT_EXEMPT:
-                    tax = base_line['tax_details']['taxes_data'][0]['tax']  # here, `tax` is guaranteed to be a single `account.tax` record
+                    tax = base_line['tax_details']['taxes_data'][0][
+                        'tax']  # here, `tax` is guaranteed to be a single `account.tax` record
                     vat_category = VALID_TAX_CATEGORY_MAP[int(tax.amount)]
                 if vat_category == 7 and move.l10n_gr_edi_inv_type in TYPES_WITH_VAT_CATEGORY_8:
                     vat_category = 8
@@ -593,8 +597,10 @@ class AccountMove(models.Model):
         """
         self.ensure_one()
         errors = {}
-        error_action_company = {'action_text': _("View Company"), 'action': self.company_id._get_records_action(name=_("Company"))}
-        error_action_partner = {'action_text': _("View Partner"), 'action': self.commercial_partner_id._get_records_action(name=_("Partner"))}
+        error_action_company = {'action_text': _("View Company"),
+                                'action': self.company_id._get_records_action(name=_("Company"))}
+        error_action_partner = {'action_text': _("View Partner"),
+                                'action': self.commercial_partner_id._get_records_action(name=_("Partner"))}
         error_action_gr_settings = {
             'action_text': _("View Settings"),
             'action': {
@@ -638,14 +644,16 @@ class AccountMove(models.Model):
                     'message': _("Missing VAT on partner %s.", self.commercial_partner_id.name),
                     **error_action_partner,
                 }
-            if ((self.commercial_partner_id.country_code != 'GR' or self.l10n_gr_edi_inv_type in TYPES_WITH_MANDATORY_COUNTERPART) and
+            if ((
+                    self.commercial_partner_id.country_code != 'GR' or self.l10n_gr_edi_inv_type in TYPES_WITH_MANDATORY_COUNTERPART) and
                     (not self.commercial_partner_id.zip or not self.commercial_partner_id.city)):
                 errors['l10n_gr_edi_partner_no_zip_street'] = {
                     'message': _("Missing city and/or ZIP code on partner %s.", self.commercial_partner_id.name),
                     **error_action_partner,
                 }
 
-        move_disallow_classification = self.is_purchase_document(include_receipts=True) and self.l10n_gr_edi_inv_type in TYPES_WITH_FORBIDDEN_CLASSIFICATION
+        move_disallow_classification = self.is_purchase_document(
+            include_receipts=True) and self.l10n_gr_edi_inv_type in TYPES_WITH_FORBIDDEN_CLASSIFICATION
 
         for line_no, line in enumerate(self.invoice_line_ids, start=1):
             if line.display_type in ('line_section', 'line_note'):
@@ -702,7 +710,8 @@ class AccountMove(models.Model):
         for invoice_vals in xml_vals['invoice_values_list']:
             single_xml_vals = {'invoice_values_list': [invoice_vals]}
             move = invoice_vals['__move__']
-            xml_template = 'l10n_gr_edi.mydata_invoice' if move.is_sale_document(include_receipts=True) else 'l10n_gr_edi.mydata_expense_classification'
+            xml_template = 'l10n_gr_edi.mydata_invoice' if move.is_sale_document(
+                include_receipts=True) else 'l10n_gr_edi.mydata_expense_classification'
             xml_content = self._l10n_gr_edi_generate_xml_content(xml_template, single_xml_vals)
             move_xml_map[move] = xml_content
 
@@ -743,7 +752,8 @@ class AccountMove(models.Model):
         for company, bills in self.grouped('company_id').items():
             xml_vals = bills._l10n_gr_edi_get_expense_classification_xml_vals()
             xml_content = bills._l10n_gr_edi_generate_xml_content('l10n_gr_edi.mydata_expense_classification', xml_vals)
-            result = _make_mydata_request(company=company, endpoint='SendExpensesClassification', xml_content=xml_content)
+            result = _make_mydata_request(company=company, endpoint='SendExpensesClassification',
+                                          xml_content=xml_content)
             self._l10n_gr_edi_handle_send_result(result, xml_vals)
 
     def l10n_gr_edi_try_send_invoices(self):

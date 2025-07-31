@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo import fields, models, api
 from odoo.addons.l10n_es_edi_tbai.models.account_move import TBAI_REFUND_REASONS
+
+from odoo import fields, models, api
 from odoo.exceptions import UserError
 
 
@@ -17,7 +18,7 @@ class AccountMoveReversal(models.TransientModel):
         selection=TBAI_REFUND_REASONS,
         string="Invoice Refund Reason Code (TicketBai)",
         help="BOE-A-1992-28740. Ley 37/1992, de 28 de diciembre, del Impuesto sobre el "
-        "Valor Añadido. Artículo 80. Modificación de la base imponible.",
+             "Valor Añadido. Artículo 80. Modificación de la base imponible.",
     )
 
     @api.depends('move_ids')

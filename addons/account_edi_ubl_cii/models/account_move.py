@@ -1,7 +1,7 @@
 import binascii
-
 from base64 import b64decode
 from contextlib import suppress
+
 from lxml import etree
 
 from odoo import _, api, fields, models, Command

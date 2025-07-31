@@ -6,12 +6,12 @@
             <field name="model">hr.applicant.category</field>
             <field name="arch" type="xml">
                 <form string="Tags">
-                <sheet>
-                    <group>
-                        <field name="name"/>
-                        <field name="color"/>
-                    </group>
-                </sheet>
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="color"/>
+                        </group>
+                    </sheet>
                 </form>
             </field>
         </record>
@@ -22,7 +22,7 @@
             <field name="arch" type="xml">
                 <list string="Tags" editable="bottom">
                     <field name="name"/>
-                    <field name="color" widget="color_picker" />
+                    <field name="color" widget="color_picker"/>
                 </list>
             </field>
         </record>

@@ -6,7 +6,7 @@
                 <div class="alert alert-danger mb-0">
                     <p>
                         Import preview failed due to: "
-                        <t t-esc="props.previewError" />
+                        <t t-esc="props.previewError"/>
                         ".
                     </p>
                     <p>For CSV files, you may need to select the correct separator.</p>
@@ -25,7 +25,8 @@
                 <t t-foreach="props.importMessages" t-as="message" t-key="`${message.lines[0]}-${message_index}`">
                     <p t-att-class="getErrorMessageClass(props.importMessages, message.type, message_index)">
                         <t t-foreach="message.lines" t-as="line" t-key="`${line}-${line_index}`">
-                            <b t-esc="line" /><br/>
+                            <b t-esc="line"/>
+                            <br/>
                         </t>
                     </p>
                 </t>
@@ -44,37 +45,37 @@
                             <td>
                                 <div class="o_import_file_column_cell d-flex flex-column user-select-none">
                                     <span class="fw-bold text-truncate">
-                                        <span class="text-truncate" t-if="column.name" t-esc="column.name" />
+                                        <span class="text-truncate" t-if="column.name" t-esc="column.name"/>
                                         <span t-else="">Untitled</span>
                                     </span>
                                     <span
-                                        t-if="props.options.has_headers"
-                                        class="o_import_preview fst-italic small pe-2"
-                                        data-tooltip-template="ImportDataContent.tooltip"
-                                        t-att-data-tooltip-info="getTooltip(column)"
-                                        data-tooltip-position="right"
+                                            t-if="props.options.has_headers"
+                                            class="o_import_preview fst-italic small pe-2"
+                                            data-tooltip-template="ImportDataContent.tooltip"
+                                            t-att-data-tooltip-info="getTooltip(column)"
+                                            data-tooltip-position="right"
                                     >
-                                        <t t-esc="column.preview" />
+                                        <t t-esc="column.preview"/>
                                     </span>
                                 </div>
                             </td>
                             <td>
                                 <SelectMenu
-                                    value="column.fieldInfo ? column.fieldInfo.fieldPath : undefined"
-                                    groups="getGroups(column)"
-                                    onSelect="(fieldPath) => this.onFieldChanged(column, fieldPath)"
-                                    searchPlaceholder.translate="Search a field..."
-                                    togglerClass="column.fieldInfo ? 'ps-1' : ''"
+                                        value="column.fieldInfo ? column.fieldInfo.fieldPath : undefined"
+                                        groups="getGroups(column)"
+                                        onSelect="(fieldPath) => this.onFieldChanged(column, fieldPath)"
+                                        searchPlaceholder.translate="Search a field..."
+                                        togglerClass="column.fieldInfo ? 'ps-1' : ''"
                                 >
                                     <t t-if="column.fieldInfo">
                                         <i
-                                            class="o_import_field_icon border-end"
-                                            t-att-class="'position-absolute d-inline-block o_import_field_icon_' + column.fieldInfo.type"
-                                            data-tooltip-template="web.FieldTooltip"
-                                            t-att-data-tooltip-info="getTooltipDetails(column.fieldInfo)"
+                                                class="o_import_field_icon border-end"
+                                                t-att-class="'position-absolute d-inline-block o_import_field_icon_' + column.fieldInfo.type"
+                                                data-tooltip-template="web.FieldTooltip"
+                                                t-att-data-tooltip-info="getTooltipDetails(column.fieldInfo)"
                                         ></i>
                                         <span class="ps-5">
-                                            <t t-esc="column.fieldInfo.label" />
+                                            <t t-esc="column.fieldInfo.label"/>
                                         </span>
                                     </t>
                                     <span t-else="" class="text-warning">To import, select a field...</span>
@@ -82,18 +83,23 @@
                                     <t t-set-slot="choice" t-slot-scope="choice">
                                         <div t-att-class="`${choice.data.value and choice.data.value.required ? 'fw-bolder text-decoration-underline' : ''}`">
                                             <i class="o_import_field_choice o_import_field_icon position-relative d-inline-block align-middle border-end me-2"
-                                                t-att-class="choice.data.iconClass"/>
-                                            <t t-esc="choice.data.label" />
+                                               t-att-class="choice.data.iconClass"/>
+                                            <t t-esc="choice.data.label"/>
                                         </div>
                                     </t>
                                 </SelectMenu>
                             </td>
                             <td>
                                 <t t-foreach="column.comments" t-as="comment" t-key="comment_index">
-                                    <p class="m-0 p-2 alert" t-att-class="getCommentClass(column, comment, comment_index)"><t t-out="comment.content" /> <b t-if="comment.fieldName" t-out="comment.fieldName"/></p>
+                                    <p class="m-0 p-2 alert"
+                                       t-att-class="getCommentClass(column, comment, comment_index)"><t t-out="comment.content" />
+                                        <b t-if="comment.fieldName" t-out="comment.fieldName"/></p>
                                 </t>
-                                <ImportDataColumnError t-if="column.errors.length" errors="column.errors" resultNames="column.resultNames" fieldInfo="column.fieldInfo" />
-                                <ImportDataOptions t-if="column.errors.length or column.importOptions" importOptions="column.importOptions" fieldInfo="column.fieldInfo" onOptionChanged="props.onOptionChanged" />
+                                <ImportDataColumnError t-if="column.errors.length" errors="column.errors"
+                                                       resultNames="column.resultNames" fieldInfo="column.fieldInfo"/>
+                                <ImportDataOptions t-if="column.errors.length or column.importOptions"
+                                                   importOptions="column.importOptions" fieldInfo="column.fieldInfo"
+                                                   onOptionChanged="props.onOptionChanged"/>
                             </td>
                         </tr>
                     </t>
@@ -107,11 +113,11 @@
         <hr class="m-0"/>
         <div class="p-2 pe-3">
             <p
-                t-foreach="lines"
-                t-as="line"
-                t-key="line_index"
-                t-out="line"
-                class="mb-0 fs-6"
+                    t-foreach="lines"
+                    t-as="line"
+                    t-key="line_index"
+                    t-out="line"
+                    class="mb-0 fs-6"
             ></p>
         </div>
     </t>

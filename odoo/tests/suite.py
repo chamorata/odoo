@@ -15,14 +15,15 @@ to minimise the code to maintain
 
 import logging
 import sys
+from unittest import util, BaseTestSuite, TestCase
 
+from odoo.modules import module
 from . import case
 from .common import HttpCase
 from .result import stats_logger
-from unittest import util, BaseTestSuite, TestCase
-from odoo.modules import module
 
 __unittest = True
+
 
 class TestSuite(BaseTestSuite):
     """A test suite is a composite test consisting of a number of TestCases.
@@ -75,8 +76,8 @@ class TestSuite(BaseTestSuite):
                 if len(currentClass.tearDown_exceptions) > 0:
                     for exc in currentClass.tearDown_exceptions:
                         self._createClassOrModuleLevelException(
-                                result, exc[1], 'setUpClass', className,
-                                info=exc)
+                            result, exc[1], 'setUpClass', className,
+                            info=exc)
 
     def _createClassOrModuleLevelException(self, result, exception, method_name,
                                            parent, info=None):
@@ -162,9 +163,9 @@ class OdooSuite(TestSuite):
     def _handleClassSetUp(self, test, result):
         previous_test_class = result._previousTestClass
         if not (
-            previous_test_class != type(test)
-            and hasattr(result, 'stats')
-            and stats_logger.isEnabledFor(logging.INFO)
+                previous_test_class != type(test)
+                and hasattr(result, 'stats')
+                and stats_logger.isEnabledFor(logging.INFO)
         ):
             super()._handleClassSetUp(test, result)
             return
@@ -178,9 +179,9 @@ class OdooSuite(TestSuite):
         previous_test_class = result._previousTestClass
         if not (
                 previous_test_class
-            and previous_test_class != type(test)
-            and hasattr(result, 'stats')
-            and stats_logger.isEnabledFor(logging.INFO)
+                and previous_test_class != type(test)
+                and hasattr(result, 'stats')
+                and stats_logger.isEnabledFor(logging.INFO)
         ):
             super()._tearDownPreviousClass(test, result)
             return

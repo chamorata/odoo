@@ -2,12 +2,12 @@
 
 import logging
 
+from odoo.addons.website.models import ir_http
+
 from odoo import _, api, fields, models
 from odoo.osv import expression
 from odoo.tools import float_is_zero, is_html_empty
 from odoo.tools.translate import html_translate
-
-from odoo.addons.website.models import ir_http
 
 _logger = logging.getLogger(__name__)
 
@@ -24,7 +24,7 @@ class ProductTemplate(models.Model):
     _mail_post_access = 'read'
     _check_company_auto = True
 
-    #=== DEFAULT METHODS ===#
+    # === DEFAULT METHODS ===#
 
     @api.model
     def _default_website_sequence(self):
@@ -40,7 +40,7 @@ class ProductTemplate(models.Model):
             return 10000
         return max_sequence + 5
 
-    #=== FIELDS ===#
+    # === FIELDS ===#
 
     website_description = fields.Html(
         string="Description for the website",
@@ -64,7 +64,7 @@ class ProductTemplate(models.Model):
         column1='src_id', column2='dest_id',
         check_company=True,
         help="Suggest alternatives to your customer (upsell strategy)."
-            " Those products show up on the product page.",
+             " Those products show up on the product page.",
     )
     accessory_product_ids = fields.Many2many(
         string="Accessory Products",
@@ -73,7 +73,7 @@ class ProductTemplate(models.Model):
         column1='src_id', column2='dest_id',
         check_company=True,
         help="Accessories show up when the customer reviews the cart before payment"
-            " (cross-sell strategy).",
+             " (cross-sell strategy).",
     )
 
     website_size_x = fields.Integer(string="Size X", default=1)
@@ -122,7 +122,7 @@ class ProductTemplate(models.Model):
     base_unit_name = fields.Char(
         compute='_compute_base_unit_name',
         help="Displays the custom unit for the products if defined or the selected unit of measure"
-            " otherwise.",
+             " otherwise.",
     )
 
     compare_list_price = fields.Monetary(
@@ -131,7 +131,7 @@ class ProductTemplate(models.Model):
              "It will not be displayed if pricelists apply.",
     )
 
-    #=== COMPUTE METHODS ===#
+    # === COMPUTE METHODS ===#
 
     @api.depends('product_variant_ids', 'product_variant_ids.base_unit_count')
     def _compute_base_unit_count(self):
@@ -175,7 +175,7 @@ class ProductTemplate(models.Model):
             if product.id:
                 product.website_url = "/shop/%s" % self.env['ir.http']._slug(product)
 
-    #=== CRUD METHODS ===#
+    # === CRUD METHODS ===#
 
     def write(self, vals):
         # Clear empty ecommerce description content to avoid side-effects on product pages
@@ -184,7 +184,7 @@ class ProductTemplate(models.Model):
             vals['description_ecommerce'] = ''
         return super().write(vals)
 
-    #=== BUSINESS METHODS ===#
+    # === BUSINESS METHODS ===#
 
     def _prepare_variant_values(self, combination):
         variant_dict = super()._prepare_variant_values(combination)
@@ -209,7 +209,8 @@ class ProductTemplate(models.Model):
         :rtype: bool
         """
         self.ensure_one()
-        return any(a.create_variant == 'no_variant' for a in self.valid_product_template_attribute_line_ids.attribute_id)
+        return any(
+            a.create_variant == 'no_variant' for a in self.valid_product_template_attribute_line_ids.attribute_id)
 
     def _has_is_custom_values(self):
         self.ensure_one()
@@ -219,7 +220,8 @@ class ProductTemplate(models.Model):
         :return: True if at least one is_custom attribute value, False otherwise
         :rtype: bool
         """
-        return any(v.is_custom for v in self.valid_product_template_attribute_line_ids.product_template_value_ids._only_active())
+        return any(v.is_custom for v in
+                   self.valid_product_template_attribute_line_ids.product_template_value_ids._only_active())
 
     def _get_possible_variants_sorted(self, parent_combination=None):
         """Return the sorted recordset of variants that are possible.
@@ -336,8 +338,8 @@ class ProductTemplate(models.Model):
         return next(self._get_possible_combinations(parent_combination), False) is not False
 
     def _get_combination_info(
-        self, combination=False, product_id=False, add_qty=1.0,
-        parent_combination=False, only_template=False,
+            self, combination=False, product_id=False, add_qty=1.0,
+            parent_combination=False, only_template=False,
     ):
         """ Return info about a given combination.
 
@@ -423,7 +425,8 @@ class ProductTemplate(models.Model):
             'product_template_id': self.id,
             'display_name': display_name,
             'display_image': bool(product_or_template.image_128),
-            'is_combination_possible': self._is_combination_possible(combination=combination, parent_combination=parent_combination),
+            'is_combination_possible': self._is_combination_possible(combination=combination,
+                                                                     parent_combination=parent_combination),
             'parent_exclusions': self._get_parent_attribute_exclusions(parent_combination=parent_combination),
 
             **self._get_additionnal_combination_info(
@@ -441,13 +444,13 @@ class ProductTemplate(models.Model):
             )
 
         if (
-            product_or_template.type == 'combo'
-            and website.show_line_subtotals_tax_selection == 'tax_included'
-            and not all(
-                tax.price_include
-                for tax
-                in product_or_template.combo_ids.sudo().combo_item_ids.product_id.taxes_id
-            )
+                product_or_template.type == 'combo'
+                and website.show_line_subtotals_tax_selection == 'tax_included'
+                and not all(
+            tax.price_include
+            for tax
+            in product_or_template.combo_ids.sudo().combo_item_ids.product_id.taxes_id
+        )
         ):
             combination_info['tax_disclaimer'] = _(
                 "Final price may vary based on selection. Tax will be calculated at checkout."
@@ -498,9 +501,9 @@ class ProductTemplate(models.Model):
 
         comparison_price = None
         if (
-            not has_discounted_price
-            and product_or_template.compare_list_price
-            and self.env.user.has_group('website_sale.group_product_price_comparison')
+                not has_discounted_price
+                and product_or_template.compare_list_price
+                and self.env.user.has_group('website_sale.group_product_price_comparison')
         ):
             comparison_price = product_or_template.currency_id._convert(
                 from_amount=product_or_template.compare_list_price,
@@ -560,8 +563,8 @@ class ProductTemplate(models.Model):
 
     @api.model
     def _apply_taxes_to_price(
-        self, price, currency, product_taxes, taxes, product_or_template,
-        website=None,
+            self, price, currency, product_taxes, taxes, product_or_template,
+            website=None,
     ):
         website = website or self.env['website'].get_current_website()
         price = self.env['product.product']._get_tax_included_unit_price_from_price(
@@ -637,7 +640,8 @@ class ProductTemplate(models.Model):
         # to avoid generating a single default website_sequence when installing the module,
         # we need to set the default row by row for this column
         if column_name == "website_sequence":
-            _logger.debug("Table '%s': setting default value of new column %s to unique values for each row", self._table, column_name)
+            _logger.debug("Table '%s': setting default value of new column %s to unique values for each row",
+                          self._table, column_name)
             self.env.cr.execute("SELECT id FROM %s WHERE website_sequence IS NULL" % self._table)
             prod_tmpl_ids = self.env.cr.dictfetchall()
             max_seq = self._default_website_sequence()
@@ -682,9 +686,11 @@ class ProductTemplate(models.Model):
 
     def _default_website_meta(self):
         res = super()._default_website_meta()
-        res['default_opengraph']['og:description'] = res['default_twitter']['twitter:description'] = self.description_sale
+        res['default_opengraph']['og:description'] = res['default_twitter'][
+            'twitter:description'] = self.description_sale
         res['default_opengraph']['og:title'] = res['default_twitter']['twitter:title'] = self.name
-        res['default_opengraph']['og:image'] = res['default_twitter']['twitter:image'] = self.env['website'].image_url(self, 'image_1024')
+        res['default_opengraph']['og:image'] = res['default_twitter']['twitter:image'] = self.env['website'].image_url(
+            self, 'image_1024')
         res['default_meta_description'] = self.description_sale
         return res
 
@@ -769,7 +775,8 @@ class ProductTemplate(models.Model):
         mapping = {
             'name': {'name': 'name', 'type': 'text', 'match': True},
             'default_code': {'name': 'default_code', 'type': 'text', 'match': True},
-            'product_variant_ids.default_code': {'name': 'product_variant_ids.default_code', 'type': 'text', 'match': True},
+            'product_variant_ids.default_code': {'name': 'product_variant_ids.default_code', 'type': 'text',
+                                                 'match': True},
             'website_url': {'name': 'website_url', 'type': 'text', 'truncate': False},
         }
         if with_image:
@@ -783,7 +790,8 @@ class ProductTemplate(models.Model):
             mapping['description'] = {'name': 'description_sale', 'type': 'text', 'match': True}
         if with_price:
             mapping['detail'] = {'name': 'price', 'type': 'html', 'display_currency': options['display_currency']}
-            mapping['detail_strike'] = {'name': 'list_price', 'type': 'html', 'display_currency': options['display_currency']}
+            mapping['detail_strike'] = {'name': 'list_price', 'type': 'html',
+                                        'display_currency': options['display_currency']}
         if with_category:
             mapping['extra_link'] = {'name': 'category', 'type': 'html'}
         return {
@@ -868,7 +876,7 @@ class ProductTemplate(models.Model):
 
     @api.model
     def _get_configurator_display_price(
-        self, product_or_template, quantity, date, currency, pricelist, **kwargs
+            self, product_or_template, quantity, date, currency, pricelist, **kwargs
     ):
         """ Override of `sale` to apply taxes.
 
@@ -900,7 +908,7 @@ class ProductTemplate(models.Model):
 
     @api.model
     def _get_additional_configurator_data(
-        self, product_or_template, date, currency, pricelist, **kwargs
+            self, product_or_template, date, currency, pricelist, **kwargs
     ):
         """ Override of `sale` to append tracking data.
 

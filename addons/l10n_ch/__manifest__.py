@@ -48,6 +48,6 @@ The generation of the QR-bill is automatic if you meet the previous criteria. Th
             'l10n_ch/static/src/scss/**/*',
         ],
     }
-,
+    ,
     'license': 'LGPL-3',
 }

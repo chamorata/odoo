@@ -1,12 +1,13 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from datetime import datetime, time
+
 from dateutil.relativedelta import relativedelta
 from pytz import UTC
 
 from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT, get_lang
 from odoo.tools.float_utils import float_compare, float_round
-from odoo.exceptions import UserError
 
 
 class PurchaseOrderLine(models.Model):
@@ -16,7 +17,8 @@ class PurchaseOrderLine(models.Model):
     _order = 'order_id, sequence, id'
 
     name = fields.Text(
-        string='Description', required=True, compute='_compute_price_unit_and_date_planned_and_name', store=True, readonly=False)
+        string='Description', required=True, compute='_compute_price_unit_and_date_planned_and_name', store=True,
+        readonly=False)
     sequence = fields.Integer(string='Sequence', default=10)
     product_qty = fields.Float(string='Quantity', digits='Product Unit of Measure', required=True,
                                compute='_compute_product_qty', store=True, readonly=False)
@@ -31,9 +33,11 @@ class PurchaseOrderLine(models.Model):
         digits='Discount',
         store=True, readonly=False)
     taxes_id = fields.Many2many('account.tax', string='Taxes', context={'active_test': False})
-    product_uom = fields.Many2one('uom.uom', string='Unit of Measure', domain="[('category_id', '=', product_uom_category_id)]")
+    product_uom = fields.Many2one('uom.uom', string='Unit of Measure',
+                                  domain="[('category_id', '=', product_uom_category_id)]")
     product_uom_category_id = fields.Many2one(related='product_id.uom_id.category_id')
-    product_id = fields.Many2one('product.product', string='Product', domain=[('purchase_ok', '=', True)], change_default=True, index='btree_not_null', ondelete='restrict')
+    product_id = fields.Many2one('product.product', string='Product', domain=[('purchase_ok', '=', True)],
+                                 change_default=True, index='btree_not_null', ondelete='restrict')
     product_type = fields.Selection(related='product_id.type', readonly=True)
     price_unit = fields.Float(
         string='Unit Price', required=True, digits='Product Price', aggregator='avg',
@@ -44,32 +48,43 @@ class PurchaseOrderLine(models.Model):
     price_total = fields.Monetary(compute='_compute_amount', string='Total', store=True)
     price_tax = fields.Float(compute='_compute_amount', string='Tax', store=True)
 
-    order_id = fields.Many2one('purchase.order', string='Order Reference', index=True, required=True, ondelete='cascade')
+    order_id = fields.Many2one('purchase.order', string='Order Reference', index=True, required=True,
+                               ondelete='cascade')
 
-    company_id = fields.Many2one('res.company', related='order_id.company_id', string='Company', store=True, readonly=True)
+    company_id = fields.Many2one('res.company', related='order_id.company_id', string='Company', store=True,
+                                 readonly=True)
     state = fields.Selection(related='order_id.state', store=True)
 
-    invoice_lines = fields.One2many('account.move.line', 'purchase_line_id', string="Bill Lines", readonly=True, copy=False)
+    invoice_lines = fields.One2many('account.move.line', 'purchase_line_id', string="Bill Lines", readonly=True,
+                                    copy=False)
 
     # Replace by invoiced Qty
-    qty_invoiced = fields.Float(compute='_compute_qty_invoiced', string="Billed Qty", digits='Product Unit of Measure', store=True)
+    qty_invoiced = fields.Float(compute='_compute_qty_invoiced', string="Billed Qty", digits='Product Unit of Measure',
+                                store=True)
 
-    qty_received_method = fields.Selection([('manual', 'Manual')], string="Received Qty Method", compute='_compute_qty_received_method', store=True,
-        help="According to product configuration, the received quantity can be automatically computed by mechanism:\n"
-             "  - Manual: the quantity is set manually on the line\n"
-             "  - Stock Moves: the quantity comes from confirmed pickings\n")
-    qty_received = fields.Float("Received Qty", compute='_compute_qty_received', inverse='_inverse_qty_received', compute_sudo=True, store=True, digits='Product Unit of Measure')
+    qty_received_method = fields.Selection([('manual', 'Manual')], string="Received Qty Method",
+                                           compute='_compute_qty_received_method', store=True,
+                                           help="According to product configuration, the received quantity can be automatically computed by mechanism:\n"
+                                                "  - Manual: the quantity is set manually on the line\n"
+                                                "  - Stock Moves: the quantity comes from confirmed pickings\n")
+    qty_received = fields.Float("Received Qty", compute='_compute_qty_received', inverse='_inverse_qty_received',
+                                compute_sudo=True, store=True, digits='Product Unit of Measure')
     qty_received_manual = fields.Float("Manual Received Qty", digits='Product Unit of Measure', copy=False)
-    qty_to_invoice = fields.Float(compute='_compute_qty_invoiced', string='To Invoice Quantity', store=True, readonly=True,
+    qty_to_invoice = fields.Float(compute='_compute_qty_invoiced', string='To Invoice Quantity', store=True,
+                                  readonly=True,
                                   digits='Product Unit of Measure')
 
-    partner_id = fields.Many2one('res.partner', related='order_id.partner_id', string='Partner', readonly=True, store=True, index='btree_not_null')
+    partner_id = fields.Many2one('res.partner', related='order_id.partner_id', string='Partner', readonly=True,
+                                 store=True, index='btree_not_null')
     currency_id = fields.Many2one(related='order_id.currency_id', store=True, string='Currency', readonly=True)
     date_order = fields.Datetime(related='order_id.date_order', string='Order Date', readonly=True)
     date_approve = fields.Datetime(related="order_id.date_approve", string='Confirmation Date', readonly=True)
-    product_packaging_id = fields.Many2one('product.packaging', string='Packaging', domain="[('purchase', '=', True), ('product_id', '=', product_id)]", check_company=True,
+    product_packaging_id = fields.Many2one('product.packaging', string='Packaging',
+                                           domain="[('purchase', '=', True), ('product_id', '=', product_id)]",
+                                           check_company=True,
                                            compute="_compute_product_packaging_id", store=True, readonly=False)
-    product_packaging_qty = fields.Float('Packaging Quantity', compute="_compute_product_packaging_qty", store=True, readonly=False)
+    product_packaging_qty = fields.Float('Packaging Quantity', compute="_compute_product_packaging_qty", store=True,
+                                         readonly=False)
     tax_calculation_rounding_method = fields.Selection(
         related='company_id.tax_calculation_rounding_method',
         string='Tax calculation rounding method', readonly=True)
@@ -80,14 +95,17 @@ class PurchaseOrderLine(models.Model):
 
     _sql_constraints = [
         ('accountable_required_fields',
-            "CHECK(display_type IS NOT NULL OR is_downpayment OR (product_id IS NOT NULL AND product_uom IS NOT NULL AND date_planned IS NOT NULL))",
-            "Missing required fields on accountable purchase order line."),
+         "CHECK(display_type IS NOT NULL OR is_downpayment OR (product_id IS NOT NULL AND product_uom IS NOT NULL AND date_planned IS NOT NULL))",
+         "Missing required fields on accountable purchase order line."),
         ('non_accountable_null_fields',
-            "CHECK(display_type IS NULL OR (product_id IS NULL AND price_unit = 0 AND product_uom_qty = 0 AND product_uom IS NULL AND date_planned is NULL))",
-            "Forbidden values on non-accountable purchase order line"),
+         "CHECK(display_type IS NULL OR (product_id IS NULL AND price_unit = 0 AND product_uom_qty = 0 AND product_uom IS NULL AND date_planned is NULL))",
+         "Forbidden values on non-accountable purchase order line"),
     ]
-    product_template_attribute_value_ids = fields.Many2many(related='product_id.product_template_attribute_value_ids', readonly=True)
-    product_no_variant_attribute_value_ids = fields.Many2many('product.template.attribute.value', string='Product attribute values that do not create variants', ondelete='restrict')
+    product_template_attribute_value_ids = fields.Many2many(related='product_id.product_template_attribute_value_ids',
+                                                            readonly=True)
+    product_no_variant_attribute_value_ids = fields.Many2many('product.template.attribute.value',
+                                                              string='Product attribute values that do not create variants',
+                                                              ondelete='restrict')
 
     @api.depends('product_qty', 'price_unit', 'taxes_id', 'discount')
     def _compute_amount(self):
@@ -117,7 +135,8 @@ class PurchaseOrderLine(models.Model):
     def _compute_tax_id(self):
         for line in self:
             line = line.with_company(line.company_id)
-            fpos = line.order_id.fiscal_position_id or line.order_id.fiscal_position_id._get_fiscal_position(line.order_id.partner_id)
+            fpos = line.order_id.fiscal_position_id or line.order_id.fiscal_position_id._get_fiscal_position(
+                line.order_id.partner_id)
             # filter taxes by company
             taxes = line.product_id.supplier_taxes_id._filter_taxes_by_company(line.company_id)
             line.taxes_id = fpos.map_tax(taxes)
@@ -127,7 +146,8 @@ class PurchaseOrderLine(models.Model):
         for line in self:
             line.price_unit_discounted = line.price_unit * (1 - line.discount / 100)
 
-    @api.depends('invoice_lines.move_id.state', 'invoice_lines.quantity', 'qty_received', 'product_uom_qty', 'order_id.state')
+    @api.depends('invoice_lines.move_id.state', 'invoice_lines.quantity', 'qty_received', 'product_uom_qty',
+                 'order_id.state')
     def _compute_qty_invoiced(self):
         for line in self:
             # compute qty_invoiced
@@ -203,14 +223,15 @@ class PurchaseOrderLine(models.Model):
 
     def write(self, values):
         if 'display_type' in values and self.filtered(lambda line: line.display_type != values.get('display_type')):
-            raise UserError(_("You cannot change the type of a purchase order line. Instead you should delete the current line and create a new line of the proper type."))
+            raise UserError(
+                _("You cannot change the type of a purchase order line. Instead you should delete the current line and create a new line of the proper type."))
 
         if 'product_qty' in values:
             precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
             for line in self:
                 if (
-                    line.order_id.state == "purchase"
-                    and float_compare(line.product_qty, values["product_qty"], precision_digits=precision) != 0
+                        line.order_id.state == "purchase"
+                        and float_compare(line.product_qty, values["product_qty"], precision_digits=precision) != 0
                 ):
                     line.order_id.message_post_with_source(
                         'purchase.track_po_line_template',
@@ -227,8 +248,10 @@ class PurchaseOrderLine(models.Model):
     def _unlink_except_purchase_or_done(self):
         for line in self:
             if line.order_id.state in ['purchase', 'done'] and line.display_type not in ['line_note', 'line_section']:
-                state_description = {state_desc[0]: state_desc[1] for state_desc in self._fields['state']._description_selection(self.env)}
-                raise UserError(_('Cannot delete a purchase order line which is in state “%s”.', state_description.get(line.state)))
+                state_description = {state_desc[0]: state_desc[1] for state_desc in
+                                     self._fields['state']._description_selection(self.env)}
+                raise UserError(
+                    _('Cannot delete a purchase order line which is in state “%s”.', state_description.get(line.state)))
 
     @api.model
     def _get_date_planned(self, seller, po=False):
@@ -348,12 +371,21 @@ class PurchaseOrderLine(models.Model):
                     line.date_order or fields.Date.context_today(line),
                     False
                 )
-                line.price_unit = float_round(price_unit, precision_digits=max(line.currency_id.decimal_places, self.env['decimal.precision'].precision_get('Product Price')))
+                line.price_unit = float_round(price_unit, precision_digits=max(line.currency_id.decimal_places,
+                                                                               self.env[
+                                                                                   'decimal.precision'].precision_get(
+                                                                                   'Product Price')))
 
             elif seller:
-                price_unit = line.env['account.tax']._fix_tax_included_price_company(seller.price, line.product_id.supplier_taxes_id, line.taxes_id, line.company_id) if seller else 0.0
-                price_unit = seller.currency_id._convert(price_unit, line.currency_id, line.company_id, line.date_order or fields.Date.context_today(line), False)
-                price_unit = float_round(price_unit, precision_digits=max(line.currency_id.decimal_places, self.env['decimal.precision'].precision_get('Product Price')))
+                price_unit = line.env['account.tax']._fix_tax_included_price_company(seller.price,
+                                                                                     line.product_id.supplier_taxes_id,
+                                                                                     line.taxes_id,
+                                                                                     line.company_id) if seller else 0.0
+                price_unit = seller.currency_id._convert(price_unit, line.currency_id, line.company_id,
+                                                         line.date_order or fields.Date.context_today(line), False)
+                price_unit = float_round(price_unit, precision_digits=max(line.currency_id.decimal_places,
+                                                                          self.env['decimal.precision'].precision_get(
+                                                                              'Product Price')))
                 line.price_unit = seller.product_uom._compute_price(price_unit, line.product_uom)
                 line.discount = seller.discount or 0.0
 
@@ -377,9 +409,9 @@ class PurchaseOrderLine(models.Model):
                 line.product_packaging_id = False
             # suggest biggest suitable packaging matching the PO's company
             if line.product_id and line.product_qty and line.product_uom:
-                suggested_packaging = line.product_id.packaging_ids\
-                        .filtered(lambda p: p.purchase and (p.product_id.company_id <= p.company_id <= line.company_id))\
-                        ._find_suitable_product_packaging(line.product_qty, line.product_uom)
+                suggested_packaging = line.product_id.packaging_ids \
+                    .filtered(lambda p: p.purchase and (p.product_id.company_id <= p.company_id <= line.company_id)) \
+                    ._find_suitable_product_packaging(line.product_qty, line.product_uom)
                 line.product_packaging_id = suggested_packaging or line.product_packaging_id
 
     @api.onchange('product_packaging_id')
@@ -414,7 +446,8 @@ class PurchaseOrderLine(models.Model):
             if line.product_packaging_id:
                 packaging_uom = line.product_packaging_id.product_uom_id
                 qty_per_packaging = line.product_packaging_id.qty
-                product_qty = packaging_uom._compute_quantity(line.product_packaging_qty * qty_per_packaging, line.product_uom)
+                product_qty = packaging_uom._compute_quantity(line.product_packaging_qty * qty_per_packaging,
+                                                              line.product_uom)
                 if float_compare(product_qty, line.product_qty, precision_rounding=line.product_uom.rounding) != 0:
                     line.product_qty = product_qty
 
@@ -519,9 +552,9 @@ class PurchaseOrderLine(models.Model):
             )
             if self.product_id.uom_id != self.product_uom:
                 catalog_info['purchase_uom'] = {
-                'display_name': self.product_uom.display_name,
-                'id': self.product_uom.id,
-            }
+                    'display_name': self.product_uom.display_name,
+                    'id': self.product_uom.id,
+                }
             if self.product_packaging_id:
                 packaging = self.product_packaging_id
                 catalog_info['packaging'] = {
@@ -538,7 +571,7 @@ class PurchaseOrderLine(models.Model):
                 lambda line: line.product_uom._compute_quantity(
                     qty=line.product_qty,
                     to_unit=line.product_id.uom_id,
-            )))
+                )))
             catalog_info['readOnly'] = True
             return catalog_info
         return {'quantity': 0}
@@ -632,7 +665,8 @@ class PurchaseOrderLine(models.Model):
         """Return a datetime which is the noon of the input date(time) according
         to order user's time zone, convert to UTC time.
         """
-        return self.order_id.get_order_timezone().localize(datetime.combine(date, time(12))).astimezone(UTC).replace(tzinfo=None)
+        return self.order_id.get_order_timezone().localize(datetime.combine(date, time(12))).astimezone(UTC).replace(
+            tzinfo=None)
 
     def _update_date_planned(self, updated_date):
         self.date_planned = updated_date
@@ -641,7 +675,7 @@ class PurchaseOrderLine(models.Model):
         self.ensure_one()
         # don't track anything when coming from the accrued expense entry wizard, as it is only computing fields at a past date to get relevant amounts
         # and doesn't actually change anything to the current record
-        if  self.env.context.get('accrual_entry_date'):
+        if self.env.context.get('accrual_entry_date'):
             return
         if new_qty != self.qty_received and self.order_id.state == 'purchase':
             self.order_id.message_post_with_source(

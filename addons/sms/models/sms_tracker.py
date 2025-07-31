@@ -50,7 +50,8 @@ class SmsTracker(models.Model):
         elif failure_type in self.env['sms.sms'].BOUNCE_DELIVERY_ERRORS:
             error_status = "bounce"
 
-        self._update_sms_notifications(error_status or 'exception', failure_type=failure_type, failure_reason=failure_reason)
+        self._update_sms_notifications(error_status or 'exception', failure_type=failure_type,
+                                       failure_reason=failure_reason)
         return error_status, failure_type, failure_reason
 
     def _action_update_from_sms_state(self, sms_state, failure_type=False, failure_reason=False):

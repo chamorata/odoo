@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from datetime import timedelta
 from collections import defaultdict
+from datetime import timedelta
+
 from odoo import fields, models, _, api
 from odoo.exceptions import UserError, ValidationError, AccessError
 from odoo.tools.float_utils import float_compare, float_is_zero
@@ -17,8 +18,10 @@ class MrpProduction(models.Model):
         inverse='_inverse_move_line_raw_ids', compute='_compute_move_line_raw_ids'
     )
     subcontracting_has_been_recorded = fields.Boolean("Has been recorded?", copy=False)
-    subcontractor_id = fields.Many2one('res.partner', string="Subcontractor", help="Used to restrict access to the portal user through Record Rules")
-    bom_product_ids = fields.Many2many('product.product', compute="_compute_bom_product_ids", help="List of Products used in the BoM, used to filter the list of products in the subcontracting portal view")
+    subcontractor_id = fields.Many2one('res.partner', string="Subcontractor",
+                                       help="Used to restrict access to the portal user through Record Rules")
+    bom_product_ids = fields.Many2many('product.product', compute="_compute_bom_product_ids",
+                                       help="List of Products used in the BoM, used to filter the list of products in the subcontracting portal view")
 
     incoming_picking = fields.Many2one(related='move_finished_ids.move_dest_ids.picking_id')
 
@@ -97,7 +100,8 @@ class MrpProduction(models.Model):
             backorder._set_qty_producing()
 
             self.product_qty = self.qty_producing
-            action = self._get_subcontract_move().filtered(lambda m: m.state not in ('done', 'cancel'))._action_record_components()
+            action = self._get_subcontract_move().filtered(
+                lambda m: m.state not in ('done', 'cancel'))._action_record_components()
             action['res_id'] = backorder.id
             return action
         return {'type': 'ir.actions.act_window_close'}
@@ -117,7 +121,8 @@ class MrpProduction(models.Model):
         if subcontract_move_id:
             quantity = self.qty_producing
             if self.lot_producing_id:
-                move_lines = subcontract_move_id.move_line_ids.filtered(lambda ml: not ml.picked and ml.lot_id == self.lot_producing_id or not ml.lot_id)
+                move_lines = subcontract_move_id.move_line_ids.filtered(
+                    lambda ml: not ml.picked and ml.lot_id == self.lot_producing_id or not ml.lot_id)
             else:
                 move_lines = subcontract_move_id.move_line_ids.filtered(lambda ml: not ml.picked and not ml.lot_id)
             # Update reservation and quantity done
@@ -160,6 +165,7 @@ class MrpProduction(models.Model):
 
     def _subcontracting_filter_to_done(self):
         """ Filter subcontracting production where composant is already recorded and should be consider to be validate """
+
         def filter_in(mo):
             if mo.state in ('done', 'cancel'):
                 return False
@@ -188,7 +194,8 @@ class MrpProduction(models.Model):
         return self.move_finished_ids.move_dest_ids.filtered(lambda m: m.is_subcontract)
 
     def _get_writeable_fields_portal_user(self):
-        return ['move_line_raw_ids', 'lot_producing_id', 'subcontracting_has_been_recorded', 'qty_producing', 'product_qty']
+        return ['move_line_raw_ids', 'lot_producing_id', 'subcontracting_has_been_recorded', 'qty_producing',
+                'product_qty']
 
     def _subcontract_sanity_check(self):
         for production in self:
@@ -196,5 +203,6 @@ class MrpProduction(models.Model):
                 raise UserError(_('You must enter a serial number for %s', production.product_id.name))
             for sml in production.move_raw_ids.move_line_ids:
                 if sml.tracking != 'none' and not sml.lot_id:
-                    raise UserError(_('You must enter a serial number for each line of %s', sml.product_id.display_name))
+                    raise UserError(
+                        _('You must enter a serial number for each line of %s', sml.product_id.display_name))
         return True

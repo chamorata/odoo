@@ -2,20 +2,23 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import random
-import werkzeug.urls
-
 from collections import defaultdict
 from datetime import datetime, timedelta
 
+import werkzeug.urls
+
 from odoo import api, exceptions, fields, models, tools, _
+
 
 class SignupError(Exception):
     pass
+
 
 def random_token():
     # the token has an entropy of about 120 bits (6 bits/char * 20 chars)
     chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
     return ''.join(random.SystemRandom().choice(chars) for _ in range(20))
+
 
 def now(**kwargs):
     return datetime.now() + timedelta(**kwargs)
@@ -170,7 +173,8 @@ class ResPartner(models.Model):
         self.ensure_one()
         if not expiration:
             if self.signup_type == 'reset':
-                expiration = int(self.env['ir.config_parameter'].get_param("auth_signup.reset_password.validity.hours", 4))
+                expiration = int(
+                    self.env['ir.config_parameter'].get_param("auth_signup.reset_password.validity.hours", 4))
             else:
                 expiration = int(self.env['ir.config_parameter'].get_param("auth_signup.signup.validity.hours", 144))
         plist = [self.id, self.user_ids.ids, self._get_login_date(), self.signup_type]
@@ -183,6 +187,7 @@ class ResPartner(models.Model):
             partner_id, user_ids, login_date, signup_type = payload
             # login_date can be either an int or "None" as a string for signup
             partner = self.browse(partner_id)
-            if login_date == partner._get_login_date() and partner.user_ids.ids == user_ids and signup_type == partner.browse(partner_id).signup_type:
+            if login_date == partner._get_login_date() and partner.user_ids.ids == user_ids and signup_type == partner.browse(
+                    partner_id).signup_type:
                 return partner
         return None

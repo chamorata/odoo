@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import exceptions, tools
 from odoo.addons.mail.tests.common import MailCommon
 from odoo.addons.mail.tests.mail_tracking_duration_mixin_case import MailTrackingDurationMixinCase
 from odoo.addons.test_mail.tests.common import TestRecipients
+
+from odoo import exceptions, tools
 from odoo.tests.common import tagged, users
 from odoo.tools import mute_logger
 
@@ -101,18 +102,18 @@ class TestMailThreadCC(MailCommon):
                     'email': 'cc1@example.com',
                     'create_values': {},
                 }, {
-                    'lang': None,
-                    'reason': 'CC Email',
-                    'name': 'cc2@example.com',
-                    'email': 'cc2@example.com',
-                    'create_values': {},
-                }, {
-                    'lang': None,
-                    'reason': 'CC Email',
-                    'name': '"cc3" <cc3@example.com>',
-                    'email': '"cc3" <cc3@example.com>',
-                    'create_values': {},
-                },
+                'lang': None,
+                'reason': 'CC Email',
+                'name': 'cc2@example.com',
+                'email': 'cc2@example.com',
+                'create_values': {},
+            }, {
+                'lang': None,
+                'reason': 'CC Email',
+                'name': '"cc3" <cc3@example.com>',
+                'email': '"cc3" <cc3@example.com>',
+                'create_values': {},
+            },
             ],
             'cc should be in suggestions',
         )

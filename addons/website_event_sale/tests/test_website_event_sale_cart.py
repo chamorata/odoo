@@ -1,12 +1,12 @@
 from datetime import datetime, timedelta
 
-from odoo import Command
-from odoo.tests import tagged
-
 from odoo.addons.website_event_sale.tests.common import TestWebsiteEventSaleCommon
 from odoo.addons.website_sale.tests.test_website_sale_cart_abandoned import (
     TestWebsiteSaleCartAbandonedCommon,
 )
+
+from odoo import Command
+from odoo.tests import tagged
 
 
 @tagged('post_install', '-at_install')

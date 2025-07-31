@@ -5,19 +5,20 @@ from odoo import api, fields, models, _
 
 TEST_GST_NUMBER = "36AABCT1332L011"
 
+
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
     l10n_in_gst_treatment = fields.Selection([
-            ('regular', 'Registered Business - Regular'),
-            ('composition', 'Registered Business - Composition'),
-            ('unregistered', 'Unregistered Business'),
-            ('consumer', 'Consumer'),
-            ('overseas', 'Overseas'),
-            ('special_economic_zone', 'Special Economic Zone'),
-            ('deemed_export', 'Deemed Export'),
-            ('uin_holders', 'UIN Holders'),
-        ], string="GST Treatment")
+        ('regular', 'Registered Business - Regular'),
+        ('composition', 'Registered Business - Composition'),
+        ('unregistered', 'Unregistered Business'),
+        ('consumer', 'Consumer'),
+        ('overseas', 'Overseas'),
+        ('special_economic_zone', 'Special Economic Zone'),
+        ('deemed_export', 'Deemed Export'),
+        ('uin_holders', 'UIN Holders'),
+    ], string="GST Treatment")
 
     l10n_in_pan = fields.Char(
         string="PAN",
@@ -34,8 +35,8 @@ class ResPartner(models.Model):
     def _compute_l10n_in_gst_state_warning(self):
         for partner in self:
             if (
-                "IN" in partner.fiscal_country_codes
-                and partner.check_vat_in(partner.vat)
+                    "IN" in partner.fiscal_country_codes
+                    and partner.check_vat_in(partner.vat)
             ):
                 if partner.vat[:2] == "99":
                     partner.l10n_in_gst_state_warning = _(
@@ -55,7 +56,8 @@ class ResPartner(models.Model):
     @api.depends('l10n_in_pan')
     def _compute_display_pan_warning(self):
         for partner in self:
-            partner.display_pan_warning = partner.vat and partner.l10n_in_pan and partner.l10n_in_pan != partner.vat[2:12]
+            partner.display_pan_warning = partner.vat and partner.l10n_in_pan and partner.l10n_in_pan != partner.vat[
+                                                                                                         2:12]
 
     @api.onchange('vat')
     def onchange_vat(self):

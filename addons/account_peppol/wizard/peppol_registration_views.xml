@@ -8,14 +8,16 @@
             <form class="form_peppol_registration">
                 <field name="company_id" invisible="1"/>
                 <sheet>
-                    <div class="m-0" name="warnings" invisible="not peppol_warnings or account_peppol_proxy_state != 'not_registered'">
+                    <div class="m-0" name="warnings"
+                         invisible="not peppol_warnings or account_peppol_proxy_state != 'not_registered'">
                         <field name="peppol_warnings" class="o_field_html" widget="actionable_errors"/>
                     </div>
 
-                    <div name="peppol_registration" invisible="account_peppol_proxy_state not in ('not_registered', 'in_verification')">
+                    <div name="peppol_registration"
+                         invisible="account_peppol_proxy_state not in ('not_registered', 'in_verification')">
                         <p class="text-muted">Send electronic invoices, and receive bills automatically via Peppol</p>
 
-                            <!-- Optional step: receiver registration fields -->
+                        <!-- Optional step: receiver registration fields -->
 
                         <group col="1">
                             <group>

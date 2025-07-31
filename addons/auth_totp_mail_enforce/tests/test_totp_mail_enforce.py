@@ -1,12 +1,11 @@
 import logging
-
 from datetime import datetime, timedelta
 from xmlrpc.client import Fault
 
+from odoo.addons.auth_totp.tests.test_totp import TestTOTPMixin
+
 from odoo.tests import get_db_name, tagged, HttpCase
 from odoo.tools import mute_logger
-
-from odoo.addons.auth_totp.tests.test_totp import TestTOTPMixin
 
 _logger = logging.getLogger(__name__)
 

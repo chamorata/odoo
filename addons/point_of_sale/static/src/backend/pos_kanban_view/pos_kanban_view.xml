@@ -8,23 +8,29 @@
 
     <t t-name="point_of_sale.PosKanbanRenderer">
         <div class="d-flex flex-column">
-            <t t-call="web.KanbanRenderer" />
-            <div class="position-relative container" t-att-class="{ 'border-top mt-2': showTopBorder() }" t-if="this.posState.show_predefined_scenarios">
-                <div class="flex-grow-1 text-center" t-att-class="{ 'disable-buttons': !posState.has_chart_template || loadScenario.status === 'loading' }">
-                    <p class="h1 text-primary mt-4" t-if="!posState.has_pos_config">Want to try with sample products?</p>
+            <t t-call="web.KanbanRenderer"/>
+            <div class="position-relative container" t-att-class="{ 'border-top mt-2': showTopBorder() }"
+                 t-if="this.posState.show_predefined_scenarios">
+                <div class="flex-grow-1 text-center"
+                     t-att-class="{ 'disable-buttons': !posState.has_chart_template || loadScenario.status === 'loading' }">
+                    <p class="h1 text-primary mt-4" t-if="!posState.has_pos_config">Want to try with sample products?
+                    </p>
                     <p t-if="!posState.has_chart_template" class="h2 m-3">
-                        Please <a href="#" class="btn-link o_form_uri" role="button" t-on-click="() => action.doAction('account.action_account_config')">install a chart of accounts</a> to activate the buttons.
+                        Please <a href="#" class="btn-link o_form_uri" role="button"
+                                  t-on-click="() => action.doAction('account.action_account_config')">install a chart of
+                        accounts
+                    </a> to activate the buttons.
                     </p>
                     <p t-else="" class="h2 m-3">Choose your store</p>
                     <div t-attf-class="d-flex {{posState.is_restaurant_installed ? 'flex-column' : 'flex-column-reverse'}}">
                         <div class="shop-scenarios row p-3">
                             <t t-foreach="shopScenarios" t-as="item" t-key="item_index">
-                                <t t-call="point_of_sale.ScenarioCard" />
+                                <t t-call="point_of_sale.ScenarioCard"/>
                             </t>
                         </div>
                         <div class="restaurant-scenarios row p-3 justify-content-center">
                             <t t-foreach="restaurantScenarios" t-as="item" t-key="item_index">
-                                <t t-call="point_of_sale.ScenarioCard" />
+                                <t t-call="point_of_sale.ScenarioCard"/>
                             </t>
                         </div>
                     </div>
@@ -43,8 +49,8 @@
                     </div>
                     <p class="text-large">
                         <a role="button" class="btn btn-lg btn-secondary fw-bolder"
-                            t-on-click="createNewProducts"
-                            t-att-class="{ 'disabled': !posState.has_chart_template || loadScenario.status === 'loading' }">
+                           t-on-click="createNewProducts"
+                           t-att-class="{ 'disabled': !posState.has_chart_template || loadScenario.status === 'loading' }">
                             Create my own products
                         </a>
                     </p>
@@ -56,11 +62,11 @@
     <t t-name="point_of_sale.ScenarioCard">
         <div class="col-lg-4">
             <div class="card mb-3 rounded-3 scenario-card" style="max-width: 540px;"
-                t-on-click="() => this.clickLoadScenario(item)">
+                 t-on-click="() => this.clickLoadScenario(item)">
                 <div class="row g-0">
                     <div class="col-lg-4">
                         <div class="img-container m-2 d-flex align-items-center justify-content-center">
-                            <img t-attf-src="/point_of_sale/static/img/{{item.iconFile}}" class="scenario-img" />
+                            <img t-attf-src="/point_of_sale/static/img/{{item.iconFile}}" class="scenario-img"/>
                         </div>
                     </div>
                     <div class="col-lg-8">

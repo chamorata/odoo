@@ -36,7 +36,8 @@
                        decoration-info="state == 'draft'"
                        decoration-primary="state == 'sent'"
                        widget="badge"/>
-                <field name="l10n_it_edi_doi_not_yet_invoiced" decoration-bf="1" sum="Total" string="Not Yet Invoiced Amount"/>
+                <field name="l10n_it_edi_doi_not_yet_invoiced" decoration-bf="1" sum="Total"
+                       string="Not Yet Invoiced Amount"/>
             </list>
         </field>
     </record>

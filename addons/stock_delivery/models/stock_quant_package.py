@@ -26,7 +26,11 @@ class StockQuantPackage(models.Model):
             self.weight_is_kg = True
         self.weight_uom_rounding = uom_id.rounding
 
-    weight = fields.Float(compute='_compute_weight', digits='Stock Weight', help="Total weight of all the products contained in the package.")
-    weight_uom_name = fields.Char(string='Weight unit of measure label', compute='_compute_weight_uom_name', readonly=True, default=_get_default_weight_uom)
-    weight_is_kg = fields.Boolean("Technical field indicating whether weight uom is kg or not (i.e. lb)", compute="_compute_weight_is_kg")
-    weight_uom_rounding = fields.Float("Technical field indicating weight's number of decimal places", compute="_compute_weight_is_kg")
+    weight = fields.Float(compute='_compute_weight', digits='Stock Weight',
+                          help="Total weight of all the products contained in the package.")
+    weight_uom_name = fields.Char(string='Weight unit of measure label', compute='_compute_weight_uom_name',
+                                  readonly=True, default=_get_default_weight_uom)
+    weight_is_kg = fields.Boolean("Technical field indicating whether weight uom is kg or not (i.e. lb)",
+                                  compute="_compute_weight_is_kg")
+    weight_uom_rounding = fields.Float("Technical field indicating weight's number of decimal places",
+                                       compute="_compute_weight_is_kg")

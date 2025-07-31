@@ -327,7 +327,7 @@
             <field name="employee_id" ref="hr.employee_mw"/>
             <field name="name">Blue Mountains Grammar School</field>
             <field name="date_start" eval="(datetime.now()+relativedelta(years=-11)).strftime('%Y-08-15')"/>
-            <field name="date_end"  eval="(datetime.now()+relativedelta(years=-9)).strftime('%Y-02-1')"/>
+            <field name="date_end" eval="(datetime.now()+relativedelta(years=-9)).strftime('%Y-02-1')"/>
             <field name="line_type_id" ref="hr_skills.resume_type_education"/>
         </record>
         <record id="employee_resume_line_emp_mw_3" model="hr.resume.line" forcecreate="1">
@@ -337,7 +337,7 @@
             <field name="date_end" eval="(datetime.now()+relativedelta(years=-8)).strftime('%Y-12-15')"/>
             <field name="line_type_id" ref="hr_skills.resume_type_education"/>
         </record>
-        <record id="employee_resume_line_emp_mw_4" model="hr.resume.line" >
+        <record id="employee_resume_line_emp_mw_4" model="hr.resume.line">
             <field name="employee_id" ref="hr.employee_mw"/>
             <field name="name">Schultz Inc</field>
             <field name="date_start" eval="(datetime.now()+relativedelta(years=-7)).strftime('%Y-01-01')"/>

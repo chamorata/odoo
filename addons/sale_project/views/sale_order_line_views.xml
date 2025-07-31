@@ -28,7 +28,8 @@
                 <attribute name="context">{
                     'default_type': 'service',
                     'default_service_policy': 'ordered_prepaid',
-                }</attribute>
+                    }
+                </attribute>
             </field>
         </field>
     </record>

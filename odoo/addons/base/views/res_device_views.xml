@@ -71,7 +71,8 @@
                                 <field name="city"/>
                                 <t t-out="luxon.DateTime.fromISO(record.last_activity.raw_value).toRelative()"/>
                             </div>
-                            <button name="revoke" type="object" string="Revoke" class="btn btn-secondary ms-auto mt-auto"/>
+                            <button name="revoke" type="object" string="Revoke"
+                                    class="btn btn-secondary ms-auto mt-auto"/>
                         </t>
                     </templates>
                 </kanban>

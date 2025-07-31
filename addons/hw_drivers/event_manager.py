@@ -2,10 +2,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import json
-from threading import Event
 import time
+from threading import Event
 
 from odoo.http import request
+
 
 class EventManager(object):
     def __init__(self):
@@ -48,7 +49,8 @@ class EventManager(object):
         }
         self.events.append(event)
         for session in self.sessions:
-            if device.device_identifier in self.sessions[session]['devices'] and not self.sessions[session]['event'].is_set():
+            if device.device_identifier in self.sessions[session]['devices'] and not self.sessions[session][
+                'event'].is_set():
                 self.sessions[session]['result'] = event
                 self.sessions[session]['event'].set()
 

@@ -7,7 +7,7 @@
             <field name="model">report.paperformat</field>
             <field name="arch" type="xml">
                 <list string="Paper format configuration">
-                    <field name="name" />
+                    <field name="name"/>
                 </list>
             </field>
         </record>
@@ -16,24 +16,24 @@
             <field name="model">report.paperformat</field>
             <field name="arch" type="xml">
                 <form string="Paper format configuration">
-                <sheet>
-                    <group>
-                        <field name="name" />
-                        <field name="format" />
-                        <field name="page_height" invisible="format != 'custom'" />
-                        <field name="page_width" invisible="format != 'custom'" />
-                        <field name="orientation" />
-                        <field name="margin_top" />
-                        <field name="margin_bottom" />
-                        <field name="margin_left" />
-                        <field name="margin_right" />
-                        <field name="header_line" />
-                        <field name="header_spacing" />
-                        <field name="disable_shrinking" />
-                        <field name="dpi" />
-                        <field name="report_ids" widget="many2many_tags" options="{'not_delete': True}"/>
-                    </group>
-                </sheet>
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="format"/>
+                            <field name="page_height" invisible="format != 'custom'"/>
+                            <field name="page_width" invisible="format != 'custom'"/>
+                            <field name="orientation"/>
+                            <field name="margin_top"/>
+                            <field name="margin_bottom"/>
+                            <field name="margin_left"/>
+                            <field name="margin_right"/>
+                            <field name="header_line"/>
+                            <field name="header_spacing"/>
+                            <field name="disable_shrinking"/>
+                            <field name="dpi"/>
+                            <field name="report_ids" widget="many2many_tags" options="{'not_delete': True}"/>
+                        </group>
+                    </sheet>
                 </form>
             </field>
         </record>
@@ -48,27 +48,27 @@
             <field name="view_mode">list,form</field>
         </record>
         <menuitem
-            id="reporting_menuitem"
-            name="Reporting"
-            parent="base.menu_custom"
-            sequence="15"
-            groups="base.group_no_one"
-            />
+                id="reporting_menuitem"
+                name="Reporting"
+                parent="base.menu_custom"
+                sequence="15"
+                groups="base.group_no_one"
+        />
         <menuitem
-            id="paper_format_menuitem"
-            name="Paper Format"
-            parent="reporting_menuitem"
-            action="paper_format_action"
-            sequence="2"
-            groups="base.group_no_one"
-            />
+                id="paper_format_menuitem"
+                name="Paper Format"
+                parent="reporting_menuitem"
+                action="paper_format_action"
+                sequence="2"
+                groups="base.group_no_one"
+        />
         <menuitem
-            id="reports_menuitem"
-            name="Reports"
-            parent="reporting_menuitem"
-            action="reports_action"
-            sequence="3"
-            groups="base.group_no_one"
-            />
+                id="reports_menuitem"
+                name="Reports"
+                parent="reporting_menuitem"
+                action="reports_action"
+                sequence="3"
+                groups="base.group_no_one"
+        />
     </data>
 </odoo>

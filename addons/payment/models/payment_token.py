@@ -1,7 +1,5 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import logging
-
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
@@ -37,14 +35,14 @@ class PaymentToken(models.Model):
     )
     active = fields.Boolean(string="Active", default=True)
 
-    #=== COMPUTE METHODS ===#
+    # === COMPUTE METHODS ===#
 
     @api.depends('payment_details', 'create_date')
     def _compute_display_name(self):
         for token in self:
             token.display_name = token._build_display_name()
 
-    #=== CRUD METHODS ===#
+    # === CRUD METHODS ===#
 
     @api.model_create_multi
     def create(self, values_list):
@@ -84,9 +82,9 @@ class PaymentToken(models.Model):
         if 'active' in values:
             if values['active']:
                 if any(
-                    not token.payment_method_id.active
-                    or token.provider_id.state == 'disabled'
-                    for token in self
+                        not token.payment_method_id.active
+                        or token.provider_id.state == 'disabled'
+                        for token in self
                 ):
                     raise UserError(_(
                         "You can't unarchive tokens linked to inactive payment methods or disabled"
@@ -115,7 +113,7 @@ class PaymentToken(models.Model):
         """
         return
 
-    #=== BUSINESS METHODS ===#
+    # === BUSINESS METHODS ===#
 
     def _get_available_tokens(self, providers_ids, partner_id, is_validation=False, **kwargs):
         """ Return the available tokens linked to the given providers and partner.

@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from collections import defaultdict
+
 from odoo import fields, models
 
 
@@ -12,7 +13,8 @@ class ProductLabelLayout(models.TransientModel):
     move_line_ids = fields.Many2many('stock.move.line')
     label_quantity = fields.Selection([
         ('lots', 'One per lot/SN'),
-        ('units', 'One per unit')], string="Quantity to print", required=True, default='lots', help="If the UoM of a lot is not 'units', the lot will be considered as a unit and only one label will be printed for this lot.")
+        ('units', 'One per unit')], string="Quantity to print", required=True, default='lots',
+        help="If the UoM of a lot is not 'units', the lot will be considered as a unit and only one label will be printed for this lot.")
     print_format = fields.Selection([
         ('4x12', '4 x 12'),
         ('zpl', 'ZPL Labels')], string="Format", default='4x12', required=True)

@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from dateutil.relativedelta import relativedelta
+
 from odoo.fields import Date
 from odoo.tests.common import TransactionCase
 
@@ -65,7 +66,7 @@ class TestWorkEntryBase(TransactionCase):
         for interval in intervals:
             start = interval[0]
             stop = interval[1]
-            work_entry_type = interval[2] if len(interval) == 3\
+            work_entry_type = interval[2] if len(interval) == 3 \
                 else default_work_entry_type
             create_vals.append({
                 'contract_id': self.richard_emp.contract_ids[0].id,

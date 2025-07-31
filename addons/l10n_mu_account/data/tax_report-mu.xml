@@ -121,7 +121,8 @@
                             <record id="mu_tr_T5_value" model="account.report.expression">
                                 <field name="label">value</field>
                                 <field name="engine">aggregation</field>
-                                <field name="formula">T1_1.value + T1_2.value + T1_3.value + T1_4.value + T3.value</field>
+                                <field name="formula">T1_1.value + T1_2.value + T1_3.value + T1_4.value + T3.value
+                                </field>
                             </record>
                             <record id="mu_tr_T5_vat" model="account.report.expression">
                                 <field name="label">vat</field>
@@ -273,7 +274,9 @@
                             <record id="mu_tr_T9_value" model="account.report.expression">
                                 <field name="label">value</field>
                                 <field name="engine">aggregation</field>
-                                <field name="formula">T6_1.value + T6_2.value + T6_3.value + T6_4.value + T6_5.value + T6_6.value + T7.value + T8_1.value + T8_2.value</field>
+                                <field name="formula">T6_1.value + T6_2.value + T6_3.value + T6_4.value + T6_5.value +
+                                    T6_6.value + T7.value + T8_1.value + T8_2.value
+                                </field>
                             </record>
                             <record id="mu_tr_T9_vat" model="account.report.expression">
                                 <field name="label">vat</field>

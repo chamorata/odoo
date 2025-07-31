@@ -9,9 +9,9 @@
                       decoration-info="blocking_level == 'info'"
                       decoration-warning="blocking_level == 'warning'"
                       decoration-danger="blocking_level == 'error'">
-                    <field name="edi_format_name" />
-                    <field name="error" />
-                    <field name="blocking_level" column_invisible="True" />
+                    <field name="edi_format_name"/>
+                    <field name="error"/>
+                    <field name="blocking_level" column_invisible="True"/>
                 </list>
             </field>
         </record>

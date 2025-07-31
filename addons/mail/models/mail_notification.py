@@ -1,11 +1,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from dateutil.relativedelta import relativedelta
+from odoo.addons.mail.tools.discuss import Store
 
 from odoo import api, fields, models
 from odoo.exceptions import AccessError
 from odoo.tools.translate import _
-from odoo.addons.mail.tools.discuss import Store
 
 
 class MailNotification(models.Model):
@@ -18,13 +18,14 @@ class MailNotification(models.Model):
     # origin
     author_id = fields.Many2one('res.partner', 'Author', ondelete='set null')
     mail_message_id = fields.Many2one('mail.message', 'Message', index=True, ondelete='cascade', required=True)
-    mail_mail_id = fields.Many2one('mail.mail', 'Mail', index=True, help='Optional mail_mail ID. Used mainly to optimize searches.')
+    mail_mail_id = fields.Many2one('mail.mail', 'Mail', index=True,
+                                   help='Optional mail_mail ID. Used mainly to optimize searches.')
     # recipient
     res_partner_id = fields.Many2one('res.partner', 'Recipient', index=True, ondelete='cascade')
     # status
     notification_type = fields.Selection([
         ('inbox', 'Inbox'), ('email', 'Email')
-        ], string='Notification Type', default='inbox', index=True, required=True)
+    ], string='Notification Type', default='inbox', index=True, required=True)
     notification_status = fields.Selection([
         ('ready', 'Ready to Send'),
         ('process', 'Processing'),  # being checked by intermediary like IAP for sms
@@ -33,7 +34,7 @@ class MailNotification(models.Model):
         ('bounce', 'Bounced'),
         ('exception', 'Exception'),
         ('canceled', 'Cancelled')
-        ], string='Status', default='ready', index=True)
+    ], string='Status', default='ready', index=True)
     is_read = fields.Boolean('Is Read', index=True)
     read_date = fields.Datetime('Read Date', copy=False)
     failure_type = fields.Selection(selection=[
@@ -46,7 +47,7 @@ class MailNotification(models.Model):
         ("mail_from_invalid", "Invalid from address"),
         ("mail_from_missing", "Missing from address"),
         ("mail_smtp", "Connection failed (outgoing mail server problem)"),
-        ], string='Failure type')
+    ], string='Failure type')
     failure_reason = fields.Text('Failure reason', copy=False)
 
     _sql_constraints = [
@@ -122,6 +123,7 @@ class MailNotification(models.Model):
 
     def _filtered_for_web_client(self):
         """Returns only the notifications to show on the web client."""
+
         def _filter_unimportant_notifications(notif):
             if notif.notification_status in ['bounce', 'exception', 'canceled'] \
                     or notif.res_partner_id.partner_share:

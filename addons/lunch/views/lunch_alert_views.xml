@@ -81,8 +81,10 @@
                         <div>
                             <field name="mode"/>
                             <span invisible="mode != 'chat'">
-                                to <field name="recipients"/>
-                                on <field name="notification_time"/>
+                                to
+                                <field name="recipients"/>
+                                on
+                                <field name="notification_time"/>
                                 <field name="notification_moment"/>
                             </span>
                         </div>

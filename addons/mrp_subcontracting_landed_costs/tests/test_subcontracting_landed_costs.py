@@ -1,7 +1,7 @@
+from odoo.addons.mrp_subcontracting.tests.common import TestMrpSubcontractingCommon
+
 from odoo.exceptions import ValidationError
 from odoo.tests import Form, tagged
-
-from odoo.addons.mrp_subcontracting.tests.common import TestMrpSubcontractingCommon
 
 
 @tagged('post_install', '-at_install')
@@ -59,7 +59,9 @@ class TestSubcontractingLandedCosts(TestMrpSubcontractingCommon):
         for valuation in stock_landed_cost.valuation_adjustment_lines:
             if valuation.cost_line_id.name == 'equal split':
                 self.assertEqual(valuation.former_cost, 100)
-                self.assertEqual(valuation.additional_landed_cost, 99, 'Additional Landed Cost should be 99 instead of %s' % (valuation.additional_landed_cost))
+                self.assertEqual(valuation.additional_landed_cost, 99,
+                                 'Additional Landed Cost should be 99 instead of %s' % (
+                                     valuation.additional_landed_cost))
                 self.assertEqual(valuation.final_cost, 199)
             else:
                 raise ValidationError('unrecognized valuation adjustment line')
@@ -123,7 +125,9 @@ class TestSubcontractingLandedCosts(TestMrpSubcontractingCommon):
         self.assertEqual(len(stock_landed_cost.valuation_adjustment_lines), 2)
         for valuation in stock_landed_cost.valuation_adjustment_lines:
             if valuation.cost_line_id.name == 'equal split':
-                self.assertEqual(valuation.additional_landed_cost, 49.5, 'Additional Landed Cost should be 49.5 instead of %s' % (valuation.additional_landed_cost))
+                self.assertEqual(valuation.additional_landed_cost, 49.5,
+                                 'Additional Landed Cost should be 49.5 instead of %s' % (
+                                     valuation.additional_landed_cost))
             else:
                 raise ValidationError('unrecognized valuation adjustment line')
 

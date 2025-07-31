@@ -9,7 +9,7 @@
         <field name="context">{'default_res_model': 'hr.expense.sheet'}</field>
     </record>
     <menuitem id="hr_expense_menu_config_activity_type"
-        action="mail_activity_type_action_config_hr_expense"
-        parent="menu_hr_expense_configuration"
-        groups="base.group_no_one"/>
+              action="mail_activity_type_action_config_hr_expense"
+              parent="menu_hr_expense_configuration"
+              groups="base.group_no_one"/>
 </odoo>

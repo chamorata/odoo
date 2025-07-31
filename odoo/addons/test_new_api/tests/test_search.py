@@ -41,8 +41,8 @@ class TestSubqueries(TransactionCase):
         """]):
             self.env['test_new_api.multi'].search([
                 '|',
-                    ('partner.name', 'like', 'jack'),
-                    ('partner.phone', 'like', '01234'),
+                ('partner.name', 'like', 'jack'),
+                ('partner.phone', 'like', '01234'),
             ])
 
     def test_not_and_many2one_with_subfield(self):
@@ -60,8 +60,8 @@ class TestSubqueries(TransactionCase):
         """]):
             self.env['test_new_api.multi'].search([
                 '!', '&',
-                    ('partner.name', 'like', 'jack'),
-                    ('partner.phone', 'like', '01234'),
+                ('partner.name', 'like', 'jack'),
+                ('partner.phone', 'like', '01234'),
             ])
 
     def test_not_or_many2one_with_subfield(self):
@@ -79,8 +79,8 @@ class TestSubqueries(TransactionCase):
         """]):
             self.env['test_new_api.multi'].search([
                 '!', '|',
-                    ('partner.name', 'like', 'jack'),
-                    ('partner.phone', 'like', '01234'),
+                ('partner.name', 'like', 'jack'),
+                ('partner.phone', 'like', '01234'),
             ])
 
     def test_or_autojoined_many2one_with_subfield(self):
@@ -98,8 +98,8 @@ class TestSubqueries(TransactionCase):
         """]):
             self.env['test_new_api.multi'].search([
                 '|',
-                    ('partner.name', 'like', 'jack'),
-                    ('partner.phone', 'like', '01234'),
+                ('partner.name', 'like', 'jack'),
+                ('partner.phone', 'like', '01234'),
             ])
 
     def test_not_or_autojoined_many2one_with_subfield(self):
@@ -121,8 +121,8 @@ class TestSubqueries(TransactionCase):
         """]):
             self.env['test_new_api.multi'].search([
                 '!', '|',
-                    ('partner.name', 'like', 'jack'),
-                    ('partner.phone', 'like', '01234'),
+                ('partner.name', 'like', 'jack'),
+                ('partner.phone', 'like', '01234'),
             ])
 
     def test_mixed_and_or_many2one_with_subfield(self):
@@ -144,8 +144,8 @@ class TestSubqueries(TransactionCase):
             self.env['test_new_api.multi'].search([
                 ('partner.email', 'like', '@sgc.us'),
                 '|',
-                    ('partner.name', 'like', 'jack'),
-                    ('partner.phone', 'like', '01234'),
+                ('partner.name', 'like', 'jack'),
+                ('partner.phone', 'like', '01234'),
             ])
 
     def test_mixed_and_or_not_many2one_with_subfield(self):
@@ -184,15 +184,15 @@ class TestSubqueries(TransactionCase):
             # (function or not (phone and mobile)) and not website and (name or email)
             self.env['test_new_api.multi'].search([
                 '&', '&',
-                    '|',
-                        ('partner.function', 'like', 'Colonel'),
-                        '!', '&',
-                            ('partner.phone', 'like', '+01'),
-                            ('partner.mobile', 'like', '+01'),
-                    '!', ('partner.website', 'like', 'sgc.us'),
-                    '|',
-                        ('partner.name', 'like', 'jack'),
-                        ('partner.email', 'like', '@sgc.us'),
+                '|',
+                ('partner.function', 'like', 'Colonel'),
+                '!', '&',
+                ('partner.phone', 'like', '+01'),
+                ('partner.mobile', 'like', '+01'),
+                '!', ('partner.website', 'like', 'sgc.us'),
+                '|',
+                ('partner.name', 'like', 'jack'),
+                ('partner.email', 'like', '@sgc.us'),
             ])
 
     def test_and_one2many_with_subfield(self):
@@ -232,8 +232,8 @@ class TestSubqueries(TransactionCase):
         """]):
             self.env['test_new_api.multi'].search([
                 '|',
-                    ('lines.name', 'like', 'x'),
-                    ('lines.name', 'like', 'y'),
+                ('lines.name', 'like', 'x'),
+                ('lines.name', 'like', 'y'),
             ])
 
     def test_mixed_and_or_one2many_with_subfield(self):
@@ -257,8 +257,8 @@ class TestSubqueries(TransactionCase):
             self.env['test_new_api.multi'].search([
                 ('lines.name', 'like', 'x'),
                 '|',
-                    ('lines.name', 'like', 'y'),
-                    ('lines.name', 'like', 'z'),
+                ('lines.name', 'like', 'y'),
+                ('lines.name', 'like', 'z'),
             ])
 
     def test_and_many2many_with_subfield(self):
@@ -321,8 +321,8 @@ class TestSubqueries(TransactionCase):
         """]):
             self.env['test_new_api.multi'].search([
                 '|',
-                    ('tags.name', 'like', 'x'),
-                    ('tags.name', 'like', 'y'),
+                ('tags.name', 'like', 'x'),
+                ('tags.name', 'like', 'y'),
             ])
 
     def test_mixed_and_or_many2many_with_subfield(self):
@@ -364,8 +364,8 @@ class TestSubqueries(TransactionCase):
             self.env['test_new_api.multi'].search([
                 ('tags.name', 'like', 'x'),
                 '|',
-                    ('tags.name', 'like', 'y'),
-                    ('tags.name', 'like', 'z'),
+                ('tags.name', 'like', 'y'),
+                ('tags.name', 'like', 'z'),
             ])
 
     def test_related_simple(self):
@@ -1103,7 +1103,8 @@ class TestDatePartNumber(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.person = cls.env["test_new_api.person"].create({"name": "that person", "birthday": "1990-02-09"})
-        cls.lesson = cls.env["test_new_api.lesson"].create({"teacher_id": cls.person.id, "attendee_ids": [(4, cls.person.id)]})
+        cls.lesson = cls.env["test_new_api.lesson"].create(
+            {"teacher_id": cls.person.id, "attendee_ids": [(4, cls.person.id)]})
 
     def test_basic_cases(self):
         Person = self.env["test_new_api.person"].with_context(active_test=False)
@@ -1147,7 +1148,8 @@ class TestDatePartNumber(TransactionCase):
         self.assertEqual(result, self.lesson)
 
     def test_inherit(self):
-        account = self.env["test_new_api.person.account"].create({"person_id": self.person.id, "activation_date": "2020-03-09"})
+        account = self.env["test_new_api.person.account"].create(
+            {"person_id": self.person.id, "activation_date": "2020-03-09"})
 
         result = self.env["test_new_api.person.account"].search([('activation_date.quarter_number', '=', 1)])
         self.assertEqual(result, account)

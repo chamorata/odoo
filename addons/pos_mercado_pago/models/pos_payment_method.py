@@ -2,7 +2,6 @@ import logging
 
 from odoo import fields, models, _
 from odoo.exceptions import AccessError, UserError
-
 from .mercado_pago_pos_request import MercadoPagoPosRequest
 
 _logger = logging.getLogger(__name__)
@@ -42,7 +41,8 @@ class PosPaymentMethod(models.Model):
         _logger.info('Calling Mercado Pago to force the terminal mode to "PDV"')
 
         mode = {"operating_mode": "PDV"}
-        resp = mercado_pago.call_mercado_pago("patch", f"/point/integration-api/devices/{self.mp_id_point_smart_complet}", mode)
+        resp = mercado_pago.call_mercado_pago("patch",
+                                              f"/point/integration-api/devices/{self.mp_id_point_smart_complet}", mode)
         if resp.get("operating_mode") != "PDV":
             raise UserError(_("Unexpected Mercado Pago response: %s", resp))
         _logger.debug("Successfully set the terminal mode to 'PDV'.")
@@ -56,7 +56,9 @@ class PosPaymentMethod(models.Model):
 
         mercado_pago = MercadoPagoPosRequest(self.sudo().mp_bearer_token)
         # Call Mercado Pago for payment intend creation
-        resp = mercado_pago.call_mercado_pago("post", f"/point/integration-api/devices/{self.mp_id_point_smart_complet}/payment-intents", infos)
+        resp = mercado_pago.call_mercado_pago("post",
+                                              f"/point/integration-api/devices/{self.mp_id_point_smart_complet}/payment-intents",
+                                              infos)
         _logger.debug("mp_payment_intent_create(), response from Mercado Pago: %s", resp)
         return resp
 
@@ -92,7 +94,9 @@ class PosPaymentMethod(models.Model):
 
         mercado_pago = MercadoPagoPosRequest(self.sudo().mp_bearer_token)
         # Call Mercado Pago for payment intend cancelation
-        resp = mercado_pago.call_mercado_pago("delete", f"/point/integration-api/devices/{self.mp_id_point_smart_complet}/payment-intents/{payment_intent_id}", {})
+        resp = mercado_pago.call_mercado_pago("delete",
+                                              f"/point/integration-api/devices/{self.mp_id_point_smart_complet}/payment-intents/{payment_intent_id}",
+                                              {})
         _logger.debug("mp_payment_intent_cancel(), response from Mercado Pago: %s", resp)
         return resp
 
@@ -123,6 +127,7 @@ class PosPaymentMethod(models.Model):
 
         for record in records:
             if record.mp_bearer_token:
-                record.mp_id_point_smart_complet = record._find_terminal(record.mp_bearer_token, record.mp_id_point_smart)
+                record.mp_id_point_smart_complet = record._find_terminal(record.mp_bearer_token,
+                                                                         record.mp_id_point_smart)
 
         return records

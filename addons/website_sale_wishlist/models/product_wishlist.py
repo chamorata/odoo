@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime, timedelta
+
 from odoo import api, fields, models
 from odoo.http import request
 
@@ -17,7 +18,8 @@ class ProductWishlist(models.Model):
     product_id = fields.Many2one('product.product', string='Product', required=True)
     currency_id = fields.Many2one('res.currency', related='website_id.currency_id', readonly=True)
     pricelist_id = fields.Many2one('product.pricelist', string='Pricelist', help='Pricelist when added')
-    price = fields.Monetary(currency_field='currency_id', string='Price', help='Price of the product when it has been added in the wishlist')
+    price = fields.Monetary(currency_field='currency_id', string='Price',
+                            help='Price of the product when it has been added in the wishlist')
     website_id = fields.Many2one('website', ondelete='cascade', required=True)
     active = fields.Boolean(default=True, required=True)
 
@@ -31,12 +33,13 @@ class ProductWishlist(models.Model):
         if request.website.is_public_user():
             wish = self.sudo().search([('id', 'in', request.session.get('wishlist_ids', []))])
         else:
-            wish = self.search([("partner_id", "=", self.env.user.partner_id.id), ('website_id', '=', request.website.id)])
+            wish = self.search(
+                [("partner_id", "=", self.env.user.partner_id.id), ('website_id', '=', request.website.id)])
 
         return wish.filtered(
             lambda wish:
-                wish.sudo().product_id.product_tmpl_id.website_published
-                and wish.sudo().product_id.product_tmpl_id._can_be_added_to_cart()
+            wish.sudo().product_id.product_tmpl_id.website_published
+            and wish.sudo().product_id.product_tmpl_id._can_be_added_to_cart()
         )
 
     @api.model
@@ -69,7 +72,8 @@ class ProductWishlist(models.Model):
     def _gc_sessions(self, *args, **kwargs):
         """Remove wishlists for unexisting sessions."""
         self.with_context(active_test=False).search([
-            ("create_date", "<", fields.Datetime.to_string(datetime.now() - timedelta(weeks=kwargs.get('wishlist_week', 5)))),
+            ("create_date", "<",
+             fields.Datetime.to_string(datetime.now() - timedelta(weeks=kwargs.get('wishlist_week', 5)))),
             ("partner_id", "=", False),
         ]).unlink()
 

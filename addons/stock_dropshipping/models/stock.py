@@ -13,7 +13,8 @@ class StockRule(models.Model):
         """ Do not group purchase order line if they are linked to different
         sale order line. The purpose is to compute the delivered quantities.
         """
-        return procurement.values.get('sale_line_id'), super(StockRule, self)._get_procurements_to_merge_groupby(procurement)
+        return procurement.values.get('sale_line_id'), super(StockRule, self)._get_procurements_to_merge_groupby(
+            procurement)
 
     def _get_partner_id(self, values, rule):
         route = self.env.ref('stock_dropshipping.route_drop_shipping', raise_if_not_found=False)
@@ -32,6 +33,7 @@ class ProcurementGroup(models.Model):
             domain = expression.AND([domain, [('company_id', '=', values['company_id'].id)]])
         return domain
 
+
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
@@ -42,17 +44,19 @@ class StockPicking(models.Model):
         for picking in self:
             source, dest = picking.location_id, picking.location_dest_id
             picking.is_dropship = (source.usage == 'supplier' or (source.usage == 'transit' and not source.company_id)) \
-                              and (dest.usage == 'customer' or (dest.usage == 'transit' and not dest.company_id))
+                                  and (dest.usage == 'customer' or (dest.usage == 'transit' and not dest.company_id))
 
     def _is_to_external_location(self):
         self.ensure_one()
         return super()._is_to_external_location() or self.is_dropship
 
+
 class StockPickingType(models.Model):
     _inherit = 'stock.picking.type'
 
     code = fields.Selection(
-        selection_add=[('dropship', 'Dropship')], ondelete={'dropship': lambda recs: recs.write({'code': 'outgoing', 'active': False})})
+        selection_add=[('dropship', 'Dropship')],
+        ondelete={'dropship': lambda recs: recs.write({'code': 'outgoing', 'active': False})})
 
     def _compute_default_location_src_id(self):
         dropship_types = self.filtered(lambda pt: pt.code == 'dropship')

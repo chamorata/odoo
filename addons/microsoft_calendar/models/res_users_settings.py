@@ -8,8 +8,11 @@ class ResUsersSettings(models.Model):
 
     # Microsoft Calendar settings.
     microsoft_calendar_sync_token = fields.Char('Microsoft Next Sync Token', copy=False, groups='base.group_system')
-    microsoft_synchronization_stopped = fields.Boolean('Outlook Synchronization stopped', copy=False, groups='base.group_system')
-    microsoft_last_sync_date = fields.Datetime('Last Sync Date', copy=False, help='Last synchronization date with Outlook Calendar', groups='base.group_system')
+    microsoft_synchronization_stopped = fields.Boolean('Outlook Synchronization stopped', copy=False,
+                                                       groups='base.group_system')
+    microsoft_last_sync_date = fields.Datetime('Last Sync Date', copy=False,
+                                               help='Last synchronization date with Outlook Calendar',
+                                               groups='base.group_system')
 
     @api.model
     def _get_fields_blacklist(self):

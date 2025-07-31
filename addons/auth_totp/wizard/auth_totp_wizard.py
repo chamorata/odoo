@@ -4,18 +4,19 @@
 import base64
 import functools
 import io
-import qrcode
 import re
+
+import qrcode
 import werkzeug.urls
+from odoo.addons.auth_totp.models.totp import ALGORITHM, DIGITS, TIMESTEP
 
 from odoo import _, api, fields, models
 from odoo.addons.base.models.res_users import check_identity
 from odoo.exceptions import UserError
 from odoo.http import request
 
-from odoo.addons.auth_totp.models.totp import ALGORITHM, DIGITS, TIMESTEP
-
 compress = functools.partial(re.sub, r'\s', '')
+
 
 class TOTPWizard(models.TransientModel):
     _name = 'auth_totp.wizard'
@@ -61,7 +62,7 @@ class TOTPWizard(models.TransientModel):
         except ValueError:
             raise UserError(_("The verification code should only contain numbers"))
         if self.user_id._totp_try_setting(self.secret, c):
-            self.secret = '' # empty it, because why keep it until GC?
+            self.secret = ''  # empty it, because why keep it until GC?
             return {
                 'type': 'ir.actions.client',
                 'tag': 'display_notification',

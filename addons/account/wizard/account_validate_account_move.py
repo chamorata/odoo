@@ -1,5 +1,6 @@
-from odoo import Command, models, fields, api, _
 from odoo.addons.account.models.exceptions import TaxClosingNonPostedDependingMovesError
+
+from odoo import Command, models, fields, api, _
 from odoo.exceptions import UserError
 
 
@@ -8,7 +9,8 @@ class ValidateAccountMove(models.TransientModel):
     _description = "Validate Account Move"
 
     move_ids = fields.Many2many('account.move')
-    force_post = fields.Boolean(string="Force", help="Entries in the future are set to be auto-posted by default. Check this checkbox to post them now.")
+    force_post = fields.Boolean(string="Force",
+                                help="Entries in the future are set to be auto-posted by default. Check this checkbox to post them now.")
     display_force_post = fields.Boolean(compute='_compute_display_force_post')
     is_entries = fields.Boolean(compute='_compute_is_entries')
     abnormal_date_partner_ids = fields.One2many('res.partner', compute='_compute_abnormal_date_partner_ids')

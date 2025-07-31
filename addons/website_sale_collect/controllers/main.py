@@ -1,9 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.website_sale.controllers.main import WebsiteSale
+
 from odoo import _
 from odoo.http import request
-
-from odoo.addons.website_sale.controllers.main import WebsiteSale
 
 
 class WebsiteSaleCollect(WebsiteSale):
@@ -14,14 +14,14 @@ class WebsiteSaleCollect(WebsiteSale):
         if request.website.sudo().in_store_dm_id:
             order_sudo = request.website.sale_get_order()
             if (
-                order_sudo.carrier_id.delivery_type == 'in_store'
-                and order_sudo.pickup_location_data
+                    order_sudo.carrier_id.delivery_type == 'in_store'
+                    and order_sudo.pickup_location_data
             ):
                 res['selected_wh_location'] = order_sudo.pickup_location_data
             res['zip_code'] = (  # Define the zip code.
-                order_sudo.partner_shipping_id.zip
-                or res.get('selected_wh_location', {}).get('zip_code')
-                or request.geoip.postal.code
+                    order_sudo.partner_shipping_id.zip
+                    or res.get('selected_wh_location', {}).get('zip_code')
+                    or request.geoip.postal.code
             )
         return res
 
@@ -40,9 +40,9 @@ class WebsiteSaleCollect(WebsiteSale):
         products are unavailable. """
         errors = super()._get_shop_payment_errors(order)
         if (
-            order.state != 'sale'
-            and order._has_deliverable_products()
-            and order.carrier_id.delivery_type == 'in_store'
+                order.state != 'sale'
+                and order._has_deliverable_products()
+                and order.carrier_id.delivery_type == 'in_store'
         ):
             if not order.pickup_location_data:
                 errors.append((

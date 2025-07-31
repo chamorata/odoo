@@ -10,7 +10,7 @@ Allow internal users requesting a module installation
 =====================================================
     """,
     'auto_install': True,
-    'data':[
+    'data': [
         'security/ir.model.access.csv',
         'wizard/base_module_install_request_views.xml',
         'data/mail_template_data.xml',

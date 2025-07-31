@@ -1,7 +1,7 @@
 from .parse_attestation_statement import parse_attestation_statement
 from .parse_authenticator_data import parse_authenticator_data
-from .structs import AttestationObject
 from .parse_cbor import parse_cbor
+from .structs import AttestationObject
 
 
 def parse_attestation_object(val: bytes) -> AttestationObject:

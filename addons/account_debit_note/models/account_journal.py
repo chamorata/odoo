@@ -9,7 +9,7 @@ class AccountJournal(models.Model):
         compute="_compute_debit_sequence",
         readonly=False, store=True,
         help="Check this box if you don't want to share the same sequence for invoices "
-        "and debit notes made from this journal",
+             "and debit notes made from this journal",
     )
 
     @api.depends("type")

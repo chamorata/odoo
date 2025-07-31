@@ -36,7 +36,8 @@ class AccountFiscalPosition(models.Model):
 
         # Taxation in Brazil depends on both the state of the partner and the state of the company
         if self.env.company.state_id == delivery.state_id:
-            return self.search([('l10n_br_fp_type', '=', 'internal'), ('company_id', '=', self.env.company.id)], limit=1)
+            return self.search([('l10n_br_fp_type', '=', 'internal'), ('company_id', '=', self.env.company.id)],
+                               limit=1)
         if self.env.company.state_id.code in SOUTH_SOUTHEAST and delivery.state_id.code in NORTH_NORTHEAST_MIDWEST:
             return self.search([('l10n_br_fp_type', '=', 'ss_nnm'), ('company_id', '=', self.env.company.id)], limit=1)
         return self.search([('l10n_br_fp_type', '=', 'interstate'), ('company_id', '=', self.env.company.id)], limit=1)

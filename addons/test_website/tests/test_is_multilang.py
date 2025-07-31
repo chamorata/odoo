@@ -1,7 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from urllib.parse import urlparse
-import odoo.tests
+
 import lxml
+
+import odoo.tests
 
 
 @odoo.tests.common.tagged('post_install', '-at_install')
@@ -18,7 +20,7 @@ class TestIsMultiLang(odoo.tests.HttpCase):
         website.default_lang_id = en
         website.language_ids = en + fr
 
-        for data in [None, {'post': True}]: # GET / POST
+        for data in [None, {'post': True}]:  # GET / POST
             body = lxml.html.fromstring(self.url_open('/fr/multi_url', data=data).content)
 
             self.assertEqual(fr_prefix + '/get', body.find('./a[@id="get"]').get('href'))

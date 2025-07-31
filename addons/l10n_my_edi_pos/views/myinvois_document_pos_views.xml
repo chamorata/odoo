@@ -8,8 +8,9 @@
             <field name="mode">primary</field>
             <field name="arch" type="xml">
                 <div name="button_box" position="inside">
-                    <button name="action_view_linked_orders" type="object" icon="fa-shopping-basket" class="oe_stat_button" invisible="linked_order_count == 0">
-                         <field name="linked_order_count" string="PoS Orders" widget="statinfo"/>
+                    <button name="action_view_linked_orders" type="object" icon="fa-shopping-basket"
+                            class="oe_stat_button" invisible="linked_order_count == 0">
+                        <field name="linked_order_count" string="PoS Orders" widget="statinfo"/>
                     </button>
                 </div>
                 <field name="myinvois_issuance_date" position="before">
@@ -27,7 +28,8 @@
             <field name="mode">primary</field>
             <field name="arch" type="xml">
                 <header position="inside">
-                    <button name="action_open_consolidate_invoice_wizard" string="Consolidate Orders" type="object" display="always" class="btn-primary"/>
+                    <button name="action_open_consolidate_invoice_wizard" string="Consolidate Orders" type="object"
+                            display="always" class="btn-primary"/>
                 </header>
                 <field name="myinvois_state" position="after">
                     <field name="pos_config_id"/>

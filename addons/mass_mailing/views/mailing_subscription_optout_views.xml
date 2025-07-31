@@ -32,7 +32,7 @@
         <field name="name">mailing.subscription.optout.view.search</field>
         <field name="model">mailing.subscription.optout</field>
         <field name="arch" type="xml">
-           <search>
+            <search>
                 <field name="name"/>
             </search>
         </field>

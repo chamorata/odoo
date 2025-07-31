@@ -10,7 +10,8 @@
                 <field name="name"/>
                 <field name="group_ids" widget="many2many_tags" required="1"/>
                 <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>
-                <field name="spreadsheet_binary_data" groups="base.group_no_one" widget="binary_spreadsheet" filename="spreadsheet_file_name" string="Data" />
+                <field name="spreadsheet_binary_data" groups="base.group_no_one" widget="binary_spreadsheet"
+                       filename="spreadsheet_file_name" string="Data"/>
                 <field name="is_published" widget="boolean_toggle"/>
                 <field name="dashboard_group_id" optional="hidden"/>
             </list>
@@ -41,7 +42,8 @@
                     </div>
                     <notebook>
                         <page string="Spreadsheets" name="spreadsheets">
-                            <field name="dashboard_ids" context="{'list_view_ref': 'spreadsheet_dashboard.spreadsheet_dashboard_view_list'}"/>
+                            <field name="dashboard_ids"
+                                   context="{'list_view_ref': 'spreadsheet_dashboard.spreadsheet_dashboard_view_list'}"/>
                         </page>
                     </notebook>
                 </sheet>

@@ -1,9 +1,10 @@
 import base64
+
 from lxml import etree
+from odoo.addons.account.tests.test_account_move_send import TestAccountMoveSendCommon
+from odoo.addons.l10n_account_edi_ubl_cii_tests.tests.common import TestUBLCommon
 
 from odoo import Command
-from odoo.addons.l10n_account_edi_ubl_cii_tests.tests.common import TestUBLCommon
-from odoo.addons.account.tests.test_account_move_send import TestAccountMoveSendCommon
 from odoo.tests import tagged
 
 
@@ -293,7 +294,8 @@ class TestUBLBE(TestUBLCommon, TestAccountMoveSendCommon):
         ]
         for test in test_data:
             cash_rounding_method = test['invoice_cash_rounding_id']
-            with self.subTest(sub_test_name=f"cash rounding method: {cash_rounding_method.name if cash_rounding_method else 'None'}"):
+            with self.subTest(
+                    sub_test_name=f"cash rounding method: {cash_rounding_method.name if cash_rounding_method else 'None'}"):
                 invoice = self._generate_move(
                     seller=self.partner_1,
                     buyer=self.partner_2,
@@ -312,7 +314,8 @@ class TestUBLBE(TestUBLCommon, TestAccountMoveSendCommon):
 
                 attachment = invoice.ubl_cii_xml_id
                 self.assertTrue(attachment)
-                self._assert_invoice_attachment(invoice.ubl_cii_xml_id, test['expected']['xpaths'], test['expected']['xml_file'])
+                self._assert_invoice_attachment(invoice.ubl_cii_xml_id, test['expected']['xpaths'],
+                                                test['expected']['xml_file'])
 
                 # Check that importing yields the expected results.
 
@@ -357,6 +360,7 @@ class TestUBLBE(TestUBLCommon, TestAccountMoveSendCommon):
         In addition, when the Seller has no VAT, the node PartyTaxScheme and PartyLegalEntity may contain the Seller
         identifier or the Seller legal registration identifier.
         """
+
         def check_attachment(invoice, expected_file):
             self._assert_invoice_attachment(
                 invoice.ubl_cii_xml_id,
@@ -374,6 +378,7 @@ class TestUBLBE(TestUBLCommon, TestAccountMoveSendCommon):
                 ''',
                 expected_file_path=expected_file,
             )
+
         # Setup a public admin in Luxembourg without VAT
         self.partner_2.write({
             'vat': None,
@@ -454,7 +459,8 @@ class TestUBLBE(TestUBLCommon, TestAccountMoveSendCommon):
                 }
             ],
         )
-        self._assert_invoice_attachment(invoice.ubl_cii_xml_id, None, 'from_odoo/bis3_out_invoice_negative_unit_price.xml')
+        self._assert_invoice_attachment(invoice.ubl_cii_xml_id, None,
+                                        'from_odoo/bis3_out_invoice_negative_unit_price.xml')
 
     def test_inverting_negative_price_unit_new(self):
         self.env['ir.config_parameter'].sudo().set_param('account_edi_ubl_cii.use_new_dict_to_xml_helpers', True)
@@ -877,8 +883,8 @@ class TestUBLBE(TestUBLCommon, TestAccountMoveSendCommon):
         tax_line_21 = next((line for line in tax_lines if line.name == 'tax_21'))
         tax_line_12 = next((line for line in tax_lines if line.name == 'tax_12'))
         invoice.line_ids = [
-            Command.update(tax_line_21.id, {'amount_currency': -84.03}), # distribute  3 cents over 2 lines
-            Command.update(tax_line_12.id, {'amount_currency': -23.99}), # distribute -1 cent  over 2 lines
+            Command.update(tax_line_21.id, {'amount_currency': -84.03}),  # distribute  3 cents over 2 lines
+            Command.update(tax_line_12.id, {'amount_currency': -23.99}),  # distribute -1 cent  over 2 lines
         ]
 
         invoice.action_post()
@@ -916,7 +922,8 @@ class TestUBLBE(TestUBLCommon, TestAccountMoveSendCommon):
                 },
             ],
         )
-        price_amounts = etree.fromstring(invoice.ubl_cii_xml_id.raw).findall('.//{*}InvoiceLine/{*}Price/{*}PriceAmount')
+        price_amounts = etree.fromstring(invoice.ubl_cii_xml_id.raw).findall(
+            './/{*}InvoiceLine/{*}Price/{*}PriceAmount')
         self.assertEqual(price_amounts[0].text, '102.15')
         self.assertEqual(price_amounts[1].text, '83.6')
 

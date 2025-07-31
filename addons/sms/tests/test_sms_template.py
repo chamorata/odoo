@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from markupsafe import Markup
-
-from odoo.tests.common import TransactionCase, users
 from odoo.addons.mail.tests.common import mail_new_test_user
+
 from odoo.exceptions import AccessError
 from odoo.tests import tagged
+from odoo.tests.common import TransactionCase, users
 from odoo.tools import mute_logger, convert_file
 
 
@@ -88,7 +88,8 @@ class TestSmsTemplateAccessRights(TransactionCase):
         self.assertEqual(sms_composer.body, '{{ object.name }}', 'In mass mode, we should not render the template')
 
         body = sms_composer._prepare_body_values(self.partner)[self.partner.id]
-        self.assertEqual(body, self.partner.name, 'In mass mode, if the user did not change the body, he should be able to render it')
+        self.assertEqual(body, self.partner.name,
+                         'In mass mode, if the user did not change the body, he should be able to render it')
 
         sms_composer.body = 'New body: {{ 4 + 9 }}'
         with self.assertRaises(AccessError, msg='User should not be able to write new inline_template code'):

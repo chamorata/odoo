@@ -976,7 +976,7 @@
             <field name="name">IQD</field>
             <field name="iso_numeric">368</field>
             <field name="full_name">Iraqi dinar</field>
-            <field name="symbol"> ع.د</field>
+            <field name="symbol">ع.د</field>
             <field name="rounding">0.001</field>
             <field name="active" eval="False"/>
             <field name="currency_unit_label">Dinar</field>
@@ -1010,7 +1010,7 @@
             <field name="name">JOD</field>
             <field name="iso_numeric">400</field>
             <field name="full_name">Jordanian dinar</field>
-            <field name="symbol"> د.ا </field>
+            <field name="symbol">د.ا</field>
             <field name="rounding">0.001</field>
             <field name="active" eval="False"/>
             <field name="currency_unit_label">Dinar</field>
@@ -1043,7 +1043,7 @@
             <field name="name">KWD</field>
             <field name="iso_numeric">414</field>
             <field name="full_name">Kuwaiti dinar</field>
-            <field name="symbol"> د.ك </field>
+            <field name="symbol">د.ك</field>
             <field name="rounding">0.001</field>
             <field name="active" eval="False"/>
             <field name="currency_unit_label">Dinar</field>
@@ -1109,7 +1109,7 @@
             <field name="name">LYD</field>
             <field name="iso_numeric">434</field>
             <field name="full_name">Libyan dinar</field>
-            <field name="symbol"> ل.د </field>
+            <field name="symbol">ل.د</field>
             <field name="rounding">0.001</field>
             <field name="active" eval="False"/>
             <field name="currency_unit_label">Dinar</field>

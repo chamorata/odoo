@@ -1,8 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.point_of_sale.tests.common import TestPointOfSaleCommon
+
 import odoo
 from odoo import fields
-from odoo.addons.point_of_sale.tests.common import TestPointOfSaleCommon
 
 
 @odoo.tests.tagged('post_install', '-at_install')
@@ -63,38 +64,39 @@ class TestPointOfSaleFlow(TestPointOfSaleCommon):
         current_session = self.pos_config.current_session_id
 
         pos_order = {
-           'amount_paid': 10,
-           'amount_return': 0,
-           'amount_tax': 0,
-           'amount_total': 10,
-           'date_order': fields.Datetime.to_string(fields.Datetime.now()),
-           'fiscal_position_id': False,
-           'to_invoice': True,
-           'partner_id': partner_test.id,
-           'lines': [[0,
-             0,
-             {'discount': 0,
-              'pack_lot_ids': [[0, 0, {'lot_name': lot1.name}]],
-              'price_unit': 10,
-              'product_id': self.product.id,
-              'price_subtotal': 10,
-              'price_subtotal_incl': 10,
-              'sale_order_line_id': sale_order.order_line[0].id,
-              'sale_order_origin_id': sale_order.id,
-              'qty': 1,
-              'tax_ids': []}]],
-           'name': 'Order 00044-003-0014',
-           'session_id': current_session.id,
-           'sequence_number': self.pos_config.journal_id.id,
-           'shipping_date': fields.Date.today(),
-           'payment_ids': [[0,
-             0,
-             {'amount': 10,
-              'name': fields.Datetime.now(),
-              'payment_method_id': self.pos_config.payment_method_ids[0].id}]],
-           'uuid': '00044-003-0014',
-           'last_order_preparation_change': '{}',
-           'user_id': self.env.uid}
+            'amount_paid': 10,
+            'amount_return': 0,
+            'amount_tax': 0,
+            'amount_total': 10,
+            'date_order': fields.Datetime.to_string(fields.Datetime.now()),
+            'fiscal_position_id': False,
+            'to_invoice': True,
+            'partner_id': partner_test.id,
+            'lines': [[0,
+                       0,
+                       {'discount': 0,
+                        'pack_lot_ids': [[0, 0, {'lot_name': lot1.name}]],
+                        'price_unit': 10,
+                        'product_id': self.product.id,
+                        'price_subtotal': 10,
+                        'price_subtotal_incl': 10,
+                        'sale_order_line_id': sale_order.order_line[0].id,
+                        'sale_order_origin_id': sale_order.id,
+                        'qty': 1,
+                        'tax_ids': []}]],
+            'name': 'Order 00044-003-0014',
+            'session_id': current_session.id,
+            'sequence_number': self.pos_config.journal_id.id,
+            'shipping_date': fields.Date.today(),
+            'payment_ids': [[0,
+                             0,
+                             {'amount': 10,
+                              'name': fields.Datetime.now(),
+                              'payment_method_id': self.pos_config.payment_method_ids[0].id}]],
+            'uuid': '00044-003-0014',
+            'last_order_preparation_change': '{}',
+            'user_id': self.env.uid}
 
         order = self.env['pos.order'].sync_from_ui([pos_order])
-        self.assertEqual(self.env['pos.order'].browse(order['pos.order'][0]['id']).picking_ids.move_line_ids.lot_id, lot1)
+        self.assertEqual(self.env['pos.order'].browse(order['pos.order'][0]['id']).picking_ids.move_line_ids.lot_id,
+                         lot1)

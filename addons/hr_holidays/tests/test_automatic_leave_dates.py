@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 from datetime import date, datetime
 
-from odoo.tests import Form
-
 from odoo.addons.hr_holidays.tests.common import TestHrHolidaysCommon
-from odoo.exceptions import ValidationError
+
+from odoo.tests import Form
 
 
 class TestAutomaticLeaveDates(TestHrHolidaysCommon):
@@ -191,7 +190,6 @@ class TestAutomaticLeaveDates(TestHrHolidaysCommon):
             leave_form.request_unit_half = True
             leave_form.request_date_from_period = 'am'
 
-
             self.assertEqual(leave_form.number_of_days, 0)
             self.assertEqual(leave_form.number_of_hours, 0)
             self.assertEqual(leave_form.date_from, datetime(2019, 9, 2, 6, 0, 0))
@@ -220,7 +218,6 @@ class TestAutomaticLeaveDates(TestHrHolidaysCommon):
             leave_form.request_date_to = date(2019, 9, 3)
             leave_form.request_unit_half = True
             leave_form.request_date_from_period = 'am'
-
 
             self.assertEqual(leave_form.number_of_days, 0)
             self.assertEqual(leave_form.number_of_hours, 0)

@@ -11,11 +11,10 @@ import werkzeug.wrappers
 import werkzeug.wsgi
 from werkzeug.urls import iri_to_uri
 
-from odoo.tools.translate import JAVASCRIPT_TRANSLATION_COMMENT
-from odoo.tools.misc import file_open
 from odoo import http
 from odoo.http import request
-
+from odoo.tools.misc import file_open
+from odoo.tools.translate import JAVASCRIPT_TRANSLATION_COMMENT
 
 _logger = logging.getLogger(__name__)
 
@@ -41,8 +40,8 @@ def clean_action(action, env):
     custom_properties = action.keys() - readable_fields - action_type_fields
     if custom_properties:
         _logger.warning("Action %r contains custom properties %s. Passing them "
-            "via the `params` or `context` properties is recommended instead",
-            action_name, ', '.join(map(repr, custom_properties)))
+                        "via the `params` or `context` properties is recommended instead",
+                        action_name, ', '.join(map(repr, custom_properties)))
 
     return cleaned_action
 
@@ -134,7 +133,7 @@ def generate_views(action):
                              'either multiple view modes or a single view '
                              'mode and an optional view id.\n\n Got view '
                              'modes %r and view id %r for action %r' % (
-                view_modes, view_id, action))
+                                 view_modes, view_id, action))
         action['views'] = [(False, mode) for mode in view_modes]
         return
     action['views'] = [(view_id, view_modes[0])]
@@ -158,7 +157,7 @@ def get_action(env, path_part):
         someid = path_part.removeprefix('action-')
         if someid.isdigit():  # record id
             action = Actions.sudo().browse(int(someid)).exists()
-        elif '.' in someid:   # xml id
+        elif '.' in someid:  # xml id
             action = env.ref(someid, False)
             if not action or not action._name.startswith('ir.actions'):
                 action = Actions

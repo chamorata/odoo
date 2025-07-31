@@ -4,18 +4,19 @@ from __future__ import annotations
 import base64
 import itertools
 import json
+from collections import defaultdict
 
 from odoo import api, models
+from odoo.exceptions import AccessError, UserError
 from odoo.fields import Command
 from odoo.models import BaseModel, NewId
 from odoo.osv.expression import AND, TRUE_DOMAIN, normalize_domain
 from odoo.tools import unique, OrderedSet
-from odoo.exceptions import AccessError, UserError
-from collections import defaultdict
 from odoo.tools.translate import LazyTranslate
 
 _lt = LazyTranslate(__name__)
 SEARCH_PANEL_ERROR_MESSAGE = _lt("Too many items to display.")
+
 
 def is_true_domain(domain):
     return normalize_domain(domain) == TRUE_DOMAIN
@@ -26,6 +27,7 @@ class lazymapping(defaultdict):
         value = self.default_factory(key)
         self[key] = value
         return value
+
 
 DISPLAY_DATE_FORMATS = {
     'day': 'dd MMM yyyy',
@@ -197,7 +199,8 @@ class Base(models.AbstractModel):
                         try:
                             reference_read = co_record.web_read(field_spec['fields'])
                         except AccessError:
-                            reference_read = [{'id': co_record.id, 'display_name': self.env._("You don't have access to this record")}]
+                            reference_read = [{'id': co_record.id,
+                                               'display_name': self.env._("You don't have access to this record")}]
                         if any(fname != 'id' for fname in field_spec['fields']):
                             # we can infer that if we can read fields for the co-record, it exists
                             co_record_exists = bool(reference_read)
@@ -288,6 +291,7 @@ class Base(models.AbstractModel):
         :return a dictionnary mapping group_by values to dictionnaries mapping
                 progress bar field values to the related number of records
         """
+
         def adapt(value):
             if isinstance(value, tuple):
                 value = value[0]
@@ -338,9 +342,9 @@ class Base(models.AbstractModel):
             return self._search_panel_domain_image(field_name, count_domain, True)
 
         model_domain_image = self._search_panel_domain_image(field_name, model_domain,
-                            enable_counters and no_extra,
-                            set_limit and limit,
-                        )
+                                                             enable_counters and no_extra,
+                                                             set_limit and limit,
+                                                             )
         if enable_counters and not no_extra:
             count_domain_image = self._search_panel_domain_image(field_name, count_domain, True)
             for id, values in model_domain_image.items():
@@ -396,7 +400,6 @@ class Base(models.AbstractModel):
 
         return domain_image
 
-
     @api.model
     def _search_panel_global_counters(self, values_range, parent_name):
         """
@@ -444,11 +447,12 @@ class Base(models.AbstractModel):
         :return: the sublist of records with the above properties
         }
         """
+
         def get_parent_id(record):
             value = record[parent_name]
             return value and value[0]
 
-        allowed_records = { record['id']: record for record in records }
+        allowed_records = {record['id']: record for record in records}
         records_to_keep = {}
         for id in ids:
             record_id = id
@@ -473,7 +477,6 @@ class Base(models.AbstractModel):
         # we keep initial order
         return [rec for rec in records if records_to_keep.get(rec['id'])]
 
-
     @api.model
     def _search_panel_selection_range(self, field_name, **kwargs):
         """
@@ -491,7 +494,6 @@ class Base(models.AbstractModel):
                     { 'id': id, 'display_name': display_name, ('__count': c,) }
                 with key '__count' set if enable_counters is True
         """
-
 
         enable_counters = kwargs.get('enable_counters')
         expand = kwargs.get('expand')
@@ -516,7 +518,6 @@ class Base(models.AbstractModel):
             selection_range.append(values)
 
         return selection_range
-
 
     @api.model
     def search_panel_select_range(self, field_name, **kwargs):
@@ -570,8 +571,8 @@ class Base(models.AbstractModel):
             return {
                 'parent_field': False,
                 'values': self._search_panel_selection_range(field_name, model_domain=model_domain,
-                                extra_domain=extra_domain, **kwargs
-                            ),
+                                                             extra_domain=extra_domain, **kwargs
+                                                             ),
             }
 
         Comodel = self.env[field.comodel_name].with_context(hierarchical_naming=False)
@@ -595,10 +596,11 @@ class Base(models.AbstractModel):
 
         if enable_counters or not expand:
             domain_image = self._search_panel_field_image(field_name,
-                model_domain=model_domain, extra_domain=extra_domain,
-                only_counters=expand,
-                set_limit= limit and not (expand or hierarchize or comodel_domain), **kwargs
-            )
+                                                          model_domain=model_domain, extra_domain=extra_domain,
+                                                          only_counters=expand,
+                                                          set_limit=limit and not (
+                                                                      expand or hierarchize or comodel_domain), **kwargs
+                                                          )
 
         if not (expand or hierarchize or comodel_domain):
             values = list(domain_image.values())
@@ -646,7 +648,6 @@ class Base(models.AbstractModel):
             'parent_field': parent_name,
             'values': list(field_range.values()),
         }
-
 
     @api.model
     def search_panel_select_multi_range(self, field_name, **kwargs):
@@ -696,8 +697,8 @@ class Base(models.AbstractModel):
         if field.type == 'selection':
             return {
                 'values': self._search_panel_selection_range(field_name, model_domain=model_domain,
-                                extra_domain=extra_domain, **kwargs
-                            )
+                                                             extra_domain=extra_domain, **kwargs
+                                                             )
             }
 
         Comodel = self.env.get(field.comodel_name).with_context(hierarchical_naming=False)
@@ -746,7 +747,7 @@ class Base(models.AbstractModel):
             field_range = []
             for record in comodel_records:
                 record_id = record['id']
-                values= {
+                values = {
                     'id': record_id,
                     'display_name': record['display_name'],
                 }
@@ -757,9 +758,9 @@ class Base(models.AbstractModel):
 
                 if enable_counters:
                     search_domain = AND([
-                            model_domain,
-                            [(field_name, 'in', record_id)],
-                        ])
+                        model_domain,
+                        [(field_name, 'in', record_id)],
+                    ])
                     local_extra_domain = extra_domain
                     if group_by and group_domain:
                         local_extra_domain = AND([
@@ -773,7 +774,7 @@ class Base(models.AbstractModel):
                     values['__count'] = self.search_count(search_count_domain)
                 field_range.append(values)
 
-            return { 'values': field_range, }
+            return {'values': field_range, }
 
         if field.type == 'many2one':
             if enable_counters or not expand:
@@ -782,10 +783,12 @@ class Base(models.AbstractModel):
                     kwargs.get('group_domain', []),
                 ])
                 domain_image = self._search_panel_field_image(field_name,
-                                    model_domain=model_domain, extra_domain=extra_domain,
-                                    only_counters=expand,
-                                    set_limit=limit and not (expand or group_by or comodel_domain), **kwargs
-                                )
+                                                              model_domain=model_domain, extra_domain=extra_domain,
+                                                              only_counters=expand,
+                                                              set_limit=limit and not (
+                                                                          expand or group_by or comodel_domain),
+                                                              **kwargs
+                                                              )
 
             if not (expand or group_by or comodel_domain):
                 values = list(domain_image.values())
@@ -806,7 +809,7 @@ class Base(models.AbstractModel):
             field_range = []
             for record in comodel_records:
                 record_id = record['id']
-                values= {
+                values = {
                     'id': record_id,
                     'display_name': record['display_name'],
                 }
@@ -822,7 +825,7 @@ class Base(models.AbstractModel):
 
                 field_range.append(values)
 
-            return { 'values': field_range, }
+            return {'values': field_range, }
 
     def onchange(self, values: dict, field_names: list[str], fields_spec: dict):
         """
@@ -1031,7 +1034,8 @@ class Base(models.AbstractModel):
         elif len(warnings) > 1:
             # concatenate warning titles and messages
             title = self.env._("Warnings")
-            message = '\n\n'.join([warn_title + '\n\n' + warn_message for warn_title, warn_message, warn_type in warnings])
+            message = '\n\n'.join(
+                [warn_title + '\n\n' + warn_message for warn_title, warn_message, warn_type in warnings])
             result['warning'] = dict(title=title, message=message, type='dialog')
 
         return result
@@ -1052,7 +1056,6 @@ class Base(models.AbstractModel):
                 translations['en_US'] = values[field_name]
                 translations[self.env.lang or 'en_US'] = values[field_name]
                 self.update_field_translations(field_name, translations)
-
 
 
 class ResCompany(models.Model):
@@ -1078,8 +1081,8 @@ class ResCompany(models.Model):
         # necessarily updates the style for every company at once
         company_ids = self.sudo().search([])
         company_styles = self.env['ir.qweb']._render('web.styles_company_report', {
-                'company_ids': company_ids,
-            }, raise_if_not_found=False)
+            'company_ids': company_ids,
+        }, raise_if_not_found=False)
         return base64.b64encode(company_styles.encode())
 
     def _update_asset_style(self):

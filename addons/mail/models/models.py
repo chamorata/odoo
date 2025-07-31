@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+import logging
 from collections import defaultdict
 from datetime import datetime
+
 from lxml.builder import E
 from markupsafe import Markup
-
-from odoo import api, exceptions, models, tools, _
 from odoo.addons.mail.tools.alias_error import AliasError
 
-import logging
+from odoo import api, exceptions, models, tools, _
 
 _logger = logging.getLogger(__name__)
+
 
 class BaseModel(models.AbstractModel):
     _inherit = 'base'
@@ -19,8 +20,8 @@ class BaseModel(models.AbstractModel):
     def _valid_field_parameter(self, field, name):
         # allow tracking on abstract models; see also 'mail.thread'
         return (
-            name == 'tracking' and self._abstract
-            or super()._valid_field_parameter(field, name)
+                name == 'tracking' and self._abstract
+                or super()._valid_field_parameter(field, name)
         )
 
     # ------------------------------------------------------------
@@ -48,7 +49,7 @@ class BaseModel(models.AbstractModel):
 
         return {
             record.id: (
-                record_companies[record.id].alias_domain_id or default_domain
+                    record_companies[record.id].alias_domain_id or default_domain
             )
             for record in self
         }
@@ -328,10 +329,10 @@ class BaseModel(models.AbstractModel):
         # address itself is too long : return only email and log warning
         if len(record_email) >= length_limit:
             _logger.warning('Notification email address for reply-to is longer than 68 characters. '
-                'This might create non-compliant folding in the email header in certain DKIM '
-                'verification tech stacks. It is advised to shorten it if possible. '
-                'Record name (if set): %s '
-                'Reply-To: %s ', record_name, record_email)
+                            'This might create non-compliant folding in the email header in certain DKIM '
+                            'verification tech stacks. It is advised to shorten it if possible. '
+                            'Record name (if set): %s '
+                            'Reply-To: %s ', record_name, record_email)
             return record_email
 
         if not company:
@@ -459,7 +460,8 @@ class BaseModel(models.AbstractModel):
             field_value = self.mapped(field_path)
         except KeyError:
             raise exceptions.UserError(
-                _("%(model_name)s.%(field_path)s does not seem to be a valid field path", model_name=self._name, field_path=field_path)
+                _("%(model_name)s.%(field_path)s does not seem to be a valid field path", model_name=self._name,
+                  field_path=field_path)
             )
         except Exception as err:  # noqa: BLE001
             raise exceptions.UserError(

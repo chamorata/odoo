@@ -23,8 +23,10 @@ class MassMailingList(models.Model):
     contact_count_email = fields.Integer(compute="_compute_mailing_list_statistics", string="Number of Emails")
     contact_count_opt_out = fields.Integer(compute="_compute_mailing_list_statistics", string="Number of Opted-out")
     contact_pct_opt_out = fields.Float(compute="_compute_mailing_list_statistics", string="Percentage of Opted-out")
-    contact_count_blacklisted = fields.Integer(compute="_compute_mailing_list_statistics", string="Number of Blacklisted")
-    contact_pct_blacklisted = fields.Float(compute="_compute_mailing_list_statistics", string="Percentage of Blacklisted")
+    contact_count_blacklisted = fields.Integer(compute="_compute_mailing_list_statistics",
+                                               string="Number of Blacklisted")
+    contact_pct_blacklisted = fields.Float(compute="_compute_mailing_list_statistics",
+                                           string="Percentage of Blacklisted")
     contact_pct_bounce = fields.Float(compute="_compute_mailing_list_statistics", string="Percentage of Bouncing")
     contact_ids = fields.Many2many(
         'mailing.contact', 'mailing_subscription', 'list_id', 'contact_id',
@@ -97,9 +99,12 @@ class MassMailingList(models.Model):
                     mailing_list[field] = value
 
             if mailing_list.contact_count != 0:
-                mailing_list.contact_pct_opt_out = 100 * (mailing_list.contact_count_opt_out / mailing_list.contact_count)
-                mailing_list.contact_pct_blacklisted = 100 * (mailing_list.contact_count_blacklisted / mailing_list.contact_count)
-                mailing_list.contact_pct_bounce = 100 * (bounce_per_mailing.get(mailing_list.id, 0) / mailing_list.contact_count)
+                mailing_list.contact_pct_opt_out = 100 * (
+                            mailing_list.contact_count_opt_out / mailing_list.contact_count)
+                mailing_list.contact_pct_blacklisted = 100 * (
+                            mailing_list.contact_count_blacklisted / mailing_list.contact_count)
+                mailing_list.contact_pct_bounce = 100 * (
+                            bounce_per_mailing.get(mailing_list.id, 0) / mailing_list.contact_count)
             else:
                 mailing_list.contact_pct_opt_out = 0
                 mailing_list.contact_pct_blacklisted = 0
@@ -118,7 +123,8 @@ class MassMailingList(models.Model):
             ])
 
             if mass_mailings > 0:
-                raise UserError(_("At least one of the mailing list you are trying to archive is used in an ongoing mailing campaign."))
+                raise UserError(
+                    _("At least one of the mailing list you are trying to archive is used in an ongoing mailing campaign."))
 
         return super(MassMailingList, self).write(vals)
 
@@ -129,7 +135,8 @@ class MassMailingList(models.Model):
 
     def copy_data(self, default=None):
         vals_list = super().copy_data(default=default)
-        return [dict(vals, name=self.env._("%s (copy)", mailing_list.name)) for mailing_list, vals in zip(self, vals_list)]
+        return [dict(vals, name=self.env._("%s (copy)", mailing_list.name)) for mailing_list, vals in
+                zip(self, vals_list)]
 
     # ------------------------------------------------------
     # ACTIONS
@@ -336,12 +343,14 @@ class MassMailingList(models.Model):
                 body = force_message
             elif opt_out:
                 body = Markup('<p>%s</p><ul>%s</ul>') % (
-                    _('%(contact_name)s unsubscribed from the following mailing list(s)', contact_name=contact.display_name),
+                    _('%(contact_name)s unsubscribed from the following mailing list(s)',
+                      contact_name=contact.display_name),
                     Markup().join(Markup('<li>%s</li>') % name for name in updated.mapped('name')),
                 )
             else:
                 body = Markup('<p>%s</p><ul>%s</ul>') % (
-                    _('%(contact_name)s subscribed to the following mailing list(s)', contact_name=contact.display_name),
+                    _('%(contact_name)s subscribed to the following mailing list(s)',
+                      contact_name=contact.display_name),
                     Markup().join(Markup('<li>%s</li>') % name for name in updated.mapped('name')),
                 )
             contact.with_context(mail_create_nosubscribe=True).message_post(
@@ -397,7 +406,7 @@ class MassMailingList(models.Model):
                 WHERE list_id IN %s
                 GROUP BY
                     list_id;
-            ''', (tuple(self.ids), ))
+            ''', (tuple(self.ids),))
             res = self.env.cr.dictfetchall()
 
         contact_counts = {}

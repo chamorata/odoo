@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from datetime import datetime, timedelta
 from unittest.mock import patch
 
 import odoo
@@ -8,7 +9,6 @@ from odoo import http
 from odoo.addons.base.tests.common import HttpCaseWithUserPortal, HttpCaseWithUserDemo
 from odoo.exceptions import AccessError
 
-from datetime import datetime, timedelta
 
 class TestAuthSignupFlow(HttpCaseWithUserPortal, HttpCaseWithUserDemo):
 
@@ -53,7 +53,9 @@ class TestAuthSignupFlow(HttpCaseWithUserPortal, HttpCaseWithUserDemo):
             # Check if an email is sent to the new userw
             new_user = self.env['res.users'].search([('name', '=', name)])
             self.assertTrue(new_user)
-            mail = self.env['mail.message'].search([('message_type', '=', 'email_outgoing'), ('model', '=', 'res.users'), ('res_id', '=', new_user.id)], limit=1)
+            mail = self.env['mail.message'].search(
+                [('message_type', '=', 'email_outgoing'), ('model', '=', 'res.users'), ('res_id', '=', new_user.id)],
+                limit=1)
             self.assertTrue(mail, "The new user must be informed of his registration")
 
     def test_compute_signup_url(self):

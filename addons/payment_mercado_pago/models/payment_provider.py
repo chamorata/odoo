@@ -4,13 +4,11 @@ import logging
 import pprint
 
 import requests
+from odoo.addons.payment_mercado_pago import const
 from werkzeug import urls
 
 from odoo import _, fields, models
 from odoo.exceptions import ValidationError
-
-from odoo.addons.payment_mercado_pago import const
-
 
 _logger = logging.getLogger(__name__)
 

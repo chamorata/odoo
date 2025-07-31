@@ -3,9 +3,9 @@
 
     <t t-name="pos_restaurant.TipReceipt">
         <div class="pos-receipt">
-            <ReceiptHeader data="props.headerData" />
+            <ReceiptHeader data="props.headerData"/>
             <div class="pos-payment-terminal-receipt">
-                <pre t-esc="data" />
+                <pre t-esc="data"/>
             </div>
             <br/>
 

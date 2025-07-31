@@ -39,7 +39,8 @@ class SaleEdiXmlUBLBIS3(models.AbstractModel):
         order_values['origin'] = tree.findtext('./{*}OriginatorDocumentReference/{*}ID')
         order_values['payment_term_id'] = self._import_payment_term_id(order, tree, './/cac:PaymentTerms/cbc:Note')
 
-        allowance_charges_line_vals, allowance_charges_logs = self._import_document_allowance_charges(tree, order, 'sale')
+        allowance_charges_line_vals, allowance_charges_logs = self._import_document_allowance_charges(tree, order,
+                                                                                                      'sale')
         lines_vals, line_logs = self._import_order_lines(order, tree, './{*}OrderLine/{*}LineItem')
         lines_vals += allowance_charges_line_vals
 

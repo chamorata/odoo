@@ -1,10 +1,12 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
+import logging
+import random
+import time
+
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
 from odoo import fields
 from odoo.tests import Form
-from odoo.addons.account.tests.common import AccountTestInvoicingCommon
-import random
-import logging
-import time
 
 _logger = logging.getLogger(__name__)
 
@@ -166,7 +168,8 @@ class TestAr(AccountTestInvoicingCommon):
             'vat': "30714101443",
             'l10n_ar_afip_responsibility_type_id': cls.env.ref("l10n_ar.res_IVARI").id,
         })
-        cls.partner_mipyme_ex = cls.partner_mipyme.copy({'name': 'MiPyme Exento', 'l10n_ar_afip_responsibility_type_id': cls.env.ref('l10n_ar.res_IVAE').id})
+        cls.partner_mipyme_ex = cls.partner_mipyme.copy(
+            {'name': 'MiPyme Exento', 'l10n_ar_afip_responsibility_type_id': cls.env.ref('l10n_ar.res_IVAE').id})
 
         # ==== Taxes ====
         cls.tax_21 = cls._search_tax(cls, 'iva_21')
@@ -488,10 +491,14 @@ class TestAr(AccountTestInvoicingCommon):
                 "invoice_date": "2021-03-13",
                 "company_id": self.company_ri,
                 "invoice_line_ids": [
-                    {'product_id': self.service_iva_21, 'price_unit': 1.12, 'quantity': 1, 'name': 'Support Services 1'},
-                    {'product_id': self.service_iva_21, 'price_unit': 1.12, 'quantity': 1, 'name': 'Support Services 2'},
-                    {'product_id': self.service_iva_21, 'price_unit': 1.12, 'quantity': 1, 'name': 'Support Services 3'},
-                    {'product_id': self.service_iva_21, 'price_unit': 1.12, 'quantity': 1, 'name': 'Support Services 4'},
+                    {'product_id': self.service_iva_21, 'price_unit': 1.12, 'quantity': 1,
+                     'name': 'Support Services 1'},
+                    {'product_id': self.service_iva_21, 'price_unit': 1.12, 'quantity': 1,
+                     'name': 'Support Services 2'},
+                    {'product_id': self.service_iva_21, 'price_unit': 1.12, 'quantity': 1,
+                     'name': 'Support Services 3'},
+                    {'product_id': self.service_iva_21, 'price_unit': 1.12, 'quantity': 1,
+                     'name': 'Support Services 4'},
                 ],
             },
             'test_invoice_12': {
@@ -502,10 +509,14 @@ class TestAr(AccountTestInvoicingCommon):
                 "invoice_date": "2021-03-13",
                 "company_id": self.company_ri,
                 "invoice_line_ids": [
-                    {'product_id': self.service_iva_21, 'price_unit': 15.7076, 'quantity': 1, 'name': 'Support Services 1'},
-                    {'product_id': self.service_iva_21, 'price_unit': 5.3076, 'quantity': 2, 'name': 'Support Services 2'},
-                    {'product_id': self.service_iva_21, 'price_unit': 3.5384, 'quantity': 2, 'name': 'Support Services 3'},
-                    {'product_id': self.service_iva_21, 'price_unit': 1.6376, 'quantity': 2, 'name': 'Support Services 4'},
+                    {'product_id': self.service_iva_21, 'price_unit': 15.7076, 'quantity': 1,
+                     'name': 'Support Services 1'},
+                    {'product_id': self.service_iva_21, 'price_unit': 5.3076, 'quantity': 2,
+                     'name': 'Support Services 2'},
+                    {'product_id': self.service_iva_21, 'price_unit': 3.5384, 'quantity': 2,
+                     'name': 'Support Services 3'},
+                    {'product_id': self.service_iva_21, 'price_unit': 1.6376, 'quantity': 2,
+                     'name': 'Support Services 4'},
                 ],
             },
             'test_invoice_13': {
@@ -516,14 +527,22 @@ class TestAr(AccountTestInvoicingCommon):
                 "invoice_date": "2021-03-13",
                 "company_id": self.company_ri,
                 "invoice_line_ids": [
-                    {'product_id': self.service_iva_21, 'price_unit': 24.3, 'quantity': 3, 'name': 'Support Services 1'},
-                    {'product_id': self.service_iva_21, 'price_unit': 260.59, 'quantity': 1, 'name': 'Support Services 2'},
-                    {'product_id': self.service_iva_21, 'price_unit': 48.72, 'quantity': 1, 'name': 'Support Services 3'},
-                    {'product_id': self.service_iva_21, 'price_unit': 13.666, 'quantity': 1, 'name': 'Support Services 4'},
-                    {'product_id': self.service_iva_21, 'price_unit': 11.329, 'quantity': 2, 'name': 'Support Services 5'},
-                    {'product_id': self.service_iva_21, 'price_unit': 68.9408, 'quantity': 1, 'name': 'Support Services 6'},
-                    {'product_id': self.service_iva_21, 'price_unit': 4.7881, 'quantity': 2, 'name': 'Support Services 7'},
-                    {'product_id': self.service_iva_21, 'price_unit': 12.0625, 'quantity': 2, 'name': 'Support Services 8'},
+                    {'product_id': self.service_iva_21, 'price_unit': 24.3, 'quantity': 3,
+                     'name': 'Support Services 1'},
+                    {'product_id': self.service_iva_21, 'price_unit': 260.59, 'quantity': 1,
+                     'name': 'Support Services 2'},
+                    {'product_id': self.service_iva_21, 'price_unit': 48.72, 'quantity': 1,
+                     'name': 'Support Services 3'},
+                    {'product_id': self.service_iva_21, 'price_unit': 13.666, 'quantity': 1,
+                     'name': 'Support Services 4'},
+                    {'product_id': self.service_iva_21, 'price_unit': 11.329, 'quantity': 2,
+                     'name': 'Support Services 5'},
+                    {'product_id': self.service_iva_21, 'price_unit': 68.9408, 'quantity': 1,
+                     'name': 'Support Services 6'},
+                    {'product_id': self.service_iva_21, 'price_unit': 4.7881, 'quantity': 2,
+                     'name': 'Support Services 7'},
+                    {'product_id': self.service_iva_21, 'price_unit': 12.0625, 'quantity': 2,
+                     'name': 'Support Services 8'},
                 ],
             },
             'test_invoice_14': {
@@ -573,7 +592,8 @@ class TestAr(AccountTestInvoicingCommon):
                 "invoice_date": "2021-03-13",
                 "company_id": self.company_ri,
                 "invoice_line_ids": [
-                    {'product_id': self.service_iva_21, 'price_unit': 24.3, 'quantity': 3, 'name': 'Support Services 8', 'discount': 100},
+                    {'product_id': self.service_iva_21, 'price_unit': 24.3, 'quantity': 3, 'name': 'Support Services 8',
+                     'discount': 100},
                 ],
             },
             'test_invoice_18': {
@@ -584,7 +604,8 @@ class TestAr(AccountTestInvoicingCommon):
                 "invoice_date": "2021-03-13",
                 "company_id": self.company_ri,
                 "invoice_line_ids": [
-                    {'product_id': self.service_iva_21, 'price_unit': 24.3, 'quantity': 3, 'name': 'Support Services 8', 'discount': 100},
+                    {'product_id': self.service_iva_21, 'price_unit': 24.3, 'quantity': 3, 'name': 'Support Services 8',
+                     'discount': 100},
                     {'product_id': self.service_iva_27, 'price_unit': 250.0, 'quantity': 1, 'discount': 100},
                     {'product_id': self.product_iva_105_perc, 'price_unit': 3245.0, 'quantity': 1},
                 ],
@@ -597,7 +618,8 @@ class TestAr(AccountTestInvoicingCommon):
                 "invoice_date": "2021-03-13",
                 "company_id": self.company_ri,
                 "invoice_line_ids": [
-                    {'product_id': self.service_iva_21, 'price_unit': 24.3, 'quantity': 3, 'name': 'Support Services 8'},
+                    {'product_id': self.service_iva_21, 'price_unit': 24.3, 'quantity': 3,
+                     'name': 'Support Services 8'},
                     {'product_id': self.service_iva_27, 'price_unit': 250.0, 'quantity': 1},
                     {'product_id': self.product_iva_105_perc, 'price_unit': 3245.0, 'quantity': 1},
                 ],
@@ -724,7 +746,8 @@ class TestAr(AccountTestInvoicingCommon):
 
     def _create_credit_note(self, invoice, data=None):
         data = data or {}
-        refund_wizard = self.env['account.move.reversal'].with_context({'active_ids': [invoice.id], 'active_model': 'account.move'}).create({
+        refund_wizard = self.env['account.move.reversal'].with_context(
+            {'active_ids': [invoice.id], 'active_model': 'account.move'}).create({
             'reason': data.get('reason', 'Mercadería defectuosa'),
             'journal_id': invoice.journal_id.id})
 
@@ -732,7 +755,8 @@ class TestAr(AccountTestInvoicingCommon):
         if forced_document_type:
             refund_wizard.l10n_latam_document_type_id = forced_document_type.id
 
-        res = refund_wizard.refund_moves() if data.get('refund_method', 'refund') == 'refund' else refund_wizard.modify_moves()
+        res = refund_wizard.refund_moves() if data.get('refund_method',
+                                                       'refund') == 'refund' else refund_wizard.modify_moves()
         refund = self.env['account.move'].browse(res['res_id'])
         return refund
 
@@ -740,7 +764,7 @@ class TestAr(AccountTestInvoicingCommon):
         data = data or {}
         debit_note_wizard = self.env['account.debit.note'].with_context(
             {'active_ids': [invoice.id], 'active_model': 'account.move', 'default_copy_lines': True}).create({
-                'reason': data.get('reason', 'Mercadería defectuosa')})
+            'reason': data.get('reason', 'Mercadería defectuosa')})
         res = debit_note_wizard.create_debit()
         debit_note = self.env['account.move'].browse(res['res_id'])
         return debit_note
@@ -754,7 +778,8 @@ class TestAr(AccountTestInvoicingCommon):
         return res
 
     def _search_fp(self, name):
-        return self.env['account.fiscal.position'].search([('company_id', '=', self.env.company.id), ('name', '=', name)])
+        return self.env['account.fiscal.position'].search(
+            [('company_id', '=', self.env.company.id), ('name', '=', name)])
 
     def _post(self, invoice):
         invoice.action_post()
@@ -770,8 +795,9 @@ class TestAr(AccountTestInvoicingCommon):
 
     def _set_today_rate(self, currency, value):
         rate_obj = self.env['res.currency.rate']
-        rate = rate_obj.search([('currency_id', '=', currency.id), ('name', '=', fields.Date.to_string(fields.Date.today())),
-                                ('company_id', '=', self.env.company.id)])
+        rate = rate_obj.search(
+            [('currency_id', '=', currency.id), ('name', '=', fields.Date.to_string(fields.Date.today())),
+             ('company_id', '=', self.env.company.id)])
         if rate:
             rate.rate = value
         else:

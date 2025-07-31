@@ -6,10 +6,10 @@ import os
 import re
 
 from odoo.tests import common
-from odoo.tools import html_escape as e
 from odoo.tools.misc import file_open
 
 directory = os.path.dirname(__file__)
+
 
 class TestExport(common.TransactionCase):
     _model = None
@@ -43,10 +43,11 @@ class TestExport(common.TransactionCase):
             # spaces while others use non-break space when formatting timedeltas
             # to the french locale
             return re.sub(
-                r'[^\S\n\r]', # no \p{Zs}
+                r'[^\S\n\r]',  # no \p{Zs}
                 ' ',
                 model.with_context(context).record_to_html(record, name, options or {})
             )
+
         return converter
 
 
@@ -132,7 +133,7 @@ class TestCurrencyExport(TestExport):
             converted, u'<span class="oe_currency_value">-\N{ZERO WIDTH NO-BREAK SPACE}0.12</span>'
                        u'\N{NO-BREAK SPACE}{symbol}'.format(
                 symbol=currency.symbol
-            ),)
+            ), )
 
     def test_currency_pre(self):
         currency = self.create(
@@ -143,29 +144,30 @@ class TestCurrencyExport(TestExport):
 
         self.assertEqual(
             converted,
-                      u'{symbol}\N{NO-BREAK SPACE}'
-                      u'<span class="oe_currency_value">0.12</span>'.format(
+            u'{symbol}\N{NO-BREAK SPACE}'
+            u'<span class="oe_currency_value">0.12</span>'.format(
                 symbol=currency.symbol
-            ),)
+            ), )
 
     def test_currency_precision(self):
         """ Precision should be the currency's, not the float field's
         """
-        currency = self.create(self.Currency, name="Test", symbol=u"test",)
+        currency = self.create(self.Currency, name="Test", symbol=u"test", )
         obj = self.create(self.Model, value=0.1234567)
 
         converted = self.convert(obj, dest=currency)
 
         self.assertEqual(
             converted,
-                      u'<span class="oe_currency_value">0.12</span>'
-                      u'\N{NO-BREAK SPACE}{symbol}'.format(
+            u'<span class="oe_currency_value">0.12</span>'
+            u'\N{NO-BREAK SPACE}{symbol}'.format(
                 symbol=currency.symbol
-            ),)
+            ), )
 
 
 class TestTextExport(TestBasicExport):
     maxDiff = None
+
     def test_text(self):
         converter = self.get_converter('text')
 

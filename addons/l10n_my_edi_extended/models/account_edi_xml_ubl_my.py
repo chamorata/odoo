@@ -12,12 +12,15 @@ class AccountEdiXmlUBLMyInvoisMY(models.AbstractModel):
 
         # For self billed documents (when sending in_xxx entries to the platform) the supplier and customer are reversed.
         if self._is_self_billed(vals['vals']['document_type_code']):
-            vals['vals']['accounting_supplier_party_vals']['party_vals'] = self._get_partner_party_vals(invoice.partner_id, role='supplier')
-            vals['vals']['accounting_customer_party_vals']['party_vals'] = self._get_partner_party_vals(invoice.company_id.partner_id, role='customer')
+            vals['vals']['accounting_supplier_party_vals']['party_vals'] = self._get_partner_party_vals(
+                invoice.partner_id, role='supplier')
+            vals['vals']['accounting_customer_party_vals']['party_vals'] = self._get_partner_party_vals(
+                invoice.company_id.partner_id, role='customer')
             # /!\ For the company (regular invoices) it is the field on res.company that is used, and not the one on res.partner.
             # In master the behavior will be aligned and the classification information will be retrieved in _get_partner_party_vals
             vals['vals']['accounting_supplier_party_vals']['party_vals'].update({
-                'industry_classification_code_attrs': {'name': invoice.partner_id.commercial_partner_id.l10n_my_edi_industrial_classification.name},
+                'industry_classification_code_attrs': {
+                    'name': invoice.partner_id.commercial_partner_id.l10n_my_edi_industrial_classification.name},
                 'industry_classification_code': invoice.partner_id.commercial_partner_id.l10n_my_edi_industrial_classification.code,
             })
             # Self-billed invoices must use the number given by the supplier.
@@ -36,7 +39,8 @@ class AccountEdiXmlUBLMyInvoisMY(models.AbstractModel):
             expected_generic_tin = 'EI00000000020'
         # Switch the generic tin to the correct one when it makes sense (For example when a supplier has the buyer generic tin set)
         for identification_val in other_party['party_identification_vals']:
-            if identification_val.get('id_attrs', {}).get('schemeID') == 'TIN' and identification_val.get('id') == opposite_generic_tin:
+            if identification_val.get('id_attrs', {}).get('schemeID') == 'TIN' and identification_val.get(
+                    'id') == opposite_generic_tin:
                 identification_val['id'] = expected_generic_tin
         return vals
 
@@ -51,10 +55,12 @@ class AccountEdiXmlUBLMyInvoisMY(models.AbstractModel):
         # EXTENDS 'l10n_my_edi'
         constraints = super()._export_invoice_constraints(invoice, vals)
         # The classification check was only looking at the product, we also want to validate lines without product
-        for line in invoice.invoice_line_ids.filtered(lambda line: line.display_type not in ('line_note', 'line_section')):
+        for line in invoice.invoice_line_ids.filtered(
+                lambda line: line.display_type not in ('line_note', 'line_section')):
             # If there are no products, we still expect a classification to be manually set.
             if not line.product_id and not line.l10n_my_edi_classification_code:
-                self._l10n_my_edi_make_validation_error(constraints, 'class_code_required_line', line.id, line.display_name)
+                self._l10n_my_edi_make_validation_error(constraints, 'class_code_required_line', line.id,
+                                                        line.display_name)
             # We allow invoicing a product with no classification when the classification has been manually provided.
             if f"myinvois_{line.product_id.id}_class_code_required" in constraints and line.l10n_my_edi_classification_code:
                 del constraints[f"myinvois_{line.product_id.id}_class_code_required"]

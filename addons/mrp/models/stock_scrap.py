@@ -12,7 +12,7 @@ class StockScrap(models.Model):
         check_company=True)
     workorder_id = fields.Many2one(
         'mrp.workorder', 'Work Order',
-        check_company=True) # Not to restrict or prefer quants, but informative
+        check_company=True)  # Not to restrict or prefer quants, but informative
     product_is_kit = fields.Boolean(related='product_id.is_kits')
     product_template = fields.Many2one(related='product_id.product_tmpl_id')
     bom_id = fields.Many2one(
@@ -75,7 +75,8 @@ class StockScrap(models.Model):
                     'incoming_moves': lambda m: True,
                     'outgoing_moves': lambda m: False
                 }
-                scrap.scrap_qty = scrap.move_ids._compute_kit_quantities(scrap.product_id, scrap.scrap_qty, scrap.bom_id, filters)
+                scrap.scrap_qty = scrap.move_ids._compute_kit_quantities(scrap.product_id, scrap.scrap_qty,
+                                                                         scrap.bom_id, filters)
 
     def _should_check_available_qty(self):
         return super()._should_check_available_qty() or self.product_is_kit

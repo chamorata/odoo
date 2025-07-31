@@ -4,6 +4,7 @@
 from odoo import api, fields, models, tools
 from odoo.tools import formatLang
 
+
 class PurchaseBillUnion(models.Model):
     _name = 'purchase.bill.union'
     _auto = False

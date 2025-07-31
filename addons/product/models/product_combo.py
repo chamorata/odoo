@@ -35,9 +35,9 @@ class ProductCombo(models.Model):
         self.combo_item_count = 0
         # Optimization to count the number of combo items in each combo.
         for combo, item_count in self.env['product.combo.item']._read_group(
-            domain=[('combo_id', 'in', self.ids)],
-            groupby=['combo_id'],
-            aggregates=['__count'],
+                domain=[('combo_id', 'in', self.ids)],
+                groupby=['combo_id'],
+                aggregates=['__count'],
         ):
             combo.combo_item_count = item_count
 
@@ -46,7 +46,7 @@ class ProductCombo(models.Model):
         main_company = self.env['res.company']._get_main_company()
         for combo in self:
             combo.currency_id = (
-                combo.company_id.sudo().currency_id or main_company.currency_id
+                    combo.company_id.sudo().currency_id or main_company.currency_id
             )
 
     @api.depends('combo_item_ids')

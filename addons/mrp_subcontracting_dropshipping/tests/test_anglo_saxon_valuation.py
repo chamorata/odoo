@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.addons.stock_account.tests.test_anglo_saxon_valuation_reconciliation_common import ValuationReconciliationTestCommon
+from odoo.addons.stock_account.tests.test_anglo_saxon_valuation_reconciliation_common import \
+    ValuationReconciliationTestCommon
+
 from odoo import Command
 from odoo.tests import tagged, Form
 
@@ -30,7 +32,8 @@ class TestSubcontractingDropshippingValuation(ValuationReconciliationTestCommon)
         (cls.product_a | cls.product_b).is_storable = True
 
         cls.dropship_route = cls.env.ref('stock_dropshipping.route_drop_shipping')
-        cls.dropship_subcontractor_route = cls.env.ref('mrp_subcontracting_dropshipping.route_subcontracting_dropshipping')
+        cls.dropship_subcontractor_route = cls.env.ref(
+            'mrp_subcontracting_dropshipping.route_subcontracting_dropshipping')
 
         cls.bom_a = cls.env['mrp.bom'].create({
             'product_tmpl_id': cls.product_a.product_tmpl_id.id,
@@ -91,22 +94,23 @@ class TestSubcontractingDropshippingValuation(ValuationReconciliationTestCommon)
         all_amls_ids += amls.ids
         self.assertRecordValues(amls, [
             # Compensation of dropshipping value
-            {'account_id': stock_valu_acc_id,   'product_id': self.product_a.id,    'debit': 0.0,   'credit': 20.0},
-            {'account_id': stock_out_acc_id,    'product_id': self.product_a.id,    'debit': 20.0,  'credit': 0.0},
+            {'account_id': stock_valu_acc_id, 'product_id': self.product_a.id, 'debit': 0.0, 'credit': 20.0},
+            {'account_id': stock_out_acc_id, 'product_id': self.product_a.id, 'debit': 20.0, 'credit': 0.0},
             # Receipt from subcontractor
-            {'account_id': stock_valu_acc_id,   'product_id': self.product_a.id,    'debit': 220.0, 'credit': 0.0},
-            {'account_id': stock_in_acc_id,     'product_id': self.product_a.id,    'debit': 0.0,   'credit': 200.0},
-            {'account_id': stock_cop_acc_id,    'product_id': self.product_a.id,    'debit': 0.0,   'credit': 20.0},
+            {'account_id': stock_valu_acc_id, 'product_id': self.product_a.id, 'debit': 220.0, 'credit': 0.0},
+            {'account_id': stock_in_acc_id, 'product_id': self.product_a.id, 'debit': 0.0, 'credit': 200.0},
+            {'account_id': stock_cop_acc_id, 'product_id': self.product_a.id, 'debit': 0.0, 'credit': 20.0},
             # Delivery to subcontractor
-            {'account_id': stock_valu_acc_id,   'product_id': self.product_b.id,    'debit': 0.0,   'credit': 20.0},
-            {'account_id': stock_cop_acc_id,    'product_id': self.product_b.id,    'debit': 20.0,  'credit': 0.0},
+            {'account_id': stock_valu_acc_id, 'product_id': self.product_b.id, 'debit': 0.0, 'credit': 20.0},
+            {'account_id': stock_cop_acc_id, 'product_id': self.product_b.id, 'debit': 20.0, 'credit': 0.0},
             # Initial dropshipped value
-            {'account_id': stock_valu_acc_id,   'product_id': self.product_a.id,    'debit': 0.0,   'credit': 200.0},
-            {'account_id': stock_out_acc_id,    'product_id': self.product_a.id,    'debit': 200.0, 'credit': 0.0},
+            {'account_id': stock_valu_acc_id, 'product_id': self.product_a.id, 'debit': 0.0, 'credit': 200.0},
+            {'account_id': stock_out_acc_id, 'product_id': self.product_a.id, 'debit': 200.0, 'credit': 0.0},
         ])
 
         # return to subcontracting location
-        return_form = Form(self.env['stock.return.picking'].with_context(active_id=delivery.id, active_model='stock.picking'))
+        return_form = Form(
+            self.env['stock.return.picking'].with_context(active_id=delivery.id, active_model='stock.picking'))
         with return_form.product_return_moves.edit(0) as line:
             line.quantity = 1
         return_wizard = return_form.save()
@@ -118,14 +122,15 @@ class TestSubcontractingDropshippingValuation(ValuationReconciliationTestCommon)
         amls = self.env['account.move.line'].search([('id', 'not in', all_amls_ids)])
         all_amls_ids += amls.ids
         self.assertRecordValues(amls, [
-            {'account_id': stock_valu_acc_id,   'product_id': self.product_a.id,    'debit': 0.0,   'credit': 110.0},
-            {'account_id': stock_in_acc_id,     'product_id': self.product_a.id,    'debit': 110.0, 'credit': 0.0},
+            {'account_id': stock_valu_acc_id, 'product_id': self.product_a.id, 'debit': 0.0, 'credit': 110.0},
+            {'account_id': stock_in_acc_id, 'product_id': self.product_a.id, 'debit': 110.0, 'credit': 0.0},
         ])
 
         # return to stock location
         warehouse = self.env['stock.warehouse'].search([('company_id', '=', self.env.company.id)], limit=1)
         stock_location = warehouse.lot_stock_id
-        return_form = Form(self.env['stock.return.picking'].with_context(active_id=delivery.id, active_model='stock.picking'))
+        return_form = Form(
+            self.env['stock.return.picking'].with_context(active_id=delivery.id, active_model='stock.picking'))
         with return_form.product_return_moves.edit(0) as line:
             line.quantity = 1
         return_wizard = return_form.save()
@@ -138,8 +143,8 @@ class TestSubcontractingDropshippingValuation(ValuationReconciliationTestCommon)
         amls = self.env['account.move.line'].search([('id', 'not in', all_amls_ids)])
         all_amls_ids += amls.ids
         self.assertRecordValues(amls, [
-            {'account_id': stock_out_acc_id,    'product_id': self.product_a.id,    'debit': 0.0,   'credit': 110.0},
-            {'account_id': stock_valu_acc_id,   'product_id': self.product_a.id,    'debit': 110.0, 'credit': 0.0},
+            {'account_id': stock_out_acc_id, 'product_id': self.product_a.id, 'debit': 0.0, 'credit': 110.0},
+            {'account_id': stock_valu_acc_id, 'product_id': self.product_a.id, 'debit': 110.0, 'credit': 0.0},
         ])
 
     def test_avco_valuation_subcontract_and_dropshipped_and_backorder(self):
@@ -280,11 +285,11 @@ class TestSubcontractingDropshippingValuation(ValuationReconciliationTestCommon)
         self.assertRecordValues(
             account_move.line_ids.sorted('balance'),
             [
-                {'name': 'product_a',                           'debit': 0.0,       'credit': 1800.0},
-                {'name': 'product_a',                           'debit': 0.0,       'credit': 1680.0},
-                {'name': '15% (Copy)',                          'debit': 0.0,       'credit': 270.0},
-                {'name': f'{account_move.name} installment #1', 'debit': 621.0,     'credit': 0.0},
-                {'name': f'{account_move.name} installment #2', 'debit': 1449.0,    'credit': 0.0},
-                {'name': 'product_a',                           'debit': 1680.0,    'credit': 0.0},
+                {'name': 'product_a', 'debit': 0.0, 'credit': 1800.0},
+                {'name': 'product_a', 'debit': 0.0, 'credit': 1680.0},
+                {'name': '15% (Copy)', 'debit': 0.0, 'credit': 270.0},
+                {'name': f'{account_move.name} installment #1', 'debit': 621.0, 'credit': 0.0},
+                {'name': f'{account_move.name} installment #2', 'debit': 1449.0, 'credit': 0.0},
+                {'name': 'product_a', 'debit': 1680.0, 'credit': 0.0},
             ]
         )

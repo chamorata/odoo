@@ -40,7 +40,9 @@ class Post(models.Model):
         ], string='Status', default='active')
     views = fields.Integer('Views', default=0, readonly=True, copy=False)
     active = fields.Boolean('Active', default=True)
-    website_message_ids = fields.One2many(domain=lambda self: [('model', '=', self._name), ('message_type', 'in', ['email', 'comment', 'email_outgoing'])])
+    website_message_ids = fields.One2many(domain=lambda self: [('model', '=', self._name), ('message_type', 'in',
+                                                                                            ['email', 'comment',
+                                                                                             'email_outgoing'])])
     website_url = fields.Char('Website URL', compute='_compute_website_url')
     website_id = fields.Many2one(related='forum_id.website_id', readonly=True)
 
@@ -183,20 +185,24 @@ class Post(models.Model):
         for post in self:
             if post.create_date:
                 days = (datetime.today() - post.create_date).days
-                post.relevancy = math.copysign(1, post.vote_count) * (abs(post.vote_count - 1) ** post.forum_id.relevancy_post_vote / (days + 2) ** post.forum_id.relevancy_time_decay)
+                post.relevancy = math.copysign(1, post.vote_count) * (
+                            abs(post.vote_count - 1) ** post.forum_id.relevancy_post_vote / (
+                                days + 2) ** post.forum_id.relevancy_time_decay)
             else:
                 post.relevancy = 0
 
     @api.depends_context('uid')
     def _compute_user_vote(self):
-        votes = self.env['forum.post.vote'].search_read([('post_id', 'in', self._ids), ('user_id', '=', self._uid)], ['vote', 'post_id'])
+        votes = self.env['forum.post.vote'].search_read([('post_id', 'in', self._ids), ('user_id', '=', self._uid)],
+                                                        ['vote', 'post_id'])
         mapped_vote = dict([(v['post_id'][0], v['vote']) for v in votes])
         for vote in self:
             vote.user_vote = mapped_vote.get(vote.id, 0)
 
     @api.depends('vote_ids.vote')
     def _compute_vote_count(self):
-        read_group_res = self.env['forum.post.vote']._read_group([('post_id', 'in', self._ids)], ['post_id', 'vote'], ['__count'])
+        read_group_res = self.env['forum.post.vote']._read_group([('post_id', 'in', self._ids)], ['post_id', 'vote'],
+                                                                 ['__count'])
         result = dict.fromkeys(self._ids, 0)
         for post, vote, count in read_group_res:
             result[post.id] += count * int(vote)
@@ -260,8 +266,10 @@ class Post(models.Model):
             post.can_downvote = is_admin or user.karma >= post.forum_id.karma_downvote or post.user_vote == 1
             post.can_comment = is_admin or user.karma >= post.karma_comment
             post.can_comment_convert = is_admin or user.karma >= post.karma_comment_convert
-            post.can_view = post.can_close or post_sudo.active and (post_sudo.create_uid.karma > 0 or post_sudo.create_uid == user)
-            post.can_display_biography = is_admin or (post_sudo.create_uid.karma >= post.forum_id.karma_user_bio and post_sudo.create_uid.website_published)
+            post.can_view = post.can_close or post_sudo.active and (
+                        post_sudo.create_uid.karma > 0 or post_sudo.create_uid == user)
+            post.can_display_biography = is_admin or (
+                        post_sudo.create_uid.karma >= post.forum_id.karma_user_bio and post_sudo.create_uid.website_published)
             post.can_post = is_admin or user.karma >= post.forum_id.karma_post
             post.can_flag = is_admin or user.karma >= post.forum_id.karma_flag
             post.can_moderate = is_admin or user.karma >= post.forum_id.karma_moderate
@@ -301,7 +309,8 @@ class Post(models.Model):
         res = super(Post, self)._default_website_meta()
         res['default_opengraph']['og:title'] = res['default_twitter']['twitter:title'] = self.name
         res['default_opengraph']['og:description'] = res['default_twitter']['twitter:description'] = self.plain_content
-        res['default_opengraph']['og:image'] = res['default_twitter']['twitter:image'] = self.env['website'].image_url(self.create_uid, 'image_1024')
+        res['default_opengraph']['og:image'] = res['default_twitter']['twitter:image'] = self.env['website'].image_url(
+            self.create_uid, 'image_1024')
         res['default_twitter']['twitter:card'] = 'summary'
         res['default_meta_description'] = self.plain_content
         return res
@@ -343,8 +352,10 @@ class Post(models.Model):
         # if unlinking an answer with accepted answer: remove provided karma
         for post in self:
             if post.is_correct:
-                post.create_uid.sudo()._add_karma(post.forum_id.karma_gen_answer_accepted * -1, post, _('The accepted answer is deleted'))
-                self.env.user.sudo()._add_karma(post.forum_id.karma_gen_answer_accepted * -1, post, _('Delete the accepted answer'))
+                post.create_uid.sudo()._add_karma(post.forum_id.karma_gen_answer_accepted * -1, post,
+                                                  _('The accepted answer is deleted'))
+                self.env.user.sudo()._add_karma(post.forum_id.karma_gen_answer_accepted * -1, post,
+                                                _('Delete the accepted answer'))
         return super(Post, self).unlink()
 
     def write(self, vals):
@@ -379,9 +390,11 @@ class Post(models.Model):
                 mult = 1 if vals['is_correct'] else -1
                 if vals['is_correct'] != post.is_correct and post.create_uid.id != self._uid:
                     post.create_uid.sudo()._add_karma(post.forum_id.karma_gen_answer_accepted * mult, post,
-                                                      _('User answer accepted') if mult > 0 else _('Accepted answer removed'))
+                                                      _('User answer accepted') if mult > 0 else _(
+                                                          'Accepted answer removed'))
                     self.env.user.sudo()._add_karma(post.forum_id.karma_gen_answer_accept * mult, post,
-                                                    _('Validate an answer') if mult > 0 else _('Remove validated answer'))
+                                                    _('Validate an answer') if mult > 0 else _(
+                                                        'Remove validated answer'))
             if tag_ids:
                 if set(post.tag_ids.ids) != tag_ids and self.env.user.karma < post.forum_id.karma_edit_retag:
                     raise AccessError(_('%d karma required to retag.', post.forum_id.karma_edit_retag))
@@ -430,7 +443,8 @@ class Post(models.Model):
         if content and self.env.user.karma < forum.karma_dofollow:
             for match in re.findall(r'<a\s.*href=".*?">', content):
                 escaped_match = re.escape(match)  # replace parenthesis or special char in regex
-                url_match = re.match(r'^.*href="(.*)".*', match) # extracting the link allows to rebuild a clean link tag
+                url_match = re.match(r'^.*href="(.*)".*',
+                                     match)  # extracting the link allows to rebuild a clean link tag
                 url = url_match.group(1)
                 content = re.sub(escaped_match, f'<a rel="nofollow" href="{url}">', content)
 
@@ -467,7 +481,8 @@ class Post(models.Model):
                 # TDE FIXME: in master, you should probably use a subtype;
                 # however here we remove subtype but set partner_ids
                 partners = post.sudo().message_partner_ids | tag_partners
-                partners = partners.filtered(lambda partner: partner.user_ids and any(user.karma >= post.forum_id.karma_moderate for user in partner.user_ids))
+                partners = partners.filtered(lambda partner: partner.user_ids and any(
+                    user.karma >= post.forum_id.karma_moderate for user in partner.user_ids))
 
                 post.message_post_with_source(
                     'website_forum.forum_post_template_validation',
@@ -491,7 +506,8 @@ class Post(models.Model):
                 karma = post.forum_id.karma_gen_answer_flagged
                 if post.closed_reason_id == reason_spam:
                     # If first post, increase the karma to add
-                    count_post = post.search_count([('parent_id', '=', False), ('forum_id', '=', post.forum_id.id), ('create_uid', '=', post.create_uid.id)])
+                    count_post = post.search_count([('parent_id', '=', False), ('forum_id', '=', post.forum_id.id),
+                                                    ('create_uid', '=', post.create_uid.id)])
                     if count_post == 1:
                         karma *= 10
                 post.create_uid.sudo()._add_karma(karma * -1, post, _('Reopen a banned question'))
@@ -511,7 +527,8 @@ class Post(models.Model):
                 karma = post.forum_id.karma_gen_answer_flagged
                 if reason_id == reason_spam:
                     # If first post, increase the karma to remove
-                    count_post = post.search_count([('parent_id', '=', False), ('forum_id', '=', post.forum_id.id), ('create_uid', '=', post.create_uid.id)])
+                    count_post = post.search_count([('parent_id', '=', False), ('forum_id', '=', post.forum_id.id),
+                                                    ('create_uid', '=', post.create_uid.id)])
                     if count_post == 1:
                         karma *= 10
                 message = (
@@ -561,7 +578,7 @@ class Post(models.Model):
             if not post.can_flag:
                 raise AccessError(_('%d karma required to flag a post.', post.forum_id.karma_flag))
             if post.state == 'flagged':
-               res.append({'error': 'post_already_flagged'})
+                res.append({'error': 'post_already_flagged'})
             elif post.state == 'active':
                 # TODO: potential performance bottleneck, can be batched
                 post.write({
@@ -583,7 +600,8 @@ class Post(models.Model):
                 raise AccessError(_('%d karma required to mark a post as offensive.', post.forum_id.karma_moderate))
             # remove some karma
             _logger.info('Downvoting user <%s> for posting spam/offensive contents', post.create_uid)
-            post.create_uid.sudo()._add_karma(post.forum_id.karma_gen_answer_flagged, post, _('Downvote for posting offensive contents'))
+            post.create_uid.sudo()._add_karma(post.forum_id.karma_gen_answer_flagged, post,
+                                              _('Downvote for posting offensive contents'))
             # TODO: potential bottleneck, could be done in batch
             post.write({
                 'state': 'offensive',
@@ -646,7 +664,8 @@ class Post(models.Model):
             'date': self.create_date,
         }
         # done with the author user to have create_uid correctly set
-        new_message = question.with_user(self_sudo.create_uid.id).with_context(mail_create_nosubscribe=True).sudo().message_post(**values).sudo(False)
+        new_message = question.with_user(self_sudo.create_uid.id).with_context(
+            mail_create_nosubscribe=True).sudo().message_post(**values).sudo(False)
 
         # unlink the original answer, using SUPERUSER_ID to avoid karma issues
         self.sudo().unlink()
@@ -849,7 +868,7 @@ class Post(models.Model):
             res["text"] = self.plain_content or self.name
             res["answerCount"] = self.child_count
         if self.create_uid.sudo().website_published:
-            res["author"]["url"] = self.env['ir.http']._url_for(f"/forum/user/{ self.create_uid.sudo().id }")
+            res["author"]["url"] = self.env['ir.http']._url_for(f"/forum/user/{self.create_uid.sudo().id}")
         return res
 
     def go_to_website(self):
@@ -879,7 +898,8 @@ class Post(models.Model):
             domain = expression.AND([domain, [('forum_id', '=', self.env['ir.http']._unslug(forum)[1])]])
         tags = options.get('tag')
         if tags:
-            domain = expression.AND([domain, [('tag_ids', 'in', [self.env['ir.http']._unslug(tag)[1] for tag in tags.split(',')])]])
+            domain = expression.AND(
+                [domain, [('tag_ids', 'in', [self.env['ir.http']._unslug(tag)[1] for tag in tags.split(',')])]])
         filters = options.get('filters')
         if filters == 'unanswered':
             domain = expression.AND([domain, [('child_ids', '=', False)]])

@@ -8,7 +8,8 @@
                 <form string="Account Lock Exception">
                     <header>
                         <field name="active" invisible="True"/>
-                        <field name="state" widget="statusbar" statusbar_visible="active,expired" invisible="not active"/>
+                        <field name="state" widget="statusbar" statusbar_visible="active,expired"
+                               invisible="not active"/>
                         <button string="Revoke" invisible="state != 'active'" class="btn-secondary"
                                 type="object" name="action_revoke"/>
                     </header>
@@ -26,7 +27,9 @@
                         </div>
                         <div>
                             <div class="oe_title">
-                                <h2><field name="display_name" decoration-bf="1"/></h2>
+                                <h2>
+                                    <field name="display_name" decoration-bf="1"/>
+                                </h2>
                             </div>
                             <group>
                                 <group>
@@ -44,12 +47,13 @@
                                     </div>
 
                                     <div class="o_wrap_label">
-                                        <field name="lock_date_field" class="o_form_label o_form_label_readonly" nolabel="1" readonly="True"/>
+                                        <field name="lock_date_field" class="o_form_label o_form_label_readonly"
+                                               nolabel="1" readonly="True"/>
                                     </div>
                                     <div>
                                         <field name="lock_date" nolabel="1" class="oe_inline" readonly="True"/>
                                         <i class="text-muted">
-                                        (from <field name="company_lock_date" class="oe_inline" readonly="True"/>)
+                                            (from<field name="company_lock_date" class="oe_inline" readonly="True"/>)
                                         </i>
                                     </div>
                                 </group>

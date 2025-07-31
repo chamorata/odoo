@@ -8,16 +8,19 @@ class ResConfigSettings(models.TransientModel):
 
     # pos.config fields
     pos_basic_employee_ids = fields.Many2many(related='pos_config_id.basic_employee_ids', readonly=False,
-        help='If left empty, all employees can log in to PoS')
+                                              help='If left empty, all employees can log in to PoS')
     pos_advanced_employee_ids = fields.Many2many(related='pos_config_id.advanced_employee_ids', readonly=False,
-        help='If left empty, only Odoo users have extended rights in PoS')
+                                                 help='If left empty, only Odoo users have extended rights in PoS')
 
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
             pos_config_id = vals.get('pos_config_id')
             if pos_config_id:
-                vals['pos_advanced_employee_ids'] = vals.get('pos_advanced_employee_ids', []) + [[4, emp_id] for emp_id in self.env['pos.config'].browse(pos_config_id)._get_group_pos_manager().users.employee_id.ids]
+                vals['pos_advanced_employee_ids'] = vals.get('pos_advanced_employee_ids', []) + [[4, emp_id] for emp_id
+                                                                                                 in self.env[
+                                                                                                     'pos.config'].browse(
+                        pos_config_id)._get_group_pos_manager().users.employee_id.ids]
         return super().create(vals_list)
 
     @api.onchange('pos_basic_employee_ids')

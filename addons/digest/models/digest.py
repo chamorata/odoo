@@ -2,9 +2,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import logging
-import pytz
-
 from datetime import datetime, date
+
+import pytz
 from dateutil.relativedelta import relativedelta
 from markupsafe import Markup
 from werkzeug.urls import url_encode, url_join
@@ -35,7 +35,8 @@ class Digest(models.Model):
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company.id)
     available_fields = fields.Char(compute='_compute_available_fields')
     is_subscribed = fields.Boolean('Is user subscribed', compute='_compute_is_subscribed')
-    state = fields.Selection([('activated', 'Activated'), ('deactivated', 'Deactivated')], string='Status', readonly=True, default='activated')
+    state = fields.Selection([('activated', 'Activated'), ('deactivated', 'Deactivated')], string='Status',
+                             readonly=True, default='activated')
     # First base-related KPIs
     kpi_res_users_connected = fields.Boolean('Connected Users')
     kpi_res_users_connected_value = fields.Integer(compute='_compute_kpi_res_users_connected_value')
@@ -51,7 +52,8 @@ class Digest(models.Model):
         for digest in self:
             kpis_values_fields = []
             for field_name, field in digest._fields.items():
-                if field.type == 'boolean' and field_name.startswith(('kpi_', 'x_kpi_', 'x_studio_kpi_')) and digest[field_name]:
+                if field.type == 'boolean' and field_name.startswith(('kpi_', 'x_kpi_', 'x_studio_kpi_')) and digest[
+                    field_name]:
                     kpis_values_fields += [field_name + '_value']
             digest.available_fields = ', '.join(kpis_values_fields)
 
@@ -205,9 +207,9 @@ class Digest(models.Model):
             'author_id': self.env.user.partner_id.id,
             'body_html': full_mail,
             'email_from': (
-                self.company_id.partner_id.email_formatted
-                or self.env.user.email_formatted
-                or self.env.ref('base.user_root').email_formatted
+                    self.company_id.partner_id.email_formatted
+                    or self.env.user.email_formatted
+                    or self.env.ref('base.user_root').email_formatted
             ),
             'email_to': user.email_formatted,
             # Add headers that allow the MUA to offer a one click button to unsubscribe (requires DKIM to work)
@@ -229,7 +231,9 @@ class Digest(models.Model):
             try:
                 digest.action_send()
             except MailDeliveryException as e:
-                _logger.warning('MailDeliveryException while sending digest %d. Digest is now scheduled for next cron update.', digest.id)
+                _logger.warning(
+                    'MailDeliveryException while sending digest %d. Digest is now scheduled for next cron update.',
+                    digest.id)
 
     def _get_unsubscribe_token(self, user_id):
         """Generate a secure hash for this digest and user. It allows to
@@ -275,8 +279,10 @@ class Digest(models.Model):
         kpis_actions = self._compute_kpis_actions(company, user)
 
         for col_index, (tf_name, tf) in enumerate(self._compute_timeframes(company)):
-            digest = self.with_context(start_datetime=tf[0][0], end_datetime=tf[0][1]).with_user(user).with_company(company)
-            previous_digest = self.with_context(start_datetime=tf[1][0], end_datetime=tf[1][1]).with_user(user).with_company(company)
+            digest = self.with_context(start_datetime=tf[0][0], end_datetime=tf[0][1]).with_user(user).with_company(
+                company)
+            previous_digest = self.with_context(start_datetime=tf[1][0], end_datetime=tf[1][1]).with_user(
+                user).with_company(company)
             for index, field_name in enumerate(digest_fields):
                 kpi_values = kpis[index]
                 kpi_values['kpi_action'] = kpis_actions.get(field_name)
@@ -348,17 +354,19 @@ class Digest(models.Model):
                   new_perioridicy_str=new_perioridicy_str)
             )
         elif self.periodicity == 'daily' and user.has_group('base.group_erp_manager'):
-            preferences.append(Markup('<p>%s<br /><a href="%s" target="_blank" style="color:#017e84; font-weight: bold;">%s</a></p>') % (
-                _('Prefer a broader overview?'),
-                f'/digest/{self.id:d}/set_periodicity?periodicity=weekly',
-                _('Switch to weekly Digests')
-            ))
+            preferences.append(Markup(
+                '<p>%s<br /><a href="%s" target="_blank" style="color:#017e84; font-weight: bold;">%s</a></p>') % (
+                                   _('Prefer a broader overview?'),
+                                   f'/digest/{self.id:d}/set_periodicity?periodicity=weekly',
+                                   _('Switch to weekly Digests')
+                               ))
         if user.has_group('base.group_erp_manager'):
-            preferences.append(Markup('<p>%s<br /><a href="%s" target="_blank" style="color:#017e84; font-weight: bold;">%s</a></p>') % (
-                _('Want to customize this email?'),
-                f'/odoo/{self._name}/{self.id:d}',
-                _('Choose the metrics you care about')
-            ))
+            preferences.append(Markup(
+                '<p>%s<br /><a href="%s" target="_blank" style="color:#017e84; font-weight: bold;">%s</a></p>') % (
+                                   _('Want to customize this email?'),
+                                   f'/odoo/{self._name}/{self.id:d}',
+                                   _('Choose the metrics you care about')
+                               ))
 
         return preferences
 
@@ -383,13 +391,13 @@ class Digest(models.Model):
             (_('Last 24 hours'), (
                 (start_datetime + relativedelta(days=-1), start_datetime),
                 (start_datetime + relativedelta(days=-2), start_datetime + relativedelta(days=-1)))
-            ), (_('Last 7 Days'), (
+             ), (_('Last 7 Days'), (
                 (start_datetime + relativedelta(weeks=-1), start_datetime),
                 (start_datetime + relativedelta(weeks=-2), start_datetime + relativedelta(weeks=-1)))
-            ), (_('Last 30 Days'), (
+                 ), (_('Last 30 Days'), (
                 (start_datetime + relativedelta(months=-1), start_datetime),
                 (start_datetime + relativedelta(months=-2), start_datetime + relativedelta(months=-1)))
-            )
+                     )
         ]
 
     # ------------------------------------------------------------
@@ -432,13 +440,14 @@ class Digest(models.Model):
 
     def _get_kpi_fields(self):
         return [field_name for field_name, field in self._fields.items()
-                if field.type == 'boolean' and field_name.startswith(('kpi_', 'x_kpi_', 'x_studio_kpi_')) and self[field_name]
-               ]
+                if field.type == 'boolean' and field_name.startswith(('kpi_', 'x_kpi_', 'x_studio_kpi_')) and self[
+                    field_name]
+                ]
 
     def _get_margin_value(self, value, previous_value=0.0):
         margin = 0.0
         if (value != previous_value) and (value != 0.0 and previous_value != 0.0):
-            margin = float_round((float(value-previous_value) / previous_value or 1) * 100, precision_digits=2)
+            margin = float_round((float(value - previous_value) / previous_value or 1) * 100, precision_digits=2)
         return margin
 
     def _check_daily_logs(self):

@@ -1,6 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import timedelta
+
 from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models
@@ -60,7 +61,7 @@ class AlarmManager(models.AbstractModel):
         # Add filter on partner_id
         if partners:
             base_request += filter_user
-            tuple_params += (tuple(partners.ids), )
+            tuple_params += (tuple(partners.ids),)
 
         # Upper bound on first_alarm of requested events
         first_alarm_max_value = ""
@@ -106,7 +107,8 @@ class AlarmManager(models.AbstractModel):
         }
         return result
 
-    def do_check_alarm_for_one_date(self, one_date, event, event_maxdelta, in_the_next_X_seconds, alarm_type, after=False, missing=False):
+    def do_check_alarm_for_one_date(self, one_date, event, event_maxdelta, in_the_next_X_seconds, alarm_type,
+                                    after=False, missing=False):
         """ Search for some alarms in the interval of time determined by some parameters (after, in_the_next_X_seconds, ...)
             :param one_date: date of the event to check (not the same that in the event browse if recurrent)
             :param event: Event browse record
@@ -172,11 +174,11 @@ class AlarmManager(models.AbstractModel):
                AND event.start - CAST(alarm.duration || ' ' || alarm.interval AS Interval) < %s
                %s
         """,
-            alarm_type,
-            lastcall,
-            now,
-            extra_conditions,
-        ))
+                                alarm_type,
+                                lastcall,
+                                now,
+                                extra_conditions,
+                                ))
 
         events_by_alarm = {}
         for alarm_id, event_id in self.env.cr.fetchall():
@@ -230,7 +232,8 @@ class AlarmManager(models.AbstractModel):
             max_delta = all_meetings[event_id]['max_duration']
             meeting = self.env['calendar.event'].browse(event_id)
             in_date_format = fields.Datetime.from_string(meeting.start)
-            last_found = self.do_check_alarm_for_one_date(in_date_format, meeting, max_delta, time_limit, 'notification', after=partner.calendar_last_notif_ack)
+            last_found = self.do_check_alarm_for_one_date(in_date_format, meeting, max_delta, time_limit,
+                                                          'notification', after=partner.calendar_last_notif_ack)
             if last_found:
                 for alert in last_found:
                     all_notif.append(self.do_notif_reminder(alert))

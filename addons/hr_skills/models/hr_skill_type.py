@@ -1,6 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from random import randint
+
 from odoo import fields, models
 
 
@@ -20,4 +21,5 @@ class SkillType(models.Model):
 
     def copy_data(self, default=None):
         vals_list = super().copy_data(default=default)
-        return [dict(vals, name=self.env._("%s (copy)", skill_type.name), color=0) for skill_type, vals in zip(self, vals_list)]
+        return [dict(vals, name=self.env._("%s (copy)", skill_type.name), color=0) for skill_type, vals in
+                zip(self, vals_list)]

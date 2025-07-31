@@ -1,6 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import logging
+
 from odoo import models
 from odoo.http import request
 
@@ -29,6 +30,7 @@ here inside of http_routing's ir.qweb. Solutions vary, the one used
 inside of #99667 is to use the request.borrow_request context manager to
 temporary hide the incoming http request.
 """
+
 
 class IrQweb(models.AbstractModel):
     _inherit = "ir.qweb"

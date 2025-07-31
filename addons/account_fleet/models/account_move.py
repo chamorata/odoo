@@ -7,16 +7,18 @@ class AccountMove(models.Model):
     _inherit = 'account.move'
 
     def _post(self, soft=True):
-        vendor_bill_service = self.env.ref('account_fleet.data_fleet_service_type_vendor_bill', raise_if_not_found=False)
+        vendor_bill_service = self.env.ref('account_fleet.data_fleet_service_type_vendor_bill',
+                                           raise_if_not_found=False)
         if not vendor_bill_service:
             return super()._post(soft)
 
         val_list = []
         log_list = []
-        posted = super()._post(soft)  # We need the move name to be set, but we also need to know which move are posted for the first time.
+        posted = super()._post(
+            soft)  # We need the move name to be set, but we also need to know which move are posted for the first time.
         for line in posted.line_ids:
-            if not line.vehicle_id or line.vehicle_log_service_ids\
-                    or line.move_id.move_type != 'in_invoice'\
+            if not line.vehicle_id or line.vehicle_log_service_ids \
+                    or line.move_id.move_type != 'in_invoice' \
                     or line.display_type != 'product':
                 continue
             val = line._prepare_fleet_log_service()
@@ -36,13 +38,15 @@ class AccountMoveLine(models.Model):
     # used to decide whether the vehicle_id field is editable
     need_vehicle = fields.Boolean(compute='_compute_need_vehicle')
     vehicle_log_service_ids = fields.One2many(export_string_translation=False,
-        comodel_name='fleet.vehicle.log.services', inverse_name='account_move_line_id')  # One2one
+                                              comodel_name='fleet.vehicle.log.services',
+                                              inverse_name='account_move_line_id')  # One2one
 
     def _compute_need_vehicle(self):
         self.need_vehicle = False
 
     def _prepare_fleet_log_service(self):
-        vendor_bill_service = self.env.ref('account_fleet.data_fleet_service_type_vendor_bill', raise_if_not_found=False)
+        vendor_bill_service = self.env.ref('account_fleet.data_fleet_service_type_vendor_bill',
+                                           raise_if_not_found=False)
         return {
             'service_type_id': vendor_bill_service.id,
             'vehicle_id': self.vehicle_id.id,

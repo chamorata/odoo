@@ -2,9 +2,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from freezegun import freeze_time
-
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
-from odoo.tests import tagged
+
 from odoo import fields
 
 
@@ -53,7 +52,7 @@ class ValuationReconciliationTestCommon(AccountTestInvoicingCommon):
             'login': "su",
             'email': "stockuser@yourcompany.com",
             'groups_id': [(6, 0, [cls.env.ref('stock.group_stock_user').id])],
-            })
+        })
 
     @classmethod
     def collect_company_accounting_data(cls, company):
@@ -87,27 +86,36 @@ class ValuationReconciliationTestCommon(AccountTestInvoicingCommon):
         return company_data
 
     def check_reconciliation(self, invoice, picking, full_reconcile=True, operation='purchase'):
-        interim_account_id = self.company_data['default_account_stock_in'].id if operation == 'purchase' else self.company_data['default_account_stock_out'].id
+        interim_account_id = self.company_data['default_account_stock_in'].id if operation == 'purchase' else \
+        self.company_data['default_account_stock_out'].id
         invoice_line = invoice.line_ids.filtered(lambda line: line.account_id.id == interim_account_id)
 
         stock_moves = picking.move_ids
 
-        valuation_line = stock_moves.mapped('account_move_ids.line_ids').filtered(lambda x: x.account_id.id == interim_account_id)
+        valuation_line = stock_moves.mapped('account_move_ids.line_ids').filtered(
+            lambda x: x.account_id.id == interim_account_id)
 
         if invoice.is_purchase_document() and any(l.display_type == 'cogs' for l in invoice_line):
-            self.assertEqual(len(invoice_line), 2, "Only two line2 should have been written by invoice in stock input account")
-            self.assertTrue(all(vl.reconciled for vl in valuation_line) or invoice_line[0].reconciled or invoice_line[1].reconciled, "The valuation and invoice line should have been reconciled together.")
+            self.assertEqual(len(invoice_line), 2,
+                             "Only two line2 should have been written by invoice in stock input account")
+            self.assertTrue(
+                all(vl.reconciled for vl in valuation_line) or invoice_line[0].reconciled or invoice_line[1].reconciled,
+                "The valuation and invoice line should have been reconciled together.")
         else:
-            self.assertEqual(len(invoice_line), 1, "Only one line should have been written by invoice in stock input account")
-            self.assertTrue(all(vl.reconciled for vl in valuation_line) or invoice_line.reconciled, "The valuation and invoice line should have been reconciled together.")
+            self.assertEqual(len(invoice_line), 1,
+                             "Only one line should have been written by invoice in stock input account")
+            self.assertTrue(all(vl.reconciled for vl in valuation_line) or invoice_line.reconciled,
+                            "The valuation and invoice line should have been reconciled together.")
 
         if invoice.move_type not in ('out_refund', 'in_refund'):
             # self.assertEqual(len(valuation_line), 1, "Only one line should have been written for stock valuation in stock input account")
 
             if full_reconcile:
-                self.assertTrue(all(vl.full_reconcile_id for vl in valuation_line), "The reconciliation should be total at that point.")
+                self.assertTrue(all(vl.full_reconcile_id for vl in valuation_line),
+                                "The reconciliation should be total at that point.")
             else:
-                self.assertFalse(all(vl.full_reconcile_id for vl in valuation_line), "The reconciliation should not be total at that point.")
+                self.assertFalse(all(vl.full_reconcile_id for vl in valuation_line),
+                                 "The reconciliation should not be total at that point.")
 
     def _process_pickings(self, pickings, date=False, quantity=False):
 

@@ -47,9 +47,11 @@ class ResPartner(models.Model):
     def _iap_replace_language_codes(self, iap_data):
         if lang := iap_data.pop('preferred_language', False):
             if installed_lang := (
-                self.env['res.lang'].search([('code', '=', lang), ('iso_code', '=', lang)])  # specific lang (e.g.: fr_BE)
-                or
-                self.env['res.lang'].search([('code', 'ilike', lang[:2]), ('iso_code', 'ilike', lang[:2])], limit=1)  # fallback to generic lang (e.g. fr)
+                    self.env['res.lang'].search(
+                        [('code', '=', lang), ('iso_code', '=', lang)])  # specific lang (e.g.: fr_BE)
+                    or
+                    self.env['res.lang'].search([('code', 'ilike', lang[:2]), ('iso_code', 'ilike', lang[:2])], limit=1)
+            # fallback to generic lang (e.g. fr)
             ):
                 iap_data['lang'] = installed_lang.code
         return iap_data
@@ -184,10 +186,10 @@ class ResPartner(models.Model):
         """Called by JS to create the activity tags from the UNSPSC codes"""
         # If the UNSPSC module is installed, we might have a translation, so let's use it
         if self.env['ir.module.module']._get('product_unspsc').state == 'installed':
-            tag_names = self.env['product.unspsc.code']\
-                            .with_context(active_test=False)\
-                            .search([('code', 'in', [unspsc_code for unspsc_code, __ in unspsc_codes])])\
-                            .mapped('name')
+            tag_names = self.env['product.unspsc.code'] \
+                .with_context(active_test=False) \
+                .search([('code', 'in', [unspsc_code for unspsc_code, __ in unspsc_codes])]) \
+                .mapped('name')
         # If it's not, then we use the default English name provided by DnB
         else:
             tag_names = [unspsc_name for __, unspsc_name in unspsc_codes]

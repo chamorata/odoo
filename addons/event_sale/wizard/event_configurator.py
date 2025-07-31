@@ -12,7 +12,7 @@ class EventConfigurator(models.TransientModel):
     product_id = fields.Many2one('product.product', string="Product", readonly=True)
     event_id = fields.Many2one('event.event', string="Event")
     event_ticket_id = fields.Many2one('event.event.ticket', string="Ticket Type",
-        compute="_compute_event_ticket_id", readonly=False, store=True)
+                                      compute="_compute_event_ticket_id", readonly=False, store=True)
     has_available_tickets = fields.Boolean("Has Available Tickets", compute="_compute_has_available_tickets")
 
     @api.constrains('event_id', 'event_ticket_id')

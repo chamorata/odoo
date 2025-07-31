@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from collections import defaultdict
+
 from odoo import http, _
-from odoo.http import request
 from odoo.exceptions import UserError
+from odoo.http import request
 
 
 class WebsiteMail(http.Controller):
@@ -26,7 +27,9 @@ class WebsiteMail(http.Controller):
             partner_ids = request.env.user.partner_id.ids
         else:
             # mail_thread method
-            partner_ids = [p.id for p in request.env['mail.thread'].sudo()._mail_find_partner_from_emails([email], records=record.sudo()) if p]
+            partner_ids = [p.id for p in request.env['mail.thread'].sudo()._mail_find_partner_from_emails([email],
+                                                                                                          records=record.sudo())
+                           if p]
             if not partner_ids or not partner_ids[0]:
                 name = email.split('@')[0]
                 partner_ids = request.env['res.partner'].sudo().create({'name': name, 'email': email}).ids

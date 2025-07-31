@@ -57,11 +57,14 @@
         <field name="help" type="html">
             <p class="o_view_nocontent_nocreate">
                 The closings are created by Odoo
-                </p><p>
-                Sales closings run automatically on a daily, monthly and annual basis. It computes both period and cumulative totals from all the sales entries posted in the system after the previous closing.
+            </p>
+            <p>
+                Sales closings run automatically on a daily, monthly and annual basis. It computes both period and
+                cumulative totals from all the sales entries posted in the system after the previous closing.
             </p>
         </field>
     </record>
 
-    <menuitem action="action_list_view_account_sale_closing" id="menu_account_closing_reporting" parent="l10n_fr_account.account_reports_fr_statements_menu" sequence="90"/>
+    <menuitem action="action_list_view_account_sale_closing" id="menu_account_closing_reporting"
+              parent="l10n_fr_account.account_reports_fr_statements_menu" sequence="90"/>
 </odoo>

@@ -1,22 +1,23 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from ast import literal_eval
-from collections import defaultdict
+import datetime
 import itertools
 import logging
-import psycopg2
-import datetime
+from ast import literal_eval
+from collections import defaultdict
 
-from odoo import api, fields, models, Command
+import psycopg2
+
 from odoo import _
+from odoo import api, fields, models, Command
 from odoo.exceptions import ValidationError, UserError
 from odoo.tools import mute_logger, SQL
 
 _logger = logging.getLogger('odoo.addons.base.partner.merge')
 
-class MergePartnerLine(models.TransientModel):
 
+class MergePartnerLine(models.TransientModel):
     _name = 'base.partner.merge.line'
     _description = 'Merge Partner Line'
     _order = 'min_id asc'
@@ -106,7 +107,8 @@ class MergePartnerAutomatic(models.TransientModel):
             :param src_records: merge source recordset (does not include destination one)
             :param dst_record: record of destination
         """
-        _logger.debug('_update_foreign_keys_generic for dst_record: %s for src_records: %s', dst_record.id, str(src_records.ids))
+        _logger.debug('_update_foreign_keys_generic for dst_record: %s for src_records: %s', dst_record.id,
+                      str(src_records.ids))
 
         relations = self._get_fk_on(self.env[model]._table)
 
@@ -159,14 +161,16 @@ class MergePartnerAutomatic(models.TransientModel):
                     self._cr.execute(query, (tuple(src_records.ids),))
 
     @api.model
-    def _update_reference_fields_generic(self, referenced_model, src_records, dst_record, additional_update_records=None):
+    def _update_reference_fields_generic(self, referenced_model, src_records, dst_record,
+                                         additional_update_records=None):
         """ Update all reference fields from the src_records to dst_record for any model.
             :param referenced_model: model name as a string
             :param src_records: merge source recordset (does not include destination one)
             :param dst_record: record of destination
             :param additional_update_records: list of tuples (model, field_model, field_id)
         """
-        _logger.debug('_update_reference_fields_generic for dst_record: %s for src_records: %r', dst_record.id, src_records.ids)
+        _logger.debug('_update_reference_fields_generic for dst_record: %s for src_records: %r', dst_record.id,
+                      src_records.ids)
 
         def update_records(model, src, field_model='model', field_id='res_id'):
             Model = self.env[model] if model in self.env else None
@@ -329,7 +333,7 @@ class MergePartnerAutomatic(models.TransientModel):
 
         # get all fields that are not computed or x2many
         values = dict()
-        values_by_company = defaultdict(dict)   # {company: vals}
+        values_by_company = defaultdict(dict)  # {company: vals}
         for column in model_fields:
             field = dst_partner._fields[column]
             if field.type not in ('many2many', 'one2many') and field.compute is None:
@@ -361,7 +365,8 @@ class MergePartnerAutomatic(models.TransientModel):
             try:
                 dst_partner.write({'parent_id': parent_id})
             except ValidationError:
-                _logger.info('Skip recursive partner hierarchies for parent_id %s of partner: %s', parent_id, dst_partner.id)
+                _logger.info('Skip recursive partner hierarchies for parent_id %s of partner: %s', parent_id,
+                             dst_partner.id)
 
     @api.model
     def _merge_bank_accounts(self, src_partners, dst_partner):
@@ -372,7 +377,8 @@ class MergePartnerAutomatic(models.TransientModel):
         all_src_accounts = src_partners.bank_ids
 
         for src_account in all_src_accounts:
-            duplicate_account = dst_partner.bank_ids.filtered(lambda a: a.sanitized_acc_number == src_account.sanitized_acc_number)
+            duplicate_account = dst_partner.bank_ids.filtered(
+                lambda a: a.sanitized_acc_number == src_account.sanitized_acc_number)
             if duplicate_account:
                 self._update_foreign_keys_generic('res.partner.bank', src_account, duplicate_account)
                 self._update_reference_fields_generic('res.partner.bank', src_account, duplicate_account)
@@ -396,7 +402,8 @@ class MergePartnerAutomatic(models.TransientModel):
             return
 
         if len(partner_ids) > 3:
-            raise UserError(_("For safety reasons, you cannot merge more than 3 contacts together. You can re-open the wizard several times if needed."))
+            raise UserError(
+                _("For safety reasons, you cannot merge more than 3 contacts together. You can re-open the wizard several times if needed."))
 
         # check if the list of partners to merge contains child/parent relation
         child_ids = self.env['res.partner']
@@ -410,7 +417,8 @@ class MergePartnerAutomatic(models.TransientModel):
             raise UserError(_("You cannot merge contacts linked to more than one user even if only one is active."))
 
         if extra_checks and len(set(partner.email for partner in partner_ids)) > 1:
-            raise UserError(_("All contacts must have the same email. Only the Administrator can merge contacts with different emails."))
+            raise UserError(
+                _("All contacts must have the same email. Only the Administrator can merge contacts with different emails."))
 
         # remove dst_partner from partners to merge
         if dst_partner and dst_partner in partner_ids:
@@ -490,7 +498,7 @@ class MergePartnerAutomatic(models.TransientModel):
         ])
 
         if maximum_group:
-            text.append("LIMIT %s" % maximum_group,)
+            text.append("LIMIT %s" % maximum_group, )
 
         return ' '.join(text)
 
@@ -557,7 +565,7 @@ class MergePartnerAutomatic(models.TransientModel):
             next wizard line. Each line is a subset of partner that can be merged together.
             If no line left, the end screen will be displayed (but an action is still returned).
         """
-        self.env.invalidate_all() # FIXME: is this still necessary?
+        self.env.invalidate_all()  # FIXME: is this still necessary?
         values = {}
         if self.line_ids:
             # in this case, we try to find the next record.
@@ -594,7 +602,7 @@ class MergePartnerAutomatic(models.TransientModel):
         model_mapping = self._compute_models()
 
         # group partner query
-        self._cr.execute(query) # pylint: disable=sql-injection
+        self._cr.execute(query)  # pylint: disable=sql-injection
 
         counter = 0
         for min_id, aggr_ids in self._cr.fetchall():
@@ -641,7 +649,7 @@ class MergePartnerAutomatic(models.TransientModel):
         """
         self.ensure_one()
         self.action_start_manual_process()  # here we don't redirect to the next screen, since it is automatic process
-        self.env.invalidate_all() # FIXME: is this still necessary?
+        self.env.invalidate_all()  # FIXME: is this still necessary?
 
         for line in self.line_ids:
             partner_ids = literal_eval(line.aggr_ids)

@@ -15,7 +15,8 @@ class JobPlatform(models.Model):
                              "of the received email to autopopulate the Applicant's name field")
 
     _sql_constraints = [
-        ('email_uniq', 'unique (email)', "The Email must be unique, this one already corresponds to another Job Platform."),
+        ('email_uniq', 'unique (email)',
+         "The Email must be unique, this one already corresponds to another Job Platform."),
     ]
 
     @api.model_create_multi

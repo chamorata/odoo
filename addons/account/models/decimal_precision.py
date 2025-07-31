@@ -1,5 +1,6 @@
 from odoo import models
 
+
 class DecimalPrecision(models.Model):
     _inherit = 'decimal.precision'
 

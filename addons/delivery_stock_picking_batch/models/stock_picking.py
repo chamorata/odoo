@@ -15,7 +15,8 @@ class StockPickingType(models.Model):
     batch_max_weight = fields.Integer("Maximum weight",
                                       help="A transfer will not be automatically added to batches that will exceed this weight if the transfer is added to it.\n"
                                            "Leave this value as '0' if no weight limit.")
-    weight_uom_name = fields.Char(string='Weight unit of measure label', compute='_compute_weight_uom_name', readonly=True, default=_get_default_weight_uom)
+    weight_uom_name = fields.Char(string='Weight unit of measure label', compute='_compute_weight_uom_name',
+                                  readonly=True, default=_get_default_weight_uom)
 
     def _compute_weight_uom_name(self):
         for picking_type in self:
@@ -39,7 +40,8 @@ class StockPicking(models.Model):
     def _get_possible_batches_domain(self):
         domain = super()._get_possible_batches_domain()
         if self.picking_type_id.batch_group_by_carrier:
-            domain = expression.AND([domain, [('picking_ids.carrier_id', '=', self.carrier_id.id if self.carrier_id else False)]])
+            domain = expression.AND(
+                [domain, [('picking_ids.carrier_id', '=', self.carrier_id.id if self.carrier_id else False)]])
 
         return domain
 

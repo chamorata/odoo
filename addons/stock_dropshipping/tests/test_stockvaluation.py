@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo.addons.stock_account.tests.test_anglo_saxon_valuation_reconciliation_common import ValuationReconciliationTestCommon
+from odoo.addons.stock_account.tests.test_anglo_saxon_valuation_reconciliation_common import \
+    ValuationReconciliationTestCommon
+
 from odoo.tests import Form, tagged
 
 
@@ -53,7 +55,8 @@ class TestStockValuation(ValuationReconciliationTestCommon):
         self.sale_order1.action_confirm()
 
         # confirm the purchase order
-        self.purchase_order1 = self.env['purchase.order'].search([('group_id', '=', self.sale_order1.procurement_group_id.id)])
+        self.purchase_order1 = self.env['purchase.order'].search(
+            [('group_id', '=', self.sale_order1.procurement_group_id.id)])
         self.purchase_order1.button_confirm()
 
         # validate the dropshipping picking
@@ -112,10 +115,10 @@ class TestStockValuation(ValuationReconciliationTestCommon):
         all_amls = self._dropship_product1()
 
         expected_aml = {
-            self.company_data['default_account_payable'].id:        (0.0, 8.0),
-            self.company_data['default_account_expense'].id:        (8.0, 0.0),
-            self.company_data['default_account_receivable'].id:     (12.0, 0.0),
-            self.company_data['default_account_revenue'].id:        (0.0, 12.0),
+            self.company_data['default_account_payable'].id: (0.0, 8.0),
+            self.company_data['default_account_expense'].id: (8.0, 0.0),
+            self.company_data['default_account_receivable'].id: (12.0, 0.0),
+            self.company_data['default_account_revenue'].id: (0.0, 12.0),
         }
 
         self._check_results(expected_aml, 4, all_amls)
@@ -130,10 +133,10 @@ class TestStockValuation(ValuationReconciliationTestCommon):
         all_amls = self._dropship_product1()
 
         expected_aml = {
-            self.company_data['default_account_payable'].id:        (0.0, 8.0),
-            self.company_data['default_account_expense'].id:        (8.0, 0.0),
-            self.company_data['default_account_receivable'].id:     (12.0, 0.0),
-            self.company_data['default_account_revenue'].id:        (0.0, 12.0),
+            self.company_data['default_account_payable'].id: (0.0, 8.0),
+            self.company_data['default_account_expense'].id: (8.0, 0.0),
+            self.company_data['default_account_receivable'].id: (12.0, 0.0),
+            self.company_data['default_account_revenue'].id: (0.0, 12.0),
         }
 
         self._check_results(expected_aml, 4, all_amls)
@@ -148,10 +151,10 @@ class TestStockValuation(ValuationReconciliationTestCommon):
         all_amls = self._dropship_product1()
 
         expected_aml = {
-            self.company_data['default_account_payable'].id:        (0.0, 8.0),
-            self.company_data['default_account_expense'].id:        (8.0, 0.0),
-            self.company_data['default_account_receivable'].id:     (12.0, 0.0),
-            self.company_data['default_account_revenue'].id:        (0.0, 12.0),
+            self.company_data['default_account_payable'].id: (0.0, 8.0),
+            self.company_data['default_account_expense'].id: (8.0, 0.0),
+            self.company_data['default_account_receivable'].id: (12.0, 0.0),
+            self.company_data['default_account_revenue'].id: (0.0, 12.0),
         }
 
         self._check_results(expected_aml, 4, all_amls)
@@ -167,10 +170,10 @@ class TestStockValuation(ValuationReconciliationTestCommon):
         all_amls = self._dropship_product1()
 
         expected_aml = {
-            self.company_data['default_account_payable'].id:        (0.0, 8.0),
-            self.company_data['default_account_expense'].id:        (8.0, 0.0),
-            self.company_data['default_account_receivable'].id:     (12.0, 0.0),
-            self.company_data['default_account_revenue'].id:        (0.0, 12.0),
+            self.company_data['default_account_payable'].id: (0.0, 8.0),
+            self.company_data['default_account_expense'].id: (8.0, 0.0),
+            self.company_data['default_account_receivable'].id: (12.0, 0.0),
+            self.company_data['default_account_revenue'].id: (0.0, 12.0),
         }
 
         self._check_results(expected_aml, 4, all_amls)
@@ -188,12 +191,12 @@ class TestStockValuation(ValuationReconciliationTestCommon):
         all_amls = self._dropship_product1()
 
         expected_aml = {
-            self.company_data['default_account_payable'].id:        (0.0, 8.0),
-            self.company_data['default_account_expense'].id:        (10.0, 0.0),
-            self.company_data['default_account_receivable'].id:     (12.0, 0.0),
-            self.company_data['default_account_revenue'].id:        (0.0, 12.0),
-            self.company_data['default_account_stock_in'].id:       (8.0, 10.0),
-            self.company_data['default_account_stock_out'].id:      (10.0, 10.0),
+            self.company_data['default_account_payable'].id: (0.0, 8.0),
+            self.company_data['default_account_expense'].id: (10.0, 0.0),
+            self.company_data['default_account_receivable'].id: (12.0, 0.0),
+            self.company_data['default_account_revenue'].id: (0.0, 12.0),
+            self.company_data['default_account_stock_in'].id: (8.0, 10.0),
+            self.company_data['default_account_stock_out'].id: (10.0, 10.0),
         }
         # Interim IN is not balanced because because there's a difference between the po line
         # price unit and the standard price. We could set a price difference account on the
@@ -211,12 +214,12 @@ class TestStockValuation(ValuationReconciliationTestCommon):
         all_amls = self._dropship_product1()
 
         expected_aml = {
-            self.company_data['default_account_payable'].id:        (0.0, 8.0),
-            self.company_data['default_account_expense'].id:        (10.0, 0.0),
-            self.company_data['default_account_receivable'].id:     (12.0, 0.0),
-            self.company_data['default_account_revenue'].id:        (0.0, 12.0),
-            self.company_data['default_account_stock_in'].id:       (8.0, 10.0),
-            self.company_data['default_account_stock_out'].id:      (10.0, 10.0),
+            self.company_data['default_account_payable'].id: (0.0, 8.0),
+            self.company_data['default_account_expense'].id: (10.0, 0.0),
+            self.company_data['default_account_receivable'].id: (12.0, 0.0),
+            self.company_data['default_account_revenue'].id: (0.0, 12.0),
+            self.company_data['default_account_stock_in'].id: (8.0, 10.0),
+            self.company_data['default_account_stock_out'].id: (10.0, 10.0),
         }
         # Interim IN is not balanced because because there's a difference between the po line
         # price unit and the standard price. We could set a price difference account on the
@@ -234,12 +237,12 @@ class TestStockValuation(ValuationReconciliationTestCommon):
         all_amls = self._dropship_product1()
 
         expected_aml = {
-            self.company_data['default_account_payable'].id:        (0.0, 8.0),
-            self.company_data['default_account_expense'].id:        (8.0, 0.0),
-            self.company_data['default_account_receivable'].id:     (12.0, 0.0),
-            self.company_data['default_account_revenue'].id:        (0.0, 12.0),
-            self.company_data['default_account_stock_in'].id:       (8.0, 8.0),
-            self.company_data['default_account_stock_out'].id:      (8.0, 8.0),
+            self.company_data['default_account_payable'].id: (0.0, 8.0),
+            self.company_data['default_account_expense'].id: (8.0, 0.0),
+            self.company_data['default_account_receivable'].id: (12.0, 0.0),
+            self.company_data['default_account_revenue'].id: (0.0, 12.0),
+            self.company_data['default_account_stock_in'].id: (8.0, 8.0),
+            self.company_data['default_account_stock_out'].id: (8.0, 8.0),
         }
 
         self._check_results(expected_aml, 10, all_amls)
@@ -254,12 +257,12 @@ class TestStockValuation(ValuationReconciliationTestCommon):
         all_amls = self._dropship_product1()
 
         expected_aml = {
-            self.company_data['default_account_payable'].id:        (0.0, 8.0),
-            self.company_data['default_account_expense'].id:        (8.0, 0.0),
-            self.company_data['default_account_receivable'].id:     (12.0, 0.0),
-            self.company_data['default_account_revenue'].id:        (0.0, 12.0),
-            self.company_data['default_account_stock_in'].id:       (8.0, 8.0),
-            self.company_data['default_account_stock_out'].id:      (8.0, 8.0),
+            self.company_data['default_account_payable'].id: (0.0, 8.0),
+            self.company_data['default_account_expense'].id: (8.0, 0.0),
+            self.company_data['default_account_receivable'].id: (12.0, 0.0),
+            self.company_data['default_account_revenue'].id: (0.0, 12.0),
+            self.company_data['default_account_stock_in'].id: (8.0, 8.0),
+            self.company_data['default_account_stock_out'].id: (8.0, 8.0),
         }
         self._check_results(expected_aml, 10, all_amls)
 
@@ -274,8 +277,9 @@ class TestStockValuation(ValuationReconciliationTestCommon):
 
         # return what we've done
         stock_return_picking_form = Form(self.env['stock.return.picking']
-            .with_context(active_ids=self.sale_order1.picking_ids.ids, active_id=self.sale_order1.picking_ids.ids[0],
-            active_model='stock.picking'))
+                                         .with_context(active_ids=self.sale_order1.picking_ids.ids,
+                                                       active_id=self.sale_order1.picking_ids.ids[0],
+                                                       active_model='stock.picking'))
         stock_return_picking = stock_return_picking_form.save()
         stock_return_picking.product_return_moves.quantity = 1.0
         stock_return_picking_action = stock_return_picking.action_create_returns()
@@ -291,8 +295,8 @@ class TestStockValuation(ValuationReconciliationTestCommon):
 
         # Two extra AML should have been created for the return
         expected_aml = {
-            self.company_data['default_account_stock_in'].id:       (10.0, 0.0),
-            self.company_data['default_account_stock_out'].id:      (0.0, 10.0),
+            self.company_data['default_account_stock_in'].id: (10.0, 0.0),
+            self.company_data['default_account_stock_out'].id: (0.0, 10.0),
         }
 
         self._check_results(expected_aml, 4, all_amls_return - all_amls)
@@ -312,8 +316,9 @@ class TestStockValuation(ValuationReconciliationTestCommon):
 
         # return what we've done
         stock_return_picking_form = Form(self.env['stock.return.picking']
-            .with_context(active_ids=self.sale_order1.picking_ids.ids, active_id=self.sale_order1.picking_ids.ids[0],
-            active_model='stock.picking'))
+                                         .with_context(active_ids=self.sale_order1.picking_ids.ids,
+                                                       active_id=self.sale_order1.picking_ids.ids[0],
+                                                       active_model='stock.picking'))
         stock_return_picking = stock_return_picking_form.save()
         stock_return_picking.product_return_moves.quantity = 1.0
         stock_return_picking_action = stock_return_picking.action_create_returns()
@@ -327,8 +332,8 @@ class TestStockValuation(ValuationReconciliationTestCommon):
 
         # return again to have a new dropship picking from a dropship return
         stock_return_picking_form_2 = Form(self.env['stock.return.picking']
-            .with_context(active_ids=return_pick.ids, active_id=return_pick.ids[0],
-            active_model='stock.picking'))
+                                           .with_context(active_ids=return_pick.ids, active_id=return_pick.ids[0],
+                                                         active_model='stock.picking'))
         stock_return_picking_2 = stock_return_picking_form_2.save()
         stock_return_picking_2.product_return_moves.quantity = 1.0
         stock_return_picking_action_2 = stock_return_picking_2.action_create_returns()
@@ -354,7 +359,8 @@ class TestStockValuation(ValuationReconciliationTestCommon):
         dropship1_layers = self.purchase_order1.order_line.move_ids.stock_valuation_layer_ids
         self.assertEqual(len(dropship1_layers), 2)
         self.assertEqual(dropship1_layers[0].value, 8)
-        dropship1_cogs_line = self.customer_invoice1.line_ids.filtered(lambda aml: aml.account_id.id == account_output.id)
+        dropship1_cogs_line = self.customer_invoice1.line_ids.filtered(
+            lambda aml: aml.account_id.id == account_output.id)
         self.assertEqual(dropship1_cogs_line.balance, -8)
 
         # --- Create Dropship 2 --- #

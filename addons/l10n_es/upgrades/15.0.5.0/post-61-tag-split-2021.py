@@ -20,6 +20,7 @@ def migrate(cr, version):
         """)
 
         return cr.fetchone()[0]
+
     env = api.Environment(cr, SUPERUSER_ID, {})
 
     templates_mapping = {

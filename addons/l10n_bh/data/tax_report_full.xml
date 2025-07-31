@@ -242,7 +242,9 @@
                         </field>
                     </record>
                     <record id="l10n_bh_tax_report_full_11" model="account.report.line">
-                        <field name="name">11(a). Imports subject to VAT accounted for through reverse charge mechanism at 10%</field>
+                        <field name="name">11(a). Imports subject to VAT accounted for through reverse charge mechanism
+                            at 10%
+                        </field>
                         <field name="code">bh_11a</field>
                         <field name="expression_ids">
                             <record id="l10n_bh_tax_report_full_11_base" model="account.report.expression">
@@ -286,7 +288,8 @@
                         </field>
                     </record>
                     <record id="l10n_bh_tax_report_full_13" model="account.report.line">
-                        <field name="name">13. Purchases from non-registered suppliers, zero rated/ exempt purchases</field>
+                        <field name="name">13. Purchases from non-registered suppliers, zero rated/ exempt purchases
+                        </field>
                         <field name="code">bh_13</field>
                         <field name="expression_ids">
                             <record id="l10n_bh_tax_report_full_13_base" model="account.report.expression">
@@ -353,7 +356,9 @@
                     <record id="l10n_bh_tax_report_full_15_tax" model="account.report.expression">
                         <field name="label">tax</field>
                         <field name="engine">aggregation</field>
-                        <field name="formula">(bh_7.tax + bh_1a.adjustment*0.1) - (bh_14.tax + 0.1*(bh_8a.adjustment + bh_9a.adjustment + bh_10.adjustment + bh_11a.adjustment + bh_12.adjustment))</field>
+                        <field name="formula">(bh_7.tax + bh_1a.adjustment*0.1) - (bh_14.tax + 0.1*(bh_8a.adjustment +
+                            bh_9a.adjustment + bh_10.adjustment + bh_11a.adjustment + bh_12.adjustment))
+                        </field>
                     </record>
                 </field>
                 <field name="children_ids">

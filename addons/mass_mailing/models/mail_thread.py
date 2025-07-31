@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import datetime
+
 from markupsafe import Markup
 
 from odoo import api, models, fields, tools, _
@@ -66,12 +67,16 @@ class MailThread(models.AbstractModel):
                 bounce_message=tools.html2plaintext(message_dict.get('body') or ''))
         if bounced_email:
             three_months_ago = fields.Datetime.to_string(datetime.datetime.now() - datetime.timedelta(weeks=13))
-            stats = self.env['mailing.trace'].search(['&', '&', ('trace_status', '=', 'bounce'), ('write_date', '>', three_months_ago), ('email', '=ilike', bounced_email)]).mapped('write_date')
-            if len(stats) >= BLACKLIST_MAX_BOUNCED_LIMIT and (not bounced_partner or any(p.message_bounce >= BLACKLIST_MAX_BOUNCED_LIMIT for p in bounced_partner)):
+            stats = self.env['mailing.trace'].search(
+                ['&', '&', ('trace_status', '=', 'bounce'), ('write_date', '>', three_months_ago),
+                 ('email', '=ilike', bounced_email)]).mapped('write_date')
+            if len(stats) >= BLACKLIST_MAX_BOUNCED_LIMIT and (not bounced_partner or any(
+                    p.message_bounce >= BLACKLIST_MAX_BOUNCED_LIMIT for p in bounced_partner)):
                 if max(stats) > min(stats) + datetime.timedelta(weeks=1):
                     self.env['mail.blacklist'].sudo()._add(
                         bounced_email,
-                        message=Markup('<p>%s</p>') % _('This email has been automatically added in blocklist because of too much bounced.')
+                        message=Markup('<p>%s</p>') % _(
+                            'This email has been automatically added in blocklist because of too much bounced.')
                     )
 
     @api.model

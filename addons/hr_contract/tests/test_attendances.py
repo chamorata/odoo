@@ -1,10 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from pytz import timezone
-
 from datetime import datetime, date
 
 from odoo.addons.hr_contract.tests.common import TestContractCommon
+from pytz import timezone
 
 
 class TestAttendances(TestContractCommon):
@@ -36,14 +35,14 @@ class TestAttendances(TestContractCommon):
                 'hour_to': hour_to,
                 'day_period': day_period,
             }) for dayofweek, hour_from, hour_to, day_period in [
-                ("0", 8.0, 12.0, "morning"),
-                ("0", 12.0, 13.0, "lunch"),
-                ("0", 13.0, 16.6, "afternoon"),
-                ("1", 8.0, 12.0, "morning"),
-                ("1", 12.0, 13.0, "lunch"),
-                ("1", 13.0, 16.6, "afternoon"),
-                ("2", 8.0, 11.8, "morning"),
-            ]],
+                                                 ("0", 8.0, 12.0, "morning"),
+                                                 ("0", 12.0, 13.0, "lunch"),
+                                                 ("0", 13.0, 16.6, "afternoon"),
+                                                 ("1", 8.0, 12.0, "morning"),
+                                                 ("1", 12.0, 13.0, "lunch"),
+                                                 ("1", 13.0, 16.6, "afternoon"),
+                                                 ("2", 8.0, 11.8, "morning"),
+                                             ]],
         }])
 
         cls.env['hr.contract'].create({

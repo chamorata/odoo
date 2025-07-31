@@ -1,10 +1,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import odoo
 from odoo.addons.mail.tests.test_thread_controller import (
     MessagePostSubTestData,
     TestThreadControllerCommon,
 )
+
+import odoo
 
 
 @odoo.tests.tagged("-at_install", "post_install")
@@ -125,7 +126,7 @@ class TestPortalThreadController(TestThreadControllerCommon):
         sign = {"hash": _hash, "pid": partner.id}
         bad_sign = {"hash": "incorrect hash", "pid": partner.id}
         all_partners = (
-            self.user_portal + self.user_employee + self.user_demo + self.user_admin
+                self.user_portal + self.user_employee + self.user_demo + self.user_admin
         ).partner_id
         record.message_subscribe(partner_ids=self.user_demo.partner_id.ids)
         followers = self.user_demo.partner_id

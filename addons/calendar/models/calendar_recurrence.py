@@ -1,19 +1,17 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from datetime import datetime, time
-import pytz
 import re
+from datetime import datetime, time
 
+import pytz
 from dateutil import rrule
 from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models, _
+from odoo.addons.base.models.res_partner import _tz_get
 from odoo.exceptions import UserError
 from odoo.tools.misc import clean_context
-
-from odoo.addons.base.models.res_partner import _tz_get
-
 
 MAX_RECURRENT_EVENT = 720
 
@@ -79,6 +77,7 @@ BYDAY_SELECTION = [
     ('-1', 'Last'),
 ]
 
+
 def freq_to_select(rrule_freq):
     return RRULE_FREQ_TO_SELECT[rrule_freq]
 
@@ -125,10 +124,10 @@ class RecurrenceRule(models.Model):
     _sql_constraints = [
         ('month_day',
          "CHECK (rrule_type != 'monthly' "
-                "OR month_by != 'day' "
-                "OR day >= 1 AND day <= 31 "
-                "OR weekday in %s AND byday in %s)"
-                % (tuple(wd[0] for wd in WEEKDAY_SELECTION), tuple(bd[0] for bd in BYDAY_SELECTION)),
+         "OR month_by != 'day' "
+         "OR day >= 1 AND day <= 31 "
+         "OR weekday in %s AND byday in %s)"
+         % (tuple(wd[0] for wd in WEEKDAY_SELECTION), tuple(bd[0] for bd in BYDAY_SELECTION)),
          "The day must be between 1 and 31"),
     ]
 
@@ -151,9 +150,11 @@ class RecurrenceRule(models.Model):
         days = ", ".join(day_strings)
 
         if self.end_type == 'count':
-            return _("Every %(interval)s Weeks on %(days)s for %(count)s events", interval=self.interval, days=days, count=self.count)
+            return _("Every %(interval)s Weeks on %(days)s for %(count)s events", interval=self.interval, days=days,
+                     count=self.count)
         if self.end_type == 'end_date':
-            return _("Every %(interval)s Weeks on %(days)s until %(until)s", interval=self.interval, days=days, until=self.until)
+            return _("Every %(interval)s Weeks on %(days)s until %(until)s", interval=self.interval, days=days,
+                     until=self.until)
         return _("Every %(interval)s Weeks on %(days)s", interval=self.interval, days=days)
 
     def _get_monthly_recurrence_name(self):
@@ -164,15 +165,20 @@ class RecurrenceRule(models.Model):
             weekday_label = weekday_selection[self.weekday]
 
             if self.end_type == 'count':
-                return _("Every %(interval)s Months on the %(position)s %(weekday)s for %(count)s events", interval=self.interval, position=position_label, weekday=weekday_label, count=self.count)
+                return _("Every %(interval)s Months on the %(position)s %(weekday)s for %(count)s events",
+                         interval=self.interval, position=position_label, weekday=weekday_label, count=self.count)
             if self.end_type == 'end_date':
-                return _("Every %(interval)s Months on the %(position)s %(weekday)s until %(until)s", interval=self.interval, position=position_label, weekday=weekday_label, until=self.until)
-            return _("Every %(interval)s Months on the %(position)s %(weekday)s", interval=self.interval, position=position_label, weekday=weekday_label)
+                return _("Every %(interval)s Months on the %(position)s %(weekday)s until %(until)s",
+                         interval=self.interval, position=position_label, weekday=weekday_label, until=self.until)
+            return _("Every %(interval)s Months on the %(position)s %(weekday)s", interval=self.interval,
+                     position=position_label, weekday=weekday_label)
         else:
             if self.end_type == 'count':
-                return _("Every %(interval)s Months day %(day)s for %(count)s events", interval=self.interval, day=self.day, count=self.count)
+                return _("Every %(interval)s Months day %(day)s for %(count)s events", interval=self.interval,
+                         day=self.day, count=self.count)
             if self.end_type == 'end_date':
-                return _("Every %(interval)s Months day %(day)s until %(until)s", interval=self.interval, day=self.day, until=self.until)
+                return _("Every %(interval)s Months day %(day)s until %(until)s", interval=self.interval, day=self.day,
+                         until=self.until)
             return _("Every %(interval)s Months day %(day)s", interval=self.interval, day=self.day)
 
     def _get_yearly_recurrence_name(self):
@@ -199,7 +205,8 @@ class RecurrenceRule(models.Model):
 
     @api.depends('calendar_event_ids.start')
     def _compute_dtstart(self):
-        groups = self.env['calendar.event']._read_group([('recurrence_id', 'in', self.ids)], ['recurrence_id'], ['start:min'])
+        groups = self.env['calendar.event']._read_group([('recurrence_id', 'in', self.ids)], ['recurrence_id'],
+                                                        ['start:min'])
         start_mapping = {recurrence.id: start_min for recurrence, start_min in groups}
         for recurrence in self:
             recurrence.dtstart = start_mapping.get(recurrence.id)
@@ -376,7 +383,8 @@ class RecurrenceRule(models.Model):
         :param dstart: if provided, only write events starting from this point in time
         """
         events = self._get_events_from(dtstart) if dtstart else self.calendar_event_ids
-        return events.with_context(no_mail_to_attendees=True, dont_notify=True).write(dict(values, recurrence_update='self_only'))
+        return events.with_context(no_mail_to_attendees=True, dont_notify=True).write(
+            dict(values, recurrence_update='self_only'))
 
     def _rrule_serialize(self):
         """
@@ -444,7 +452,7 @@ class RecurrenceRule(models.Model):
     def _get_lang_week_start(self):
         lang = self.env['res.lang']._get_data(code=self.env.user.lang)
         week_start = int(lang.week_start)  # lang.week_start ranges from '1' to '7'
-        return rrule.weekday(week_start - 1) # rrule expects an int from 0 to 6
+        return rrule.weekday(week_start - 1)  # rrule expects an int from 0 to 6
 
     def _get_start_of_period(self, dt):
         if self.rrule_type == 'weekly':
@@ -493,17 +501,17 @@ class RecurrenceRule(models.Model):
         self.ensure_one()
         original_count = self.end_type == 'count' and self.count
         ranges = set(self._get_ranges(event.start, duration))
-        future_events = set((x, y) for x, y in ranges if x.date() >= event.start.date() and y.date() >= event.start.date())
+        future_events = set(
+            (x, y) for x, y in ranges if x.date() >= event.start.date() and y.date() >= event.start.date())
         if original_count and len(future_events) < original_count:
             # Rise count number because some past values will be dismissed.
-            self.count = (2*original_count) - len(future_events)
+            self.count = (2 * original_count) - len(future_events)
             ranges = set(self._get_ranges(event.start, duration))
             # We set back the occurrence number to its original value
             self.count = original_count
         # Remove ranges of events occurring in the past
         ranges = set((x, y) for x, y in ranges if x.date() >= event.start.date() and y.date() >= event.start.date())
         return ranges
-
 
     def _get_ranges(self, start, event_duration):
         starts = self._get_occurrences(start)
@@ -545,7 +553,8 @@ class RecurrenceRule(models.Model):
         # What should be stored is:
         # 2019/02/01 11:00 - 2019/03/01 11:00 - 2019/04/01 10:00 - 2019/05/01 10:00 (UTC)
         #                                                  *****              *****
-        return (timezone.localize(occurrence, is_dst=False).astimezone(pytz.utc).replace(tzinfo=None) for occurrence in occurences)
+        return (timezone.localize(occurrence, is_dst=False).astimezone(pytz.utc).replace(tzinfo=None) for occurrence in
+                occurences)
 
     def _get_events_from(self, dtstart):
         return self.env['calendar.event'].search([
@@ -586,7 +595,8 @@ class RecurrenceRule(models.Model):
         if freq == 'monthly' and self.month_by == 'date':  # e.g. every 15th of the month
             rrule_params['bymonthday'] = self.day
         elif freq == 'monthly' and self.month_by == 'day':  # e.g. every 2nd Monday in the month
-            rrule_params['byweekday'] = getattr(rrule, RRULE_WEEKDAYS[self.weekday])(int(self.byday))  # e.g. MO(+2) for the second Monday of the month
+            rrule_params['byweekday'] = getattr(rrule, RRULE_WEEKDAYS[self.weekday])(
+                int(self.byday))  # e.g. MO(+2) for the second Monday of the month
         elif freq == 'weekly':
             weekdays = self._get_week_days()
             if not weekdays:

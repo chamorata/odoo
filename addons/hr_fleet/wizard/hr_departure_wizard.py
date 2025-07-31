@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, fields, models
+from odoo import fields, models
 
 
 class HrDepartureWizard(models.TransientModel):
     _inherit = 'hr.departure.wizard'
 
-    release_campany_car = fields.Boolean("Release Company Car", default=lambda self: self.env.user.has_group('fleet.fleet_group_user'))
+    release_campany_car = fields.Boolean("Release Company Car",
+                                         default=lambda self: self.env.user.has_group('fleet.fleet_group_user'))
 
     def action_register_departure(self):
         super(HrDepartureWizard, self).action_register_departure()

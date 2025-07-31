@@ -17,8 +17,10 @@
                         <field name="turnstile_secret_key"/>
                     </div>
                     <div>
-                        <a href="https://blog.cloudflare.com/turnstile-private-captcha-alternative/" class="oe_link" target="_blank">
-                            <i class="oi oi-arrow-right"/> More info
+                        <a href="https://blog.cloudflare.com/turnstile-private-captcha-alternative/" class="oe_link"
+                           target="_blank">
+                            <i class="oi oi-arrow-right"/>
+                            More info
                         </a>
                     </div>
                 </div>

@@ -1,8 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.mail.tests.test_controller_common import TestControllerCommon
+
 import odoo
 from odoo.tests import JsonRpcException
-from odoo.addons.mail.tests.test_controller_common import TestControllerCommon
 
 
 @odoo.tests.tagged("-at_install", "post_install")
@@ -34,11 +35,11 @@ class TestMessageReactionControllerCommon(TestControllerCommon):
                     self.assertEqual(len(self._find_reactions(message)), 0)
                 else:
                     with self.assertRaises(
-                        JsonRpcException, msg="add reaction should raise NotFound"
+                            JsonRpcException, msg="add reaction should raise NotFound"
                     ):
                         self._add_reaction(message, self.reaction, route_kw)
                     with self.assertRaises(
-                        JsonRpcException, msg="remove reaction should raise NotFound"
+                            JsonRpcException, msg="remove reaction should raise NotFound"
                     ):
                         self._remove_reaction(message, self.reaction, route_kw)
 

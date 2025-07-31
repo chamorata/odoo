@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns2:QueryTransactionStatusResponse xmlns="http://schemas.nav.gov.hu/NTCA/1.0/common"
-    xmlns:ns2="http://schemas.nav.gov.hu/OSA/3.0/api"
-    xmlns:ns3="http://schemas.nav.gov.hu/OSA/3.0/base"
-    xmlns:ns4="http://schemas.nav.gov.hu/OSA/3.0/data">
+                                    xmlns:ns2="http://schemas.nav.gov.hu/OSA/3.0/api"
+>
     <header>
         <requestId>ODOO88f933af5e3345188d56a53b59</requestId>
         <timestamp>2024-03-12T10:50:56.365Z</timestamp>

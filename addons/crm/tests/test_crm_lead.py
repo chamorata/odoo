@@ -2,15 +2,16 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import datetime
-from freezegun import freeze_time
 from unittest.mock import patch
 
-from odoo import fields
-from odoo.addons.base.tests.test_format_address_mixin import FormatAddressCase
+from freezegun import freeze_time
 from odoo.addons.crm.models.crm_lead import PARTNER_FIELDS_TO_SYNC, PARTNER_ADDRESS_FIELDS_TO_SYNC
 from odoo.addons.crm.tests.common import TestCrmCommon, INCOMING_EMAIL
 from odoo.addons.mail.tests.mail_tracking_duration_mixin_case import MailTrackingDurationMixinCase
 from odoo.addons.phone_validation.tools.phone_validation import phone_format
+
+from odoo import fields
+from odoo.addons.base.tests.test_format_address_mixin import FormatAddressCase
 from odoo.exceptions import UserError
 from odoo.tests import Form, tagged, users
 from odoo.tools import mute_logger
@@ -58,7 +59,8 @@ class TestCRMLead(TestCrmCommon):
         self.assertLeadAddress(lead, False, False, False, False, self.env['res.country.state'], self.country_ref)
         # other contact fields
         for fname in set(PARTNER_FIELDS_TO_SYNC) - set(['function', 'lang']):
-            self.assertEqual(lead[fname], self.contact_1[fname], 'No user input -> take from contact for field %s' % fname)
+            self.assertEqual(lead[fname], self.contact_1[fname],
+                             'No user input -> take from contact for field %s' % fname)
         self.assertEqual(lead.function, 'Parmesan Rappeur', 'User input should take over partner value')
         self.assertEqual(lead.lang_id, self.lang_fr)
         # specific contact fields
@@ -69,7 +71,8 @@ class TestCRMLead(TestCrmCommon):
 
         # update a single address fields -> only those are updated
         lead.write({'street': 'Super Street', 'city': 'Super City'})
-        self.assertLeadAddress(lead, 'Super Street', False, 'Super City', False, self.env['res.country.state'], self.country_ref)
+        self.assertLeadAddress(lead, 'Super Street', False, 'Super City', False, self.env['res.country.state'],
+                               self.country_ref)
 
         # change partner -> whole address updated
         lead.write({'partner_id': self.contact_company_1.id})
@@ -207,12 +210,15 @@ class TestCRMLead(TestCrmCommon):
         self.assertEqual(lead.email_from, lead_data['email_from'], "Email From should keep its initial value")
         self.assertEqual(lead.partner_name, empty_partner.name, "Partner name should be set as contact is a company")
         # PARTNER_ADDRESS_FIELDS_TO_SYNC
-        self.assertEqual(lead.street, lead_data['street'], "Street should remain since partner has no address field set")
+        self.assertEqual(lead.street, lead_data['street'],
+                         "Street should remain since partner has no address field set")
         self.assertEqual(lead.street2, False, "Street2 should remain since partner has no address field set")
-        self.assertEqual(lead.country_id, self.country_ref, "Country should remain since partner has no address field set")
+        self.assertEqual(lead.country_id, self.country_ref,
+                         "Country should remain since partner has no address field set")
         self.assertEqual(lead.city, False, "City should remain since partner has no address field set")
         self.assertEqual(lead.zip, False, "Zip should remain since partner has no address field set")
-        self.assertEqual(lead.state_id, self.env['res.country.state'], "State should remain since partner has no address field set")
+        self.assertEqual(lead.state_id, self.env['res.country.state'],
+                         "State should remain since partner has no address field set")
         # PARTNER_FIELDS_TO_SYNC
         self.assertEqual(lead.lang_id, self.lang_en)
         self.assertEqual(lead.phone, lead_data['phone'], "Phone should keep its initial value")
@@ -401,25 +407,25 @@ class TestCRMLead(TestCrmCommon):
             lead_form.partner_id = partner
             self.assertEqual(lead_form.email_from, partner_email)
             self.assertEqual(lead_form.phone, partner_phone_formatted,
-                            'Lead: form automatically formats numbers')
+                             'Lead: form automatically formats numbers')
             self.assertEqual(lead_form.mobile, partner_mobile_formatted,
-                            'Lead: form automatically formats numbers')
+                             'Lead: form automatically formats numbers')
             self.assertFalse(lead_form.partner_email_update)
             self.assertFalse(lead_form.partner_phone_update)
 
             lead_form.save()
             self.assertEqual(partner.phone, partner_phone,
-                            'Lead / Partner: partner values sent to lead')
+                             'Lead / Partner: partner values sent to lead')
             self.assertEqual(lead.email_from, partner_email,
-                            'Lead / Partner: partner values sent to lead')
+                             'Lead / Partner: partner values sent to lead')
             self.assertEqual(lead.email_normalized, partner_email_normalized,
-                            'Lead / Partner: equal emails should lead to equal normalized emails')
+                             'Lead / Partner: equal emails should lead to equal normalized emails')
             self.assertEqual(lead.phone, partner_phone_formatted,
-                            'Lead / Partner: partner values (formatted) sent to lead')
+                             'Lead / Partner: partner values (formatted) sent to lead')
             self.assertEqual(lead.mobile, partner_mobile_formatted,
-                            'Lead / Partner: partner values (formatted) sent to lead')
+                             'Lead / Partner: partner values (formatted) sent to lead')
             self.assertEqual(lead.phone_sanitized, partner_mobile_sanitized,
-                            'Lead: phone_sanitized computed field on mobile')
+                             'Lead: phone_sanitized computed field on mobile')
 
             # for email_from, if only formatting differs, warning should not appear and
             # email on partner should not be updated
@@ -477,7 +483,7 @@ class TestCRMLead(TestCrmCommon):
             # if SMS is uninstalled, phone_sanitized is not available on partner
             if 'phone_sanitized' in partner:
                 self.assertEqual(partner.phone_sanitized, partner_mobile_sanitized,
-                                'Partner sanitized should be computed on mobile')
+                                 'Partner sanitized should be computed on mobile')
 
     @users('user_sales_manager')
     def test_crm_lead_partner_sync_email_phone_corner_cases(self):
@@ -562,12 +568,11 @@ class TestCRMLead(TestCrmCommon):
             self.assertFalse(lead_form.partner_phone_update)
             self.assertEqual(lead_form.country_id, be_country)
 
-
     @users('user_sales_manager')
     def test_crm_lead_stages(self):
         first_now = datetime(2023, 11, 6, 8, 0, 0)
         with patch.object(self.env.cr, 'now', lambda: first_now), \
-             freeze_time(first_now):
+                freeze_time(first_now):
             self.lead_1.write({'date_open': first_now})
 
         lead = self.lead_1.with_user(self.env.user)
@@ -577,7 +582,7 @@ class TestCRMLead(TestCrmCommon):
 
         second_now = datetime(2023, 11, 8, 8, 0, 0)
         with patch.object(self.env.cr, 'now', lambda: second_now), \
-             freeze_time(second_now):
+                freeze_time(second_now):
             lead.convert_opportunity(self.contact_1)
         self.assertEqual(lead.date_open, first_now)
         self.assertEqual(lead.team_id, self.sales_team_1)
@@ -638,7 +643,8 @@ class TestCRMLead(TestCrmCommon):
         self.assertEqual(lead.phone_state, 'correct')
 
         lead.partner_id = self.contact_company_1
-        self.assertEqual(lead.country_id, self.contact_company_1.country_id, "Country should still be the one set on partner")
+        self.assertEqual(lead.country_id, self.contact_company_1.country_id,
+                         "Country should still be the one set on partner")
         self.assertEqual(lead.email_from, self.contact_company_1.email)
         self.assertEqual(lead.phone, self.test_phone)
         self.assertEqual(lead.email_state, 'correct')
@@ -658,7 +664,7 @@ class TestCRMLead(TestCrmCommon):
         are not erased too often """
         first_now = datetime(2023, 11, 6, 8, 0, 0)
         with patch.object(self.env.cr, 'now', lambda: first_now), \
-             freeze_time(first_now):
+                freeze_time(first_now):
             leads = self.env['crm.lead'].create([
                 {
                     'email_from': 'testlead@customer.company.com',
@@ -688,7 +694,7 @@ class TestCRMLead(TestCrmCommon):
         # maybe date_last_stage_update
         updated_time = datetime(2023, 11, 23, 8, 0, 0)
         with patch.object(self.env.cr, 'now', lambda: updated_time), \
-             freeze_time(updated_time):
+                freeze_time(updated_time):
             leads.write({"user_id": self.user_sales_salesman.id})
             leads.flush_recordset()
         for lead in leads:
@@ -710,7 +716,7 @@ class TestCRMLead(TestCrmCommon):
         # set won changes stage -> update date_last_stage_update
         newer_time = datetime(2023, 11, 26, 8, 0, 0)
         with patch.object(self.env.cr, 'now', lambda: newer_time), \
-             freeze_time(newer_time):
+                freeze_time(newer_time):
             leads[1].action_set_won()
             leads[1].flush_recordset()
         self.assertEqual(
@@ -722,7 +728,7 @@ class TestCRMLead(TestCrmCommon):
         # case no real value change is happening
         last_time = datetime(2023, 11, 29, 8, 0, 0)
         with patch.object(self.env.cr, 'now', lambda: last_time), \
-             freeze_time(last_time):
+                freeze_time(last_time):
             leads.merge_opportunity(
                 user_id=self.user_sales_salesman.id,
                 auto_unlink=False,
@@ -823,9 +829,11 @@ class TestCRMLead(TestCrmCommon):
         for team in teams:
             with self.subTest(team=team):
                 if team != team_other_comp:
-                    self.assertIn(f"<a href='mailto:{team.alias_email}'>{team.alias_email}</a>", self.env['crm.lead'].sudo().get_empty_list_help(""))
+                    self.assertIn(f"<a href='mailto:{team.alias_email}'>{team.alias_email}</a>",
+                                  self.env['crm.lead'].sudo().get_empty_list_help(""))
                 else:
-                    self.assertNotIn(f"<a href='mailto:{team.alias_email}'>{team.alias_email}</a>", self.env['crm.lead'].sudo().get_empty_list_help(""))
+                    self.assertNotIn(f"<a href='mailto:{team.alias_email}'>{team.alias_email}</a>",
+                                     self.env['crm.lead'].sudo().get_empty_list_help(""))
                 team.active = False
 
     @mute_logger('odoo.addons.mail.models.mail_thread')
@@ -935,7 +943,7 @@ class TestCRMLead(TestCrmCommon):
             {'name': 'Lead %s' % index,
              'country_id': self.env.ref('base.be').id,
              'phone': number,
-            }
+             }
             for index, number in enumerate(numbers)
         ])
 

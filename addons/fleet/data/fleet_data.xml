@@ -6,7 +6,7 @@
             <field name="model_id" ref="model_fleet_vehicle_log_contract"/>
             <field name="state">code</field>
             <field name="code">model.run_scheduler()</field>
-            <field name="user_id" ref="base.user_root" />
+            <field name="user_id" ref="base.user_root"/>
             <field name="interval_number">1</field>
             <field name="interval_type">days</field>
         </record>
@@ -32,13 +32,13 @@
         </record>
 
         <record id="type_contract_omnium" model="fleet.service.type">
-          <field name="name">Omnium</field>
-          <field name="category">contract</field>
+            <field name="name">Omnium</field>
+            <field name="category">contract</field>
         </record>
 
         <record id="type_contract_leasing" model="fleet.service.type">
-          <field name="name">Leasing</field>
-          <field name="category">contract</field>
+            <field name="name">Leasing</field>
+            <field name="category">contract</field>
         </record>
     </data>
 </odoo>

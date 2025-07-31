@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from collections import defaultdict
+from itertools import chain
+
 from odoo import _, fields, models, tools
 from odoo.exceptions import UserError
 from odoo.tools import float_compare, float_is_zero
-
-from itertools import chain
 from odoo.tools import groupby, OrderedSet
-from collections import defaultdict
 
 
 class StockValuationLayer(models.Model):
@@ -20,25 +20,31 @@ class StockValuationLayer(models.Model):
     _rec_name = 'product_id'
 
     company_id = fields.Many2one('res.company', 'Company', readonly=True, required=True)
-    product_id = fields.Many2one('product.product', 'Product', readonly=True, required=True, check_company=True, auto_join=True)
+    product_id = fields.Many2one('product.product', 'Product', readonly=True, required=True, check_company=True,
+                                 auto_join=True)
     categ_id = fields.Many2one('product.category', related='product_id.categ_id', store=True)
     product_tmpl_id = fields.Many2one('product.template', related='product_id.product_tmpl_id')
     quantity = fields.Float('Quantity', readonly=True, digits='Product Unit of Measure')
     uom_id = fields.Many2one(related='product_id.uom_id', readonly=True, required=True)
-    currency_id = fields.Many2one('res.currency', 'Currency', related='company_id.currency_id', readonly=True, required=True)
+    currency_id = fields.Many2one('res.currency', 'Currency', related='company_id.currency_id', readonly=True,
+                                  required=True)
     unit_cost = fields.Float('Unit Value', digits='Product Price', readonly=True, aggregator=None)
     value = fields.Monetary('Total Value', readonly=True)
     remaining_qty = fields.Float(readonly=True, digits='Product Unit of Measure')
     remaining_value = fields.Monetary('Remaining Value', readonly=True)
     description = fields.Char('Description', readonly=True)
-    stock_valuation_layer_id = fields.Many2one('stock.valuation.layer', 'Linked To', readonly=True, check_company=True, index=True)
+    stock_valuation_layer_id = fields.Many2one('stock.valuation.layer', 'Linked To', readonly=True, check_company=True,
+                                               index=True)
     stock_valuation_layer_ids = fields.One2many('stock.valuation.layer', 'stock_valuation_layer_id')
     stock_move_id = fields.Many2one('stock.move', 'Stock Move', readonly=True, check_company=True, index=True)
-    account_move_id = fields.Many2one('account.move', 'Journal Entry', readonly=True, check_company=True, index="btree_not_null")
-    account_move_line_id = fields.Many2one('account.move.line', 'Invoice Line', readonly=True, check_company=True, index="btree_not_null")
+    account_move_id = fields.Many2one('account.move', 'Journal Entry', readonly=True, check_company=True,
+                                      index="btree_not_null")
+    account_move_line_id = fields.Many2one('account.move.line', 'Invoice Line', readonly=True, check_company=True,
+                                           index="btree_not_null")
     reference = fields.Char(related='stock_move_id.reference')
     price_diff_value = fields.Float('Invoice value correction with invoice currency')
-    warehouse_id = fields.Many2one('stock.warehouse', string="Receipt WH", compute='_compute_warehouse_id', search='_search_warehouse_id')
+    warehouse_id = fields.Many2one('stock.warehouse', string="Receipt WH", compute='_compute_warehouse_id',
+                                   search='_search_warehouse_id')
     lot_id = fields.Many2one('stock.lot', 'Lot/Serial Number', check_company=True, index=True)
 
     def init(self):
@@ -76,7 +82,7 @@ class StockValuationLayer(models.Model):
         am_vals = []
         aml_to_reconcile = defaultdict(set)
         move_ids = OrderedSet()
-        svl_move_list = defaultdict(int) 
+        svl_move_list = defaultdict(int)
         for svl in self:
             if not svl.with_company(svl.company_id).product_id.valuation == 'real_time':
                 continue
@@ -87,13 +93,14 @@ class StockValuationLayer(models.Model):
                 move = svl.stock_valuation_layer_id.stock_move_id
             move_ids.add(move.id)
             svl_move_list[svl.id] = move.id
-        
+
         moves = self.env['stock.move'].browse(move_ids)
         move_directions = moves._get_move_directions()
         for svl in self:
             linked_move = moves.browse(svl_move_list[svl.id])
             if linked_move:
-                am_vals += linked_move.with_context(move_directions=move_directions).with_company(svl.company_id)._account_entry_move(svl.quantity, svl.description, svl.id, svl.value)
+                am_vals += linked_move.with_context(move_directions=move_directions).with_company(
+                    svl.company_id)._account_entry_move(svl.quantity, svl.description, svl.id, svl.value)
 
         if am_vals:
             account_moves = self.env['account.move'].sudo().create(am_vals)
@@ -104,7 +111,8 @@ class StockValuationLayer(models.Model):
             moves = svls.stock_move_id
             if anglo_saxon_accounting:
                 moves._get_related_invoices()._stock_account_anglo_saxon_reconcile_valuation(product=product)
-            moves = (moves | moves.origin_returned_move_id).with_prefetch(chain(moves._prefetch_ids, moves.origin_returned_move_id._prefetch_ids))
+            moves = (moves | moves.origin_returned_move_id).with_prefetch(
+                chain(moves._prefetch_ids, moves.origin_returned_move_id._prefetch_ids))
             for aml in moves._get_all_related_aml():
                 if aml.reconciled or aml.move_id.state != "posted" or not aml.account_id.reconcile:
                     continue
@@ -188,7 +196,8 @@ class StockValuationLayer(models.Model):
             qty_taken_on_candidate = min(qty_to_take_on_candidates, candidate_quantity)
 
             qty_to_take_on_candidates -= qty_taken_on_candidate
-            tmp_value += qty_taken_on_candidate * ((candidate.value + sum(candidate.stock_valuation_layer_ids.mapped('value'))) / candidate.quantity)
+            tmp_value += qty_taken_on_candidate * ((candidate.value + sum(
+                candidate.stock_valuation_layer_ids.mapped('value'))) / candidate.quantity)
             if float_is_zero(qty_to_take_on_candidates, precision_rounding=rounding):
                 break
 
@@ -221,7 +230,8 @@ class StockValuationLayer(models.Model):
             if float_is_zero(relevant_qty, precision_rounding=rounding):
                 continue
             qty_total += relevant_qty
-            value_total += relevant_qty * ((svl.value + sum(svl.stock_valuation_layer_ids.mapped('value'))) / svl.quantity)
+            value_total += relevant_qty * (
+                        (svl.value + sum(svl.stock_valuation_layer_ids.mapped('value'))) / svl.quantity)
 
         if float_compare(qty_total, 0, precision_rounding=min_rounding) > 0:
             unit_cost = value_total / qty_total
@@ -246,7 +256,8 @@ class StockValuationLayer(models.Model):
             if not product_accounts[product.id].get('expense'):
                 raise UserError(_('You must set a counterpart account on your product category.'))
             if not product_accounts[product.id].get('stock_valuation'):
-                raise UserError(_('You don\'t have any stock valuation account defined on your product category. You must define one before processing this operation.'))
+                raise UserError(
+                    _('You don\'t have any stock valuation account defined on your product category. You must define one before processing this operation.'))
 
             if value < 0:
                 debit_account_id = product_accounts[product.id]['expense'].id

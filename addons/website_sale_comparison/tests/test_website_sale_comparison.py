@@ -6,7 +6,7 @@ from collections import OrderedDict
 from lxml import etree
 
 from odoo.fields import Command
-from odoo.tests import HttpCase, TransactionCase, loaded_demo_data, tagged
+from odoo.tests import HttpCase, TransactionCase, tagged
 
 _logger = logging.getLogger(__name__)
 
@@ -113,7 +113,8 @@ class TestWebsiteSaleComparisonUi(HttpCase):
         cls.variants_margaux = cls.template_margaux._get_possible_variants_sorted()
 
         for variant, price in zip(cls.variants_margaux, [487.32, 394.05, 532.44, 1047.84]):
-            variant.product_template_attribute_value_ids.filtered(lambda ptav: ptav.attribute_id == cls.attribute_vintage).price_extra = price
+            variant.product_template_attribute_value_ids.filtered(
+                lambda ptav: ptav.attribute_id == cls.attribute_vintage).price_extra = price
 
     def test_01_admin_tour_product_comparison(self):
         attribute = self.env['product.attribute'].create({
@@ -183,7 +184,8 @@ class TestWebsiteSaleComparisonUi(HttpCase):
 
         tr_varieties_simple_att = root.xpath('//div[@id="product_attributes_simple"]//tr')[0]
         text = etree.tostring(tr_varieties_simple_att, encoding='unicode', method='text')
-        self.assertEqual(text.replace(' ', '').replace('\n', ''), "GrapeVarieties:CabernetSauvignon,Merlot,CabernetFranc,PetitVerdot")
+        self.assertEqual(text.replace(' ', '').replace('\n', ''),
+                         "GrapeVarieties:CabernetSauvignon,Merlot,CabernetFranc,PetitVerdot")
 
         # Case product page with "Product attributes table" enabled
         self.env['website'].viewref('website_sale_comparison.product_attributes_body').active = True
@@ -197,7 +199,8 @@ class TestWebsiteSaleComparisonUi(HttpCase):
 
         tr_varieties = root.xpath('//div[@id="product_specifications"]//tr')[1]
         text_varieties = etree.tostring(tr_varieties, encoding='unicode', method='text')
-        self.assertEqual(text_varieties.replace(' ', '').replace('\n', ''), "GrapeVarietiesCabernetSauvignon,Merlot,CabernetFranc,PetitVerdot")
+        self.assertEqual(text_varieties.replace(' ', '').replace('\n', ''),
+                         "GrapeVarietiesCabernetSauvignon,Merlot,CabernetFranc,PetitVerdot")
 
         # Case compare page
         res = self.url_open('/shop/compare?products=%s' % ','.join(str(id) for id in self.variants_margaux.ids))
@@ -208,17 +211,20 @@ class TestWebsiteSaleComparisonUi(HttpCase):
 
         products = table.xpath('//a[@class="o_product_comparison_table"]')
         self.assertEqual(len(products), 4)
-        for product, name in zip(products, ['ChâteauMargaux(2018)', 'ChâteauMargaux(2017)', 'ChâteauMargaux(2016)', 'ChâteauMargaux(2015)']):
+        for product, name in zip(products, ['ChâteauMargaux(2018)', 'ChâteauMargaux(2017)', 'ChâteauMargaux(2016)',
+                                            'ChâteauMargaux(2015)']):
             text = etree.tostring(product, encoding='unicode', method='text')
             self.assertEqual(text.replace(' ', '').replace('\n', ''), name)
 
         tr_vintage = table.xpath('tbody/tr')[0]
         text_vintage = etree.tostring(tr_vintage, encoding='unicode', method='text')
-        self.assertEqual(text_vintage.replace(' ', '').replace('\n', ''), "Vintage2018,2017,2016,20152018,2017,2016,20152018,2017,2016,20152018,2017,2016,2015")
+        self.assertEqual(text_vintage.replace(' ', '').replace('\n', ''),
+                         "Vintage2018,2017,2016,20152018,2017,2016,20152018,2017,2016,20152018,2017,2016,2015")
 
         tr_varieties = table.xpath('tbody/tr')[1]
         text_varieties = etree.tostring(tr_varieties, encoding='unicode', method='text')
-        self.assertEqual(text_varieties.replace(' ', '').replace('\n', ''), "GrapeVarieties" + 4 * "CabernetSauvignon,Merlot,CabernetFranc,PetitVerdot")
+        self.assertEqual(text_varieties.replace(' ', '').replace('\n', ''),
+                         "GrapeVarieties" + 4 * "CabernetSauvignon,Merlot,CabernetFranc,PetitVerdot")
 
     def test_03_category_order(self):
         """Test that categories are shown in the correct order when the

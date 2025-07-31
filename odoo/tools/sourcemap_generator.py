@@ -1,5 +1,5 @@
-from functools import lru_cache
 import json
+from functools import lru_cache
 
 
 class SourceMapGenerator:
@@ -16,6 +16,7 @@ class SourceMapGenerator:
     functions/steps for our use case. This simpler version does a line by line mapping, with the ability to
     add offsets at the start and end of a file. (when we have to add comments on top a transpiled file by example).
     """
+
     def __init__(self, source_root=None):
         self._file = None
         self._source_root = source_root

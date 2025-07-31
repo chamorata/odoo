@@ -1,5 +1,6 @@
 from odoo.tests import common
 
+
 class TestActionBindings(common.TransactionCase):
 
     def test_bindings(self):
@@ -17,8 +18,8 @@ class TestActionBindings(common.TransactionCase):
         action2 = self.env.ref('base.ir_default_menu_action')
         action3 = self.env['ir.actions.report'].search([('groups_id', '=', False)], limit=1)
         action1.binding_model_id = action2.binding_model_id \
-                                 = action3.binding_model_id \
-                                 = self.env['ir.model']._get('res.partner')
+            = action3.binding_model_id \
+            = self.env['ir.model']._get('res.partner')
 
         bindings = Actions.get_bindings('res.partner')
         self.assertItemsEqual(
@@ -48,6 +49,7 @@ class TestActionBindings(common.TransactionCase):
             action3.read(['name', 'binding_view_types']),
             "Wrong action bindings",
         )
+
 
 class TestBindingViewFilters(common.TransactionCase):
     def test_act_window(self):

@@ -1,5 +1,6 @@
-from odoo.tests import common, tagged
 from odoo.addons.partner_autocomplete.tests.common import MockIAPPartnerAutocomplete
+
+from odoo.tests import common, tagged
 
 
 @tagged('post_install', '-at_install')

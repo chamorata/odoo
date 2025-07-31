@@ -4,26 +4,27 @@
 import configparser
 import contextlib
 import datetime
-from enum import Enum
-from functools import cache
-from importlib import util
 import io
 import json
 import logging
-import netifaces
-from OpenSSL import crypto
 import os
-from pathlib import Path
 import platform
-import requests
 import secrets
 import socket
 import subprocess
-from urllib.parse import parse_qs
-import urllib3
-from threading import Thread, Lock
 import time
 import zipfile
+from enum import Enum
+from functools import cache
+from importlib import util
+from pathlib import Path
+from threading import Thread, Lock
+from urllib.parse import parse_qs
+
+import netifaces
+import requests
+import urllib3
+from OpenSSL import crypto
 
 from odoo import http, release, service
 from odoo.tools.func import lazy_property
@@ -56,6 +57,7 @@ class IoTRestart(Thread):
     """
     Thread to restart odoo server in IoT Box when we must return a answer before
     """
+
     def __init__(self, delay):
         Thread.__init__(self)
         self.delay = delay
@@ -80,8 +82,10 @@ elif platform.system() == 'Linux':
                 subprocess.run(["sudo", "mount", "-o", "remount,ro", "/root_bypass_ramdisks/"], check=False)
                 subprocess.run(["sudo", "mount", "-o", "remount,rw", "/root_bypass_ramdisks/etc/cups"], check=False)
 
+
 def access_point():
     return get_ip() == '10.11.12.1'
+
 
 def start_nginx_server():
     if platform.system() == 'Windows':
@@ -93,6 +97,7 @@ def start_nginx_server():
             os.chdir('..\\server')
     elif platform.system() == 'Linux':
         subprocess.check_call(["sudo", "service", "nginx", "restart"])
+
 
 def check_certificate():
     """
@@ -122,7 +127,8 @@ def check_certificate():
         return {"status": CertificateStatus.ERROR,
                 "error_code": "ERR_IOT_HTTPS_CHECK_CERT_READ_EXCEPTION"}
 
-    cert_end_date = datetime.datetime.strptime(cert.get_notAfter().decode('utf-8'), "%Y%m%d%H%M%SZ") - datetime.timedelta(days=10)
+    cert_end_date = datetime.datetime.strptime(cert.get_notAfter().decode('utf-8'),
+                                               "%Y%m%d%H%M%SZ") - datetime.timedelta(days=10)
     for key in cert.get_subject().get_components():
         if key[0] == b'CN':
             cn = key[1].decode('utf-8')
@@ -131,7 +137,8 @@ def check_certificate():
         _logger.info(message)
         return {"status": CertificateStatus.NEED_REFRESH}
     else:
-        message = 'Your certificate %(certificate)s is valid until %(end_date)s' % {"certificate": cn, "end_date": cert_end_date}
+        message = 'Your certificate %(certificate)s is valid until %(end_date)s' % {"certificate": cn,
+                                                                                    "end_date": cert_end_date}
         _logger.info(message)
         return {"status": CertificateStatus.OK, "message": message}
 
@@ -175,7 +182,8 @@ def check_git_branch():
                         subprocess.run(git + ['remote', 'set-branches', 'origin', db_branch], check=True)
                         _logger.info("Updating odoo folder to the branch %s", db_branch)
                         subprocess.run(
-                            ['/home/pi/odoo/addons/point_of_sale/tools/posbox/configuration/posbox_update.sh'], check=True
+                            ['/home/pi/odoo/addons/point_of_sale/tools/posbox/configuration/posbox_update.sh'],
+                            check=True
                         )
                 except subprocess.CalledProcessError:
                     _logger.exception("Failed to update the code with git.")
@@ -183,6 +191,7 @@ def check_git_branch():
                     odoo_restart()
     except Exception:
         _logger.exception('An error occurred while trying to update the code with git')
+
 
 def check_image():
     """
@@ -264,6 +273,7 @@ def get_certificate_status(is_first=True):
     return True, check_certificate_result.get("message",
                                               "The HTTPS certificate was generated correctly")
 
+
 def get_img_name():
     major, minor = get_version()[1:].split('.')
     return 'iotboxv%s_%s.zip' % (major, minor)
@@ -289,13 +299,17 @@ def get_mac_address():
             if addr != '00:00:00:00:00:00':
                 return addr
 
+
 def get_path_nginx():
     return str(list(Path().absolute().parent.glob('*nginx*'))[0])
 
+
 def get_ssid():
-    ap = subprocess.call(['systemctl', 'is-active', '--quiet', 'hostapd']) # if service is active return 0 else inactive
+    ap = subprocess.call(
+        ['systemctl', 'is-active', '--quiet', 'hostapd'])  # if service is active return 0 else inactive
     if not ap:
-        return subprocess.check_output(['grep', '-oP', '(?<=ssid=).*', '/etc/hostapd/hostapd.conf']).decode('utf-8').rstrip()
+        return subprocess.check_output(['grep', '-oP', '(?<=ssid=).*', '/etc/hostapd/hostapd.conf']).decode(
+            'utf-8').rstrip()
     process_iwconfig = subprocess.Popen(['iwconfig'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     process_grep = subprocess.Popen(['grep', 'ESSID:"'], stdin=process_iwconfig.stdout, stdout=subprocess.PIPE)
     return subprocess.check_output(['sed', 's/.*"\\(.*\\)"/\\1/'], stdin=process_grep.stdout).decode('utf-8').rstrip()
@@ -342,10 +356,13 @@ def get_version(detailed_version=False):
             version += f'#{get_commit_hash()}'
     return version
 
+
 def get_wifi_essid():
     wifi_options = []
-    process_iwlist = subprocess.Popen(['sudo', 'iwlist', 'wlan0', 'scan'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    process_grep = subprocess.Popen(['grep', 'ESSID:"'], stdin=process_iwlist.stdout, stdout=subprocess.PIPE).stdout.readlines()
+    process_iwlist = subprocess.Popen(['sudo', 'iwlist', 'wlan0', 'scan'], stdout=subprocess.PIPE,
+                                      stderr=subprocess.STDOUT)
+    process_grep = subprocess.Popen(['grep', 'ESSID:"'], stdin=process_iwlist.stdout,
+                                    stdout=subprocess.PIPE).stdout.readlines()
     for ssid in process_grep:
         essid = ssid.decode('utf-8').split('"')[1]
         if essid not in wifi_options:
@@ -375,8 +392,8 @@ def load_certificate():
         response = http.request(
             'POST',
             url,
-            body = json.dumps(data).encode('utf8'),
-            headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+            body=json.dumps(data).encode('utf8'),
+            headers={'Content-type': 'application/json', 'Accept': 'text/plain'}
         )
     except Exception as e:
         _logger.exception("An error occurred while trying to reach odoo.com servers.")
@@ -435,6 +452,7 @@ def delete_iot_handlers():
     except OSError:
         _logger.exception('Failed to delete old IoT handlers')
 
+
 def download_iot_handlers(auto=True):
     """
     Get the drivers from the configured Odoo server
@@ -460,9 +478,11 @@ def download_iot_handlers(auto=True):
         except Exception:
             _logger.exception('Could not reach configured server to download IoT handlers')
 
+
 def compute_iot_handlers_addon_name(handler_kind, handler_file_name):
-    return "odoo.addons.hw_drivers.iot_handlers.{handler_kind}.{handler_name}".\
+    return "odoo.addons.hw_drivers.iot_handlers.{handler_kind}.{handler_name}". \
         format(handler_kind=handler_kind, handler_name=handler_file_name.removesuffix('.py'))
+
 
 def load_iot_handlers():
     """
@@ -474,7 +494,8 @@ def load_iot_handlers():
         path = file_path(f'hw_drivers/iot_handlers/{directory}')
         filesList = list_file_by_os(path)
         for file in filesList:
-            spec = util.spec_from_file_location(compute_iot_handlers_addon_name(directory, file), str(Path(path).joinpath(file)))
+            spec = util.spec_from_file_location(compute_iot_handlers_addon_name(directory, file),
+                                                str(Path(path).joinpath(file)))
             if spec:
                 module = util.module_from_spec(spec)
                 try:
@@ -482,6 +503,7 @@ def load_iot_handlers():
                 except Exception:
                     _logger.exception('Unable to load handler file: %s', file)
     lazy_property.reset_all(http.root)
+
 
 def list_file_by_os(file_list):
     platform_os = platform.system()
@@ -507,7 +529,7 @@ def path_file(*args):
     """
     platform_os = platform.system()
     if platform_os == 'Linux':
-        return Path("~pi", *args).expanduser() # Path.home() returns odoo user's home instead of pi's
+        return Path("~pi", *args).expanduser()  # Path.home() returns odoo user's home instead of pi's
     elif platform_os == 'Windows':
         return Path().absolute().parent.joinpath('server', *args)
 
@@ -559,6 +581,7 @@ def download_from_url(download_url, path_to_filename):
         _logger.info('Downloaded %s from %s', path_to_filename, download_url)
     except Exception:
         _logger.exception('Failed to download from %s', download_url)
+
 
 def unzip_file(path_to_filename, path_to_extract):
     """

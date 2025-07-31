@@ -23,7 +23,8 @@
                     <t t-foreach="'1 1-1 1-1-1 1-2 2-1'.split(' ')" t-as="layout" t-key="layout">
                         <DropdownItem onSelected="() => this.selectLayout(layout)">
                             <img t-attf-src="/board/static/img/layout_{{layout}}.png" alt=""/>
-                            <i t-if="layout == board.layout" class="fa fa-check fa-lg text-success" aria-label='Layout' role="img" title="Layout"/>
+                            <i t-if="layout == board.layout" class="fa fa-check fa-lg text-success" aria-label='Layout'
+                               role="img" title="Layout"/>
                         </DropdownItem>
                     </t>
                 </t>
@@ -31,16 +32,20 @@
         </div>
         <div class="o-dashboard-layout flex-grow-1" t-attf-class="o-dashboard-layout-{{board.layout}}" t-ref="main">
             <t t-foreach="board.columns" t-as="column" t-key="column_index">
-                <div t-if="column_index lt board.colNumber" class="o-dashboard-column h-100" t-att-data-idx="column_index">
+                <div t-if="column_index lt board.colNumber" class="o-dashboard-column h-100"
+                     t-att-data-idx="column_index">
                     <t t-foreach="column.actions" t-as="action" t-key="action.id">
                         <div class="o-dashboard-action mx-3 my-1 bg-view border" t-att-data-idx="action_index">
                             <h3 t-attf-class="o-dashboard-action-header {{action.title ? '' : 'oe_header_empty'}} p-2 m-2">
                                 <span> <t t-esc="action.title"/> </span>
-                                <span t-if="!env.isSmall" class="btn float-end p-1 text-muted" t-on-click="() => this.closeAction(column, action)"><i class="fa fa-close"/></span>
-                                <span class="btn float-end p-1 text-muted" t-if="!action.isFolded" t-on-click="() => this.toggleAction(action, !env.isSmall)"><i class="fa fa-window-minimize"/></span>
-                                <span class="btn float-end p-1 text-muted" t-if="action.isFolded"  t-on-click="() => this.toggleAction(action, !env.isSmall)"><i class="fa fa-window-maximize"/></span>
+                                <span t-if="!env.isSmall" class="btn float-end p-1 text-muted"
+                                      t-on-click="() => this.closeAction(column, action)"><i class="fa fa-close"/></span>
+                                <span class="btn float-end p-1 text-muted" t-if="!action.isFolded"
+                                      t-on-click="() => this.toggleAction(action, !env.isSmall)"><i class="fa fa-window-minimize"/></span>
+                                <span class="btn float-end p-1 text-muted" t-if="action.isFolded"
+                                      t-on-click="() => this.toggleAction(action, !env.isSmall)"><i class="fa fa-window-maximize"/></span>
                             </h3>
-                            <BoardAction t-if="!action.isFolded" action="action" />
+                            <BoardAction t-if="!action.isFolded" action="action"/>
                         </div>
                     </t>
                 </div>
@@ -73,12 +78,12 @@
                 <column t-foreach="columns" t-as="column" t-key="column_index">
                     <t t-foreach="column.actions" t-as="action" t-key="action_index">
                         <action
-                            t-att-name="action.actionId"
-                            t-att-string="action.title"
-                            t-att-view_mode="action.viewMode"
-                            t-att-context="action.context"
-                            t-att-domain="action.domain"
-                            t-att-fold="action.isFolded ? 1 : 0"/>
+                                t-att-name="action.actionId"
+                                t-att-string="action.title"
+                                t-att-view_mode="action.viewMode"
+                                t-att-context="action.context"
+                                t-att-domain="action.domain"
+                                t-att-fold="action.isFolded ? 1 : 0"/>
                     </t>
                 </column>
             </board>

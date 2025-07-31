@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.website_slides.tests import common
 from psycopg2 import IntegrityError
 from werkzeug.urls import url_unquote_plus
 
-from odoo.addons.website_slides.tests import common
 from odoo.exceptions import ValidationError
 from odoo.tests import HttpCase
 from odoo.tests.common import users

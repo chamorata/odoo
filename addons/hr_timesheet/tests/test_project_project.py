@@ -49,7 +49,8 @@ class TestProjectProject(TransactionCase):
         if not project_plan_id:
             project_plan, _other_plans = self.env['account.analytic.plan']._get_all_plans()
             project_plan_id = project_plan.id
-        analytic_account = self.env['account.analytic.account'].create({'name': 'Test Analytic Account', 'plan_id': project_plan_id})
+        analytic_account = self.env['account.analytic.account'].create(
+            {'name': 'Test Analytic Account', 'plan_id': project_plan_id})
         project1, project2 = self.env['project.project'].with_context(default_account_id=analytic_account.id).create([{
             'name': 'Project 1 (no timesheets)',
             'allow_timesheets': False,

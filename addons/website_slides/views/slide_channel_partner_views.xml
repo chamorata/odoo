@@ -9,7 +9,7 @@
                     <field name="partner_id"/>
                     <field name="partner_email"/>
                     <field name="channel_id" string="Course"/>
-                     <separator/>
+                    <separator/>
                     <filter string="Archived" name="filter_archived" domain="[('active', '=', False)]"/>
                     <separator/>
                     <filter string="Invite Sent" name="filter_invited" domain="[('member_status', '=', 'invited')]"/>
@@ -36,26 +36,26 @@
                     <field name="write_date" string="Last Action On"/>
                     <field name="last_invitation_date" string="Last Invitation" optional="hide"/>
                     <field name="member_status" string="Status" widget="badge"
-                        decoration-success="member_status == 'completed'"
-                        decoration-info="member_status == 'ongoing'"
-                        decoration-warning="member_status == 'joined'"
-                        decoration-muted="member_status == 'invited'"/>
+                           decoration-success="member_status == 'completed'"
+                           decoration-info="member_status == 'ongoing'"
+                           decoration-warning="member_status == 'joined'"
+                           decoration-muted="member_status == 'invited'"/>
                     <field name="completion" string="Progress" widget="progressbar"/>
                     <field name="next_slide_id"/>
                     <field name="channel_user_id" widget="many2one_avatar_user" optional="hide"/>
                     <field name="channel_type" optional="hide"/>
                     <field name="channel_visibility" optional="hide"/>
                     <field name="channel_enroll" widget="badge"
-                        decoration-success="channel_enroll == 'public'"
-                        decoration-info="channel_enroll == 'invite'"
-                        decoration-warning="channel_enroll == 'payment'"
-                        optional="hide"/>
+                           decoration-success="channel_enroll == 'public'"
+                           decoration-info="channel_enroll == 'invite'"
+                           decoration-warning="channel_enroll == 'payment'"
+                           optional="hide"/>
                     <field name="channel_website_id" groups="website.group_multi_website" optional="hide"/>
                     <field name="active" column_invisible="True"/>
                     <button name="action_archive" title="Archive" icon="fa-times" type="object"
-                        invisible="not active"/>
+                            invisible="not active"/>
                     <button name="action_unarchive" title="Unarchive" icon="fa-undo" type="object"
-                        invisible="active"/>
+                            invisible="active"/>
                 </list>
             </field>
         </record>

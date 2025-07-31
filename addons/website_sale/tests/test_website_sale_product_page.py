@@ -1,9 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.tests import HttpCase, tagged
-
 from odoo.addons.product.tests.common import ProductVariantsCommon
 from odoo.addons.website_sale.tests.common import WebsiteSaleCommon
+
+from odoo.tests import HttpCase, tagged
 
 
 @tagged('post_install', '-at_install')

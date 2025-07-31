@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-from odoo.tests import common
 from unittest.mock import patch
+
+from odoo.tests import common
 
 
 @common.tagged('post_install', '-at_install')
@@ -22,7 +23,7 @@ class TestWebSearchRead(common.TransactionCase):
             return original_search_count(*method_args, **method_kwargs)
 
         with patch('odoo.addons.base.models.res_currency.Currency.search_count', new=search_count):
-            results = self.ResCurrency.web_search_read(domain=[], specification={'id':{}}, **kwargs)
+            results = self.ResCurrency.web_search_read(domain=[], specification={'id': {}}, **kwargs)
 
         self.assertEqual(results['length'], expected_length)
         self.assertEqual(len(results['records']), expected_records_length)

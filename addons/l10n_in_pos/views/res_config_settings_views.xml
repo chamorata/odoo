@@ -9,7 +9,8 @@
                 <attribute name="invisible">not is_kiosk_mode or country_code == 'IN'</attribute>
             </xpath>
             <xpath expr="//div[@id='available_payment_terminal']" position="after">
-                <div class="o_notification_alert alert alert-warning" role="alert" invisible="not is_kiosk_mode or country_code != 'IN'">
+                <div class="o_notification_alert alert alert-warning" role="alert"
+                     invisible="not is_kiosk_mode or country_code != 'IN'">
                     <span>Please note that the kiosk for INR currency only works with Razorpay terminal</span>
                 </div>
             </xpath>

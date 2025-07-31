@@ -4,10 +4,11 @@
 import datetime
 from collections import namedtuple
 
-from odoo import fields
-from odoo.tests import tagged
-from odoo.exceptions import ValidationError
 from odoo.addons.l10n_it_edi.tests.common import TestItEdi
+
+from odoo import fields
+from odoo.exceptions import ValidationError
+from odoo.tests import tagged
 
 
 @tagged('post_install_l10n', 'post_install', '-at_install')
@@ -250,9 +251,9 @@ class TestWithholdingAndPensionFundTaxes(TestItEdi):
         }])
         for line in invoice.line_ids.filtered(lambda x: x.display_type == 'product'):
             self.assertEqual(line.tax_ids, (
-                self.inps_purchase_tax
-                | self.withholding_purchase_tax
-                | self.company.account_purchase_tax_id
+                    self.inps_purchase_tax
+                    | self.withholding_purchase_tax
+                    | self.company.account_purchase_tax_id
             ))
 
     def test_pension_fund_taxes_import(self):
@@ -267,9 +268,9 @@ class TestWithholdingAndPensionFundTaxes(TestItEdi):
         }])
         for line in invoice.line_ids.filtered(lambda x: x.display_type == 'product'):
             self.assertEqual(line.tax_ids, (
-                self.inps_purchase_tax
-                | self.withholding_purchase_tax
-                | self.company.account_purchase_tax_id
+                    self.inps_purchase_tax
+                    | self.withholding_purchase_tax
+                    | self.company.account_purchase_tax_id
             ))
 
     ####################################################
@@ -311,7 +312,8 @@ class TestWithholdingAndPensionFundTaxes(TestItEdi):
             enasarco_imported_tax = line.tax_ids.filtered(lambda x: x.l10n_it_pension_fund_type == 'TC07')
             self.assertEqual(self.enasarco_purchase_tax, enasarco_imported_tax)
             self.assertEqual(-8.5, enasarco_imported_tax.amount)
-            self.assertEqual(self.withholding_purchase_tax_23, line.tax_ids.filtered(lambda x: x.l10n_it_withholding_reason == 'ZO'))
+            self.assertEqual(self.withholding_purchase_tax_23,
+                             line.tax_ids.filtered(lambda x: x.l10n_it_withholding_reason == 'ZO'))
 
     def test_enasarco_tax_import_global(self):
         """Test that if we have a unique ENASARCO line with a price of 0.0,
@@ -356,7 +358,8 @@ class TestWithholdingAndPensionFundTaxes(TestItEdi):
             enasarco_imported_tax = line.tax_ids.filtered(lambda x: x.l10n_it_pension_fund_type == 'TC07')
             self.assertEqual(self.enasarco_purchase_tax, enasarco_imported_tax)
             self.assertEqual(-8.5, enasarco_imported_tax.amount)
-            self.assertEqual(self.withholding_purchase_tax_23, line.tax_ids.filtered(lambda x: x.l10n_it_withholding_reason == 'ZO'))
+            self.assertEqual(self.withholding_purchase_tax_23,
+                             line.tax_ids.filtered(lambda x: x.l10n_it_withholding_reason == 'ZO'))
 
     def test_inps_tax_export(self):
         """

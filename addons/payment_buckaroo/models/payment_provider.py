@@ -2,11 +2,10 @@
 
 from hashlib import sha1
 
+from odoo.addons.payment_buckaroo import const
 from werkzeug import urls
 
 from odoo import fields, models
-
-from odoo.addons.payment_buckaroo import const
 
 
 class PaymentProvider(models.Model):

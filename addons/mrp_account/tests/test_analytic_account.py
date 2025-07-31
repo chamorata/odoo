@@ -11,8 +11,8 @@ class TestMrpAnalyticAccount(TransactionCase):
         # 'workorder_ids' visible in the view of 'mrp.production'. The subviews
         #  of `workorder_ids` must be present in many tests to create records.
         cls.env.user.groups_id += (
-            cls.env.ref('analytic.group_analytic_accounting')
-            + cls.env.ref('mrp.group_mrp_routings')
+                cls.env.ref('analytic.group_analytic_accounting')
+                + cls.env.ref('mrp.group_mrp_routings')
         )
 
         cls.analytic_plan = cls.env['account.analytic.plan'].create({

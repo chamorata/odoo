@@ -2,8 +2,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.mail.tests.common import mail_new_test_user
-from odoo.tests import Form, TransactionCase
+
 from odoo.exceptions import AccessError, UserError
+from odoo.tests import Form, TransactionCase
 
 
 class TestEditableQuant(TransactionCase):
@@ -303,7 +304,8 @@ class TestEditableQuant(TransactionCase):
             'inventory_quantity': 0.4,
         })
         quant.action_apply_inventory()
-        move_lines = self.env['stock.move.line'].search([('product_id', '=', self.product.id), ('is_inventory', '=', True)])
+        move_lines = self.env['stock.move.line'].search(
+            [('product_id', '=', self.product.id), ('is_inventory', '=', True)])
         self.assertEqual(len(move_lines), 1, "One inventory adjustment move lines should have been created")
         self.assertEqual(self.product.qty_available, 0.4, "Before revert inventory adjustment qty is 0.4")
         move_lines.action_revert_inventory()
@@ -321,7 +323,8 @@ class TestEditableQuant(TransactionCase):
         quant.action_apply_inventory()
         quant.inventory_quantity = 150
         quant.action_apply_inventory()
-        move_lines = self.env['stock.move.line'].search([('product_id', '=', self.product.id), ('is_inventory', '=', True)])
+        move_lines = self.env['stock.move.line'].search(
+            [('product_id', '=', self.product.id), ('is_inventory', '=', True)])
         self.assertEqual(self.product.qty_available, 150, "Before revert multi inventory adjustment qty is 150")
         self.assertEqual(len(move_lines), 2, "Two inventory adjustment move lines should have been created")
         move_lines.action_revert_inventory()

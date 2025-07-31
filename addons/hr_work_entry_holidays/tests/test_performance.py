@@ -3,6 +3,7 @@
 from datetime import date, datetime
 
 from odoo.addons.hr_work_entry_holidays.tests.common import TestWorkEntryHolidaysBase
+
 from odoo.tests.common import users, warmup, tagged
 
 

@@ -9,6 +9,7 @@ import jinja2
 
 from . import Command
 
+
 class Scaffold(Command):
     """ Generates an Odoo module skeleton. """
 
@@ -53,10 +54,12 @@ class Scaffold(Command):
             if d != 'base'
         )
 
+
 builtins = lambda *args: os.path.join(
     os.path.abspath(os.path.dirname(__file__)),
     'templates',
     *args)
+
 
 def snake(s):
     """ snake cases ``s``
@@ -69,11 +72,14 @@ def snake(s):
     s = re.sub(r'(?<=[^A-Z])\B([A-Z])', r' \1', s)
     # lowercase everything, split on whitespace and join
     return '_'.join(s.lower().split())
+
+
 def pascal(s):
     return ''.join(
         ss.capitalize()
         for ss in re.sub(r'[_\s]+', ' ', s).split()
     )
+
 
 def directory(p, create=False):
     expanded = os.path.abspath(
@@ -85,9 +91,12 @@ def directory(p, create=False):
         die("%s is not a directory" % p)
     return expanded
 
+
 env = jinja2.Environment()
 env.filters['snake'] = snake
 env.filters['pascal'] = pascal
+
+
 class template(object):
     def __init__(self, identifier):
         # TODO: archives (zipfile, tarfile)
@@ -136,14 +145,16 @@ class template(object):
                 if ext not in ('.py', '.xml', '.csv', '.js', '.rst', '.html', '.template'):
                     f.write(content)
                 else:
-                    env.from_string(content.decode('utf-8'))\
-                       .stream(params or {})\
-                       .dump(f, encoding='utf-8')
+                    env.from_string(content.decode('utf-8')) \
+                        .stream(params or {}) \
+                        .dump(f, encoding='utf-8')
                     f.write(b'\n')
+
 
 def die(message, code=1):
     print(message, file=sys.stderr)
     sys.exit(code)
+
 
 def warn(message):
     # ASK: shall we use logger ?

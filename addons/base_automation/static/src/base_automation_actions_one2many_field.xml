@@ -10,10 +10,10 @@
                 <div style="min-width: fit-content;" t-att-data-action-id="action.id">
                     <div class="fs-5 d-flex align-items-center">
                         <i
-                            data-name="server_action_icon"
-                            t-att-title="getActionType(action)"
-                            class="fa"
-                            t-att-class="{
+                                data-name="server_action_icon"
+                                t-att-title="getActionType(action)"
+                                class="fa"
+                                t-att-class="{
                                 'code': 'fa-file-code-o',
                                 'object_create': 'fa-edit',
                                 'object_write': 'fa-refresh',
@@ -25,7 +25,7 @@
                                 'sms': 'fa-comments-o',
                             }[action.data.state]"
                         />
-                        <div class="ps-2" t-esc="action.data.name" />
+                        <div class="ps-2" t-esc="action.data.name"/>
                     </div>
                 </div>
                 <div t-if="!action_last" class="px-3 align-self-center" t-att-data-action-id="action.id">

@@ -11,7 +11,7 @@
                     <field name="l10n_id_kode_transaksi" invisible="not l10n_id_pkp"/>
                 </xpath>
                 <page name="accounting" position="inside">
-                    <group string="Indonesian Taxes"  invisible="not l10n_id_pkp">
+                    <group string="Indonesian Taxes" invisible="not l10n_id_pkp">
                         <group>
                             <field name="l10n_id_nik"/>
                         </group>

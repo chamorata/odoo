@@ -1,12 +1,14 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import datetime, date
+
 from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
+from odoo.addons.hr_contract.tests.common import TestContractCommon
 
 from odoo.exceptions import ValidationError
-from odoo.addons.hr_contract.tests.common import TestContractCommon
 from odoo.tests import tagged
+
 
 @tagged('test_contracts')
 class TestHrContracts(TestContractCommon):
@@ -22,7 +24,7 @@ class TestHrContracts(TestContractCommon):
 
         cls.company_2 = cls.env['res.company'].create({
             'name': 'TestCompany2',
-            'contract_expiration_notice_period' : 5,
+            'contract_expiration_notice_period': 5,
             'work_permit_expiration_notice_period': 10,
         })
 
@@ -81,7 +83,6 @@ class TestHrContracts(TestContractCommon):
         self.create_contract('draft', 'normal', start, end)
 
     def test_overlapping_contract_no_end(self):
-
         # No end date
         self.create_contract('open', 'normal', datetime.strptime('2015-11-01', '%Y-%m-%d').date())
 
@@ -91,7 +92,6 @@ class TestHrContracts(TestContractCommon):
             self.create_contract('draft', 'done', start, end)
 
     def test_overlapping_contract_no_end2(self):
-
         start = datetime.strptime('2015-11-01', '%Y-%m-%d').date()
         end = datetime.strptime('2015-12-30', '%Y-%m-%d').date()
         self.create_contract('open', 'normal', start, end)
@@ -126,7 +126,8 @@ class TestHrContracts(TestContractCommon):
         contract = self.create_contract('open', 'normal', today + relativedelta(day=1), today + relativedelta(day=31))
         self.assertEqual(self.employee.contract_id, contract)
 
-        draft_contract = self.create_contract('draft', 'normal', today + relativedelta(months=1, day=1), today + relativedelta(months=1, day=31))
+        draft_contract = self.create_contract('draft', 'normal', today + relativedelta(months=1, day=1),
+                                              today + relativedelta(months=1, day=31))
         draft_contract.state = 'open'
         self.assertEqual(self.employee.contract_id, draft_contract)
 
@@ -163,26 +164,33 @@ class TestHrContracts(TestContractCommon):
         with freeze_time('2015-11-01'):
             self.env['hr.contract'].update_state()
 
-            mail_activity = self.env['mail.activity'].search([('res_id', '=', contract_1.id), ('res_model', '=', 'hr.contract')])
-            self.assertTrue(mail_activity.exists(), "There should be reminder activity as employee work permit going to end soon")
+            mail_activity = self.env['mail.activity'].search(
+                [('res_id', '=', contract_1.id), ('res_model', '=', 'hr.contract')])
+            self.assertTrue(mail_activity.exists(),
+                            "There should be reminder activity as employee work permit going to end soon")
             mail_activity.unlink()
 
-            mail_activity2 = self.env['mail.activity'].search([('res_id', '=', contract_2.id), ('res_model', '=', 'hr.contract')])
-            self.assertFalse(mail_activity2.exists(), "There should be no reminder as the contract is not yet about to expire.")
+            mail_activity2 = self.env['mail.activity'].search(
+                [('res_id', '=', contract_2.id), ('res_model', '=', 'hr.contract')])
+            self.assertFalse(mail_activity2.exists(),
+                             "There should be no reminder as the contract is not yet about to expire.")
 
         with freeze_time('2015-11-10'):
-
             contract_1.kanban_state = 'normal'
             self.env['hr.contract'].update_state()
 
-            mail_activity2 = self.env['mail.activity'].search([('res_id', '=', contract_2.id), ('res_model', '=', 'hr.contract')])
-            self.assertTrue(mail_activity2.exists(), "There should be reminder activity as employee contract going to end soon")
+            mail_activity2 = self.env['mail.activity'].search(
+                [('res_id', '=', contract_2.id), ('res_model', '=', 'hr.contract')])
+            self.assertTrue(mail_activity2.exists(),
+                            "There should be reminder activity as employee contract going to end soon")
 
         with freeze_time('2015-11-15'):
             self.env['hr.contract'].update_state()
 
-            mail_activity = self.env['mail.activity'].search([('res_id', '=', contract_1.id), ('res_model', '=', 'hr.contract')])
-            self.assertTrue(len(mail_activity) == 2, "There should be reminder activity as employee contract and work permit going to end soon")
+            mail_activity = self.env['mail.activity'].search(
+                [('res_id', '=', contract_1.id), ('res_model', '=', 'hr.contract')])
+            self.assertTrue(len(mail_activity) == 2,
+                            "There should be reminder activity as employee contract and work permit going to end soon")
 
     def test_contract_calendar_update(self):
         """

@@ -1,11 +1,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.sale_loyalty.tests.common import TestSaleCouponCommon
+
 from odoo.exceptions import ValidationError
 from odoo.fields import Command
 from odoo.tests import new_test_user, tagged
 from odoo.tools.float_utils import float_compare
-
-from odoo.addons.sale_loyalty.tests.common import TestSaleCouponCommon
 
 
 @tagged('post_install', '-at_install')
@@ -114,7 +114,8 @@ class TestLoyalty(TestSaleCouponCommon):
         })
         order._update_programs_and_rewards()
         claimable_rewards = order._get_claimable_rewards()
-        self.assertEqual(len(claimable_rewards), 1, "The ewallet program should not be applicable since the card has no points.")
+        self.assertEqual(len(claimable_rewards), 1,
+                         "The ewallet program should not be applicable since the card has no points.")
         vals = order._get_reward_values_discount(loyalty_program.reward_ids[0], loyalty_card)
         self.assertEqual(
             vals[0]['points_cost'] % loyalty_program.reward_ids.required_points,
@@ -125,7 +126,8 @@ class TestLoyalty(TestSaleCouponCommon):
         self.ewallet.points = 50
         order._update_programs_and_rewards()
         claimable_rewards = order._get_claimable_rewards()
-        self.assertEqual(len(claimable_rewards), 2, "Now that the ewallet has some points they should both be applicable.")
+        self.assertEqual(len(claimable_rewards), 2,
+                         "Now that the ewallet has some points they should both be applicable.")
 
     def test_cancel_order_with_coupons(self):
         """This test ensure that creating an order with coupons will not
@@ -195,10 +197,10 @@ class TestLoyalty(TestSaleCouponCommon):
                 'trigger': 'with_code',
                 'applies_on': 'both',
                 'reward_ids': [Command.create({
-                        'reward_type': 'discount',
-                        'discount': 100.0,
-                        'discount_applicability': 'specific',
-                        'discount_product_domain': '[("name", "=", "Product A")]',
+                    'reward_type': 'discount',
+                    'discount': 100.0,
+                    'discount_applicability': 'specific',
+                    'discount_product_domain': '[("name", "=", "Product A")]',
                 })],
             },
             {
@@ -235,12 +237,12 @@ class TestLoyalty(TestSaleCouponCommon):
         order = self.env['sale.order'].with_user(self.user_salemanager).create({
             'partner_id': self.partner.id,
             'order_line': [
-                    Command.create({
-                        'product_id': product_a.id,
-                    }),
-                    Command.create({
-                        'product_id': product_b.id,
-                    }),
+                Command.create({
+                    'product_id': product_a.id,
+                }),
+                Command.create({
+                    'product_id': product_b.id,
+                }),
             ]
         })
 
@@ -314,7 +316,7 @@ class TestLoyalty(TestSaleCouponCommon):
 
         order.order_line = [
             Command.clear(),
-            Command.create({'product_id': product_a.id}),                     # price_total = 120
+            Command.create({'product_id': product_a.id}),  # price_total = 120
             Command.create({'product_id': product_b.id, 'price_unit': -95}),  # price_total = -114
         ]
         self._auto_rewards(order, promotion)
@@ -362,16 +364,16 @@ class TestLoyalty(TestSaleCouponCommon):
             'trigger': 'auto',
             'applies_on': 'current',
             'rule_ids': [Command.create({
-                    'reward_point_amount': 1,
-                    'reward_point_mode': 'order',
-                    'minimum_amount': 10,
-                })],
+                'reward_point_amount': 1,
+                'reward_point_mode': 'order',
+                'minimum_amount': 10,
+            })],
             'reward_ids': [Command.create({
-                    'reward_type': 'discount',
-                    'discount': 10.0,
-                    'discount_applicability': 'order',
-                    'required_points': 1,
-                })],
+                'reward_type': 'discount',
+                'discount': 10.0,
+                'discount_applicability': 'order',
+                'required_points': 1,
+            })],
         }])
 
         self.assertEqual(order.amount_total, 100)
@@ -484,7 +486,8 @@ class TestLoyalty(TestSaleCouponCommon):
         self.promotion_code_10pc.reward_ids.discount_applicability = 'specific'
         self.promotion_code_10pc.reward_ids.discount_product_category_id = product_category_food.id
 
-        discount_product = self.env['product.product'].search([('id', '=', self.promotion_code_10pc.reward_ids.discount_line_product_id.id)])
+        discount_product = self.env['product.product'].search(
+            [('id', '=', self.promotion_code_10pc.reward_ids.discount_line_product_id.id)])
         discount_product.categ_id = product_category_food.id
 
         order = self.env['sale.order'].with_user(self.user_salemanager).create({
@@ -600,23 +603,23 @@ class TestLoyalty(TestSaleCouponCommon):
             'trigger': 'auto',
             'applies_on': 'current',
             'rule_ids': [Command.create({
-                    'reward_point_amount': 1,
-                    'reward_point_mode': 'unit',
-                })],
+                'reward_point_amount': 1,
+                'reward_point_mode': 'unit',
+            })],
             'reward_ids': [Command.create({
-                    'reward_type': 'discount',
-                    'discount': 10.0,
-                    'discount_applicability': 'specific',
-                    'required_points': 1,
-                })],
+                'reward_type': 'discount',
+                'discount': 10.0,
+                'discount_applicability': 'specific',
+                'required_points': 1,
+            })],
         }])
 
         order = self.env['sale.order'].with_user(self.user_salemanager).create({
             'partner_id': self.partner.id,
             'order_line': [Command.create({
-                    'product_id': product_A.id,
-                    'product_uom_qty': 3,
-                })]
+                'product_id': product_A.id,
+                'product_uom_qty': 3,
+            })]
         })
 
         self.assertEqual(float_compare(order.amount_total, 300, precision_rounding=3), 0)
@@ -631,7 +634,8 @@ class TestLoyalty(TestSaleCouponCommon):
 
         order._update_programs_and_rewards()
         self._claim_reward(order, coupon_program)
-        self.assertEqual(float_compare(order.amount_total, 218.7, precision_rounding=3), 0, "300 * 0.9 * 0.9 * 0.9 = 218.7")
+        self.assertEqual(float_compare(order.amount_total, 218.7, precision_rounding=3), 0,
+                         "300 * 0.9 * 0.9 * 0.9 = 218.7")
 
     def test_promotion_program_restricted_to_pricelists(self):
         self.env['product.pricelist'].search([]).action_archive()
@@ -764,7 +768,6 @@ class TestLoyalty(TestSaleCouponCommon):
         self.assertEqual(len(order_6.order_line.ids), 2, applied_message)
 
     def test_specific_promotion_on_free_product(self):
-
         product_A = self.env['product.product'].create({
             'name': 'Product A',
             'list_price': 100,

@@ -2,7 +2,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import re
 
-
 __all__ = ['check_barcode_encoding']
 
 
@@ -51,6 +50,6 @@ def check_barcode_encoding(barcode, encoding):
     }
     barcode_size = barcode_sizes[encoding]
     return (encoding != 'ean13' or barcode[0] != '0') \
-           and len(barcode) == barcode_size \
-           and re.match(r"^\d+$", barcode) \
-           and get_barcode_check_digit(barcode) == int(barcode[-1])
+        and len(barcode) == barcode_size \
+        and re.match(r"^\d+$", barcode) \
+        and get_barcode_check_digit(barcode) == int(barcode[-1])

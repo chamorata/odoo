@@ -1,5 +1,6 @@
-from odoo.http import request
 from odoo.addons.website_sale.controllers.payment import PaymentPortal
+
+from odoo.http import request
 
 
 class PaymentPortalOnsite(PaymentPortal):

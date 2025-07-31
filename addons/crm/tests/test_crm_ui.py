@@ -1,6 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.crm.tests.common import TestCrmCommon
+
 from odoo.tests import HttpCase
 from odoo.tests.common import tagged
 
@@ -46,9 +47,9 @@ class TestUi(HttpCase, TestCrmCommon):
             'login': 'temp_crm_user',
             'password': 'temp_crm_user',
             'groups_id': [(6, 0, [
-                    self.ref('base.group_user'),
-                    self.ref('sales_team.group_sale_salesman')
-                ])]
+                self.ref('base.group_user'),
+                self.ref('sales_team.group_sale_salesman')
+            ])]
         })
         self.start_tour("/odoo", 'crm_rainbowman', login="temp_crm_user")
 

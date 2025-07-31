@@ -36,7 +36,7 @@ class PaymentCaptureWizard(models.TransientModel):
     has_draft_children = fields.Boolean(compute='_compute_has_draft_children')
     has_remaining_amount = fields.Boolean(compute='_compute_has_remaining_amount')
 
-    #=== COMPUTE METHODS ===#
+    # === COMPUTE METHODS ===#
 
     @api.depends('transaction_ids')
     def _compute_authorized_amount(self):
@@ -104,7 +104,7 @@ class PaymentCaptureWizard(models.TransientModel):
             if not wizard.has_remaining_amount:
                 wizard.void_remaining_amount = False
 
-    #=== CONSTRAINT METHODS ===#
+    # === CONSTRAINT METHODS ===#
 
     @api.constrains('amount_to_capture')
     def _check_amount_to_capture_within_boundaries(self):
@@ -118,13 +118,13 @@ class PaymentCaptureWizard(models.TransientModel):
                     formatted_amount
                 ))
             if not wizard.support_partial_capture \
-               and wizard.amount_to_capture != wizard.available_amount:
+                    and wizard.amount_to_capture != wizard.available_amount:
                 raise ValidationError(_(
                     "Some of the transactions you intend to capture can only be captured in full. "
                     "Handle the transactions individually to capture a partial amount."
                 ))
 
-    #=== ACTION METHODS ===#
+    # === ACTION METHODS ===#
 
     def action_capture(self):
         for wizard in self:

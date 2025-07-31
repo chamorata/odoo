@@ -8,7 +8,8 @@ class Partner(models.Model):
     _name = 'res.partner'
     _inherit = 'res.partner'
 
-    opportunity_ids = fields.One2many('crm.lead', 'partner_id', string='Opportunities', domain=[('type', '=', 'opportunity')])
+    opportunity_ids = fields.One2many('crm.lead', 'partner_id', string='Opportunities',
+                                      domain=[('type', '=', 'opportunity')])
     opportunity_count = fields.Integer(
         string="Opportunity Count",
         groups='sales_team.group_sale_salesman',

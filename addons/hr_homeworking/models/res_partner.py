@@ -2,6 +2,7 @@
 
 from odoo import models
 
+
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
@@ -15,4 +16,3 @@ class ResPartner(models.Model):
             im_status = user.partner_id.im_status
             if im_status == "online" or im_status == "away" or im_status == "offline":
                 user.partner_id.im_status = location_type + "_" + im_status
-

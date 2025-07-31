@@ -1,8 +1,9 @@
+from odoo.addons.l10n_jo_edi.models.account_edi_xml_ubl_21_jo import JO_MAX_DP
+from odoo.addons.l10n_jo_edi.tests.jo_edi_common import JoEdiCommon
+
 from odoo import Command
 from odoo.tests import tagged
 from odoo.tools.float_utils import float_compare
-from odoo.addons.l10n_jo_edi.tests.jo_edi_common import JoEdiCommon
-from odoo.addons.l10n_jo_edi.models.account_edi_xml_ubl_21_jo import JO_MAX_DP
 
 
 @tagged('post_install_l10n', 'post_install', '-at_install')
@@ -80,7 +81,8 @@ class TestJoEdiPrecision(JoEdiCommon):
 
         tax_exclusive_amount = float(root.findtext('./{*}LegalMonetaryTotal/{*}TaxExclusiveAmount'))
         tax_inclusive_amount = float(root.findtext('./{*}LegalMonetaryTotal/{*}TaxInclusiveAmount'))
-        self.assertEqual(float_compare(tax_inclusive_amount, invoice.amount_total, 2), 0, f'{tax_inclusive_amount} != {invoice.amount_total}')
+        self.assertEqual(float_compare(tax_inclusive_amount, invoice.amount_total, 2), 0,
+                         f'{tax_inclusive_amount} != {invoice.amount_total}')
         monetary_values_discount = float(root.findtext('./{*}LegalMonetaryTotal/{*}AllowanceTotalAmount'))
         payable_amount = float(root.findtext('./{*}LegalMonetaryTotal/{*}PayableAmount'))
 
@@ -101,7 +103,9 @@ class TestJoEdiPrecision(JoEdiCommon):
                 'quantity': float(xml_line.findtext('{*}InvoicedQuantity')),
                 'line_extension_amount': line_extension_amount,
                 'tax_amount_general': float(xml_line.findtext('{*}TaxTotal/{*}TaxAmount', default=0)),
-                'rounding_amount': float(xml_line.findtext('{*}TaxTotal/{*}RoundingAmount', default=line_extension_amount)),  # defaults to line_extension_amount in the absence of taxes
+                'rounding_amount': float(
+                    xml_line.findtext('{*}TaxTotal/{*}RoundingAmount', default=line_extension_amount)),
+                # defaults to line_extension_amount in the absence of taxes
                 **self._extract_vals_from_subtotals(
                     subtotals=xml_line.findall('{*}TaxTotal/{*}TaxSubtotal'),
                     defaults={
@@ -129,7 +133,8 @@ class TestJoEdiPrecision(JoEdiCommon):
             }) + self._equality_check({
                 'General Tax Amount': line['tax_amount_general'],
                 'General Tax Amount in subtotal': line['tax_amount_general_subtotal'],
-                'Taxable Amount * Tax Percent': (line['taxable_amount_general'] + line['tax_amount_special']) * line['tax_percent'],
+                'Taxable Amount * Tax Percent': (line['taxable_amount_general'] + line['tax_amount_special']) * line[
+                    'tax_percent'],
             })
             if line_errors:
                 error_message += f"Errors on the line {line['id']}\n"
@@ -137,7 +142,8 @@ class TestJoEdiPrecision(JoEdiCommon):
                 error_message += "-------------------------------------------------------------------------\n"
 
         aggregated_tax_exclusive_amount = self._sum_max_dp(line['price_unit'] * line['quantity'] for line in lines)
-        aggregated_tax_inclusive_amount = self._sum_max_dp(line['price_unit'] * line['quantity'] - line['discount'] + line['total_tax_amount'] for line in lines)
+        aggregated_tax_inclusive_amount = self._sum_max_dp(
+            line['price_unit'] * line['quantity'] - line['discount'] + line['total_tax_amount'] for line in lines)
         aggregated_tax_amount = sum(line['tax_amount_general'] for line in lines)
         aggregated_discount_amount = sum(line['discount'] for line in lines)
 
@@ -147,7 +153,8 @@ class TestJoEdiPrecision(JoEdiCommon):
         }) + self._equality_check({
             'Tax Inclusive Amount': tax_inclusive_amount,
             'Aggregated Tax Inclusive Amount': aggregated_tax_inclusive_amount,
-            'Tax Exclusive Amount - Total Discount + Total Tax': tax_exclusive_amount - total_discount + sum(line['total_tax_amount'] for line in lines),
+            'Tax Exclusive Amount - Total Discount + Total Tax': tax_exclusive_amount - total_discount + sum(
+                line['total_tax_amount'] for line in lines),
         }) + self._equality_check({
             'Tax Amount': total_tax,
             'Aggregated Tax Amount': aggregated_tax_amount,
@@ -351,6 +358,7 @@ class TestJoEdiPrecision(JoEdiCommon):
             root = self.get_xml_tree_from_string(xml_string)
             for xml_line in root.findall('./{*}InvoiceLine'):
                 yield float(xml_line.findtext('{*}Price/{*}PriceAmount'))
+
         self.company.l10n_jo_edi_taxpayer_type = 'sales'
         self.company.l10n_jo_edi_sequence_income_source = '16683693'
         invoice = self._l10n_jo_create_invoice({

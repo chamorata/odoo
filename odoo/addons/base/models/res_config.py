@@ -170,9 +170,9 @@ class ResConfigSettings(models.TransientModel, ResConfigModuleInstallationMixin)
 
     def _valid_field_parameter(self, field, name):
         return (
-            name in ('default_model', 'config_parameter')
-            or field.type in ('boolean', 'selection') and name in ('group', 'implied_group')
-            or super()._valid_field_parameter(field, name)
+                name in ('default_model', 'config_parameter')
+                or field.type in ('boolean', 'selection') and name in ('group', 'implied_group')
+                or super()._valid_field_parameter(field, name)
         )
 
     def copy(self, default=None):
@@ -194,6 +194,7 @@ class ResConfigSettings(models.TransientModel, ResConfigModuleInstallationMixin)
 
     def _register_hook(self):
         """ Add an onchange method for each module field. """
+
         def make_method(name):
             return lambda self: self.onchange_module(self[name], name)
 
@@ -246,7 +247,8 @@ class ResConfigSettings(models.TransientModel, ResConfigModuleInstallationMixin)
                 modules += IrModule._get(name[7:])
             elif hasattr(field, 'config_parameter') and field.config_parameter:
                 if field.type not in ('boolean', 'integer', 'float', 'char', 'selection', 'many2one', 'datetime'):
-                    raise Exception("Field %s must have type 'boolean', 'integer', 'float', 'char', 'selection', 'many2one' or 'datetime'" % field)
+                    raise Exception(
+                        "Field %s must have type 'boolean', 'integer', 'float', 'char', 'selection', 'many2one' or 'datetime'" % field)
                 configs.append((name, field.config_parameter))
             else:
                 others.append(name)
@@ -279,7 +281,7 @@ class ResConfigSettings(models.TransientModel, ResConfigModuleInstallationMixin)
         for name, groups, implied_group in classified['group']:
             res[name] = all(implied_group in group.implied_ids for group in groups)
             if self._fields[name].type == 'selection':
-                res[name] = str(int(res[name]))     # True, False -> '1', '0'
+                res[name] = str(int(res[name]))  # True, False -> '1', '0'
 
         # modules: which modules are installed/to install
         for module in classified['module']:
@@ -553,7 +555,8 @@ class ResConfigSettings(models.TransientModel, ResConfigModuleInstallationMixin)
 
     def action_open_template_user(self):
         action = self.env["ir.actions.actions"]._for_xml_id("base.action_res_users")
-        template_user_id = literal_eval(self.env['ir.config_parameter'].sudo().get_param('base.template_portal_user_id', 'False'))
+        template_user_id = literal_eval(
+            self.env['ir.config_parameter'].sudo().get_param('base.template_portal_user_id', 'False'))
         template_user = self.env['res.users'].browse(template_user_id)
         if not template_user.exists():
             raise UserError(_('Invalid template user. It seems it has been deleted.'))

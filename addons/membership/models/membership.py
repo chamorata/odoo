@@ -26,21 +26,24 @@ class MembershipLine(models.Model):
     date_to = fields.Date(string='To', readonly=True)
     date_cancel = fields.Date(string='Cancel date')
     date = fields.Date(string='Join Date',
-        help="Date on which member has joined the membership")
+                       help="Date on which member has joined the membership")
     member_price = fields.Float(string='Membership Fee',
-        digits='Product Price', required=True,
-        help='Amount for the membership')
-    account_invoice_line = fields.Many2one('account.move.line', string='Account Invoice line', readonly=True, ondelete='cascade')
-    account_invoice_id = fields.Many2one('account.move', related='account_invoice_line.move_id', string='Invoice', readonly=True)
-    company_id = fields.Many2one('res.company', related='account_invoice_line.move_id.company_id', string="Company", readonly=True, store=True)
+                                digits='Product Price', required=True,
+                                help='Amount for the membership')
+    account_invoice_line = fields.Many2one('account.move.line', string='Account Invoice line', readonly=True,
+                                           ondelete='cascade')
+    account_invoice_id = fields.Many2one('account.move', related='account_invoice_line.move_id', string='Invoice',
+                                         readonly=True)
+    company_id = fields.Many2one('res.company', related='account_invoice_line.move_id.company_id', string="Company",
+                                 readonly=True, store=True)
     state = fields.Selection(STATE, compute='_compute_state', string='Membership Status', store=True,
-        help="It indicates the membership status.\n"
-             "-Non Member: A member who has not applied for any membership.\n"
-             "-Cancelled Member: A member who has cancelled his membership.\n"
-             "-Old Member: A member whose membership date has expired.\n"
-             "-Waiting Member: A member who has applied for the membership and whose invoice is going to be created.\n"
-             "-Invoiced Member: A member whose invoice has been created.\n"
-             "-Paid Member: A member who has paid the membership amount.")
+                             help="It indicates the membership status.\n"
+                                  "-Non Member: A member who has not applied for any membership.\n"
+                                  "-Cancelled Member: A member who has cancelled his membership.\n"
+                                  "-Old Member: A member whose membership date has expired.\n"
+                                  "-Waiting Member: A member who has applied for the membership and whose invoice is going to be created.\n"
+                                  "-Invoiced Member: A member whose invoice has been created.\n"
+                                  "-Paid Member: A member who has paid the membership amount.")
 
     @api.depends('account_invoice_id.state',
                  'account_invoice_id.amount_residual',

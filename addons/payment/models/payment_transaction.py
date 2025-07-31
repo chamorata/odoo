@@ -3,18 +3,17 @@
 import logging
 import pprint
 import re
-import unicodedata
 from datetime import datetime
 
 import psycopg2
+import unicodedata
 from dateutil import relativedelta
 from markupsafe import Markup
+from odoo.addons.payment import utils as payment_utils
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import email_normalize_all, format_amount
-
-from odoo.addons.payment import utils as payment_utils
 
 _logger = logging.getLogger(__name__)
 
@@ -123,7 +122,7 @@ class PaymentTransaction(models.Model):
         ('reference_uniq', 'unique(reference)', "Reference must be unique!"),
     ]
 
-    #=== COMPUTE METHODS ===#
+    # === COMPUTE METHODS ===#
 
     def _compute_refunds_count(self):
         rg_data = self.env['payment.transaction']._read_group(
@@ -135,7 +134,7 @@ class PaymentTransaction(models.Model):
         for record in self:
             record.refunds_count = data.get(record.id, 0)
 
-    #=== CONSTRAINT METHODS ===#
+    # === CONSTRAINT METHODS ===#
 
     @api.constrains('state')
     def _check_state_authorized_supported(self):
@@ -155,7 +154,7 @@ class PaymentTransaction(models.Model):
         if self.token_id and not self.token_id.active:
             raise ValidationError(_("Creating a transaction from an archived token is forbidden."))
 
-    #=== CRUD METHODS ===#
+    # === CRUD METHODS ===#
 
     @api.model_create_multi
     def create(self, values_list):
@@ -215,7 +214,7 @@ class PaymentTransaction(models.Model):
         """
         return dict()
 
-    #=== ACTION METHODS ===#
+    # === ACTION METHODS ===#
 
     def action_view_refunds(self):
         """ Return the windows action to browse the refund transactions linked to the transaction.
@@ -299,7 +298,7 @@ class PaymentTransaction(models.Model):
             # In sudo mode because we need to be able to read on provider fields.
             tx.sudo()._send_refund_request(amount_to_refund=amount_to_refund)
 
-    #=== BUSINESS METHODS - PAYMENT FLOW ===#
+    # === BUSINESS METHODS - PAYMENT FLOW ===#
 
     @api.model
     def _compute_reference(self, provider_code, prefix=None, separator='-', **kwargs):
@@ -773,6 +772,7 @@ class PaymentTransaction(models.Model):
         :return: The recordset of transactions whose state was updated.
         :rtype: recordset of `payment.transaction`
         """
+
         def classify_by_state(transactions_):
             """ Classify the transactions according to their current state.
 
@@ -843,7 +843,7 @@ class PaymentTransaction(models.Model):
                 # Call `_update_state` directly instead of `_set_authorized` to avoid looping.
                 child_tx.source_transaction_id._update_state(('authorized',), 'done', state_message)
 
-    #=== BUSINESS METHODS - POST-PROCESSING ===#
+    # === BUSINESS METHODS - POST-PROCESSING ===#
 
     def _cron_post_process(self):
         """ Trigger the post-processing of the transactions that were not handled by the client in
@@ -885,7 +885,7 @@ class PaymentTransaction(models.Model):
         """
         self.is_post_processed = True
 
-    #=== BUSINESS METHODS - LOGGING ===#
+    # === BUSINESS METHODS - LOGGING ===#
 
     def _log_sent_message(self):
         """ Log that the transactions have been initiated in the chatter of relevant documents.
@@ -921,7 +921,7 @@ class PaymentTransaction(models.Model):
         """
         self.ensure_one()
 
-    #=== BUSINESS METHODS - GETTERS ===#
+    # === BUSINESS METHODS - GETTERS ===#
 
     def _get_sent_message(self):
         """ Return the message stating that the transaction has been requested.
@@ -977,7 +977,7 @@ class PaymentTransaction(models.Model):
         if self.state == 'pending':
             message = _(
                 ("The transaction with reference %(ref)s for %(amount)s "
-                "is pending (%(provider_name)s)."),
+                 "is pending (%(provider_name)s)."),
                 ref=self.reference,
                 amount=formatted_amount,
                 provider_name=self.provider_id.name
@@ -1005,7 +1005,7 @@ class PaymentTransaction(models.Model):
         else:
             message = _(
                 ("The transaction with reference %(ref)s for %(amount)s is canceled "
-                "(%(provider_name)s)."),
+                 "(%(provider_name)s)."),
                 ref=self.reference,
                 amount=formatted_amount,
                 provider_name=self.provider_id.name

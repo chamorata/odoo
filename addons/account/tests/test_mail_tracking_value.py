@@ -2,9 +2,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 
-from odoo import Command
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.addons.mail.tests.common import MailCommon
+
+from odoo import Command
 from odoo.tests import Form
 from odoo.tests.common import tagged
 
@@ -35,7 +36,7 @@ class TestTracking(AccountTestInvoicingCommon, MailCommon):
 
         self.flush_tracking()
         # Isolate the tracked value for the invoice line because changing the account has recomputed the taxes.
-        tracking_value = account_move.message_ids.sudo().tracking_value_ids\
+        tracking_value = account_move.message_ids.sudo().tracking_value_ids \
             .filtered(lambda t: t.field_id.name == 'account_id' and t.old_value_integer == old_value.id)
         self.assertTracking(tracking_value.mail_message_id, [
             ('account_id', 'many2one', old_value, new_value),

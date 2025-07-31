@@ -1,7 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.exceptions import ValidationError
 from odoo.addons.stock.tests.common import TestStockCommon
+
+from odoo.exceptions import ValidationError
 
 
 class TestAnalytics(TestStockCommon):

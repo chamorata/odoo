@@ -2,9 +2,10 @@
 
 from odoo.addons.stock_account.tests.test_stockvaluation import _create_accounting_data
 from odoo.addons.stock_account.tests.test_stockvaluationlayer import TestStockValuationCommon
+
+from odoo import Command
 from odoo.exceptions import UserError
 from odoo.tests import Form
-from odoo import Command
 
 
 class TestLotValuation(TestStockValuationCommon):
@@ -84,7 +85,8 @@ class TestLotValuation(TestStockValuationCommon):
 
     def test_real_time_valuation(self):
         """ Test account move lines contains lot """
-        self.stock_input_account, self.stock_output_account, self.stock_valuation_account, self.expense_account, self.stock_journal = _create_accounting_data(self.env)
+        self.stock_input_account, self.stock_output_account, self.stock_valuation_account, self.expense_account, self.stock_journal = _create_accounting_data(
+            self.env)
         self.product1.categ_id.write({
             'property_stock_account_input_categ_id': self.stock_input_account.id,
             'property_stock_account_output_categ_id': self.stock_output_account.id,
@@ -105,7 +107,7 @@ class TestLotValuation(TestStockValuationCommon):
             {'debit': 70.0, 'credit': 0.0},
             {'debit': 0.0, 'credit': 10.0},
             {'debit': 10.0, 'credit': 0.0},
-            ])
+        ])
 
     def test_disable_lot_valuation(self):
         """ Disabling lot valuation should compansate lots layer untouched a one product only layer.
@@ -214,7 +216,7 @@ class TestLotValuation(TestStockValuationCommon):
                     'value_ids': [
                         Command.link(self.size_attribute.value_ids[0].id),
                         Command.link(self.size_attribute.value_ids[1].id),
-                ]}),
+                    ]}),
             ],
         })
         productA, productB = template.product_variant_ids
@@ -526,7 +528,7 @@ class TestLotValuation(TestStockValuationCommon):
         self.product1.standard_price = 9
         move = self._make_out_move(self.product1, 3, create_picking=True, lot_ids=[self.lot1, self.lot2, self.lot3])
         stock_return_picking_form = Form(self.env['stock.return.picking']
-            .with_context(active_id=move.picking_id.id, active_model='stock.picking'))
+                                         .with_context(active_id=move.picking_id.id, active_model='stock.picking'))
         stock_return_picking = stock_return_picking_form.save()
         stock_return_picking.product_return_moves.quantity = 2
         stock_return_picking_action = stock_return_picking.action_create_returns()
@@ -741,7 +743,8 @@ class TestLotValuation(TestStockValuationCommon):
         Check that an inventory user is able to process a delivery.
         """
         product_lot = self.product1
-        self.env['stock.quant']._update_available_quantity(product_lot, self.env.ref('stock.warehouse0').lot_stock_id, 10.0, lot_id=self.lot1)
+        self.env['stock.quant']._update_available_quantity(product_lot, self.env.ref('stock.warehouse0').lot_stock_id,
+                                                           10.0, lot_id=self.lot1)
         inventory_user = self.env['res.users'].create({
             'name': 'Inventory user',
             'login': 'inventory_user',

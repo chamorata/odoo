@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.point_of_sale.tests.common import TestPoSCommon
+
 import odoo
 from odoo import fields
-from odoo.addons.point_of_sale.tests.common import TestPoSCommon
 
 
 @odoo.tests.tagged('post_install', '-at_install')
@@ -45,7 +46,8 @@ class TestPoSSaleReport(TestPoSCommon):
     def test_weight_and_volume_product_variant(self):
         colors = ['red', 'blue']
         prod_attr = self.env['product.attribute'].create({'name': 'Color', 'create_variant': 'dynamic'})
-        prod_attr_values = self.env['product.attribute.value'].create([{'name': color, 'attribute_id': prod_attr.id, 'sequence': 1} for color in colors])
+        prod_attr_values = self.env['product.attribute.value'].create(
+            [{'name': color, 'attribute_id': prod_attr.id, 'sequence': 1} for color in colors])
 
         uom_unit = self.env.ref('uom.product_uom_unit')
         product_template = self.env['product.template'].create({
@@ -106,7 +108,6 @@ class TestPoSSaleReport(TestPoSCommon):
         self.assertEqual(move_id.partner_shipping_id.id, self.other_customer.id)
 
     def test_warehouse(self):
-
         self.open_new_session()
         session = self.pos_session
         orders = []

@@ -3,12 +3,13 @@
 
 from datetime import datetime, timedelta
 
-from odoo.fields import Datetime as FieldsDatetime
-from odoo.tests.common import users
+from odoo.addons.event.tests.common import EventCase
 from odoo.addons.website.tests.test_website_visitor import MockVisitor
 from odoo.addons.website.tools import MockRequest
 from odoo.addons.website_event.controllers.main import WebsiteEventController
-from odoo.addons.event.tests.common import EventCase
+
+from odoo.fields import Datetime as FieldsDatetime
+from odoo.tests.common import users
 
 
 class TestEventData(EventCase, MockVisitor):
@@ -78,24 +79,24 @@ class TestEventData(EventCase, MockVisitor):
 
         self.assertEqual(registrations, [
             {'name': 'Pixis', 'email': 'pixis@gmail.com', 'phone': '+32444444444', 'event_ticket_id': ticket_id_1.id,
-            'registration_answer_ids': [
-                (0, 0, {'question_id': name_question.id, 'value_text_box': 'Pixis'}),
-                (0, 0, {'question_id': email_question.id, 'value_text_box': 'pixis@gmail.com'}),
-                (0, 0, {'question_id': phone_question.id, 'value_text_box': '+32444444444'}),
-                (0, 0, {'question_id': second_phone_question.id, 'value_text_box': '+32555555555'}),
-                (0, 0, {'question_id': self.event_question_1.id, 'value_answer_id': 5}),
-                (0, 0, {'question_id': self.event_question_2.id, 'value_answer_id': 7}),
-                (0, 0, {'question_id': self.event_question_3.id, 'value_text_box': 'Free Text'})]},
+             'registration_answer_ids': [
+                 (0, 0, {'question_id': name_question.id, 'value_text_box': 'Pixis'}),
+                 (0, 0, {'question_id': email_question.id, 'value_text_box': 'pixis@gmail.com'}),
+                 (0, 0, {'question_id': phone_question.id, 'value_text_box': '+32444444444'}),
+                 (0, 0, {'question_id': second_phone_question.id, 'value_text_box': '+32555555555'}),
+                 (0, 0, {'question_id': self.event_question_1.id, 'value_answer_id': 5}),
+                 (0, 0, {'question_id': self.event_question_2.id, 'value_answer_id': 7}),
+                 (0, 0, {'question_id': self.event_question_3.id, 'value_text_box': 'Free Text'})]},
             {'name': 'Geluchat', 'email': 'geluchat@gmail.com', 'phone': '+32777777777', 'company_name': 'My Company',
-            'event_ticket_id': ticket_id_2.id,
-            'registration_answer_ids': [
-                (0, 0, {'question_id': name_question.id, 'value_text_box': 'Geluchat'}),
-                (0, 0, {'question_id': email_question.id, 'value_text_box': 'geluchat@gmail.com'}),
-                (0, 0, {'question_id': phone_question.id, 'value_text_box': '+32777777777'}),
-                (0, 0, {'question_id': company_name_question.id, 'value_text_box': 'My Company'}),
-                (0, 0, {'question_id': self.event_question_1.id, 'value_answer_id': 9}),
-                (0, 0, {'question_id': self.event_question_2.id, 'value_answer_id': 7}),
-                (0, 0, {'question_id': self.event_question_3.id, 'value_text_box': 'Free Text'})]}
+             'event_ticket_id': ticket_id_2.id,
+             'registration_answer_ids': [
+                 (0, 0, {'question_id': name_question.id, 'value_text_box': 'Geluchat'}),
+                 (0, 0, {'question_id': email_question.id, 'value_text_box': 'geluchat@gmail.com'}),
+                 (0, 0, {'question_id': phone_question.id, 'value_text_box': '+32777777777'}),
+                 (0, 0, {'question_id': company_name_question.id, 'value_text_box': 'My Company'}),
+                 (0, 0, {'question_id': self.event_question_1.id, 'value_answer_id': 9}),
+                 (0, 0, {'question_id': self.event_question_2.id, 'value_answer_id': 7}),
+                 (0, 0, {'question_id': self.event_question_3.id, 'value_text_box': 'Free Text'})]}
         ])
 
     def test_process_attendees_form_no_tickets(self):
@@ -235,5 +236,6 @@ class TestEventData(EventCase, MockVisitor):
                 ('id', 'in', self.events_visibility_test.ids),
                 ('is_visible_on_website', '=', True)])
             self.assertIn(self.event_public, visible_events)
-            self.assertIn(self.event_link_only, visible_events, "Should now be visible because visitor is participating")
+            self.assertIn(self.event_link_only, visible_events,
+                          "Should now be visible because visitor is participating")
             self.assertNotIn(self.event_logged_users, visible_events)

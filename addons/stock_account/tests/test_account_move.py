@@ -3,8 +3,10 @@
 
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.addons.stock_account.tests.test_stockvaluation import _create_accounting_data
-from odoo.tests import Form, tagged
+
 from odoo import fields, Command
+from odoo.tests import Form, tagged
+
 
 class TestAccountMoveStockCommon(AccountTestInvoicingCommon):
     @classmethod
@@ -201,7 +203,8 @@ class TestAccountMove(TestAccountMoveStockCommon):
         })
 
         for company in (self.env.company | first_company):
-            bill_form = Form(self.env['account.move'].with_company(company.id).with_context(default_move_type='in_invoice'))
+            bill_form = Form(
+                self.env['account.move'].with_company(company.id).with_context(default_move_type='in_invoice'))
             bill_form.partner_id = self.partner_a
             bill_form.invoice_date = fields.Date.today()
             with bill_form.invoice_line_ids.new() as line:
@@ -375,7 +378,8 @@ class TestAccountMove(TestAccountMoveStockCommon):
         quants.inventory_quantity = 10.0
         wizard = self.env['stock.inventory.adjustment.name'].create({'quant_ids': quants})
         wizard.action_apply()
-        inv_adjustment_journal_items = self.env['account.move.line'].search([('product_id', 'in', products.ids)], order='id asc', limit=4)
+        inv_adjustment_journal_items = self.env['account.move.line'].search([('product_id', 'in', products.ids)],
+                                                                            order='id asc', limit=4)
         stock_input_account, stock_valuation_account, stock_output_account = (
             self.auto_categ.property_stock_account_input_categ_id,
             self.auto_categ.property_stock_valuation_account_id,

@@ -3,12 +3,11 @@
 
 
 from dateutil.relativedelta import relativedelta
-
 from freezegun import freeze_time
+from odoo.addons.mail.tools.discuss import Store
 
 from odoo import Command, fields
 from odoo.tests.common import tagged, TransactionCase
-from odoo.addons.mail.tools.discuss import Store
 
 
 @tagged('post_install', '-at_install')

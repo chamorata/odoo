@@ -56,21 +56,23 @@
                                 <field name="slide_views" widget="statinfo" string="Attendees"/>
                             </button>
                             <button disabled="1" icon="fa-thumbs-up" class="oe_stat_button"
-                                invisible="channel_type == 'training' or likes == 0">
+                                    invisible="channel_type == 'training' or likes == 0">
                                 <field class="ms-1" name="likes" widget="statinfo" string="Likes"/>
-                             </button>
-                             <button disabled="1" icon="fa-thumbs-down" class="oe_stat_button"
-                                invisible="channel_type == 'training' or dislikes == 0">
+                            </button>
+                            <button disabled="1" icon="fa-thumbs-down" class="oe_stat_button"
+                                    invisible="channel_type == 'training' or dislikes == 0">
                                 <field class="ms-1" name="dislikes" widget="statinfo" string="Dislikes"/>
-                             </button>
-                             <button disabled="1" icon="fa-comments" class="oe_stat_button"
-                                 invisible="not channel_allow_comment or comments_count == 0">
+                            </button>
+                            <button disabled="1" icon="fa-comments" class="oe_stat_button"
+                                    invisible="not channel_allow_comment or comments_count == 0">
                                 <field class="ms-1" name="comments_count" widget="statinfo" string="Comments"/>
                             </button>
                             <button name="action_view_embeds" class="oe_stat_button" type="object" icon="fa-share-alt"
-                                invisible="embed_count == 0">
+                                    invisible="embed_count == 0">
                                 <div class="o_stat_info">
-                                    <span class="o_stat_value"><field name="embed_count"/></span>
+                                    <span class="o_stat_value">
+                                        <field name="embed_count"/>
+                                    </span>
                                     <span class="o_stat_text">Embed Views</span>
                                 </div>
                             </button>
@@ -78,17 +80,20 @@
                                    invisible="is_category or not channel_id"/>
                         </div>
                         <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
-                        <field name="image_1920" widget="image" class="oe_avatar" options='{"preview_image": "image_256"}'
-                            invisible="is_category"/>
+                        <field name="image_1920" widget="image" class="oe_avatar"
+                               options='{"preview_image": "image_256"}'
+                               invisible="is_category"/>
                         <div class="oe_title pe-xl-0">
                             <div>
                                 <label for="name" string="Content Title"/>
                             </div>
                             <h1>
-                                <field name="name" default_focus="1" placeholder="e.g. Setting up your computer" class="me-0"/>
+                                <field name="name" default_focus="1" placeholder="e.g. Setting up your computer"
+                                       class="me-0"/>
                                 <field name="is_category" invisible="1"/>
                             </h1>
-                            <field name="tag_ids" invisible="is_category" widget="many2many_tags" placeholder="Tags..."/>
+                            <field name="tag_ids" invisible="is_category" widget="many2many_tags"
+                                   placeholder="Tags..."/>
                         </div>
                         <notebook invisible="is_category">
                             <page name="document" string="Document">
@@ -101,33 +106,45 @@
                                         <div class="text-muted" colspan="2" invisible="slide_category != 'quiz'">
                                             You can add questions to this quiz in the 'Quiz' tab.
                                         </div>
-                                        <label for="source_type" string="" invisible="slide_category not in ['infographic', 'document']"/>
-                                        <field name="source_type" widget="radio" nolabel="1" invisible="slide_category not in ['infographic', 'document']" />
-                                        <field name="video_url" invisible="slide_category != 'video'" readonly="slide_category != 'video'" required="slide_category == 'video'"
-                                            placeholder='e.g "www.youtube.com/watch?v=ebBez6bcSEc"'
-                                            widget="url"/>
-                                        <field name="document_google_url" invisible="source_type != 'external' or slide_category != 'document'" readonly="source_type != 'external' or slide_category != 'document'"
-                                            placeholder='e.g "https://drive.google.com/file/..."'
-                                            widget="url"/>
-                                        <field name="image_google_url" invisible="source_type != 'external' or slide_category != 'infographic'" readonly="source_type != 'external' or slide_category != 'infographic'"
-                                            placeholder='e.g "https://drive.google.com/file/..."'
-                                            widget="url"/>
-                                        <field name="document_binary_content" string="" options="{'accepted_file_extensions': '.pdf'}"
-                                            invisible="source_type == 'external' or slide_category != 'document'"
-                                            readonly="source_type == 'external' or slide_category != 'document'"/>
-                                        <field name="image_binary_content" string="" options="{'accepted_file_extensions': 'image/*'}"
-                                            invisible="source_type == 'external' or slide_category != 'infographic'"
-                                            readonly="source_type == 'external' or slide_category != 'infographic'"/>
+                                        <label for="source_type" string=""
+                                               invisible="slide_category not in ['infographic', 'document']"/>
+                                        <field name="source_type" widget="radio" nolabel="1"
+                                               invisible="slide_category not in ['infographic', 'document']"/>
+                                        <field name="video_url" invisible="slide_category != 'video'"
+                                               readonly="slide_category != 'video'" required="slide_category == 'video'"
+                                               placeholder='e.g "www.youtube.com/watch?v=ebBez6bcSEc"'
+                                               widget="url"/>
+                                        <field name="document_google_url"
+                                               invisible="source_type != 'external' or slide_category != 'document'"
+                                               readonly="source_type != 'external' or slide_category != 'document'"
+                                               placeholder='e.g "https://drive.google.com/file/..."'
+                                               widget="url"/>
+                                        <field name="image_google_url"
+                                               invisible="source_type != 'external' or slide_category != 'infographic'"
+                                               readonly="source_type != 'external' or slide_category != 'infographic'"
+                                               placeholder='e.g "https://drive.google.com/file/..."'
+                                               widget="url"/>
+                                        <field name="document_binary_content" string=""
+                                               options="{'accepted_file_extensions': '.pdf'}"
+                                               invisible="source_type == 'external' or slide_category != 'document'"
+                                               readonly="source_type == 'external' or slide_category != 'document'"/>
+                                        <field name="image_binary_content" string=""
+                                               options="{'accepted_file_extensions': 'image/*'}"
+                                               invisible="source_type == 'external' or slide_category != 'infographic'"
+                                               readonly="source_type == 'external' or slide_category != 'infographic'"/>
                                     </group>
                                     <group name="related_details">
-                                        <field name="user_id" string="Responsible" domain="[('share', '=', False)]" widget="many2one_avatar"/>
+                                        <field name="user_id" string="Responsible" domain="[('share', '=', False)]"
+                                               widget="many2one_avatar"/>
                                         <label for="completion_time"/>
                                         <div>
                                             <field name="completion_time" widget="float_time" class="oe_inline"/>
-                                            <span> hours</span>
+                                            <span>hours</span>
                                         </div>
-                                        <field name="slide_resource_downloadable" invisible="slide_category != 'document' or source_type != 'local_file'"/>
-                                        <field name="date_published" string="Published Date" invisible="not date_published" groups="base.group_no_one"/>
+                                        <field name="slide_resource_downloadable"
+                                               invisible="slide_category != 'document' or source_type != 'local_file'"/>
+                                        <field name="date_published" string="Published Date"
+                                               invisible="not date_published" groups="base.group_no_one"/>
                                         <field name="is_preview"/>
                                         <field name="public_views"/>
                                         <field name="total_views"/>
@@ -135,9 +152,10 @@
                                 </group>
                             </page>
                             <page name="description" string="Description">
-                                <field name="description" options="{'embedded_components': false}" placeholder="e.g. In this video, we'll give you the keys on how Odoo can help you to grow your business. At the end, we'll propose you a quiz to test your knowledge."/>
+                                <field name="description" options="{'embedded_components': false}"
+                                       placeholder="e.g. In this video, we'll give you the keys on how Odoo can help you to grow your business. At the end, we'll propose you a quiz to test your knowledge."/>
                             </page>
-                            <page string="Additional Resources" name="external_links" >
+                            <page string="Additional Resources" name="external_links">
                                 <group>
                                     <field name="slide_resource_ids" widget="one2many" nolabel="1">
                                         <list editable="top">
@@ -147,8 +165,8 @@
                                             <field name="file_name" column_invisible="True"/>
                                             <field name="data" readonly="resource_type == 'url'" filename="file_name"/>
                                             <field name="link" string="Link"
-                                                readonly="resource_type == 'file'"
-                                                required="resource_type == 'url'"/>
+                                                   readonly="resource_type == 'file'"
+                                                   required="resource_type == 'url'"/>
                                         </list>
                                     </field>
                                 </group>
@@ -200,20 +218,25 @@
             <field name="model">slide.slide</field>
             <field name="arch" type="xml">
                 <kanban edit="false" group_create="0"
-                    records_draggable="0"
-                    class="o_slide_kanban"
-                    sample="1">
+                        records_draggable="0"
+                        class="o_slide_kanban"
+                        sample="1">
                     <templates>
                         <t t-name="card" class="flex-row">
                             <aside class="o_kanban_aside_full">
                                 <t t-if="record.image_128.raw_value">
                                     <div class="o_kanban_image_fill position-relative w-100">
-                                        <field name="image_128" class="h-100" widget="image" options="{'img_class': 'object-fit-cover'}"/>
-                                        <field name="channel_id" class="o_website_slides_inner_image position-absolute bottom-0 end-0 bg-light" widget="image" options="{'preview_image': 'image_128', 'img_class': 'object-fit-contain'}"/>
+                                        <field name="image_128" class="h-100" widget="image"
+                                               options="{'img_class': 'object-fit-cover'}"/>
+                                        <field name="channel_id"
+                                               class="o_website_slides_inner_image position-absolute bottom-0 end-0 bg-light"
+                                               widget="image"
+                                               options="{'preview_image': 'image_128', 'img_class': 'object-fit-contain'}"/>
                                     </div>
                                 </t>
                                 <t t-else="">
-                                    <img src="/website_slides/static/src/img/channel-training-default.jpg" class="w-100" options="{'img_class': 'object-fit-cover'}" alt="Default training image"/>
+                                    <img src="/website_slides/static/src/img/channel-training-default.jpg" class="w-100"
+                                         options="{'img_class': 'object-fit-cover'}" alt="Default training image"/>
                                 </t>
                             </aside>
                             <main>
@@ -223,28 +246,39 @@
                                 <footer class="mt-auto d-flex justify-content-between align-items-end pt-0">
                                     <span>
                                         <t t-if="record.slide_category.raw_value == 'infographic'">
-                                            <i class="fa fa-file-image-o me-2" aria-label="Infographic" role="img" title="Infographic"/>
+                                            <i class="fa fa-file-image-o me-2" aria-label="Infographic" role="img"
+                                               title="Infographic"/>
                                         </t>
                                         <t t-elif="record.slide_category.raw_value == 'article'">
-                                            <i class="fa fa-file-code-o me-2" aria-label="article" role="img" title="Article"/>
+                                            <i class="fa fa-file-code-o me-2" aria-label="article" role="img"
+                                               title="Article"/>
                                         </t>
                                         <t t-elif="record.slide_category.raw_value == 'video'">
-                                            <i class="fa fa-file-video-o me-2" aria-label="Video" role="img" title="Video"/>
+                                            <i class="fa fa-file-video-o me-2" aria-label="Video" role="img"
+                                               title="Video"/>
                                         </t>
                                         <t t-elif="record.slide_category.raw_value == 'quiz'">
                                             <i class="fa fa-flag me-2" aria-label="Quiz" role="img" title="Quiz"/>
                                         </t>
-                                        <t t-else=""><i class="fa fa-file-pdf-o me-2" aria-label="Document" role="img" title="Document"/></t>
+                                        <t t-else="">
+                                            <i class="fa fa-file-pdf-o me-2" aria-label="Document" role="img"
+                                               title="Document"/>
+                                        </t>
                                         <field name="slide_category"/>
                                     </span>
                                     <span class="d-flex align-items-center">
-                                        <i class="fa fa-clock-o me-2" aria-label="Duration" role="img" title="Duration"/><field name="completion_time" widget="float_time"/>
+                                        <i class="fa fa-clock-o me-2" aria-label="Duration" role="img"
+                                           title="Duration"/>
+                                        <field name="completion_time" widget="float_time"/>
                                     </span>
                                     <span>
-                                        <i class="fa fa-question me-2" aria-label="Number of Questions" role="img" title="Number of Questions"/><field name="questions_count"/>
+                                        <i class="fa fa-question me-2" aria-label="Number of Questions" role="img"
+                                           title="Number of Questions"/>
+                                        <field name="questions_count"/>
                                     </span>
                                     <span>
-                                        <i class="fa fa-eye me-2" aria-label="Views" role="img" title="Views"/><field name="total_views"/>
+                                        <i class="fa fa-eye me-2" aria-label="Views" role="img" title="Views"/>
+                                        <field name="total_views"/>
                                     </span>
                                     <field name="user_id" widget="many2one_avatar_user"/>
                                 </footer>
@@ -301,12 +335,15 @@
                     <filter name="filter_user_id_uid" string="My Content" domain="[('user_id', '=', uid)]"/>
                     <separator/>
                     <filter name="published" string="Published" domain="[('is_published', '=', True)]"/>
-                    <filter name="not_published" string="Waiting for validation" domain="[('is_published', '=', False)]"/>
+                    <filter name="not_published" string="Waiting for validation"
+                            domain="[('is_published', '=', False)]"/>
                     <separator/>
                     <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
                     <group expand="0" string="Group By">
-                        <filter string="Course" name="groupby_channel" domain="[]" context="{'group_by': 'channel_id'}"/>
-                        <filter string="Category" name="groupby_category" domain="[]" context="{'group_by': 'category_id'}"/>
+                        <filter string="Course" name="groupby_channel" domain="[]"
+                                context="{'group_by': 'channel_id'}"/>
+                        <filter string="Category" name="groupby_category" domain="[]"
+                                context="{'group_by': 'category_id'}"/>
                         <filter string="Type" name="groupby_type" domain="[]" context="{'group_by': 'slide_category'}"/>
                     </group>
                 </search>
@@ -367,7 +404,8 @@
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
                     No data yet!
-                </p><p>
+                </p>
+                <p>
                     Create new content for your eLearning
                 </p>
             </field>

@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.tests import Form, tagged
 from odoo.addons.mrp.tests.common import TestMrpCommon
+
+from odoo.tests import Form, tagged
+
 
 @tagged('post_install', '-at_install')
 class TestRepairTraceability(TestMrpCommon):
@@ -56,7 +58,7 @@ class TestRepairTraceability(TestMrpCommon):
                 operation.product_id = product_to_remove
             ro = ro_form.save()
         ro.action_validate()
-        ro.move_ids[0].lot_ids = ptremove_lot # Remove product Serial B2 from the product.
+        ro.move_ids[0].lot_ids = ptremove_lot  # Remove product Serial B2 from the product.
         ro.action_repair_start()
         ro.move_ids.picked = True
         ro.action_repair_end()
@@ -86,6 +88,7 @@ class TestRepairTraceability(TestMrpCommon):
         this component is removed from the product and returned as available stock. The user should be able to
         use the component in a new MO
         """
+
         def produce_one(product, component):
             mo_form = Form(self.env['mrp.production'])
             mo_form.product_id = product
@@ -98,7 +101,6 @@ class TestRepairTraceability(TestMrpCommon):
             mo.move_raw_ids.picked = True
             mo.button_mark_done()
             return mo
-
 
         stock_location = self.env.ref('stock.stock_location_stock')
 
@@ -259,7 +261,8 @@ class TestRepairTraceability(TestMrpCommon):
         Use it in a MO
         """
         stock_location = self.env.ref('stock.stock_location_stock')
-        scrap_location = self.env['stock.location'].search([('company_id', '=', self.env.company.id), ('scrap_location', '=', True)], limit=1)
+        scrap_location = self.env['stock.location'].search(
+            [('company_id', '=', self.env.company.id), ('scrap_location', '=', True)], limit=1)
 
         finished = self.bom_4.product_id
         component = self.bom_4.bom_line_ids.product_id

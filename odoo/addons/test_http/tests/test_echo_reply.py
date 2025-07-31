@@ -2,12 +2,11 @@
 
 import json
 
+from odoo.addons.test_http.controllers import CT_JSON
 from odoo.http import Request
 from odoo.tests import tagged
 from odoo.tests.common import new_test_user
 from odoo.tools import mute_logger
-from odoo.addons.test_http.controllers import CT_JSON
-
 from .test_common import TestHttpBase
 
 
@@ -37,7 +36,6 @@ class TestHttpEchoReplyHttpNoDB(TestHttpBase):
         res = self.nodb_url_open('/test_http/echo-http-post', data=payload, headers=CT_JSON)
         self.assertEqual(res.status_code, 200)
         self.assertEqual(res.text, '{}')
-
 
     def test_echohttp5_post_csrf(self):
         res = self.nodb_url_open('/test_http/echo-http-csrf?race=Asgard', data={'commander': 'Thor'})
@@ -133,13 +131,15 @@ class TestHttpEchoReplyHttpWithDB(TestHttpBase):
 
     @mute_logger('odoo.http')
     def test_echohttp6_post_bad_csrf(self):
-        res = self.db_url_open('/test_http/echo-http-csrf?race=Asgard', data={'commander': 'Thor', 'csrf_token': 'bad token'})
+        res = self.db_url_open('/test_http/echo-http-csrf?race=Asgard',
+                               data={'commander': 'Thor', 'csrf_token': 'bad token'})
         self.assertEqual(res.status_code, 400)
         self.assertIn("Session expired (invalid CSRF token)", res.text)
 
     @mute_logger('odoo.http')
     def test_echohttp7_post_good_csrf(self):
-        res = self.db_url_open('/test_http/echo-http-csrf?race=Asgard', data={'commander': 'Thor', 'csrf_token': Request.csrf_token(self)})
+        res = self.db_url_open('/test_http/echo-http-csrf?race=Asgard',
+                               data={'commander': 'Thor', 'csrf_token': Request.csrf_token(self)})
         self.assertEqual(res.status_code, 200)
         self.assertEqual(res.text, "{'race': 'Asgard', 'commander': 'Thor'}")
 
@@ -190,8 +190,8 @@ class TestHttpEchoReplyJsonWithDB(TestHttpBase):
         res = self.db_url_open("/test_http/echo-json-context", data=payload, headers=CT_JSON)
         self.assertEqual(res.status_code, 200)
         self.assertEqual(res.text, '{"jsonrpc": "2.0", "id": 0, "result": '
-            f'{{"lang": "en_US", "tz": false, "uid": {self.jackoneill.id}}}'
-            '}')
+                                   f'{{"lang": "en_US", "tz": false, "uid": {self.jackoneill.id}}}'
+                                   '}')
 
     def test_echojson3_bad_json(self):
         payload = 'some non json garbage'

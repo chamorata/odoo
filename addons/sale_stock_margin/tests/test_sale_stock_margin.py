@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import fields
-
-from odoo.tests import Form, tagged
 from odoo.addons.stock_account.tests.test_stockvaluationlayer import TestStockValuationCommon
+
+from odoo import fields
+from odoo.tests import Form, tagged
 
 
 @tagged('post_install', '-at_install')
@@ -163,10 +163,10 @@ class TestSaleStockMargin(TestStockValuationCommon):
 
         Form.from_action(self.env, sale_order.picking_ids.button_validate()).save().process()
 
-        self.assertAlmostEqual(order_line_1.purchase_price, 43)       # (35 + 51) / 2
-        self.assertAlmostEqual(order_line_2.purchase_price, 12.5)     # (17 + 11 + 11 + 11) / 4
-        self.assertAlmostEqual(order_line_1.margin, 34)               # (60 - 43) * 2
-        self.assertAlmostEqual(order_line_2.margin, 30)               # (20 - 12.5) * 4
+        self.assertAlmostEqual(order_line_1.purchase_price, 43)  # (35 + 51) / 2
+        self.assertAlmostEqual(order_line_2.purchase_price, 12.5)  # (17 + 11 + 11 + 11) / 4
+        self.assertAlmostEqual(order_line_1.margin, 34)  # (60 - 43) * 2
+        self.assertAlmostEqual(order_line_2.margin, 30)  # (20 - 12.5) * 4
         self.assertAlmostEqual(sale_order.margin, 64)
 
     def test_sale_stock_margin_6(self):
@@ -202,7 +202,8 @@ class TestSaleStockMargin(TestStockValuationCommon):
     def test_so_and_multicurrency(self):
         ResCurrencyRate = self.env['res.currency.rate']
         company_currency = self.env.company.currency_id
-        other_currency = self.env.ref('base.EUR') if company_currency == self.env.ref('base.USD') else self.env.ref('base.USD')
+        other_currency = self.env.ref('base.EUR') if company_currency == self.env.ref('base.USD') else self.env.ref(
+            'base.USD')
 
         date = fields.Date.today()
         ResCurrencyRate.create({'currency_id': company_currency.id, 'rate': 1, 'name': date})
@@ -240,7 +241,8 @@ class TestSaleStockMargin(TestStockValuationCommon):
         C02's data"""
         main_company = self.env['res.company']._get_main_company()
         main_company_currency = main_company.currency_id
-        new_company_currency = self.env.ref('base.EUR') if main_company_currency == self.env.ref('base.USD') else self.env.ref('base.USD')
+        new_company_currency = self.env.ref('base.EUR') if main_company_currency == self.env.ref(
+            'base.USD') else self.env.ref('base.USD')
 
         date = fields.Date.today()
         self.env['res.currency.rate'].create([
@@ -258,8 +260,10 @@ class TestSaleStockMargin(TestStockValuationCommon):
 
         product = self._create_product()
 
-        incoming_picking_type = self.env['stock.picking.type'].search([('company_id', '=', new_company.id), ('code', '=', 'incoming')], limit=1)
-        production_location = self.env['stock.location'].search([('company_id', '=', new_company.id), ('usage', '=', 'production')])
+        incoming_picking_type = self.env['stock.picking.type'].search(
+            [('company_id', '=', new_company.id), ('code', '=', 'incoming')], limit=1)
+        production_location = self.env['stock.location'].search(
+            [('company_id', '=', new_company.id), ('usage', '=', 'production')])
 
         picking = self.env['stock.picking'].create({
             'picking_type_id': incoming_picking_type.id,
@@ -354,10 +358,10 @@ class TestSaleStockMargin(TestStockValuationCommon):
     def test_add_standard_product_on_delivery_cost_on_sale_order(self):
         """ test that if product with standard cost method is added in delivery, the cost is computed."""
         self.product1.write({
-                'standard_price': 20,
-                'list_price': 25,
-                'invoice_policy': 'order',
-            })
+            'standard_price': 20,
+            'list_price': 25,
+            'invoice_policy': 'order',
+        })
         product2 = self.env['product.product'].create({
             'name': 'product2',
             'type': 'consu',
@@ -386,10 +390,10 @@ class TestSaleStockMargin(TestStockValuationCommon):
             'property_cost_method': 'average'
         })
         self.product1.write({
-                'standard_price': 20,
-                'list_price': 25,
-                'invoice_policy': 'order',
-            })
+            'standard_price': 20,
+            'list_price': 25,
+            'invoice_policy': 'order',
+        })
         product2 = self.env['product.product'].create({
             'name': 'product2',
             'type': 'consu',

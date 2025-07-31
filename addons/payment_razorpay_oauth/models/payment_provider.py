@@ -7,15 +7,13 @@ from datetime import timedelta
 from urllib.parse import urlencode
 
 import requests
-
-from odoo import _, fields, models
-from odoo.exceptions import RedirectWarning, ValidationError
-from odoo.http import request
-
 from odoo.addons.payment_razorpay import const
 from odoo.addons.payment_razorpay_oauth import const as oauth_const
 from odoo.addons.payment_razorpay_oauth.controllers.onboarding import RazorpayController
 
+from odoo import _, fields, models
+from odoo.exceptions import RedirectWarning, ValidationError
+from odoo.http import request
 
 _logger = logging.getLogger(__name__)
 

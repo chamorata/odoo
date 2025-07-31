@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import fields, models, tools
 from odoo.addons.sale.models.sale_order import SALE_ORDER_STATE
+
+from odoo import fields, models, tools
 
 
 class EventSaleReport(models.Model):
@@ -40,10 +41,10 @@ class EventSaleReport(models.Model):
     sale_price_untaxed = fields.Float('Untaxed Revenues', readonly=True)
     invoice_partner_id = fields.Many2one('res.partner', string='Invoice Address', readonly=True)
     sale_status = fields.Selection(string="Payment Status", selection=[
-            ('to_pay', 'Not Sold'),
-            ('sold', 'Sold'),
-            ('free', 'Free'),
-        ])
+        ('to_pay', 'Not Sold'),
+        ('sold', 'Sold'),
+        ('free', 'Free'),
+    ])
     company_id = fields.Many2one('res.company', string='Company', readonly=True)
 
     def init(self):

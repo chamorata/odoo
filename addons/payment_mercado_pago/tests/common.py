@@ -4,7 +4,6 @@ from odoo.addons.payment.tests.common import PaymentCommon
 
 
 class MercadoPagoCommon(PaymentCommon):
-
     MP_PAYMENT_ID = '1234567890'
 
     @classmethod

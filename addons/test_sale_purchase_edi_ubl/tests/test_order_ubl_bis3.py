@@ -1,10 +1,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.account_edi_ubl_cii.tests.test_ubl_cii import TestAccountEdiUblCii
+
 from odoo.exceptions import UserError
 from odoo.fields import Command
 from odoo.tests import tagged
-
-from odoo.addons.account_edi_ubl_cii.tests.test_ubl_cii import TestAccountEdiUblCii
 
 
 @tagged('post_install', '-at_install')
@@ -34,8 +34,8 @@ class TestOrderEdiUbl(TestAccountEdiUblCii):
 
         return self.env['ir.attachment'].create({
             'raw': self.env['purchase.edi.xml.ubl_bis3'].with_context(
-                    allow_company_ids=[self.purchase_company.id],
-                )._export_order(po),
+                allow_company_ids=[self.purchase_company.id],
+            )._export_order(po),
             'name': 'test_order.xml',
         })
 

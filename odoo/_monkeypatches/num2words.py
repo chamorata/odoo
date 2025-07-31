@@ -131,7 +131,7 @@ class Num2Word_Base:
         # Simple way of finding decimal places to update the precision
         self.precision = abs(Decimal(str(value)).as_tuple().exponent)
 
-        post = abs(value - pre) * 10**self.precision
+        post = abs(value - pre) * 10 ** self.precision
         if abs(round(post) - post) < 0.01:
             # We generally floor all values beyond our precision (rather than
             # rounding), but in cases where we have something like 1.239999999,
@@ -319,7 +319,7 @@ class Num2Word_Base:
 
 class Num2Word_AR_Fixed(Num2Word_Base):
     errmsg_toobig = "abs(%s) must be less than %s."
-    MAXVAL = 10**51
+    MAXVAL = 10 ** 51
 
     def __init__(self):
         super().__init__()
@@ -509,7 +509,7 @@ class Num2Word_AR_Fixed(Num2Word_Base):
         integer = int(number)
         if integer == number:
             return str(integer)
-        decimal = round((number - integer) * 10**9)
+        decimal = round((number - integer) * 10 ** 9)
         return f"{integer}.{decimal:09d}"
 
     def convert(self, value):
@@ -882,8 +882,8 @@ class NumberToWords_BG(Num2Word_Base):
 
     def _show_digits_group(self, num, gender=0, last=False):
         num = int(num)
-        e = int(num % 10)                # ones
-        d = int((num - e) % 100 / 10)        # tens
+        e = int(num % 10)  # ones
+        d = int((num - e) % 100 / 10)  # tens
         s = int((num - d * 10 - e) % 1000 / 100)  # hundreds
         ret = [None] * 6
 
@@ -979,6 +979,7 @@ def patch_num2words():
         _logger.warning("num2words is not available, Arabic number to words conversion will not work")
         return
     if MIN_PY_VERSION >= (3, 12):
-        raise RuntimeError("The num2words monkey patch is obsolete. Bump the version of the library to the latest available in the official package repository, if it hasn't already been done, and remove the patch.")
+        raise RuntimeError(
+            "The num2words monkey patch is obsolete. Bump the version of the library to the latest available in the official package repository, if it hasn't already been done, and remove the patch.")
     num2words.CONVERTER_CLASSES["ar"] = Num2Word_AR_Fixed()
     num2words.CONVERTER_CLASSES["bg"] = NumberToWords_BG()

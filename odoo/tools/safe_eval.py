@@ -36,6 +36,7 @@ __all__ = ['test_expr', 'safe_eval', 'const_eval']
 # lp:703841), does import time.
 _ALLOWED_MODULES = ['_strptime', 'math', 'time']
 
+
 # Mock __import__ function, as called by cpython's import emulator `PyImport_Import` inside
 # timemodule.c, _datetimemodule.c and others.
 # This function does not actually need to do anything, its expected side-effect is to make the
@@ -44,9 +45,9 @@ def _import(name, globals=None, locals=None, fromlist=None, level=-1):
     if name not in sys.modules:
         raise ImportError(f'module {name} should be imported before calling safe_eval()')
 
+
 for module in _ALLOWED_MODULES:
     __import__(module)
-
 
 _UNSAFE_ATTRIBUTES = [
     # Frames
@@ -72,6 +73,8 @@ def to_opcodes(opnames, _opmap=opmap):
     for x in opnames:
         if x in _opmap:
             yield _opmap[x]
+
+
 # opcodes which absolutely positively must not be usable in safe_eval,
 # explicitly subtracted from all sets of valid opcodes just in case
 _BLACKLIST = set(to_opcodes([
@@ -183,8 +186,8 @@ _SAFE_OPCODES = _EXPR_OPCODES.union(to_opcodes([
     'SET_FUNCTION_ATTRIBUTE',
 ])) - _BLACKLIST
 
-
 _logger = logging.getLogger(__name__)
+
 
 def assert_no_dunder_name(code_obj, expr):
     """ assert_no_dunder_name(code_obj, expr) -> None
@@ -208,6 +211,7 @@ def assert_no_dunder_name(code_obj, expr):
     for name in code_obj.co_names:
         if "__" in name or name in _UNSAFE_ATTRIBUTES:
             raise NameError('Access to forbidden name %r (%r)' % (name, expr))
+
 
 def assert_valid_codeobj(allowed_codes, code_obj, expr):
     """ Asserts that the provided code object validates against the bytecode
@@ -233,11 +237,13 @@ def assert_valid_codeobj(allowed_codes, code_obj, expr):
     # when loading /web according to line_profiler
     code_codes = {i.opcode for i in dis.get_instructions(code_obj)}
     if not allowed_codes >= code_codes:
-        raise ValueError("forbidden opcode(s) in %r: %s" % (expr, ', '.join(opname[x] for x in (code_codes - allowed_codes))))
+        raise ValueError(
+            "forbidden opcode(s) in %r: %s" % (expr, ', '.join(opname[x] for x in (code_codes - allowed_codes))))
 
     for const in code_obj.co_consts:
         if isinstance(const, CodeType):
             assert_valid_codeobj(allowed_codes, const, 'lambda')
+
 
 def test_expr(expr, allowed_codes, mode="eval", filename=None):
     """test_expr(expression, allowed_codes[, mode[, filename]]) -> code_object
@@ -285,6 +291,7 @@ def const_eval(expr):
     c = test_expr(expr, _CONST_OPCODES)
     return unsafe_eval(c)
 
+
 def expr_eval(expr):
     """expr_eval(expression) -> value
 
@@ -305,6 +312,7 @@ def expr_eval(expr):
     """
     c = test_expr(expr, _EXPR_OPCODES)
     return unsafe_eval(c)
+
 
 _BUILTINS = {
     '__import__': _import,
@@ -344,7 +352,10 @@ _BUILTINS = {
     'zip': zip,
     'Exception': Exception,
 }
-def safe_eval(expr, globals_dict=None, locals_dict=None, mode="eval", nocopy=False, locals_builtins=False, filename=None):
+
+
+def safe_eval(expr, globals_dict=None, locals_dict=None, mode="eval", nocopy=False, locals_builtins=False,
+              filename=None):
     """safe_eval(expression[, globals[, locals[, mode[, nocopy]]]]) -> result
 
     System-restricted Python expression evaluation
@@ -409,6 +420,8 @@ def safe_eval(expr, globals_dict=None, locals_dict=None, mode="eval", nocopy=Fal
         raise
     except Exception as e:
         raise ValueError('%r while evaluating\n%r' % (e, expr))
+
+
 def test_python_expr(expr, mode="eval"):
     try:
         test_expr(expr, _SAFE_OPCODES, mode=mode)
@@ -421,7 +434,8 @@ def test_python_expr(expr, mode="eval"):
                 'offset': err.args[1][2],
                 'error_line': err.args[1][3],
             }
-            msg = "%s : %s at line %d\n%s" % (type(err).__name__, error['message'], error['lineno'], error['error_line'])
+            msg = "%s : %s at line %d\n%s" % (type(err).__name__, error['message'], error['lineno'],
+                                              error['error_line'])
         else:
             msg = str(err)
         return msg
@@ -445,6 +459,7 @@ Pre-wrapped modules are provided as attributes of `odoo.tools.safe_eval`.
 """)
     return d
 
+
 class wrap_module:
     def __init__(self, module, attributes):
         """Helper for wrapping a package/module to expose selected attributes
@@ -467,21 +482,26 @@ class wrap_module:
     def __repr__(self):
         return self._repr
 
+
 # dateutil submodules are lazy so need to import them for them to "exist"
 import dateutil
+
 mods = ['parser', 'relativedelta', 'rrule', 'tz']
 for mod in mods:
     __import__('dateutil.%s' % mod)
 # make sure to patch pytz before exposing
 from odoo._monkeypatches.pytz import patch_pytz  # noqa: E402, F401
+
 patch_pytz()
 
-datetime = wrap_module(__import__('datetime'), ['date', 'datetime', 'time', 'timedelta', 'timezone', 'tzinfo', 'MAXYEAR', 'MINYEAR'])
+datetime = wrap_module(__import__('datetime'),
+                       ['date', 'datetime', 'time', 'timedelta', 'timezone', 'tzinfo', 'MAXYEAR', 'MINYEAR'])
 dateutil = wrap_module(dateutil, {
     "tz": ["UTC", "tzutc"],
     "parser": ["isoparse", "parse"],
     "relativedelta": ["relativedelta", "MO", "TU", "WE", "TH", "FR", "SA", "SU"],
-    "rrule": ["rrule", "rruleset", "rrulestr", "YEARLY", "MONTHLY", "WEEKLY", "DAILY", "HOURLY", "MINUTELY", "SECONDLY", "MO", "TU", "WE", "TH", "FR", "SA", "SU"],
+    "rrule": ["rrule", "rruleset", "rrulestr", "YEARLY", "MONTHLY", "WEEKLY", "DAILY", "HOURLY", "MINUTELY", "SECONDLY",
+              "MO", "TU", "WE", "TH", "FR", "SA", "SU"],
 })
 json = wrap_module(__import__('json'), ['loads', 'dumps'])
 time = wrap_module(__import__('time'), ['time', 'strptime', 'strftime', 'sleep'])

@@ -1,12 +1,12 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import Command
-
 from datetime import datetime, timedelta
+
 from freezegun import freeze_time
 
-from odoo.tests.common import HttpCase, new_test_user, tagged
+from odoo import Command
 from odoo.exceptions import UserError, ValidationError
+from odoo.tests.common import HttpCase, new_test_user, tagged
 
 
 @tagged("post_install", "-at_install")
@@ -91,8 +91,8 @@ class TestDiscussSubChannels(HttpCase):
         random_channel = self.env["discuss.channel"].create({"name": "Random"})
         random_channel.message_post(body="Hello world!")
         with self.assertRaises(
-            ValidationError,
-            msg="Cannot create Hello world!: initial message should belong to parent channel.",
+                ValidationError,
+                msg="Cannot create Hello world!: initial message should belong to parent channel.",
         ):
             parent._create_sub_channel(from_message_id=random_channel.message_ids[0].id)
 

@@ -319,19 +319,22 @@ class Pricelist(models.Model):
                     return int(string_value)
                 except (TypeError, ValueError, OverflowError):
                     return None
+
             # get fallback pricelist when no pricelist for a given country
             pl_fallback = (
-                Pricelist.search(pl_domain + [('country_group_ids', '=', False)], limit=1) or
-                # save data in ir.config_parameter instead of ir.default for
-                # res.partner.property_product_pricelist
-                # otherwise the data will become the default value while
-                # creating without specifying the property_product_pricelist
-                # however if the property_product_pricelist is not specified
-                # the result of the previous line should have high priority
-                # when computing
-                Pricelist.browse(convert_to_int(IrConfigParameter.get_param(f'res.partner.property_product_pricelist_{company_id}'))) or
-                Pricelist.browse(convert_to_int(IrConfigParameter.get_param('res.partner.property_product_pricelist'))) or
-                Pricelist.search(pl_domain, limit=1)
+                    Pricelist.search(pl_domain + [('country_group_ids', '=', False)], limit=1) or
+                    # save data in ir.config_parameter instead of ir.default for
+                    # res.partner.property_product_pricelist
+                    # otherwise the data will become the default value while
+                    # creating without specifying the property_product_pricelist
+                    # however if the property_product_pricelist is not specified
+                    # the result of the previous line should have high priority
+                    # when computing
+                    Pricelist.browse(convert_to_int(
+                        IrConfigParameter.get_param(f'res.partner.property_product_pricelist_{company_id}'))) or
+                    Pricelist.browse(
+                        convert_to_int(IrConfigParameter.get_param('res.partner.property_product_pricelist'))) or
+                    Pricelist.search(pl_domain, limit=1)
             )
             # group partners by country, and find a pricelist for each country
             remaining_partners = self.env['res.partner'].browse(remaining_partner_ids)
@@ -339,7 +342,8 @@ class Pricelist(models.Model):
             for country, partners in partners_by_country.items():
                 if not country and (country_code := self.env.context.get('country_code')):
                     country = self.env['res.country'].search([('code', '=', country_code)], limit=1)
-                pl = Pricelist.search(pl_domain + [('country_group_ids.country_ids', '=', country.id if country else False)], limit=1)
+                pl = Pricelist.search(
+                    pl_domain + [('country_group_ids.country_ids', '=', country.id if country else False)], limit=1)
                 pl = pl or pl_fallback
                 result.update(dict.fromkeys(partners._ids, pl))
 

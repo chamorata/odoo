@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.tests import Form
-from datetime import datetime, timedelta
-
-from odoo.fields import Datetime as Dt
-from odoo.exceptions import UserError
 from odoo.addons.mrp.tests.common import TestMrpCommon
+
+from odoo.exceptions import UserError
+from odoo.tests import Form
 
 
 class TestMrpCancelMO(TestMrpCommon):
@@ -21,11 +19,11 @@ class TestMrpCancelMO(TestMrpCommon):
         # Check the MO and its moves are cancelled
         self.assertEqual(manufacturing_order.state, 'cancel', "MO should be in cancel state.")
         self.assertEqual(manufacturing_order.move_raw_ids[0].state, 'cancel',
-            "Cancelled MO raw moves must be cancelled as well.")
+                         "Cancelled MO raw moves must be cancelled as well.")
         self.assertEqual(manufacturing_order.move_raw_ids[1].state, 'cancel',
-            "Cancelled MO raw moves must be cancelled as well.")
+                         "Cancelled MO raw moves must be cancelled as well.")
         self.assertEqual(manufacturing_order.move_finished_ids.state, 'cancel',
-            "Cancelled MO finished move must be cancelled as well.")
+                         "Cancelled MO finished move must be cancelled as well.")
 
     def test_cancel_mo_without_routing_2(self):
         """ Cancel a Manufacturing Order with no routing but some productions.
@@ -41,11 +39,11 @@ class TestMrpCancelMO(TestMrpCommon):
         # Check it's cancelled
         self.assertEqual(manufacturing_order.state, 'cancel', "MO should be in cancel state.")
         self.assertEqual(manufacturing_order.move_raw_ids[0].state, 'cancel',
-            "Cancelled MO raw moves must be cancelled as well.")
+                         "Cancelled MO raw moves must be cancelled as well.")
         self.assertEqual(manufacturing_order.move_raw_ids[1].state, 'cancel',
-            "Cancelled MO raw moves must be cancelled as well.")
+                         "Cancelled MO raw moves must be cancelled as well.")
         self.assertEqual(manufacturing_order.move_finished_ids.state, 'cancel',
-            "Cancelled MO finished move must be cancelled as well.")
+                         "Cancelled MO finished move must be cancelled as well.")
 
     def test_cancel_mo_without_routing_3(self):
         """ Cancel a Manufacturing Order with no routing but some productions
@@ -64,17 +62,17 @@ class TestMrpCancelMO(TestMrpCommon):
         # Check MO is marked as done and its SML are done or cancelled
         self.assertEqual(manufacturing_order.state, 'done', "MO should be in done state.")
         self.assertEqual(manufacturing_order.move_raw_ids[0].state, 'done',
-            "Due to 'post_inventory', some move raw must stay in done state")
+                         "Due to 'post_inventory', some move raw must stay in done state")
         self.assertEqual(manufacturing_order.move_raw_ids[1].state, 'done',
-            "Due to 'post_inventory', some move raw must stay in done state")
+                         "Due to 'post_inventory', some move raw must stay in done state")
         self.assertEqual(manufacturing_order.move_raw_ids[2].state, 'cancel',
-            "The other move raw are cancelled like their MO.")
+                         "The other move raw are cancelled like their MO.")
         self.assertEqual(manufacturing_order.move_raw_ids[3].state, 'cancel',
-            "The other move raw are cancelled like their MO.")
+                         "The other move raw are cancelled like their MO.")
         self.assertEqual(manufacturing_order.move_finished_ids[0].state, 'done',
-            "Due to 'post_inventory', a move finished must stay in done state")
+                         "Due to 'post_inventory', a move finished must stay in done state")
         self.assertEqual(manufacturing_order.move_finished_ids[1].state, 'cancel',
-            "The other move finished is cancelled like its MO.")
+                         "The other move finished is cancelled like its MO.")
 
     def test_unlink_mo(self):
         """ Try to unlink a Manufacturing Order, and check it's possible or not

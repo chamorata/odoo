@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+import itertools
 import re
 from collections import defaultdict
-import itertools
 
 from odoo import api, fields, models
 from odoo.http import request

@@ -3,11 +3,6 @@
 from datetime import datetime
 from unittest.mock import patch
 
-from odoo.exceptions import UserError, ValidationError
-from odoo.fields import Command
-from odoo.tests import tagged
-
-from odoo.addons.base.tests.common import BaseUsersCommon
 from odoo.addons.product.tests.common import ProductAttributesCommon
 from odoo.addons.website.tools import MockRequest
 from odoo.addons.website_sale.controllers.combo_configurator import (
@@ -17,6 +12,11 @@ from odoo.addons.website_sale.controllers.main import WebsiteSale
 from odoo.addons.website_sale.controllers.payment import PaymentPortal
 from odoo.addons.website_sale.models.product_template import ProductTemplate
 from odoo.addons.website_sale.tests.common import WebsiteSaleCommon
+
+from odoo.addons.base.tests.common import BaseUsersCommon
+from odoo.exceptions import UserError, ValidationError
+from odoo.fields import Command
+from odoo.tests import tagged
 
 
 @tagged('post_install', '-at_install')
@@ -41,7 +41,8 @@ class TestWebsiteSaleCart(BaseUsersCommon, ProductAttributesCommon, WebsiteSaleC
         self.product.unlink()
 
         with self.assertRaises(UserError):
-            with MockRequest(self.product.with_user(self.public_user).env, website=self.website.with_user(self.public_user)):
+            with MockRequest(self.product.with_user(self.public_user).env,
+                             website=self.website.with_user(self.public_user)):
                 self.WebsiteSaleController.cart_update_json(product_id=product_id, add_qty=1)
 
     def test_add_cart_unpublished_product(self):
@@ -49,7 +50,8 @@ class TestWebsiteSaleCart(BaseUsersCommon, ProductAttributesCommon, WebsiteSaleC
         self.product.website_published = False
 
         with self.assertRaises(UserError):
-            with MockRequest(self.product.with_user(self.public_user).env, website=self.website.with_user(self.public_user)):
+            with MockRequest(self.product.with_user(self.public_user).env,
+                             website=self.website.with_user(self.public_user)):
                 self.WebsiteSaleController.cart_update_json(product_id=self.product.id, add_qty=1)
 
         # public but remove sale_ok
@@ -57,7 +59,8 @@ class TestWebsiteSaleCart(BaseUsersCommon, ProductAttributesCommon, WebsiteSaleC
         self.product.website_published = True
 
         with self.assertRaises(UserError):
-            with MockRequest(self.product.with_user(self.public_user).env, website=self.website.with_user(self.public_user)):
+            with MockRequest(self.product.with_user(self.public_user).env,
+                             website=self.website.with_user(self.public_user)):
                 self.WebsiteSaleController.cart_update_json(product_id=self.product.id, add_qty=1)
 
     def test_add_cart_archived_product(self):
@@ -65,7 +68,8 @@ class TestWebsiteSaleCart(BaseUsersCommon, ProductAttributesCommon, WebsiteSaleC
         self.product.active = False
 
         with self.assertRaises(UserError):
-            with MockRequest(self.product.with_user(self.public_user).env, website=self.website.with_user(self.public_user)):
+            with MockRequest(self.product.with_user(self.public_user).env,
+                             website=self.website.with_user(self.public_user)):
                 self.WebsiteSaleController.cart_update_json(product_id=self.product.id, add_qty=1)
 
     def test_zero_price_product_rule(self):
@@ -140,7 +144,8 @@ class TestWebsiteSaleCart(BaseUsersCommon, ProductAttributesCommon, WebsiteSaleC
             self.assertEqual(sale_order.amount_untaxed, 1000.0)
 
             # remove the product from the cart
-            self.WebsiteSaleController.cart_update_json(product_id=self.product.id, line_id=sale_order.order_line.id, set_qty=0)
+            self.WebsiteSaleController.cart_update_json(product_id=self.product.id, line_id=sale_order.order_line.id,
+                                                        set_qty=0)
             self.assertEqual(sale_order.amount_total, 0.0)
             self.assertEqual(sale_order.order_line, SaleOrderLine)
 
@@ -161,7 +166,8 @@ class TestWebsiteSaleCart(BaseUsersCommon, ProductAttributesCommon, WebsiteSaleC
         self.product.accessory_product_ids = [Command.link(accessory_product.id)]
 
         website = self.website.with_user(self.public_user)
-        with MockRequest(self.product.with_user(self.public_user).env, website=self.website.with_user(self.public_user)):
+        with MockRequest(self.product.with_user(self.public_user).env,
+                         website=self.website.with_user(self.public_user)):
             self.WebsiteSaleController.cart_update_json(product_id=self.product.id, add_qty=1)
             sale_order = website.sale_get_order()
             self.assertEqual(len(sale_order._cart_accessories()), 0)
@@ -234,7 +240,8 @@ class TestWebsiteSaleCart(BaseUsersCommon, ProductAttributesCommon, WebsiteSaleC
         so.fiscal_position_id = fpos
         so._recompute_taxes()
         so._cart_update(product_id=test_product.id, line_id=sol.id, set_qty=2)
-        self.assertEqual(round(sol.price_total), 106, "2 units @ 100$ with 50% discount + 6% tax (mapped from fp 10% -> 6%)")
+        self.assertEqual(round(sol.price_total), 106,
+                         "2 units @ 100$ with 50% discount + 6% tax (mapped from fp 10% -> 6%)")
 
     def test_cart_update_with_fpos_no_variant_product(self):
         # We will test that the mapping of an 10% included tax by a 0% by a fiscal position is taken into account when updating the cart for no_variant product
@@ -390,8 +397,8 @@ class TestWebsiteSaleCart(BaseUsersCommon, ProductAttributesCommon, WebsiteSaleC
         self.carrier.country_ids = [Command.set((2,))]
         self.product.type = 'consu'
         with (MockRequest(self.product.with_user(portal_user).env, website=website), patch(
-            'odoo.addons.website_sale.models.sale_order.SaleOrder._get_preferred_delivery_method',
-            return_value=self.env['delivery.carrier'],
+                'odoo.addons.website_sale.models.sale_order.SaleOrder._get_preferred_delivery_method',
+                return_value=self.env['delivery.carrier'],
         )):
             order = website.sale_get_order(force_create=True)
             order.order_line = [
@@ -419,8 +426,8 @@ class TestWebsiteSaleCart(BaseUsersCommon, ProductAttributesCommon, WebsiteSaleC
         )
         self.product.company_id = branch_a
         with MockRequest(
-            self.product.with_user(website.user_id).env,
-            website=website.with_user(website.user_id),
+                self.product.with_user(website.user_id).env,
+                website=website.with_user(website.user_id),
         ):
             branch_a.invalidate_recordset()
             data = WebsiteSaleComboConfiguratorController().website_sale_combo_configurator_get_data(

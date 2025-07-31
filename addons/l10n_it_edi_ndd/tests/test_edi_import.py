@@ -1,12 +1,11 @@
-import uuid
-from freezegun import freeze_time
-from unittest.mock import patch
+import logging
 
-from odoo import fields, sql_db, tools, Command
-from odoo.tests import new_test_user, tagged
+from freezegun import freeze_time
 from odoo.addons.l10n_it_edi.tests.common import TestItEdi
 
-import logging
+from odoo import fields
+from odoo.tests import tagged
+
 _logger = logging.getLogger(__name__)
 
 

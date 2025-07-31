@@ -30,29 +30,29 @@
         -->
         <t t-set="delivery_type" t-value="dm.delivery_type + '_use_locations'"/>
         <t
-            t-set="is_pickup_needed"
-            t-value="delivery_type in dm.fields_get() and dm[delivery_type]"
+                t-set="is_pickup_needed"
+                t-value="delivery_type in dm.fields_get() and dm[delivery_type]"
         />
         <div class="row flex-column flex-md-row flex-grow-1 gap-lg-3">
             <div class="col">
                 <div class="d-flex form-check mb-0 gap-2">
                     <!-- === Radio button === -->
                     <input
-                        t-attf-id="o_delivery_{{dm.id}}"
-                        name="o_delivery_radio"
-                        type="radio"
-                        t-att-checked="is_selected"
-                        disabled="true"
-                        class="form-check-input position-absolute"
-                        t-att-data-dm-id="dm.id"
-                        t-att-data-delivery-type="dm.delivery_type"
-                        t-att-data-is-pickup-location-required="is_pickup_needed"
+                            t-attf-id="o_delivery_{{dm.id}}"
+                            name="o_delivery_radio"
+                            type="radio"
+                            t-att-checked="is_selected"
+                            disabled="true"
+                            class="form-check-input position-absolute"
+                            t-att-data-dm-id="dm.id"
+                            t-att-data-delivery-type="dm.delivery_type"
+                            t-att-data-is-pickup-location-required="is_pickup_needed"
                     />
                     <!-- === Carrier label === -->
                     <label
-                        class="o_delivery_carrier_label"
-                        t-field="dm.name"
-                        t-attf-for="o_delivery_{{dm.id}}"
+                            class="o_delivery_carrier_label"
+                            t-field="dm.name"
+                            t-attf-for="o_delivery_{{dm.id}}"
                     />
                 </div>
             </div>
@@ -65,24 +65,24 @@
         </div>
         <!-- === Pick up location === -->
         <div
-            t-if="is_pickup_needed"
-            name="o_pickup_location"
-            t-attf-class="position-relative d-flex gap-2 mt-2 {{'' if is_selected else 'd-none'}}"
+                t-if="is_pickup_needed"
+                name="o_pickup_location"
+                t-attf-class="position-relative d-flex gap-2 mt-2 {{'' if is_selected else 'd-none'}}"
         >
             <t
-                t-set="pickup_location_data"
-                t-value="(is_selected and order.pickup_location_data) or {}"
+                    t-set="pickup_location_data"
+                    t-value="(is_selected and order.pickup_location_data) or {}"
             />
             <div
-                name="o_pickup_location_details"
-                t-attf-class="ms-4 {{'' if is_selected and pickup_location_data else 'd-none'}}"
+                    name="o_pickup_location_details"
+                    t-attf-class="ms-4 {{'' if is_selected and pickup_location_data else 'd-none'}}"
             >
                 <span>
                     <b name="o_pickup_location_name" t-out="pickup_location_data.get('name', '')"/>
                     <br/>
                     <i
-                        name="o_pickup_location_address"
-                        t-out="(pickup_location_data.get('street', ) or '')
+                            name="o_pickup_location_address"
+                            t-out="(pickup_location_data.get('street', ) or '')
                                + ' '
                                + (pickup_location_data.get('zip_code') or '')
                                + ' '
@@ -90,29 +90,29 @@
                     />
                 </span>
                 <span
-                    name="o_pickup_location_selector"
-                    class="btn btn-primary fa fa-pencil ms-2 p-1"
-                    title="Change location"
-                    aria-label="Change location"
-                    t-att-data-location-id="pickup_location_data.get('id')"
-                    t-att-data-zip-code="pickup_location_data.get('zip_code')"
-                    t-att-data-pickup-location-data="is_selected and json_pickup_location_data"
+                        name="o_pickup_location_selector"
+                        class="btn btn-primary fa fa-pencil ms-2 p-1"
+                        title="Change location"
+                        aria-label="Change location"
+                        t-att-data-location-id="pickup_location_data.get('id')"
+                        t-att-data-zip-code="pickup_location_data.get('zip_code')"
+                        t-att-data-pickup-location-data="is_selected and json_pickup_location_data"
                 />
             </div>
             <button
-                t-if="not (is_selected and pickup_location_data)"
-                name="o_pickup_location_selector"
-                type="button"
-                class="btn btn-primary ms-4"
-                t-att-data-zip-code="order.partner_shipping_id.zip"
+                    t-if="not (is_selected and pickup_location_data)"
+                    name="o_pickup_location_selector"
+                    type="button"
+                    class="btn btn-primary ms-4"
+                    t-att-data-zip-code="order.partner_shipping_id.zip"
             >
                 Select a location
             </button>
         </div>
         <div
-            t-if="dm.website_description"
-            t-field="dm.website_description"
-            class="text-muted mt-1"
+                t-if="dm.website_description"
+                t-field="dm.website_description"
+                class="text-muted mt-1"
         />
     </template>
 

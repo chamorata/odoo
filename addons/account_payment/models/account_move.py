@@ -1,10 +1,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.payment import utils as payment_utils
+
 from odoo import api, fields, models
 from odoo.tools import format_date, str2bool
 from odoo.tools.translate import _
-
-from odoo.addons.payment import utils as payment_utils
 
 
 class AccountMove(models.Model):

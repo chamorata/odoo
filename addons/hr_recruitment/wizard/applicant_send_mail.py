@@ -9,7 +9,8 @@ class ApplicantSendMail(models.TransientModel):
     _description = 'Send mails to applicants'
 
     applicant_ids = fields.Many2many('hr.applicant', string='Applications', required=True)
-    author_id = fields.Many2one('res.partner', 'Author', required=True, default=lambda self: self.env.user.partner_id.id)
+    author_id = fields.Many2one('res.partner', 'Author', required=True,
+                                default=lambda self: self.env.user.partner_id.id)
     attachment_ids = fields.Many2many('ir.attachment', string='Attachments', readonly=False, store=True)
 
     @api.depends('subject')
@@ -19,14 +20,16 @@ class ApplicantSendMail(models.TransientModel):
     def action_send(self):
         self.ensure_one()
 
-        without_emails = self.applicant_ids.filtered(lambda a: not a.email_from or (a.partner_id and not a.partner_id.email))
+        without_emails = self.applicant_ids.filtered(
+            lambda a: not a.email_from or (a.partner_id and not a.partner_id.email))
         if without_emails:
             return {
                 'type': 'ir.actions.client',
                 'tag': 'display_notification',
                 'params': {
                     'type': 'danger',
-                    'message': _("The following applicants are missing an email address: %s.", ', '.join(without_emails.mapped(lambda a: a.partner_name or a.display_name))),
+                    'message': _("The following applicants are missing an email address: %s.",
+                                 ', '.join(without_emails.mapped(lambda a: a.partner_name or a.display_name))),
                 }
             }
 

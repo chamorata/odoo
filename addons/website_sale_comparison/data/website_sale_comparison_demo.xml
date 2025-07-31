@@ -59,7 +59,7 @@
         <field name="value_ids" eval="[(6,0,[ref('product_attribute_value_7')])]"/>
     </record>
     <record id="product_6_attribute_8_template_attribute_line" model="product.template.attribute.line">
-         <field name="product_tmpl_id" ref="product.product_product_6_product_template"/>
+        <field name="product_tmpl_id" ref="product.product_product_6_product_template"/>
         <field name="attribute_id" ref="product_attribute_8"/>
         <field name="value_ids" eval="[(6,0,[ref('product_attribute_value_8')])]"/>
     </record>

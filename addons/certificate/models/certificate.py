@@ -7,10 +7,10 @@ from cryptography.hazmat.primitives import constant_time, serialization
 from cryptography.hazmat.primitives.serialization import Encoding, pkcs12
 
 from odoo import _, api, fields, models
-from .key import STR_TO_HASH, _get_formatted_value
 from odoo.exceptions import UserError
 from odoo.osv import expression
 from odoo.tools import parse_version
+from .key import STR_TO_HASH, _get_formatted_value
 
 
 class Certificate(models.Model):
@@ -117,7 +117,8 @@ class Certificate(models.Model):
             if certificate.content_format == 'pkcs12':
                 content = certificate.with_context(bin_size=False).content
                 pkcs12_password = certificate.pkcs12_password.encode('utf-8') if certificate.pkcs12_password else None
-                key, _cert, _additional_certs = pkcs12.load_key_and_certificates(base64.b64decode(content), pkcs12_password)
+                key, _cert, _additional_certs = pkcs12.load_key_and_certificates(base64.b64decode(content),
+                                                                                 pkcs12_password)
 
                 if key:
                     pem_key = base64.b64encode(key.private_bytes(
@@ -161,7 +162,8 @@ class Certificate(models.Model):
                     pass
                 if not cert:
                     try:
-                        pkcs12_password = certificate.pkcs12_password.encode('utf-8') if certificate.pkcs12_password else None
+                        pkcs12_password = certificate.pkcs12_password.encode(
+                            'utf-8') if certificate.pkcs12_password else None
                         _key, cert, _additional_certs = pkcs12.load_key_and_certificates(content, pkcs12_password)
                         certificate.content_format = 'pkcs12'
                     except ValueError:
@@ -180,7 +182,8 @@ class Certificate(models.Model):
                     certificate.date_start = None
                     certificate.date_end = None
                     certificate.serial_number = None
-                    certificate.loading_error = _("This certificate could not be loaded. Either the content or the password is erroneous.")
+                    certificate.loading_error = _(
+                        "This certificate could not be loaded. Either the content or the password is erroneous.")
                     continue
 
                 try:
@@ -296,7 +299,8 @@ class Certificate(models.Model):
         self.ensure_one()
         cert = x509.load_pem_x509_certificate(base64.b64decode(self.with_context(bin_size=False).pem_certificate))
         if hashing_algorithm not in STR_TO_HASH:
-            raise UserError(f"Unsupported hashing algorithm '{hashing_algorithm}'. Currently supported: sha1 and sha256.")
+            raise UserError(
+                f"Unsupported hashing algorithm '{hashing_algorithm}'. Currently supported: sha1 and sha256.")
         return _get_formatted_value(cert.fingerprint(STR_TO_HASH[hashing_algorithm]), formatting=formatting)
 
     def _get_signature_bytes(self, formatting='encodebytes'):
@@ -349,7 +353,8 @@ class Certificate(models.Model):
         '''
         self.ensure_one()
         if self.public_key_id or self.private_key_id:
-            return (self.public_key_id or self.private_key_id)._get_public_key_bytes(encoding=encoding, formatting=formatting)
+            return (self.public_key_id or self.private_key_id)._get_public_key_bytes(encoding=encoding,
+                                                                                     formatting=formatting)
 
         # When no keys are set to the certificate, use the self-contained public key from the content
         try:

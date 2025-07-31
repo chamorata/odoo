@@ -36,9 +36,11 @@ class ResPartner(models.Model):
         }
 
         for partner in self:
-            slide_channel_ids = data.get((partner.id, 'joined'), []) + data.get((partner.id, 'ongoing'), []) + data.get((partner.id, 'completed'), [])
+            slide_channel_ids = data.get((partner.id, 'joined'), []) + data.get((partner.id, 'ongoing'), []) + data.get(
+                (partner.id, 'completed'), [])
             partner.slide_channel_ids = slide_channel_ids
-            partner.slide_channel_completed_ids = self.env['slide.channel'].browse(data.get((partner.id, 'completed'), []))
+            partner.slide_channel_completed_ids = self.env['slide.channel'].browse(
+                data.get((partner.id, 'completed'), []))
             partner.slide_channel_count = len(slide_channel_ids)
 
     def _search_slide_channel_completed_ids(self, operator, value):

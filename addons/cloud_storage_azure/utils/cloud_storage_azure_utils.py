@@ -8,11 +8,12 @@ importing the azure.storage.blob library.
 import base64
 import hashlib
 import hmac
+from datetime import date
+from urllib.parse import quote
 
 import requests
-from urllib.parse import quote
-from datetime import date
 from lxml import etree
+
 from odoo.exceptions import ValidationError
 
 X_MS_VERSION = '2023-11-03'
@@ -194,6 +195,7 @@ class UserDelegationKey:
     :ivar str value:
         The user delegation key.
     """
+
     def __init__(self):
         self.signed_oid = None
         self.signed_tid = None
@@ -221,7 +223,7 @@ def generate_blob_sas(
         content_encoding=None,
         content_language=None,
         content_type=None,
-    ):
+):
     """Generates a shared access signature for a blob.
 
     This function is a simplified version of the azure.storage.blob.generate_blob_sas

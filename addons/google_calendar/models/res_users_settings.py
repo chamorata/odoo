@@ -17,8 +17,9 @@ class ResUsersSettings(models.Model):
     google_calendar_token_validity = fields.Datetime('Token Validity', copy=False, groups='base.group_system')
     google_calendar_sync_token = fields.Char('Next Sync Token', copy=False, groups='base.group_system')
     google_calendar_cal_id = fields.Char('Calendar ID', copy=False, groups='base.group_system',
-        help='Last Calendar ID who has been synchronized. If it is changed, we remove all links between GoogleID and Odoo Google Internal ID')
-    google_synchronization_stopped = fields.Boolean('Google Synchronization stopped', copy=False, groups='base.group_system')
+                                         help='Last Calendar ID who has been synchronized. If it is changed, we remove all links between GoogleID and Odoo Google Internal ID')
+    google_synchronization_stopped = fields.Boolean('Google Synchronization stopped', copy=False,
+                                                    groups='base.group_system')
 
     @api.model
     def _get_fields_blacklist(self):
@@ -46,13 +47,15 @@ class ResUsersSettings(models.Model):
 
     def _is_google_calendar_valid(self):
         self.ensure_one()
-        return self.sudo().google_calendar_token_validity and self.sudo().google_calendar_token_validity >= (fields.Datetime.now() + timedelta(minutes=1))
+        return self.sudo().google_calendar_token_validity and self.sudo().google_calendar_token_validity >= (
+                    fields.Datetime.now() + timedelta(minutes=1))
 
     def _refresh_google_calendar_token(self):
         self.ensure_one()
 
         try:
-            access_token, ttl = self.env['google.service']._refresh_google_token('calendar', self.sudo().google_calendar_rtoken)
+            access_token, ttl = self.env['google.service']._refresh_google_token('calendar',
+                                                                                 self.sudo().google_calendar_rtoken)
             self.sudo().write({
                 'google_calendar_token': access_token,
                 'google_calendar_token_validity': fields.Datetime.now() + timedelta(seconds=ttl),
@@ -64,7 +67,8 @@ class ResUsersSettings(models.Model):
                 self.sudo()._set_google_auth_tokens(False, False, 0)
                 self.env.cr.commit()
             error_key = error.response.json().get("error", "nc")
-            error_msg = _("An error occurred while generating the token. Your authorization code may be invalid or has already expired [%s]. "
-                          "You should check your Client ID and secret on the Google APIs plateform or try to stop and restart your calendar synchronization.",
-                          error_key)
+            error_msg = _(
+                "An error occurred while generating the token. Your authorization code may be invalid or has already expired [%s]. "
+                "You should check your Client ID and secret on the Google APIs plateform or try to stop and restart your calendar synchronization.",
+                error_key)
             raise UserError(error_msg)

@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-from datetime import date, datetime
 import json as json_
 import re
+from datetime import date, datetime
 
 import markupsafe
+
 from .func import lazy
 from .misc import ReadonlyDict
 
@@ -14,6 +15,8 @@ JSON_SCRIPTSAFE_MAPPER = {
     '\u2028': r'\u2028',
     '\u2029': r'\u2029'
 }
+
+
 class _ScriptSafe(str):
     def __html__(self):
         # replacement can be done straight in the serialised JSON as the
@@ -24,9 +27,12 @@ class _ScriptSafe(str):
             lambda m: JSON_SCRIPTSAFE_MAPPER[m[0]],
             self,
         ))
+
+
 class JSON:
     def loads(self, *args, **kwargs):
         return json_.loads(*args, **kwargs)
+
     def dumps(self, *args, **kwargs):
         """ JSON used as JS in HTML (script tags) is problematic: <script>
         tags are a special context which only waits for </script> but doesn't
@@ -55,6 +61,8 @@ class JSON:
         Cf https://code.djangoproject.com/ticket/17419#comment:27
         """
         return _ScriptSafe(json_.dumps(*args, **kwargs))
+
+
 scriptsafe = JSON()
 
 

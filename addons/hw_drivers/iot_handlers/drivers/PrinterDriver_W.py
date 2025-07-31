@@ -1,27 +1,28 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from PIL import Image, ImageOps
+import io
 import logging
 from base64 import b64decode
-import io
-import win32print
-import ghostscript
 
+import ghostscript
+import win32print
+from PIL import Image, ImageOps
 from odoo.addons.hw_drivers.controllers.proxy import proxy_drivers
 from odoo.addons.hw_drivers.driver import Driver
 from odoo.addons.hw_drivers.event_manager import event_manager
+from odoo.addons.hw_drivers.iot_handlers.interfaces.PrinterInterface_W import win32print_lock
 from odoo.addons.hw_drivers.main import iot_devices
 from odoo.addons.hw_drivers.tools import helpers
-from odoo.tools.mimetypes import guess_mimetype
 from odoo.addons.hw_drivers.websocket_client import send_to_controller
-from odoo.addons.hw_drivers.iot_handlers.interfaces.PrinterInterface_W import win32print_lock
+
+from odoo.tools.mimetypes import guess_mimetype
 
 _logger = logging.getLogger(__name__)
 
 RECEIPT_PRINTER_COMMANDS = {
     'star': {
-        'center': b'\x1b\x1d\x61\x01', # ESC GS a n
+        'center': b'\x1b\x1d\x61\x01',  # ESC GS a n
         'cut': b'\x1b\x64\x02',  # ESC d n
         'title': b'\x1b\x69\x01\x01%s\x1b\x69\x00\x00',  # ESC i n1 n2
         'drawers': [b'\x07', b'\x1a']  # BEL & SUB
@@ -33,6 +34,7 @@ RECEIPT_PRINTER_COMMANDS = {
         'drawers': [b'\x1b\x3d\x01', b'\x1b\x70\x00\x19\x19', b'\x1b\x70\x01\x19\x19']  # ESC = n then ESC p m t1 t2
     }
 }
+
 
 class PrinterDriver(Driver):
     connection_type = 'printer'
@@ -71,7 +73,9 @@ class PrinterDriver(Driver):
 
     @classmethod
     def get_status(cls):
-        status = 'connected' if any(iot_devices[d].device_type == "printer" and iot_devices[d].device_connection == 'direct' for d in iot_devices) else 'disconnected'
+        status = 'connected' if any(
+            iot_devices[d].device_type == "printer" and iot_devices[d].device_connection == 'direct' for d in
+            iot_devices) else 'disconnected'
         return {'status': status, 'messages': ''}
 
     @staticmethod
@@ -136,7 +140,8 @@ class PrinterDriver(Driver):
             try:
                 ghostscript.Ghostscript(*args, stdout=stdout_buf, stderr=stderr_buf)
             except Exception:
-                _logger.exception("Error while printing report, ghostscript args: %s, error buffer: %s", args, stderr_buf.getvalue())
+                _logger.exception("Error while printing report, ghostscript args: %s, error buffer: %s", args,
+                                  stderr_buf.getvalue())
                 stdout_log_level = logging.ERROR  # some stdout value might contains relevant error information
                 raise
             finally:
@@ -165,17 +170,17 @@ class PrinterDriver(Driver):
         raster_data = b''
         dots = im.tobytes()
         while dots:
-            im_slice = dots[:width*max_slice_height]
+            im_slice = dots[:width * max_slice_height]
             slice_height = int(len(im_slice) / width)
             raster_data += raster_send + width.to_bytes(2, 'little') + slice_height.to_bytes(2, 'little') + im_slice
-            dots = dots[width*max_slice_height:]
+            dots = dots[width * max_slice_height:]
 
         return raster_data + RECEIPT_PRINTER_COMMANDS['escpos']['cut']
 
     def open_cashbox(self, data):
         """Sends a signal to the current printer to open the connected cashbox."""
         _logger.debug("open_cashbox called for printer %s", self.device_name)
-        
+
         commands = RECEIPT_PRINTER_COMMANDS[self.receipt_protocol]
         for drawer in commands['drawers']:
             self.print_raw(drawer)
@@ -189,7 +194,8 @@ class PrinterDriver(Driver):
             self.print_report(document)
         else:
             self.print_raw(document)
-        send_to_controller(self.connection_type, {'print_id': data['print_id'], 'device_identifier': self.device_identifier})
+        send_to_controller(self.connection_type,
+                           {'print_id': data['print_id'], 'device_identifier': self.device_identifier})
         _logger.debug("_action_default finished with mimetype %s for printer %s", mimetype, self.device_name)
 
 

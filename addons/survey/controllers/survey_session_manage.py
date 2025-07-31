@@ -115,7 +115,8 @@ class UserInputSession(http.Controller):
 
             return {
                 'background_image_url': survey.session_question_id.background_image_url,
-                'question_html': request.env['ir.qweb']._render('survey.user_input_session_manage_content', template_values)
+                'question_html': request.env['ir.qweb']._render('survey.user_input_session_manage_content',
+                                                                template_values)
             }
         else:
             return {}

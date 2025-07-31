@@ -33,7 +33,8 @@
                                 <field name="name">VAT 7%</field>
                                 <field name="code">l10n_tn_sale_7</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_tn_tr_VAT_sale_7_base_amount_tag" model="account.report.expression">
+                                    <record id="l10n_tn_tr_VAT_sale_7_base_amount_tag"
+                                            model="account.report.expression">
                                         <field name="label">base_amount</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">sale_7_base_amount_tag</field>
@@ -49,7 +50,8 @@
                                 <field name="name">VAT 13%</field>
                                 <field name="code">l10n_tn_sale_13</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_tn_tr_VAT_sale_13_base_amount_tag" model="account.report.expression">
+                                    <record id="l10n_tn_tr_VAT_sale_13_base_amount_tag"
+                                            model="account.report.expression">
                                         <field name="label">base_amount</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">sale_13_base_amount_tag</field>
@@ -65,7 +67,8 @@
                                 <field name="name">VAT 19%</field>
                                 <field name="code">l10n_tn_sale_19</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_tn_tr_VAT_sale_19_base_amount_tag" model="account.report.expression">
+                                    <record id="l10n_tn_tr_VAT_sale_19_base_amount_tag"
+                                            model="account.report.expression">
                                         <field name="label">base_amount</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">sale_19_base_amount_tag</field>
@@ -81,7 +84,8 @@
                                 <field name="name">VAT 6%</field>
                                 <field name="code">l10n_tn_sale_6</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_tn_tr_VAT_sale_6_base_amount_tag" model="account.report.expression">
+                                    <record id="l10n_tn_tr_VAT_sale_6_base_amount_tag"
+                                            model="account.report.expression">
                                         <field name="label">base_amount</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">sale_6_base_amount_tag</field>
@@ -97,7 +101,8 @@
                                 <field name="name">VAT 12%</field>
                                 <field name="code">l10n_tn_sale_12</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_tn_tr_VAT_sale_12_base_amount_tag" model="account.report.expression">
+                                    <record id="l10n_tn_tr_VAT_sale_12_base_amount_tag"
+                                            model="account.report.expression">
                                         <field name="label">base_amount</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">sale_12_base_amount_tag</field>
@@ -113,7 +118,8 @@
                                 <field name="name">VAT 18%</field>
                                 <field name="code">l10n_tn_sale_18</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_tn_tr_VAT_sale_18_base_amount_tag" model="account.report.expression">
+                                    <record id="l10n_tn_tr_VAT_sale_18_base_amount_tag"
+                                            model="account.report.expression">
                                         <field name="label">base_amount</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">sale_18_base_amount_tag</field>
@@ -128,19 +134,22 @@
                         </field>
                     </record>
                     <record id="l10n_tn_tr_VAT_purchase" model="account.report.line">
-                        <field name="name">2- Purchases taxable for VAT, net of VAT and giving right to deduction</field>
+                        <field name="name">2- Purchases taxable for VAT, net of VAT and giving right to deduction
+                        </field>
                         <field name="hierarchy_level">1</field>
                         <field name="children_ids">
                             <record id="l10n_tn_tr_VAT_purchase_fixed_assets" model="account.report.line">
                                 <field name="name">Purchase of fixed assets</field>
                                 <field name="code">l10n_tn_purchase_vat_fixed_assets</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_tn_tr_VAT_purchase_fixed_assets_base_amount_tag" model="account.report.expression">
+                                    <record id="l10n_tn_tr_VAT_purchase_fixed_assets_base_amount_tag"
+                                            model="account.report.expression">
                                         <field name="label">base_amount</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">purchase_fixed_assets_base_amount_tag</field>
                                     </record>
-                                    <record id="l10n_tn_tr_VAT_purchase_fixed_assets_deductible_vat_tag" model="account.report.expression">
+                                    <record id="l10n_tn_tr_VAT_purchase_fixed_assets_deductible_vat_tag"
+                                            model="account.report.expression">
                                         <field name="label">deductible_vat</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">purchase_fixed_assets_deductible_vat_tag</field>
@@ -154,15 +163,18 @@
                                         <field name="name">Local</field>
                                         <field name="code">l10n_tn_purchase_vat_local_equipment</field>
                                         <field name="expression_ids">
-                                            <record id="l10n_tn_tr_VAT_purchase_local_equipment_base_amount_tag" model="account.report.expression">
+                                            <record id="l10n_tn_tr_VAT_purchase_local_equipment_base_amount_tag"
+                                                    model="account.report.expression">
                                                 <field name="label">base_amount</field>
                                                 <field name="engine">tax_tags</field>
                                                 <field name="formula">purchase_local_equipment_base_amount_tag</field>
                                             </record>
-                                            <record id="l10n_tn_tr_VAT_purchase_local_equipment_deductible_vat_tag" model="account.report.expression">
+                                            <record id="l10n_tn_tr_VAT_purchase_local_equipment_deductible_vat_tag"
+                                                    model="account.report.expression">
                                                 <field name="label">deductible_vat</field>
                                                 <field name="engine">tax_tags</field>
-                                                <field name="formula">purchase_local_equipment_deductible_vat_tag</field>
+                                                <field name="formula">purchase_local_equipment_deductible_vat_tag
+                                                </field>
                                             </record>
                                         </field>
                                     </record>
@@ -170,15 +182,19 @@
                                         <field name="name">Imported</field>
                                         <field name="code">l10n_tn_purchase_vat_imported_equipment</field>
                                         <field name="expression_ids">
-                                            <record id="l10n_tn_tr_VAT_purchase_imported_equipment_base_amount_tag" model="account.report.expression">
+                                            <record id="l10n_tn_tr_VAT_purchase_imported_equipment_base_amount_tag"
+                                                    model="account.report.expression">
                                                 <field name="label">base_amount</field>
                                                 <field name="engine">tax_tags</field>
-                                                <field name="formula">purchase_imported_equipment_base_amount_tag</field>
+                                                <field name="formula">purchase_imported_equipment_base_amount_tag
+                                                </field>
                                             </record>
-                                            <record id="l10n_tn_tr_VAT_purchase_imported_equipment_deductible_vat_tag" model="account.report.expression">
+                                            <record id="l10n_tn_tr_VAT_purchase_imported_equipment_deductible_vat_tag"
+                                                    model="account.report.expression">
                                                 <field name="label">deductible_vat</field>
                                                 <field name="engine">tax_tags</field>
-                                                <field name="formula">purchase_imported_equipment_deductible_vat_tag</field>
+                                                <field name="formula">purchase_imported_equipment_deductible_vat_tag
+                                                </field>
                                             </record>
                                         </field>
                                     </record>
@@ -191,12 +207,14 @@
                                         <field name="name">Local</field>
                                         <field name="code">l10n_tn_purchase_vat_other_local</field>
                                         <field name="expression_ids">
-                                            <record id="l10n_tn_tr_VAT_purchase_other_local_base_amount_tag" model="account.report.expression">
+                                            <record id="l10n_tn_tr_VAT_purchase_other_local_base_amount_tag"
+                                                    model="account.report.expression">
                                                 <field name="label">base_amount</field>
                                                 <field name="engine">tax_tags</field>
                                                 <field name="formula">purchase_other_local_base_amount_tag</field>
                                             </record>
-                                            <record id="l10n_tn_tr_VAT_purchase_other_local_deductible_vat_tag" model="account.report.expression">
+                                            <record id="l10n_tn_tr_VAT_purchase_other_local_deductible_vat_tag"
+                                                    model="account.report.expression">
                                                 <field name="label">deductible_vat</field>
                                                 <field name="engine">tax_tags</field>
                                                 <field name="formula">purchase_other_local_deductible_vat_tag</field>
@@ -207,12 +225,14 @@
                                         <field name="name">Imported</field>
                                         <field name="code">l10n_tn_purchase_vat_other_imported</field>
                                         <field name="expression_ids">
-                                            <record id="l10n_tn_tr_VAT_purchase_other_imported_base_amount_tag" model="account.report.expression">
+                                            <record id="l10n_tn_tr_VAT_purchase_other_imported_base_amount_tag"
+                                                    model="account.report.expression">
                                                 <field name="label">base_amount</field>
                                                 <field name="engine">tax_tags</field>
                                                 <field name="formula">purchase_other_imported_base_amount_tag</field>
                                             </record>
-                                            <record id="l10n_tn_tr_VAT_purchase_other_imported_deductible_vat_tag" model="account.report.expression">
+                                            <record id="l10n_tn_tr_VAT_purchase_other_imported_deductible_vat_tag"
+                                                    model="account.report.expression">
                                                 <field name="label">deductible_vat</field>
                                                 <field name="engine">tax_tags</field>
                                                 <field name="formula">purchase_other_imported_deductible_vat_tag</field>
@@ -228,16 +248,20 @@
                         <field name="hierarchy_level">1</field>
                         <field name="children_ids">
                             <record id="l10n_tn_tr_VAT_thousand" model="account.report.line">
-                                <field name="name">VAT due on amounts that are ≥ 1000 D including VAT and the amount of withholding tax (25%)</field>
+                                <field name="name">VAT due on amounts that are ≥ 1000 D including VAT and the amount of
+                                    withholding tax (25%)
+                                </field>
                                 <field name="code">l10n_tn_purchase_vat_thousand</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_tn_tr_VAT_purchase_thousand_base_amount_tag" model="account.report.expression">
+                                    <record id="l10n_tn_tr_VAT_purchase_thousand_base_amount_tag"
+                                            model="account.report.expression">
                                         <field name="label">base_amount</field>
                                         <field name="engine">external</field>
                                         <field name="formula">sum</field>
                                         <field name="subformula">editable;rounding=2</field>
                                     </record>
-                                    <record id="l10n_tn_tr_VAT_purchase_thousand_deductible_vat_tag" model="account.report.expression">
+                                    <record id="l10n_tn_tr_VAT_purchase_thousand_deductible_vat_tag"
+                                            model="account.report.expression">
                                         <field name="label">deductible_vat</field>
                                         <field name="engine">aggregation</field>
                                         <field name="formula">0.25 * l10n_tn_purchase_vat_thousand.base_amount</field>
@@ -245,19 +269,24 @@
                                 </field>
                             </record>
                             <record id="l10n_tn_tr_VAT_foreign_institution" model="account.report.line">
-                                <field name="name">VAT due on transactions with persons not having an establishment in Tunisia (100%)</field>
+                                <field name="name">VAT due on transactions with persons not having an establishment in
+                                    Tunisia (100%)
+                                </field>
                                 <field name="code">l10n_tn_purchase_vat_foreign_institution</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_tn_tr_VAT_purchase_foreign_institution_base_amount_tag" model="account.report.expression">
+                                    <record id="l10n_tn_tr_VAT_purchase_foreign_institution_base_amount_tag"
+                                            model="account.report.expression">
                                         <field name="label">base_amount</field>
                                         <field name="engine">external</field>
                                         <field name="formula">sum</field>
                                         <field name="subformula">editable;rounding=2</field>
                                     </record>
-                                    <record id="l10n_tn_tr_VAT_purchase_foreign_institution_deductible_vat_tag" model="account.report.expression">
+                                    <record id="l10n_tn_tr_VAT_purchase_foreign_institution_deductible_vat_tag"
+                                            model="account.report.expression">
                                         <field name="label">deductible_vat</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">l10n_tn_purchase_vat_foreign_institution.base_amount</field>
+                                        <field name="formula">l10n_tn_purchase_vat_foreign_institution.base_amount
+                                        </field>
                                     </record>
                                 </field>
                             </record>
@@ -265,13 +294,15 @@
                                 <field name="name">Flat-rate VAT on means of transport</field>
                                 <field name="code">l10n_tn_purchase_vat_transport</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_tn_tr_VAT_purchase_transport_base_amount_tag" model="account.report.expression">
+                                    <record id="l10n_tn_tr_VAT_purchase_transport_base_amount_tag"
+                                            model="account.report.expression">
                                         <field name="label">base_amount</field>
                                         <field name="engine">external</field>
                                         <field name="formula">sum</field>
                                         <field name="subformula">editable;rounding=2</field>
                                     </record>
-                                    <record id="l10n_tn_tr_VAT_purchase_transport_deductible_vat_tag" model="account.report.expression">
+                                    <record id="l10n_tn_tr_VAT_purchase_transport_deductible_vat_tag"
+                                            model="account.report.expression">
                                         <field name="label">deductible_vat</field>
                                         <field name="engine">external</field>
                                         <field name="formula">sum</field>
@@ -292,7 +323,8 @@
                                         <field name="name">for termination and cancellation transactions</field>
                                         <field name="code">l10n_tn_purchase_vat_additional_deduction_cancel</field>
                                         <field name="expression_ids">
-                                            <record id="l10n_tn_tr_VAT_purchase_additional_deduction_cancel_deductible_vat_tag" model="account.report.expression">
+                                            <record id="l10n_tn_tr_VAT_purchase_additional_deduction_cancel_deductible_vat_tag"
+                                                    model="account.report.expression">
                                                 <field name="label">deductible_vat</field>
                                                 <field name="engine">external</field>
                                                 <field name="formula">sum</field>
@@ -304,7 +336,8 @@
                                         <field name="name">for other operations</field>
                                         <field name="code">l10n_tn_purchase_vat_additional_deduction_other</field>
                                         <field name="expression_ids">
-                                            <record id="l10n_tn_tr_VAT_purchase_additional_deduction_other_deductible_vat_tag" model="account.report.expression">
+                                            <record id="l10n_tn_tr_VAT_purchase_additional_deduction_other_deductible_vat_tag"
+                                                    model="account.report.expression">
                                                 <field name="label">deductible_vat</field>
                                                 <field name="engine">external</field>
                                                 <field name="formula">sum</field>
@@ -337,26 +370,28 @@
                                 <field name="label">vat_due</field>
                                 <field name="engine">aggregation</field>
                                 <field name="formula">l10n_tn_sale_7.vat_due +
-                                                      l10n_tn_sale_13.vat_due +
-                                                      l10n_tn_sale_19.vat_due +
-                                                      l10n_tn_sale_6.vat_due +
-                                                      l10n_tn_sale_12.vat_due +
-                                                      l10n_tn_sale_18.vat_due +
-                                                      l10n_tn_vat_repayment.vat_due</field>
+                                    l10n_tn_sale_13.vat_due +
+                                    l10n_tn_sale_19.vat_due +
+                                    l10n_tn_sale_6.vat_due +
+                                    l10n_tn_sale_12.vat_due +
+                                    l10n_tn_sale_18.vat_due +
+                                    l10n_tn_vat_repayment.vat_due
+                                </field>
                             </record>
                             <record id="l10n_tn_tr_VAT_total_deductible_vat_tag" model="account.report.expression">
                                 <field name="label">deductible_vat</field>
                                 <field name="engine">aggregation</field>
                                 <field name="formula">l10n_tn_purchase_vat_fixed_assets.deductible_vat +
-                                                      l10n_tn_purchase_vat_local_equipment.deductible_vat +
-                                                      l10n_tn_purchase_vat_imported_equipment.deductible_vat +
-                                                      l10n_tn_purchase_vat_other_local.deductible_vat +
-                                                      l10n_tn_purchase_vat_other_imported.deductible_vat +
-                                                      l10n_tn_purchase_vat_thousand.deductible_vat +
-                                                      l10n_tn_purchase_vat_foreign_institution.deductible_vat +
-                                                      l10n_tn_purchase_vat_transport.deductible_vat +
-                                                      l10n_tn_purchase_vat_additional_deduction_cancel.deductible_vat +
-                                                      l10n_tn_purchase_vat_additional_deduction_other.deductible_vat</field>
+                                    l10n_tn_purchase_vat_local_equipment.deductible_vat +
+                                    l10n_tn_purchase_vat_imported_equipment.deductible_vat +
+                                    l10n_tn_purchase_vat_other_local.deductible_vat +
+                                    l10n_tn_purchase_vat_other_imported.deductible_vat +
+                                    l10n_tn_purchase_vat_thousand.deductible_vat +
+                                    l10n_tn_purchase_vat_foreign_institution.deductible_vat +
+                                    l10n_tn_purchase_vat_transport.deductible_vat +
+                                    l10n_tn_purchase_vat_additional_deduction_cancel.deductible_vat +
+                                    l10n_tn_purchase_vat_additional_deduction_other.deductible_vat
+                                </field>
                             </record>
                         </field>
                     </record>
@@ -368,13 +403,15 @@
                             <record id="l10n_tn_tr_VAT_conclusion_vat_due_tag" model="account.report.expression">
                                 <field name="label">vat_due</field>
                                 <field name="engine">aggregation</field>
-                                <field name="formula">l10n_tn_vat_total.vat_due - l10n_tn_vat_total.deductible_vat</field>
+                                <field name="formula">l10n_tn_vat_total.vat_due - l10n_tn_vat_total.deductible_vat
+                                </field>
                                 <field name="subformula">if_above(TND(0))</field>
                             </record>
                             <record id="l10n_tn_tr_VAT_conclusion_deductible_vat_tag" model="account.report.expression">
                                 <field name="label">deductible_vat</field>
                                 <field name="engine">aggregation</field>
-                                <field name="formula">-l10n_tn_vat_total.vat_due + l10n_tn_vat_total.deductible_vat</field>
+                                <field name="formula">-l10n_tn_vat_total.vat_due + l10n_tn_vat_total.deductible_vat
+                                </field>
                                 <field name="subformula">if_above(TND(0))</field>
                             </record>
                         </field>
@@ -384,7 +421,8 @@
                         <field name="code">l10n_tn_vat_carryover</field>
                         <field name="hierarchy_level">3</field>
                         <field name="expression_ids">
-                            <record id="l10n_tn_tr_VAT_conclusion_carryover_deductible_vat_tag" model="account.report.expression">
+                            <record id="l10n_tn_tr_VAT_conclusion_carryover_deductible_vat_tag"
+                                    model="account.report.expression">
                                 <field name="label">deductible_vat</field>
                                 <field name="engine">external</field>
                                 <field name="formula">sum</field>
@@ -397,7 +435,8 @@
                         <field name="code">l10n_tn_vat_returned_amount</field>
                         <field name="hierarchy_level">3</field>
                         <field name="expression_ids">
-                            <record id="l10n_tn_tr_VAT_conclusion_returned_amount_deductible_vat_tag" model="account.report.expression">
+                            <record id="l10n_tn_tr_VAT_conclusion_returned_amount_deductible_vat_tag"
+                                    model="account.report.expression">
                                 <field name="label">deductible_vat</field>
                                 <field name="engine">external</field>
                                 <field name="formula">sum</field>
@@ -410,18 +449,24 @@
                         <field name="code">l10n_tn_vat_remaining_total</field>
                         <field name="hierarchy_level">3</field>
                         <field name="expression_ids">
-                            <record id="l10n_tn_tr_VAT_conclusion_after_carryover_vat_due_tag" model="account.report.expression">
+                            <record id="l10n_tn_tr_VAT_conclusion_after_carryover_vat_due_tag"
+                                    model="account.report.expression">
                                 <field name="label">vat_due</field>
                                 <field name="engine">aggregation</field>
-                                <field name="formula">l10n_tn_vat_remaining.vat_due - l10n_tn_vat_remaining.deductible_vat -
-                                            l10n_tn_vat_carryover.deductible_vat + l10n_tn_vat_returned_amount.deductible_vat</field>
+                                <field name="formula">l10n_tn_vat_remaining.vat_due -
+                                    l10n_tn_vat_remaining.deductible_vat -
+                                    l10n_tn_vat_carryover.deductible_vat + l10n_tn_vat_returned_amount.deductible_vat
+                                </field>
                                 <field name="subformula">if_above(TND(0))</field>
                             </record>
-                            <record id="l10n_tn_tr_VAT_conclusion_after_carryover_deductible_vat_tag" model="account.report.expression">
+                            <record id="l10n_tn_tr_VAT_conclusion_after_carryover_deductible_vat_tag"
+                                    model="account.report.expression">
                                 <field name="label">deductible_vat</field>
                                 <field name="engine">aggregation</field>
-                                <field name="formula">-l10n_tn_vat_remaining.vat_due + l10n_tn_vat_remaining.deductible_vat +
-                                                    l10n_tn_vat_carryover.deductible_vat - l10n_tn_vat_returned_amount.deductible_vat</field>
+                                <field name="formula">-l10n_tn_vat_remaining.vat_due +
+                                    l10n_tn_vat_remaining.deductible_vat +
+                                    l10n_tn_vat_carryover.deductible_vat - l10n_tn_vat_returned_amount.deductible_vat
+                                </field>
                                 <field name="subformula">if_above(TND(0))</field>
                             </record>
                         </field>

@@ -2,14 +2,14 @@
 
 from unittest.mock import patch
 
+from odoo.addons.payment.tests.http_common import PaymentHttpCommon
+from odoo.addons.payment_paypal.controllers.main import PaypalController
+from odoo.addons.payment_paypal.tests.common import PaypalCommon
+
 from odoo import Command
 from odoo.exceptions import ValidationError
 from odoo.tests import tagged
 from odoo.tools import mute_logger
-
-from odoo.addons.payment.tests.http_common import PaymentHttpCommon
-from odoo.addons.payment_paypal.controllers.main import PaypalController
-from odoo.addons.payment_paypal.tests.common import PaypalCommon
 
 
 @tagged('post_install', '-at_install')
@@ -18,8 +18,8 @@ class PaypalTest(PaypalCommon, PaymentHttpCommon):
     def test_processing_values(self):
         tx = self._create_transaction(flow='direct')
         with patch(
-            'odoo.addons.payment_paypal.models.payment_provider.PaymentProvider'
-            '._paypal_make_request', return_value={'id': self.order_id},
+                'odoo.addons.payment_paypal.models.payment_provider.PaymentProvider'
+                '._paypal_make_request', return_value={'id': self.order_id},
         ):
             processing_values = tx._get_processing_values()
         self.assertEqual(processing_values['order_id'], self.order_id)
@@ -75,8 +75,8 @@ class PaypalTest(PaypalCommon, PaymentHttpCommon):
         tx = self._create_transaction('direct')
         url = self._build_url(PaypalController._webhook_url)
         with patch(
-            'odoo.addons.payment_paypal.controllers.main.PaypalController'
-            '._verify_notification_origin'
+                'odoo.addons.payment_paypal.controllers.main.PaypalController'
+                '._verify_notification_origin'
         ):
             self._make_json_request(url, data=self.notification_data)
         self.assertEqual(tx.state, 'done')
@@ -87,8 +87,8 @@ class PaypalTest(PaypalCommon, PaymentHttpCommon):
         self._create_transaction('direct')
         url = self._build_url(PaypalController._webhook_url)
         with patch(
-            'odoo.addons.payment_paypal.controllers.main.PaypalController'
-            '._verify_notification_origin'
+                'odoo.addons.payment_paypal.controllers.main.PaypalController'
+                '._verify_notification_origin'
         ) as origin_check_mock, patch(
             'odoo.addons.payment.models.payment_transaction.PaymentTransaction'
             '._handle_notification_data'

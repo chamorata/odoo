@@ -17,18 +17,18 @@
                 </field>
                 <footer>
                     <button name="process"
-                        string="Confirm"
-                        type="object"
-                        data-hotkey="q"
-                        class="btn-primary"/>
+                            string="Confirm"
+                            type="object"
+                            data-hotkey="q"
+                            class="btn-primary"/>
                     <button name="process_no_expired"
-                        string="Proceed except for expired one"
-                        type="object"
-                        data-hotkey="w"
-                        class="btn-secondary"/>
+                            string="Proceed except for expired one"
+                            type="object"
+                            data-hotkey="w"
+                            class="btn-secondary"/>
                     <button string="Discard"
-                        class="btn-secondary"
-                        special="cancel" data-hotkey="x"/>
+                            class="btn-secondary"
+                            special="cancel" data-hotkey="x"/>
                 </footer>
             </form>
         </field>

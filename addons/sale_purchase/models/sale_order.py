@@ -60,16 +60,17 @@ class SaleOrder(models.Model):
         """
         purchase_to_notify_map = {}  # map PO -> recordset of SOL as {purchase.order: set(sale.orde.liner)}
 
-        purchase_order_lines = self.env['purchase.order.line'].search([('sale_line_id', 'in', self.mapped('order_line').ids), ('state', '!=', 'cancel')])
+        purchase_order_lines = self.env['purchase.order.line'].search(
+            [('sale_line_id', 'in', self.mapped('order_line').ids), ('state', '!=', 'cancel')])
         for purchase_line in purchase_order_lines:
             purchase_to_notify_map.setdefault(purchase_line.order_id, self.env['sale.order.line'])
             purchase_to_notify_map[purchase_line.order_id] |= purchase_line.sale_line_id
 
         for purchase_order, sale_order_lines in purchase_to_notify_map.items():
             purchase_order._activity_schedule_with_view('mail.mail_activity_data_warning',
-                user_id=purchase_order.user_id.id or self.env.uid,
-                views_or_xmlid='sale_purchase.exception_purchase_on_sale_cancellation',
-                render_context={
-                    'sale_orders': sale_order_lines.mapped('order_id'),
-                    'sale_order_lines': sale_order_lines,
-            })
+                                                        user_id=purchase_order.user_id.id or self.env.uid,
+                                                        views_or_xmlid='sale_purchase.exception_purchase_on_sale_cancellation',
+                                                        render_context={
+                                                            'sale_orders': sale_order_lines.mapped('order_id'),
+                                                            'sale_order_lines': sale_order_lines,
+                                                        })

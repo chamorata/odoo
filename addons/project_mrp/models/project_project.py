@@ -6,8 +6,10 @@ from odoo import fields, models, _
 class ProjectProject(models.Model):
     _inherit = 'project.project'
 
-    bom_count = fields.Integer(compute='_compute_bom_count', groups='mrp.group_mrp_user', export_string_translation=False)
-    production_count = fields.Integer(compute='_compute_production_count', groups='mrp.group_mrp_user', export_string_translation=False)
+    bom_count = fields.Integer(compute='_compute_bom_count', groups='mrp.group_mrp_user',
+                               export_string_translation=False)
+    production_count = fields.Integer(compute='_compute_production_count', groups='mrp.group_mrp_user',
+                                      export_string_translation=False)
 
     def _compute_bom_count(self):
         bom_count_per_project = dict(
@@ -41,7 +43,7 @@ class ProjectProject(models.Model):
             'help': "<p class='o_view_nocontent_smiling_face'>%s</p><p>%s</p>" % (
                 _("No bill of materials found. Let's create one."),
                 _("Bills of materials allow you to define the list of required raw materials used to make a finished "
-                    "product; through a manufacturing order or a pack of products."),
+                  "product; through a manufacturing order or a pack of products."),
             ),
         }
         boms = self.env['mrp.bom'].search([('project_id', '=', self.id)])
@@ -74,13 +76,13 @@ class ProjectProject(models.Model):
                 'show': self_sudo.bom_count > 0,
                 'sequence': 35,
             },
-            {
-                'icon': 'wrench',
-                'text': self.env._('Manufacturing Orders'),
-                'number': self_sudo.production_count,
-                'action_type': 'object',
-                'action': 'action_view_mrp_production',
-                'show': self_sudo.production_count > 0,
-                'sequence': 46,
-            }])
+                {
+                    'icon': 'wrench',
+                    'text': self.env._('Manufacturing Orders'),
+                    'number': self_sudo.production_count,
+                    'action_type': 'object',
+                    'action': 'action_view_mrp_production',
+                    'show': self_sudo.production_count > 0,
+                    'sequence': 46,
+                }])
         return buttons

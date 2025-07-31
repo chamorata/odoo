@@ -16,9 +16,11 @@ def templ(env, code, name=None, country='', **kwargs):
         **kwargs,
     }
 
+
 template_module = lambda m: ismodule(m) and m.__name__.split('.')[-1].startswith('template_')
 template_class = isclass
 template_function = lambda f: isfunction(f) and hasattr(f, '_l10n_template') and f._l10n_template[1] == 'template_data'
+
 
 class IrModule(models.Model):
     _inherit = "ir.module.module"
@@ -64,21 +66,22 @@ class IrModule(models.Model):
         res = super().write(vals)
         is_installed = len(self) == 1 and self.state == 'installed'
         if (
-            not was_installed and is_installed
-            and not self.env.company.chart_template
-            and self.account_templates
-            and (guessed := next((
+                not was_installed and is_installed
+                and not self.env.company.chart_template
+                and self.account_templates
+                and (guessed := next((
                 tname
                 for tname, tvals in self.account_templates.items()
                 if (self.env.company.country_id.id and tvals['country_id'] == self.env.company.country_id.id)
-                or tname == 'generic_coa'
-            ), None))
+                   or tname == 'generic_coa'
+        ), None))
         ):
             def try_loading(env):
                 env['account.chart.template'].try_loading(
                     guessed,
                     env.company,
                 )
+
             self.env.registry._auto_install_template = try_loading
         return res
 
@@ -88,6 +91,7 @@ class IrModule(models.Model):
             def load_account_translations(env):
                 env['account.chart.template']._load_translations(langs=langs)
                 env['account.account.tag']._translate_tax_tags(langs=langs)
+
             if self.env.registry.loaded:
                 load_account_translations(self.env)
             else:

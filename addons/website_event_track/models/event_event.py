@@ -15,9 +15,12 @@ class Event(models.Model):
     website_track_proposal = fields.Boolean(
         'Proposals on Website', compute='_compute_website_track_proposal',
         readonly=False, store=True)
-    track_menu_ids = fields.One2many('website.event.menu', 'event_id', string='Event Tracks Menus', domain=[('menu_type', '=', 'track')])
-    track_proposal_menu_ids = fields.One2many('website.event.menu', 'event_id', string='Event Proposals Menus', domain=[('menu_type', '=', 'track_proposal')])
-    allowed_track_tag_ids = fields.Many2many('event.track.tag', relation='event_allowed_track_tags_rel', string='Available Track Tags')
+    track_menu_ids = fields.One2many('website.event.menu', 'event_id', string='Event Tracks Menus',
+                                     domain=[('menu_type', '=', 'track')])
+    track_proposal_menu_ids = fields.One2many('website.event.menu', 'event_id', string='Event Proposals Menus',
+                                              domain=[('menu_type', '=', 'track_proposal')])
+    allowed_track_tag_ids = fields.Many2many('event.track.tag', relation='event_allowed_track_tags_rel',
+                                             string='Available Track Tags')
     tracks_tag_ids = fields.Many2many(
         'event.track.tag', relation='event_track_tags_rel', string='Track Tags',
         compute='_compute_tracks_tag_ids', store=True)
@@ -73,7 +76,8 @@ class Event(models.Model):
         for event in self:
             if event.menu_id and (not menus_update_by_field or event in menus_update_by_field.get('website_track')):
                 event._update_website_menu_entry('website_track', 'track_menu_ids', 'track')
-            if event.menu_id and (not menus_update_by_field or event in menus_update_by_field.get('website_track_proposal')):
+            if event.menu_id and (
+                    not menus_update_by_field or event in menus_update_by_field.get('website_track_proposal')):
                 event._update_website_menu_entry('website_track_proposal', 'track_proposal_menu_ids', 'track_proposal')
 
     def _get_menu_type_field_matching(self):
@@ -86,5 +90,6 @@ class Event(models.Model):
         return super(Event, self)._get_website_menu_entries() + [
             (_('Talks'), '/event/%s/track' % self.env['ir.http']._slug(self), False, 10, 'track'),
             (_('Agenda'), '/event/%s/agenda' % self.env['ir.http']._slug(self), False, 70, 'track'),
-            (_('Talk Proposals'), '/event/%s/track_proposal' % self.env['ir.http']._slug(self), False, 15, 'track_proposal')
+            (_('Talk Proposals'), '/event/%s/track_proposal' % self.env['ir.http']._slug(self), False, 15,
+             'track_proposal')
         ]

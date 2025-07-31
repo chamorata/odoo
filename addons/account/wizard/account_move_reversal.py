@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api
-from odoo.tools.translate import _
 from odoo.exceptions import UserError
+from odoo.tools.translate import _
 
 
 class AccountMoveReversal(models.TransientModel):
@@ -12,7 +12,8 @@ class AccountMoveReversal(models.TransientModel):
     _description = 'Account Move Reversal'
     _check_company_auto = True
 
-    move_ids = fields.Many2many('account.move', 'account_move_reversal_move', 'reversal_id', 'move_id', domain=[('state', '=', 'posted')])
+    move_ids = fields.Many2many('account.move', 'account_move_reversal_move', 'reversal_id', 'move_id',
+                                domain=[('state', '=', 'posted')])
     new_move_ids = fields.Many2many('account.move', 'account_move_reversal_new_move', 'reversal_id', 'new_move_id')
     date = fields.Date(string='Reversal date', default=fields.Date.context_today)
     reason = fields.Char(string='Reason displayed on Credit Note')
@@ -66,7 +67,8 @@ class AccountMoveReversal(models.TransientModel):
     @api.model
     def default_get(self, fields):
         res = super(AccountMoveReversal, self).default_get(fields)
-        move_ids = self.env['account.move'].browse(self.env.context['active_ids']) if self.env.context.get('active_model') == 'account.move' else self.env['account.move']
+        move_ids = self.env['account.move'].browse(self.env.context['active_ids']) if self.env.context.get(
+            'active_model') == 'account.move' else self.env['account.move']
 
         if len(move_ids.company_id) > 1:
             raise UserError(_("All selected moves for reversal must belong to the same company."))
@@ -85,16 +87,18 @@ class AccountMoveReversal(models.TransientModel):
             move_ids = record.move_ids._origin
             record.residual = len(move_ids) == 1 and move_ids.amount_residual or 0
             record.currency_id = len(move_ids.currency_id) == 1 and move_ids.currency_id or False
-            record.move_type = move_ids.move_type if len(move_ids) == 1 else (any(move.move_type in ('in_invoice', 'out_invoice') for move in move_ids) and 'some_invoice' or False)
+            record.move_type = move_ids.move_type if len(move_ids) == 1 else (any(
+                move.move_type in ('in_invoice', 'out_invoice') for move in move_ids) and 'some_invoice' or False)
 
     def _prepare_default_reversal(self, move):
         reverse_date = self.date
         mixed_payment_term = move.invoice_payment_term_id.id if move.invoice_payment_term_id.early_pay_discount_computation == 'mixed' else None
         lang = move.partner_id.lang or self.env.lang
         return {
-            'ref': self.with_context(lang=lang).env._('Reversal of: %(move_name)s, %(reason)s', move_name=move.name, reason=self.reason)
-                   if self.reason
-                   else self.with_context(lang=lang).env._('Reversal of: %s', move.name),
+            'ref': self.with_context(lang=lang).env._('Reversal of: %(move_name)s, %(reason)s', move_name=move.name,
+                                                      reason=self.reason)
+            if self.reason
+            else self.with_context(lang=lang).env._('Reversal of: %s', move.name),
             'date': reverse_date,
             'invoice_date_due': reverse_date,
             'invoice_date': move.is_invoice(include_receipts=True) and (self.date or move.date) or False,
@@ -128,7 +132,7 @@ class AccountMoveReversal(models.TransientModel):
             })
 
         batches = [
-            [self.env['account.move'], [], True],   # Moves to be cancelled by the reverses.
+            [self.env['account.move'], [], True],  # Moves to be cancelled by the reverses.
             [self.env['account.move'], [], False],  # Others.
         ]
         for move, default_vals in zip(moves, default_values_list):
@@ -143,14 +147,17 @@ class AccountMoveReversal(models.TransientModel):
         for moves, default_values_list, is_cancel_needed in batches:
             new_moves = moves._reverse_moves(default_values_list, cancel=is_cancel_needed)
             moves._message_log_batch(
-                bodies={move.id: move.env._('This entry has been %s', reverse._get_html_link(title=move.env._("reversed"))) for move, reverse in zip(moves, new_moves)}
+                bodies={
+                    move.id: move.env._('This entry has been %s', reverse._get_html_link(title=move.env._("reversed")))
+                    for move, reverse in zip(moves, new_moves)}
             )
 
             if is_modify:
                 moves_vals_list = []
                 for move in moves.with_context(include_business_fields=True):
                     data = move.copy_data(self._modify_default_reverse_values(move))[0]
-                    data['line_ids'] = [line for line in data['line_ids'] if line[2]['display_type'] in ('product', 'line_section', 'line_note')]
+                    data['line_ids'] = [line for line in data['line_ids'] if
+                                        line[2]['display_type'] in ('product', 'line_section', 'line_note')]
                     moves_vals_list.append(data)
                 new_moves = self.env['account.move'].create(moves_vals_list)
 
@@ -168,7 +175,7 @@ class AccountMoveReversal(models.TransientModel):
             action.update({
                 'view_mode': 'form',
                 'res_id': moves_to_redirect.id,
-                'context': {'default_move_type':  moves_to_redirect.move_type},
+                'context': {'default_move_type': moves_to_redirect.move_type},
             })
         else:
             action.update({
@@ -176,7 +183,7 @@ class AccountMoveReversal(models.TransientModel):
                 'domain': [('id', 'in', moves_to_redirect.ids)],
             })
             if len(set(moves_to_redirect.mapped('move_type'))) == 1:
-                action['context'] = {'default_move_type':  moves_to_redirect.mapped('move_type').pop()}
+                action['context'] = {'default_move_type': moves_to_redirect.mapped('move_type').pop()}
         return action
 
     def refund_moves(self):

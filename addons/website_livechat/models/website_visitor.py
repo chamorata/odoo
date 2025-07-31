@@ -1,7 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, Command, fields, models, _
 from odoo.addons.mail.tools.discuss import Store
+
+from odoo import api, Command, fields, models, _
 from odoo.exceptions import UserError
 from odoo.http import request
 from odoo.tools import get_lang
@@ -11,10 +12,11 @@ from odoo.tools.sql import column_exists, create_column
 class WebsiteVisitor(models.Model):
     _inherit = 'website.visitor'
 
-    livechat_operator_id = fields.Many2one('res.partner', compute='_compute_livechat_operator_id', store=True, string='Speaking with', index='btree_not_null')
+    livechat_operator_id = fields.Many2one('res.partner', compute='_compute_livechat_operator_id', store=True,
+                                           string='Speaking with', index='btree_not_null')
     livechat_operator_name = fields.Char('Operator Name', related="livechat_operator_id.name")
     discuss_channel_ids = fields.One2many('discuss.channel', 'livechat_visitor_id',
-                                       string="Visitor's livechat channels", readonly=True)
+                                          string="Visitor's livechat channels", readonly=True)
     session_count = fields.Integer('# Sessions', compute="_compute_session_count")
 
     def _auto_init(self):
@@ -30,7 +32,8 @@ class WebsiteVisitor(models.Model):
             [('livechat_visitor_id', 'in', self.ids), ('livechat_active', '=', True)],
             ['livechat_visitor_id', 'livechat_operator_id']
         )
-        visitor_operator_map = {int(result['livechat_visitor_id'][0]): int(result['livechat_operator_id'][0]) for result in results}
+        visitor_operator_map = {int(result['livechat_visitor_id'][0]): int(result['livechat_operator_id'][0]) for result
+                                in results}
         for visitor in self:
             visitor.livechat_operator_id = visitor_operator_map.get(visitor.id, False)
 
@@ -50,13 +53,15 @@ class WebsiteVisitor(models.Model):
         The visitor will receive the chat request the next time he navigates to a website page.
         (see _handle_webpage_dispatch for next step)"""
         # check if visitor is available
-        unavailable_visitors_count = self.env['discuss.channel'].search_count([('livechat_visitor_id', 'in', self.ids), ('livechat_active', '=', True)])
+        unavailable_visitors_count = self.env['discuss.channel'].search_count(
+            [('livechat_visitor_id', 'in', self.ids), ('livechat_active', '=', True)])
         if unavailable_visitors_count:
             raise UserError(_('Recipients are not available. Please refresh the page to get latest visitors status.'))
         # check if user is available as operator
         for website in self.mapped('website_id'):
             if not website.channel_id:
-                raise UserError(_('No Livechat Channel allows you to send a chat request for website %s.', website.name))
+                raise UserError(
+                    _('No Livechat Channel allows you to send a chat request for website %s.', website.name))
         self.website_id.channel_id.write({'user_ids': [(4, self.env.user.id)]})
         # Create chat_requests and linked discuss_channels
         discuss_channel_vals_list = []
@@ -74,7 +79,8 @@ class WebsiteVisitor(models.Model):
                 'channel_type': 'livechat',
                 'country_id': country.id,
                 'anonymous_name': visitor_name,
-                'name': ', '.join([visitor_name, operator.livechat_username if operator.livechat_username else operator.name]),
+                'name': ', '.join(
+                    [visitor_name, operator.livechat_username if operator.livechat_username else operator.name]),
                 'livechat_visitor_id': visitor.id,
                 'livechat_active': True,
             })
@@ -121,6 +127,7 @@ class WebsiteVisitor(models.Model):
                 discuss_channel = request.env["discuss.channel"].sudo().search([("uuid", "=", discuss_channel_uuid)])
                 discuss_channel.write({
                     'livechat_visitor_id': visitor_sudo.id,
-                    'anonymous_name': "Visitor #%d (%s)" % (visitor_sudo.id, visitor_sudo.country_id.name) if visitor_sudo.country_id else f"Visitor #{visitor_sudo.id}"
+                    'anonymous_name': "Visitor #%d (%s)" % (visitor_sudo.id,
+                                                            visitor_sudo.country_id.name) if visitor_sudo.country_id else f"Visitor #{visitor_sudo.id}"
                 })
         return visitor_id, upsert

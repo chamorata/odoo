@@ -2,6 +2,7 @@
 
 from odoo.addons.sale_loyalty.tests.common import TestSaleCouponNumbersCommon
 from odoo.addons.website.tools import MockRequest
+
 from odoo.exceptions import UserError
 from odoo.tests import tagged
 
@@ -50,7 +51,8 @@ class TestSaleCouponMultiwebsite(TestSaleCouponNumbersCommon):
         # 2. Frontend - Generic
         with MockRequest(self.env, website=self.website):
             _apply_code(self.p1.rule_ids.code, False)
-            self.assertEqual(len(order.order_line.ids), 2, "Should get the discount line as it is a generic promo program (2)")
+            self.assertEqual(len(order.order_line.ids), 2,
+                             "Should get the discount line as it is a generic promo program (2)")
             _remove_reward()
 
         # make program specific
@@ -63,14 +65,16 @@ class TestSaleCouponMultiwebsite(TestSaleCouponNumbersCommon):
         # 3.5. Backend - Specific - sale_ok enabled
         self.p1.sale_ok = True
         _apply_code(self.p1.rule_ids.code)
-        self.assertEqual(len(order.order_line.ids), 2, "Should get the discount line as it is enabled for Sales(backend)")
+        self.assertEqual(len(order.order_line.ids), 2,
+                         "Should get the discount line as it is enabled for Sales(backend)")
         _remove_reward()
 
         # 4. Frontend - Specific - Correct website
         order.website_id = self.website.id
         with MockRequest(self.env, website=self.website):
             _apply_code(self.p1.rule_ids.code, False)
-            self.assertEqual(len(order.order_line.ids), 2, "Should get the discount line as it is a specific promo program for the correct website")
+            self.assertEqual(len(order.order_line.ids), 2,
+                             "Should get the discount line as it is a specific promo program for the correct website")
             _remove_reward()
 
         # 5. Frontend - Specific - Wrong website
@@ -98,7 +102,8 @@ class TestSaleCouponMultiwebsite(TestSaleCouponNumbersCommon):
         # 2. Frontend - Generic
         with MockRequest(self.env, website=self.website):
             _apply_code(coupons[1].code, False)
-            self.assertEqual(len(order.order_line.ids), 2, "Should get the discount line as it is a generic coupon program (2)")
+            self.assertEqual(len(order.order_line.ids), 2,
+                             "Should get the discount line as it is a generic coupon program (2)")
             _remove_reward()
 
         # make program specific
@@ -111,14 +116,16 @@ class TestSaleCouponMultiwebsite(TestSaleCouponNumbersCommon):
         # 3.5. Backend - Specific - sale_ok enabled
         self.discount_coupon_program.sale_ok = True
         _apply_code(coupons[2].code)
-        self.assertEqual(len(order.order_line.ids), 2, "Should get the discount line as it is enabled for Sales(backend)")
+        self.assertEqual(len(order.order_line.ids), 2,
+                         "Should get the discount line as it is enabled for Sales(backend)")
         _remove_reward()
 
         # 4. Frontend - Specific - Correct website
         order.website_id = self.website.id
         with MockRequest(self.env, website=self.website):
             _apply_code(coupons[2].code, False)
-            self.assertEqual(len(order.order_line.ids), 2, "Should get the discount line as it is a specific coupon program for the correct website")
+            self.assertEqual(len(order.order_line.ids), 2,
+                             "Should get the discount line as it is a specific coupon program for the correct website")
             _remove_reward()
 
         # 5. Frontend - Specific - Wrong website
@@ -145,7 +152,8 @@ class TestSaleCouponMultiwebsite(TestSaleCouponNumbersCommon):
         # 2. Frontend - Generic
         with MockRequest(self.env, website=self.website):
             self._auto_rewards(order, all_programs)
-            self.assertEqual(len(order.order_line.ids), 2, "Should get the discount line as it is a generic promo program (2)")
+            self.assertEqual(len(order.order_line.ids), 2,
+                             "Should get the discount line as it is a generic promo program (2)")
 
         # make program specific
         self.p1.website_id = self.website.id
@@ -163,7 +171,8 @@ class TestSaleCouponMultiwebsite(TestSaleCouponNumbersCommon):
         order.website_id = self.website.id
         with MockRequest(self.env, website=self.website):
             self._auto_rewards(order, all_programs)
-            self.assertEqual(len(order.order_line.ids), 2, "Should get the discount line as it is a specific promo program for the correct website")
+            self.assertEqual(len(order.order_line.ids), 2,
+                             "Should get the discount line as it is a specific promo program for the correct website")
 
         # 5. Frontend - Specific - Wrong website
         self.p1.website_id = self.website2.id

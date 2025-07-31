@@ -33,8 +33,8 @@ class MailTrackingDurationMixin(models.AbstractModel):
         ], ['id'], limit=1)
 
         if (
-            self._track_duration_field not in self._track_get_fields()
-            or self._fields[self._track_duration_field].type != 'many2one'
+                self._track_duration_field not in self._track_get_fields()
+                or self._fields[self._track_duration_field].type != 'many2one'
         ):
             self.duration_tracking = False
             raise ValueError(_(

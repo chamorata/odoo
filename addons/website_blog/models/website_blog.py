@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from datetime import datetime
-import random
+from odoo.addons.website.tools import text_from_html
 
 from odoo import api, models, fields, _
-from odoo.addons.website.tools import text_from_html
+from odoo.tools import html_escape
 from odoo.tools.json import scriptsafe as json_scriptsafe
 from odoo.tools.translate import html_translate
-from odoo.tools import html_escape
 
 
 class Blog(models.Model):
@@ -54,7 +52,8 @@ class Blog(models.Model):
         self.ensure_one()
         if parent_id:
             parent_message = self.env['mail.message'].sudo().browse(parent_id)
-            if parent_message.subtype_id and parent_message.subtype_id == self.env.ref('website_blog.mt_blog_blog_published'):
+            if parent_message.subtype_id and parent_message.subtype_id == self.env.ref(
+                    'website_blog.mt_blog_blog_published'):
                 subtype_id = self.env.ref('mail.mt_note').id
         return super(Blog, self).message_post(parent_id=parent_id, subtype_id=subtype_id, **kwargs)
 
@@ -121,6 +120,7 @@ class Blog(models.Model):
             data['url'] = '/blog/%s' % data['id']
         return results_data
 
+
 class BlogTagCategory(models.Model):
     _name = 'blog.tag.category'
     _description = 'Blog Tag Category'
@@ -154,7 +154,7 @@ class BlogPost(models.Model):
     _name = "blog.post"
     _description = "Blog Post"
     _inherit = ['mail.thread', 'website.seo.metadata', 'website.published.multi.mixin',
-        'website.cover_properties.mixin', 'website.searchable.mixin']
+                'website.cover_properties.mixin', 'website.searchable.mixin']
     _order = 'id DESC'
     _mail_post_access = 'read'
 
@@ -162,26 +162,31 @@ class BlogPost(models.Model):
         super(BlogPost, self)._compute_website_url()
         for blog_post in self:
             if blog_post.id:
-                blog_post.website_url = "/blog/%s/%s" % (self.env['ir.http']._slug(blog_post.blog_id), self.env['ir.http']._slug(blog_post))
+                blog_post.website_url = "/blog/%s/%s" % (self.env['ir.http']._slug(blog_post.blog_id),
+                                                         self.env['ir.http']._slug(blog_post))
 
     def _default_content(self):
         text = html_escape(_("Start writing here..."))
         return """
             <p class="o_default_snippet_text">%(text)s</p>
         """ % {"text": text}
+
     name = fields.Char('Title', required=True, translate=True, default='')
     subtitle = fields.Char('Sub Title', translate=True)
-    author_id = fields.Many2one('res.partner', 'Author', default=lambda self: self.env.user.partner_id, index='btree_not_null')
+    author_id = fields.Many2one('res.partner', 'Author', default=lambda self: self.env.user.partner_id,
+                                index='btree_not_null')
     author_avatar = fields.Binary(related='author_id.image_128', string="Avatar", readonly=False)
     author_name = fields.Char(related='author_id.display_name', string="Author Name", readonly=False, store=True)
     active = fields.Boolean('Active', default=True)
-    blog_id = fields.Many2one('blog.blog', 'Blog', required=True, ondelete='cascade', default=lambda self: self.env['blog.blog'].search([], limit=1))
+    blog_id = fields.Many2one('blog.blog', 'Blog', required=True, ondelete='cascade',
+                              default=lambda self: self.env['blog.blog'].search([], limit=1))
     tag_ids = fields.Many2many('blog.tag', string='Tags')
     content = fields.Html('Content', default=_default_content, translate=html_translate, sanitize=False)
     teaser = fields.Text('Teaser', compute='_compute_teaser', inverse='_set_teaser', translate=True)
     teaser_manual = fields.Text(string='Teaser Content', translate=True)
 
-    website_message_ids = fields.One2many(domain=lambda self: [('model', '=', self._name), ('message_type', '=', 'comment')])
+    website_message_ids = fields.One2many(
+        domain=lambda self: [('model', '=', self._name), ('message_type', '=', 'comment')])
 
     # creation / update stuff
     create_date = fields.Datetime('Created on', readonly=True)
@@ -315,7 +320,8 @@ class BlogPost(models.Model):
         res['default_opengraph']['article:modified_time'] = self.write_date
         res['default_opengraph']['article:tag'] = self.tag_ids.mapped('name')
         # background-image might contain single quotes eg `url('/my/url')`
-        res['default_opengraph']['og:image'] = res['default_twitter']['twitter:image'] = json_scriptsafe.loads(self.cover_properties).get('background-image', 'none')[4:-1].strip("'")
+        res['default_opengraph']['og:image'] = res['default_twitter']['twitter:image'] = json_scriptsafe.loads(
+            self.cover_properties).get('background-image', 'none')[4:-1].strip("'")
         res['default_opengraph']['og:title'] = res['default_twitter']['twitter:title'] = self.name
         res['default_meta_description'] = self.subtitle
         return res
@@ -346,9 +352,11 @@ class BlogPost(models.Model):
         else:
             domain.append([("post_date", "<=", fields.Datetime.now())])
         search_fields = ['name', 'author_name']
+
         def search_in_tags(env, search_term):
             tags_like_search = env['blog.tag'].search([('name', 'ilike', search_term)])
             return [('tag_ids', 'in', tags_like_search.ids)]
+
         fetch_fields = ['name', 'website_url']
         mapping = {
             'name': {'name': 'name', 'type': 'text', 'match': True},

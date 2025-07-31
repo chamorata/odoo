@@ -5,7 +5,6 @@ from odoo import api, models
 
 
 class Rating(models.Model):
-
     _inherit = "rating.rating"
 
     @api.depends('res_model', 'res_id')

@@ -8,7 +8,7 @@ class ResConfigSettings(models.TransientModel):
     _inherit = 'res.config.settings'
 
     group_expiry_date_on_delivery_slip = fields.Boolean("Display Expiration Dates on Delivery Slips",
-        implied_group='product_expiry.group_expiry_date_on_delivery_slip')
+                                                        implied_group='product_expiry.group_expiry_date_on_delivery_slip')
 
     @api.onchange('group_lot_on_delivery_slip')
     def _onchange_group_lot_on_delivery_slip(self):

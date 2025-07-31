@@ -27,14 +27,14 @@ from ....webauthn.helpers.structs import AttestationStatement
 
 
 def verify_fido_u2f(
-    *,
-    attestation_statement: AttestationStatement,
-    client_data_json: bytes,
-    rp_id_hash: bytes,
-    credential_id: bytes,
-    credential_public_key: bytes,
-    aaguid: bytes,
-    pem_root_certs_bytes: List[bytes],
+        *,
+        attestation_statement: AttestationStatement,
+        client_data_json: bytes,
+        rp_id_hash: bytes,
+        credential_id: bytes,
+        credential_public_key: bytes,
+        aaguid: bytes,
+        pem_root_certs_bytes: List[bytes],
 ) -> bool:
     """Verify a "fido-u2f" attestation statement
 

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from datetime import datetime, timedelta
-
 from odoo import _, models
 
 
@@ -29,8 +27,8 @@ class HrDepartureWizard(models.TransientModel):
         employee_allocations = self.env['hr.leave.allocation'].search([
             ('employee_id', '=', self.employee_id.id),
             '|',
-                ('date_to', '=', False),
-                ('date_to', '>', self.departure_date),
+            ('date_to', '=', False),
+            ('date_to', '>', self.departure_date),
         ])
         to_delete = self.env['hr.leave.allocation']
         to_modify = self.env['hr.leave.allocation']
@@ -43,6 +41,6 @@ class HrDepartureWizard(models.TransientModel):
                     body=_('Validity End date has been updated because Employee no longer works in the company'),
                     subtype_xmlid='mail.mt_comment'
                 )
-        to_delete.write({'state': 'confirm'}) # Needs to be confirmed before it can be unlinked
+        to_delete.write({'state': 'confirm'})  # Needs to be confirmed before it can be unlinked
         to_delete.unlink()
         to_modify.date_to = self.departure_date

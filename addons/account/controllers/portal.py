@@ -3,12 +3,13 @@
 
 from collections import OrderedDict
 
-from odoo import fields, http, _
-from odoo.osv import expression
-from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager
 from odoo.addons.account.controllers.download_docs import _get_headers, _build_zip_from_data
+from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager
+
+from odoo import fields, http, _
 from odoo.exceptions import AccessError, MissingError
 from odoo.http import request
+from odoo.osv import expression
 
 
 class PortalAccount(CustomerPortal):
@@ -48,7 +49,7 @@ class PortalAccount(CustomerPortal):
 
     def _get_invoices_domain(self, m_type=None):
         if m_type in ['in', 'out']:
-            move_type = [m_type+move for move in ('_invoice', '_refund', '_receipt')]
+            move_type = [m_type + move for move in ('_invoice', '_refund', '_receipt')]
         else:
             move_type = ('out_invoice', 'out_refund', 'in_invoice', 'in_refund', 'out_receipt', 'in_receipt')
         return [('state', 'not in', ('cancel', 'draft')), ('move_type', 'in', move_type)]
@@ -74,7 +75,8 @@ class PortalAccount(CustomerPortal):
         return {
             'all': {'label': _('All'), 'domain': []},
             'overdue_invoices': {'label': _('Overdue invoices'), 'domain': self._get_overdue_invoices_domain()},
-            'invoices': {'label': _('Invoices'), 'domain': [('move_type', 'in', ('out_invoice', 'out_refund', 'out_receipt'))]},
+            'invoices': {'label': _('Invoices'),
+                         'domain': [('move_type', 'in', ('out_invoice', 'out_refund', 'out_receipt'))]},
             'bills': {'label': _('Bills'), 'domain': [('move_type', 'in', ('in_invoice', 'in_refund', 'in_receipt'))]},
         }
 
@@ -95,7 +97,8 @@ class PortalAccount(CustomerPortal):
         })
         return request.render("account.portal_my_invoices", values)
 
-    def _prepare_my_invoices_values(self, page, date_begin, date_end, sortby, filterby, domain=None, url="/my/invoices"):
+    def _prepare_my_invoices_values(self, page, date_begin, date_end, sortby, filterby, domain=None,
+                                    url="/my/invoices"):
         values = self._prepare_portal_layout_values()
         AccountInvoice = request.env['account.move']
 
@@ -127,8 +130,8 @@ class PortalAccount(CustomerPortal):
                 [
                     invoice._get_invoice_portal_extra_values()
                     for invoice in AccountInvoice.search(
-                        domain, order=order, limit=self._items_per_page, offset=pager_offset
-                    )
+                    domain, order=order, limit=self._items_per_page, offset=pager_offset
+                )
                 ]
                 if AccountInvoice.has_access('read') else
                 AccountInvoice
@@ -175,7 +178,8 @@ class PortalAccount(CustomerPortal):
             # Use the template set on the related partner if there is.
             # This is not perfect as the invoice can still have been computed with another template, but it's a slight fix/imp for stable.
             pdf_report_name = invoice_sudo.partner_id.invoice_template_pdf_report_id.report_name or 'account.account_invoices'
-            return self._show_report(model=invoice_sudo, report_type=report_type, report_ref=pdf_report_name, download=download)
+            return self._show_report(model=invoice_sudo, report_type=report_type, report_ref=pdf_report_name,
+                                     download=download)
 
         values = self._invoice_get_page_view_values(invoice_sudo, access_token, **kw)
         return request.render("account.portal_invoice_page", values)
@@ -192,13 +196,16 @@ class PortalAccount(CustomerPortal):
         if not partner_creation and not partner.can_edit_vat():
             if 'vat' in data and (data['vat'] or False) != (partner.vat or False):
                 error['vat'] = 'error'
-                error_message.append(_('Changing VAT number is not allowed once invoices have been issued for your account. Please contact us directly for this operation.'))
+                error_message.append(
+                    _('Changing VAT number is not allowed once invoices have been issued for your account. Please contact us directly for this operation.'))
             if 'name' in data and (data['name'] or False) != (partner.name or False):
                 error['name'] = 'error'
-                error_message.append(_('Changing your name is not allowed once invoices have been issued for your account. Please contact us directly for this operation.'))
+                error_message.append(
+                    _('Changing your name is not allowed once invoices have been issued for your account. Please contact us directly for this operation.'))
             if 'company_name' in data and (data['company_name'] or False) != (partner.company_name or False):
                 error['company_name'] = 'error'
-                error_message.append(_('Changing your company name is not allowed once invoices have been issued for your account. Please contact us directly for this operation.'))
+                error_message.append(
+                    _('Changing your company name is not allowed once invoices have been issued for your account. Please contact us directly for this operation.'))
         return error, error_message
 
     def extra_details_form_validate(self, data, additional_required_fields, error, error_message):

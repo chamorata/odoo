@@ -16,6 +16,7 @@ except ImportError:
 
 import pylint.interfaces
 from pylint.checkers import BaseChecker, utils
+
 try:
     from pylint.checkers.utils import only_required_for_messages
 except ImportError:
@@ -40,8 +41,10 @@ FUNCTION_WHITELIST = {
 
 function_definitions = collections.defaultdict(list)
 callsites_for_queries = collections.defaultdict(list)
-root_call: contextvars.ContextVar[Optional[astroid.Call]] =\
+root_call: contextvars.ContextVar[Optional[astroid.Call]] = \
     contextvars.ContextVar('root_call', default=None)
+
+
 @contextlib.contextmanager
 def push_call(node: astroid.Call):
     with ExitStack() as s:
@@ -50,10 +53,12 @@ def push_call(node: astroid.Call):
             s.callback(root_call.reset, t)
         yield
 
+
 def parse_version(s):
     # can't use odoo.tools.parse_version because pythonpath is screwed from
     # inside pylint on runbot
     return [s.rjust(3, '0') for s in s.split('.')]
+
 
 class OdooBaseChecker(BaseChecker):
     # `test_printf` fails if this is not set in 2.5 (???), but it's deprecated
@@ -75,6 +80,7 @@ class OdooBaseChecker(BaseChecker):
         while 'file' not in dir(node):
             node = node.parent
         return node.file
+
     def _get_return_node(self, node):
         ret = []
         nodes = deque([node])
@@ -86,7 +92,7 @@ class OdooBaseChecker(BaseChecker):
                 nodes.extend(node.get_children())
         return ret
 
-    def _is_asserted(self, node): # If there is an assert on the value of the node, it's very likely to be safe
+    def _is_asserted(self, node):  # If there is an assert on the value of the node, it's very likely to be safe
         asserted = deque((assert_.test for assert_ in node.scope().nodes_of_class(astroid.Assert)))
         while asserted:
             n = asserted.popleft()
@@ -103,7 +109,7 @@ class OdooBaseChecker(BaseChecker):
             return node.name
         elif isinstance(node, astroid.Call):
             return self._get_attribute_chain(node.func)
-        return '' #FIXME
+        return ''  # FIXME
 
     def _evaluate_function_call(self, node, args_allowed, position):
         name = node.func.attrname if isinstance(node.func, astroid.Attribute) else node.func.name
@@ -144,7 +150,7 @@ class OdooBaseChecker(BaseChecker):
         )
 
     def _is_constexpr(self, node: NodeNG, *, args_allowed=False, position=None):
-        if isinstance(node, astroid.Const): # astroid.const is always safe
+        if isinstance(node, astroid.Const):  # astroid.const is always safe
             return True
         elif isinstance(node, (astroid.List, astroid.Set)):
             return self.all_const(node.elts, args_allowed=args_allowed)
@@ -160,33 +166,37 @@ class OdooBaseChecker(BaseChecker):
             )
         elif isinstance(node, astroid.Starred):
             return self._is_constexpr(node.value, args_allowed=args_allowed, position=position)
-        elif isinstance(node, astroid.BinOp): # recusively infer both side of the operation. Failing if either side is not inferable
+        elif isinstance(node,
+                        astroid.BinOp):  # recusively infer both side of the operation. Failing if either side is not inferable
             left_operand = self._is_constexpr(node.left, args_allowed=args_allowed)
             # This case allows to always consider a string formatted with %d to be safe
             if node.op == '%' and \
-                isinstance(node.left, astroid.Const) and \
-                node.left.pytype() == 'builtins.str' and \
-                '%d' in node.left.value and \
-                not '%s' in node.left.value:
+                    isinstance(node.left, astroid.Const) and \
+                    node.left.pytype() == 'builtins.str' and \
+                    '%d' in node.left.value and \
+                    not '%s' in node.left.value:
                 return True
             right_operand = self._is_constexpr(node.right, args_allowed=args_allowed)
             return left_operand and right_operand
-        elif isinstance(node, astroid.Name) or isinstance(node, astroid.AssignName): # Variable: find the assignement instruction in the AST and infer its value.
+        elif isinstance(node, astroid.Name) or isinstance(node,
+                                                          astroid.AssignName):  # Variable: find the assignement instruction in the AST and infer its value.
             assignements = node.lookup(node.name)
             assigned_node = []
-            for n in assignements[1]: #assignement[0] contains the scope, so assignment[1] contains the assignement nodes
+            for n in assignements[
+                1]:  # assignement[0] contains the scope, so assignment[1] contains the assignement nodes
                 # FIXME: makes no sense, assuming this gets
                 #        `visit_functiondef`'d we should just ignore it
                 if isinstance(n.parent, astroid.FunctionDef):
                     assigned_node += [args_allowed]
                 elif isinstance(n.parent, astroid.Arguments):
                     assigned_node += [args_allowed]
-                elif isinstance(n.parent, astroid.Tuple): # multi assign a,b = (a,b)
+                elif isinstance(n.parent, astroid.Tuple):  # multi assign a,b = (a,b)
                     statement = n.statement()
                     if isinstance(statement, astroid.For):
                         assigned_node += [self._is_constexpr(statement.iter, args_allowed=args_allowed)]
                     elif isinstance(statement, astroid.Assign):
-                        assigned_node += [self._is_constexpr(statement.value, args_allowed=args_allowed, position=n.parent.elts.index(n))]
+                        assigned_node += [self._is_constexpr(statement.value, args_allowed=args_allowed,
+                                                             position=n.parent.elts.index(n))]
                     else:
                         raise TypeError(f"Expected statement Assign or For, got {statement}")
                 elif isinstance(n.parent, astroid.For):
@@ -213,9 +223,9 @@ class OdooBaseChecker(BaseChecker):
                     return self._is_constexpr(node.args[0])
                 elif node.func.attrname == 'format':
                     return (
-                        self._is_constexpr(node.func.expr, args_allowed=args_allowed)
-                    and self.all_const(node.args, args_allowed=args_allowed)
-                    and self.all_const((key.value for key in node.keywords or []), args_allowed=args_allowed)
+                            self._is_constexpr(node.func.expr, args_allowed=args_allowed)
+                            and self.all_const(node.args, args_allowed=args_allowed)
+                            and self.all_const((key.value for key in node.keywords or []), args_allowed=args_allowed)
                     )
             with push_call(node):
                 return self._evaluate_function_call(node, args_allowed=args_allowed, position=position)
@@ -270,9 +280,9 @@ class OdooBaseChecker(BaseChecker):
         # self._thing is OK (mostly self._table), self._thing() also because
         # it's a common pattern of reports (self._select, self._group_by, ...)
         return (isinstance(node, astroid.Attribute)
-            and isinstance(node.expr, astroid.Name)
-            and node.attrname.startswith('_')
-        )
+                and isinstance(node.expr, astroid.Name)
+                and node.attrname.startswith('_')
+                )
 
     def _check_concatenation(self, node):
         node = self.resolve(node)
@@ -311,10 +321,9 @@ class OdooBaseChecker(BaseChecker):
         if isinstance(node, astroid.Call) \
                 and isinstance(node.func, astroid.Attribute) \
                 and node.func.attrname == 'format':
-
             return not (
                     all(map(self._allowable, node.args or []))
-                and all(self._allowable(keyword.value) for keyword in (node.keywords or []))
+                    and all(self._allowable(keyword.value) for keyword in (node.keywords or []))
             )
 
         # check execute(f'foo {...}')
@@ -340,12 +349,14 @@ class OdooBaseChecker(BaseChecker):
         # Thanks @moylop260 (Moisés López) & @nilshamerlinck (Nils Hamerlinck)
         current_file_bname = os.path.basename(self.linter.current_file)
         if not (
-            # .execute() or .executemany()
-            isinstance(node, astroid.Call) and node.args and
-            ((isinstance(node.func, astroid.Attribute) and node.func.attrname in ('execute', 'executemany', 'SQL') and self._get_cursor_name(node.func) in DFTL_CURSOR_EXPR) or
-            (isinstance(node.func, astroid.Name) and node.func.name == 'SQL')) and
-            # ignore in test files, probably not accessible
-            not current_file_bname.startswith('test_')
+                # .execute() or .executemany()
+                isinstance(node, astroid.Call) and node.args and
+                ((isinstance(node.func, astroid.Attribute) and node.func.attrname in ('execute', 'executemany',
+                                                                                      'SQL') and self._get_cursor_name(
+                    node.func) in DFTL_CURSOR_EXPR) or
+                 (isinstance(node.func, astroid.Name) and node.func.name == 'SQL')) and
+                # ignore in test files, probably not accessible
+                not current_file_bname.startswith('test_')
         ):
             return False
         if len(node.args) == 0:

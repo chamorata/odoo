@@ -7,4 +7,5 @@ import odoo
 def db_list(force=False, host=None):
     return []
 
+
 odoo.http.db_list = db_list

@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import SUPERUSER_ID
 from odoo.addons.crm.tests import common as crm_common
+
+from odoo import SUPERUSER_ID
 from odoo.fields import Datetime
 from odoo.tests import Form, tagged, users
+
 
 @tagged('lead_manage')
 class TestLeadConvertForm(crm_common.TestLeadConvertCommon):
@@ -78,25 +80,26 @@ class TestLeadConvert(crm_common.TestLeadConvertCommon):
              'type': 'lead',
              'email_from': test_lead.email_from,
              'probability': 0, 'active': False,
-            },
+             },
             {'name': 'Duplicate lead: same email_from, proba 0 but not lost',
              'type': 'lead',
              'email_from': test_lead.email_from,
              'probability': 0, 'active': True,
-            },
+             },
             {'name': 'Duplicate opp: same email_from, won',
              'type': 'opportunity',
              'email_from': test_lead.email_from,
              'probability': 100, 'stage_id': self.stage_team1_won.id,
-            },
+             },
             {'name': 'Duplicate opp: same email_from, proba 100 but not won',
              'type': 'opportunity',
              'email_from': test_lead.email_from,
              'probability': 100, 'stage_id': self.stage_team1_2.id,
-            }
+             }
         ])
         lead_lost = dup_leads.filtered(lambda lead: lead.name == 'Duplicate lead: same email_from, lost')
-        _opp_proba100 = dup_leads.filtered(lambda lead: lead.name == 'Duplicate opp: same email_from, proba 100 but not won')
+        _opp_proba100 = dup_leads.filtered(
+            lambda lead: lead.name == 'Duplicate opp: same email_from, proba 100 but not won')
         opp_won = dup_leads.filtered(lambda lead: lead.name == 'Duplicate opp: same email_from, won')
         opp_lost = dup_leads.filtered(lambda lead: lead.name == 'Duplicate: lost opportunity')
 
@@ -357,7 +360,7 @@ class TestLeadConvert(crm_common.TestLeadConvertCommon):
             'active_ids': lead.ids,
         }).create({'name': 'convert', 'action': 'exist'})
         self.assertNotEqual(convert.partner_id, partner_company_2,
-            "Conversion wizard should not be able to find the partner from another company")
+                            "Conversion wizard should not be able to find the partner from another company")
 
     @users('user_sales_manager')
     def test_lead_convert_same_partner(self):
@@ -424,9 +427,9 @@ class TestLeadConvert(crm_common.TestLeadConvertCommon):
         leads = self.env['crm.lead']
         for x in range(2):
             leads |= self.env['crm.lead'].create({
-                'name': 'Dup-%02d-%s' % (x+1, self.lead_1.name),
+                'name': 'Dup-%02d-%s' % (x + 1, self.lead_1.name),
                 'type': 'lead', 'user_id': False, 'team_id': self.lead_1.team_id.id,
-                'contact_name': 'Duplicate %02d of %s' % (x+1, self.lead_1.contact_name),
+                'contact_name': 'Duplicate %02d of %s' % (x + 1, self.lead_1.contact_name),
                 'email_from': self.lead_1.email_from,
                 'probability': 10,
             })
@@ -491,9 +494,9 @@ class TestLeadConvert(crm_common.TestLeadConvertCommon):
         leads = self.env['crm.lead']
         for x in range(2):
             leads |= self.env['crm.lead'].create({
-                'name': 'Dup-%02d-%s' % (x+1, self.lead_1.name),
+                'name': 'Dup-%02d-%s' % (x + 1, self.lead_1.name),
                 'type': 'lead', 'user_id': False, 'team_id': self.lead_1.team_id.id,
-                'contact_name': 'Duplicate %02d of %s' % (x+1, self.lead_1.contact_name),
+                'contact_name': 'Duplicate %02d of %s' % (x + 1, self.lead_1.contact_name),
                 'email_from': self.lead_1.email_from,
                 'probability': 10,
             })

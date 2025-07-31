@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import re
+
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 
@@ -94,7 +95,8 @@ class AccountJournal(models.Model):
         return dashboard_data
 
     def action_checks_to_print(self):
-        payment_method_line_id = self.outbound_payment_method_line_ids.filtered(lambda l: l.code == 'check_printing')[:1].id
+        payment_method_line_id = self.outbound_payment_method_line_ids.filtered(lambda l: l.code == 'check_printing')[
+                                 :1].id
         return {
             'name': _('Checks to Print'),
             'type': 'ir.actions.act_window',

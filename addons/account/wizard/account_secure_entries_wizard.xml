@@ -24,7 +24,8 @@
                         </div>
                     </sheet>
                     <footer>
-                        <button string="Secure Entries" class="btn-primary" name="action_secure_entries" type="object" data-hotkey="v"/>
+                        <button string="Secure Entries" class="btn-primary" name="action_secure_entries" type="object"
+                                data-hotkey="v"/>
                         <button string="Discard" special="cancel" data-hotkey="z"/>
                     </footer>
                 </form>
@@ -40,11 +41,11 @@
         </record>
 
         <menuitem
-            id="menu_action_secure_entries"
-            name="Secure Entries"
-            action="action_view_account_secure_entries_wizard"
-            parent="account.menu_finance_entries"
-            sequence="80"
-            groups="base.group_no_one,account.group_account_secured"/>
+                id="menu_action_secure_entries"
+                name="Secure Entries"
+                action="action_view_account_secure_entries_wizard"
+                parent="account.menu_finance_entries"
+                sequence="80"
+                groups="base.group_no_one,account.group_account_secured"/>
     </data>
 </odoo>

@@ -3,9 +3,10 @@
 
 from datetime import datetime, timedelta
 
+from freezegun import freeze_time
+
 from odoo import fields, tests
 from odoo.tests import Form
-from freezegun import freeze_time
 
 
 class TestReportStockQuantity(tests.TransactionCase):
@@ -29,7 +30,8 @@ class TestReportStockQuantity(tests.TransactionCase):
             'code': 'TESTWH'
         })
         cls.categ_unit = cls.env.ref('uom.product_uom_categ_unit')
-        cls.uom_unit = cls.env['uom.uom'].search([('category_id', '=', cls.categ_unit.id), ('uom_type', '=', 'reference')], limit=1)
+        cls.uom_unit = cls.env['uom.uom'].search(
+            [('category_id', '=', cls.categ_unit.id), ('uom_type', '=', 'reference')], limit=1)
         cls.customer_location = cls.env.ref('stock.stock_location_customers')
         cls.supplier_location = cls.env.ref('stock.stock_location_suppliers')
         # replenish
@@ -96,7 +98,8 @@ class TestReportStockQuantity(tests.TransactionCase):
 
         self.env.flush_all()
         report = self.env['report.stock.quantity']._read_group(
-            [('date', '>=', fields.Date.today()), ('date', '<=', fields.Date.today()), ('product_id', '=', self.product1.id)],
+            [('date', '>=', fields.Date.today()), ('date', '<=', fields.Date.today()),
+             ('product_id', '=', self.product1.id)],
             ['date:day', 'product_id', 'state'],
             ['product_qty:sum'])
 
@@ -109,7 +112,8 @@ class TestReportStockQuantity(tests.TransactionCase):
         from_date = fields.Date.to_string(fields.Date.add(fields.Date.today(), days=-1))
         to_date = fields.Date.to_string(fields.Date.add(fields.Date.today(), days=4))
         report = self.env['report.stock.quantity']._read_group(
-            [('product_qty', '<', 0), ('date', '>=', from_date), ('date', '<=', to_date), ('product_id', '=', self.product1.id)],
+            [('product_qty', '<', 0), ('date', '>=', from_date), ('date', '<=', to_date),
+             ('product_id', '=', self.product1.id)],
             ['date:day', 'product_id', 'state'],
             ['product_qty:sum'])
         forecast_report = [qty for __, __, state, qty in report if state == 'forecast']
@@ -224,17 +228,18 @@ class TestReportStockQuantity(tests.TransactionCase):
         self.env.flush_all()
 
         data = self.env['report.stock.quantity']._read_group(
-            [('state', '=', 'forecast'), ('product_id', '=', product.id), ('date', '>=', two_days_ago), ('date', '<=', in_two_days)],
+            [('state', '=', 'forecast'), ('product_id', '=', product.id), ('date', '>=', two_days_ago),
+             ('date', '<=', in_two_days)],
             ['date:day', 'warehouse_id'],
             ['product_qty:sum'],
         )
 
         for (date_day, warehouse, qty_rd), qty in zip(data, [
             # wh01_qty, wh02_qty
-            3.0, 0.0,   # two days ago
+            3.0, 0.0,  # two days ago
             3.0, 0.0,
-            2.0, 1.0,   # today
+            2.0, 1.0,  # today
             2.0, 1.0,
-            1.0, 2.0,   # in two days
+            1.0, 2.0,  # in two days
         ]):
             self.assertEqual(qty_rd, qty, f"Incorrect qty for Date '{date_day}' Warehouse '{warehouse.display_name}'")

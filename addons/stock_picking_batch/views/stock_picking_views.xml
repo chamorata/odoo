@@ -15,8 +15,8 @@
             </div>
             <xpath expr="//page[@name='extra']//field[@name='company_id']" position="after">
                 <field name="batch_id"
-                    readonly="1"
-                    options="{'no_create': True}"/>
+                       readonly="1"
+                       options="{'no_create': True}"/>
             </xpath>
         </field>
     </record>
@@ -28,13 +28,13 @@
         <field name="arch" type="xml">
             <field name="picking_type_id" position="after">
                 <field name="batch_id" optional="show"
-                    domain="[
+                       domain="[
                         ('state', 'in', ['draft', 'in_progress']),
                         '|',
                             ('picking_type_id', '=', picking_type_id),
                             ('picking_type_id', '=', False),
                     ]"
-                    context="{'default_picking_type_id': picking_type_id}" readonly="state in ['cancel', 'done']"/>
+                       context="{'default_picking_type_id': picking_type_id}" readonly="state in ['cancel', 'done']"/>
             </field>
         </field>
     </record>

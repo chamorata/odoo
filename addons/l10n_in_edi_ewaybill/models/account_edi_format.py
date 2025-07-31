@@ -1,18 +1,17 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import re
 import json
+import logging
+import re
 from datetime import timedelta
+
 from markupsafe import Markup
 
 from odoo import models, fields, api, _
-from odoo.tools import html_escape
 from odoo.exceptions import AccessError
-
+from odoo.tools import html_escape
 from .error_codes import ERROR_CODES
-
-import logging
 
 _logger = logging.getLogger(__name__)
 
@@ -62,7 +61,7 @@ class AccountEdiFormat(models.Model):
                 res.update({
                     'post': self._l10n_in_edi_ewaybill_irn_post_invoice_edi,
                     'edi_content': self._l10n_in_edi_ewaybill_irn_json_invoice_content,
-                    })
+                })
             return res
 
     def _needs_web_services(self):
@@ -93,10 +92,13 @@ class AccountEdiFormat(models.Model):
                 error_message.append(_("- Vehicle Number and Type is required when Transportation Mode is By Road"))
         elif move.l10n_in_mode in ("2", "3", "4"):
             if not move.l10n_in_transportation_doc_no and move.l10n_in_transportation_doc_date:
-                error_message.append(_("- Transport document number and date is required when Transportation Mode is Rail,Air or Ship"))
+                error_message.append(
+                    _("- Transport document number and date is required when Transportation Mode is Rail,Air or Ship"))
         if error_message:
             error_message.insert(0, _("The following information are missing on the invoice (see eWayBill tab):"))
-        goods_lines = move.invoice_line_ids.filtered(lambda line: not (line.display_type in ('line_section', 'line_note', 'rounding') or line.product_id.type == "service"))
+        goods_lines = move.invoice_line_ids.filtered(lambda line: not (
+                    line.display_type in ('line_section', 'line_note',
+                                          'rounding') or line.product_id.type == "service"))
         if not goods_lines:
             error_message.append(_('You need at least one product having "Product Type" as stockable or consumable.'))
         if base == "irn":
@@ -107,7 +109,7 @@ class AccountEdiFormat(models.Model):
         error_message += self._l10n_in_validate_partner(move.company_id.partner_id, is_company=True)
         if not re.match("^.{1,16}$", is_purchase and move.ref or move.name):
             error_message.append(_("%s number should be set and not more than 16 characters",
-                (is_purchase and "Bill Reference" or "Invoice")))
+                                   (is_purchase and "Bill Reference" or "Invoice")))
         for line in goods_lines:
             if line.display_type == 'product':
                 hsn_code = self._l10n_in_edi_extract_digits(line.l10n_in_hsn_code)
@@ -116,9 +118,9 @@ class AccountEdiFormat(models.Model):
                 elif not re.match(r'^\d{4}$|^\d{6}$|^\d{8}$', hsn_code):
                     error_message.append(_(
                         "Invalid HSN Code (%(hsn_code)s) in product line %(product_line)s") % {
-                        'hsn_code': hsn_code,
-                        'product_line': line.product_id.name or line.name
-                    })
+                                             'hsn_code': hsn_code,
+                                             'product_line': line.product_id.name or line.name
+                                         })
         if error_message:
             error_message.insert(0, _("Impossible to send the Ewaybill."))
         return error_message
@@ -151,17 +153,18 @@ class AccountEdiFormat(models.Model):
             if "312" in error_codes:
                 # E-waybill is already canceled
                 # this happens when timeout from the Government portal but IRN is generated
-                error_message = "<br/>".join([html_escape("[%s] %s" % (e.get("code"), e.get("message"))) for e in error])
+                error_message = "<br/>".join(
+                    [html_escape("[%s] %s" % (e.get("code"), e.get("message"))) for e in error])
                 error = []
                 response = {"data": ""}
                 odoobot = self.env.ref("base.partner_root")
                 invoices.message_post(author_id=odoobot.id, body=
-                    Markup("%s<br/>%s:<br/>%s") %(
-                        _("Somehow this E-waybill has been cancelled in the government portal before. You can verify by checking the details into the government (https://ewaybillgst.gov.in/Others/EBPrintnew.aspx)"),
-                        _("Error"),
-                        error_message
-                    )
+                Markup("%s<br/>%s:<br/>%s") % (
+                    _("Somehow this E-waybill has been cancelled in the government portal before. You can verify by checking the details into the government (https://ewaybillgst.gov.in/Others/EBPrintnew.aspx)"),
+                    _("Error"),
+                    error_message
                 )
+                                      )
             if "no-credit" in error_codes:
                 res[invoices] = {
                     "success": False,
@@ -169,7 +172,8 @@ class AccountEdiFormat(models.Model):
                     "blocking_level": "error",
                 }
             elif error:
-                error_message = "<br/>".join([html_escape("[%s] %s" % (e.get("code"), e.get("message"))) for e in error])
+                error_message = "<br/>".join(
+                    [html_escape("[%s] %s" % (e.get("code"), e.get("message"))) for e in error])
                 blocking_level = "error"
                 if "404" in error_codes:
                     blocking_level = "warning"
@@ -224,8 +228,8 @@ class AccountEdiFormat(models.Model):
                     error = []
                     odoobot = self.env.ref("base.partner_root")
                     invoices.message_post(author_id=odoobot.id, body=
-                        _("Somehow this E-waybill has been generated in the government portal before. You can verify by checking the invoice details into the government (https://ewaybillgst.gov.in/Others/EBPrintnew.aspx)")
-                    )
+                    _("Somehow this E-waybill has been generated in the government portal before. You can verify by checking the invoice details into the government (https://ewaybillgst.gov.in/Others/EBPrintnew.aspx)")
+                                          )
 
             if "no-credit" in error_codes:
                 res[invoices] = {
@@ -234,7 +238,8 @@ class AccountEdiFormat(models.Model):
                     "blocking_level": "error",
                 }
             elif error:
-                error_message = "<br/>".join([html_escape("[%s] %s" % (e.get("code"), e.get("message"))) for e in error])
+                error_message = "<br/>".join(
+                    [html_escape("[%s] %s" % (e.get("code"), e.get("message"))) for e in error])
                 blocking_level = "error"
                 if "404" in error_codes or "waiting" in error_codes:
                     blocking_level = "warning"
@@ -331,8 +336,8 @@ class AccountEdiFormat(models.Model):
                     error = []
                     odoobot = self.env.ref("base.partner_root")
                     invoices.message_post(author_id=odoobot.id, body=
-                        _("Somehow this E-waybill has been generated in the government portal before. You can verify by checking the invoice details into the government (https://ewaybillgst.gov.in/Others/EBPrintnew.aspx)")
-                    )
+                    _("Somehow this E-waybill has been generated in the government portal before. You can verify by checking the invoice details into the government (https://ewaybillgst.gov.in/Others/EBPrintnew.aspx)")
+                                          )
             if "no-credit" in error_codes:
                 res[invoices] = {
                     "success": False,
@@ -340,7 +345,8 @@ class AccountEdiFormat(models.Model):
                     "blocking_level": "error",
                 }
             elif error:
-                error_message = "<br/>".join([html_escape("[%s] %s" % (e.get("code"), e.get("message"))) for e in error])
+                error_message = "<br/>".join(
+                    [html_escape("[%s] %s" % (e.get("code"), e.get("message"))) for e in error])
                 blocking_level = "error"
                 if "404" in error_codes:
                     blocking_level = "warning"
@@ -386,7 +392,7 @@ class AccountEdiFormat(models.Model):
         res = super()._get_l10n_in_edi_saler_buyer_party(move)
         if move.is_outbound() and self.code == 'in_ewaybill_1_03':
             res = {
-                "seller_details":  move.partner_id,
+                "seller_details": move.partner_id,
                 "dispatch_details": move.partner_shipping_id or move.partner_id,
                 "buyer_details": move.company_id.partner_id,
                 "ship_to_details": move._l10n_in_get_warehouse_address() or move.company_id.partner_id,
@@ -439,7 +445,8 @@ class AccountEdiFormat(models.Model):
             "fromPlace": dispatch_details.city or "",
             "fromPincode": dispatch_details.country_id.code == "IN" and int(extract_digits(dispatch_details.zip)) or "",
             "fromStateCode": int(seller_details.state_id.l10n_in_tin) or "",
-            "actFromStateCode": dispatch_details.state_id.l10n_in_tin and int(dispatch_details.state_id.l10n_in_tin) or "",
+            "actFromStateCode": dispatch_details.state_id.l10n_in_tin and int(
+                dispatch_details.state_id.l10n_in_tin) or "",
             "toGstin": buyer_details.commercial_partner_id.vat or "URP",
             "toTrdName": buyer_details.commercial_partner_id.name,
             "toAddr1": ship_to_details.street or "",
@@ -448,7 +455,7 @@ class AccountEdiFormat(models.Model):
             "toPincode": int(extract_digits(ship_to_details.zip)),
             "actToStateCode": int(ship_to_details.state_id.l10n_in_tin),
             "toStateCode": invoices.l10n_in_state_id.l10n_in_tin and int(invoices.l10n_in_state_id.l10n_in_tin) or (
-                buyer_details.state_id.l10n_in_tin or int(buyer_details.state_id.l10n_in_tin) or ""
+                    buyer_details.state_id.l10n_in_tin or int(buyer_details.state_id.l10n_in_tin) or ""
             ),
             "itemList": [
                 self._get_l10n_in_edi_ewaybill_line_details(line, line_tax_details, sign)
@@ -461,7 +468,8 @@ class AccountEdiFormat(models.Model):
             "cessValue": self._l10n_in_round_value(tax_details_by_code.get("cess_amount", 0.00)),
             "cessNonAdvolValue": self._l10n_in_round_value(tax_details_by_code.get("cess_non_advol_amount", 0.00)),
             "otherValue": self._l10n_in_round_value(tax_details_by_code.get("other_amount", 0.00) + rounding_amount),
-            "totInvValue": self._l10n_in_round_value(tax_details.get("base_amount") + tax_details.get("tax_amount") + rounding_amount),
+            "totInvValue": self._l10n_in_round_value(
+                tax_details.get("base_amount") + tax_details.get("tax_amount") + rounding_amount),
         }
         is_overseas = invoices.l10n_in_gst_treatment in ("overseas", "special_economic_zone")
         if invoices.is_outbound():
@@ -474,7 +482,8 @@ class AccountEdiFormat(models.Model):
                 })
             else:
                 json_payload.update({
-                    "actFromStateCode": dispatch_details.state_id.l10n_in_tin and int(dispatch_details.state_id.l10n_in_tin) or "",
+                    "actFromStateCode": dispatch_details.state_id.l10n_in_tin and int(
+                        dispatch_details.state_id.l10n_in_tin) or "",
                     "fromPincode": int(extract_digits(dispatch_details.zip)),
                 })
         else:
@@ -501,7 +510,7 @@ class AccountEdiFormat(models.Model):
                 "transMode": invoices.l10n_in_mode,
                 "transDocNo": invoices.l10n_in_transportation_doc_no or "",
                 "transDocDate": invoices.l10n_in_transportation_doc_date and
-                    invoices.l10n_in_transportation_doc_date.strftime("%d/%m/%Y") or "",
+                                invoices.l10n_in_transportation_doc_date.strftime("%d/%m/%Y") or "",
             })
         if invoices.l10n_in_mode == "1":
             json_payload.update({
@@ -541,7 +550,7 @@ class AccountEdiFormat(models.Model):
             line_details.update({"cessRate": self._l10n_in_round_value(tax_details_by_code.get("cess_rate"))})
         return line_details
 
-    #================================ E-invoice API methods ===========================
+    # ================================ E-invoice API methods ===========================
 
     @api.model
     def _l10n_in_edi_irn_ewaybill_generate(self, company, json_payload):
@@ -558,7 +567,8 @@ class AccountEdiFormat(models.Model):
             "auth_token": token,
             "json_payload": json_payload,
         }
-        return self._l10n_in_edi_connect_to_server(company, url_path="/iap/l10n_in_edi/1/generate_ewaybill_by_irn", params=params)
+        return self._l10n_in_edi_connect_to_server(company, url_path="/iap/l10n_in_edi/1/generate_ewaybill_by_irn",
+                                                   params=params)
 
     @api.model
     def _l10n_in_edi_irn_ewaybill_get(self, company, irn):
@@ -569,9 +579,10 @@ class AccountEdiFormat(models.Model):
             "auth_token": token,
             "irn": irn,
         }
-        return self._l10n_in_edi_connect_to_server(company, url_path="/iap/l10n_in_edi/1/get_ewaybill_by_irn", params=params)
+        return self._l10n_in_edi_connect_to_server(company, url_path="/iap/l10n_in_edi/1/get_ewaybill_by_irn",
+                                                   params=params)
 
-    #=============================== E-waybill API methods ===================================
+    # =============================== E-waybill API methods ===================================
 
     @api.model
     def _l10n_in_edi_ewaybill_no_config_response(self):
@@ -621,7 +632,7 @@ class AccountEdiFormat(models.Model):
                 "error": [{
                     "code": "access_error",
                     "message": _("Unable to connect to the E-WayBill service."
-                        "The web service may be temporary down. Please try again in a moment.")
+                                 "The web service may be temporary down. Please try again in a moment.")
                 }]
             }
 

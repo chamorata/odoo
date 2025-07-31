@@ -1,5 +1,5 @@
-from urllib3.util import parse_url
 from urllib3.exceptions import LocationParseError
+from urllib3.util import parse_url
 
 from odoo import fields, models, _
 from odoo.exceptions import ValidationError

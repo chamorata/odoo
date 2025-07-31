@@ -3,8 +3,8 @@
 
 from odoo import api, models, Command
 from odoo.addons.base.tests.common import SavepointCaseWithUserDemo
-from odoo.tools import mute_logger, unique, lazy
 from odoo.exceptions import AccessError
+from odoo.tools import mute_logger, unique, lazy
 
 
 class TestAPI(SavepointCaseWithUserDemo):

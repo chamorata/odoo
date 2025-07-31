@@ -2,10 +2,11 @@
 
 import json
 import logging
-
 from collections import defaultdict
 from datetime import timedelta
 from itertools import groupby
+
+from odoo.addons.payment import utils as payment_utils
 
 from odoo import SUPERUSER_ID, _, api, fields, models
 from odoo.exceptions import (
@@ -21,13 +22,10 @@ from odoo.tools import (
     create_index,
     float_is_zero,
     format_amount,
-    format_date,
     is_html_empty,
     SQL,
 )
 from odoo.tools.mail import html_keep_url
-
-from odoo.addons.payment import utils as payment_utils
 
 _logger = logging.getLogger(__name__)
 
@@ -65,7 +63,7 @@ class SaleOrder(models.Model):
             return ['name', 'partner_id.name']
         return ['name']
 
-    #=== FIELDS ===#
+    # === FIELDS ===#
 
     name = fields.Char(
         string="Order Reference",
@@ -180,7 +178,7 @@ class SaleOrder(models.Model):
         compute='_compute_fiscal_position_id',
         store=True, readonly=False, precompute=True, check_company=True,
         help="Fiscal positions are used to adapt taxes and accounts for particular customers or sales orders/invoices."
-            "The default value comes from the customer.",
+             "The default value comes from the customer.",
     )
     payment_term_id = fields.Many2one(
         comodel_name='account.payment.term',
@@ -321,7 +319,7 @@ class SaleOrder(models.Model):
     def init(self):
         create_index(self._cr, 'sale_order_date_order_id_idx', 'sale_order', ["date_order desc", "id desc"])
 
-    #=== COMPUTE METHODS ===#
+    # === COMPUTE METHODS ===#
 
     @api.depends('partner_id')
     @api.depends_context('sale_show_partner_name')
@@ -393,12 +391,14 @@ class SaleOrder(models.Model):
     @api.depends('partner_id')
     def _compute_partner_invoice_id(self):
         for order in self:
-            order.partner_invoice_id = order.partner_id.address_get(['invoice'])['invoice'] if order.partner_id else False
+            order.partner_invoice_id = order.partner_id.address_get(['invoice'])[
+                'invoice'] if order.partner_id else False
 
     @api.depends('partner_id')
     def _compute_partner_shipping_id(self):
         for order in self:
-            order.partner_shipping_id = order.partner_id.address_get(['delivery'])['delivery'] if order.partner_id else False
+            order.partner_shipping_id = order.partner_id.address_get(['delivery'])[
+                'delivery'] if order.partner_id else False
 
     @api.depends('partner_shipping_id', 'partner_id', 'company_id')
     def _compute_fiscal_position_id(self):
@@ -468,9 +468,9 @@ class SaleOrder(models.Model):
                 #   * if partner is set (is required anyway, so it will be set sooner or later)
                 #   * if the order is not saved or has no salesman already
                 order.user_id = (
-                    order.partner_id.user_id
-                    or order.partner_id.commercial_partner_id.user_id
-                    or (self.env.user.has_group('sales_team.group_sale_salesman') and self.env.user)
+                        order.partner_id.user_id
+                        or order.partner_id.commercial_partner_id.user_id
+                        or (self.env.user.has_group('sales_team.group_sale_salesman') and self.env.user)
                 )
 
     @api.depends('partner_id', 'user_id')
@@ -518,9 +518,9 @@ class SaleOrder(models.Model):
         self.ensure_one()
         epd_lines = []
         if (
-            self.payment_term_id.early_discount
-            and self.payment_term_id.early_pay_discount_computation == 'mixed'
-            and self.payment_term_id.discount_percentage
+                self.payment_term_id.early_discount
+                and self.payment_term_id.early_pay_discount_computation == 'mixed'
+                and self.payment_term_id.discount_percentage
         ):
             percentage = self.payment_term_id.discount_percentage
             currency = self.currency_id or self.company_id.currency_id
@@ -552,7 +552,8 @@ class SaleOrder(models.Model):
         # existing invoices. This is necessary since such a refund is not
         # directly linked to the SO.
         for order in self:
-            invoices = order.order_line.invoice_lines.move_id.filtered(lambda r: r.move_type in ('out_invoice', 'out_refund'))
+            invoices = order.order_line.invoice_lines.move_id.filtered(
+                lambda r: r.move_type in ('out_invoice', 'out_refund'))
             order.invoice_ids = invoices
             order.invoice_count = len(invoices)
 
@@ -635,7 +636,8 @@ class SaleOrder(models.Model):
                     order.invoice_status = 'to invoice'
             elif line_invoice_status and all(invoice_status == 'invoiced' for invoice_status in line_invoice_status):
                 order.invoice_status = 'invoiced'
-            elif line_invoice_status and all(invoice_status in ('invoiced', 'upselling') for invoice_status in line_invoice_status):
+            elif line_invoice_status and all(
+                    invoice_status in ('invoiced', 'upselling') for invoice_status in line_invoice_status):
                 order.invoice_status = 'upselling'
             else:
                 order.invoice_status = 'no'
@@ -657,7 +659,8 @@ class SaleOrder(models.Model):
         for order in self:
             total = 0.0
             for line in order.order_line:
-                total += (line.price_subtotal * 100)/(100-line.discount) if line.discount != 100 else (line.price_unit * line.product_uom_qty)
+                total += (line.price_subtotal * 100) / (100 - line.discount) if line.discount != 100 else (
+                            line.price_unit * line.product_uom_qty)
             order.amount_undiscounted = total
 
     @api.depends('client_order_ref', 'date_order', 'origin', 'partner_id')
@@ -705,8 +708,8 @@ class SaleOrder(models.Model):
              WHERE sale_order.id IN %(orders)s
              GROUP BY sale_order.id
             """,
-            orders=tuple(orders.ids),
-        ))
+                                            orders=tuple(orders.ids),
+                                            ))
         return {
             order_id: set(duplicate_ids)
             for order_id, duplicate_ids in result
@@ -738,9 +741,9 @@ class SaleOrder(models.Model):
         today = fields.Date.today()
         for order in self:
             order.is_expired = (
-                order.state in ('draft', 'sent')
-                and order.validity_date
-                and order.validity_date < today
+                    order.state in ('draft', 'sent')
+                    and order.validity_date
+                    and order.validity_date < today
             )
 
     @api.depends('company_id', 'fiscal_position_id')
@@ -804,7 +807,7 @@ class SaleOrder(models.Model):
         for order in self:
             order.access_url = f'/my/orders/{order.id}'
 
-    #=== CONSTRAINT METHODS ===#
+    # === CONSTRAINT METHODS ===#
 
     @api.constrains('company_id', 'order_line')
     def _check_order_line_company_id(self):
@@ -829,11 +832,11 @@ class SaleOrder(models.Model):
             if order.require_payment and not (0 < order.prepayment_percent <= 1.0):
                 raise ValidationError(_("Prepayment percentage must be a valid percentage."))
 
-    #=== ONCHANGE METHODS ===#
+    # === ONCHANGE METHODS ===#
 
     def onchange(self, values, field_names, fields_spec):
         self_with_context = self
-        if not field_names: # Some warnings should not be displayed for the first onchange
+        if not field_names:  # Some warnings should not be displayed for the first onchange
             self_with_context = self.with_context(sale_onchange_first_call=True)
         return super(SaleOrder, self_with_context).onchange(values, field_names, fields_spec)
 
@@ -870,13 +873,14 @@ class SaleOrder(models.Model):
             # This can't be caught by a python constraint as it is only triggered at save
             # and a compute methodd needs this data to be set correctly before saving
             if not order.company_id:
-                raise ValidationError(_("The company is required, please select one before making any other changes to the sale order."))
+                raise ValidationError(
+                    _("The company is required, please select one before making any other changes to the sale order."))
 
     @api.onchange('fiscal_position_id')
     def _onchange_fpos_id_show_update_fpos(self):
         if self.order_line and (
-            not self.fiscal_position_id
-            or (self.fiscal_position_id and self._origin.fiscal_position_id != self.fiscal_position_id)
+                not self.fiscal_position_id
+                or (self.fiscal_position_id and self._origin.fiscal_position_id != self.fiscal_position_id)
         ):
             self.show_update_fpos = True
 
@@ -922,8 +926,8 @@ class SaleOrder(models.Model):
                 linked_lines = line._get_linked_lines()
                 selected_combo_items = json.loads(line.selected_combo_items)
                 if (
-                    selected_combo_items
-                    and len(selected_combo_items) != len(line.product_template_id.combo_ids)
+                        selected_combo_items
+                        and len(selected_combo_items) != len(line.product_template_id.combo_ids)
                 ):
                     raise ValidationError(_(
                         "The number of selected combo items must match the number of available"
@@ -962,7 +966,7 @@ class SaleOrder(models.Model):
                 line.selected_combo_items = False
                 self.order_line = delete_commands + create_commands + update_commands
 
-    #=== CRUD METHODS ===#
+    # === CRUD METHODS ===#
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -1011,7 +1015,7 @@ class SaleOrder(models.Model):
             )
         return res
 
-    #=== ACTION METHODS ===#
+    # === ACTION METHODS ===#
 
     def action_open_discount_wizard(self):
         self.ensure_one()
@@ -1076,10 +1080,10 @@ class SaleOrder(models.Model):
             'context': ctx,
         }
         if (
-            self.env.context.get('check_document_layout')
-            and not self.env.context.get('discard_logo_check')
-            and self.env.is_admin()
-            and not self.env.company.external_report_layout_id
+                self.env.context.get('check_document_layout')
+                and not self.env.context.get('discard_logo_check')
+                and self.env.is_admin()
+                and not self.env.company.external_report_layout_id
         ):
             layout_action = self.env['ir.actions.report']._action_configure_external_report_layout(
                 action,
@@ -1115,7 +1119,8 @@ class SaleOrder(models.Model):
             'sale.default_confirmation_template'
         )
         default_confirmation_template = default_confirmation_template_id \
-            and self.env['mail.template'].browse(int(default_confirmation_template_id)).exists()
+                                        and self.env['mail.template'].browse(
+            int(default_confirmation_template_id)).exists()
         if default_confirmation_template:
             return default_confirmation_template
         else:
@@ -1186,10 +1191,10 @@ class SaleOrder(models.Model):
         if self.state not in {'draft', 'sent'}:
             return _("Some orders are not in a state requiring confirmation.")
         if any(
-            not line.display_type
-            and not line.is_downpayment
-            and not line.product_id
-            for line in self.order_line
+                not line.display_type
+                and not line.is_downpayment
+                and not line.product_id
+                for line in self.order_line
         ):
             return _("A line on these orders missing a product, you cannot confirm it.")
 
@@ -1332,8 +1337,8 @@ class SaleOrder(models.Model):
 
         if self.partner_id:
             self.message_post(body=_("Product taxes have been recomputed according to fiscal position %s.",
-                self.fiscal_position_id._get_html_link() if self.fiscal_position_id else "")
-            )
+                                     self.fiscal_position_id._get_html_link() if self.fiscal_position_id else "")
+                              )
 
     def _recompute_taxes(self):
         lines_to_recompute = self.order_line.filtered(lambda line: not line.display_type)
@@ -1347,7 +1352,7 @@ class SaleOrder(models.Model):
 
         if self.pricelist_id:
             message = _("Product prices have been recomputed according to pricelist %s.",
-                self.pricelist_id._get_html_link())
+                        self.pricelist_id._get_html_link())
         else:
             message = _("Product prices have been recomputed.")
         self.message_post(body=message)
@@ -1400,8 +1405,8 @@ class SaleOrder(models.Model):
 
         txs_to_be_linked = self.transaction_ids.sudo().filtered(
             lambda tx: (
-                tx.state in ('pending', 'authorized')
-                or tx.state == 'done' and not (tx.payment_id and tx.payment_id.is_reconciled)
+                    tx.state in ('pending', 'authorized')
+                    or tx.state == 'done' and not (tx.payment_id and tx.payment_id.is_reconciled)
             )
         )
 
@@ -1416,7 +1421,8 @@ class SaleOrder(models.Model):
             'team_id': self.team_id.id,
             'partner_id': self.partner_invoice_id.id,
             'partner_shipping_id': self.partner_shipping_id.id,
-            'fiscal_position_id': (self.fiscal_position_id or self.fiscal_position_id._get_fiscal_position(self.partner_invoice_id)).id,
+            'fiscal_position_id': (self.fiscal_position_id or self.fiscal_position_id._get_fiscal_position(
+                self.partner_invoice_id)).id,
             'invoice_origin': self.name,
             'invoice_payment_term_id': self.payment_term_id.id,
             'invoice_user_id': self.user_id.id,
@@ -1439,7 +1445,7 @@ class SaleOrder(models.Model):
         elif len(invoices) == 1:
             form_view = [(self.env.ref('account.view_move_form').id, 'form')]
             if 'views' in action:
-                action['views'] = form_view + [(state,view) for state,view in action['views'] if view != 'form']
+                action['views'] = form_view + [(state, view) for state, view in action['views'] if view != 'form']
             else:
                 action['views'] = form_view
             action['res_id'] = invoices.id
@@ -1453,7 +1459,9 @@ class SaleOrder(models.Model):
             context.update({
                 'default_partner_id': self.partner_id.id,
                 'default_partner_shipping_id': self.partner_shipping_id.id,
-                'default_invoice_payment_term_id': self.payment_term_id.id or self.partner_id.property_payment_term_id.id or self.env['account.move'].default_get(['invoice_payment_term_id']).get('invoice_payment_term_id'),
+                'default_invoice_payment_term_id': self.payment_term_id.id or self.partner_id.property_payment_term_id.id or
+                                                   self.env['account.move'].default_get(
+                                                       ['invoice_payment_term_id']).get('invoice_payment_term_id'),
                 'default_invoice_origin': self.name,
             })
         action['context'] = context
@@ -1529,7 +1537,7 @@ class SaleOrder(models.Model):
 
         # 1) Create invoices.
         invoice_vals_list = []
-        invoice_item_sequence = 0 # Incremental sequencing to keep the lines order on the invoice.
+        invoice_item_sequence = 0  # Incremental sequencing to keep the lines order on the invoice.
         for order in self:
             if order.partner_invoice_id.lang:
                 order = order.with_context(lang=order.partner_invoice_id.lang)
@@ -1577,7 +1585,9 @@ class SaleOrder(models.Model):
                     x.get(grouping_key) for grouping_key in invoice_grouping_keys
                 ]
             )
-            for _grouping_keys, invoices in groupby(invoice_vals_list, key=lambda x: [x.get(grouping_key) for grouping_key in invoice_grouping_keys]):
+            for _grouping_keys, invoices in groupby(invoice_vals_list,
+                                                    key=lambda x: [x.get(grouping_key) for grouping_key in
+                                                                   invoice_grouping_keys]):
                 origins = set()
                 payment_refs = set()
                 refs = set()
@@ -1623,7 +1633,8 @@ class SaleOrder(models.Model):
             for invoice in invoice_vals_list:
                 sequence = 1
                 for line in invoice['invoice_line_ids']:
-                    line[2]['sequence'] = SaleOrderLine._get_invoice_line_sequence(new=sequence, old=line[2]['sequence'])
+                    line[2]['sequence'] = SaleOrderLine._get_invoice_line_sequence(new=sequence,
+                                                                                   old=line[2]['sequence'])
                     sequence += 1
 
         moves = self._create_account_invoices(invoice_vals_list, final)
@@ -1674,8 +1685,8 @@ class SaleOrder(models.Model):
                         })]
                         delta_sign = 1 if delta_amount > 0 else -1
                         for lines, attr, sign in (
-                            (product_lines, 'price_total', -1 if move.is_inbound() else 1),
-                            (tax_lines, 'amount_currency', 1),
+                                (product_lines, 'price_total', -1 if move.is_inbound() else 1),
+                                (tax_lines, 'amount_currency', 1),
                         ):
                             remaining = delta_amount
                             lines_len = len(lines)
@@ -1702,16 +1713,16 @@ class SaleOrder(models.Model):
     def _discard_tracking(self):
         self.ensure_one()
         return (
-            self.state == 'draft'
-            and request and request.env.context.get('catalog_skip_tracking')
+                self.state == 'draft'
+                and request and request.env.context.get('catalog_skip_tracking')
         )
 
     def _track_finalize(self):
         """ Override of `mail` to prevent logging changes when the SO is in a draft state. """
         if (len(self) == 1
-            # The method _track_finalize is sometimes called too early or too late and it
-            # might cause a desynchronization with the cache, thus this condition is needed.
-            and self.env.cache.contains(self, self._fields['state']) and self._discard_tracking()):
+                # The method _track_finalize is sometimes called too early or too late and it
+                # might cause a desynchronization with the cache, thus this condition is needed.
+                and self.env.cache.contains(self, self._fields['state']) and self._discard_tracking()):
             self.env.cr.precommit.data.pop(f'mail.tracking.{self._name}', {})
             self.env.flush_all()
             return
@@ -1837,10 +1848,10 @@ class SaleOrder(models.Model):
 
     def _get_order_lines_to_report(self):
         down_payment_lines = self.order_line.filtered(lambda line:
-            line.is_downpayment
-            and not line.display_type
-            and not line._get_downpayment_state()
-        )
+                                                      line.is_downpayment
+                                                      and not line.display_type
+                                                      and not line._get_downpayment_state()
+                                                      )
 
         def show_line(line):
             if not line.is_downpayment:
@@ -1864,9 +1875,9 @@ class SaleOrder(models.Model):
         # - we have still not paid enough for confirmation.
         prepayment_amount = self._get_prepayment_required_amount()
         if (
-            self.state in ('draft', 'sent')
-            and self.require_payment
-            and self.currency_id.compare_amounts(prepayment_amount, self.amount_paid) > 0
+                self.state in ('draft', 'sent')
+                and self.require_payment
+                and self.currency_id.compare_amounts(prepayment_amount, self.amount_paid) > 0
         ):
             amount = prepayment_amount - self.amount_paid
         else:
@@ -1974,10 +1985,10 @@ class SaleOrder(models.Model):
         """
         self.ensure_one()
         return (
-            self.state in ['draft', 'sent']
-            and not self.is_expired
-            and self.require_signature
-            and not self.signature
+                self.state in ['draft', 'sent']
+                and not self.is_expired
+                and self.require_signature
+                and not self.signature
         )
 
     def _has_to_be_paid(self):
@@ -1996,11 +2007,11 @@ class SaleOrder(models.Model):
         """
         self.ensure_one()
         return (
-            self.state in ['draft', 'sent']
-            and not self.is_expired
-            and self.require_payment
-            and self.amount_total > 0
-            and not self._is_confirmation_amount_reached()
+                self.state in ['draft', 'sent']
+                and not self.is_expired
+                and self.require_payment
+                and self.amount_total > 0
+                and not self._is_confirmation_amount_reached()
         )
 
     def _get_portal_return_action(self):
@@ -2021,7 +2032,7 @@ class SaleOrder(models.Model):
         self.ensure_one()
         return f'{self.type_name} {self.name}'
 
-    #=== CORE METHODS OVERRIDES ===#
+    # === CORE METHODS OVERRIDES ===#
 
     @api.model
     def get_empty_list_help(self, help_msg):
@@ -2036,14 +2047,14 @@ class SaleOrder(models.Model):
 
         filtered_self = self.filtered(
             lambda so: so.ids
-                and (so.user_id or so.partner_id.user_id)
-                and so._origin.invoice_status != 'upselling')
+                       and (so.user_id or so.partner_id.user_id)
+                       and so._origin.invoice_status != 'upselling')
         super()._compute_field_value(field)
 
         upselling_orders = filtered_self.filtered(lambda so: so.invoice_status == 'upselling')
         upselling_orders._create_upsell_activity()
 
-    #=== BUSINESS METHODS ===#
+    # === BUSINESS METHODS ===#
 
     def _create_upsell_activity(self):
         if not self:
@@ -2175,16 +2186,16 @@ class SaleOrder(models.Model):
         self.ensure_one()
 
         documents = (
-            self.order_line.product_id.product_document_ids
-            | self.order_line.product_template_id.product_document_ids
+                self.order_line.product_id.product_document_ids
+                | self.order_line.product_template_id.product_document_ids
         )
         return self._filter_product_documents(documents).sorted()
 
     def _filter_product_documents(self, documents):
         return documents.filtered(
             lambda document:
-                document.attached_on_sale == 'quotation'
-                or (self.state == 'sale' and document.attached_on_sale == 'sale_order')
+            document.attached_on_sale == 'quotation'
+            or (self.state == 'sale' and document.attached_on_sale == 'sale_order')
         )
 
     def _update_order_line_info(self, product_id, quantity, **kwargs):
@@ -2217,11 +2228,12 @@ class SaleOrder(models.Model):
                 'order_id': self.id,
                 'product_id': product_id,
                 'product_uom_qty': quantity,
-                'sequence': ((self.order_line and self.order_line[-1].sequence + 1) or 10),  # put it at the end of the order
+                'sequence': ((self.order_line and self.order_line[-1].sequence + 1) or 10),
+                # put it at the end of the order
             })
-        return sol.price_unit * (1-(sol.discount or 0.0)/100.0)
+        return sol.price_unit * (1 - (sol.discount or 0.0) / 100.0)
 
-    #=== TOOLING ===#
+    # === TOOLING ===#
 
     def _is_readonly(self):
         """ Return Whether the sale order is read-only or not based on the state or the lock status.

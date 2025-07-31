@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import models, api
-import ast
 import json
+
+from odoo import models, api
+
 
 class LoyaltyReward(models.Model):
     _name = 'loyalty.reward'
@@ -25,7 +26,8 @@ class LoyaltyReward(models.Model):
         return ['description', 'program_id', 'reward_type', 'required_points', 'clear_wallet', 'currency_id',
                 'discount', 'discount_mode', 'discount_applicability', 'all_discount_product_ids', 'is_global_discount',
                 'discount_max_amount', 'discount_line_product_id', 'reward_product_id',
-                'multi_product', 'reward_product_ids', 'reward_product_qty', 'reward_product_uom_id', 'reward_product_domain']
+                'multi_product', 'reward_product_ids', 'reward_product_qty', 'reward_product_uom_id',
+                'reward_product_domain']
 
     def _load_pos_data(self, data):
         domain = self._load_pos_data_domain(data)

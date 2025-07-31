@@ -32,13 +32,15 @@ class AccountTax(models.Model):
     def _prepare_base_line_for_taxes_computation(self, record, **kwargs):
         # EXTENDS 'account'
         results = super()._prepare_base_line_for_taxes_computation(record, **kwargs)
-        results['expense_id'] = self._get_base_line_field_value_from_record(record, 'expense_id', kwargs, self.env['hr.expense'])
+        results['expense_id'] = self._get_base_line_field_value_from_record(record, 'expense_id', kwargs,
+                                                                            self.env['hr.expense'])
         return results
 
     def _prepare_tax_line_for_taxes_computation(self, record, **kwargs):
         # EXTENDS 'account'
         results = super()._prepare_tax_line_for_taxes_computation(record, **kwargs)
-        results['expense_id'] = self._get_base_line_field_value_from_record(record, 'expense_id', kwargs, self.env['hr.expense'])
+        results['expense_id'] = self._get_base_line_field_value_from_record(record, 'expense_id', kwargs,
+                                                                            self.env['hr.expense'])
         return results
 
     def _prepare_base_line_grouping_key(self, base_line):

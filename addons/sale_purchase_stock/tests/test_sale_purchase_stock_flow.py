@@ -156,10 +156,12 @@ class TestSalePurchaseStockFlow(TransactionCase):
 
         red_po = self.env['purchase.order'].search([('partner_id', '=', red_vendor.id)], limit=1)
         self.assertTrue(red_po)
-        self.assertRecordValues(red_po.order_line, [{'product_id': red_product.id, 'product_uom_qty': 2, 'price_unit': 5}])
+        self.assertRecordValues(red_po.order_line,
+                                [{'product_id': red_product.id, 'product_uom_qty': 2, 'price_unit': 5}])
         blue_po = self.env['purchase.order'].search([('partner_id', '=', blue_vendor.id)], limit=1)
         self.assertTrue(blue_po)
-        self.assertRecordValues(blue_po.order_line, [{'product_id': blue_product.id, 'product_uom_qty': 3, 'price_unit': 10}])
+        self.assertRecordValues(blue_po.order_line,
+                                [{'product_id': blue_product.id, 'product_uom_qty': 3, 'price_unit': 10}])
 
     def test_link_sale_purchase_mto_link_multi_step(self):
         self.warehouse.reception_steps = 'two_steps'
@@ -296,9 +298,11 @@ class TestSalePurchaseStockFlow(TransactionCase):
         warehouse = self.env['stock.warehouse'].search([('company_id', '=', self.env.company.id)], limit=1)
         warehouse.write({'reception_steps': 'two_steps', 'delivery_steps': 'pick_ship'})
         xdock_route = warehouse.crossdock_route_id
-        self.assertRecordValues(xdock_route, [{'product_selectable': False, 'product_categ_selectable': False, 'sale_selectable': True}])
+        self.assertRecordValues(xdock_route, [{'product_selectable': False, 'product_categ_selectable': False,
+                                               'sale_selectable': True}])
 
-        regular_vendor, xdock_vendor = self.env['res.partner'].create([{'name': 'Regular Vendor'}, {'name': 'Super Vendor'},])
+        regular_vendor, xdock_vendor = self.env['res.partner'].create(
+            [{'name': 'Regular Vendor'}, {'name': 'Super Vendor'}, ])
         product = self.env['product.product'].create({
             'name': 'Cross-Dockable',
             'is_storable': True,
@@ -332,7 +336,7 @@ class TestSalePurchaseStockFlow(TransactionCase):
         regular_store_move = regular_receipt_move.move_dest_ids
         self.assertRecordValues(regular_store_move, [{
             'location_id': warehouse.wh_input_stock_loc_id.id,
-            'location_dest_id':  warehouse.lot_stock_id.id,
+            'location_dest_id': warehouse.lot_stock_id.id,
             'location_final_id': warehouse.lot_stock_id.id,
             'picking_type_id': warehouse.store_type_id.id,
         }])
@@ -420,7 +424,7 @@ class TestSalePurchaseStockFlow(TransactionCase):
 
         sale_order = self.env['sale.order'].create({
             'partner_id': self.customer.id,
-            'order_line': [Command.create({'product_id': product.id,'product_uom_qty': 2})],
+            'order_line': [Command.create({'product_id': product.id, 'product_uom_qty': 2})],
         })
         sale_order.action_confirm()
         pick_picking = sale_order.picking_ids[0]
@@ -511,7 +515,8 @@ class TestSalePurchaseStockFlow(TransactionCase):
         self.assertEqual(receipt_internal.move_ids.product_id, self.mto_product | mts_product)
         receipt_internal.button_validate()
 
-        output_pickings = sale_orders.picking_ids.filtered(lambda p: p.location_dest_id == self.warehouse.wh_output_stock_loc_id)
+        output_pickings = sale_orders.picking_ids.filtered(
+            lambda p: p.location_dest_id == self.warehouse.wh_output_stock_loc_id)
         self.assertEqual(output_pickings[0].partner_id, xd_customer)
         self.assertEqual(output_pickings[0].move_ids.product_id, xd_product)
         self.assertEqual(output_pickings[1].partner_id, mto_customer)
@@ -553,6 +558,7 @@ class TestSalePurchaseStockFlow(TransactionCase):
         purchase_order.button_cancel()
         self.assertEqual(purchase_order.state, 'cancel')
         # update the quantity on hand of the MTO product
-        self.env['stock.quant']._update_available_quantity(self.mto_product, sale_order.picking_ids.move_ids.location_id, 1)
+        self.env['stock.quant']._update_available_quantity(self.mto_product,
+                                                           sale_order.picking_ids.move_ids.location_id, 1)
         sale_order.picking_ids.action_assign()
         self.assertEqual(sale_order.picking_ids.move_ids.quantity, 1)

@@ -18,6 +18,7 @@ record = E.record
 field = E.field
 function = E.function
 
+
 class TestEnv(common.TransactionCase):
     def setUp(self):
         super().setUp()
@@ -82,7 +83,6 @@ class TestEnv(common.TransactionCase):
         self.assertEqual(r.name, 'c')
         self.assertEqual(r.create_uid, self.env.ref('base.default_user'))
         self.assertEqual(r.user_id, self.env.ref('base.default_user'))
-
 
     def test_uid_function(self):
         self.importer(

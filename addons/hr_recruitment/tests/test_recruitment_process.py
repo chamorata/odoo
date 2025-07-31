@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.hr.tests.common import TestHrCommon
+
 from odoo.tools.misc import file_open
 
 
@@ -49,14 +50,14 @@ class TestRecruitmentProcess(TestHrCommon):
             ('res_id', '=', applicant.id)])
         self.assertEqual(applicant.partner_name, 'Mr. Richard Anderson', 'Applicant name does not match.')
         self.assertEqual(applicant.stage_id, self.env.ref('hr_recruitment.stage_job0'),
-            "Stage should be 'New' and is '%s'." % (applicant.stage_id.name))
+                         "Stage should be 'New' and is '%s'." % (applicant.stage_id.name))
         self.assertTrue(resume_ids, 'Resume is not attached.')
         # I assign the Job position to the applicant
         applicant.write({'job_id': job_developer.id})
         # I schedule meeting with applicant for interview.
         applicant_meeting = applicant.action_create_meeting()
         self.assertEqual(applicant_meeting['context']['default_name'], 'Mr. Richard Anderson',
-            'Applicant name does not match.')
+                         'Applicant name does not match.')
 
     def test_01_hr_application_notification(self):
         new_job_application_mt = self.env.ref(
@@ -87,7 +88,8 @@ class TestRecruitmentProcess(TestHrCommon):
             }
         )
         application = self.env["hr.applicant"].create(
-            {"candidate_id": self.env['hr.candidate'].create({'partner_name': 'Test Job Application for Notification'}).id, "job_id": job.id}
+            {"candidate_id": self.env['hr.candidate'].create(
+                {'partner_name': 'Test Job Application for Notification'}).id, "job_id": job.id}
         )
         new_application_message = application.message_ids.filtered(
             lambda m: m.subtype_id == new_application_mt
@@ -136,12 +138,14 @@ class TestRecruitmentProcess(TestHrCommon):
 
         with file_open('hr_recruitment/tests/resume.eml', 'rb') as request_file:
             request_message = request_file.read()
-        self.env['mail.thread'].message_process('hr.applicant', request_message, custom_values={"job_id": job_developer.id})
+        self.env['mail.thread'].message_process('hr.applicant', request_message,
+                                                custom_values={"job_id": job_developer.id})
 
         # Make sure the candidate and applicant are created in the right company
         applicant = self.env['hr.applicant'].search([('email_from', 'ilike', 'Richard_Anderson@yahoo.com')], limit=1)
         self.assertEqual(applicant.company_id, other_company, 'Applicant should be created in the right company')
-        self.assertEqual(applicant.candidate_id.company_id, other_company, 'Candidate should be created in the right company')
+        self.assertEqual(applicant.candidate_id.company_id, other_company,
+                         'Candidate should be created in the right company')
 
     def test_multiple_emails_only_one_candidate(self):
         """Make sure that receiving multiple emails from the same address does not create multiple candidates"""

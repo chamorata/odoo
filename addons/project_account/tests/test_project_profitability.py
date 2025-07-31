@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.tests import tagged
-
 from odoo.addons.project.tests.test_project_profitability import TestProjectProfitabilityCommon
+
+from odoo.tests import tagged
 
 
 @tagged('-at_install', 'post_install')
@@ -22,7 +22,8 @@ class TestProjectAccountProfitability(TestProjectProfitabilityCommon):
             'The profitability data of the project should return no data and so 0 for each total amount.'
         )
         # Create a new company with the foreign currency.
-        foreign_company = self.env['res.company'].create({'name': "My Test Company", 'currency_id': self.foreign_currency.id})
+        foreign_company = self.env['res.company'].create(
+            {'name': "My Test Company", 'currency_id': self.foreign_currency.id})
 
         # Create new AAL with the new company.
         self.env['account.analytic.line'].create([{
@@ -50,10 +51,15 @@ class TestProjectAccountProfitability(TestProjectProfitabilityCommon):
         self.assertDictEqual(
             project._get_profitability_items(False),
             {
-                'revenues': {'data': [{'id': 'other_revenues_aal', 'sequence': self.project._get_profitability_sequence_per_invoice_type()['other_revenues_aal'],
-                    'invoiced': 30.0, 'to_invoice': 0.0}], 'total': {'invoiced': 30.0, 'to_invoice': 0.0}},
-                'costs': {'data': [{'id': 'other_costs_aal', 'sequence': self.project._get_profitability_sequence_per_invoice_type()['other_costs_aal'],
-                    'billed': -30.0, 'to_bill': 0.0}], 'total': {'billed': -30.0, 'to_bill': 0.0}}
+                'revenues': {'data': [{'id': 'other_revenues_aal',
+                                       'sequence': self.project._get_profitability_sequence_per_invoice_type()[
+                                           'other_revenues_aal'],
+                                       'invoiced': 30.0, 'to_invoice': 0.0}],
+                             'total': {'invoiced': 30.0, 'to_invoice': 0.0}},
+                'costs': {'data': [{'id': 'other_costs_aal',
+                                    'sequence': self.project._get_profitability_sequence_per_invoice_type()[
+                                        'other_costs_aal'],
+                                    'billed': -30.0, 'to_bill': 0.0}], 'total': {'billed': -30.0, 'to_bill': 0.0}}
             },
             'The profitability data of the project should return the total amount for the revenues and costs from tha AAL of the account of the project.'
         )
@@ -78,10 +84,15 @@ class TestProjectAccountProfitability(TestProjectProfitabilityCommon):
         self.assertDictEqual(
             project._get_profitability_items(False),
             {
-                'revenues': {'data': [{'id': 'other_revenues_aal', 'sequence': project._get_profitability_sequence_per_invoice_type()['other_revenues_aal'],
-                    'invoiced': 180.0, 'to_invoice': 0.0}], 'total': {'invoiced': 180.0, 'to_invoice': 0.0}},
-                'costs': {'data': [{'id': 'other_costs_aal', 'sequence': project._get_profitability_sequence_per_invoice_type()['other_costs_aal'],
-                    'billed': -180.0, 'to_bill': 0.0}], 'total': {'billed': -180.0, 'to_bill': 0.0}}
+                'revenues': {'data': [{'id': 'other_revenues_aal',
+                                       'sequence': project._get_profitability_sequence_per_invoice_type()[
+                                           'other_revenues_aal'],
+                                       'invoiced': 180.0, 'to_invoice': 0.0}],
+                             'total': {'invoiced': 180.0, 'to_invoice': 0.0}},
+                'costs': {'data': [{'id': 'other_costs_aal',
+                                    'sequence': project._get_profitability_sequence_per_invoice_type()[
+                                        'other_costs_aal'],
+                                    'billed': -180.0, 'to_bill': 0.0}], 'total': {'billed': -180.0, 'to_bill': 0.0}}
             },
             'The profitability data of the project should return the total amount for the revenues and costs from tha AAL of the account of the project.'
         )

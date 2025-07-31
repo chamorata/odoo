@@ -1,11 +1,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import logging
+from werkzeug.exceptions import BadRequest
+
 from odoo import _
 from odoo.exceptions import UserError, MissingError, AccessError
 from odoo.http import Controller, request, route
 from .utils import clean_action
-from werkzeug.exceptions import BadRequest
 
 
 class MissingActionError(UserError):
@@ -75,7 +75,8 @@ class Action(Controller):
                     if not act.get('display_name'):
                         act['display_name'] = act['name']
                     # client actions don't have multi-record views, so we can't go further to the next controller
-                    if act['type'] == 'ir.actions.client' and idx + 1 < len(actions) and action.get('action') == actions[idx + 1].get('action'):
+                    if act['type'] == 'ir.actions.client' and idx + 1 < len(actions) and action.get('action') == \
+                            actions[idx + 1].get('action'):
                         results.append({'error': 'Client actions don\'t have multi-record views'})
                         continue
                     if record_id:
@@ -83,14 +84,16 @@ class Action(Controller):
                         if record_id == 'new':
                             results.append({'display_name': _("New")})
                         elif act['res_model']:
-                            results.append({'display_name': request.env[act['res_model']].browse(record_id).display_name})
+                            results.append(
+                                {'display_name': request.env[act['res_model']].browse(record_id).display_name})
                         else:
                             results.append({'display_name': act['display_name']})
                     else:
                         if act.get('res_model') and act['type'] != 'ir.actions.client':
                             request.env[act['res_model']].check_access('read')
                             # action shouldn't be available on its own if it doesn't have multi-record views
-                            name = act['display_name'] if any(view[1] != 'form' and view[1] != 'search' for view in act['views']) else None
+                            name = act['display_name'] if any(
+                                view[1] != 'form' and view[1] != 'search' for view in act['views']) else None
                         else:
                             name = act['display_name']
                         results.append({'display_name': name})

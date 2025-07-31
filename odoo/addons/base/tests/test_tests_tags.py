@@ -105,14 +105,17 @@ class TestSetTags(TransactionCase):
     def test_parental_advisory(self):
         """Explicit test tags on the class should override anything
         """
+
         @tagged('flow')
         class FakeClassA(TransactionCase):
             pass
+
         class FakeClassB(FakeClassA):
             test_tags = {'foo', 'bar'}
 
         self.assertEqual(FakeClassA().test_tags, {'standard', 'at_install', 'flow'})
         self.assertEqual(FakeClassB().test_tags, {'foo', 'bar'})
+
 
 @tagged('nodatabase')
 class TestSelector(TransactionCase):
@@ -196,7 +199,7 @@ class TestSelector(TransactionCase):
         self.assertEqual({('standard', None, None, None, None), }, tags.include)  # all strandard
         self.assertEqual({(None, 'module', 'class', 'method', None), }, tags.exclude)  # exept the test func
 
-        tags = TagsSelector('-*/module:class.method') 
+        tags = TagsSelector('-*/module:class.method')
         self.assertEqual({('standard', None, None, None, None), }, tags.include)
         self.assertEqual({(None, 'module', 'class', 'method', None), }, tags.exclude)
 
@@ -217,6 +220,7 @@ class TestSelector(TransactionCase):
 class TestSelectorSelection(TransactionCase):
     def test_selector_selection(self):
         """Test check_tags use cases"""
+
         class Test_A(TransactionCase):
             pass
 
@@ -358,11 +362,12 @@ class TestSelectorSelection(TransactionCase):
     def test_selector_parser_parameters(self):
         tags = ','.join([
             '/base:FakeClassA[failfast=0,filter=-livechat]',
-            #'/base:FakeClassA[filter=[-barecode,-stock_x]]',
+            # '/base:FakeClassA[filter=[-barecode,-stock_x]]',
             '/other[notForThisClass]',
             '-/base:FakeClassA[arg1,arg2]',
         ])
         tags = TagsSelector(tags)
+
         class FakeClassA(TransactionCase):
             pass
 
@@ -376,7 +381,8 @@ class TestSelectorSelection(TransactionCase):
         self.assertEqual(self._test_params, [])
 
         tags = TagsSelector('/other_module,-.test_negative_parameters_translate[someparam]')
-        self.assertFalse(tags.check(self), "we don't expect a negative parameter to enable the test if not enabled in other tags")
+        self.assertFalse(tags.check(self),
+                         "we don't expect a negative parameter to enable the test if not enabled in other tags")
         self.assertEqual(self._test_params, [])
 
         tags = TagsSelector('/base,-.test_negative_parameters_translate[someparam]')
@@ -384,20 +390,24 @@ class TestSelectorSelection(TransactionCase):
         self.assertEqual(self._test_params, [('-', 'someparam')])
 
         tags = TagsSelector('-.test_negative_parameters_translate[someparam]')
-        self.assertTrue(tags.check(self), "we don't expect a single negative parameter to disable the test that should run by edfault")
+        self.assertTrue(tags.check(self),
+                        "we don't expect a single negative parameter to disable the test that should run by edfault")
         self.assertEqual(self._test_params, [('-', 'someparam')])
 
         tags = TagsSelector('/base,-.test_negative_parameters_translate')
-        self.assertFalse(tags.check(self), "Sanity check, a negative parametric tag without params still disable the test")
+        self.assertFalse(tags.check(self),
+                         "Sanity check, a negative parametric tag without params still disable the test")
         self.assertEqual(self._test_params, [])
 
         tags = TagsSelector('.test_negative_parameters_translate[-someparam]')
         self.assertTrue(tags.check(self), "A parametric tag should enable test")
         self.assertEqual(self._test_params, [('+', '-someparam')])
 
+
 class TestTestClass(BaseCase):
     def test_canonical_tag(self):
         self.assertEqual(self.canonical_tag, '/base/tests/test_tests_tags.py:TestTestClass.test_canonical_tag')
 
     def get_log_metadata(self):
-        self.assertEqual(self.log_metadata['canonical_tag'], '/base/tests/test_tests_tags.py:TestTestClass.test_canonical_tag')
+        self.assertEqual(self.log_metadata['canonical_tag'],
+                         '/base/tests/test_tests_tags.py:TestTestClass.test_canonical_tag')

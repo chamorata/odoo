@@ -1,10 +1,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import io
-
 from base64 import b64decode
 from typing import Literal, Optional
+
 from PIL import Image
+
 from odoo.tools import float_compare
 
 
@@ -176,12 +177,12 @@ class EscLabelCommand:
         return self
 
     def upload_image(
-        self,
-        filename: str,
-        image_field: str,
-        size: Optional[tuple[int, int]] = None,
-        crop_mode: Literal["contain", "cover"] = "contain",
-        flip=False
+            self,
+            filename: str,
+            image_field: str,
+            size: Optional[tuple[int, int]] = None,
+            crop_mode: Literal["contain", "cover"] = "contain",
+            flip=False
     ):
         """
         Saves an image to the printer under the name `{filename}.PNG`.
@@ -235,14 +236,14 @@ class EscLabelCommand:
         return self._upload_pil_image(filename, image)
 
     def print_text(
-        self,
-        text: str,
-        position: tuple[int, int],
-        font_size: tuple[int, int],
-        wrap_width: Optional[int] = None,
-        max_lines: int = 1,
-        align: Literal["L", "C", "R", "J"] = "L",
-        rotation: Literal["N", "R", "I", "B"] = "N"
+            self,
+            text: str,
+            position: tuple[int, int],
+            font_size: tuple[int, int],
+            wrap_width: Optional[int] = None,
+            max_lines: int = 1,
+            align: Literal["L", "C", "R", "J"] = "L",
+            rotation: Literal["N", "R", "I", "B"] = "N"
     ):
         """
         Prints text at the given `position` and `font_size`.
@@ -271,10 +272,10 @@ class EscLabelCommand:
         return self
 
     def print_box(
-        self,
-        position: tuple[int, int],
-        size: tuple[int, int],
-        thickness: int = 1
+            self,
+            position: tuple[int, int],
+            size: tuple[int, int],
+            thickness: int = 1
     ):
         """
         Print a box, which has both an outline (foreground color) and a fill (background color).
@@ -291,11 +292,11 @@ class EscLabelCommand:
         return self
 
     def set_color(
-        self,
-        color: tuple[int, int, int] | str,
-        alpha: int = 255,
-        bg_color: tuple[int, int, int] | str = (0, 0, 0),
-        bg_alpha: int = 0,
+            self,
+            color: tuple[int, int, int] | str,
+            alpha: int = 255,
+            bg_color: tuple[int, int, int] | str = (0, 0, 0),
+            bg_alpha: int = 0,
     ):
         """
         Set the foreground and background color and transparency.
@@ -333,22 +334,22 @@ class EscLabelCommand:
 
 def setup_printer(layout: dict):
     return (EscLabelCommand()
-        .delete_files("*.*")  # Clean-up printer memory
-        .set_resolution(600)  # 600 DPI
-        .set_media_coating("M1")  # Matte paper
-        .set_media_type("DL")  # Die-cut label
-        .set_media_shape("FP")  # Fanfold paper
-        .set_media_source("ER")  # External paper feed
-        .set_edge_detection("W")  # Detect gap between labels
-        .set_print_quality("N")  # Normal quality
-        .set_utf8_encoding()
-        .set_printable_area(layout["print_width"],
-                            layout["print_height"] * 2 if layout["double_sided"] else layout["print_height"])
-        .set_label_gap(layout["label_gap"])
-        .set_left_gap(48)
-        .set_printing_offset(layout["print_offset_left"], layout["print_offset_top"])
-        .wrap_command()
-    )
+            .delete_files("*.*")  # Clean-up printer memory
+            .set_resolution(600)  # 600 DPI
+            .set_media_coating("M1")  # Matte paper
+            .set_media_type("DL")  # Die-cut label
+            .set_media_shape("FP")  # Fanfold paper
+            .set_media_source("ER")  # External paper feed
+            .set_edge_detection("W")  # Detect gap between labels
+            .set_print_quality("N")  # Normal quality
+            .set_utf8_encoding()
+            .set_printable_area(layout["print_width"],
+                                layout["print_height"] * 2 if layout["double_sided"] else layout["print_height"])
+            .set_label_gap(layout["label_gap"])
+            .set_left_gap(48)
+            .set_printing_offset(layout["print_offset_left"], layout["print_offset_top"])
+            .wrap_command()
+            )
 
 
 def print_centered_text(layout: dict, text: str, y_position: int, font_size: int, command: EscLabelCommand, flip=False):
@@ -402,7 +403,8 @@ def print_event_template(event: dict, layout: dict, flip=False):
 
     if event["logo"]:
         logo_x_pos = (layout["print_width"] - layout["logo_width"]) / 2
-        logo_y_pos = layout["print_height"] * 2 - layout["logo_y_pos"] - layout["logo_height"] if flip else layout["logo_y_pos"]
+        logo_y_pos = layout["print_height"] * 2 - layout["logo_y_pos"] - layout["logo_height"] if flip else layout[
+            "logo_y_pos"]
         command.print_image("LOGOFLIP" if flip else "LOGO", (logo_x_pos, logo_y_pos))
 
     command.set_color(layout["secondary_text_color"], alpha=layout["secondary_text_alpha"])
@@ -428,10 +430,10 @@ def setup_event_template(event: dict, layout: dict):
             upload_images_command.upload_image("BGFLIP", event["badge_image"], background_size, "cover", flip=True)
     if event["logo"]:
         upload_images_command.upload_image("LOGO", event["logo"], (layout["logo_width"], layout["logo_height"]),
-                                            "contain")
+                                           "contain")
         if layout["double_sided"]:
             upload_images_command.upload_image("LOGOFLIP", event["logo"],
-                                                (layout["logo_width"], layout["logo_height"]), "contain", flip=True)
+                                               (layout["logo_width"], layout["logo_height"]), "contain", flip=True)
 
     template_command = print_event_template(event, layout)
     if layout["double_sided"]:
@@ -480,9 +482,9 @@ def print_attendee_badge(attendee: dict, layout: dict, flip=False):
     if attendee["ticket_name"]:
         ticket_bg_y_pos = layout["print_height"] if flip else layout["print_height"] - layout["ticket_bg_height"]
         (command
-            .set_color(color=attendee["ticket_color"], bg_color=attendee["ticket_color"], bg_alpha=255)
-            .print_box(position=(0, ticket_bg_y_pos), size=(layout["print_width"], layout["ticket_bg_height"]))
-            )
+         .set_color(color=attendee["ticket_color"], bg_color=attendee["ticket_color"], bg_alpha=255)
+         .print_box(position=(0, ticket_bg_y_pos), size=(layout["print_width"], layout["ticket_bg_height"]))
+         )
         command.set_color(attendee["ticket_text_color"])
         print_centered_text(
             layout,
@@ -537,7 +539,6 @@ layout_96x82 = {
     "secondary_text_color": "#374151",
     "secondary_text_alpha": 200
 }
-
 
 layout_96x134 = {
     "print_width": 2340,

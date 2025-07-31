@@ -4,6 +4,7 @@ import base64
 from odoo.tests.common import TransactionCase
 from odoo.tools.misc import file_open
 
+
 class TestProductConfiguratorCommon(TransactionCase):
 
     @classmethod
@@ -71,7 +72,8 @@ class TestProductConfiguratorCommon(TransactionCase):
             'sequence': 3,
             'is_custom': True
         })
-        cls.product_product_custo_desk.attribute_line_ids[0].write({'value_ids': [(4, product_attribute_value_custom.id)]})
+        cls.product_product_custo_desk.attribute_line_ids[0].write(
+            {'value_ids': [(4, product_attribute_value_custom.id)]})
 
         # Disable the aluminium + black product
         cls.product_product_custo_desk.product_variant_ids[3].active = False

@@ -24,8 +24,10 @@ class IrFilters(models.Model):
                                 help="The menu action this filter applies to. "
                                      "When left empty the filter applies to all menus "
                                      "for this model.")
-    embedded_action_id = fields.Many2one('ir.embedded.actions', help="The embedded action this filter is applied to", ondelete="cascade")
-    embedded_parent_res_id = fields.Integer(help="id of the record the filter should be applied to. Only used in combination with embedded actions")
+    embedded_action_id = fields.Many2one('ir.embedded.actions', help="The embedded action this filter is applied to",
+                                         ondelete="cascade")
+    embedded_parent_res_id = fields.Integer(
+        help="id of the record the filter should be applied to. Only used in combination with embedded actions")
     active = fields.Boolean(default=True)
 
     @api.model
@@ -63,8 +65,11 @@ class IrFilters(models.Model):
         """Return a domain component for matching filters that are visible in the
            same context (menu/view) as the given action."""
         action_condition = ('action_id', 'in', [action_id, False]) if action_id else ('action_id', '=', False)
-        embedded_condition = ('embedded_action_id', '=', embedded_action_id) if embedded_action_id else ('embedded_action_id', '=', False)
-        embedded_parent_res_id_condition = ('embedded_parent_res_id', '=', embedded_parent_res_id) if embedded_action_id and embedded_parent_res_id else ('embedded_parent_res_id', 'in', [0, False])
+        embedded_condition = ('embedded_action_id', '=', embedded_action_id) if embedded_action_id else (
+            'embedded_action_id', '=', False)
+        embedded_parent_res_id_condition = ('embedded_parent_res_id', '=',
+                                            embedded_parent_res_id) if embedded_action_id and embedded_parent_res_id else (
+            'embedded_parent_res_id', 'in', [0, False])
 
         return [action_condition, embedded_condition, embedded_parent_res_id_condition]
 
@@ -88,7 +93,8 @@ class IrFilters(models.Model):
         action_domain = self._get_action_domain(action_id, embedded_action_id, embedded_parent_res_id)
         return self.with_context(user_context).search_read(
             action_domain + [('model_id', '=', model), ('user_id', 'in', [self._uid, False])],
-            ['name', 'is_default', 'domain', 'context', 'user_id', 'sort', 'embedded_action_id', 'embedded_parent_res_id'],
+            ['name', 'is_default', 'domain', 'context', 'user_id', 'sort', 'embedded_action_id',
+             'embedded_parent_res_id'],
         )
 
     @api.model
@@ -108,7 +114,8 @@ class IrFilters(models.Model):
         :raises odoo.exceptions.UserError: if there is an existing default and
                                             we're not updating it
         """
-        domain = self._get_action_domain(vals.get('action_id'), vals.get('embedded_action_id'), vals.get('embedded_parent_res_id'))
+        domain = self._get_action_domain(vals.get('action_id'), vals.get('embedded_action_id'),
+                                         vals.get('embedded_parent_res_id'))
         defaults = self.search(domain + [
             ('model_id', '=', vals['model_id']),
             ('user_id', '=', False),
@@ -120,7 +127,9 @@ class IrFilters(models.Model):
         if matching_filters and (matching_filters[0]['id'] == defaults.id):
             return
 
-        raise UserError(self.env._("There is already a shared filter set as default for %(model)s, delete or change it before setting a new default", model=vals.get('model_id')))
+        raise UserError(self.env._(
+            "There is already a shared filter set as default for %(model)s, delete or change it before setting a new default",
+            model=vals.get('model_id')))
 
     @api.model
     @api.returns('self', lambda value: value.id)
@@ -166,8 +175,9 @@ class IrFilters(models.Model):
         # Partial constraint, complemented by unique index (see below). Still
         # useful to keep because it provides a proper error message when a
         # violation occurs, as it shares the same prefix as the unique index.
-        ('name_model_uid_unique', 'unique (model_id, user_id, action_id, embedded_action_id, embedded_parent_res_id, name)',
-            'Filter names must be unique'),
+        ('name_model_uid_unique',
+         'unique (model_id, user_id, action_id, embedded_action_id, embedded_parent_res_id, name)',
+         'Filter names must be unique'),
 
         # The embedded_parent_res_id can only be defined when the embedded_action_id field is set.
         # As the embedded model is linked to only one res_model, It ensure the unicity of the filter regarding the
@@ -187,5 +197,6 @@ class IrFilters(models.Model):
         # Use unique index to implement unique constraint on the lowercase name (not possible using a constraint)
         tools.create_unique_index(self._cr, 'ir_filters_name_model_uid_unique_action_index',
                                   self._table, ['model_id', 'COALESCE(user_id,-1)', 'COALESCE(action_id,-1)',
-                                                'lower(name)', 'embedded_parent_res_id', 'COALESCE(embedded_action_id,-1)'])
+                                                'lower(name)', 'embedded_parent_res_id',
+                                                'COALESCE(embedded_action_id,-1)'])
         return result

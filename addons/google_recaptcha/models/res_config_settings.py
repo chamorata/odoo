@@ -7,7 +7,8 @@ class ResConfigSettings(models.TransientModel):
     _inherit = 'res.config.settings'
 
     recaptcha_public_key = fields.Char("Site Key", config_parameter='recaptcha_public_key', groups='base.group_system')
-    recaptcha_private_key = fields.Char("Secret Key", config_parameter='recaptcha_private_key', groups='base.group_system')
+    recaptcha_private_key = fields.Char("Secret Key", config_parameter='recaptcha_private_key',
+                                        groups='base.group_system')
     recaptcha_min_score = fields.Float(
         "Minimum score",
         config_parameter='recaptcha_min_score',

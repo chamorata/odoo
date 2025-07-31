@@ -19,13 +19,14 @@ class MembershipInvoice(models.TransientModel):
         self.member_price = price_dict.get(self.product_id.id) or False
 
     def membership_invoice(self):
-        invoice_list = self.env['res.partner'].browse(self._context.get('active_ids')).create_membership_invoice(self.product_id, self.member_price)
+        invoice_list = self.env['res.partner'].browse(self._context.get('active_ids')).create_membership_invoice(
+            self.product_id, self.member_price)
 
         search_view_ref = self.env.ref('account.view_account_invoice_filter', False)
         form_view_ref = self.env.ref('account.view_move_form', False)
         list_view_ref = self.env.ref('account.view_move_tree', False)
 
-        return  {
+        return {
             'domain': [('id', 'in', invoice_list.ids)],
             'name': 'Membership Invoices',
             'res_model': 'account.move',

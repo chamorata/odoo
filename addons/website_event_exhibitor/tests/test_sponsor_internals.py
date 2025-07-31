@@ -2,9 +2,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import datetime
-from freezegun import freeze_time
 
+from freezegun import freeze_time
 from odoo.addons.website_event_exhibitor.tests.common import TestEventExhibitorCommon
+
 from odoo.tests.common import users
 
 

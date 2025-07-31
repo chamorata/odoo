@@ -12,5 +12,6 @@ def _configure_journals(env):
         template_code = company.chart_template
         template_data = ChartTemplate._get_chart_template_data(template_code)['template_data']
         if 'property_stock_account_production_cost_id' in template_data:
-            data = {'property_stock_account_production_cost_id': template_data['property_stock_account_production_cost_id']}
+            data = {
+                'property_stock_account_production_cost_id': template_data['property_stock_account_production_cost_id']}
             ChartTemplate._post_load_data(template_code, company, data)

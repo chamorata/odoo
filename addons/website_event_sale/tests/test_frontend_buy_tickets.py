@@ -2,16 +2,15 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from datetime import timedelta
 
+from odoo.addons.payment.tests.http_common import PaymentHttpCommon
+
 import odoo.tests
 from odoo import Command
-from odoo.exceptions import ValidationError
-from odoo.tests import JsonRpcException
-
 from odoo.addons.base.tests.common import HttpCaseWithUserDemo
-from odoo.addons.payment.tests.http_common import PaymentHttpCommon
+from odoo.exceptions import ValidationError
 from odoo.fields import Datetime
+from odoo.tests import JsonRpcException
 from odoo.tools import mute_logger
-
 from .common import TestWebsiteEventSaleCommon
 
 
@@ -79,7 +78,8 @@ class TestUi(HttpCaseWithUserDemo, TestWebsiteEventSaleCommon):
         # - that main demo company is gelocated in US
         # - that this test awaits for hardcoded USDs amount
         # we have to force company currency as USDs only for this test
-        self.cr.execute("UPDATE res_company SET currency_id = %s WHERE id = %s", [self.env.ref('base.USD').id, self.env.ref('base.main_company').id])
+        self.cr.execute("UPDATE res_company SET currency_id = %s WHERE id = %s",
+                        [self.env.ref('base.USD').id, self.env.ref('base.main_company').id])
         self.env['product.pricelist'].create({'name': "Public Pricelist"})
 
         transfer_provider = self.env.ref('payment.payment_provider_transfer')

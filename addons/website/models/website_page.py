@@ -3,10 +3,10 @@
 import re
 
 from odoo.addons.website.tools import text_from_html
+
 from odoo import api, fields, models
 from odoo.osv import expression
 from odoo.tools import escape_psql, SQL
-from odoo.tools.translate import _
 
 
 class Page(models.Model):
@@ -27,7 +27,8 @@ class Page(models.Model):
     is_in_menu = fields.Boolean(compute='_compute_website_menu')
     is_homepage = fields.Boolean(compute='_compute_is_homepage', string='Homepage')
     is_visible = fields.Boolean(compute='_compute_visible', string='Is Visible')
-    is_new_page_template = fields.Boolean(string="New Page Template", help='Add this page to the "+New" page templates. It will be added to the "Custom" category.')
+    is_new_page_template = fields.Boolean(string="New Page Template",
+                                          help='Add this page to the "+New" page templates. It will be added to the "Custom" category.')
 
     # Page options
     header_overlay = fields.Boolean()
@@ -48,7 +49,7 @@ class Page(models.Model):
     def _compute_visible(self):
         for page in self:
             page.is_visible = page.website_published and (
-                not page.date_publish or page.date_publish < fields.Datetime.now()
+                    not page.date_publish or page.date_publish < fields.Datetime.now()
             )
 
     @api.depends('menu_ids')
@@ -81,11 +82,11 @@ class Page(models.Model):
         # Iterate a single time on the whole list sorted on specific-website first.
         for page in self.sorted(key=lambda p: (p.url, not p.website_id)):
             if (
-                (not previous_page or page.url != previous_page.url)
-                # If a generic page (niche case) has been COWed and that COWed
-                # page received a URL change, it should not let you access the
-                # generic page anymore, despite having a different URL.
-                and (page.website_id or page_keys.count(page.key) == 1)
+                    (not previous_page or page.url != previous_page.url)
+                    # If a generic page (niche case) has been COWed and that COWed
+                    # page received a URL change, it should not let you access the
+                    # generic page anymore, despite having a different URL.
+                    and (page.website_id or page_keys.count(page.key) == 1)
             ):
                 ids.append(page.id)
             previous_page = page
@@ -163,7 +164,8 @@ class Page(models.Model):
 
             # If name has changed, check for key uniqueness
             if 'name' in vals and page.name != vals['name']:
-                vals['key'] = self.env['website'].with_context(website_id=website_id).get_unique_key(self.env['ir.http']._slugify(vals['name'] or ''))
+                vals['key'] = self.env['website'].with_context(website_id=website_id).get_unique_key(
+                    self.env['ir.http']._slugify(vals['name'] or ''))
             if 'visibility' in vals:
                 if vals['visibility'] != 'restricted_group':
                     vals['groups_id'] = False
@@ -256,6 +258,7 @@ class Page(models.Model):
             text = '%s %s %s' % (page.name, page.url, text_from_html(page.arch))
             pattern = '|'.join([re.escape(search_term) for search_term in search.split()])
             return re.findall('(%s)' % pattern, text, flags=re.I) if pattern else False
+
         if search and with_description:
             results = results.filtered(lambda result: filter_page(search, result, results))
         return results[:limit], len(results)

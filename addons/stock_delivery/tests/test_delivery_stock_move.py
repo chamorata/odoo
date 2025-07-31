@@ -1,6 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
 from odoo.tests import Form, tagged
 
 
@@ -73,9 +74,11 @@ class StockMoveInvoice(AccountTestInvoicingCommon):
         self.invoice.action_post()
 
         # I pay the invoice.
-        self.journal = self.AccountJournal.search([('type', '=', 'cash'), ('company_id', '=', self.sale_prepaid.company_id.id)], limit=1)
+        self.journal = self.AccountJournal.search(
+            [('type', '=', 'cash'), ('company_id', '=', self.sale_prepaid.company_id.id)], limit=1)
 
-        register_payments = self.env['account.payment.register'].with_context(active_model='account.move', active_ids=self.invoice.ids).create({
+        register_payments = self.env['account.payment.register'].with_context(active_model='account.move',
+                                                                              active_ids=self.invoice.ids).create({
             'journal_id': self.journal.id,
         })
         register_payments._create_payments()
@@ -151,8 +154,10 @@ class StockMoveInvoice(AccountTestInvoicingCommon):
             'partner_id': self.partner_a.id,
             'partner_invoice_id': self.partner_a.id,
             'order_line': [
-                (0, 0, {'name': super_product.name, 'product_id': super_product.id, 'product_uom_qty': 1, 'price_unit': 1,}),
-                (0, 0, {'name': great_product.name, 'product_id': great_product.id, 'product_uom_qty': 1, 'price_unit': 1,}),
+                (0, 0,
+                 {'name': super_product.name, 'product_id': super_product.id, 'product_uom_qty': 1, 'price_unit': 1, }),
+                (0, 0,
+                 {'name': great_product.name, 'product_id': great_product.id, 'product_uom_qty': 1, 'price_unit': 1, }),
             ]
         })
         # Confirm the SO
@@ -203,7 +208,8 @@ class StockMoveInvoice(AccountTestInvoicingCommon):
         sale_order.picking_ids.button_validate()
 
         # Return picking
-        return_form = Form(self.env["stock.return.picking"].with_context(active_id=sale_order.picking_ids.id, active_model="stock.picking"))
+        return_form = Form(self.env["stock.return.picking"].with_context(active_id=sale_order.picking_ids.id,
+                                                                         active_model="stock.picking"))
         return_wizard = return_form.save()
         return_wizard.product_return_moves.quantity = 2
         action = return_wizard.action_create_returns()
@@ -230,7 +236,8 @@ class StockMoveInvoice(AccountTestInvoicingCommon):
 
         # Check the carrier in picking after confirm sale order
         delivery_for_product_11 = sale_order.picking_ids.filtered(lambda p: self.product_11 in p.move_ids.product_id)
-        self.assertEqual(delivery_for_product_11.carrier_id, self.normal_delivery, "The shipping method should be set in pending deliveries.")
+        self.assertEqual(delivery_for_product_11.carrier_id, self.normal_delivery,
+                         "The shipping method should be set in pending deliveries.")
 
         done_delivery = sale_order.picking_ids.filtered(lambda p: p.state == "done")
         self.assertFalse(done_delivery.carrier_id.id, "The shipping method should not be set in done deliveries.")

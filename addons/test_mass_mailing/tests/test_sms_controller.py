@@ -1,4 +1,5 @@
 from odoo.addons.test_mass_mailing.tests.common import TestMassSMSCommon
+
 from odoo.tools import mute_logger
 
 

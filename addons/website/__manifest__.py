@@ -191,7 +191,8 @@
     'uninstall_hook': 'uninstall_hook',
     'assets': {
         'web.assets_frontend': [
-            ('replace', 'web/static/src/legacy/js/public/public_root_instance.js', 'website/static/src/js/content/website_root_instance.js'),
+            ('replace', 'web/static/src/legacy/js/public/public_root_instance.js',
+             'website/static/src/js/content/website_root_instance.js'),
             'website/static/src/core/errors/beforeunload_error_handler.js',
             'website/static/src/libs/zoomodoo/zoomodoo.scss',
             'website/static/src/scss/website.scss',
@@ -438,18 +439,25 @@
             '6': ['s_text_block_h1', 's_table_of_content'],
         },
         'about': {
-            'full': ['s_text_block_h1', 's_image_text', 's_text_image', 's_numbers', 's_picture', 's_quotes_carousel', 's_references'],
-            'full_1': ['s_text_block_h1', 's_three_columns', 's_text_block_h2', 's_company_team', 's_references', 's_quotes_carousel', 's_call_to_action'],
-            'mini': ['s_cover', 's_text_block_h2', 's_text_block_2nd', 's_picture_only', 's_text_block_h2_contact', 's_website_form'],
-            'personal': ['s_text_cover', 's_image_text', 's_text_block_h2', 's_numbers', 's_features', 's_call_to_action_about'],
-            'map': ['s_text_block_h1', 's_text_block', 's_numbers', 's_text_image', 's_text_block_h2', 's_text_block_2nd', 's_map', 's_images_wall'],
+            'full': ['s_text_block_h1', 's_image_text', 's_text_image', 's_numbers', 's_picture', 's_quotes_carousel',
+                     's_references'],
+            'full_1': ['s_text_block_h1', 's_three_columns', 's_text_block_h2', 's_company_team', 's_references',
+                       's_quotes_carousel', 's_call_to_action'],
+            'mini': ['s_cover', 's_text_block_h2', 's_text_block_2nd', 's_picture_only', 's_text_block_h2_contact',
+                     's_website_form'],
+            'personal': ['s_text_cover', 's_image_text', 's_text_block_h2', 's_numbers', 's_features',
+                         's_call_to_action_about'],
+            'map': ['s_text_block_h1', 's_text_block', 's_numbers', 's_text_image', 's_text_block_h2',
+                    's_text_block_2nd', 's_map', 's_images_wall'],
             'timeline': ['s_banner', 's_text_block_h2', 's_text_block', 's_timeline', 's_call_to_action_about'],
         },
         'landing': {
             '0': ['s_cover'],
-            '1': ['s_banner', 's_features', 's_masonry_block', 's_call_to_action_digital', 's_references', 's_quotes_carousel'],
+            '1': ['s_banner', 's_features', 's_masonry_block', 's_call_to_action_digital', 's_references',
+                  's_quotes_carousel'],
             '2': ['s_cover', 's_text_image', 's_text_block_h2', 's_three_columns', 's_call_to_action'],
-            '3': ['s_text_cover', 's_text_block_h2', 's_three_columns', 's_showcase', 's_color_blocks_2', 's_quotes_carousel', 's_call_to_action'],
+            '3': ['s_text_cover', 's_text_block_h2', 's_three_columns', 's_showcase', 's_color_blocks_2',
+                  's_quotes_carousel', 's_call_to_action'],
             '4': ['s_cover', 's_text_block_h2', 's_text_block', 's_text_block_h2_contact', 's_website_form'],
             '5': ['s_banner'],
         },
@@ -461,18 +469,22 @@
             '4': ['s_cover', 's_media_list'],
         },
         'services': {
-            '0': ['s_text_block_h1', 's_text_block_2nd', 's_three_columns', 's_text_block_h2_contact', 's_website_form'],
+            '0': ['s_text_block_h1', 's_text_block_2nd', 's_three_columns', 's_text_block_h2_contact',
+                  's_website_form'],
             '1': ['s_text_block_h1', 's_features_grid', 's_text_block_h2', 's_faq_collapse', 's_call_to_action'],
             '2': ['s_text_cover', 's_image_text', 's_text_image', 's_image_text_2nd', 's_call_to_action_digital'],
             '3': ['s_text_block_h1', 's_parallax', 's_table_of_content', 's_call_to_action'],
         },
         'pricing': {
-            '0': ['s_text_block_h1', 's_comparisons', 's_text_block_2nd', 's_showcase', 's_text_block_h2', 's_faq_collapse', 's_call_to_action'],
+            '0': ['s_text_block_h1', 's_comparisons', 's_text_block_2nd', 's_showcase', 's_text_block_h2',
+                  's_faq_collapse', 's_call_to_action'],
             '1': ['s_text_block_h1', 's_comparisons', 's_call_to_action'],
             '2': ['s_cover', 's_comparisons', 's_call_to_action', 's_features_grid', 's_color_blocks_2'],
-            '3': ['s_carousel', 's_product_catalog', 's_call_to_action_menu'],  # should be s_call_to_action - but let's create that snippet
+            '3': ['s_carousel', 's_product_catalog', 's_call_to_action_menu'],
+            # should be s_call_to_action - but let's create that snippet
             '4': ['s_text_block_h1', 's_image_text', 's_text_image', 's_image_text_2nd', 's_call_to_action'],
-            '5': ['s_text_block_h1', 's_text_block', 's_product_catalog', 's_three_columns_menu', 's_call_to_action'],  # was s_call_to_action_menu
+            '5': ['s_text_block_h1', 's_text_block', 's_product_catalog', 's_three_columns_menu', 's_call_to_action'],
+            # was s_call_to_action_menu
         },
         'team': {
             '0': ['s_text_block_h1', 's_three_columns'],

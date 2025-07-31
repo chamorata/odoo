@@ -1,6 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.test_mass_mailing.tests import common
+
 from odoo.tests import tagged, users
 
 
@@ -27,19 +28,19 @@ class TestUTM(common.TestMassMailCommon):
     def test_utm_source_mixin_name_brackets(self):
         """ Test with brackets """
         false_dupes = self.env["utm.test.source.mixin"].create([
-            {
-                'name': 'NewTest [2]',
-                'title': 'NewTest',
-            }
-            for idx in range(3)] + [
-            {
-                'name': 'NewTest [3]',
-                'title': 'NewTest',
-            }, {
+                                                                   {
+                                                                       'name': 'NewTest [2]',
+                                                                       'title': 'NewTest',
+                                                                   }
+                                                                   for idx in range(3)] + [
+                                                                   {
+                                                                       'name': 'NewTest [3]',
+                                                                       'title': 'NewTest',
+                                                                   }, {
                 'name': 'NewTest',
                 'title': 'NewTest',
             }]
-        )
+                                                               )
         self.assertListEqual(
             false_dupes.mapped('name'),
             ["NewTest [2]", "NewTest", "NewTest [3]", "NewTest [4]", "NewTest [5]"]

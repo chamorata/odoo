@@ -3,19 +3,23 @@
 import hashlib
 import hmac
 
-from odoo import api, fields, models, _
 from odoo.addons.portal.utils import validate_thread_with_hash_pid, validate_thread_with_token
+
+from odoo import api, fields, models, _
 
 
 class MailThread(models.AbstractModel):
     _inherit = 'mail.thread'
 
-    _mail_post_token_field = 'access_token' # token field for external posts, to be overridden
+    _mail_post_token_field = 'access_token'  # token field for external posts, to be overridden
 
     website_message_ids = fields.One2many('mail.message', 'res_id', string='Website Messages',
-        domain=lambda self: [('model', '=', self._name), ('message_type', 'in', ('comment', 'email', 'email_outgoing', 'auto_comment'))],
-        auto_join=True,
-        help="Website communication history")
+                                          domain=lambda self: [('model', '=', self._name), ('message_type', 'in',
+                                                                                            ('comment', 'email',
+                                                                                             'email_outgoing',
+                                                                                             'auto_comment'))],
+                                          auto_join=True,
+                                          help="Website communication history")
 
     def _notify_get_recipients_groups(self, message, model_description, msg_vals=None):
         groups = super()._notify_get_recipients_groups(

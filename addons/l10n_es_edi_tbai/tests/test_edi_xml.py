@@ -5,10 +5,9 @@ from datetime import datetime, date
 
 from freezegun import freeze_time
 from lxml import etree
-
 from odoo.addons.l10n_es_edi_tbai.models.xml_utils import NS_MAP
-from odoo.tests import tagged
 
+from odoo.tests import tagged
 from .common import TestEsEdiTbaiCommon
 
 
@@ -150,7 +149,8 @@ class TestEdiTbaiXmls(TestEsEdiTbaiCommon):
             self.assertXmlTreeEqual(xml_doc, xml_expected)
 
     def test_xml_tree_post_multitax(self):
-        self.out_invoice.invoice_line_ids.tax_ids = [self._get_tax_by_xml_id('s_req52').id, self._get_tax_by_xml_id('s_iva21b').id]
+        self.out_invoice.invoice_line_ids.tax_ids = [self._get_tax_by_xml_id('s_req52').id,
+                                                     self._get_tax_by_xml_id('s_iva21b').id]
         with freeze_time(self.frozen_today):
             edi_document = self.out_invoice._l10n_es_tbai_create_edi_document(cancel=False)
             edi_document._generate_xml(self.out_invoice._l10n_es_tbai_get_values(cancel=False))

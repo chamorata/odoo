@@ -13,7 +13,9 @@ class FinancialYearOpeningWizard(models.TransientModel):
 
     company_id = fields.Many2one(comodel_name='res.company', required=True)
     opening_move_posted = fields.Boolean(string='Opening Move Posted', compute='_compute_opening_move_posted')
-    opening_date = fields.Date(string='Opening Date', required=True, related='company_id.account_opening_date', help="Date from which the accounting is managed in Odoo. It is the date of the opening entry.", readonly=False)
+    opening_date = fields.Date(string='Opening Date', required=True, related='company_id.account_opening_date',
+                               help="Date from which the accounting is managed in Odoo. It is the date of the opening entry.",
+                               readonly=False)
     fiscalyear_last_day = fields.Integer(related="company_id.fiscalyear_last_day", required=True, readonly=False,
                                          help="The last day of the month will be used if the chosen day doesn't exist.")
     fiscalyear_last_month = fields.Selection(related="company_id.fiscalyear_last_month", readonly=False,
@@ -36,7 +38,7 @@ class FinancialYearOpeningWizard(models.TransientModel):
             except ValueError:
                 raise ValidationError(
                     _('Incorrect fiscal year date: day is out of range for month. Month: %(month)s; Day: %(day)s',
-                    month=wiz.fiscalyear_last_month, day=wiz.fiscalyear_last_day)
+                      month=wiz.fiscalyear_last_month, day=wiz.fiscalyear_last_day)
                 )
 
     def write(self, vals):
@@ -51,7 +53,8 @@ class FinancialYearOpeningWizard(models.TransientModel):
                 'account_opening_date': vals.get('opening_date') or wiz.company_id.account_opening_date,
             })
             wiz.company_id.account_opening_move_id.write({
-                'date': fields.Date.from_string(vals.get('opening_date') or wiz.company_id.account_opening_date) - timedelta(days=1),
+                'date': fields.Date.from_string(
+                    vals.get('opening_date') or wiz.company_id.account_opening_date) - timedelta(days=1),
             })
 
         vals.pop('opening_date', None)
@@ -60,7 +63,8 @@ class FinancialYearOpeningWizard(models.TransientModel):
         return super().write(vals)
 
     def action_save_onboarding_fiscal_year(self):
-        step_state = self.env['onboarding.onboarding.step'].with_company(self.company_id).action_validate_step('account.onboarding_onboarding_step_fiscal_year')
+        step_state = self.env['onboarding.onboarding.step'].with_company(self.company_id).action_validate_step(
+            'account.onboarding_onboarding_step_fiscal_year')
         # move the state to DONE to avoid an update in the web_read
         if step_state == 'JUST_DONE':
             self.env.ref('account.onboarding_onboarding_account_dashboard')._prepare_rendering_values()
@@ -74,12 +78,13 @@ class SetupBarBankConfigWizard(models.TransientModel):
     _check_company_auto = True
 
     res_partner_bank_id = fields.Many2one(comodel_name='res.partner.bank', ondelete='cascade', required=True)
-    new_journal_name = fields.Char(default=lambda self: self.linked_journal_id.name, inverse='set_linked_journal_id', required=True, help='Will be used to name the Journal related to this bank account')
+    new_journal_name = fields.Char(default=lambda self: self.linked_journal_id.name, inverse='set_linked_journal_id',
+                                   required=True, help='Will be used to name the Journal related to this bank account')
     linked_journal_id = fields.Many2one(string="Journal",
-        comodel_name='account.journal', inverse='set_linked_journal_id',
-        compute="_compute_linked_journal_id",
-        check_company=True,
-        domain=[('type', '=', 'bank'), ('bank_account_id', '=', False)])
+                                        comodel_name='account.journal', inverse='set_linked_journal_id',
+                                        compute="_compute_linked_journal_id",
+                                        check_company=True,
+                                        domain=[('type', '=', 'bank'), ('bank_account_id', '=', False)])
     bank_bic = fields.Char(related='bank_id.bic', readonly=False, string="Bic")
     num_journals_without_account = fields.Integer(default=lambda self: self._number_unlinked_journal())
     company_id = fields.Many2one('res.company', required=True, compute='_compute_company_id')

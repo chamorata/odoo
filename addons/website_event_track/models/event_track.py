@@ -2,8 +2,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import timedelta
-from pytz import utc
 from random import randint
+
+from pytz import utc
 
 from odoo import api, fields, models, tools
 from odoo.osv import expression
@@ -41,11 +42,11 @@ class Track(models.Model):
         group_expand='_read_group_expand_full',  # Always display all stages
         required=True, tracking=True)
     legend_blocked = fields.Char(related='stage_id.legend_blocked',
-        string='Kanban Blocked Explanation', readonly=True)
+                                 string='Kanban Blocked Explanation', readonly=True)
     legend_done = fields.Char(related='stage_id.legend_done',
-        string='Kanban Valid Explanation', readonly=True)
+                              string='Kanban Valid Explanation', readonly=True)
     legend_normal = fields.Char(related='stage_id.legend_normal',
-        string='Kanban Ongoing Explanation', readonly=True)
+                                string='Kanban Ongoing Explanation', readonly=True)
     kanban_state = fields.Selection([
         ('normal', 'Grey'),
         ('done', 'Green'),
@@ -155,7 +156,8 @@ class Track(models.Model):
         super(Track, self)._compute_website_url()
         for track in self:
             if track.id:
-                track.website_url = '/event/%s/track/%s' % (self.env['ir.http']._slug(track.event_id), self.env['ir.http']._slug(track))
+                track.website_url = '/event/%s/track/%s' % (self.env['ir.http']._slug(track.event_id),
+                                                            self.env['ir.http']._slug(track))
 
     # STAGES
 
@@ -195,7 +197,7 @@ class Track(models.Model):
             if not track.partner_biography:
                 track.partner_biography = track.partner_id.website_description
             elif track.partner_id and is_html_empty(track.partner_biography) and \
-                not is_html_empty(track.partner_id.website_description):
+                    not is_html_empty(track.partner_id.website_description):
                 track.partner_biography = track.partner_id.website_description
 
     @api.depends('partner_id')
@@ -226,14 +228,14 @@ class Track(models.Model):
                                  name=track.partner_name,
                                  function=track.partner_function,
                                  company=track.partner_company_name
-                                )
+                                 )
                 else:
                     tag_line = '%s, %s' % (track.partner_name, track.partner_function)
             elif track.partner_company_name:
                 tag_line = _('%(name)s from %(company)s',
                              name=tag_line,
                              company=track.partner_company_name
-                            )
+                             )
             track.partner_tag_line = tag_line
 
     @api.depends('partner_id')
@@ -267,7 +269,6 @@ class Track(models.Model):
             else:
                 track.date_end = False
 
-
     # FRONTEND DESCRIPTION
 
     @api.depends('image', 'partner_id.image_256')
@@ -276,7 +277,8 @@ class Track(models.Model):
             if track.website_image:
                 track.website_image_url = self.env['website'].image_url(track, 'website_image', size=1024)
             else:
-                track.website_image_url = '/website_event_track/static/src/img/event_track_default_%d.jpeg' % (track.id % 2)
+                track.website_image_url = '/website_event_track/static/src/img/event_track_default_%d.jpeg' % (
+                            track.id % 2)
 
     # WISHLIST / VISITOR MANAGEMENT
 
@@ -316,7 +318,8 @@ class Track(models.Model):
             }
             for track in self:
                 if wishlist_map.get(track.id):
-                    track.is_reminder_on = wishlist_map.get(track.id)['is_wishlisted'] or (track.wishlisted_by_default and not wishlist_map[track.id]['is_blacklisted'])
+                    track.is_reminder_on = wishlist_map.get(track.id)['is_wishlisted'] or (
+                                track.wishlisted_by_default and not wishlist_map[track.id]['is_blacklisted'])
                 else:
                     track.is_reminder_on = track.wishlisted_by_default
 
@@ -357,7 +360,8 @@ class Track(models.Model):
             date_begin_utc = utc.localize(track.date, is_dst=False)
             date_end_utc = utc.localize(track.date_end, is_dst=False)
             track.is_track_live = date_begin_utc <= now_utc < date_end_utc
-            track.is_track_soon = (date_begin_utc - now_utc).total_seconds() < 30*60 if date_begin_utc > now_utc else False
+            track.is_track_soon = (
+                                              date_begin_utc - now_utc).total_seconds() < 30 * 60 if date_begin_utc > now_utc else False
             track.is_track_today = date_begin_utc.date() == now_utc.date()
             track.is_track_upcoming = date_begin_utc > now_utc
             track.is_track_done = date_end_utc <= now_utc
@@ -445,7 +449,8 @@ class Track(models.Model):
         return {
             track.id: {
                 'partner_ids': [],
-                'email_to': ','.join(tools.email_normalize_all(track.contact_email or track.partner_email)) or track.contact_email or track.partner_email,
+                'email_to': ','.join(tools.email_normalize_all(
+                    track.contact_email or track.partner_email)) or track.contact_email or track.partner_email,
                 'email_cc': False
             } for track in self
         }
@@ -473,7 +478,8 @@ class Track(models.Model):
             main_email = self.contact_email or self.partner_email
             main_email_normalized = tools.email_normalize(main_email)
             new_partner = message.partner_ids.filtered(
-                lambda partner: partner.email == main_email or (main_email_normalized and partner.email_normalized == main_email_normalized)
+                lambda partner: partner.email == main_email or (
+                            main_email_normalized and partner.email_normalized == main_email_normalized)
             )
             if new_partner:
                 mail_email_fname = 'contact_email' if self.contact_email else 'partner_email'
@@ -594,18 +600,18 @@ class Track(models.Model):
 
         track_candidates = track_candidates.sorted(
             lambda track:
-                (track.is_published,
-                 track.track_start_remaining == 0  # First get the tracks that started less than 10 minutes ago ...
-                 and track.track_start_relative < (10 * 60)
-                 and not track.is_track_done,  # ... AND not finished
-                 track.track_start_remaining > 0,  # Then the one that will begin later (the sooner come first)
-                 -1 * track.track_start_remaining,
-                 track.is_reminder_on,
-                 not track.wishlisted_by_default,
-                 len(track.tag_ids & self.tag_ids),
-                 track.location_id == self.location_id,
-                 randint(0, 20),
-                ), reverse=True
+            (track.is_published,
+             track.track_start_remaining == 0  # First get the tracks that started less than 10 minutes ago ...
+             and track.track_start_relative < (10 * 60)
+             and not track.is_track_done,  # ... AND not finished
+             track.track_start_remaining > 0,  # Then the one that will begin later (the sooner come first)
+             -1 * track.track_start_remaining,
+             track.is_reminder_on,
+             not track.wishlisted_by_default,
+             len(track.tag_ids & self.tag_ids),
+             track.location_id == self.location_id,
+             randint(0, 20),
+             ), reverse=True
         )
 
         return track_candidates[:limit]

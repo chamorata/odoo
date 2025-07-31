@@ -1,57 +1,61 @@
 # -*- coding: utf-8 -*-
 
-from odoo import api, Command, fields, models, _
+from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
 from odoo.tools import format_amount
 
 ACCOUNT_DOMAIN = "['&', ('deprecated', '=', False), ('account_type', 'not in', ('asset_receivable','liability_payable','asset_cash','liability_credit_card','off_balance'))]"
 
+
 class ProductCategory(models.Model):
     _inherit = "product.category"
 
     property_account_income_categ_id = fields.Many2one('account.account', company_dependent=True,
-        string="Income Account",
-        domain=ACCOUNT_DOMAIN,
-        help="This account will be used when validating a customer invoice.",
-        tracking=True,
-        ondelete='restrict',
-    )
+                                                       string="Income Account",
+                                                       domain=ACCOUNT_DOMAIN,
+                                                       help="This account will be used when validating a customer invoice.",
+                                                       tracking=True,
+                                                       ondelete='restrict',
+                                                       )
     property_account_expense_categ_id = fields.Many2one('account.account', company_dependent=True,
-        string="Expense Account",
-        domain=ACCOUNT_DOMAIN,
-        help="The expense is accounted for when a vendor bill is validated, except in anglo-saxon accounting with perpetual inventory valuation in which case the expense (Cost of Goods Sold account) is recognized at the customer invoice validation.",
-        tracking=True,
-        ondelete='restrict',
-    )
+                                                        string="Expense Account",
+                                                        domain=ACCOUNT_DOMAIN,
+                                                        help="The expense is accounted for when a vendor bill is validated, except in anglo-saxon accounting with perpetual inventory valuation in which case the expense (Cost of Goods Sold account) is recognized at the customer invoice validation.",
+                                                        tracking=True,
+                                                        ondelete='restrict',
+                                                        )
 
-#----------------------------------------------------------
+
+# ----------------------------------------------------------
 # Products
-#----------------------------------------------------------
+# ----------------------------------------------------------
 class ProductTemplate(models.Model):
     _inherit = "product.template"
 
     taxes_id = fields.Many2many('account.tax', 'product_taxes_rel', 'prod_id', 'tax_id',
-        string="Sales Taxes",
-        help="Default taxes used when selling the product",
-        domain=[('type_tax_use', '=', 'sale')],
-        default=lambda self: self.env.companies.account_sale_tax_id or self.env.companies.root_id.sudo().account_sale_tax_id,
-    )
+                                string="Sales Taxes",
+                                help="Default taxes used when selling the product",
+                                domain=[('type_tax_use', '=', 'sale')],
+                                default=lambda
+                                    self: self.env.companies.account_sale_tax_id or self.env.companies.root_id.sudo().account_sale_tax_id,
+                                )
     tax_string = fields.Char(compute='_compute_tax_string')
     supplier_taxes_id = fields.Many2many('account.tax', 'product_supplier_taxes_rel', 'prod_id', 'tax_id',
-        string="Purchase Taxes",
-        help="Default taxes used when buying the product",
-        domain=[('type_tax_use', '=', 'purchase')],
-        default=lambda self: self.env.companies.account_purchase_tax_id or self.env.companies.root_id.sudo().account_purchase_tax_id,
-    )
+                                         string="Purchase Taxes",
+                                         help="Default taxes used when buying the product",
+                                         domain=[('type_tax_use', '=', 'purchase')],
+                                         default=lambda
+                                             self: self.env.companies.account_purchase_tax_id or self.env.companies.root_id.sudo().account_purchase_tax_id,
+                                         )
     property_account_income_id = fields.Many2one('account.account', company_dependent=True, ondelete='restrict',
-        string="Income Account",
-        domain=ACCOUNT_DOMAIN,
-        help="Keep this field empty to use the default value from the product category.")
+                                                 string="Income Account",
+                                                 domain=ACCOUNT_DOMAIN,
+                                                 help="Keep this field empty to use the default value from the product category.")
     property_account_expense_id = fields.Many2one('account.account', company_dependent=True, ondelete='restrict',
-        string="Expense Account",
-        domain=ACCOUNT_DOMAIN,
-        help="Keep this field empty to use the default value from the product category. If anglo-saxon accounting with automated valuation method is configured, the expense account on the product category will be used.")
+                                                  string="Expense Account",
+                                                  domain=ACCOUNT_DOMAIN,
+                                                  help="Keep this field empty to use the default value from the product category. If anglo-saxon accounting with automated valuation method is configured, the expense account on the product category will be used.")
     account_tag_ids = fields.Many2many(
         string="Account Tags",
         comodel_name='account.account.tag',
@@ -178,7 +182,8 @@ class ProductTemplate(models.Model):
             # Tax is configured as price included
             return total_included
         # calculate base from tax
-        included_computed_price = self.taxes_id.with_context(force_price_include=True).compute_all(price, self.currency_id)
+        included_computed_price = self.taxes_id.with_context(force_price_include=True).compute_all(price,
+                                                                                                   self.currency_id)
         return included_computed_price['total_excluded']
 
 
@@ -191,9 +196,9 @@ class ProductProduct(models.Model):
         return self.product_tmpl_id._get_product_accounts()
 
     def _get_tax_included_unit_price(self, company, currency, document_date, document_type,
-        is_refund_document=False, product_uom=None, product_currency=None,
-        product_price_unit=None, product_taxes=None, fiscal_position=None
-    ):
+                                     is_refund_document=False, product_uom=None, product_currency=None,
+                                     product_price_unit=None, product_taxes=None, fiscal_position=None
+                                     ):
         """ Helper to get the price unit from different models.
             This is needed to compute the same unit price in different models (sale order, account move, etc.) with same parameters.
         """
@@ -237,14 +242,15 @@ class ProductProduct(models.Model):
 
         # Apply currency rate.
         if currency != product_currency:
-            product_price_unit = product_currency._convert(product_price_unit, currency, company, document_date, round=False)
+            product_price_unit = product_currency._convert(product_price_unit, currency, company, document_date,
+                                                           round=False)
 
         return product_price_unit
 
     def _get_tax_included_unit_price_from_price(
-        self, product_price_unit, product_taxes,
-        fiscal_position=None,
-        product_taxes_after_fp=None,
+            self, product_price_unit, product_taxes,
+            fiscal_position=None,
+            product_taxes_after_fp=None,
     ):
         if not product_taxes:
             return product_price_unit
@@ -295,8 +301,8 @@ class ProductProduct(models.Model):
 
         company = company or self.env.company
         for company_domain in (
-            [*self.env['res.partner']._check_company_domain(company), ('company_id', '!=', False)],
-            [('company_id', '=', False)],
+                [*self.env['res.partner']._check_company_domain(company), ('company_id', '!=', False)],
+                [('company_id', '=', False)],
         ):
             products = self.env['product.product'].search(
                 expression.AND([

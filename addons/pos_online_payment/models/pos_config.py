@@ -19,7 +19,8 @@ class PosConfig(models.Model):
                     if opm_amount > 1:
                         raise ValidationError(_("A POS config cannot have more than one online payment method."))
                     if not pm._get_online_payment_providers(config.id, error_if_invalid=True):
-                        raise ValidationError(_("To use an online payment method in a POS config, it must have at least one published payment provider supporting the currency of that POS config."))
+                        raise ValidationError(
+                            _("To use an online payment method in a POS config, it must have at least one published payment provider supporting the currency of that POS config."))
 
     def _get_cashier_online_payment_method(self):
         self.ensure_one()

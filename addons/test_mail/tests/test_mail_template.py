@@ -3,12 +3,12 @@
 
 import base64
 import datetime
-
-from freezegun import freeze_time
 from unittest.mock import patch
 
+from freezegun import freeze_time
 from odoo.addons.mail.tests.common import MailCommon
 from odoo.addons.test_mail.tests.common import TestRecipients
+
 from odoo.tests import tagged, users, warmup
 from odoo.tools import mute_logger, safe_eval
 
@@ -269,7 +269,8 @@ class TestMailTemplateLanguages(TestMailTemplateCommon):
 
         self.assertEqual(
             sorted(mail.attachment_ids.mapped('name')),
-            [f'TestReport for {self.test_record.name}.html', f'TestReport2 for {self.test_record.name}.html', 'first.txt', 'second.txt']
+            [f'TestReport for {self.test_record.name}.html', f'TestReport2 for {self.test_record.name}.html',
+             'first.txt', 'second.txt']
         )
         self.assertEqual(mail.recipient_ids, self.partner_2 | self.user_admin.partner_id)
         self.assertEqual(mail.subject, f'EnglishSubject for {self.test_record.name}')
@@ -305,11 +306,11 @@ class TestMailTemplateLanguages(TestMailTemplateCommon):
             if idx >= 50:
                 self.assertEqual(mail.subject, f'EnglishSubject for {record.name}')
                 self.assertEqual(mail.body_html,
-                         f'<body><p>EnglishBody for {record.name}</p> English Layout for Lang Chatter Model</body>')
+                                 f'<body><p>EnglishBody for {record.name}</p> English Layout for Lang Chatter Model</body>')
             else:
                 self.assertEqual(mail.subject, f'SpanishSubject for {record.name}')
                 self.assertEqual(mail.body_html,
-                         f'<body><p>SpanishBody for {record.name}</p> Spanish Layout para Spanish Model Description</body>')
+                                 f'<body><p>SpanishBody for {record.name}</p> Spanish Layout para Spanish Model Description</body>')
 
     @mute_logger('odoo.addons.mail.models.mail_mail')
     def test_template_send_email_wreport_batch_scalability(self):
@@ -325,7 +326,7 @@ class TestMailTemplateLanguages(TestMailTemplateCommon):
                     "mail.batch_size", batch_size
                 )
                 with self.with_user(self.user_employee.login), \
-                     self.mock_mail_gateway():
+                        self.mock_mail_gateway():
                     template = self.test_template_wreports.with_env(self.env)
                     mails_sudo = template.send_mail_batch(self.test_records_batch.ids)
 
@@ -334,7 +335,8 @@ class TestMailTemplateLanguages(TestMailTemplateCommon):
                 for idx, (mail, record) in enumerate(zip(mails_sudo, self.test_records_batch)):
                     self.assertEqual(
                         sorted(mail.attachment_ids.mapped('name')),
-                        [f'TestReport for {record.name}.html', f'TestReport2 for {record.name}.html', 'first.txt', 'second.txt']
+                        [f'TestReport for {record.name}.html', f'TestReport2 for {record.name}.html', 'first.txt',
+                         'second.txt']
                     )
                     self.assertEqual(
                         sorted(mail.attachment_ids.mapped("res_id")),

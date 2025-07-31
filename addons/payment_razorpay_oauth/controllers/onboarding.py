@@ -3,7 +3,6 @@
 import logging
 import pprint
 from datetime import timedelta
-from urllib.parse import urlencode
 
 from werkzeug.exceptions import Forbidden
 
@@ -11,12 +10,10 @@ from odoo import _, fields
 from odoo.exceptions import ValidationError
 from odoo.http import Controller, request, route
 
-
 _logger = logging.getLogger(__name__)
 
 
 class RazorpayController(Controller):
-
     OAUTH_RETURN_URL = '/payment/razorpay/oauth/return'
 
     @route(OAUTH_RETURN_URL, type='http', auth='user', methods=['GET'], website=True)
@@ -47,7 +44,7 @@ class RazorpayController(Controller):
         # Request and set the OAuth tokens on the provider.
         action = request.env.ref('payment.action_payment_provider')
         redirect_url = f'/odoo/action-{action.id}/{int(provider_sudo.id)}'
-        if not authorization_code: # The user cancelled the authorization.
+        if not authorization_code:  # The user cancelled the authorization.
             return request.redirect(redirect_url)
         try:
             response_content = provider_sudo._razorpay_make_proxy_request(

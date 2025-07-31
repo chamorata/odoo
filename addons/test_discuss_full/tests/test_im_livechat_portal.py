@@ -1,6 +1,7 @@
-from odoo import Command, tests
 from odoo.addons.test_mail_full.tests.test_portal import TestPortal
 from odoo.addons.website_livechat.tests.test_chatbot_ui import TestLivechatChatbotUI
+
+from odoo import Command, tests
 
 
 @tests.common.tagged("post_install", "-at_install")

@@ -37,7 +37,7 @@ class Users(models.Model):
                     'user_id': self.env.uid,
                 })
                 activity_data = self.env.cr.dictfetchall()
-                
+
                 user_activities = {}
                 for act in activity_data:
                     if not user_activities.get(act['mailing_type']):
@@ -66,7 +66,8 @@ class Users(models.Model):
 
                 for mailing_type in user_activities.keys():
                     user_activities[mailing_type].update({
-                        'domain': json.dumps([['activity_ids.res_id', 'in', list(user_activities[mailing_type]['res_ids'])]])
+                        'domain': json.dumps(
+                            [['activity_ids.res_id', 'in', list(user_activities[mailing_type]['res_ids'])]])
                     })
                 activities.extend(list(user_activities.values()))
                 break

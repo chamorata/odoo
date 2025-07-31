@@ -1,13 +1,13 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import Command
-from odoo.tests import tagged
-
 from odoo.addons.sale.tests.test_sale_product_attribute_value_config import (
     TestSaleProductAttributeValueCommon,
 )
 from odoo.addons.website.tools import MockRequest
 from odoo.addons.website_sale.tests.common import WebsiteSaleCommon
+
+from odoo import Command
+from odoo.tests import tagged
 
 
 @tagged('post_install', '-at_install')
@@ -85,7 +85,7 @@ class TestWebsiteSaleProductFilters(WebsiteSaleCommon, TestSaleProductAttributeV
         } for i in range(1, 13)])
 
         cls.product_tmpls = (
-            cls.computer_case + cls.monitor + cls.computer + cls.windows_pc + cls.mac + generics
+                cls.computer_case + cls.monitor + cls.computer + cls.windows_pc + cls.mac + generics
         )
 
         if 'loyalty.program' in cls.env:

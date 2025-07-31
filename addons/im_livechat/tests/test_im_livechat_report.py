@@ -3,6 +3,7 @@
 from unittest.mock import patch
 
 from odoo.addons.im_livechat.tests.common import TestImLivechatCommon
+
 from odoo.tests.common import tagged
 
 
@@ -16,7 +17,8 @@ class TestImLivechatReport(TestImLivechatCommon):
             for record in channel_self:
                 record.available_operator_ids = self.operators
 
-        with patch.object(type(self.env['im_livechat.channel']), '_compute_available_operator_ids', _compute_available_operator_ids):
+        with patch.object(type(self.env['im_livechat.channel']), '_compute_available_operator_ids',
+                          _compute_available_operator_ids):
             channel_id = self.make_jsonrpc_request(
                 "/im_livechat/get_session",
                 {"anonymous_name": "Anonymous", "channel_id": self.livechat_channel.id},

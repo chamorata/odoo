@@ -8,7 +8,7 @@ from odoo.addons.base.models.ir_model import MODULE_UNINSTALL_FLAG
 from odoo.exceptions import MissingError
 from odoo.http import request
 from odoo.modules.module import get_manifest
-from odoo.tools import escape_psql, split_every, SQL
+from odoo.tools import split_every, SQL
 
 _logger = logging.getLogger(__name__)
 
@@ -108,7 +108,8 @@ class IrModuleModule(models.Model):
         records = self.env[theme_model_name]
 
         for module in self:
-            imd_ids = IrModelData.search([('module', '=', module.name), ('model', '=', theme_model_name)]).mapped('res_id')
+            imd_ids = IrModelData.search([('module', '=', module.name), ('model', '=', theme_model_name)]).mapped(
+                'res_id')
             records |= self.env[theme_model_name].with_context(active_test=False).browse(imd_ids)
         return records
 
@@ -151,14 +152,16 @@ class IrModuleModule(models.Model):
                     _logger.info('Record queued: %s' % rec.display_name)
                     continue
 
-                find = rec.with_context(active_test=False).mapped('copy_ids').filtered(lambda m: m.website_id == website)
+                find = rec.with_context(active_test=False).mapped('copy_ids').filtered(
+                    lambda m: m.website_id == website)
 
                 # special case for attachment
                 # if module B override attachment from dependence A, we update it
                 if not find and model_name == 'ir.attachment':
                     # In master, a unique constraint over (theme_template_id, website_id)
                     # will be introduced, thus ensuring unicity of 'find'
-                    find = rec.copy_ids.search([('key', '=', rec.key), ('website_id', '=', website.id), ("original_id", "=", False)])
+                    find = rec.copy_ids.search(
+                        [('key', '=', rec.key), ('website_id', '=', website.id), ("original_id", "=", False)])
 
                 if find:
                     imd = self.env['ir.model.data'].search([('model', '=', find._name), ('res_id', '=', find.id)])
@@ -260,7 +263,8 @@ class IrModuleModule(models.Model):
 
             for model_name in self._theme_model_names:
                 template = self._get_module_data(model_name)
-                models = template.with_context(**{'active_test': False, MODULE_UNINSTALL_FLAG: True}).mapped('copy_ids').filtered(lambda m: m.website_id == website)
+                models = template.with_context(**{'active_test': False, MODULE_UNINSTALL_FLAG: True}).mapped(
+                    'copy_ids').filtered(lambda m: m.website_id == website)
                 models.unlink()
                 self._theme_cleanup(model_name, website)
 
@@ -349,6 +353,7 @@ class IrModuleModule(models.Model):
 
     def _theme_upgrade_upstream(self):
         """ Upgrade the upstream dependencies of a theme, and install it if necessary. """
+
         def install_or_upgrade(theme):
             if theme.state != 'installed':
                 theme.button_install()
@@ -457,8 +462,10 @@ class IrModuleModule(models.Model):
 
     def get_themes_domain(self):
         """Returns the 'ir.module.module' search domain matching all available themes."""
+
         def get_id(model_id):
             return self.env['ir.model.data']._xmlid_to_res_id(model_id)
+
         return [
             ('state', '!=', 'uninstallable'),
             ('category_id', 'not in', [
@@ -514,8 +521,10 @@ class IrModuleModule(models.Model):
             specific_arch_db_en = specific_arch_db.get('en_US')
             generic_arch_db_update = {k: generic_arch_db[k] for k in langs_update}
             specific_arch_db_update = {k: specific_arch_db.get(k, specific_arch_db_en) for k in langs_update}
-            generic_translation_dictionary = field.get_translation_dictionary(generic_arch_db_en, generic_arch_db_update)
-            specific_translation_dictionary = field.get_translation_dictionary(specific_arch_db_en, specific_arch_db_update)
+            generic_translation_dictionary = field.get_translation_dictionary(generic_arch_db_en,
+                                                                              generic_arch_db_update)
+            specific_translation_dictionary = field.get_translation_dictionary(specific_arch_db_en,
+                                                                               specific_arch_db_update)
             # update specific_translation_dictionary
             for term_en, specific_term_langs in specific_translation_dictionary.items():
                 if term_en not in generic_translation_dictionary:
@@ -533,7 +542,8 @@ class IrModuleModule(models.Model):
             return res
 
         lang_value_list = [SQL("%(lang)s, o_menu.name->>%(lang)s", lang=lang) for lang in langs if lang != 'en_US']
-        update_jsonb_list = [SQL('jsonb_build_object(%s)', SQL(', ').join(items)) for items in split_every(50, lang_value_list)]
+        update_jsonb_list = [SQL('jsonb_build_object(%s)', SQL(', ').join(items)) for items in
+                             split_every(50, lang_value_list)]
         update_jsonb = SQL(' || ').join(update_jsonb_list)
         o_menu_name = SQL('menu.name || %s' if overwrite else '%s || menu.name', update_jsonb)
         self.env.cr.execute(SQL(
@@ -582,6 +592,7 @@ class IrModuleModule(models.Model):
         """ Generates snippet templates hierarchy based on manifest entries for
             use in the configurator and when creating new pages from templates.
         """
+
         def split_key(snippet_key):
             """ Snippets xmlid can be written without the module part, meaning
                 it is a shortcut for a website module snippet.
@@ -605,7 +616,8 @@ class IrModuleModule(models.Model):
             existing_primary_template_keys = self.env['ir.ui.view'].with_context(active_test=False).search_fetch([
                 ('mode', '=', 'primary'), ('key', 'in', keys),
             ], ['key']).mapped('key')
-            missing_create_values = [values for values in create_values if values['key'] not in existing_primary_template_keys]
+            missing_create_values = [values for values in create_values if
+                                     values['key'] not in existing_primary_template_keys]
             missing_records = self.env['ir.ui.view'].with_context(no_cow=True).create(missing_create_values)
             self._create_model_data(missing_records)
             return len(missing_records)

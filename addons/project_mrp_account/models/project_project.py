@@ -36,7 +36,8 @@ class Project(models.Model):
             ['amount:sum'],
         )
         if mrp_aal_read_group:
-            can_see_manufactoring_order = with_action and len(self) == 1 and self.env.user.has_group('mrp.group_mrp_user')
+            can_see_manufactoring_order = with_action and len(self) == 1 and self.env.user.has_group(
+                'mrp.group_mrp_user')
             total_amount = 0
             for currency, amount_summed in mrp_aal_read_group:
                 total_amount += currency._convert(amount_summed, self.currency_id, self.company_id)

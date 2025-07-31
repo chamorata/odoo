@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from freezegun import freeze_time
 from datetime import timedelta
+
+from freezegun import freeze_time
+from odoo.addons.sale.tests.common import SaleCommon
 
 from odoo import fields
 from odoo.fields import Command
 from odoo.tests import Form, tagged
 from odoo.tools import float_compare, mute_logger, float_round
-
-from odoo.addons.sale.tests.common import SaleCommon
 
 
 @tagged('post_install', '-at_install')
@@ -85,7 +85,7 @@ class TestSalePrices(SaleCommon):
         self.assertEqual(
             discounted_lines.mapped('price_unit'),
             [product_price, product_price, product_dozen_price, product_dozen_price])
-        self.assertEqual(discounted_lines.mapped('discount'), [self.discount]*len(discounted_lines))
+        self.assertEqual(discounted_lines.mapped('discount'), [self.discount] * len(discounted_lines))
 
         discounted_lines[0].product_uom_qty = 3.0
         self.assertFalse(discounted_lines[0].discount)
@@ -393,7 +393,7 @@ class TestSalePrices(SaleCommon):
         self.assertEqual(product_2_ctxt.cost_currency_id, other_curr)
 
         product_1.lst_price = 100.0
-        product_2_ctxt.standard_price = 10.0 # cost is company_dependent
+        product_2_ctxt.standard_price = 10.0  # cost is company_dependent
 
         pricelist = self.env['product.pricelist'].create({
             'name': 'Test multi-currency',
@@ -498,7 +498,7 @@ class TestSalePrices(SaleCommon):
 
         self.assertTrue(all(line.discount == 5 for line in sale_order.order_line))
         self.assertEqual(sale_order.amount_undiscounted, so_amount)
-        self.assertEqual(sale_order.amount_total, 0.95*so_amount)
+        self.assertEqual(sale_order.amount_total, 0.95 * so_amount)
 
         pricelist.item_ids = [
             Command.create({
@@ -510,7 +510,7 @@ class TestSalePrices(SaleCommon):
 
         self.assertTrue(all(line.discount == 0 for line in sale_order.order_line))
         self.assertEqual(sale_order.amount_undiscounted, so_amount)
-        self.assertEqual(sale_order.amount_total, 0.95*so_amount)
+        self.assertEqual(sale_order.amount_total, 0.95 * so_amount)
 
         # Test taking off the pricelist
         sale_order.pricelist_id = False
@@ -1111,14 +1111,14 @@ class TestSalePrices(SaleCommon):
                 Command.create({
                     'name': 'Discount',
                     'applied_on': '1_product',
-                    'product_tmpl_id':  test_product_discount.product_tmpl_id.id,
+                    'product_tmpl_id': test_product_discount.product_tmpl_id.id,
                     'compute_price': 'percentage',
                     'percent_price': 10,
                 }),
                 Command.create({
                     'name': 'Formula',
                     'applied_on': '1_product',
-                    'product_tmpl_id':  test_product_incl_discount.product_tmpl_id.id,
+                    'product_tmpl_id': test_product_incl_discount.product_tmpl_id.id,
                     'compute_price': 'formula',
                     'price_discount': 10,
                 }),

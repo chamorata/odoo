@@ -91,6 +91,6 @@
             <field eval="True" name="consumed"/>
         </record>
         <function model="discuss.channel" name="rating_apply"
-            eval="([ref('im_livechat.livechat_channel_session_1')], 5, 'LIVECHAT_1', None, 'Good Job')"/>
+                  eval="([ref('im_livechat.livechat_channel_session_1')], 5, 'LIVECHAT_1', None, 'Good Job')"/>
     </data>
 </odoo>

@@ -1,38 +1,32 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import base64
-import warnings
-from collections import defaultdict, OrderedDict
-from decorator import decorator
-from operator import attrgetter
-from textwrap import dedent
-import io
 import logging
 import os
 import shutil
 import threading
-import zipfile
+import warnings
+from collections import defaultdict, OrderedDict
+from textwrap import dedent
 
-import requests
-import werkzeug.urls
-
+import lxml.html
+import psycopg2
+from decorator import decorator
 from docutils import nodes
 from docutils.core import publish_string
 from docutils.transforms import Transform, writer_aux
 from docutils.writers.html4css1 import Writer
-import lxml.html
-import psycopg2
 
 import odoo
 from odoo import api, fields, models, modules, tools, _
 from odoo.addons.base.models.ir_model import MODULE_UNINSTALL_FLAG
 from odoo.exceptions import AccessDenied, UserError, ValidationError
-from odoo.osv import expression
-from odoo.tools.parse_version import parse_version
-from odoo.tools.misc import topological_sort, get_flag
-from odoo.tools.translate import TranslationImporter, get_po_paths
 from odoo.http import request
 from odoo.modules import get_module_path
+from odoo.osv import expression
+from odoo.tools.misc import topological_sort, get_flag
+from odoo.tools.parse_version import parse_version
+from odoo.tools.translate import TranslationImporter, get_po_paths
 
 _logger = logging.getLogger(__name__)
 
@@ -42,6 +36,7 @@ ACTION_DICT = {
     'target': 'new',
     'type': 'ir.actions.act_window',
 }
+
 
 def backup(path, raise_exception=True):
     path = os.path.normpath(path)
@@ -64,6 +59,7 @@ def assert_log_admin_access(method):
     Raises an AccessDenied error if the user does not have administrator privileges, according
     to `user._is_admin()`.
     """
+
     def check_and_log(method, self, *args, **kwargs):
         user = self.env.user
         origin = request.httprequest.remote_addr if request else 'n/a'
@@ -73,7 +69,9 @@ def assert_log_admin_access(method):
             raise AccessDenied()
         _logger.info('ALLOW access to module.%s on %s to user %s #%s via %s', *log_data)
         return method(self, *args, **kwargs)
+
     return decorator(check_and_log, method)
+
 
 class ModuleCategory(models.Model):
     _name = "ir.module.category"
@@ -127,6 +125,7 @@ class MyWriter(Writer):
     Custom docutils html4ccs1 writer that doesn't add the warnings to the
     output document.
     """
+
     def get_transforms(self):
         return [MyFilterMessages, writer_aux.Admonitions]
 
@@ -139,7 +138,6 @@ STATES = [
     ('to remove', 'To be removed'),
     ('to install', 'To be installed'),
 ]
-
 
 XML_DECLARATION = (
     '<?xml version='.encode('utf-8'),
@@ -208,7 +206,9 @@ class Module(models.Model):
                     'xml_declaration': False,
                     'file_insertion_enabled': False,
                 }
-                output = publish_string(source=module.description if not module.application and module.description else '', settings_overrides=overrides, writer=MyWriter())
+                output = publish_string(
+                    source=module.description if not module.application and module.description else '',
+                    settings_overrides=overrides, writer=MyWriter())
                 module.description_html = _apply_description_images(output)
 
     @api.depends('name')
@@ -261,7 +261,8 @@ class Module(models.Model):
                 path = modules.module.get_module_icon_path(module)
             if path:
                 try:
-                    with tools.file_open(path, 'rb', filter_ext=('.png', '.svg', '.gif', '.jpeg', '.jpg')) as image_file:
+                    with tools.file_open(path, 'rb',
+                                         filter_ext=('.png', '.svg', '.gif', '.jpeg', '.jpg')) as image_file:
                         module.icon_image = base64.b64encode(image_file.read())
                 except FileNotFoundError:
                     module.icon_image = ''
@@ -291,14 +292,14 @@ class Module(models.Model):
     url = fields.Char('URL', readonly=True)
     sequence = fields.Integer('Sequence', default=100)
     dependencies_id = fields.One2many('ir.module.module.dependency', 'module_id',
-                                       string='Dependencies', readonly=True)
+                                      string='Dependencies', readonly=True)
     country_ids = fields.Many2many('res.country', 'module_country', 'module_id', 'country_id')
     exclusion_ids = fields.One2many('ir.module.module.exclusion', 'module_id',
                                     string='Exclusions', readonly=True)
     auto_install = fields.Boolean('Automatic Installation',
-                                   help='An auto-installable module is automatically installed by the '
-                                        'system when all its dependencies are satisfied. '
-                                        'If the module has no dependency, it is always installed.')
+                                  help='An auto-installable module is automatically installed by the '
+                                       'system when all its dependencies are satisfied. '
+                                       'If the module has no dependency, it is always installed.')
     state = fields.Selection(STATES, string='Status', default='uninstallable', readonly=True, index=True)
     demo = fields.Boolean('Demo Data', default=False, readonly=True)
     license = fields.Selection([
@@ -329,7 +330,8 @@ class Module(models.Model):
 
     def _compute_has_iap(self):
         for module in self:
-            module.has_iap = bool(module.id) and 'iap' in module.upstream_dependencies(exclude_states=('',)).mapped('name')
+            module.has_iap = bool(module.id) and 'iap' in module.upstream_dependencies(exclude_states=('',)).mapped(
+                'name')
 
     @api.ondelete(at_uninstall=False)
     def _unlink_except_installed(self):
@@ -351,11 +353,17 @@ class Module(models.Model):
             modules.check_manifest_dependencies(terp)
         except Exception as e:
             if newstate == 'to install':
-                msg = _('Unable to install module "%(module)s" because an external dependency is not met: %(dependency)s', module=module_name, dependency=e.args[0])
+                msg = _(
+                    'Unable to install module "%(module)s" because an external dependency is not met: %(dependency)s',
+                    module=module_name, dependency=e.args[0])
             elif newstate == 'to upgrade':
-                msg = _('Unable to upgrade module "%(module)s" because an external dependency is not met: %(dependency)s', module=module_name, dependency=e.args[0])
+                msg = _(
+                    'Unable to upgrade module "%(module)s" because an external dependency is not met: %(dependency)s',
+                    module=module_name, dependency=e.args[0])
             else:
-                msg = _('Unable to process module "%(module)s" because an external dependency is not met: %(dependency)s', module=module_name, dependency=e.args[0])
+                msg = _(
+                    'Unable to process module "%(module)s" because an external dependency is not met: %(dependency)s',
+                    module=module_name, dependency=e.args[0])
             raise UserError(msg)
 
     def _state_update(self, newstate, states_to_update, level=100):
@@ -384,7 +392,7 @@ class Module(models.Model):
                     update_mods += dep.depend_id
 
             # update dependency modules that require it, and determine demo for module
-            update_demo = update_mods._state_update(newstate, states_to_update, level=level-1)
+            update_demo = update_mods._state_update(newstate, states_to_update, level=level - 1)
             module_demo = module.demo or update_demo or any(mod.demo for mod in ready_mods)
             demo = demo or module_demo
 
@@ -406,10 +414,11 @@ class Module(models.Model):
         #  - at least one dependency is 'to install'
         #  - if the module is country specific, at least one company is in one of the countries
         install_states = frozenset(('installed', 'to install', 'to upgrade'))
+
         def must_install(module):
             states = {dep.state for dep in module.dependencies_id if dep.auto_install_required}
             return states <= install_states and 'to install' in states and (
-                not module.country_ids or module.country_ids & company_countries
+                    not module.country_ids or module.country_ids & company_countries
             )
 
         modules = self
@@ -452,10 +461,11 @@ class Module(models.Model):
             if modules and not any(modules <= closure(module) for module in modules):
                 labels = dict(self.fields_get(['state'])['state']['selection'])
                 raise UserError(
-                    _('You are trying to install incompatible modules in category "%(category)s":%(module_list)s', category=category.name, module_list=''.join(
-                        f"\n- {module.shortdesc} ({labels[module.state]})"
-                        for module in modules
-                    ))
+                    _('You are trying to install incompatible modules in category "%(category)s":%(module_list)s',
+                      category=category.name, module_list=''.join(
+                            f"\n- {module.shortdesc} ({labels[module.state]})"
+                            for module in modules
+                        ))
                 )
 
         return dict(ACTION_DICT, name=_('Install'))
@@ -506,7 +516,8 @@ class Module(models.Model):
         they rely on data that don't exist anymore if the module is removed.
         """
         domain = expression.OR([[('key', '=like', m.name + '.%')] for m in self])
-        orphans = self.env['ir.ui.view'].with_context(**{'active_test': False, MODULE_UNINSTALL_FLAG: True}).search(domain)
+        orphans = self.env['ir.ui.view'].with_context(**{'active_test': False, MODULE_UNINSTALL_FLAG: True}).search(
+            domain)
         orphans.unlink()
 
     @api.returns('self')
@@ -580,7 +591,8 @@ class Module(models.Model):
 
     def _button_immediate_function(self, function):
         if not self.env.registry.ready or self.env.registry._init:
-            raise UserError(_('The method _button_immediate_install cannot be called on init or non loaded registries. Please use button_install instead.'))
+            raise UserError(
+                _('The method _button_immediate_install cannot be called on init or non loaded registries. Please use button_install instead.'))
 
         if getattr(threading.current_thread(), 'testing', False):
             raise RuntimeError(
@@ -698,9 +710,9 @@ class Module(models.Model):
                 self.check_external_dependencies(module.name, 'to upgrade')
             for dep in Dependency.search([('name', '=', module.name)]):
                 if (
-                    dep.module_id.state == 'installed'
-                    and dep.module_id not in todo
-                    and dep.module_id.name != 'studio_customization'
+                        dep.module_id.state == 'installed'
+                        and dep.module_id not in todo
+                        and dep.module_id.name != 'studio_customization'
                 ):
                     todo.append(dep.module_id)
 
@@ -712,7 +724,9 @@ class Module(models.Model):
                 continue
             for dep in module.dependencies_id:
                 if dep.state == 'unknown':
-                    raise UserError(_('You try to upgrade the module %(module)s that depends on the module: %(dependency)s.\nBut this module is not available in your system.', module=module.name, dependency=dep.name))
+                    raise UserError(
+                        _('You try to upgrade the module %(module)s that depends on the module: %(dependency)s.\nBut this module is not available in your system.',
+                          module=module.name, dependency=dep.name))
                 if dep.state == 'uninstalled':
                     to_install += self.search([('name', '=', dep.name)]).ids
 
@@ -760,7 +774,7 @@ class Module(models.Model):
     @assert_log_admin_access
     @api.model
     def update_list(self):
-        res = [0, 0]    # [update, add]
+        res = [0, 0]  # [update, add]
 
         default_version = modules.adapt_version('1.0')
         known_mods = self.with_context(lang=None).search([])
@@ -780,7 +794,8 @@ class Module(models.Model):
                         updated_values[key] = values[key]
                 if terp.get('installable', True) and mod.state == 'uninstallable':
                     updated_values['state'] = 'uninstalled'
-                if parse_version(terp.get('version', default_version)) > parse_version(mod.latest_version or default_version):
+                if parse_version(terp.get('version', default_version)) > parse_version(
+                        mod.latest_version or default_version):
                     res[0] += 1
                 if updated_values:
                     mod.write(updated_values)
@@ -807,11 +822,14 @@ class Module(models.Model):
         existing = set(dep.name for dep in self.dependencies_id)
         needed = set(depends or [])
         for dep in (needed - existing):
-            self._cr.execute('INSERT INTO ir_module_module_dependency (module_id, name) values (%s, %s)', (self.id, dep))
+            self._cr.execute('INSERT INTO ir_module_module_dependency (module_id, name) values (%s, %s)',
+                             (self.id, dep))
         for dep in (existing - needed):
-            self._cr.execute('DELETE FROM ir_module_module_dependency WHERE module_id = %s and name = %s', (self.id, dep))
-        self._cr.execute('UPDATE ir_module_module_dependency SET auto_install_required = (name = any(%s)) WHERE module_id = %s',
-                         (list(auto_install_requirements or ()), self.id))
+            self._cr.execute('DELETE FROM ir_module_module_dependency WHERE module_id = %s and name = %s',
+                             (self.id, dep))
+        self._cr.execute(
+            'UPDATE ir_module_module_dependency SET auto_install_required = (name = any(%s)) WHERE module_id = %s',
+            (list(auto_install_requirements or ()), self.id))
         self.env['ir.module.module.dependency'].invalidate_model(['auto_install_required'])
         self.invalidate_recordset(['dependencies_id'])
 
@@ -830,7 +848,8 @@ class Module(models.Model):
         existing = set(excl.name for excl in self.exclusion_ids)
         needed = set(excludes or [])
         for name in (needed - existing):
-            self._cr.execute('INSERT INTO ir_module_module_exclusion (module_id, name) VALUES (%s, %s)', (self.id, name))
+            self._cr.execute('INSERT INTO ir_module_module_exclusion (module_id, name) VALUES (%s, %s)',
+                             (self.id, name))
         for name in (existing - needed):
             self._cr.execute('DELETE FROM ir_module_module_exclusion WHERE module_id=%s AND name=%s', (self.id, name))
         self.invalidate_recordset(['exclusion_ids'])
@@ -972,6 +991,7 @@ class Module(models.Model):
 
 DEP_STATES = STATES + [('unknown', 'Unknown')]
 
+
 class ModuleDependency(models.Model):
     _name = "ir.module.module.dependency"
     _description = "Module dependency"
@@ -1019,9 +1039,12 @@ class ModuleDependency(models.Model):
     def all_dependencies(self, module_names):
         to_search = {key: True for key in module_names}
         res = {}
+
         def search_direct_deps(to_search, res):
             to_search_list = list(to_search.keys())
-            dependencies = self.web_search_read(domain=[("module_id.name", "in", to_search_list)], specification={"module_id":{"fields":{"name":{}}}, "name": {}, })["records"]
+            dependencies = self.web_search_read(domain=[("module_id.name", "in", to_search_list)],
+                                                specification={"module_id": {"fields": {"name": {}}}, "name": {}, })[
+                "records"]
             to_search.clear()
             for dependency in dependencies:
                 dep_name = dependency["name"]
@@ -1031,6 +1054,7 @@ class ModuleDependency(models.Model):
                 if mod_name not in res:
                     res[mod_name] = list()
                 res[mod_name].append(dep_name)
+
         search_direct_deps(to_search, res)
         while to_search:
             search_direct_deps(to_search, res)

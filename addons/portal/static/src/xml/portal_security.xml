@@ -15,7 +15,7 @@
             <h3><strong>Name your key</strong></h3>
             <p>Enter a description of and purpose for the key.</p>
             <input type="text" class="form-control col-10 col-md-6" placeholder="What's this key for?"
-                name="description" required="required"/>
+                   name="description" required="required"/>
             <p>
                 It is very important that this description be clear
                 and complete, <strong>it will be the only way to
@@ -26,9 +26,9 @@
             </h3>
             <select name="duration" class="form-control">
                 <option t-foreach="duration_selection" t-as="duration" t-key="duration[0]"
-                    t-att-id="`duration_${duration[0]}`"
-                    t-esc="duration[1]"
-                    t-att-value="duration[0]"/>
+                        t-att-id="`duration_${duration[0]}`"
+                        t-esc="duration[1]"
+                        t-att-value="duration[0]"/>
             </select>
             <p>
                 The key will be deleted once this period has elapsed.
@@ -45,7 +45,8 @@
             <p><code><span t-out="key"/></code></p>
             <p class="alert alert-warning" role="alert">
                 <strong>Important:</strong>
-                The key cannot be retrieved later and provides <b>full access</b>
+                The key cannot be retrieved later and provides
+                <b>full access</b>
                 to your user account, it is very important to store it securely.
             </p>
         </div>

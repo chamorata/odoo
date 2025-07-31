@@ -1,6 +1,5 @@
-from .test_multicompany import TestMultiCompanyProject
-
 from odoo.exceptions import UserError
+from .test_multicompany import TestMultiCompanyProject
 
 
 class TestProjectStagesMulticompany(TestMultiCompanyProject):
@@ -76,7 +75,8 @@ class TestProjectStagesMulticompany(TestMultiCompanyProject):
         project.company_id = self.company_b.id
 
         # Check that project was moved to stage_company_b
-        self.assertFalse(self.project_company_a.stage_id.company_id, "Project Company A should now be in a stage without company")
+        self.assertFalse(self.project_company_a.stage_id.company_id,
+                         "Project Company A should now be in a stage without company")
 
     def test_project_creation_default_stage(self):
         """
@@ -122,7 +122,8 @@ class TestProjectStagesMulticompany(TestMultiCompanyProject):
         """
         Project's company should be the same as the default stage's company in the context.
         """
-        project = self.env['project.project'].with_user(self.user_manager_companies).with_context(default_stage_id=self.stage_company_b.id).create({
+        project = self.env['project.project'].with_user(self.user_manager_companies).with_context(
+            default_stage_id=self.stage_company_b.id).create({
             'name': 'Project company B',
         })
         self.assertEqual(project.company_id, self.company_b)

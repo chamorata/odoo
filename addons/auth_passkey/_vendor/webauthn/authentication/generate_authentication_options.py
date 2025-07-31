@@ -9,12 +9,12 @@ from ..helpers.structs import (
 
 
 def generate_authentication_options(
-    *,
-    rp_id: str,
-    challenge: Optional[bytes] = None,
-    timeout: int = 60000,
-    allow_credentials: Optional[List[PublicKeyCredentialDescriptor]] = None,
-    user_verification: UserVerificationRequirement = UserVerificationRequirement.PREFERRED,
+        *,
+        rp_id: str,
+        challenge: Optional[bytes] = None,
+        timeout: int = 60000,
+        allow_credentials: Optional[List[PublicKeyCredentialDescriptor]] = None,
+        user_verification: UserVerificationRequirement = UserVerificationRequirement.PREFERRED,
 ) -> PublicKeyCredentialRequestOptions:
     """Generate options for retrieving a credential via navigator.credentials.get()
 

@@ -1,7 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo.tests import tagged
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
 from odoo.exceptions import UserError
+from odoo.tests import tagged
 
 
 @tagged('post_install_l10n', 'post_install', '-at_install')
@@ -16,10 +17,9 @@ class PaymentReferenceTest(AccountTestInvoicingCommon):
     def setUpClass(cls):
         super().setUpClass()
 
-        cls.invoice = cls.init_invoice('out_invoice', products=cls.product_a+cls.product_b)
+        cls.invoice = cls.init_invoice('out_invoice', products=cls.product_a + cls.product_b)
 
     def test_payment_reference_fi(self):
-
         compute = self.invoice.compute_payment_reference_finnish
 
         # Common
@@ -40,7 +40,6 @@ class PaymentReferenceTest(AccountTestInvoicingCommon):
             compute('QWERTY')
 
     def test_payment_reference_rf(self):
-
         compute = self.invoice.compute_payment_reference_finnish_rf
 
         # Common

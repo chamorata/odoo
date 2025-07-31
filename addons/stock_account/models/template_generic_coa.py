@@ -1,5 +1,6 @@
-from odoo import models
 from odoo.addons.account.models.chart_template import template
+
+from odoo import models
 
 
 class AccountChartTemplate(models.AbstractModel):
@@ -21,4 +22,5 @@ class AccountChartTemplate(models.AbstractModel):
             if 'account_production_wip_account_id' in company_data:
                 company.account_production_wip_account_id = self.ref(company_data['account_production_wip_account_id'])
             if 'account_production_wip_overhead_account_id' in company_data:
-                company.account_production_wip_overhead_account_id = self.ref(company_data['account_production_wip_overhead_account_id'])
+                company.account_production_wip_overhead_account_id = self.ref(
+                    company_data['account_production_wip_overhead_account_id'])

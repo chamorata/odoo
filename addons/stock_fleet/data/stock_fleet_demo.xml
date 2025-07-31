@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo noupdate="1">
-    <record id="vehicle_tag_transport" model="fleet.vehicle.tag" >
+    <record id="vehicle_tag_transport" model="fleet.vehicle.tag">
         <field name="name">Transport</field>
         <field name="color" eval="5"/>
-      </record>
+    </record>
     <!-- vehicle category -->
     <record id="model_category_truck" model="fleet.vehicle.model.category">
         <field name="name">Transport Truck</field>
@@ -20,16 +20,16 @@
 
     <!-- vehicle models -->
     <record id="model_volvo_fm" model="fleet.vehicle.model">
-          <field name="name">FM</field>
-          <field name="brand_id" ref="fleet.brand_volvo"/>
-          <field name="vehicle_type">car</field>
-          <field name="category_id" ref="model_category_truck"/>
+        <field name="name">FM</field>
+        <field name="brand_id" ref="fleet.brand_volvo"/>
+        <field name="vehicle_type">car</field>
+        <field name="category_id" ref="model_category_truck"/>
     </record>
     <record id="model_ford_transit" model="fleet.vehicle.model">
-          <field name="name">Transit</field>
-          <field name="brand_id" ref="fleet.brand_ford"/>
-          <field name="vehicle_type">car</field>
-          <field name="category_id" ref="model_category_van"/>
+        <field name="name">Transit</field>
+        <field name="brand_id" ref="fleet.brand_ford"/>
+        <field name="vehicle_type">car</field>
+        <field name="category_id" ref="model_category_van"/>
     </record>
 
     <!-- fleet vehicles -->
@@ -41,8 +41,8 @@
         <field name="color">Black</field>
         <field name="location">Millersburg Ohio (US) 44654</field>
         <field name="doors">2</field>
-        <field name="driver_id" ref="base.user_admin" />
-        <field name="acquisition_date" eval="(DateTime.now() - timedelta(days=336)).strftime('%Y-%m-%d')" />
+        <field name="driver_id" ref="base.user_admin"/>
+        <field name="acquisition_date" eval="(DateTime.now() - timedelta(days=336)).strftime('%Y-%m-%d')"/>
         <field name="state_id" ref="fleet.fleet_vehicle_state_registered"/>
         <field name="odometer">18000</field>
         <field name="odometer_unit">kilometers</field>

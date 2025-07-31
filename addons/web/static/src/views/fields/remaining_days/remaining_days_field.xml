@@ -3,14 +3,14 @@
     <t t-name="web.RemainingDaysField">
         <t t-if="props.readonly">
             <div
-                t-att-class="classNames"
-                t-att-title="formattedValue"
+                    t-att-class="classNames"
+                    t-att-title="formattedValue"
             >
                 <t t-esc="diffString"/>
             </div>
         </t>
         <t t-else="">
-            <DateTimeField t-props="dateTimeFieldProps" />
+            <DateTimeField t-props="dateTimeFieldProps"/>
         </t>
     </t>
 </templates>

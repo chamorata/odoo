@@ -1,9 +1,11 @@
 from base64 import b64encode
 from datetime import timedelta
 
-from odoo import fields, models, _
 from odoo.addons.account.models.company import PEPPOL_LIST
 from odoo.addons.account_edi_proxy_client.models.account_edi_proxy_user import AccountEdiProxyError
+
+from odoo import fields, models, _
+
 
 class AccountMoveSend(models.AbstractModel):
     _inherit = 'account.move.send'
@@ -56,13 +58,15 @@ class AccountMoveSend(models.AbstractModel):
         always_on_companies = moves.company_id.filtered(
             lambda c: c.country_code in info_always_on_countries and c.account_peppol_proxy_state not in can_send
         )
-        if always_on_companies and any_moves_not_sent_peppol and not filter_peppol_state(moves, ['not_valid', 'not_verified']):
+        if always_on_companies and any_moves_not_sent_peppol and not filter_peppol_state(moves,
+                                                                                         ['not_valid', 'not_verified']):
             alerts.pop('account_edi_ubl_cii_configure_company', False)
             alerts['account_peppol_what_is_peppol'] = {
                 'message': _("You can send this invoice electronically via Peppol."),
                 **what_is_peppol_alert,
             }
-        elif (peppol_not_selected_partners := filter_peppol_state(not_peppol_moves, ['valid'])) and any_moves_not_sent_peppol:
+        elif (
+        peppol_not_selected_partners := filter_peppol_state(not_peppol_moves, ['valid'])) and any_moves_not_sent_peppol:
             # Check for not peppol partners that are on the network.
             if len(peppol_not_selected_partners) == 1:
                 alerts['account_peppol_partner_want_peppol'] = {
@@ -118,7 +122,8 @@ class AccountMoveSend(models.AbstractModel):
             invoice_edi_format = move_data.get('invoice_edi_format') or partner._get_peppol_edi_format()
             return all([
                 self._is_applicable_to_company(method, move.company_id),
-                self.env['res.partner']._get_peppol_verification_state(partner.peppol_endpoint, partner.peppol_eas, invoice_edi_format) == 'valid',
+                self.env['res.partner']._get_peppol_verification_state(partner.peppol_endpoint, partner.peppol_eas,
+                                                                       invoice_edi_format) == 'valid',
                 move.company_id.account_peppol_proxy_state != 'rejected',
                 move._need_ubl_cii_xml(invoice_edi_format)
                 or move.ubl_cii_xml_id and move.peppol_move_state not in ('processing', 'done'),
@@ -153,7 +158,9 @@ class AccountMoveSend(models.AbstractModel):
                     invoice_data['error'] = _('The partner is missing Peppol EAS and/or Endpoint identifier.')
                     continue
 
-                if self.env['res.partner']._get_peppol_verification_state(partner.peppol_endpoint, partner.peppol_eas, invoice_data['invoice_edi_format']) != 'valid':
+                if self.env['res.partner']._get_peppol_verification_state(partner.peppol_endpoint, partner.peppol_eas,
+                                                                          invoice_data[
+                                                                              'invoice_edi_format']) != 'valid':
                     invoice.peppol_move_state = 'error'
                     invoice_data['error'] = _('Please verify partner configuration in partner settings.')
                     continue
@@ -169,7 +176,8 @@ class AccountMoveSend(models.AbstractModel):
                     filename = invoice.ubl_cii_xml_id.name
                 else:
                     invoice.peppol_move_state = 'error'
-                    builder = invoice.partner_id.commercial_partner_id._get_edi_builder(invoice_data['invoice_edi_format'])
+                    builder = invoice.partner_id.commercial_partner_id._get_edi_builder(
+                        invoice_data['invoice_edi_format'])
                     invoice_data['error'] = _(
                         "Errors occurred while creating the EDI document (format: %s):",
                         builder._description
@@ -215,7 +223,8 @@ class AccountMoveSend(models.AbstractModel):
                     invoices |= invoice
                 log_message = _('The document has been sent to the Peppol Access Point for processing')
                 invoices._message_log_batch(bodies={invoice.id: log_message for invoice in invoices})
-                self.env.ref('account_peppol.ir_cron_peppol_get_message_status')._trigger(at=fields.Datetime.now() + timedelta(minutes=5))
+                self.env.ref('account_peppol.ir_cron_peppol_get_message_status')._trigger(
+                    at=fields.Datetime.now() + timedelta(minutes=5))
 
         if self._can_commit():
             self._cr.commit()

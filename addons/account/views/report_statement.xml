@@ -6,10 +6,12 @@
             <xpath expr="//div[hasclass('col-3')]" position="attributes">
                 <attribute name="class">col-4</attribute>
             </xpath>
-            <xpath expr="//div[hasclass('col-2') and hasclass('offset-2') and hasclass('text-center')]" position="attributes">
+            <xpath expr="//div[hasclass('col-2') and hasclass('offset-2') and hasclass('text-center')]"
+                   position="attributes">
                 <attribute name="class">col-4 text-center</attribute>
             </xpath>
-            <xpath expr="//div[hasclass('col-2') and hasclass('offset-3') and hasclass('text-end')]" position="attributes">
+            <xpath expr="//div[hasclass('col-2') and hasclass('offset-3') and hasclass('text-end')]"
+                   position="attributes">
                 <attribute name="class">col-2 offset-2 text-end</attribute>
             </xpath>
         </template>
@@ -19,7 +21,7 @@
                 <t t-foreach="docs" t-as="o">
                     <t t-call="account.report_statement_internal_layout">
                         <div class="page">
-                        <div class="oe_structure"></div>
+                            <div class="oe_structure"></div>
                             <div class="border border-top-0 border-end-0 border-start-0 border-info">
                                 <div class="row">
                                     <div class="col-12">
@@ -41,10 +43,14 @@
                                             <strong>
                                                 <span t-out="o.journal_id.display_name">Journal Name</span>
                                                 <span t-if="o.journal_id.bank_account_id">
-                                                    - <span t-out="o.journal_id.bank_account_id.display_name">Bank Account Name</span>
+                                                    -
+                                                    <span t-out="o.journal_id.bank_account_id.display_name">Bank Account
+                                                        Name
+                                                    </span>
                                                 </span>
                                                 <span t-if="o.journal_id.code">
-                                                    - <span t-out="o.journal_id.code">12345</span>
+                                                    -
+                                                    <span t-out="o.journal_id.code">12345</span>
                                                 </span>
                                             </strong>
                                         </h5>
@@ -54,7 +60,8 @@
                                             <strong>
                                                 <span t-if="o.name">
                                                     <span t-field="o.name">Statement Name</span>
-                                                - </span>
+                                                    -
+                                                </span>
                                                 <span t-field="o.date">2023-08-15</span>
                                             </strong>
                                         </h5>
@@ -74,7 +81,9 @@
                                                     </td>
                                                     <td class="p-0">
                                                         <strong>
-                                                            <span t-out="o.line_ids and o.line_ids.sorted(lambda line: line.date)[0].date" t-options='{"widget": "date"}'>2023-08-11</span>
+                                                            <span t-out="o.line_ids and o.line_ids.sorted(lambda line: line.date)[0].date"
+                                                                  t-options='{"widget": "date"}'>2023-08-11
+                                                            </span>
                                                         </strong>
                                                     </td>
                                                     <td class="text-end p-0">
@@ -89,7 +98,9 @@
                                                     </td>
                                                     <td class="p-0">
                                                         <strong>
-                                                            <span t-out="o.line_ids and o.line_ids.sorted(lambda line: line.date)[-1].date" t-options='{"widget": "date"}'>2023-08-31</span>
+                                                            <span t-out="o.line_ids and o.line_ids.sorted(lambda line: line.date)[-1].date"
+                                                                  t-options='{"widget": "date"}'>2023-08-31
+                                                            </span>
                                                         </strong>
                                                     </td>
                                                     <td class="text-end p-0">
@@ -113,13 +124,24 @@
                                         </td>
                                         <td class="py-1">
                                             <span class="d-block fw-bold" t-if="line.partner_id">
-                                                <span t-out="line.partner_id.name">Marc Demo</span> <span t-if="line.partner_bank_id and line.partner_bank_id.partner_id != line.partner_id">(<span t-out="line.partner_bank_id.partner_id.name">Bank of odoo</span>)</span>
+                                                <span t-out="line.partner_id.name">Marc Demo</span>
+                                                <span t-if="line.partner_bank_id and line.partner_bank_id.partner_id != line.partner_id">
+                                                    (<span t-out="line.partner_bank_id.partner_id.name">Bank of
+                                                    odoo</span>)
+                                                </span>
                                             </span>
-                                            <span class="d-block" t-if="line.partner_bank_id or line.account_number" t-out="line.account_number or line.partner_bank_id.acc_number">534677881234</span>
-                                            <span class="d-block" t-if="line.payment_ref" t-field="line.payment_ref">Payment Reference</span>
+                                            <span class="d-block" t-if="line.partner_bank_id or line.account_number"
+                                                  t-out="line.account_number or line.partner_bank_id.acc_number">
+                                                534677881234
+                                            </span>
+                                            <span class="d-block" t-if="line.payment_ref" t-field="line.payment_ref">
+                                                Payment Reference
+                                            </span>
                                         </td>
                                         <td class="text-end py-1">
-                                            <span t-att-class="'d-block fw-bold' + (' text-danger' if line.amount &lt; 0 else '')" t-field="line.amount">100.0</span>
+                                            <span t-att-class="'d-block fw-bold' + (' text-danger' if line.amount &lt; 0 else '')"
+                                                  t-field="line.amount">100.0
+                                            </span>
                                         </td>
                                     </tr>
                                 </tbody>

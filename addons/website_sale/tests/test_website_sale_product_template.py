@@ -2,11 +2,11 @@
 
 from datetime import datetime
 
-from odoo.fields import Command
-from odoo.tests import tagged
-
 from odoo.addons.website.tools import MockRequest
 from odoo.addons.website_sale.tests.common import WebsiteSaleCommon
+
+from odoo.fields import Command
+from odoo.tests import tagged
 
 
 @tagged('post_install', '-at_install')

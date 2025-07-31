@@ -3,25 +3,32 @@
 
 import logging
 
-
-from odoo import api, fields, models, Command
-from odoo.addons.google_calendar.utils.google_calendar import GoogleCalendarService, InvalidSyncToken
-from odoo.addons.google_calendar.models.google_sync import google_calendar_token
 from odoo.addons.google_account.models import google_service
+from odoo.addons.google_calendar.models.google_sync import google_calendar_token
+from odoo.addons.google_calendar.utils.google_calendar import GoogleCalendarService, InvalidSyncToken
+
+from odoo import api, fields, models
 from odoo.loglevels import exception_to_unicode
 from odoo.tools import str2bool
 
 _logger = logging.getLogger(__name__)
 
+
 class User(models.Model):
     _inherit = 'res.users'
 
-    google_calendar_rtoken = fields.Char(related='res_users_settings_id.google_calendar_rtoken', groups="base.group_system")
-    google_calendar_token = fields.Char(related='res_users_settings_id.google_calendar_token', groups="base.group_system")
-    google_calendar_token_validity = fields.Datetime(related='res_users_settings_id.google_calendar_token_validity', groups="base.group_system")
-    google_calendar_sync_token = fields.Char(related='res_users_settings_id.google_calendar_sync_token', groups="base.group_system")
-    google_calendar_cal_id = fields.Char(related='res_users_settings_id.google_calendar_cal_id', groups="base.group_system")
-    google_synchronization_stopped = fields.Boolean(related='res_users_settings_id.google_synchronization_stopped', readonly=False, groups="base.group_system")
+    google_calendar_rtoken = fields.Char(related='res_users_settings_id.google_calendar_rtoken',
+                                         groups="base.group_system")
+    google_calendar_token = fields.Char(related='res_users_settings_id.google_calendar_token',
+                                        groups="base.group_system")
+    google_calendar_token_validity = fields.Datetime(related='res_users_settings_id.google_calendar_token_validity',
+                                                     groups="base.group_system")
+    google_calendar_sync_token = fields.Char(related='res_users_settings_id.google_calendar_sync_token',
+                                             groups="base.group_system")
+    google_calendar_cal_id = fields.Char(related='res_users_settings_id.google_calendar_cal_id',
+                                         groups="base.group_system")
+    google_synchronization_stopped = fields.Boolean(related='res_users_settings_id.google_synchronization_stopped',
+                                                    readonly=False, groups="base.group_system")
 
     def _get_google_calendar_token(self):
         self.ensure_one()
@@ -68,7 +75,8 @@ class User(models.Model):
         recurrences_write_dates = {r.id: r.write_date for r in odoo_recurrences}
         events_write_dates = {e.id: e.write_date for e in odoo_events}
         synced_recurrences = self.env['calendar.recurrence']._sync_google2odoo(recurrences, recurrences_write_dates)
-        synced_events = self.env['calendar.event']._sync_google2odoo(events - recurrences, events_write_dates, default_reminders=default_reminders)
+        synced_events = self.env['calendar.event']._sync_google2odoo(events - recurrences, events_write_dates,
+                                                                     default_reminders=default_reminders)
 
         # Odoo -> Google
         recurrences = self.env['calendar.recurrence']._get_records_to_sync(full_sync=full_sync)
@@ -109,11 +117,14 @@ class User(models.Model):
         with google_calendar_token(self) as token:
             try:
                 if not event_id:
-                    events, next_sync_token, default_reminders = calendar_service.get_events(self.res_users_settings_id.sudo().google_calendar_sync_token, token=token)
+                    events, next_sync_token, default_reminders = calendar_service.get_events(
+                        self.res_users_settings_id.sudo().google_calendar_sync_token, token=token)
                 else:
                     # We force the sync_token parameter to avoid doing a full sync.
                     # Other events are fetched when the calendar view is displayed.
-                    events, next_sync_token, default_reminders = calendar_service.get_events(sync_token=token, token=token, event_id=event_id)
+                    events, next_sync_token, default_reminders = calendar_service.get_events(sync_token=token,
+                                                                                             token=token,
+                                                                                             event_id=event_id)
             except InvalidSyncToken:
                 events, next_sync_token, default_reminders = calendar_service.get_events(token=token)
                 full_sync = True
@@ -128,7 +139,8 @@ class User(models.Model):
     @api.model
     def _sync_all_google_calendar(self):
         """ Cron job """
-        users = self.env['res.users'].sudo().search([('google_calendar_rtoken', '!=', False), ('google_synchronization_stopped', '=', False)])
+        users = self.env['res.users'].sudo().search(
+            [('google_calendar_rtoken', '!=', False), ('google_synchronization_stopped', '=', False)])
         google = GoogleCalendarService(self.env['google.service'])
         for user in users:
             _logger.info("Calendar Synchro - Starting synchronization for %s", user)

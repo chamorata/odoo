@@ -1,6 +1,6 @@
-import odoo.tests
-
 from odoo.addons.website.tools import MockRequest
+
+import odoo.tests
 
 
 class TestReports(odoo.tests.HttpCase):

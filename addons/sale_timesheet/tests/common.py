@@ -63,7 +63,7 @@ class TestCommonSaleTimesheet(TestSaleProjectCommon):
             'user_id': cls.user_manager_company_B.id,
             'hourly_cost': 45,
         })
-        
+
         cls.employee_without_sales_access = cls.env['hr.employee'].create({
             'name': 'Tyrion Lannister',
             'user_id': cls.user_employee_without_sales_access.id,

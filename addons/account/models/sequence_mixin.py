@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-from datetime import date
-
-from odoo import api, fields, models, _
-from odoo.exceptions import ValidationError
-from odoo.tools.misc import format_date
-from odoo.tools import frozendict, date_utils, SQL
-
 import logging
 import re
 from collections import defaultdict
+from datetime import date
+
 from psycopg2 import errors as pgerrors
+
+from odoo import api, fields, models, _
+from odoo.exceptions import ValidationError
+from odoo.tools import frozendict, date_utils, SQL
+from odoo.tools.misc import format_date
 
 _logger = logging.getLogger(__name__)
 
@@ -57,12 +57,12 @@ class SequenceMixin(models.AbstractModel):
                     CREATE INDEX %(index_name)s ON %(table)s (%(sequence_index)s, sequence_prefix desc, sequence_number desc, %(field)s);
                     CREATE INDEX %(index2_name)s ON %(table)s (%(sequence_index)s, id desc, sequence_prefix);
                     """,
-                    sequence_index=SQL.identifier(self._sequence_index),
-                    index_name=SQL.identifier(index_name),
-                    index2_name=SQL.identifier(index_name + "2"),
-                    table=SQL.identifier(self._table),
-                    field=SQL.identifier(self._sequence_field),
-                ))
+                                        sequence_index=SQL.identifier(self._sequence_index),
+                                        index_name=SQL.identifier(index_name),
+                                        index2_name=SQL.identifier(index_name + "2"),
+                                        table=SQL.identifier(self._table),
+                                        field=SQL.identifier(self._sequence_field),
+                                        ))
             unique_index = self.env.execute_query(SQL(
                 """
                 SELECT 1
@@ -145,8 +145,10 @@ class SequenceMixin(models.AbstractModel):
         sequence_number_reset = self._deduce_sequence_number_reset(sequence)
         date_start, date_end, forced_year_start, forced_year_end = self._get_sequence_date_range(sequence_number_reset)
         year_match = (
-            (not format_values["year"] or self._year_match(format_values["year"], forced_year_start or date_start.year))
-            and (not format_values["year_end"] or self._year_match(format_values["year_end"], forced_year_end or date_end.year))
+                (not format_values["year"] or self._year_match(format_values["year"],
+                                                               forced_year_start or date_start.year))
+                and (not format_values["year_end"] or self._year_match(format_values["year_end"],
+                                                                       forced_year_end or date_end.year))
         )
         month_match = not format_values['month'] or format_values['month'] == date.month
         return year_match and month_match
@@ -165,10 +167,10 @@ class SequenceMixin(models.AbstractModel):
             date = fields.Date.to_date(record[record._sequence_date_field])
             sequence = record[record._sequence_field]
             if (
-                sequence
-                and date
-                and date > constraint_date
-                and not record._sequence_matches_date()
+                    sequence
+                    and date
+                    and date > constraint_date
+                    and not record._sequence_matches_date()
             ):
                 raise ValidationError(_(
                     "The %(date_field)s (%(date)s) you've entered isn't aligned with the existing sequence number (%(sequence)s). Clear the sequence number to proceed.\n"
@@ -207,11 +209,12 @@ class SequenceMixin(models.AbstractModel):
             if match:
                 groupdict = match.groupdict()
                 if (
-                    groupdict.get('year_end') and groupdict.get('year')
-                    and (
+                        groupdict.get('year_end') and groupdict.get('year')
+                        and (
                         len(groupdict['year']) < len(groupdict['year_end'])
-                        or self._truncate_year_to_length((int(groupdict['year']) + 1), len(groupdict['year_end'])) != int(groupdict['year_end'])
-                    )
+                        or self._truncate_year_to_length((int(groupdict['year']) + 1),
+                                                         len(groupdict['year_end'])) != int(groupdict['year_end'])
+                )
                 ):
                     # year and year_end are not compatible for range (the difference is not 1)
                     continue
@@ -463,10 +466,13 @@ class SequenceMixin(models.AbstractModel):
         format_string, format_values = self._get_sequence_format_param(last_sequence)
         sequence_number_reset = self._deduce_sequence_number_reset(last_sequence)
         if new:
-            date_start, date_end, forced_year_start, forced_year_end = self._get_sequence_date_range(sequence_number_reset)
+            date_start, date_end, forced_year_start, forced_year_end = self._get_sequence_date_range(
+                sequence_number_reset)
             format_values['seq'] = 0
-            format_values['year'] = self._truncate_year_to_length(forced_year_start or date_start.year, format_values['year_length'])
-            format_values['year_end'] = self._truncate_year_to_length(forced_year_end or date_end.year, format_values['year_end_length'])
+            format_values['year'] = self._truncate_year_to_length(forced_year_start or date_start.year,
+                                                                  format_values['year_length'])
+            format_values['year_end'] = self._truncate_year_to_length(forced_year_end or date_end.year,
+                                                                      format_values['year_end_length'])
             format_values['month'] = self[self._sequence_date_field].month
         return format_string, format_values
 

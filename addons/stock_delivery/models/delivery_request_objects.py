@@ -2,7 +2,9 @@
 
 class DeliveryPackage:
     """ Each provider need similar information about its packages. """
-    def __init__(self, commodities, weight, package_type, name=None, total_cost=0, currency=None, picking=False, order=False):
+
+    def __init__(self, commodities, weight, package_type, name=None, total_cost=0, currency=None, picking=False,
+                 order=False):
         """ The UOMs are based on the config parameters, which is very convenient:
         we do not need to keep those stored."""
         self.picking_id = picking
@@ -23,6 +25,7 @@ class DeliveryPackage:
 
 class DeliveryCommodity:
     """ Commodities information are needed for Commercial invoices with each provider. """
+
     def __init__(self, product, amount, monetary_value, country_of_origin):
         self.product_id = product
         self.qty = amount

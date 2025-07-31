@@ -38,6 +38,7 @@ class RedirectWarning(Exception):
     :param dict additional_context: parameter passed to action_id.
            Can be used to limit a view to active_ids for example.
     """
+
     def __init__(self, message, action, button_text, additional_context=None):
         super().__init__(message, action, button_text, additional_context)
 

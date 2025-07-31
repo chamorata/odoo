@@ -5,11 +5,14 @@ from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
 
+
 class LoyaltyGenerateWizard(models.TransientModel):
     _name = 'loyalty.generate.wizard'
     _description = 'Generate Coupons'
 
-    program_id = fields.Many2one('loyalty.program', required=True, default=lambda self: self.env.context.get('active_id', False) or self.env.context.get('default_program_id', False))
+    program_id = fields.Many2one('loyalty.program', required=True,
+                                 default=lambda self: self.env.context.get('active_id', False) or self.env.context.get(
+                                     'default_program_id', False))
     program_type = fields.Selection(related='program_id.program_type')
 
     mode = fields.Selection([
@@ -22,7 +25,7 @@ class LoyaltyGenerateWizard(models.TransientModel):
     customer_tag_ids = fields.Many2many('res.partner.category', string='Customer Tags')
 
     coupon_qty = fields.Integer('Quantity',
-        compute='_compute_coupon_qty', readonly=False, store=True)
+                                compute='_compute_coupon_qty', readonly=False, store=True)
     points_granted = fields.Float('Grant', required=True, default=1)
     points_name = fields.Char(related='program_id.portal_point_name', readonly=True)
     valid_until = fields.Date()
@@ -46,11 +49,12 @@ class LoyaltyGenerateWizard(models.TransientModel):
         self.confirmation_message = False
         for wizard in self:
             program_desc = dict(wizard._fields['program_type']._description_selection(wizard.env))
-            wizard.confirmation_message = _("You're about to generate %(program_type)s with a value of %(value)s for %(customer_number)i customers",
+            wizard.confirmation_message = _(
+                "You're about to generate %(program_type)s with a value of %(value)s for %(customer_number)i customers",
                 program_type=program_desc[wizard.program_type],
                 value=wizard.points_granted,
                 customer_number=wizard.coupon_qty,
-            )
+                )
 
     @api.depends('customer_ids', 'customer_tag_ids', 'mode')
     def _compute_coupon_qty(self):
@@ -63,7 +67,8 @@ class LoyaltyGenerateWizard(models.TransientModel):
     @api.depends("mode", "program_id")
     def _compute_will_send_mail(self):
         for wizard in self:
-            wizard.will_send_mail = wizard.mode == 'selected' and 'create' in wizard.program_id.mapped('communication_plan_ids.trigger')
+            wizard.will_send_mail = wizard.mode == 'selected' and 'create' in wizard.program_id.mapped(
+                'communication_plan_ids.trigger')
 
     def _get_coupon_values(self, partner):
         self.ensure_one()

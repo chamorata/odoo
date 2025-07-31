@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import dateutil.relativedelta as relativedelta
 import functools
 import re
 
+import dateutil.relativedelta as relativedelta
 from markupsafe import Markup
 from werkzeug import urls
 
@@ -12,11 +12,13 @@ from odoo.tools import safe_eval
 
 INLINE_TEMPLATE_REGEX = re.compile(r"\{\{(.+?)(\|\|\|\s*(.*?))?\}\}")
 
+
 def relativedelta_proxy(*args, **kwargs):
     # dateutil.relativedelta is an old-style class and cannot be directly
     # instanciated wihtin a jinja2 expression, so a lambda "proxy" is
     # is needed, apparently
     return relativedelta.relativedelta(*args, **kwargs)
+
 
 template_env_globals = {
     'str': str,
@@ -36,6 +38,7 @@ template_env_globals = {
     'hasattr': hasattr,
 }
 
+
 def parse_inline_template(text):
     groups = []
     current_literal_index = 0
@@ -53,6 +56,7 @@ def parse_inline_template(text):
 
     return groups
 
+
 def convert_inline_template_to_qweb(template):
     template_instructions = parse_inline_template(template or '')
     preview_markup = []
@@ -62,6 +66,7 @@ def convert_inline_template_to_qweb(template):
         else:
             preview_markup.append(string)
     return Markup('').join(preview_markup)
+
 
 def render_inline_template(template_instructions, variables):
     results = []

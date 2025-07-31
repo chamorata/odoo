@@ -14,7 +14,8 @@ class MailGroupMessageReject(models.TransientModel):
     mail_group_message_id = fields.Many2one('mail.group.message', string="Message", required=True, readonly=True)
     action = fields.Selection([('reject', 'Reject'), ('ban', 'Ban')], string='Action', required=True)
 
-    send_email = fields.Boolean('Send Email', help='Send an email to the author of the message', compute='_compute_send_email')
+    send_email = fields.Boolean('Send Email', help='Send an email to the author of the message',
+                                compute='_compute_send_email')
 
     @api.depends('mail_group_message_id')
     def _compute_subject(self):

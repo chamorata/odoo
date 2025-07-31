@@ -1,11 +1,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.hr_expense.tests.common import TestExpenseCommon
+from odoo.addons.mail.tests.common import mail_new_test_user
+
 from odoo import Command
 from odoo.exceptions import AccessError, UserError
 from odoo.tests import HttpCase, tagged, new_test_user
-
-from odoo.addons.hr_expense.tests.common import TestExpenseCommon
-from odoo.addons.mail.tests.common import mail_new_test_user
 
 
 @tagged('-at_install', 'post_install')

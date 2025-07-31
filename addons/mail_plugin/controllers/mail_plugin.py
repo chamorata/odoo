@@ -4,12 +4,13 @@
 import base64
 import json
 import logging
+
 import requests
 from markupsafe import Markup
+from odoo.addons.iap.tools import iap_tools
 from werkzeug.exceptions import Forbidden
 
 from odoo import http, tools, _
-from odoo.addons.iap.tools import iap_tools
 from odoo.exceptions import AccessError
 from odoo.http import request
 
@@ -160,7 +161,8 @@ class MailPluginController(http.Controller):
                     'name': _('Notification'),
                     'email': normalized_email,
                     'enrichment_info': {
-                        'type': 'odoo_custom_error', 'info': _('This is your notification address. Search the Contact manually to link this email to a record.'),
+                        'type': 'odoo_custom_error', 'info': _(
+                            'This is your notification address. Search the Contact manually to link this email to a record.'),
                     },
                 },
             }
@@ -239,7 +241,7 @@ class MailPluginController(http.Controller):
             'email': email,
         }
 
-        #see if the partner has a parent company
+        # see if the partner has a parent company
         if company and company > -1:
             partner_info['parent_id'] = company
         partner = request.env['res.partner'].create(partner_info)
@@ -286,13 +288,15 @@ class MailPluginController(http.Controller):
         try:
             response = request.env['iap.enrich.api']._request_enrich({domain: domain})  # The key doesn't matter
         except iap_tools.InsufficientCreditError:
-            enriched_data['enrichment_info'] = {'type': 'insufficient_credit', 'info': request.env['iap.account'].get_credits_url('reveal')}
+            enriched_data['enrichment_info'] = {'type': 'insufficient_credit',
+                                                'info': request.env['iap.account'].get_credits_url('reveal')}
         except Exception:
             enriched_data["enrichment_info"] = {'type': 'other', 'info': 'Unknown reason'}
         else:
             enriched_data = response.get(domain)
             if not enriched_data:
-                enriched_data = {'enrichment_info': {'type': 'no_data', 'info': 'The enrichment API found no data for the email provided.'}}
+                enriched_data = {'enrichment_info': {'type': 'no_data',
+                                                     'info': 'The enrichment API found no data for the email provided.'}}
         return enriched_data
 
     def _find_existing_company(self, email):
@@ -307,7 +311,8 @@ class MailPluginController(http.Controller):
         if partner_iap:
             return partner_iap.partner_id.sudo(False)
 
-        return request.env["res.partner"].search([("is_company", "=", True), ("email_normalized", "=ilike", "%" + search)], limit=1)
+        return request.env["res.partner"].search(
+            [("is_company", "=", True), ("email_normalized", "=ilike", "%" + search)], limit=1)
 
     def _get_company_data(self, company):
         if not company:

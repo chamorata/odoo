@@ -12,7 +12,7 @@
     </tr>
 </t>
 
-<t t-name="hr_default_group_row">
+    <t t-name="hr_default_group_row">
     <tr class="o_group_header o_group_has_content">
         <td class="o_group_name border-0 pe-2" colspan="99">
             <b t-esc="display_name"/>

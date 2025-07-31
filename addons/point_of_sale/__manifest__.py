@@ -136,7 +136,6 @@
             'web/static/lib/owl/odoo_module.js',
             'web/static/lib/zxing-library/zxing-library.js',
 
-
             ('include', 'point_of_sale.base_app'),
 
             'web/static/src/core/colorlist/colorlist.scss',
@@ -150,7 +149,8 @@
             'web/static/src/scss/fontawesome_overridden.scss',
             'web/static/fonts/fonts.scss',
 
-            ('remove', 'web/static/src/core/errors/error_handlers.js'), # error handling in PoS is different from the webclient
+            ('remove', 'web/static/src/core/errors/error_handlers.js'),
+            # error handling in PoS is different from the webclient
             ('remove', '/web/static/src/core/dialog/dialog.scss'),
             'web/static/src/core/currency.js',
             # barcode scanner

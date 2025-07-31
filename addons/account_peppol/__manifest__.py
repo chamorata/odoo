@@ -48,5 +48,6 @@
             'account_peppol/static/src/js/*',
         ],
     },
-    'auto_install': ['account_edi_ubl_cii'],  # auto-install when account_edi_ubl_cii AND one company exists in countries above
+    'auto_install': ['account_edi_ubl_cii'],
+    # auto-install when account_edi_ubl_cii AND one company exists in countries above
 }

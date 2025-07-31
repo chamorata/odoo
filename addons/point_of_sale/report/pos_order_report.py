@@ -121,4 +121,4 @@ class PosOrderReport(models.Model):
                 %s
             )
         """ % (self._table, self._select(), self._from())
-        )
+                         )

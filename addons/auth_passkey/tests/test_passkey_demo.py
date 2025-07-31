@@ -1,14 +1,13 @@
 import json
-
 from contextlib import contextmanager
-from lxml import etree
 from unittest.mock import patch
 
+from lxml import etree
+
+from odoo.addons.base.tests.common import HttpCaseWithUserDemo
 from odoo.http import request
 from odoo.tests import tagged
 from odoo.tools import SQL, mute_logger
-
-from odoo.addons.base.tests.common import HttpCaseWithUserDemo
 
 
 class PasskeyTest(HttpCaseWithUserDemo):
@@ -145,13 +144,13 @@ class PasskeyTest(HttpCaseWithUserDemo):
 
     def rpc(self, model, method, *args, **kwargs):
         return self.url_open('/web/dataset/call_kw', headers={"Content-Type": "application/json"}, data=json.dumps({
-                "params": {
-                    'model': model,
-                    'method': method,
-                    'args': args,
-                    'kwargs': kwargs,
-                },
-            })).json()
+            "params": {
+                'model': model,
+                'method': method,
+                'args': args,
+                'kwargs': kwargs,
+            },
+        })).json()
 
     @contextmanager
     def patch_start_auth(self, challenge):
@@ -422,7 +421,8 @@ class PasskeyTest(HttpCaseWithUserDemo):
             # `Response sign count of 14 was not greater than current count of 21`
             webauthn_response['response']['authenticatorData'] = 'SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MFAAAAFQ'
             # Signature changes as the authenticator data changed.
-            webauthn_response['response']['signature'] = 'MEQCIAdcWwNtQVrklYo70p5eHjVdSkA4Pgk6hbCCT6O8-V0BAiBBVKgroyNNOqN5xwO6Rr4yJV61J1TGWoOyUsoUftjypw'
+            webauthn_response['response'][
+                'signature'] = 'MEQCIAdcWwNtQVrklYo70p5eHjVdSkA4Pgk6hbCCT6O8-V0BAiBBVKgroyNNOqN5xwO6Rr4yJV61J1TGWoOyUsoUftjypw'
 
             csrf_token = etree.fromstring(
                 self.url_open('/web/login').content

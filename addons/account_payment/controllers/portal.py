@@ -1,12 +1,12 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import _, fields, http
-from odoo.exceptions import AccessError, MissingError, ValidationError
-from odoo.http import request
-
 from odoo.addons.account.controllers import portal
 from odoo.addons.payment import utils as payment_utils
 from odoo.addons.payment.controllers.portal import PaymentPortal
+
+from odoo import _, fields, http
+from odoo.exceptions import AccessError, MissingError, ValidationError
+from odoo.http import request
 
 
 class PortalAccount(portal.PortalAccount, PaymentPortal):
@@ -20,7 +20,8 @@ class PortalAccount(portal.PortalAccount, PaymentPortal):
             # Do not compute payment-related stuff if given invoice doesn't have to be paid.
             return {
                 **values,
-                'payment': payment,  # We want to show the dialog even when everything has been paid (with a custom message)
+                'payment': payment,
+                # We want to show the dialog even when everything has been paid (with a custom message)
             }
 
         epd = values.get('epd_discount_amount_currency', 0.0)
@@ -60,7 +61,8 @@ class PortalAccount(portal.PortalAccount, PaymentPortal):
         overdue_invoices = request.env['account.move'].search(self._get_overdue_invoices_domain())
 
         values = self._overdue_invoices_get_page_view_values(overdue_invoices, **kw)
-        return request.render("account_payment.portal_overdue_invoices_page", values) if 'payment' in values else request.redirect('/my/invoices')
+        return request.render("account_payment.portal_overdue_invoices_page",
+                              values) if 'payment' in values else request.redirect('/my/invoices')
 
     def _overdue_invoices_get_page_view_values(self, overdue_invoices, **kwargs):
         values = {'page_name': 'overdue_invoices'}
@@ -162,7 +164,8 @@ class PortalAccount(portal.PortalAccount, PaymentPortal):
             'payment_reference': invoices_data.get('payment_reference', False),
         }
         # Merge the dictionaries while allowing the redefinition of keys.
-        values = portal_page_values | payment_form_values | payment_context | self._get_extra_payment_form_values(**kwargs)
+        values = portal_page_values | payment_form_values | payment_context | self._get_extra_payment_form_values(
+            **kwargs)
         return values
 
     @http.route()

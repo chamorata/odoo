@@ -1,7 +1,7 @@
-import lxml.html.clean
 import re
-
 from importlib.metadata import version
+
+import lxml.html.clean
 
 from odoo.tools import parse_version
 

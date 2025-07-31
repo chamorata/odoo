@@ -1,10 +1,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.http import request
+from odoo.addons.website.controllers import form
 
 from odoo import _
 from odoo.addons.base.models.ir_qweb_fields import nl2br, nl2br_enclose
-from odoo.addons.website.controllers import form
+from odoo.http import request
 from odoo.tools import html2plaintext
 
 
@@ -27,10 +27,11 @@ class WebsiteForm(form.WebsiteForm):
         custom_label = nl2br_enclose(_("Other Information"), 'h4')  # Title for custom fields
         default_field = model.website_form_default_field_id
         default_field_data = values.get(default_field.name, '')
-        default_field_content = nl2br_enclose(default_field.name.capitalize(), 'h4') + nl2br_enclose(html2plaintext(default_field_data), 'p')
+        default_field_content = nl2br_enclose(default_field.name.capitalize(), 'h4') + nl2br_enclose(
+            html2plaintext(default_field_data), 'p')
         custom_content = (default_field_content if default_field_data else '') \
-                        + (custom_label + custom if custom else '') \
-                        + (self._meta_label + meta if meta else '')
+                         + (custom_label + custom if custom else '') \
+                         + (self._meta_label + meta if meta else '')
 
         if default_field.name:
             if default_field.ttype == 'html':

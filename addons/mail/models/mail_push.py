@@ -3,10 +3,10 @@
 
 import logging
 
+from odoo.addons.mail.tools.web_push import push_to_end_point, DeviceUnreachableError
 from requests import Session
 
 from odoo import api, fields, models
-from odoo.addons.mail.tools.web_push import push_to_end_point, DeviceUnreachableError
 
 _logger = logging.getLogger(__name__)
 

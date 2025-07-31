@@ -74,6 +74,7 @@ class MassMailing(models.Model):
         """Domain with an additional condition that the card must exist for the records."""
         domain = super()._get_recipients_domain()
         if self.card_campaign_id:
-            res_ids = self.env['card.card'].search_fetch([('campaign_id', '=', self.card_campaign_id.id)], ['res_id']).mapped('res_id')
+            res_ids = self.env['card.card'].search_fetch([('campaign_id', '=', self.card_campaign_id.id)],
+                                                         ['res_id']).mapped('res_id')
             domain = osv.expression.AND([domain, [('id', 'in', res_ids)]])
         return domain

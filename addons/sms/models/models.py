@@ -1,5 +1,6 @@
-from odoo import models
 from odoo.addons.phone_validation.tools import phone_validation
+
+from odoo import models
 
 
 class BaseModel(models.AbstractModel):

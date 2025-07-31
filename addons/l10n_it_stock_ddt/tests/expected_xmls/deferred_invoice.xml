@@ -1,4 +1,7 @@
-<p:FatturaElettronica xmlns:p="http://ivaservizi.agenziaentrate.gov.it/docs/xsd/fatture/v1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xsi:schemaLocation="http://ivaservizi.agenziaentrate.gov.it/docs/xsd/fatture/v1.2 http://www.fatturapa.gov.it/export/fatturazione/sdi/fatturapa/v1.2/Schema_del_file_xml_FatturaPA_versione_1.2.xsd" versione="FPR12">
+<p:FatturaElettronica xmlns:p="http://ivaservizi.agenziaentrate.gov.it/docs/xsd/fatture/v1.2"
+                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                      xsi:schemaLocation="http://ivaservizi.agenziaentrate.gov.it/docs/xsd/fatture/v1.2 http://www.fatturapa.gov.it/export/fatturazione/sdi/fatturapa/v1.2/Schema_del_file_xml_FatturaPA_versione_1.2.xsd"
+                      versione="FPR12">
     <FatturaElettronicaHeader>
         <DatiTrasmissione>
             <IdTrasmittente>
@@ -26,7 +29,7 @@
                 <RegimeFiscale>RF01</RegimeFiscale>
             </DatiAnagrafici>
             <Sede>
-                <Indirizzo>1234 Test Street </Indirizzo>
+                <Indirizzo>1234 Test Street</Indirizzo>
                 <CAP>12345</CAP>
                 <Comune>Prova</Comune>
                 <Nazione>IT</Nazione>
@@ -44,7 +47,7 @@
                 </Anagrafica>
             </DatiAnagrafici>
             <Sede>
-                <Indirizzo>Via Privata Alessi 6 </Indirizzo>
+                <Indirizzo>Via Privata Alessi 6</Indirizzo>
                 <CAP>28887</CAP>
                 <Comune>Milan</Comune>
                 <Nazione>IT</Nazione>
@@ -113,19 +116,19 @@
             </DettaglioLinee>
             <DatiRiepilogo>
                 <AliquotaIVA>22.00</AliquotaIVA>
-                    <ImponibileImporto>1990.00</ImponibileImporto>
-                    <Imposta>437.80</Imposta>
+                <ImponibileImporto>1990.00</ImponibileImporto>
+                <Imposta>437.80</Imposta>
                 <EsigibilitaIVA>I</EsigibilitaIVA>
             </DatiRiepilogo>
         </DatiBeniServizi>
         <DatiPagamento>
             <CondizioniPagamento>TP02</CondizioniPagamento>
-                <DettaglioPagamento>
-                    <ModalitaPagamento>MP05</ModalitaPagamento>
-                    <DataScadenzaPagamento>2020-02-03</DataScadenzaPagamento>
-                    <ImportoPagamento>2427.80</ImportoPagamento>
-                    <CodicePagamento>INV/2020/00001</CodicePagamento>
-                </DettaglioPagamento>
+            <DettaglioPagamento>
+                <ModalitaPagamento>MP05</ModalitaPagamento>
+                <DataScadenzaPagamento>2020-02-03</DataScadenzaPagamento>
+                <ImportoPagamento>2427.80</ImportoPagamento>
+                <CodicePagamento>INV/2020/00001</CodicePagamento>
+            </DettaglioPagamento>
         </DatiPagamento>
     </FatturaElettronicaBody>
 </p:FatturaElettronica>

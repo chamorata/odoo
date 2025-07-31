@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import base64
 from io import BytesIO
-from odoo import api, fields, models
+
+from odoo import fields, models
 
 
 class BaseImportModule(models.TransientModel):
@@ -12,7 +13,8 @@ class BaseImportModule(models.TransientModel):
     module_file = fields.Binary(string='Module .ZIP file', required=True, attachment=False)
     state = fields.Selection([('init', 'init'), ('done', 'done')], string='Status', readonly=True, default='init')
     import_message = fields.Text()
-    force = fields.Boolean(string='Force init', help="Force init mode even if installed. (will update `noupdate='1'` records)")
+    force = fields.Boolean(string='Force init',
+                           help="Force init mode even if installed. (will update `noupdate='1'` records)")
     with_demo = fields.Boolean(string='Import demo data of module')
     modules_dependencies = fields.Text()
 
@@ -30,7 +32,8 @@ class BaseImportModule(models.TransientModel):
         }
 
     def get_dependencies_to_install_names(self):
-        module_ids, _not_found = self.env['ir.module.module']._get_missing_dependencies_modules(base64.decodebytes(self.module_file))
+        module_ids, _not_found = self.env['ir.module.module']._get_missing_dependencies_modules(
+            base64.decodebytes(self.module_file))
         return module_ids.mapped('name')
 
     def action_module_open(self):

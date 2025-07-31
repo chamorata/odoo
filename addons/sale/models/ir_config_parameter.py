@@ -10,8 +10,8 @@ class IrConfigParameter(models.Model):
     def _sale_sync_cron(self, unlink=False):
         for config in self:
             if (
-                config.key == 'sale.automatic_invoice'
-                and (send_invoice_cron := self.env.ref('sale.send_invoice_cron', raise_if_not_found=False))
+                    config.key == 'sale.automatic_invoice'
+                    and (send_invoice_cron := self.env.ref('sale.send_invoice_cron', raise_if_not_found=False))
             ):
                 send_invoice_cron.active = False if unlink else str2bool(config.value)
 

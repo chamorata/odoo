@@ -21,7 +21,8 @@ class TestSmsTemplate(SMSCommon, TestSMSRecipients):
         cls.sms_template = cls._create_sms_template('mail.test.sms', body=cls.body_en)
 
     def test_sms_template_render(self):
-        rendered_body = self.sms_template._render_template(self.sms_template.body, self.sms_template.model, self.test_record.ids)
+        rendered_body = self.sms_template._render_template(self.sms_template.body, self.sms_template.model,
+                                                           self.test_record.ids)
         self.assertEqual(rendered_body[self.test_record.id], 'Dear %s this is an SMS.' % self.test_record.display_name)
 
         rendered_body = self.sms_template._render_field('body', self.test_record.ids)

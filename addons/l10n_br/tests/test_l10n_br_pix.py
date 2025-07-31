@@ -1,6 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo import Command
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
+from odoo import Command
 from odoo.exceptions import ValidationError
 from odoo.tests import tagged
 

@@ -2,14 +2,16 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import timedelta
+
+from odoo.addons.mail.tools.discuss import Store
+
 from odoo import http, Command, fields
 from odoo.http import request
-from odoo.addons.mail.tools.discuss import Store
 
 
 class WebsiteLivechatChatbotScriptController(http.Controller):
     @http.route('/chatbot/<model("chatbot.script"):chatbot_script>/test',
-        type="http", auth="user", website=True)
+                type="http", auth="user", website=True)
     def chatbot_test_script(self, chatbot_script):
         """ Custom route allowing to test a chatbot script.
         As we don't have a im_livechat.channel linked to it, we pre-emptively create a discuss.channel

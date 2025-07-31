@@ -2,16 +2,16 @@
 
 from unittest.mock import ANY, patch
 
-from odoo.exceptions import AccessError
-from odoo.tests import JsonRpcException, tagged
-from odoo.tools import mute_logger
-
 from odoo.addons.account_payment.tests.common import AccountPaymentCommon
 from odoo.addons.mail.tests.common import MailCase
 from odoo.addons.payment.tests.http_common import PaymentHttpCommon
 from odoo.addons.portal.controllers.portal import CustomerPortal
 from odoo.addons.sale.controllers.portal import PaymentPortal
 from odoo.addons.sale.tests.common import SaleCommon
+
+from odoo.exceptions import AccessError
+from odoo.tests import JsonRpcException, tagged
+from odoo.tools import mute_logger
 
 
 @tagged('-at_install', 'post_install')
@@ -26,8 +26,8 @@ class TestSalePayment(AccountPaymentCommon, SaleCommon, PaymentHttpCommon, MailC
         cls.partner = cls.sale_order.partner_invoice_id
 
         cls.provider.journal_id.inbound_payment_method_line_ids.filtered(lambda l:
-            l.payment_provider_id == cls.provider
-        ).payment_account_id = cls.inbound_payment_method_line.payment_account_id
+                                                                         l.payment_provider_id == cls.provider
+                                                                         ).payment_account_id = cls.inbound_payment_method_line.payment_account_id
 
     def test_11_so_payment_link(self):
         # test customized /payment/pay route with sale_order_id param
@@ -36,8 +36,8 @@ class TestSalePayment(AccountPaymentCommon, SaleCommon, PaymentHttpCommon, MailC
         route_values['sale_order_id'] = self.sale_order.id
 
         with patch(
-            'odoo.addons.payment.controllers.portal.PaymentPortal'
-            '._compute_show_tokenize_input_mapping'
+                'odoo.addons.payment.controllers.portal.PaymentPortal'
+                '._compute_show_tokenize_input_mapping'
         ) as patched:
             tx_context = self._get_portal_pay_context(**route_values)
             patched.assert_called_once_with(ANY, sale_order_id=ANY)
@@ -132,7 +132,7 @@ class TestSalePayment(AccountPaymentCommon, SaleCommon, PaymentHttpCommon, MailC
         self.assertTrue(self.sale_order._has_to_be_paid())
         with mute_logger('odoo.addons.sale.models.payment_transaction'):
             tx_sudo._post_process()
-        self.assertEqual(self.sale_order.state, 'draft') # Only a partial amount was paid
+        self.assertEqual(self.sale_order.state, 'draft')  # Only a partial amount was paid
 
         # Pay the remaining amount
         pay_route_values = self._prepare_pay_values()
@@ -203,7 +203,8 @@ class TestSalePayment(AccountPaymentCommon, SaleCommon, PaymentHttpCommon, MailC
         with mute_logger('odoo.addons.sale.models.payment_transaction'):
             tx_sudo._post_process()
 
-        self.assertEqual(self.sale_order.state, 'draft', 'a partial transaction with automatic invoice and invoice_policy = delivery should not validate a quote')
+        self.assertEqual(self.sale_order.state, 'draft',
+                         'a partial transaction with automatic invoice and invoice_policy = delivery should not validate a quote')
 
     def test_confirmed_transactions_comfirms_so_with_multiple_transaction(self):
         """ Test that a confirmed transaction confirms a SO even if one or more non-confirmed
@@ -384,8 +385,8 @@ class TestSalePayment(AccountPaymentCommon, SaleCommon, PaymentHttpCommon, MailC
             state='done',
         )
         with mute_logger('odoo.addons.sale.models.payment_transaction'), patch(
-            'odoo.addons.sale.models.sale_order.SaleOrder._create_invoices',
-            return_value=self.env['account.move']
+                'odoo.addons.sale.models.sale_order.SaleOrder._create_invoices',
+                return_value=self.env['account.move']
         ) as _create_invoices_mock:
             tx._post_process()
 
@@ -573,7 +574,7 @@ class TestSalePayment(AccountPaymentCommon, SaleCommon, PaymentHttpCommon, MailC
             raise AccessError('')
 
         with patch.object(
-            CustomerPortal, '_document_check_access', _document_check_access_mock
+                CustomerPortal, '_document_check_access', _document_check_access_mock
         ), patch('odoo.addons.payment.utils.check_access_token') as check_payment_access_token_mock:
             try:
                 payment_portal_controller._get_extra_payment_form_values(
@@ -607,7 +608,7 @@ class TestSalePayment(AccountPaymentCommon, SaleCommon, PaymentHttpCommon, MailC
         self.amount = self.sale_order.amount_total / 2
 
         with patch(
-            'odoo.addons.sale.models.sale_order.SaleOrder._send_order_notification_mail',
+                'odoo.addons.sale.models.sale_order.SaleOrder._send_order_notification_mail',
         ) as notification_mail_mock:
             tx_pending = self._create_transaction(
                 flow='direct',

@@ -1,17 +1,16 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.account.controllers.portal import PortalAccount
+from odoo.addons.hr_timesheet.controllers.portal import TimesheetCustomerPortal
+from odoo.addons.portal.controllers.portal import pager as portal_pager
+from odoo.addons.project.controllers.portal import ProjectCustomerPortal
 from werkzeug.exceptions import NotFound
 
 from odoo import http, _
 from odoo.exceptions import AccessError, MissingError
 from odoo.http import request
 from odoo.osv import expression
-
-from odoo.addons.account.controllers.portal import PortalAccount
-from odoo.addons.hr_timesheet.controllers.portal import TimesheetCustomerPortal
-from odoo.addons.portal.controllers.portal import pager as portal_pager
-from odoo.addons.project.controllers.portal import ProjectCustomerPortal
 
 
 class PortalProjectAccount(PortalAccount, ProjectCustomerPortal):
@@ -34,7 +33,8 @@ class PortalProjectAccount(PortalAccount, ProjectCustomerPortal):
         '/my/tasks/<task_id>/orders/invoices',
         '/my/tasks/<task_id>/orders/invoices/page/<int:page>'],
         type='http', auth="user", website=True)
-    def portal_my_tasks_invoices(self, task_id=None, page=1, date_begin=None, date_end=None, sortby=None, filterby=None, **kw):
+    def portal_my_tasks_invoices(self, task_id=None, page=1, date_begin=None, date_end=None, sortby=None, filterby=None,
+                                 **kw):
         task = request.env['project.task'].search([('id', '=', task_id)])
         if not task:
             return NotFound()
@@ -75,8 +75,10 @@ class SaleTimesheetCustomerPortal(TimesheetCustomerPortal):
         if search_in == 'so':
             return ['|', ('so_line', 'ilike', search), ('so_line.order_id.name', 'ilike', search)]
         elif search_in == 'invoice':
-            invoices = request.env['account.move'].sudo().search(['|', ('name', 'ilike', search), ('id', 'ilike', search)])
-            return request.env['account.analytic.line']._timesheet_get_sale_domain(invoices.mapped('invoice_line_ids.sale_line_ids'), invoices)
+            invoices = request.env['account.move'].sudo().search(
+                ['|', ('name', 'ilike', search), ('id', 'ilike', search)])
+            return request.env['account.analytic.line']._timesheet_get_sale_domain(
+                invoices.mapped('invoice_line_ids.sale_line_ids'), invoices)
         else:
             return super()._get_search_domain(search_in, search)
 

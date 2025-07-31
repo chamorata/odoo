@@ -14,7 +14,9 @@
         </field>
         <field name="line_ids">
             <record id="l10n_ca_tr_gsthst_90" model="account.report.line">
-                <field name="name">90 - Taxable sales including zero-rated supplies (other than zero‑rated exports) made in Canada</field>
+                <field name="name">90 - Taxable sales including zero-rated supplies (other than zero‑rated exports) made
+                    in Canada
+                </field>
                 <field name="code">Ca90</field>
                 <field name="hierarchy_level">3</field>
                 <field name="expression_ids">
@@ -56,7 +58,9 @@
                 </field>
             </record>
             <record id="l10n_ca_tr_gsthst_104" model="account.report.line">
-                <field name="name">104 - Adjustments to be added to the net tax for the reporting period (for example, the GST/HST obtained from the recovery of a bad debt).</field>
+                <field name="name">104 - Adjustments to be added to the net tax for the reporting period (for example,
+                    the GST/HST obtained from the recovery of a bad debt).
+                </field>
                 <field name="code">Ca104</field>
                 <field name="hierarchy_level">3</field>
                 <field name="expression_ids">
@@ -73,7 +77,9 @@
                 <field name="aggregation_formula">Ca103.balance + Ca104.balance</field>
             </record>
             <record id="l10n_ca_tr_gsthst_106" model="account.report.line">
-                <field name="name">106 - GST/HST you paid or that is payable by you on qualifying expenses (input tax credits – ITCs) for the current period and any eligible unclaimed ITCs from a previous period</field>
+                <field name="name">106 - GST/HST you paid or that is payable by you on qualifying expenses (input tax
+                    credits – ITCs) for the current period and any eligible unclaimed ITCs from a previous period
+                </field>
                 <field name="code">Ca106</field>
                 <field name="hierarchy_level">3</field>
                 <field name="expression_ids">
@@ -85,7 +91,9 @@
                 </field>
             </record>
             <record id="l10n_ca_tr_gsthst_107" model="account.report.line">
-                <field name="name">107 - Adjustments to be deducted when determining the net tax for the reporting period (for example, the GST/HST included in a bad debt)</field>
+                <field name="name">107 - Adjustments to be deducted when determining the net tax for the reporting
+                    period (for example, the GST/HST included in a bad debt)
+                </field>
                 <field name="code">Ca107</field>
                 <field name="hierarchy_level">3</field>
                 <field name="expression_ids">
@@ -141,7 +149,8 @@
                 <field name="aggregation_formula">Ca109.balance - Ca112.balance</field>
             </record>
             <record id="l10n_ca_tr_gsthst_205" model="account.report.line">
-                <field name="name">205 - GST/HST due on purchases of real property or purchases of emission allowances</field>
+                <field name="name">205 - GST/HST due on purchases of real property or purchases of emission allowances
+                </field>
                 <field name="code">Ca205</field>
                 <field name="hierarchy_level">3</field>
                 <field name="expression_ids">
@@ -282,7 +291,9 @@
                 <field name="aggregation_formula">CaBcB.balance - CaBcC.balance</field>
             </record>
             <record id="l10n_ca_tr_pst_bc_e" model="account.report.line">
-                <field name="name">E - Purchase and Lease Price of Taxable Goods, Software and Services from which no PST was paid</field>
+                <field name="name">E - Purchase and Lease Price of Taxable Goods, Software and Services from which no
+                    PST was paid
+                </field>
                 <field name="code">CaBcE</field>
                 <field name="hierarchy_level">3</field>
                 <field name="expression_ids">
@@ -428,10 +439,10 @@
                 <field name="hierarchy_level">3</field>
                 <field name="expression_ids">
                     <record id="l10n_ca_tr_pst_mb_35_balance" model="account.report.expression">
-                   <field name="label">balance</field>
-                    <field name="engine">external</field>
-                    <field name="formula">sum</field>
-                    <field name="subformula">editable;rounding=2</field>
+                        <field name="label">balance</field>
+                        <field name="engine">external</field>
+                        <field name="formula">sum</field>
+                        <field name="subformula">editable;rounding=2</field>
                     </record>
                 </field>
             </record>
@@ -626,7 +637,8 @@
                 </field>
             </record>
             <record id="l10n_ca_tr_qst_114_214" model="account.report.line">
-                <field name="name">114 - 214 - Tax payable on taxable immovables or taxable carbon emission allowances</field>
+                <field name="name">114 - 214 - Tax payable on taxable immovables or taxable carbon emission allowances
+                </field>
                 <field name="code">CaQc114214</field>
                 <field name="hierarchy_level">2</field>
                 <field name="expression_ids">
@@ -709,10 +721,10 @@
                         <field name="hierarchy_level">3</field>
                         <field name="expression_ids">
                             <record id="l10n_ca_tr_pst_sk_1_balance" model="account.report.expression">
-                           <field name="label">balance</field>
-                            <field name="engine">external</field>
-                            <field name="formula">sum</field>
-                            <field name="subformula">editable;rounding=2;if_above(CAD(0))</field>
+                                <field name="label">balance</field>
+                                <field name="engine">external</field>
+                                <field name="formula">sum</field>
+                                <field name="subformula">editable;rounding=2;if_above(CAD(0))</field>
                             </record>
                         </field>
                     </record>
@@ -768,7 +780,9 @@
                         <field name="name">6 - Tax Credits Recorded for this Period</field>
                         <field name="code">CaSk6</field>
                         <field name="hierarchy_level">3</field>
-                        <field name="aggregation_formula">CaSk2.balance + CaSk3.balance + CaSk4.balance + CaSk5.balance</field>
+                        <field name="aggregation_formula">CaSk2.balance + CaSk3.balance + CaSk4.balance +
+                            CaSk5.balance
+                        </field>
                     </record>
                     <record id="l10n_ca_tr_pst_sk_7" model="account.report.line">
                         <field name="name">7 - Tax Credits</field>

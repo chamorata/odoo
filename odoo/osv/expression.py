@@ -114,11 +114,12 @@ import collections
 import collections.abc
 import json
 import logging
-import pytz
 import reprlib
 import traceback
 import warnings
 from datetime import date, datetime, time
+
+import pytz
 
 import odoo.modules
 from odoo.models import check_property_field_value_name, READ_GROUP_NUMBER_GRANULARITY
@@ -207,15 +208,16 @@ def normalize_domain(domain):
        have been made explicit. One property of normalized domain expressions is that they
        can be easily combined together as if they were single domain components.
     """
-    assert isinstance(domain, (list, tuple)), "Domains to normalize must have a 'domain' form: a list or tuple of domain components"
+    assert isinstance(domain, (list,
+                               tuple)), "Domains to normalize must have a 'domain' form: a list or tuple of domain components"
     if not domain:
         return [TRUE_LEAF]
     result = []
-    expected = 1                            # expected number of expressions
+    expected = 1  # expected number of expressions
     op_arity = {NOT_OPERATOR: 1, AND_OPERATOR: 2, OR_OPERATOR: 2}
     for token in domain:
-        if expected == 0:                   # more than expected, like in [A, B]
-            result[0:0] = [AND_OPERATOR]             # put an extra '&' in front
+        if expected == 0:  # more than expected, like in [A, B]
+            result[0:0] = [AND_OPERATOR]  # put an extra '&' in front
             expected = 1
         if isinstance(token, (list, tuple)):  # domain term
             expected -= 1
@@ -574,6 +576,7 @@ def _tree_combine_anies(tree, model):
 
 def _tree_as_domain(tree):
     """ Return the domain list represented by the given domain tree. """
+
     def _flatten(tree):
         if tree[0] == '?':
             yield TRUE_LEAF if tree[1] else FALSE_LEAF
@@ -644,7 +647,7 @@ def prettify_domain(domain, pre_indent=0):
             # when a same operator appears twice in a row, we want to
             # include the second one on the same line as the former one
             if (not top['terms'] and commits
-                and (commits[-1]['terms'] or [''])[-1].startswith(repr(term))):
+                    and (commits[-1]['terms'] or [''])[-1].startswith(repr(term))):
                 commits[-1]['terms'][-1] += f", {term!r}"  # hack
                 top['left_count'] += 0 if term == NOT_OPERATOR else 1
             else:
@@ -832,6 +835,7 @@ class expression(object):
         :var obj comodel: relational model of field (field.comodel)
             (res_partner.bank_ids -> res.partner.bank)
         """
+
         def to_ids(value, comodel, leaf):
             """ Normalize a single id or name, or a list of those, into a list of ids
 
@@ -992,11 +996,12 @@ class expression(object):
                 comodel = model.env[field.comodel_name].with_context(**field.context)
 
             if (
-                field.company_dependent
-                and field.index == 'btree_not_null'
-                and not isinstance(right, (SQL, Query))
-                and not (field.type in ('datetime', 'date') and len(path) > 1)  # READ_GROUP_NUMBER_GRANULARITY is not supported
-                and model.env['ir.default']._evaluate_condition_with_fallback(model._name, leaf) is False
+                    field.company_dependent
+                    and field.index == 'btree_not_null'
+                    and not isinstance(right, (SQL, Query))
+                    and not (field.type in ('datetime', 'date') and len(
+                path) > 1)  # READ_GROUP_NUMBER_GRANULARITY is not supported
+                    and model.env['ir.default']._evaluate_condition_with_fallback(model._name, leaf) is False
             ):
                 push('&', model, alias)
                 sql_col_is_not_null = SQL('%s.%s IS NOT NULL', SQL.identifier(alias), SQL.identifier(field.name))
@@ -1023,7 +1028,8 @@ class expression(object):
             elif field.type == 'properties':
                 if len(path) != 2 or "." in path[1]:
                     raise ValueError(f"Wrong path {path}")
-                elif operator not in ('=', '!=', '>', '>=', '<', '<=', 'in', 'not in', 'like', 'ilike', 'not like', 'not ilike'):
+                elif operator not in ('=', '!=', '>', '>=', '<', '<=', 'in', 'not in', 'like', 'ilike', 'not like',
+                                      'not ilike'):
                     raise ValueError(f"Wrong search operator {operator!r}")
                 property_name = path[1]
                 check_property_field_value_name(property_name)
@@ -1086,15 +1092,18 @@ class expression(object):
                         ))
             elif field.type in ('datetime', 'date') and len(path) == 2:
                 if path[1] not in READ_GROUP_NUMBER_GRANULARITY:
-                    raise ValueError(f'Error when processing the field {field!r}, the granularity {path[1]} is not supported. Only {", ".join(READ_GROUP_NUMBER_GRANULARITY.keys())} are supported')
+                    raise ValueError(
+                        f'Error when processing the field {field!r}, the granularity {path[1]} is not supported. Only {", ".join(READ_GROUP_NUMBER_GRANULARITY.keys())} are supported')
                 sql_field = model._field_to_sql(alias, field.name, self.query)
                 if model._context.get('tz') in pytz.all_timezones_set and field.type == 'datetime':
                     sql_field = SQL("timezone(%s, timezone('UTC', %s))", model._context['tz'], sql_field)
                 if path[1] == 'day_of_week':
                     first_week_day = int(get_lang(model.env, model._context.get('tz')).week_start)
-                    sql = SQL("mod(7 - %s + date_part(%s, %s)::int, 7) %s %s", first_week_day, READ_GROUP_NUMBER_GRANULARITY[path[1]], sql_field, SQL_OPERATORS[operator], right)
+                    sql = SQL("mod(7 - %s + date_part(%s, %s)::int, 7) %s %s", first_week_day,
+                              READ_GROUP_NUMBER_GRANULARITY[path[1]], sql_field, SQL_OPERATORS[operator], right)
                 else:
-                    sql = SQL('date_part(%s, %s) %s %s', READ_GROUP_NUMBER_GRANULARITY[path[1]], sql_field, SQL_OPERATORS[operator], right)
+                    sql = SQL('date_part(%s, %s) %s %s', READ_GROUP_NUMBER_GRANULARITY[path[1]], sql_field,
+                              SQL_OPERATORS[operator], right)
                 push_result(sql)
 
             # ----------------------------------------
@@ -1334,8 +1343,8 @@ class expression(object):
                         push(dom_leaf, model, alias)
 
                 elif (
-                    isinstance(right, str)
-                    or isinstance(right, (tuple, list)) and right and all(isinstance(item, str) for item in right)
+                        isinstance(right, str)
+                        or isinstance(right, (tuple, list)) and right and all(isinstance(item, str) for item in right)
                 ):
                     # resolve string-based m2o criterion into IDs subqueries
 
@@ -1346,7 +1355,8 @@ class expression(object):
                         right = list(right)
                     if not isinstance(right, list) and operator in ('not in', 'in'):
                         operator = dict_op[operator]
-                    elif isinstance(right, list) and operator in ('!=', '='):  # for domain (FIELD,'=',['value1','value2'])
+                    elif isinstance(right, list) and operator in ('!=',
+                                                                  '='):  # for domain (FIELD,'=',['value1','value2'])
                         operator = dict_op[operator]
                     if operator in NEGATIVE_TERM_OPERATORS:
                         res_ids = comodel._search([('display_name', TERM_OPERATORS_NEGATION[operator], right)])
@@ -1403,7 +1413,8 @@ class expression(object):
                         push_result(model._condition_to_sql(alias, left, operator, right, self.query))
 
                 elif field.translate and (isinstance(right, str) or right is False) and left == field.name and \
-                    self._has_trigram and field.index == 'trigram' and operator in ('=', 'like', 'ilike', '=like', '=ilike'):
+                        self._has_trigram and field.index == 'trigram' and operator in ('=', 'like', 'ilike', '=like',
+                                                                                        '=ilike'):
                     right = right or ''
                     sql_operator = SQL_OPERATORS[operator]
                     need_wildcard = operator in WILDCARD_OPERATORS

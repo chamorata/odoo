@@ -4,10 +4,10 @@
 import base64
 import logging
 import operator
-from tempfile import TemporaryFile
 from os.path import splitext
+from tempfile import TemporaryFile
 
-from odoo import api, fields, models, tools, sql_db, _
+from odoo import fields, models, tools, _
 from odoo.exceptions import UserError
 from odoo.tools.translate import TranslationImporter
 

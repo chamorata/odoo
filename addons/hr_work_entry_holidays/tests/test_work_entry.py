@@ -2,13 +2,14 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import datetime, date
-from dateutil.relativedelta import relativedelta
+
 import pytz
+from dateutil.relativedelta import relativedelta
+from odoo.addons.hr_work_entry_holidays.tests.common import TestWorkEntryHolidaysBase
 
 from odoo.exceptions import ValidationError
-from odoo.tests.common import tagged
 from odoo.fields import Date
-from odoo.addons.hr_work_entry_holidays.tests.common import TestWorkEntryHolidaysBase
+from odoo.tests.common import tagged
 
 
 @tagged('work_entry')
@@ -48,7 +49,8 @@ class TestWorkeEntryHolidaysWorkEntry(TestWorkEntryHolidaysBase):
             'request_date_from': self.start.date() - relativedelta(days=1),
             'request_date_to': self.start.date(),
         })
-        self.assertFalse(work_entry1.action_validate(), "It should not validate work_entries conflicting with non approved leaves")
+        self.assertFalse(work_entry1.action_validate(),
+                         "It should not validate work_entries conflicting with non approved leaves")
         self.assertEqual(work_entry1.state, 'conflict')
 
     def test_refuse_leave_work_entry(self):
@@ -144,7 +146,8 @@ class TestWorkeEntryHolidaysWorkEntry(TestWorkEntryHolidaysBase):
             'login': 'Classic User',
             'company_id': self.env.ref('base.main_company').id,
             'company_ids': self.env.ref('base.main_company').ids,
-            'groups_id': [(6, 0, [self.env.ref('hr_contract.group_hr_contract_manager').id, self.env.ref('base.group_user').id])],
+            'groups_id': [
+                (6, 0, [self.env.ref('hr_contract.group_hr_contract_manager').id, self.env.ref('base.group_user').id])],
         })
         self.env['hr.employee'].with_user(user).generate_work_entries('2019-12-01', '2019-12-31')
 
@@ -227,4 +230,5 @@ class TestWorkeEntryHolidaysWorkEntry(TestWorkEntryHolidaysBase):
         self.assertEqual(leave_work_entry.leave_id.id, leave.id, "Leave work entry should have leave_id value")
 
         public_holiday_work_entry = work_entries.filtered(lambda we: we.work_entry_type_id == work_entry_type_holiday)
-        self.assertEqual(len(public_holiday_work_entry.leave_id), 0, "Public holiday work entry should not have leave_id")
+        self.assertEqual(len(public_holiday_work_entry.leave_id), 0,
+                         "Public holiday work entry should not have leave_id")

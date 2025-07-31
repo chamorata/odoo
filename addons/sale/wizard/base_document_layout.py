@@ -8,8 +8,8 @@ class BaseDocumentLayout(models.TransientModel):
 
     def _get_preview_template(self):
         if (
-            self.env.context.get('active_model') == 'sale.order'
-            and self.env.context.get('active_id')
+                self.env.context.get('active_model') == 'sale.order'
+                and self.env.context.get('active_id')
         ):
             return 'sale.quote_document_layout_preview'
         return super()._get_preview_template()
@@ -17,8 +17,8 @@ class BaseDocumentLayout(models.TransientModel):
     def _get_render_information(self, styles):
         res = super()._get_render_information(styles)
         if (
-            self.env.context.get('active_model') == 'sale.order'
-            and self.env.context.get('active_id')
+                self.env.context.get('active_model') == 'sale.order'
+                and self.env.context.get('active_id')
         ):
             res['doc'] = self.env['sale.order'].browse(self.env.context.get('active_id'))
         return res

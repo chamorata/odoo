@@ -1,19 +1,17 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import json
-
 from unittest.mock import patch
 
-from werkzeug.exceptions import Forbidden
-
-from odoo import api
-from odoo.fields import Command
-from odoo.tests import tagged
-
-from odoo.addons.base.tests.common import BaseUsersCommon
 from odoo.addons.website.tools import MockRequest
 from odoo.addons.website_sale.controllers.main import WebsiteSale
 from odoo.addons.website_sale.tests.common import WebsiteSaleCommon
+from werkzeug.exceptions import Forbidden
+
+from odoo import api
+from odoo.addons.base.tests.common import BaseUsersCommon
+from odoo.fields import Command
+from odoo.tests import tagged
 
 
 @tagged('post_install', '-at_install')
@@ -62,12 +60,14 @@ class TestCheckoutAddress(BaseUsersCommon, WebsiteSaleCommon):
         with MockRequest(self.env, website=self.website, sale_order_id=so.id) as req:
             req.httprequest.method = "POST"
             self.WebsiteSaleController.shop_address_submit(**self.default_address_values)
-            self.assertFalse(self._get_last_address(p).website_id, "New shipping address should not have a website set on it (no specific_user_account).")
+            self.assertFalse(self._get_last_address(p).website_id,
+                             "New shipping address should not have a website set on it (no specific_user_account).")
 
             self.website.specific_user_account = True
 
             self.WebsiteSaleController.shop_address_submit(**self.default_address_values)
-            self.assertEqual(self._get_last_address(p).website_id, self.website, "New shipping address should have a website set on it (specific_user_account).")
+            self.assertEqual(self._get_last_address(p).website_id, self.website,
+                             "New shipping address should have a website set on it (specific_user_account).")
 
     # TEST COMPANY
     def _setUp_multicompany_env(self):
@@ -109,15 +109,19 @@ class TestCheckoutAddress(BaseUsersCommon, WebsiteSaleCommon):
             # 1. Logged in user, new shipping
             self.WebsiteSaleController.shop_address_submit(**self.default_address_values)
             new_shipping = self._get_last_address(self.demo_partner)
-            self.assertTrue(new_shipping.company_id != self.env.user.company_id, "Logged in user new shipping should not get the company of the sudo() neither the one from it's partner..")
+            self.assertTrue(new_shipping.company_id != self.env.user.company_id,
+                            "Logged in user new shipping should not get the company of the sudo() neither the one from it's partner..")
             self.assertEqual(new_shipping.company_id, self.website.company_id, ".. but the one from the website.")
 
             # 2. Logged in user/internal user, should not edit name or email address of billing
             self.default_address_values['partner_id'] = self.demo_partner.id
             self.WebsiteSaleController.shop_address_submit(**self.default_billing_address_values)
-            self.assertEqual(self.demo_partner.company_id, self.company_b, "Logged in user edited billing (the partner itself) should not get its company modified.")
-            self.assertNotEqual(self.demo_partner.name, self.default_address_values['name'], "Employee cannot change their name during the checkout process.")
-            self.assertNotEqual(self.demo_partner.email, self.default_address_values['email'], "Employee cannot change their email during the checkout process.")
+            self.assertEqual(self.demo_partner.company_id, self.company_b,
+                             "Logged in user edited billing (the partner itself) should not get its company modified.")
+            self.assertNotEqual(self.demo_partner.name, self.default_address_values['name'],
+                                "Employee cannot change their name during the checkout process.")
+            self.assertNotEqual(self.demo_partner.email, self.default_address_values['email'],
+                                "Employee cannot change their email during the checkout process.")
 
     def test_03_public_user_address_and_company(self):
         ''' Same as test_02 but with public user '''
@@ -133,13 +137,16 @@ class TestCheckoutAddress(BaseUsersCommon, WebsiteSaleCommon):
             self.default_address_values['partner_id'] = -1
             self.WebsiteSaleController.shop_address_submit(**self.default_address_values)
             new_partner = so.partner_id
-            self.assertNotEqual(new_partner, self.website.user_id.partner_id, "New billing should have created a new partner and assign it on the SO")
-            self.assertEqual(new_partner.company_id, self.website.company_id, "The new partner should get the company of the website")
+            self.assertNotEqual(new_partner, self.website.user_id.partner_id,
+                                "New billing should have created a new partner and assign it on the SO")
+            self.assertEqual(new_partner.company_id, self.website.company_id,
+                             "The new partner should get the company of the website")
 
             # 2. Public user, edit billing
             self.default_address_values['partner_id'] = new_partner.id
             self.WebsiteSaleController.shop_address_submit(**self.default_billing_address_values)
-            self.assertEqual(new_partner.company_id, self.website.company_id, "Public user edited billing (the partner itself) should not get its company modified.")
+            self.assertEqual(new_partner.company_id, self.website.company_id,
+                             "Public user edited billing (the partner itself) should not get its company modified.")
 
     def test_03_carrier_rate_on_shipping_address_change(self):
         """ Test that when a shipping address is changed the price of delivery is recalculated
@@ -151,8 +158,8 @@ class TestCheckoutAddress(BaseUsersCommon, WebsiteSaleCommon):
         shipping_partner = self.env['res.partner'].create(shipping_partner_values)
         order.partner_shipping_id = shipping_partner
         with MockRequest(self.env, website=self.website, sale_order_id=order.id), patch(
-            'odoo.addons.delivery.models.delivery_carrier.DeliveryCarrier.rate_shipment',
-            return_value={'success': True, 'price': 10, 'warning_message': ''}
+                'odoo.addons.delivery.models.delivery_carrier.DeliveryCarrier.rate_shipment',
+                return_value={'success': True, 'price': 10, 'warning_message': ''}
         ) as rate_shipment_mock:
             # Change a shipping address of the order in the checkout.
             shipping_partner2 = shipping_partner.copy()
@@ -206,9 +213,9 @@ class TestCheckoutAddress(BaseUsersCommon, WebsiteSaleCommon):
         self.assertEqual(so.pricelist_id, self.pricelist)
 
         with MockRequest(
-            self.env, website=self.website,
-            sale_order_id=so.id,
-            website_sale_current_pl=so.pricelist_id.id
+                self.env, website=self.website,
+                sale_order_id=so.id,
+                website_sale_current_pl=so.pricelist_id.id
         ):
             self.assertEqual(self.website.pricelist_id, self.pricelist)
             order = self.website.with_env(public_user_env).sale_get_order()
@@ -230,7 +237,8 @@ class TestCheckoutAddress(BaseUsersCommon, WebsiteSaleCommon):
         self.assertEqual(so.company_id, self.website.company_id)
 
         # Same company on the SO and the env user company but no website
-        with self.assertRaises(ValueError, msg="Should not be able to create SO with company different than the website company"):
+        with self.assertRaises(ValueError,
+                               msg="Should not be able to create SO with company different than the website company"):
             self._create_so(partner_id=self.demo_partner.id, company_id=self.company_a.id)
 
         # Same company on the SO and the website company
@@ -238,7 +246,8 @@ class TestCheckoutAddress(BaseUsersCommon, WebsiteSaleCommon):
         self.assertEqual(so.company_id, self.website.company_id)
 
         # Different company on the SO and the env user company
-        with self.assertRaises(ValueError, msg="Should not be able to create SO with company different than the website company"):
+        with self.assertRaises(ValueError,
+                               msg="Should not be able to create SO with company different than the website company"):
             self._create_so(partner_id=self.demo_partner.id, company_id=self.company_c.id)
 
     def test_06_portal_user_address_and_company(self):
@@ -254,14 +263,16 @@ class TestCheckoutAddress(BaseUsersCommon, WebsiteSaleCommon):
             # 1. Portal user, new shipping, same with the log in user
             self.WebsiteSaleController.shop_address_submit(**self.default_address_values)
             new_shipping = self._get_last_address(self.portal_partner)
-            self.assertTrue(new_shipping.company_id != self.env.user.company_id, "Portal user new shipping should not get the company of the sudo() neither the one from it's partner..")
+            self.assertTrue(new_shipping.company_id != self.env.user.company_id,
+                            "Portal user new shipping should not get the company of the sudo() neither the one from it's partner..")
             self.assertEqual(new_shipping.company_id, self.website.company_id, ".. but the one from the website.")
 
             # 2. Portal user, edit billing
             self.default_address_values['partner_id'] = self.portal_partner.id
             self.WebsiteSaleController.shop_address_submit(**self.default_billing_address_values)
             # Name cannot be changed if there are issued invoices
-            self.assertNotEqual(self.portal_partner.name, self.default_address_values['name'], "Portal User should not be able to change the name if they have invoices under their name.")
+            self.assertNotEqual(self.portal_partner.name, self.default_address_values['name'],
+                                "Portal User should not be able to change the name if they have invoices under their name.")
 
     def test_07_change_fiscal_position(self):
         """
@@ -338,7 +349,7 @@ class TestCheckoutAddress(BaseUsersCommon, WebsiteSaleCommon):
             )
             self.assertEqual(
                 [so.amount_untaxed, so.amount_tax, so.amount_total],
-                [90.91, 18.18, 109.09] # (100 : (1 + 10%)) * (1 + 20%) = 109.09
+                [90.91, 18.18, 109.09]  # (100 : (1 + 10%)) * (1 + 20%) = 109.09
             )
 
             self.WebsiteSaleController.shop_address_submit(**nl_address_POST)
@@ -348,7 +359,7 @@ class TestCheckoutAddress(BaseUsersCommon, WebsiteSaleCommon):
             )
             self.assertEqual(
                 [so.amount_untaxed, so.amount_tax, so.amount_total],
-                [90.91, 13.64, 104.55] # (100 : (1 + 10%)) * (1 + 15%) = 104.55
+                [90.91, 13.64, 104.55]  # (100 : (1 + 10%)) * (1 + 15%) = 104.55
             )
 
     def test_08_new_user_address_state(self):
@@ -384,7 +395,7 @@ class TestCheckoutAddress(BaseUsersCommon, WebsiteSaleCommon):
 
             # 4. Logged-in user, new delivery, use delivery as billing
             use_delivery_as_billing = (
-                self.default_address_values | {'use_delivery_as_billing': 'true'}
+                    self.default_address_values | {'use_delivery_as_billing': 'true'}
             )
             self.WebsiteSaleController.shop_address_submit(**use_delivery_as_billing)
             new_delivery_use_same = self._get_last_address(self.demo_partner)
@@ -458,7 +469,7 @@ class TestCheckoutAddress(BaseUsersCommon, WebsiteSaleCommon):
                 'parent_id': user_partner.id,
             },
             {
-                'name': 'Invalid billing', # missing email
+                'name': 'Invalid billing',  # missing email
                 'street': '215 Vine St',
                 'city': 'Scranton',
                 'zip': '18503',
@@ -484,7 +495,6 @@ class TestCheckoutAddress(BaseUsersCommon, WebsiteSaleCommon):
         env = api.Environment(self.env.cr, user.id, {})
         # change also website env for `sale_get_order` to not change order partner_id
         with MockRequest(env, website=self.website.with_env(env), sale_order_id=so.id):
-
             # Invalid addresses unaccessible to current customer
             with self.assertRaises(Forbidden):
                 # cannot use contact type addresses
@@ -612,7 +622,8 @@ class TestCheckoutAddress(BaseUsersCommon, WebsiteSaleCommon):
 
             so.website_id = False
             so._compute_payment_term_id()
-            self.assertFalse(so.payment_term_id, "The website default payment term should not be set on a sale order not coming from the website")
+            self.assertFalse(so.payment_term_id,
+                             "The website default payment term should not be set on a sale order not coming from the website")
 
     def test_12_recompute_taxes_on_address_change(self):
         self.env.company.country_id = self.env.ref('base.us')

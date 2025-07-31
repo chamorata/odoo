@@ -65,14 +65,16 @@ class AccountJournal(models.Model):
     l10n_sa_compliance_csid_json = fields.Char("CCSID JSON", copy=False, groups="base.group_system",
                                                help="Compliance CSID data received from the Compliance CSID API "
                                                     "in dumped json format")
-    l10n_sa_production_csid_certificate_id = fields.Many2one(string="PCSID Certificate", comodel_name="certificate.certificate",
-                                                          domain=[('is_valid', '=', True)])
+    l10n_sa_production_csid_certificate_id = fields.Many2one(string="PCSID Certificate",
+                                                             comodel_name="certificate.certificate",
+                                                             domain=[('is_valid', '=', True)])
     l10n_sa_production_csid_json = fields.Char("PCSID JSON", copy=False, groups="base.group_system",
                                                help="Production CSID data received from the Production CSID API "
                                                     "in dumped json format")
     l10n_sa_production_csid_validity = fields.Datetime(related="l10n_sa_production_csid_certificate_id.date_end")
-    l10n_sa_compliance_csid_certificate_id = fields.Many2one(string="CCSID certificate", comodel_name="certificate.certificate",
-                                                          domain=[('is_valid', '=', True)])
+    l10n_sa_compliance_csid_certificate_id = fields.Many2one(string="CCSID certificate",
+                                                             comodel_name="certificate.certificate",
+                                                             domain=[('is_valid', '=', True)])
     l10n_sa_compliance_checks_passed = fields.Boolean("Compliance Checks Done", default=False, copy=False,
                                                       help="Specifies if the Compliance Checks have been completed successfully")
 
@@ -176,7 +178,8 @@ class AccountJournal(models.Model):
             # The private key is used to generate the CSR but also to sign the invoices
             ec_private_key_sudo = self.company_id.sudo().l10n_sa_private_key_id
             if not ec_private_key_sudo:
-                ec_private_key_sudo = self.env['certificate.key'].sudo()._generate_ec_private_key(self.company_id, name='CCSID private key')
+                ec_private_key_sudo = self.env['certificate.key'].sudo()._generate_ec_private_key(self.company_id,
+                                                                                                  name='CCSID private key')
                 self.company_id.l10n_sa_private_key_id = ec_private_key_sudo
             self._l10n_sa_generate_csr()
             # STEP 1: The first step of the process is to get the CCSID
@@ -288,18 +291,26 @@ class AccountJournal(models.Model):
         for fname, fval in compliance_files.items():
             invoice_hash_hex = self.env['account.edi.xml.ubl_21.zatca']._l10n_sa_generate_invoice_xml_hash(
                 fval).decode()
-            digital_signature = self.env.ref('l10n_sa_edi.edi_sa_zatca')._l10n_sa_get_digital_signature(self.company_id, invoice_hash_hex).decode()
-            prepared_xml = self._l10n_sa_prepare_compliance_xml(fname, fval, self_sudo.l10n_sa_compliance_csid_certificate_id, digital_signature)
+            digital_signature = self.env.ref('l10n_sa_edi.edi_sa_zatca')._l10n_sa_get_digital_signature(self.company_id,
+                                                                                                        invoice_hash_hex).decode()
+            prepared_xml = self._l10n_sa_prepare_compliance_xml(fname, fval,
+                                                                self_sudo.l10n_sa_compliance_csid_certificate_id,
+                                                                digital_signature)
             result = self._l10n_sa_api_compliance_checks(prepared_xml.decode(), CCSID_data)
             if result.get('error'):
-                raise UserError(Markup("<p class='mb-0'>%s <b>%s</b></p>") % (_("Could not complete Compliance Checks for the following file:"), fname))
+                raise UserError(Markup("<p class='mb-0'>%s <b>%s</b></p>") % (
+                    _("Could not complete Compliance Checks for the following file:"), fname))
             if result['validationResults']['status'] == 'WARNING':
-                warnings = Markup().join(Markup("<li><b>%(code)s</b>: %(message)s </li>") % e for e in result['validationResults']['warningMessages'])
-                self.l10n_sa_csr_errors = Markup("<br/><br/><ul class='pl-3'><b>%s</b>%s</ul>") % (_("Warnings:"), warnings)
+                warnings = Markup().join(Markup("<li><b>%(code)s</b>: %(message)s </li>") % e for e in
+                                         result['validationResults']['warningMessages'])
+                self.l10n_sa_csr_errors = Markup("<br/><br/><ul class='pl-3'><b>%s</b>%s</ul>") % (_("Warnings:"),
+                                                                                                   warnings)
             elif result['validationResults']['status'] != 'PASS':
-                errors = Markup().join(Markup("<li><b>%(code)s</b>: %(message)s </li>") % e for e in result['validationResults']['errorMessages'])
+                errors = Markup().join(Markup("<li><b>%(code)s</b>: %(message)s </li>") % e for e in
+                                       result['validationResults']['errorMessages'])
                 raise UserError(Markup("<p class='mb-0'>%s <b>%s</b> %s</p>")
-                                % (_("Could not complete Compliance Checks for the following file:"), fname, Markup("<br/><br/><ul class='pl-3'><b>%s</b>%s</ul>") % (_("Errors:"), errors)))
+                                % (_("Could not complete Compliance Checks for the following file:"), fname,
+                                   Markup("<br/><br/><ul class='pl-3'><b>%s</b>%s</ul>") % (_("Errors:"), errors)))
         self.l10n_sa_compliance_checks_passed = True
 
     def _l10n_sa_prepare_compliance_xml(self, xml_name, xml_raw, certificate, signature):
@@ -510,7 +521,7 @@ class AccountJournal(models.Model):
         self_sudo = self.sudo()
         if not self_sudo.l10n_sa_production_csid_json or not self_sudo.l10n_sa_production_csid_certificate_id:
             raise UserError(_("Please, make a request to obtain the Compliance CSID and Production CSID before sending "
-                            "documents to ZATCA"))
+                              "documents to ZATCA"))
         certificate = self_sudo.l10n_sa_production_csid_certificate_id
         if not certificate.is_valid and self.company_id.l10n_sa_api_mode != 'sandbox':
             raise UserError(_("Production certificate has expired, please renew the PCSID before proceeding"))
@@ -539,7 +550,7 @@ class AccountJournal(models.Model):
             if (status_code := ex.response.status_code) != 400:
                 return {
                     'error': (Markup("<b>[%s]</b>") % status_code) + _("Server returned an unexpected error: %(error)s",
-                               error=(request_response.text or str(ex))),
+                                                                       error=(request_response.text or str(ex))),
                     'blocking_level': 'warning',
                     'status_code': status_code,
                     'excepted': True,

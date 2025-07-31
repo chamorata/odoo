@@ -25,7 +25,7 @@ class ProductProduct(models.Model):
             default_uom_id = self.env['ir.default']._get_model_defaults('product.product').get('uom_id')
             default_uom = self.env['uom.uom'].browse(default_uom_id)
             if record.type == 'service' and record.service_type == 'timesheet' and \
-               not (record._origin.service_policy and record.service_policy == record._origin.service_policy):
+                    not (record._origin.service_policy and record.service_policy == record._origin.service_policy):
                 if default_uom and default_uom.category_id == self.env.ref('uom.uom_categ_wtime'):
                     record.uom_id = default_uom
                 else:
@@ -42,9 +42,9 @@ class ProductProduct(models.Model):
     def _onchange_service_policy(self):
         self._inverse_service_policy()
         vals = self.product_tmpl_id._get_onchange_service_policy_updates(self.service_tracking,
-                                                                        self.service_policy,
-                                                                        self.project_id,
-                                                                        self.project_template_id)
+                                                                         self.service_policy,
+                                                                         self.project_id,
+                                                                         self.project_template_id)
         if vals:
             self.update(vals)
 
@@ -52,7 +52,9 @@ class ProductProduct(models.Model):
     def _unlink_except_master_data(self):
         time_product = self.env.ref('sale_timesheet.time_product')
         if time_product in self:
-            raise ValidationError(_('The %s product is required by the Timesheets app and cannot be archived nor deleted.', time_product.name))
+            raise ValidationError(
+                _('The %s product is required by the Timesheets app and cannot be archived nor deleted.',
+                  time_product.name))
 
     def write(self, vals):
         # timesheet product can't be archived
@@ -60,5 +62,7 @@ class ProductProduct(models.Model):
         if not test_mode and 'active' in vals and not vals['active']:
             time_product = self.env.ref('sale_timesheet.time_product')
             if time_product in self:
-                raise ValidationError(_('The %s product is required by the Timesheets app and cannot be archived nor deleted.', time_product.name))
+                raise ValidationError(
+                    _('The %s product is required by the Timesheets app and cannot be archived nor deleted.',
+                      time_product.name))
         return super().write(vals)

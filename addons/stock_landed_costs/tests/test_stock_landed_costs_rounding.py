@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import Command
 from odoo.addons.stock_landed_costs.tests.common import TestStockLandedCostsCommon
+
+from odoo import Command
 from odoo.fields import Date
 from odoo.tests import tagged, Form
 
@@ -27,8 +28,10 @@ class TestStockLandedCostsRounding(TestStockLandedCostsCommon):
             'uom_id': product_uom_unit_round_1.id,
         })
         product_landed_cost_3.product_tmpl_id.categ_id.property_cost_method = 'fifo'
-        product_landed_cost_3.product_tmpl_id.categ_id.property_stock_account_input_categ_id = self.company_data['default_account_expense']
-        product_landed_cost_3.product_tmpl_id.categ_id.property_stock_account_output_categ_id = self.company_data['default_account_revenue']
+        product_landed_cost_3.product_tmpl_id.categ_id.property_stock_account_input_categ_id = self.company_data[
+            'default_account_expense']
+        product_landed_cost_3.product_tmpl_id.categ_id.property_stock_account_output_categ_id = self.company_data[
+            'default_account_revenue']
 
         product_landed_cost_4 = self.env['product.product'].create({
             'name': "LC product 4",
@@ -36,8 +39,10 @@ class TestStockLandedCostsRounding(TestStockLandedCostsCommon):
         })
         product_landed_cost_4.product_tmpl_id.categ_id.property_cost_method = 'fifo'
         product_landed_cost_4.product_tmpl_id.categ_id.property_valuation = 'real_time'
-        product_landed_cost_4.product_tmpl_id.categ_id.property_stock_account_input_categ_id = self.company_data['default_account_expense']
-        product_landed_cost_4.product_tmpl_id.categ_id.property_stock_account_output_categ_id = self.company_data['default_account_revenue']
+        product_landed_cost_4.product_tmpl_id.categ_id.property_stock_account_input_categ_id = self.company_data[
+            'default_account_expense']
+        product_landed_cost_4.product_tmpl_id.categ_id.property_stock_account_output_categ_id = self.company_data[
+            'default_account_revenue']
 
         picking_default_vals = self.env['stock.picking'].default_get(list(self.env['stock.picking'].fields_get()))
 
@@ -120,7 +125,7 @@ class TestStockLandedCostsRounding(TestStockLandedCostsCommon):
 
         # We perform all the tests for LC_pick_4
         # I receive picking LC_pick_4, and check how many quants are created
-        picking_landed_cost_4.move_ids.price_unit = 17.0/12.0
+        picking_landed_cost_4.move_ids.price_unit = 17.0 / 12.0
         picking_landed_cost_4.action_confirm()
         picking_landed_cost_4.action_assign()
         picking_landed_cost_4._action_done()

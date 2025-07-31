@@ -11,13 +11,14 @@ as possible with reasonable limitations. Also, this only changes imports and exp
 the original source need to be supported by the browsers.
 """
 
-import re
 import logging
+import re
 from functools import partial
 
 from odoo.tools.misc import OrderedSet
 
 _logger = logging.getLogger(__name__)
+
 
 def transpile_javascript(url, content):
     """
@@ -97,6 +98,7 @@ def url_to_module_path(url):
     else:
         raise ValueError("The js file %r must be in the folder '/static/src' or '/static/lib' or '/static/test'" % url)
 
+
 def wrap_with_qunit_module(url, content):
     """
     Wraps the test file content (source code) with the QUnit.module('module_name', function() {...}).
@@ -106,6 +108,7 @@ def wrap_with_qunit_module(url, content):
         return f"""QUnit.module("{match["module"]}", function() {{{content}}});"""
     else:
         return content
+
 
 def wrap_with_odoo_define(module_path, dependencies, content):
     """
@@ -150,6 +153,7 @@ def convert_export_function(content):
     """
     repl = r"\g<space>__exports.\g<identifier> = \g<identifier>; \g<type> \g<identifier>"
     return EXPORT_FCT_RE.sub(repl, content)
+
 
 EXPORT_CLASS_RE = re.compile(r"""
     ^
@@ -205,6 +209,7 @@ def convert_export_function_default(content):
     repl = r"""\g<space>__exports[Symbol.for("default")] = \g<identifier>; \g<type> \g<identifier>"""
     return EXPORT_FCT_DEFAULT_RE.sub(repl, content)
 
+
 EXPORT_CLASS_DEFAULT_RE = re.compile(r"""
     ^
     (?P<space>\s*)                          # space and empty line
@@ -228,6 +233,7 @@ def convert_export_class_default(content):
     """
     repl = r"""\g<space>const \g<identifier> = __exports[Symbol.for("default")] = \g<type> \g<identifier>"""
     return EXPORT_CLASS_DEFAULT_RE.sub(repl, content)
+
 
 EXPORT_VAR_RE = re.compile(r"""
     ^
@@ -299,10 +305,12 @@ def convert_object_export(content):
         // after
         Object.assign(__exports, { a, b, x: c })
     """
+
     def repl(matchobj):
         object_process = "{" + ", ".join([convert_as(val) for val in matchobj["object"][1:-1].split(",")]) + "}"
         space = matchobj["space"]
         return f"{space}Object.assign(__exports, {object_process})"
+
     return EXPORT_OBJECT_RE.sub(repl, content)
 
 
@@ -327,6 +335,7 @@ def convert_from_export(content):
         // after
         { a, b, c } = {require("some/path.js"); Object.assign(__exports, { a, b, x: c });}
     """
+
     def repl(matchobj):
         object_clean = "{" + ",".join([remove_as(val) for val in matchobj["object"][1:-1].split(",")]) + "}"
         object_process = "{" + ", ".join([convert_as(val) for val in matchobj["object"][1:-1].split(",")]) + "}"
@@ -336,6 +345,7 @@ def convert_from_export(content):
             'space': matchobj['space'],
             'path': matchobj['path'],
         }
+
     return EXPORT_FROM_RE.sub(repl, content)
 
 
@@ -419,9 +429,11 @@ def convert_basic_import(content):
         // after
         const {a, b, c: x} = require("some/path")
     """
+
     def repl(matchobj):
         new_object = matchobj["object"].replace(" as ", ": ")
         return f"{matchobj['space']}const {new_object} = require({matchobj['path']})"
+
     return IMPORT_BASIC_RE.sub(repl, content)
 
 
@@ -504,6 +516,7 @@ def convert_default_and_named_import(content):
         const somethingElse = require("legacy.module");
         const { b } = somethingElse;
     """
+
     def repl(matchobj):
         is_legacy = IS_PATH_LEGACY_RE.match(matchobj['path'])
         new_object = matchobj["named_exports"].replace(" as ", ": ")
@@ -512,6 +525,7 @@ def convert_default_and_named_import(content):
 {matchobj['space']}const {new_object} = {matchobj['default_export']}"""
         new_object = f"""{{ [Symbol.for("default")]: {matchobj['default_export']},{new_object[1:]}"""
         return f"{matchobj['space']}const {new_object} = require({matchobj['path']})"
+
     return IMPORT_DEFAULT_AND_NAMED_RE.sub(repl, content)
 
 
@@ -639,10 +653,12 @@ def remove_index(content):
     We want to be able to import a module just trough its directory name if it contains an index.js.
     So we no longer need to specify the index.js in the paths.
     """
+
     def repl(matchobj):
         path = matchobj["path"]
         new_path = path[: path.rfind("/index")] + path[0]
         return f"require({new_path})"
+
     return URL_INDEX_RE.sub(repl, content)
 
 

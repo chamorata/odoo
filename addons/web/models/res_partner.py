@@ -12,12 +12,11 @@ _logger = logging.getLogger(__name__)
 try:
     import vobject
 except ImportError:
-    _logger.warning("`vobject` Python module not found, vcard file generation disabled. Consider installing this module if you want to generate vcard files")
+    _logger.warning(
+        "`vobject` Python module not found, vcard file generation disabled. Consider installing this module if you want to generate vcard files")
     vobject = None
 
-
 if vobject is not None:
-
     class VBaseProxy(Proxy):
         _wrapped__ = vobject.base.VBase
 
@@ -25,12 +24,14 @@ if vobject is not None:
         type_param = ProxyAttr()
         value = ProxyAttr(None)
 
+
     class VCardContentsProxy(Proxy):
         _wrapped__ = dict
 
         __delitem__ = ProxyFunc()
         __contains__ = ProxyFunc()
         get = ProxyFunc(lambda lines: [VBaseProxy(line) for line in lines])
+
 
     class VComponentProxy(Proxy):
         _wrapped__ = vobject.base.Component

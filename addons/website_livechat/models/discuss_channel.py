@@ -1,7 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, fields, models, _
 from odoo.addons.mail.tools.discuss import Store
+
+from odoo import api, fields, models, _
 from odoo.exceptions import AccessError
 
 
@@ -37,7 +38,8 @@ class DiscussChannel(models.Model):
             try:
                 country_id = visitor.partner_id.country_id or visitor.country_id
                 channel_info['visitor'] = {
-                    'name': visitor.partner_id.name or visitor.partner_id.display_name or visitor.display_name or _("Visitor #%(id)d.", id=visitor.id),
+                    'name': visitor.partner_id.name or visitor.partner_id.display_name or visitor.display_name or _(
+                        "Visitor #%(id)d.", id=visitor.id),
                     'country': {'id': country_id.id, 'code': country_id.code.lower()} if country_id else False,
                     'id': visitor.id,
                     'is_connected': visitor.is_connected,
@@ -57,8 +59,10 @@ class DiscussChannel(models.Model):
         :param visitor: website.visitor of the channel
         :return: arrow separated string containing navigation history information
         """
-        recent_history = self.env['website.track'].search([('page_id', '!=', False), ('visitor_id', '=', visitor.id)], limit=3)
-        return ' → '.join(visit.page_id.name + ' (' + visit.visit_datetime.strftime('%H:%M') + ')' for visit in reversed(recent_history))
+        recent_history = self.env['website.track'].search([('page_id', '!=', False), ('visitor_id', '=', visitor.id)],
+                                                          limit=3)
+        return ' → '.join(visit.page_id.name + ' (' + visit.visit_datetime.strftime('%H:%M') + ')' for visit in
+                          reversed(recent_history))
 
     def _get_visitor_leave_message(self, operator=False, cancel=False):
         if not cancel:

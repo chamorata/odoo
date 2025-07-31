@@ -1,5 +1,7 @@
 from odoo.addons.portal.controllers import portal
+
 from odoo.http import request
+
 
 class CustomerPortal(portal.CustomerPortal):
 

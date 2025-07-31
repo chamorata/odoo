@@ -13,7 +13,7 @@
                             <div class="text-info" invisible="earliest_available_date_message == ''">
                                 <i class="fa fa-info-circle me-1" title="Hint"/>
                                 <field name="earliest_available_date_message" nolabel="1"/>
-                            </div >
+                            </div>
                             <field name="date_from"/>
                         </div>
                         <label for="date_to"></label>
@@ -27,15 +27,19 @@
                     </group>
                 </group>
                 <div>
-                    <span class="text-muted">Warning: The work entry regeneration will delete all manual changes on the selected period.</span>
+                    <span class="text-muted">Warning: The work entry regeneration will delete all manual changes on the
+                        selected period.
+                    </span>
                 </div>
                 <field name="search_criteria_completed" invisible="1"/>
                 <field name="valid" invisible="1"/>
                 <div invisible="not search_criteria_completed or valid">
-                    <div class="text-danger"><i class="fa fa-exclamation-triangle me-1" title="Warning"/>You are not allowed to regenerate validated work entries</div>
+                    <div class="text-danger"><i class="fa fa-exclamation-triangle me-1" title="Warning"/>You are not
+                        allowed to regenerate validated work entries
+                    </div>
                     <field name="validated_work_entry_ids" widget="many2many" nolabel="1">
                         <list string="Work Entries"
-                              default_order = "date_start"
+                              default_order="date_start"
 
                               editable="bottom"
                               no_open="1" decoration-danger="state == 'validated'">
@@ -57,7 +61,8 @@
                             string="Regenerate Work Entries"
                             class="btn btn-primary disabled"
                             invisible="search_criteria_completed and valid"/>
-                    <button name="cancel_button" string="Cancel" class="btn-secondary" special="cancel" data-hotkey="x"/>
+                    <button name="cancel_button" string="Cancel" class="btn-secondary" special="cancel"
+                            data-hotkey="x"/>
                 </footer>
             </form>
         </field>

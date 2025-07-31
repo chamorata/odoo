@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <QueryTransactionStatusRequest xmlns:common="http://schemas.nav.gov.hu/NTCA/1.0/common"
-    xmlns="http://schemas.nav.gov.hu/OSA/3.0/api">
+                               xmlns="http://schemas.nav.gov.hu/OSA/3.0/api">
     <common:header>
         <common:requestId>___ignore___</common:requestId>
         <common:timestamp>___ignore___</common:timestamp>

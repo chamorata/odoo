@@ -23,5 +23,6 @@ class TestWebReadGroup(common.TransactionCase):
                 "x_date": fields.Date.to_date("2021-07-01")
             }
         ])
-        groups = self.env["res.partner"].web_read_group([["id", "in", [first.id, second.id]]], [], groupby=["x_date"], limit=1)
+        groups = self.env["res.partner"].web_read_group([["id", "in", [first.id, second.id]]], [], groupby=["x_date"],
+                                                        limit=1)
         self.assertEqual(groups["length"], 2)

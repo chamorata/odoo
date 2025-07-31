@@ -10,9 +10,9 @@ class ResCompany(models.Model):
 
     _sql_constraints = [
         ('check_quotation_validity_days',
-            'CHECK(quotation_validity_days >= 0)',
-            "You cannot set a negative number for the default quotation validity."
-            " Leave empty (or 0) to disable the automatic expiration of quotations."),
+         'CHECK(quotation_validity_days >= 0)',
+         "You cannot set a negative number for the default quotation validity."
+         " Leave empty (or 0) to disable the automatic expiration of quotations."),
     ]
 
     portal_confirmation_sign = fields.Boolean(string="Online Signature", default=True)
@@ -25,7 +25,7 @@ class ResCompany(models.Model):
         string="Default Quotation Validity",
         default=30,
         help="Days between quotation proposal and expiration."
-            " 0 days means automatic expiration is disabled",
+             " 0 days means automatic expiration is disabled",
     )
     sale_discount_product_id = fields.Many2one(
         comodel_name='product.product',

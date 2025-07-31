@@ -3,11 +3,12 @@
 from contextlib import contextmanager
 from unittest.mock import patch
 
-from odoo import exceptions
 from odoo.addons.crm.models.crm_lead import Lead
 from odoo.addons.crm_iap_mine.models.crm_iap_lead_mining_request import CRMLeadMiningRequest
 from odoo.addons.iap.tests.common import MockIAPEnrich
 from odoo.addons.iap.tools import iap_tools
+
+from odoo import exceptions
 
 
 class MockIAPReveal(MockIAPEnrich):
@@ -67,11 +68,12 @@ class MockIAPReveal(MockIAPEnrich):
             }
 
         with patch.object(CRMLeadMiningRequest, '_iap_contact_mining', side_effect=_iap_contact_mining), \
-             patch.object(Lead, 'create', autospec=True, wraps=Lead, side_effect=_crm_lead_create):
+                patch.object(Lead, 'create', autospec=True, wraps=Lead, side_effect=_crm_lead_create):
             yield
 
     def _get_iap_company_data(self, base_name, service=None, add_values=None):
-        company_data = super(MockIAPReveal, self)._get_iap_company_data(base_name, service=service, add_values=add_values)
+        company_data = super(MockIAPReveal, self)._get_iap_company_data(base_name, service=service,
+                                                                        add_values=add_values)
         if service == 'mine':
             company_data['phone'] = company_data['phone_numbers'][0]
             company_data['sector'] = 'Sector Info'

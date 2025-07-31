@@ -16,7 +16,8 @@
                 <div t-if="state.templates.length === 0" class="fst-italic px-3">
                     No saved templates
                 </div>
-                <DropdownItem t-if="state.templates.length >= this.limit" onSelected="() => this.onSelectTemplateSearchMoreBtnClick()">
+                <DropdownItem t-if="state.templates.length >= this.limit"
+                              onSelected="() => this.onSelectTemplateSearchMoreBtnClick()">
                     <a href="#">Search More...</a>
                 </DropdownItem>
                 <div class="dropdown-divider"/>
@@ -33,7 +34,8 @@
                         <div t-if="state.templates.length === 0" class="fst-italic px-3">
                             No saved templates
                         </div>
-                        <DropdownItem t-if="state.templates.length >= this.limit" onSelected="() => this.onOverwriteTemplateSearchMoreBtnClick()">
+                        <DropdownItem t-if="state.templates.length >= this.limit"
+                                      onSelected="() => this.onOverwriteTemplateSearchMoreBtnClick()">
                             <a href="#">Search More...</a>
                         </DropdownItem>
                         <div class="dropdown-divider"/>
@@ -56,7 +58,8 @@
                         <div t-if="state.templates.length === 0" class="fst-italic px-3">
                             No saved templates
                         </div>
-                        <DropdownItem t-if="state.templates.length >= this.limit" onSelected="() => this.onDeleteTemplateSearchMoreBtnClick()">
+                        <DropdownItem t-if="state.templates.length >= this.limit"
+                                      onSelected="() => this.onDeleteTemplateSearchMoreBtnClick()">
                             <a href="#">Search More...</a>
                         </DropdownItem>
                     </t>

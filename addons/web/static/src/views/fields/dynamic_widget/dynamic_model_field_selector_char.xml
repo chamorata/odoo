@@ -8,7 +8,7 @@
             <attribute name="class" add="d-none" separator=" "/>
         </xpath>
         <xpath expr="//t[@t-if='props.readonly']" position="before">
-            <DynamicModelFieldSelector t-props="getSelectorProps" />
+            <DynamicModelFieldSelector t-props="getSelectorProps"/>
         </xpath>
     </t>
 </templates>

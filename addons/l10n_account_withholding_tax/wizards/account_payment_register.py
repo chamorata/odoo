@@ -109,10 +109,12 @@ class AccountPaymentRegister(models.TransientModel):
             ])
             for wizard in self:
                 # To avoid displaying things for nothing, also ensure to only consider withholding taxes matching the payment type.
-                wizard_domain = self.env['account.withholding.line']._get_withholding_tax_domain(company=wizard.company_id, payment_type=wizard.payment_type)
+                wizard_domain = self.env['account.withholding.line']._get_withholding_tax_domain(
+                    company=wizard.company_id, payment_type=wizard.payment_type)
                 wizard_withholding_taxes = withholding_taxes.filtered_domain(wizard_domain)
 
-                will_create_multiple_entry = not wizard.can_edit_wizard or (wizard.can_group_payments and not wizard.group_payment)
+                will_create_multiple_entry = not wizard.can_edit_wizard or (
+                            wizard.can_group_payments and not wizard.group_payment)
                 wizard.display_withholding = bool(wizard_withholding_taxes) and not will_create_multiple_entry
 
     @api.depends(
@@ -170,9 +172,9 @@ class AccountPaymentRegister(models.TransientModel):
         """
         self.ensure_one()
         if (
-            not self.display_withholding
-            or not self.can_edit_wizard
-            or not self.withholding_line_ids._need_update_withholding_lines_placeholder()
+                not self.display_withholding
+                or not self.can_edit_wizard
+                or not self.withholding_line_ids._need_update_withholding_lines_placeholder()
         ):
             return
 
@@ -200,7 +202,9 @@ class AccountPaymentRegister(models.TransientModel):
         withholding_account = self.withholding_outstanding_account_id
         if withholding_account:
             payment_vals['outstanding_account_id'] = withholding_account.id
-            if not withholding_account.reconcile and withholding_account.account_type not in ('asset_cash', 'liability_credit_card', 'off_balance'):
+            if not withholding_account.reconcile and withholding_account.account_type not in ('asset_cash',
+                                                                                              'liability_credit_card',
+                                                                                              'off_balance'):
                 withholding_account.reconcile = True
         payment_vals['should_withhold_tax'] = self.should_withhold_tax
         payment_vals['withholding_line_ids'] = []

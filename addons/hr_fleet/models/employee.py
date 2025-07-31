@@ -7,12 +7,14 @@ from odoo.exceptions import ValidationError
 class Employee(models.Model):
     _inherit = 'hr.employee'
 
-    employee_cars_count = fields.Integer(compute="_compute_employee_cars_count", string="Cars", groups="fleet.fleet_group_manager")
+    employee_cars_count = fields.Integer(compute="_compute_employee_cars_count", string="Cars",
+                                         groups="fleet.fleet_group_manager")
     car_ids = fields.One2many(
         'fleet.vehicle', 'driver_employee_id', string='Vehicles (private)',
         groups="fleet.fleet_group_manager,hr.group_hr_user",
     )
-    license_plate = fields.Char(compute="_compute_license_plate", search="_search_license_plate", groups="hr.group_hr_user")
+    license_plate = fields.Char(compute="_compute_license_plate", search="_search_license_plate",
+                                groups="hr.group_hr_user")
     mobility_card = fields.Char(groups="fleet.fleet_group_user")
 
     def action_open_employee_cars(self):
@@ -21,9 +23,11 @@ class Employee(models.Model):
         return {
             "type": "ir.actions.act_window",
             "res_model": "fleet.vehicle.assignation.log",
-            "views": [[self.env.ref("hr_fleet.fleet_vehicle_assignation_log_employee_view_list").id, "list"], [False, "form"]],
+            "views": [[self.env.ref("hr_fleet.fleet_vehicle_assignation_log_employee_view_list").id, "list"],
+                      [False, "form"]],
             "domain": [("driver_employee_id", "in", self.ids), ("driver_id", "in", self.work_contact_id.ids)],
-            "context": dict(self._context, default_driver_id=self.user_id.partner_id.id, default_driver_employee_id=self.id),
+            "context": dict(self._context, default_driver_id=self.user_id.partner_id.id,
+                            default_driver_employee_id=self.id),
             "name": self.env._("History Employee Cars"),
         }
 
@@ -31,12 +35,15 @@ class Employee(models.Model):
     def _compute_license_plate(self):
         for employee in self:
             if employee.private_car_plate and employee.car_ids.license_plate:
-                employee.license_plate = ' '.join(employee.car_ids.filtered('license_plate').mapped('license_plate') + [employee.private_car_plate])
+                employee.license_plate = ' '.join(
+                    employee.car_ids.filtered('license_plate').mapped('license_plate') + [employee.private_car_plate])
             else:
-                employee.license_plate = ' '.join(employee.car_ids.filtered('license_plate').mapped('license_plate')) or employee.private_car_plate
+                employee.license_plate = ' '.join(
+                    employee.car_ids.filtered('license_plate').mapped('license_plate')) or employee.private_car_plate
 
     def _search_license_plate(self, operator, value):
-        employees = self.env['hr.employee'].search(['|', ('car_ids.license_plate', operator, value), ('private_car_plate', operator, value)])
+        employees = self.env['hr.employee'].search(
+            ['|', ('car_ids.license_plate', operator, value), ('private_car_plate', operator, value)])
         return [('id', 'in', employees.ids)]
 
     def _compute_employee_cars_count(self):
@@ -63,8 +70,8 @@ class Employee(models.Model):
         if 'work_contact_id' in vals:
             car_ids = self.env['fleet.vehicle'].sudo().search([
                 '|',
-                    ('driver_employee_id', 'in', self.ids),
-                    ('future_driver_employee_id', 'in', self.ids),
+                ('driver_employee_id', 'in', self.ids),
+                ('future_driver_employee_id', 'in', self.ids),
             ])
             if car_ids:
                 car_ids.filtered(lambda c: c.driver_employee_id.id in self.ids).write({

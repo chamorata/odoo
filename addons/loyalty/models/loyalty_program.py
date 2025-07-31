@@ -1,11 +1,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from collections import defaultdict
+from uuid import uuid4
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
-from uuid import uuid4
 
 class LoyaltyProgram(models.Model):
     _name = 'loyalty.program'
@@ -29,7 +29,7 @@ class LoyaltyProgram(models.Model):
     sequence = fields.Integer(copy=False)
     company_id = fields.Many2one('res.company', 'Company', default=lambda self: self.env.company)
     currency_id = fields.Many2one('res.currency', 'Currency', compute='_compute_currency_id',
-        readonly=False, required=True, store=True, precompute=True)
+                                  readonly=False, required=True, store=True, precompute=True)
     currency_symbol = fields.Char(related='currency_id.symbol')
     pricelist_ids = fields.Many2many(
         string="Pricelist",
@@ -41,14 +41,15 @@ class LoyaltyProgram(models.Model):
     total_order_count = fields.Integer("Total Order Count", compute="_compute_total_order_count")
 
     rule_ids = fields.One2many('loyalty.rule', 'program_id', 'Conditional rules', copy=True,
-         compute='_compute_from_program_type', readonly=False, store=True)
+                               compute='_compute_from_program_type', readonly=False, store=True)
     reward_ids = fields.One2many('loyalty.reward', 'program_id', 'Rewards', copy=True,
-         compute='_compute_from_program_type', readonly=False, store=True)
+                                 compute='_compute_from_program_type', readonly=False, store=True)
     communication_plan_ids = fields.One2many('loyalty.mail', 'program_id', copy=True,
-         compute='_compute_from_program_type', readonly=False, store=True)
+                                             compute='_compute_from_program_type', readonly=False, store=True)
 
     # These fields are used for the simplified view of gift_card and ewallet
-    mail_template_id = fields.Many2one('mail.template', compute='_compute_mail_template_id', inverse='_inverse_mail_template_id', string="Email template", readonly=False)
+    mail_template_id = fields.Many2one('mail.template', compute='_compute_mail_template_id',
+                                       inverse='_inverse_mail_template_id', string="Email template", readonly=False)
     trigger_product_ids = fields.Many2many(related='rule_ids.product_ids', readonly=False)
 
     coupon_ids = fields.One2many('loyalty.card', 'program_id')
@@ -84,7 +85,7 @@ class LoyaltyProgram(models.Model):
         ('current', 'Current order'),
         ('future', 'Future orders'),
         ('both', 'Current & Future orders')], default='current', required=True,
-         compute='_compute_from_program_type', readonly=False, store=True,
+        compute='_compute_from_program_type', readonly=False, store=True,
     )
     trigger = fields.Selection([
         ('auto', 'Automatic'),
@@ -96,11 +97,11 @@ class LoyaltyProgram(models.Model):
         """
     )
     portal_visible = fields.Boolean(default=False,
-        help="""
+                                    help="""
         Show in web portal, PoS customer ticket, eCommerce checkout, the number of points available and used by reward.
         """)
     portal_point_name = fields.Char(default='Points', translate=True,
-         compute='_compute_portal_point_name', readonly=False, store=True)
+                                    compute='_compute_portal_point_name', readonly=False, store=True)
     is_nominative = fields.Boolean(compute='_compute_is_nominative')
     is_payment_program = fields.Boolean(compute='_compute_is_payment_program')
 
@@ -114,22 +115,22 @@ class LoyaltyProgram(models.Model):
 
     # Technical field used for a label
     available_on = fields.Boolean("Available On", store=False,
-        help="""
+                                  help="""
         Manage where your program should be available for use.
         """
-    )
+                                  )
 
     _sql_constraints = [
         ('check_max_usage', 'CHECK (limit_usage = False OR max_usage > 0)',
-            'Max usage must be strictly positive if a limit is used.'),
+         'Max usage must be strictly positive if a limit is used.'),
     ]
 
     @api.constrains('currency_id', 'pricelist_ids')
     def _check_pricelist_currency(self):
         if any(
-            pricelist.currency_id != program.currency_id
-            for program in self
-            for pricelist in program.pricelist_ids
+                pricelist.currency_id != program.currency_id
+                for program in self
+                for pricelist in program.pricelist_ids
         ):
             raise UserError(_(
                 "The loyalty program's currency must be the same as all it's pricelists ones."
@@ -156,7 +157,8 @@ class LoyaltyProgram(models.Model):
     def _compute_coupon_count_display(self):
         program_items_name = self._program_items_name()
         for program in self:
-            program.coupon_count_display = "%i %s" % (program.coupon_count or 0, program_items_name[program.program_type] or '')
+            program.coupon_count_display = "%i %s" % (program.coupon_count or 0,
+                                                      program_items_name[program.program_type] or '')
 
     @api.depends("communication_plan_ids.mail_template_id")
     def _compute_mail_template_id(self):
@@ -188,7 +190,8 @@ class LoyaltyProgram(models.Model):
 
     @api.depends('coupon_ids')
     def _compute_coupon_count(self):
-        read_group_data = self.env['loyalty.card']._read_group([('program_id', 'in', self.ids)], ['program_id'], ['__count'])
+        read_group_data = self.env['loyalty.card']._read_group([('program_id', 'in', self.ids)], ['program_id'],
+                                                               ['__count'])
         count_per_program = {program.id: count for program, count in read_group_data}
         for program in self:
             program.coupon_count = count_per_program.get(program.id, 0)
@@ -196,8 +199,8 @@ class LoyaltyProgram(models.Model):
     @api.depends('program_type', 'applies_on')
     def _compute_is_nominative(self):
         for program in self:
-            program.is_nominative = program.applies_on == 'both' or\
-                (program.program_type in ('ewallet', 'loyalty') and program.applies_on == 'future')
+            program.is_nominative = program.applies_on == 'both' or \
+                                    (program.program_type in ('ewallet', 'loyalty') and program.applies_on == 'future')
 
     @api.depends('program_type')
     def _compute_is_payment_program(self):
@@ -229,7 +232,8 @@ class LoyaltyProgram(models.Model):
     def _program_type_default_values(self):
         # All values to change when program_type changes
         # NOTE: any field used in `rule_ids`, `reward_ids` and `communication_plan_ids` MUST be present in the kanban view for it to work properly.
-        first_sale_product = self.env['product.product'].search([('company_id', 'in', [False, self.env.company.id]), ('sale_ok', '=', True)], limit=1)
+        first_sale_product = self.env['product.product'].search(
+            [('company_id', 'in', [False, self.env.company.id]), ('sale_ok', '=', True)], limit=1)
         return {
             'coupons': {
                 'applies_on': 'current',
@@ -243,7 +247,8 @@ class LoyaltyProgram(models.Model):
                 })],
                 'communication_plan_ids': [(5, 0, 0), (0, 0, {
                     'trigger': 'create',
-                    'mail_template_id': (self.env.ref('loyalty.mail_template_loyalty_card', raise_if_not_found=False) or self.env['mail.template']).id,
+                    'mail_template_id': (self.env.ref('loyalty.mail_template_loyalty_card', raise_if_not_found=False) or
+                                         self.env['mail.template']).id,
                 })],
             },
             'promotion': {
@@ -285,7 +290,9 @@ class LoyaltyProgram(models.Model):
                 })],
                 'communication_plan_ids': [(5, 0, 0), (0, 0, {
                     'trigger': 'create',
-                    'mail_template_id': (self.env.ref('loyalty.mail_template_gift_card', raise_if_not_found=False) or self.env['mail.template']).id,
+                    'mail_template_id': (
+                                self.env.ref('loyalty.mail_template_gift_card', raise_if_not_found=False) or self.env[
+                            'mail.template']).id,
                 })],
             },
             'loyalty': {
@@ -330,7 +337,7 @@ class LoyaltyProgram(models.Model):
                 'portal_point_name': _('Discount point(s)'),
                 'rule_ids': [(5, 0, 0), (0, 0, {
                     'mode': 'with_code',
-                    'code': 'PROMO_CODE_' + str(uuid4())[:4], # We should try not to trigger any unicity constraint
+                    'code': 'PROMO_CODE_' + str(uuid4())[:4],  # We should try not to trigger any unicity constraint
                     'minimum_qty': 0,
                 })],
                 'reward_ids': [(5, 0, 0), (0, 0, {
@@ -376,8 +383,8 @@ class LoyaltyProgram(models.Model):
                 'communication_plan_ids': [(5, 0, 0), (0, 0, {
                     'trigger': 'create',
                     'mail_template_id': (
-                        self.env.ref('loyalty.mail_template_loyalty_card', raise_if_not_found=False)
-                        or self.env['mail.template']
+                            self.env.ref('loyalty.mail_template_loyalty_card', raise_if_not_found=False)
+                            or self.env['mail.template']
                     ).id,
                 })],
             },
@@ -452,7 +459,7 @@ class LoyaltyProgram(models.Model):
             self = self.with_context(loyalty_skip_reward_check=True)
             # We need add the program type to the context to avoid getting the default value
             # ('discount') for reward type when calling the `default_get` method of
-            #`loyalty.reward`.
+            # `loyalty.reward`.
             if 'program_type' in vals:
                 self = self.with_context(program_type=vals['program_type'])
                 return super().write(vals)

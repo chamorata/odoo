@@ -120,7 +120,6 @@ class TestSaleOrderCreditLimit(TestSaleCommon):
         # that should bring partner_a's credit above its limit.
         self.assertEqual(invoice.partner_credit_warning, '')
 
-
         # Make the down payment invoice amount larger than the Amount to Invoice
         # and check that the warning appears with the correct amounts,
         # i.e. 1.500 instead of 2.500 (1.000 SO + 1.500 down payment invoice).

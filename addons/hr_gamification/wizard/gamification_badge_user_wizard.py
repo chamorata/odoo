@@ -2,7 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import api, fields, models, _
-from odoo.exceptions import UserError, AccessError
+from odoo.exceptions import UserError
 
 
 class GamificationBadgeUserWizard(models.TransientModel):
@@ -10,7 +10,7 @@ class GamificationBadgeUserWizard(models.TransientModel):
 
     employee_id = fields.Many2one('hr.employee', string='Employee', required=False)
     user_id = fields.Many2one('res.users', string='User', compute='_compute_user_id',
-        store=True, readonly=False, compute_sudo=True)
+                              store=True, readonly=False, compute_sudo=True)
 
     def action_grant_badge(self):
         """Wizard action for sending a badge to a chosen employee"""

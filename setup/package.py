@@ -4,23 +4,21 @@
 import argparse
 import logging
 import os
-import pexpect
 import shutil
 import subprocess
 import sys
 import tempfile
-import textwrap
 import time
 import traceback
-
+from glob import glob
 from pathlib import Path
 from xmlrpc import client as xmlrpclib
 
-from glob import glob
+import pexpect
 
-#----------------------------------------------------------
+# ----------------------------------------------------------
 # Utils
-#----------------------------------------------------------
+# ----------------------------------------------------------
 
 ROOTDIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 TSTAMP = time.strftime("%Y%m%d", time.gmtime())
@@ -89,6 +87,7 @@ def publish(args, pub_type, extensions):
     :extensions: list of extensions to publish
     :returns: published files
     """
+
     def _publish(release):
         build_path = os.path.join(args.build_dir, release)
         filename = release.split(os.path.sep)[-1]
@@ -145,7 +144,9 @@ def gen_deb_package(args, published_files):
     if args.sign:
         # Generate Release.gpg (= signed Release)
         # Options -abs: -a (Create ASCII armored output), -b (Make a detach signature), -s (Make a signature)
-        subprocess.call(['gpg', '--default-key', GPGID, '--passphrase', GPGPASSPHRASE, '--yes', '-abs', '--no-tty', '-o', 'Release.gpg', 'Release'], cwd=os.path.join(args.pub, 'deb'))
+        subprocess.call(
+            ['gpg', '--default-key', GPGID, '--passphrase', GPGPASSPHRASE, '--yes', '-abs', '--no-tty', '-o',
+             'Release.gpg', 'Release'], cwd=os.path.join(args.pub, 'deb'))
 
 
 # ---------------------------------------------------------
@@ -203,7 +204,8 @@ class Docker():
             'rpm': os.path.join(args.build_dir, 'setup/package.dffedora'),
             'win': os.path.join(args.build_dir, 'setup/package.dfwine'),
         }
-        self.docker_template = Path(docker_templates[self.arch]).read_text(encoding='utf-8').replace('USER odoo', DOCKERUSER)
+        self.docker_template = Path(docker_templates[self.arch]).read_text(encoding='utf-8').replace('USER odoo',
+                                                                                                     DOCKERUSER)
         self.test_log_file = '/data/src/test-%s.log' % self.arch
         self.docker_dir = Path(self.args.build_dir) / 'docker'
         if not self.docker_dir.exists():
@@ -215,7 +217,8 @@ class Docker():
         docker_file = self.docker_dir / 'Dockerfile'
         docker_file.write_text(self.docker_template)
         shutil.copy(os.path.join(self.args.build_dir, 'requirements.txt'), self.docker_dir)
-        run_cmd(["docker", "build", "--rm=True", "-t", self.tag, "."], chdir=self.docker_dir, timeout=1200).check_returncode()
+        run_cmd(["docker", "build", "--rm=True", "-t", self.tag, "."], chdir=self.docker_dir,
+                timeout=1200).check_returncode()
         shutil.rmtree(self.docker_dir)
 
     def run(self, cmd, build_dir, container_name, user='odoo', exposed_port=None, detach=False, timeout=None):
@@ -246,7 +249,8 @@ class Docker():
         run_cmd(docker_cmd, timeout=timeout).check_returncode()
 
     def is_running(self):
-        dinspect = subprocess.run(['docker', 'container', 'inspect', self.container_name], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+        dinspect = subprocess.run(['docker', 'container', 'inspect', self.container_name], stderr=subprocess.DEVNULL,
+                                  stdout=subprocess.DEVNULL)
         return True if dinspect.returncode == 0 else False
 
     def stop(self):
@@ -266,7 +270,8 @@ class Docker():
         if self.is_running():
             self.stop()
             raise OdooTestTimeoutError('Odoo pid file never appeared after %s sec' % INSTALL_TIMEOUT)
-        raise OdooTestError('Error while installing/starting Odoo after %s sec.\nSee testlogs.txt in build dir' % int(time.time() - start_time))
+        raise OdooTestError('Error while installing/starting Odoo after %s sec.\nSee testlogs.txt in build dir' % int(
+            time.time() - start_time))
 
     def build(self):
         """To be overriden by specific builder"""
@@ -284,9 +289,12 @@ class DockerTgz(Docker):
 
     def build(self):
         logging.info('Start building python tgz package')
-        self.run('python3 setup.py sdist --quiet --formats=gztar,zip', self.args.build_dir, 'odoo-src-build-%s' % TSTAMP)
-        os.rename(glob('%s/dist/odoo-*.tar.gz' % self.args.build_dir)[0], '%s/odoo_%s.%s.tar.gz' % (self.args.build_dir, VERSION, TSTAMP))
-        os.rename(glob('%s/dist/odoo-*.zip' % self.args.build_dir)[0], '%s/odoo_%s.%s.zip' % (self.args.build_dir, VERSION, TSTAMP))
+        self.run('python3 setup.py sdist --quiet --formats=gztar,zip', self.args.build_dir,
+                 'odoo-src-build-%s' % TSTAMP)
+        os.rename(glob('%s/dist/odoo-*.tar.gz' % self.args.build_dir)[0],
+                  '%s/odoo_%s.%s.tar.gz' % (self.args.build_dir, VERSION, TSTAMP))
+        os.rename(glob('%s/dist/odoo-*.zip' % self.args.build_dir)[0],
+                  '%s/odoo_%s.%s.zip' % (self.args.build_dir, VERSION, TSTAMP))
         logging.info('Finished building python tgz package')
 
     def start_test(self):
@@ -304,7 +312,8 @@ class DockerTgz(Docker):
             'su odoo -s /bin/bash -c "/var/lib/odoo/odoovenv/bin/odoo -d mycompany -i base --stop-after-init"',
             'su odoo -s /bin/bash -c "/var/lib/odoo/odoovenv/bin/odoo -d mycompany --pidfile=/data/src/odoo.pid"',
         ]
-        self.run(' && '.join(cmds), self.args.build_dir, 'odoo-src-test-%s' % TSTAMP, user='root', detach=True, exposed_port=8069, timeout=300)
+        self.run(' && '.join(cmds), self.args.build_dir, 'odoo-src-test-%s' % TSTAMP, user='root', detach=True,
+                 exposed_port=8069, timeout=300)
         self.test_odoo()
         logging.info('Finished testing tgz package')
 
@@ -334,7 +343,8 @@ class DockerDeb(Docker):
             f'/usr/bin/apt-get install -y /data/src/odoo_{VERSION}.{TSTAMP}_all.deb',
             'su odoo -s /bin/bash -c "odoo -d mycompany -i base --pidfile=/data/src/odoo.pid"',
         ]
-        self.run(' && '.join(cmds), self.args.build_dir, 'odoo-deb-test-%s' % TSTAMP, user='root', detach=True, exposed_port=8069, timeout=300)
+        self.run(' && '.join(cmds), self.args.build_dir, 'odoo-deb-test-%s' % TSTAMP, user='root', detach=True,
+                 exposed_port=8069, timeout=300)
         self.test_odoo()
         logging.info('Finished testing debian package')
 
@@ -357,7 +367,8 @@ class DockerRpm(Docker):
             f'mv {rpmbuild_dir}/RPMS/noarch/odoo*.rpm /data/src/dist/'
         ]
         self.run(' && '.join(cmds), self.args.build_dir, f'odoo-rpm-build-{TSTAMP}')
-        os.rename(glob('%s/dist/odoo-*.noarch.rpm' % self.args.build_dir)[0], '%s/odoo_%s.%s.rpm' % (self.args.build_dir, VERSION, TSTAMP))
+        os.rename(glob('%s/dist/odoo-*.noarch.rpm' % self.args.build_dir)[0],
+                  '%s/odoo_%s.%s.rpm' % (self.args.build_dir, VERSION, TSTAMP))
         logging.info('Finished building fedora rpm package')
 
     def start_test(self):
@@ -373,7 +384,8 @@ class DockerRpm(Docker):
             'su odoo -s /bin/bash -c "odoo -c /etc/odoo/odoo.conf -d mycompany -i base --stop-after-init"',
             'su odoo -s /bin/bash -c "odoo -c /etc/odoo/odoo.conf -d mycompany --pidfile=/data/src/odoo.pid"',
         ]
-        self.run(' && '.join(cmds), args.build_dir, 'odoo-rpm-test-%s' % TSTAMP, user='root', detach=True, exposed_port=8069, timeout=300)
+        self.run(' && '.join(cmds), args.build_dir, 'odoo-rpm-test-%s' % TSTAMP, user='root', detach=True,
+                 exposed_port=8069, timeout=300)
         self.test_odoo()
         logging.info('Finished testing rpm package')
 
@@ -419,10 +431,12 @@ class DockerWine(Docker):
         self.run(' && '.join(cmds), self.args.build_dir, 'odoo-win-build-%s' % TSTAMP)
         logging.info('Finished building Windows package')
 
+
 def parse_args():
     ap = argparse.ArgumentParser()
     build_dir = "%s-%s-%s" % (ROOTDIR, TSEC, TSTAMP)
-    log_levels = {"debug": logging.DEBUG, "info": logging.INFO, "warning": logging.WARN, "error": logging.ERROR, "critical": logging.CRITICAL}
+    log_levels = {"debug": logging.DEBUG, "info": logging.INFO, "warning": logging.WARN, "error": logging.ERROR,
+                  "critical": logging.CRITICAL}
 
     ap.add_argument("-b", "--build-dir", default=build_dir, help="build directory (%(default)s)", metavar="DIR")
     ap.add_argument("-p", "--pub", default=None, help="pub directory %(default)s", metavar="DIR")
@@ -438,7 +452,8 @@ def parse_args():
     ap.add_argument("--blacklist", nargs="*", help="Modules to blacklist in package")
 
     parsed_args = ap.parse_args()
-    logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', datefmt='%Y-%m-%d %I:%M:%S', level=log_levels[parsed_args.logging])
+    logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', datefmt='%Y-%m-%d %I:%M:%S',
+                        level=log_levels[parsed_args.logging])
     parsed_args.odoo_dir = ROOTDIR
     return parsed_args
 

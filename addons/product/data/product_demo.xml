@@ -119,12 +119,14 @@
         <record id="product_4_attribute_1_product_template_attribute_line" model="product.template.attribute.line">
             <field name="product_tmpl_id" ref="product_product_4_product_template"/>
             <field name="attribute_id" ref="product_attribute_1"/>
-            <field name="value_ids" eval="[(6, 0, [ref('product.product_attribute_value_1'), ref('product.product_attribute_value_2')])]"/>
+            <field name="value_ids"
+                   eval="[(6, 0, [ref('product.product_attribute_value_1'), ref('product.product_attribute_value_2')])]"/>
         </record>
         <record id="product_4_attribute_2_product_template_attribute_line" model="product.template.attribute.line">
             <field name="product_tmpl_id" ref="product_product_4_product_template"/>
             <field name="attribute_id" ref="product_attribute_2"/>
-            <field name="value_ids" eval="[(6, 0, [ref('product.product_attribute_value_3'), ref('product.product_attribute_value_4')])]"/>
+            <field name="value_ids"
+                   eval="[(6, 0, [ref('product.product_attribute_value_3'), ref('product.product_attribute_value_4')])]"/>
         </record>
 
         <!--
@@ -283,7 +285,8 @@
         <record id="product_11_attribute_1_product_template_attribute_line" model="product.template.attribute.line">
             <field name="product_tmpl_id" ref="product_product_11_product_template"/>
             <field name="attribute_id" ref="product_attribute_1"/>
-            <field name="value_ids" eval="[(6,0,[ref('product.product_attribute_value_1'), ref('product.product_attribute_value_2')])]"/>
+            <field name="value_ids"
+                   eval="[(6,0,[ref('product.product_attribute_value_1'), ref('product.product_attribute_value_2')])]"/>
         </record>
 
         <function model="ir.model.data" name="_update_xmlids">
@@ -328,15 +331,15 @@
         </record>
 
         <record id="product_template_attribute_exclusion_1" model="product.template.attribute.exclusion">
-            <field name="product_tmpl_id" ref="product.product_product_4_product_template" />
+            <field name="product_tmpl_id" ref="product.product_product_4_product_template"/>
             <field name="value_ids" eval="[(6, 0, [ref('product.product_4_attribute_2_value_2')])]"/>
         </record>
         <record id="product_template_attribute_exclusion_2" model="product.template.attribute.exclusion">
-            <field name="product_tmpl_id" ref="product.product_product_11_product_template" />
+            <field name="product_tmpl_id" ref="product.product_product_11_product_template"/>
             <field name="value_ids" eval="[(6, 0, [ref('product.product_11_attribute_1_value_1')])]"/>
         </record>
         <record id="product_template_attribute_exclusion_3" model="product.template.attribute.exclusion">
-            <field name="product_tmpl_id" ref="product.product_product_11_product_template" />
+            <field name="product_tmpl_id" ref="product.product_product_11_product_template"/>
             <field name="value_ids" eval="[(6, 0, [ref('product.product_11_attribute_1_value_2')])]"/>
         </record>
 
@@ -346,14 +349,15 @@
         - The "Office Chair's Steel" attribute
          -->
         <record id="product_4_attribute_1_value_2" model="product.template.attribute.value">
-            <field name="exclude_for" eval="[(6, 0, [ref('product.product_template_attribute_exclusion_1'), ref('product.product_template_attribute_exclusion_2')])]" />
+            <field name="exclude_for"
+                   eval="[(6, 0, [ref('product.product_template_attribute_exclusion_1'), ref('product.product_template_attribute_exclusion_2')])]"/>
         </record>
         <!--
         The "Customizable Desk's Steel" attribute value will excude:
         - The "Office Chair's Aluminium" attribute
         -->
         <record id="product_4_attribute_1_value_1" model="product.template.attribute.value">
-            <field name="exclude_for" eval="[(6, 0, [ref('product.product_template_attribute_exclusion_3')])]" />
+            <field name="exclude_for" eval="[(6, 0, [ref('product.product_template_attribute_exclusion_3')])]"/>
         </record>
 
         <!-- MRP Demo Data-->
@@ -550,7 +554,9 @@
         <record id="desk_organizer" model="product.product">
             <field name="list_price">5.10</field>
             <field name="name">Desk Organizer</field>
-            <field name="description_sale">The desk organiser is perfect for storing all kinds of small things and since the 5 boxes are loose, you can move and place them in the way that suits you and your things best.</field>
+            <field name="description_sale">The desk organiser is perfect for storing all kinds of small things and since
+                the 5 boxes are loose, you can move and place them in the way that suits you and your things best.
+            </field>
             <field name="default_code">FURN_0001</field>
             <field name="barcode">2300001000008</field>
             <field name="weight">0.01</field>
@@ -561,8 +567,8 @@
         </record>
         <function model="ir.model.data" name="_update_xmlids">
             <value
-                model="base"
-                eval="[{
+                    model="base"
+                    eval="[{
                     'xml_id': 'product.desk_organizer_product_template',
                     'record': obj().env.ref('product.desk_organizer').product_tmpl_id,
                     'noupdate': True,
@@ -573,8 +579,8 @@
             <field name="product_tmpl_id" ref="product.desk_organizer_product_template"/>
             <field name="attribute_id" ref="size_attribute"/>
             <field
-                name="value_ids"
-                eval="[(6, 0, [
+                    name="value_ids"
+                    eval="[(6, 0, [
                     ref('size_attribute_s'),
                     ref('size_attribute_m'),
                     ref('size_attribute_l'),
@@ -585,8 +591,8 @@
             <field name="product_tmpl_id" ref="product.desk_organizer_product_template"/>
             <field name="attribute_id" ref="fabric_attribute"/>
             <field
-                name="value_ids"
-                eval="[(6, 0, [
+                    name="value_ids"
+                    eval="[(6, 0, [
                     ref('fabric_attribute_plastic'),
                     ref('fabric_attribute_leather'),
                     ref('fabric_attribute_custom'),
@@ -619,8 +625,8 @@
         <record id="desk_accessories_combo" model="product.combo">
             <field name="name">Desk Accessories Combo</field>
             <field
-                name="combo_item_ids"
-                eval="[
+                    name="combo_item_ids"
+                    eval="[
                     Command.clear(),
                     Command.create({
                         'product_id': ref('product.desk_organizer'),
@@ -641,8 +647,8 @@
         <record id="desks_combo" model="product.combo">
             <field name="name">Desks Combo</field>
             <field
-                name="combo_item_ids"
-                eval="[
+                    name="combo_item_ids"
+                    eval="[
                     Command.clear(),
                     Command.create({
                         'product_id': ref('product.product_product_3'),
@@ -659,8 +665,8 @@
         <record id="chairs_combo" model="product.combo">
             <field name="name">Chairs Combo</field>
             <field
-                name="combo_item_ids"
-                eval="[
+                    name="combo_item_ids"
+                    eval="[
                     Command.clear(),
                     Command.create({
                         'product_id': ref('product.product_product_11'),
@@ -688,8 +694,8 @@
             <field name="uom_po_id" ref="uom.product_uom_unit"/>
             <field name="image_1920" type="base64" file="product/static/img/office_combo.png"/>
             <field
-                name="combo_ids"
-                eval="[(6, 0, [
+                    name="combo_ids"
+                    eval="[(6, 0, [
                     ref('desks_combo'),
                     ref('chairs_combo'),
                     ref('desk_accessories_combo'),

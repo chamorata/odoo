@@ -2,11 +2,12 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import datetime, timedelta, time
+
 from freezegun import freeze_time
+from odoo.addons.mrp.tests.common import TestMrpCommon
 from pytz import timezone, utc
 
 from odoo import fields
-from odoo.addons.mrp.tests.common import TestMrpCommon
 from odoo.tests import Form
 
 
@@ -28,7 +29,8 @@ class TestOee(TestMrpCommon):
             # Unset the end date
             workcenter_productivity.date_end = False
             self.assertFalse(workcenter_productivity.date_end)
-            self.assertEqual(workcenter_productivity.duration, 0.0, "The duration should be 0.0 when the end date is unset.")
+            self.assertEqual(workcenter_productivity.duration, 0.0,
+                             "The duration should be 0.0 when the end date is unset.")
 
             workcenter_productivity.workcenter_id = self.workcenter_1
             workcenter_productivity.date_end = datetime(2025, 5, 31, 12, 0, 0)
@@ -83,8 +85,9 @@ class TestOee(TestMrpCommon):
 
         # Check blocked time and productive time
         self.assertEqual(self.workcenter_1.blocked_time, blocked_time_in_hour, "Wrong block time on workcenter.")
-        self.assertEqual(self.workcenter_1.productive_time, productive_time_in_hour, "Wrong productive time on workcenter.")
+        self.assertEqual(self.workcenter_1.productive_time, productive_time_in_hour,
+                         "Wrong productive time on workcenter.")
 
         # Check overall equipment effectiveness
-        computed_oee = round(((productive_time_in_hour * 100.0)/(productive_time_in_hour + blocked_time_in_hour)), 2)
+        computed_oee = round(((productive_time_in_hour * 100.0) / (productive_time_in_hour + blocked_time_in_hour)), 2)
         self.assertEqual(self.workcenter_1.oee, computed_oee, "Wrong oee on workcenter.")

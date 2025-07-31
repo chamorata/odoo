@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import Command
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests.common import TransactionCase
 
@@ -151,7 +150,8 @@ class TestRobustness(TransactionCase):
         # unreserve
         move1._do_unreserve()
         self.assertEqual(len(self.env['stock.quant']._gather(self.product1, self.stock_location)), 1)
-        self.assertEqual(len(self.env['stock.quant']._gather(self.product1, self.stock_location, package_id=package)), 0)
+        self.assertEqual(len(self.env['stock.quant']._gather(self.product1, self.stock_location, package_id=package)),
+                         0)
 
         self.assertEqual(self.env['stock.quant']._gather(self.product1, self.stock_location).reserved_quantity, 0)
 
@@ -342,7 +342,7 @@ class TestRobustness(TransactionCase):
         self.assertEqual(quant.reserved_quantity, 3)
         move.picked = True
         move._action_done()
-        self.assertEqual(quant.reserved_quantity, 0)        
+        self.assertEqual(quant.reserved_quantity, 0)
 
         product_without_move = self.env['product.product'].create({
             'name': 'Product reserved without move',
@@ -352,7 +352,7 @@ class TestRobustness(TransactionCase):
         self.env['stock.quant']._update_available_quantity(product_without_move, self.stock_location, 10)
         quant = self.env['stock.quant']._gather(product_without_move, self.stock_location)
         self.env['stock.quant']._update_reserved_quantity(product_without_move, self.stock_location, 2)
-        
+
         self.assertEqual(quant.reserved_quantity, 2)
         self.env['stock.quant']._clean_reservations()
         self.assertEqual(quant.reserved_quantity, 0)

@@ -3,10 +3,10 @@
 import re
 from datetime import datetime
 
+from odoo.addons.account_edi_ubl_cii.models.account_edi_xml_ubl_20 import UBL_NAMESPACES
 from pytz import UTC
 
 from odoo import _, api, models
-from odoo.addons.account_edi_ubl_cii.models.account_edi_xml_ubl_20 import UBL_NAMESPACES
 
 # Far from ideal, but no better solution yet.
 COUNTRY_CODE_MAP = {
@@ -114,8 +114,13 @@ class AccountEdiXmlUBLMyInvoisMY(models.AbstractModel):
             'tax_exchange_rate': self._l10n_my_edi_get_tax_exchange_rate(invoice),
             'invoice_incoterm_code': invoice.invoice_incoterm_id.code,
             # Depending on the move type, it will either be about exports (invoices) or imports (bills)
-            'custom_form_reference': invoice.l10n_my_edi_custom_form_reference if document_type_code in {"11", "12", "13", "14"} else None,
-            'export_custom_form_reference': invoice.l10n_my_edi_custom_form_reference if document_type_code in {"01", "02", "03", "04"} else None,
+            'custom_form_reference': invoice.l10n_my_edi_custom_form_reference if document_type_code in {"11", "12",
+                                                                                                         "13",
+                                                                                                         "14"} else None,
+            'export_custom_form_reference': invoice.l10n_my_edi_custom_form_reference if document_type_code in {"01",
+                                                                                                                "02",
+                                                                                                                "03",
+                                                                                                                "04"} else None,
         })
 
         # these are optional, and since we can't have the correct one at the time of generating, we avoid adding them.
@@ -123,14 +128,17 @@ class AccountEdiXmlUBLMyInvoisMY(models.AbstractModel):
 
         # We add the company industrial classification to the supplier vals.
         vals['vals']['accounting_supplier_party_vals']['party_vals'].update({
-            'industry_classification_code_attrs': {'name': invoice.company_id.l10n_my_edi_industrial_classification.name},
+            'industry_classification_code_attrs': {
+                'name': invoice.company_id.l10n_my_edi_industrial_classification.name},
             'industry_classification_code': invoice.company_id.l10n_my_edi_industrial_classification.code,
         })
         # We ensure that the customer does not have their ttx set (it could be on the record if they're also supplier)
         customer_identification_vals = [
-            vals for vals in vals['vals']['accounting_customer_party_vals']['party_vals']['party_identification_vals'] if vals.get('id_attrs', {}) != {'schemeID': 'TTX'}
+            vals for vals in vals['vals']['accounting_customer_party_vals']['party_vals']['party_identification_vals']
+            if vals.get('id_attrs', {}) != {'schemeID': 'TTX'}
         ]
-        vals['vals']['accounting_customer_party_vals']['party_vals']['party_identification_vals'] = customer_identification_vals
+        vals['vals']['accounting_customer_party_vals']['party_vals'][
+            'party_identification_vals'] = customer_identification_vals
 
         # Debit/Credit note original invoice ref.
         # Applies to credit notes, debit notes, refunds for both invoices and self-billed invoices.
@@ -270,7 +278,8 @@ class AccountEdiXmlUBLMyInvoisMY(models.AbstractModel):
         constraints.pop('cen_en16931_tax_line', '')
 
         if not invoice.company_id.l10n_my_edi_industrial_classification:
-            self._l10n_my_edi_make_validation_error(constraints, 'industrial_classification_required', 'company', invoice.company_id.display_name)
+            self._l10n_my_edi_make_validation_error(constraints, 'industrial_classification_required', 'company',
+                                                    invoice.company_id.display_name)
 
         for partner_type in ('supplier', 'customer'):
             partner = vals[partner_type]
@@ -279,13 +288,16 @@ class AccountEdiXmlUBLMyInvoisMY(models.AbstractModel):
             if phone_number != 'NA':
                 phone = self._l10n_my_edi_get_formatted_phone_number(phone_number)
                 if E_164_REGEX.match(phone) is None:
-                    self._l10n_my_edi_make_validation_error(constraints, 'phone_number_format', partner_type, partner.display_name)
+                    self._l10n_my_edi_make_validation_error(constraints, 'phone_number_format', partner_type,
+                                                            partner.display_name)
             elif not phone_number:
-                self._l10n_my_edi_make_validation_error(constraints, 'phone_number_required', partner_type, partner.display_name)
+                self._l10n_my_edi_make_validation_error(constraints, 'phone_number_required', partner_type,
+                                                        partner.display_name)
 
             # We need to provide both l10n_my_identification_type and l10n_my_identification_number
             if not partner.commercial_partner_id.l10n_my_identification_type or not partner.commercial_partner_id.l10n_my_identification_number:
-                self._l10n_my_edi_make_validation_error(constraints, 'required_id', partner_type, partner.commercial_partner_id.display_name)
+                self._l10n_my_edi_make_validation_error(constraints, 'required_id', partner_type,
+                                                        partner.commercial_partner_id.display_name)
 
             if not partner.state_id:
                 self._l10n_my_edi_make_validation_error(constraints, 'no_state', partner_type, partner.display_name)
@@ -296,16 +308,21 @@ class AccountEdiXmlUBLMyInvoisMY(models.AbstractModel):
             if not partner.street:
                 self._l10n_my_edi_make_validation_error(constraints, 'no_street', partner_type, partner.display_name)
 
-            if partner.commercial_partner_id.sst_registration_number and len(partner.commercial_partner_id.sst_registration_number.split(';')) > 2:
-                self._l10n_my_edi_make_validation_error(constraints, 'too_many_sst', partner_type, partner.commercial_partner_id.display_name)
+            if partner.commercial_partner_id.sst_registration_number and len(
+                    partner.commercial_partner_id.sst_registration_number.split(';')) > 2:
+                self._l10n_my_edi_make_validation_error(constraints, 'too_many_sst', partner_type,
+                                                        partner.commercial_partner_id.display_name)
 
-        for line in invoice.invoice_line_ids.filtered(lambda line: line.display_type not in ('line_note', 'line_section')):
+        for line in invoice.invoice_line_ids.filtered(
+                lambda line: line.display_type not in ('line_note', 'line_section')):
             if line.product_id and not line.product_id.product_tmpl_id.l10n_my_edi_classification_code:
-                self._l10n_my_edi_make_validation_error(constraints, 'class_code_required', line.product_id.id, line.product_id.display_name)
+                self._l10n_my_edi_make_validation_error(constraints, 'class_code_required', line.product_id.id,
+                                                        line.product_id.display_name)
             if not line.tax_ids:
                 self._l10n_my_edi_make_validation_error(constraints, 'tax_ids_required', line.id, line.display_name)
             elif any(tax.l10n_my_tax_type == 'E' for tax in line.tax_ids) and not invoice.l10n_my_edi_exemption_reason:
-                self._l10n_my_edi_make_validation_error(constraints, 'tax_exemption_required', invoice.id, invoice.display_name)
+                self._l10n_my_edi_make_validation_error(constraints, 'tax_exemption_required', invoice.id,
+                                                        invoice.display_name)
 
         return constraints
 
@@ -332,8 +349,10 @@ class AccountEdiXmlUBLMyInvoisMY(models.AbstractModel):
         # Add the tax exemption here as well to ensure consistency.
         tax = tax_data['tax']
         invoice = base_line['record'].move_id
-        grouping_key['_tax_category_vals_']['name'] = invoice.l10n_my_edi_exemption_reason if tax.l10n_my_tax_type == 'E' else None
-        grouping_key['_tax_category_vals_']['tax_exemption_reason'] = invoice.l10n_my_edi_exemption_reason if tax.l10n_my_tax_type == 'E' else None
+        grouping_key['_tax_category_vals_'][
+            'name'] = invoice.l10n_my_edi_exemption_reason if tax.l10n_my_tax_type == 'E' else None
+        grouping_key['_tax_category_vals_'][
+            'tax_exemption_reason'] = invoice.l10n_my_edi_exemption_reason if tax.l10n_my_tax_type == 'E' else None
         return grouping_key
 
     def _get_invoice_line_vals(self, line, line_id, taxes_vals):
@@ -351,15 +370,21 @@ class AccountEdiXmlUBLMyInvoisMY(models.AbstractModel):
         # We can't use _find_value for the identifier since we need to get the attribute.
         vals.update({
             # Update some values to be correct.
-            'vat': self._find_value(f'.//cac:Accounting{role}Party/cac:Party/cac:PartyIdentification/cbc:ID[@schemeID="TIN"]', tree),
-            'country_code': country_map.get(self._find_value(f'.//cac:Accounting{role}Party/cac:Party//cac:Country//cbc:IdentificationCode', tree)),
+            'vat': self._find_value(
+                f'.//cac:Accounting{role}Party/cac:Party/cac:PartyIdentification/cbc:ID[@schemeID="TIN"]', tree),
+            'country_code': country_map.get(
+                self._find_value(f'.//cac:Accounting{role}Party/cac:Party//cac:Country//cbc:IdentificationCode', tree)),
             'name': self._find_value(f'.//cac:Accounting{role}Party/cac:Party//cbc:RegistrationName', tree),
             # And add new ones that are expected.
-            'sst': self._find_value(f'.//cac:Accounting{role}Party/cac:Party/cac:PartyIdentification/cbc:ID[@schemeID="SST"]', tree),
-            'ttx': self._find_value(f'.//cac:Accounting{role}Party/cac:Party/cac:PartyIdentification/cbc:ID[@schemeID="TTX"]', tree),
+            'sst': self._find_value(
+                f'.//cac:Accounting{role}Party/cac:Party/cac:PartyIdentification/cbc:ID[@schemeID="SST"]', tree),
+            'ttx': self._find_value(
+                f'.//cac:Accounting{role}Party/cac:Party/cac:PartyIdentification/cbc:ID[@schemeID="TTX"]', tree),
         })
 
-        identifier = tree.xpath(f'.//cac:Accounting{role}Party/cac:Party/cac:PartyIdentification/cbc:ID[@schemeID="NRIC" or @schemeID="PASSPORT" or @schemeID="BRN" or @schemeID="ARMY"]', namespaces=UBL_NAMESPACES)
+        identifier = tree.xpath(
+            f'.//cac:Accounting{role}Party/cac:Party/cac:PartyIdentification/cbc:ID[@schemeID="NRIC" or @schemeID="PASSPORT" or @schemeID="BRN" or @schemeID="ARMY"]',
+            namespaces=UBL_NAMESPACES)
         if identifier:  # Technically it's required, but to be safe...
             vals.update({
                 'id_type': identifier[0].attrib['schemeID'],
@@ -368,12 +393,16 @@ class AccountEdiXmlUBLMyInvoisMY(models.AbstractModel):
 
         return vals
 
-    def _import_retrieve_and_fill_partner(self, invoice, name, phone, mail, vat, country_code, id_type, id_val, sst=False, ttx=False):
+    def _import_retrieve_and_fill_partner(self, invoice, name, phone, mail, vat, country_code, id_type, id_val,
+                                          sst=False, ttx=False):
         """ In addition to the basic values, we need to fill the identifiers of the partner and eventual tax codes. """
         # OVERRIDE 'account_edi_ubl_cii'
 
         # I consider that the standard _retrieve_partner should be enough to match.
-        invoice.partner_id = self.env['res.partner'].with_company(invoice.company_id)._retrieve_partner(name=name, phone=phone, mail=mail, vat=vat)
+        invoice.partner_id = self.env['res.partner'].with_company(invoice.company_id)._retrieve_partner(name=name,
+                                                                                                        phone=phone,
+                                                                                                        mail=mail,
+                                                                                                        vat=vat)
 
         if not invoice.partner_id and name and vat:
             partner_vals = {
@@ -396,19 +425,24 @@ class AccountEdiXmlUBLMyInvoisMY(models.AbstractModel):
         # EXTENDS 'account_edi_ubl_cii'
         logs = super()._import_fill_invoice_form(invoice, tree, qty_factor)
         # We get the incoterm
-        incoterm_code = self._find_value('./cac:AdditionalDocumentReference[not(descendant::cbc:DocumentType)]/cbc:ID', tree)
+        incoterm_code = self._find_value('./cac:AdditionalDocumentReference[not(descendant::cbc:DocumentType)]/cbc:ID',
+                                         tree)
         if incoterm_code is not None:
             invoice.invoice_incoterm_id = self.env['account.incoterms'].search([('code', '=', incoterm_code)], limit=1)
-        custom_form_ref = self._find_value('./cac:AdditionalDocumentReference[descendant::cbc:DocumentType[text()="CustomsImportForm"]]/cbc:ID', tree)
+        custom_form_ref = self._find_value(
+            './cac:AdditionalDocumentReference[descendant::cbc:DocumentType[text()="CustomsImportForm"]]/cbc:ID', tree)
         invoice.l10n_my_edi_custom_form_reference = custom_form_ref
 
         # So that we can find the original invoice in case of debit/credit note.
         invoice_type = self._find_value('./cbc:InvoiceTypeCode', tree)
-        origin_uuid = self._find_value('.//cac:InvoiceDocumentReference[descendant::cbc:ID[text()="Document Internal ID"]]/cbc:UUID', tree)
+        origin_uuid = self._find_value(
+            './/cac:InvoiceDocumentReference[descendant::cbc:ID[text()="Document Internal ID"]]/cbc:UUID', tree)
         if invoice_type == '02':
-            invoice.reversed_entry_id = self.env['account.move'].search([('l10n_my_edi_external_uuid', '=', origin_uuid)], limit=1)
+            invoice.reversed_entry_id = self.env['account.move'].search(
+                [('l10n_my_edi_external_uuid', '=', origin_uuid)], limit=1)
         elif invoice_type == '03' and 'debit_origin_id' in self.env['account.move']._fields:
-            invoice.debit_origin_id = self.env['account.move'].search([('l10n_my_edi_external_uuid', '=', origin_uuid)], limit=1)
+            invoice.debit_origin_id = self.env['account.move'].search([('l10n_my_edi_external_uuid', '=', origin_uuid)],
+                                                                      limit=1)
         return logs
 
     # ----------------
@@ -419,7 +453,8 @@ class AccountEdiXmlUBLMyInvoisMY(models.AbstractModel):
         """ Returns the vals required to display the delivery information in the invoice. """
         return {
             'partner': partner,
-            'party_identification_vals': self._get_partner_party_identification_vals_list(partner.commercial_partner_id),
+            'party_identification_vals': self._get_partner_party_identification_vals_list(
+                partner.commercial_partner_id),
             'postal_address_vals': self._get_partner_address_vals(partner),
             'party_legal_entity_vals': self._get_partner_party_legal_entity_vals_list(partner.commercial_partner_id),
         }

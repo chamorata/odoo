@@ -1,5 +1,5 @@
-from odoo.tests.common import tagged
 from odoo.addons.base.tests.common import HttpCaseWithUserPortal
+from odoo.tests.common import tagged
 
 
 @tagged('post_install', '-at_install')

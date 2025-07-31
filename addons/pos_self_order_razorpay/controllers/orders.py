@@ -1,6 +1,7 @@
-from odoo import http
 from odoo.addons.pos_self_order.controllers.orders import PosSelfOrderController
 from werkzeug.exceptions import Unauthorized
+
+from odoo import http
 
 
 class PosSelfOrderControllerRazorpay(PosSelfOrderController):

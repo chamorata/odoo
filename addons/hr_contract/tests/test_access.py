@@ -1,8 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.mail.tests.common import mail_new_test_user
+
 from odoo.tests.common import TransactionCase
 
-from odoo.addons.mail.tests.common import mail_new_test_user
 
 class TestContractPublicAccess(TransactionCase):
 
@@ -66,7 +67,8 @@ class TestContractPublicAccess(TransactionCase):
 
     def test_manager(self):
         with self.with_user(self.manager_user.login):
-            david, laura, jade = self.env['hr.employee.public'].browse((self.employee_a | self.employee_b | self.employee_c).ids)
+            david, laura, jade = self.env['hr.employee.public'].browse(
+                (self.employee_a | self.employee_b | self.employee_c).ids)
 
             self.assertTrue(david.is_manager)
             self.assertFalse(laura.is_manager)
@@ -74,7 +76,8 @@ class TestContractPublicAccess(TransactionCase):
 
     def test_manager_access_read(self):
         with self.with_user(self.manager_user.login):
-            david, laura, jade = self.env['hr.employee.public'].browse((self.employee_a | self.employee_b | self.employee_c).ids)
+            david, laura, jade = self.env['hr.employee.public'].browse(
+                (self.employee_a | self.employee_b | self.employee_c).ids)
 
             # Should be able to read direct reports and indirect reports first_contract_date
             self.assertEqual(str(david.first_contract_date), '2017-12-05')

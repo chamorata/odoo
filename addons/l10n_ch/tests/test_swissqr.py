@@ -3,6 +3,7 @@
 import time
 
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
 from odoo.tests import tagged
 from odoo.tools.misc import mod10r
 
@@ -103,7 +104,8 @@ class TestSwissQR(AccountTestInvoicingCommon):
         """ Ensure correct params for Swiss QR generation. """
 
         self.assertFalse(
-            invoice.partner_bank_id._get_error_messages_for_qr('ch_qr', invoice.partner_id, invoice.currency_id), 'A Swiss QR can be generated'
+            invoice.partner_bank_id._get_error_messages_for_qr('ch_qr', invoice.partner_id, invoice.currency_id),
+            'A Swiss QR can be generated'
         )
 
         if ref_type == 'QRR':

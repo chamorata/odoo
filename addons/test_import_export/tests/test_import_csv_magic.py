@@ -48,7 +48,8 @@ class TestEncoding(ImportCase):
         """
         self._check_text("Iñtërnâtiônàlizætiøn", [('iso-8859-1', ['iso-8859-1', 'iso-8859-2'])])
 
-        self._check_text("やぶら小路の藪柑子。海砂利水魚の、食う寝る処に住む処、パイポパイポ パイポのシューリンガン。", ['eucjp', 'shift_jis', 'iso2022_jp'])
+        self._check_text("やぶら小路の藪柑子。海砂利水魚の、食う寝る処に住む処、パイポパイポ パイポのシューリンガン。",
+                         ['eucjp', 'shift_jis', 'iso2022_jp'])
 
         self._check_text("대통령은 제4항과 제5항의 규정에 의하여 확정된 법률을 지체없이 공포하여야 한다, 탄핵의 결정.", ['euc_kr', 'iso2022_kr'])
 
@@ -58,7 +59,7 @@ class TestEncoding(ImportCase):
         auto-detection
         """
         s = "Iñtërnâtiônàlizætiøn".encode()
-        r = self._make_import(s + b'\ntext')\
+        r = self._make_import(s + b'\ntext') \
             .parse_preview({
             'quoting': '"',
             'separator': '\t',
@@ -74,12 +75,12 @@ class TestFileSeparator(ImportCase):
     def setUp(self):
         super().setUp()
         self.imp = self._make_import(
-"""c|f
-a|1
-b|2
-c|3
-d|4
-""")
+            """c|f
+            a|1
+            b|2
+            c|3
+            d|4
+            """)
 
     def test_explicit_success(self):
         r = self.imp.parse_preview({

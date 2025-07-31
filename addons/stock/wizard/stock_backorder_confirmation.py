@@ -60,10 +60,12 @@ class StockBackorderConfirmation(models.TransientModel):
 
         pickings_to_validate = self.env.context.get('button_validate_picking_ids')
         if pickings_to_validate:
-            pickings_to_validate = self.env['stock.picking'].browse(pickings_to_validate).with_context(skip_backorder=True)
+            pickings_to_validate = self.env['stock.picking'].browse(pickings_to_validate).with_context(
+                skip_backorder=True)
             if pickings_not_to_do:
                 self._check_less_quantities_than_expected(pickings_not_to_do)
-                pickings_to_validate = pickings_to_validate.with_context(picking_ids_not_to_backorder=pickings_not_to_do.ids)
+                pickings_to_validate = pickings_to_validate.with_context(
+                    picking_ids_not_to_backorder=pickings_not_to_do.ids)
             return pickings_to_validate.button_validate()
         return True
 
@@ -72,7 +74,7 @@ class StockBackorderConfirmation(models.TransientModel):
         if pickings_to_validate_ids:
             pickings_to_validate = self.env['stock.picking'].browse(pickings_to_validate_ids)
             self._check_less_quantities_than_expected(pickings_to_validate)
-            return pickings_to_validate\
-                .with_context(skip_backorder=True, picking_ids_not_to_backorder=self.pick_ids.ids)\
+            return pickings_to_validate \
+                .with_context(skip_backorder=True, picking_ids_not_to_backorder=self.pick_ids.ids) \
                 .button_validate()
         return True

@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from psycopg2.extras import Json
 import logging
 from enum import IntEnum
+
+from psycopg2.extras import Json
 
 import odoo.modules
 
 _logger = logging.getLogger(__name__)
+
 
 def is_initialized(cr):
     """ Check if a database has been initialized for the ORM.
@@ -16,6 +18,7 @@ def is_initialized(cr):
 
     """
     return odoo.tools.sql.table_exists(cr, 'ir_module_module')
+
 
 def initialize(cr):
     """ Initialize a database with for the ORM.
@@ -68,7 +71,7 @@ def initialize(cr):
         id = cr.fetchone()[0]
         cr.execute('INSERT INTO ir_model_data \
             (name,model,module, res_id, noupdate) VALUES (%s,%s,%s,%s,%s)', (
-                'module_'+i, 'ir.module.module', 'base', id, True))
+            'module_' + i, 'ir.module.module', 'base', id, True))
         dependencies = info['depends']
         for d in dependencies:
             cr.execute(
@@ -109,6 +112,7 @@ def initialize(cr):
         if not to_auto_install: break
         cr.execute("""UPDATE ir_module_module SET state='to install' WHERE name in %s""", (tuple(to_auto_install),))
 
+
 def create_categories(cr, categories):
     """ Create the ir_module_category entries for some categories.
 
@@ -141,10 +145,12 @@ def create_categories(cr, categories):
         categories = categories[1:]
     return p_id
 
+
 class FunctionStatus(IntEnum):
     MISSING = 0  # function is not present (falsy)
     PRESENT = 1  # function is present but not indexable (not immutable)
     INDEXABLE = 2  # function is present and indexable (immutable)
+
 
 def has_unaccent(cr):
     """ Test whether the database has function 'unaccent' and return its status.
@@ -169,6 +175,7 @@ def has_unaccent(cr):
     # can be used to create index (it should be 'i' - means immutable), see
     # https://www.postgresql.org/docs/current/catalog-pg-proc.html.
     return FunctionStatus.INDEXABLE if result[0] == 'i' else FunctionStatus.PRESENT
+
 
 def has_trigram(cr):
     """ Test if the database has the a word_similarity function.

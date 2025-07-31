@@ -1,6 +1,5 @@
 # -*- coding:utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from datetime import datetime
 
 from odoo import fields, models
 from odoo.osv.expression import AND
@@ -9,7 +8,8 @@ from odoo.osv.expression import AND
 class ResourceCalendar(models.Model):
     _inherit = 'resource.calendar'
 
-    contracts_count = fields.Integer("# Contracts using it", compute='_compute_contracts_count', groups="hr_contract.group_hr_contract_manager")
+    contracts_count = fields.Integer("# Contracts using it", compute='_compute_contracts_count',
+                                     groups="hr_contract.group_hr_contract_manager")
 
     def transfer_leaves_to(self, other_calendar, resources=None, from_date=None):
         """

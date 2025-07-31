@@ -2,8 +2,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.mrp.tests.common import TestMrpCommon
-from odoo.tests import Form
+
 from odoo import Command
+from odoo.tests import Form
 
 
 class TestMrpSerialMassProduce(TestMrpCommon):
@@ -51,7 +52,8 @@ class TestMrpSerialMassProduce(TestMrpCommon):
         # Each generated serial number should have its own mo
         self.assertEqual(len(mo.procurement_group_id.mrp_production_ids), count)
         # Check generated serial numbers
-        self.assertEqual(mo.procurement_group_id.mrp_production_ids.lot_producing_id.mapped('name'), ["sn#1", "sn#2", "sn#3", "sn#4", "sn#5"])
+        self.assertEqual(mo.procurement_group_id.mrp_production_ids.lot_producing_id.mapped('name'),
+                         ["sn#1", "sn#2", "sn#3", "sn#4", "sn#5"])
 
     def test_smp_produce_all_but_one(self):
         """Create a MO for a product tracked by serial number.
@@ -86,7 +88,10 @@ class TestMrpSerialMassProduce(TestMrpCommon):
         Open the smp wizard, generate all serial numbers to produce all quantities.
         Check lot splitting.
         """
-        mo, dummy, dummy, product_to_use_1, product_to_use_2 = self.generate_mo(tracking_final='serial', tracking_base_1='lot', tracking_base_2='serial', qty_final=3, qty_base_1=2, qty_base_2=1)
+        mo, dummy, dummy, product_to_use_1, product_to_use_2 = self.generate_mo(tracking_final='serial',
+                                                                                tracking_base_1='lot',
+                                                                                tracking_base_2='serial', qty_final=3,
+                                                                                qty_base_1=2, qty_base_2=1)
         count = mo.product_qty
         # Make some stock and reserve
         for _ in range(2):  # 2 lots of 3 to satisfy the need and check lot splitting
@@ -239,7 +244,7 @@ class TestMrpSerialMassProduce(TestMrpCommon):
         self.assertEqual(len(mo.procurement_group_id.mrp_production_ids), 2)
         # Check generated serial numbers
         self.assertEqual(mo.procurement_group_id.mrp_production_ids.lot_producing_id.mapped('name'), ["sn#3", "sn#4"])
-        #check byproduct quantity
+        # check byproduct quantity
         self.assertEqual(mo.procurement_group_id.mrp_production_ids.move_byproduct_ids.mapped('quantity'), [1, 1])
         # check the component quantity
         self.assertEqual(mo.procurement_group_id.mrp_production_ids.move_raw_ids.mapped('quantity'), [1, 1])
@@ -273,7 +278,8 @@ class TestMrpSerialMassProduce(TestMrpCommon):
         self.assertIn("-001", mo.name)
         self.assertEqual(mo.state, "to_close")
         # Each generated serial number should have its own mo
-        self.assertEqual(mo.procurement_group_id.mrp_production_ids.lot_producing_id.mapped('name'), ["sn#5", "sn#6", "sn#7"])
+        self.assertEqual(mo.procurement_group_id.mrp_production_ids.lot_producing_id.mapped('name'),
+                         ["sn#5", "sn#6", "sn#7"])
         # check the component quantity
         self.assertRecordValues(mo.procurement_group_id.mrp_production_ids.move_raw_ids, [
             {'quantity': 1.0, 'picked': True},
@@ -313,9 +319,9 @@ class TestMrpSerialMassProduce(TestMrpCommon):
 
         # Make some stock and reserve for storable component
         self.env['stock.quant'].with_context(inventory_mode=True).create({
-                'product_id': mo.move_raw_ids[0].product_id.id,
-                'inventory_quantity': 24,
-                'location_id': mo.location_src_id.id,
+            'product_id': mo.move_raw_ids[0].product_id.id,
+            'inventory_quantity': 24,
+            'location_id': mo.location_src_id.id,
         })._apply_inventory()
 
         mo.action_confirm()

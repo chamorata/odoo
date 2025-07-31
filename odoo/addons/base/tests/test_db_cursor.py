@@ -107,7 +107,6 @@ class TestHTTPCursor(HttpCase):
             self.assertEqual(ok, 'ok')
             self.assertEqual(readonly, True, 'Call to read are expecte to be read only')
 
-
         with patch.object(type(self.env['res.partner']), 'write', return_readonly):
             result_write = self.url_open('/web/dataset/call_kw', data=json.dumps({
                 "params": {
@@ -332,8 +331,10 @@ class TestCursorHooks(common.TransactionCase):
         cr.close()
         self.assertEqual(self.log, ['preR', 'postR'])
 
+
 class TestCursorHooksTransactionCaseCleanup(common.TransactionCase):
     """Check savepoint cases handle commit hooks properly."""
+
     @staticmethod
     def initial_callback():
         pass

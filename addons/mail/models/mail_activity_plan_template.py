@@ -67,7 +67,7 @@ class MailActivityPlanTemplate(models.Model):
                       activity_type_name=template.activity_type_id.name,
                       activity_type_model=template.activity_type_id.res_model,
                       plan_name=template.plan_id.name,
-                     )
+                      )
                 )
 
     @api.constrains('responsible_id', 'responsible_type')

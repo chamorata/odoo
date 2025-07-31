@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo import fields, Command
-from odoo.tests import Form, HttpCase, new_test_user
-from odoo.tools.float_utils import float_round
-
-from odoo.addons.product.tests.common import ProductCommon
-
-import json
 import base64
+import json
 import logging
 from contextlib import contextmanager
 from functools import wraps
-from lxml import etree
 from unittest import SkipTest
 from unittest.mock import patch
+
+from lxml import etree
+from odoo.addons.product.tests.common import ProductCommon
+
+from odoo import fields, Command
+from odoo.tests import Form, HttpCase, new_test_user
+from odoo.tools.float_utils import float_round
 
 _logger = logging.getLogger(__name__)
 
@@ -35,6 +35,7 @@ class AccountTestInvoicingCommon(ProductCommon):
             def wrapper(self):
                 self.country_code = country_code.upper()
                 function(self)
+
             return wrapper
 
         return _decorator
@@ -46,6 +47,7 @@ class AccountTestInvoicingCommon(ProductCommon):
             def wrapper(self):
                 self.chart_template = chart_template
                 function(self)
+
             return wrapper
 
         return _decorator
@@ -62,7 +64,8 @@ class AccountTestInvoicingCommon(ProductCommon):
         cls.tax_sale_a = cls.company_data['default_tax_sale']
         cls.tax_sale_b = cls.company_data['default_tax_sale'] and cls.company_data['default_tax_sale'].copy()
         cls.tax_purchase_a = cls.company_data['default_tax_purchase']
-        cls.tax_purchase_b = cls.company_data['default_tax_purchase'] and cls.company_data['default_tax_purchase'].copy()
+        cls.tax_purchase_b = cls.company_data['default_tax_purchase'] and cls.company_data[
+            'default_tax_purchase'].copy()
         cls.tax_armageddon = cls.setup_armageddon_tax('complex_tax', cls.company_data)
 
         # ==== Products ====
@@ -87,11 +90,11 @@ class AccountTestInvoicingCommon(ProductCommon):
         cls.fiscal_pos_a = cls.env['account.fiscal.position'].create({
             'name': 'fiscal_pos_a',
             'tax_ids': ([(0, None, {
-                    'tax_src_id': cls.tax_sale_a.id,
-                    'tax_dest_id': cls.tax_sale_b.id,
+                'tax_src_id': cls.tax_sale_a.id,
+                'tax_dest_id': cls.tax_sale_b.id,
             })] if cls.tax_sale_b else []) + ([(0, None, {
-                    'tax_src_id': cls.tax_purchase_a.id,
-                    'tax_dest_id': cls.tax_purchase_b.id,
+                'tax_src_id': cls.tax_purchase_a.id,
+                'tax_dest_id': cls.tax_purchase_b.id,
             })] if cls.tax_purchase_b else []),
             'account_ids': [
                 (0, None, {
@@ -259,7 +262,8 @@ class AccountTestInvoicingCommon(ProductCommon):
 
     @classmethod
     def _use_chart_template(cls, company, chart_template_ref=None):
-        chart_template_ref = chart_template_ref or cls.env['account.chart.template']._guess_chart_template(company.country_id)
+        chart_template_ref = chart_template_ref or cls.env['account.chart.template']._guess_chart_template(
+            company.country_id)
         template_vals = cls.env['account.chart.template']._get_chart_template_mapping()[chart_template_ref]
         template_module = cls.env['ir.module.module']._get(template_vals['module'])
         if template_module.state != 'installed':
@@ -280,58 +284,60 @@ class AccountTestInvoicingCommon(ProductCommon):
             'company': company,
             'currency': company.currency_id,
             'default_account_revenue': AccountAccount.search([
-                    *account_company_domain,
-                    ('account_type', '=', 'income'),
-                    ('id', '!=', company.account_journal_early_pay_discount_gain_account_id.id)
-                ], limit=1),
+                *account_company_domain,
+                ('account_type', '=', 'income'),
+                ('id', '!=', company.account_journal_early_pay_discount_gain_account_id.id)
+            ], limit=1),
             'default_account_expense': AccountAccount.search([
-                    *account_company_domain,
-                    ('account_type', '=', 'expense'),
-                    ('id', '!=', company.account_journal_early_pay_discount_loss_account_id.id)
-                ], limit=1),
-            'default_account_receivable': cls.env['res.partner']._fields['property_account_receivable_id'].get_company_dependent_fallback(
+                *account_company_domain,
+                ('account_type', '=', 'expense'),
+                ('id', '!=', company.account_journal_early_pay_discount_loss_account_id.id)
+            ], limit=1),
+            'default_account_receivable': cls.env['res.partner']._fields[
+                'property_account_receivable_id'].get_company_dependent_fallback(
                 cls.env['res.partner'].with_company(company)
             ),
             'default_account_payable': AccountAccount.search([
-                    *account_company_domain,
-                    ('account_type', '=', 'liability_payable')
-                ], limit=1),
+                *account_company_domain,
+                ('account_type', '=', 'liability_payable')
+            ], limit=1),
             'default_tax_account_receivable': company.account_purchase_tax_id.tax_group_id.tax_receivable_account_id,
             'default_tax_account_payable': company.account_sale_tax_id.tax_group_id.tax_payable_account_id,
             'default_account_assets': AccountAccount.search([
-                    *account_company_domain,
-                    ('account_type', '=', 'asset_fixed')
-                ], limit=1),
+                *account_company_domain,
+                ('account_type', '=', 'asset_fixed')
+            ], limit=1),
             'default_account_deferred_expense': AccountAccount.search([
-                    *account_company_domain,
-                    ('account_type', '=', 'asset_current')
-                ], limit=1),
+                *account_company_domain,
+                ('account_type', '=', 'asset_current')
+            ], limit=1),
             'default_account_deferred_revenue': AccountAccount.search([
-                    *account_company_domain,
-                    ('account_type', '=', 'liability_current')
-                ], limit=1),
+                *account_company_domain,
+                ('account_type', '=', 'liability_current')
+            ], limit=1),
             'default_account_tax_sale': company.account_sale_tax_id.mapped('invoice_repartition_line_ids.account_id'),
-            'default_account_tax_purchase': company.account_purchase_tax_id.mapped('invoice_repartition_line_ids.account_id'),
+            'default_account_tax_purchase': company.account_purchase_tax_id.mapped(
+                'invoice_repartition_line_ids.account_id'),
             'default_journal_misc': cls.env['account.journal'].search([
-                    *journal_company_domain,
-                    ('type', '=', 'general')
-                ], limit=1),
+                *journal_company_domain,
+                ('type', '=', 'general')
+            ], limit=1),
             'default_journal_sale': cls.env['account.journal'].search([
-                    *journal_company_domain,
-                    ('type', '=', 'sale')
-                ], limit=1),
+                *journal_company_domain,
+                ('type', '=', 'sale')
+            ], limit=1),
             'default_journal_purchase': cls.env['account.journal'].search([
-                    *journal_company_domain,
-                    ('type', '=', 'purchase')
-                ], limit=1),
+                *journal_company_domain,
+                ('type', '=', 'purchase')
+            ], limit=1),
             'default_journal_bank': cls.env['account.journal'].search([
-                    *journal_company_domain,
-                    ('type', '=', 'bank')
-                ], limit=1),
+                *journal_company_domain,
+                ('type', '=', 'bank')
+            ], limit=1),
             'default_journal_cash': cls.env['account.journal'].search([
-                    *journal_company_domain,
-                    ('type', '=', 'cash')
-                ], limit=1),
+                *journal_company_domain,
+                ('type', '=', 'cash')
+            ], limit=1),
             'default_journal_credit': cls.env['account.journal'].create({
                 'name': 'Credit Journal',
                 'type': 'credit',
@@ -405,7 +411,8 @@ class AccountTestInvoicingCommon(ProductCommon):
     @classmethod
     def setup_armageddon_tax(cls, tax_name, company_data, **kwargs):
         type_tax_use = kwargs.get('type_tax_use', 'sale')
-        cash_basis_transition_account = company_data['default_account_tax_sale'] and company_data['default_account_tax_sale'].copy()
+        cash_basis_transition_account = company_data['default_account_tax_sale'] and company_data[
+            'default_account_tax_sale'].copy()
         return cls.env['account.tax'].create({
             'name': '%s (group)' % tax_name,
             'amount_type': 'group',
@@ -485,12 +492,13 @@ class AccountTestInvoicingCommon(ProductCommon):
         })
 
     @classmethod
-    def init_invoice(cls, move_type, partner=None, invoice_date=None, post=False, products=None, amounts=None, taxes=None, company=False, currency=None, journal=None):
+    def init_invoice(cls, move_type, partner=None, invoice_date=None, post=False, products=None, amounts=None,
+                     taxes=None, company=False, currency=None, journal=None):
         products = [] if products is None else products
         amounts = [] if amounts is None else amounts
         move_form = Form(cls.env['account.move'] \
-                    .with_company(company or cls.env.company) \
-                    .with_context(default_move_type=move_type))
+                         .with_company(company or cls.env.company) \
+                         .with_context(default_move_type=move_type))
         move_form.invoice_date = invoice_date or fields.Date.from_string('2019-01-01')
         # According to the state or type of the invoice, the date field is sometimes visible or not
         # Besides, the date field can be put multiple times in the view
@@ -544,7 +552,8 @@ class AccountTestInvoicingCommon(ProductCommon):
             payment.action_post()
         return payment
 
-    def create_line_for_reconciliation(self, balance, amount_currency, currency, move_date, account_1=None, partner=None):
+    def create_line_for_reconciliation(self, balance, amount_currency, currency, move_date, account_1=None,
+                                       partner=None):
         write_off_account_to_be_reconciled = account_1 if account_1 else self.receivable_account
         move = self.env['account.move'].create({
             'move_type': 'entry',
@@ -581,8 +590,11 @@ class AccountTestInvoicingCommon(ProductCommon):
 
     def assertInvoiceValues(self, move, expected_lines_values, expected_move_values):
         def sort_lines(lines):
-            return lines.sorted(lambda line: (line.sequence, not bool(line.tax_line_id), line.name or line.product_id.display_name or '', line.balance))
-        self.assertRecordValues(sort_lines(move.line_ids.sorted()), expected_lines_values, field_names=expected_lines_values[0].keys())
+            return lines.sorted(lambda line: (line.sequence, not bool(line.tax_line_id),
+                                              line.name or line.product_id.display_name or '', line.balance))
+
+        self.assertRecordValues(sort_lines(move.line_ids.sorted()), expected_lines_values,
+                                field_names=expected_lines_values[0].keys())
         self.assertRecordValues(move, [expected_move_values], field_names=expected_move_values.keys())
 
     def assert_invoice_outstanding_to_reconcile_widget(self, invoice, expected_amounts):
@@ -619,6 +631,7 @@ class AccountTestInvoicingCommon(ProductCommon):
         :param expected_results:    The expected values.
         :param soft_checking:       Limit the asserted values to the ones in 'expected_results' and don't go deeper inside the dictionary.
         """
+
         def fix_monetary_value(current_values, expected_values, monetary_fields):
             for key, current_value in current_values.items():
                 if not isinstance(expected_values.get(key), float):
@@ -658,7 +671,8 @@ class AccountTestInvoicingCommon(ProductCommon):
             'cash_rounding_base_amount': company_currency,
         }
 
-        current_values = {k: len(v) if k == 'subtotals' else v for k, v in tax_totals.items() if k not in excluded_fields}
+        current_values = {k: len(v) if k == 'subtotals' else v for k, v in tax_totals.items() if
+                          k not in excluded_fields}
         expected_values = {k: len(v) if k == 'subtotals' else v for k, v in expected_results.items()}
         if soft_checking:
             current_values = {k: v for k, v in current_values.items() if k in expected_values}
@@ -669,7 +683,8 @@ class AccountTestInvoicingCommon(ProductCommon):
             return
 
         for subtotal, expected_subtotal in zip(tax_totals['subtotals'], expected_results['subtotals']):
-            current_values = {k: len(v) if k == 'tax_groups' else v for k, v in subtotal.items() if k not in excluded_fields}
+            current_values = {k: len(v) if k == 'tax_groups' else v for k, v in subtotal.items() if
+                              k not in excluded_fields}
             expected_values = {k: len(v) if k == 'tax_groups' else v for k, v in expected_subtotal.items()}
             fix_monetary_value(current_values, expected_values, monetary_fields)
             self.assertEqual(current_values, expected_values)
@@ -826,11 +841,12 @@ class AccountTestMockOnlineSyncCommon(HttpCase):
                     'picture': '/base/static/img/logo_white.png'
                 },
             ]
+
         with patch.object(
-             target=cls.registry['account.journal'],
-             attribute='fetch_online_sync_favorite_institutions',
-             new=get_institutions,
-             create=True):
+                target=cls.registry['account.journal'],
+                attribute='fetch_online_sync_favorite_institutions',
+                new=get_institutions,
+                create=True):
             yield
 
 
@@ -863,13 +879,13 @@ class TestTaxCommon(AccountTestInvoicingHttpCommon):
         yield
 
     def _create_assert_test(
-        self,
-        expected_values,
-        py_function,
-        js_function,
-        assert_function,
-        *args,
-        extra_function=None,
+            self,
+            expected_values,
+            py_function,
+            js_function,
+            assert_function,
+            *args,
+            extra_function=None,
     ):
         if py_function:
             py_results = py_function(*args)
@@ -965,7 +981,8 @@ class TestTaxCommon(AccountTestInvoicingHttpCommon):
             'company': self._jsonify_company(self.env.company),
             'currency': self._jsonify_currency(document['currency']),
             'cash_rounding': self._jsonify_cash_rounding(document['cash_rounding']),
-            'lines': [self._jsonify_document_line(document, index, line) for index, line in enumerate(document['lines'])],
+            'lines': [self._jsonify_document_line(document, index, line) for index, line in
+                      enumerate(document['lines'])],
         }
 
     def _jsonify_company(self, company):
@@ -992,7 +1009,8 @@ class TestTaxCommon(AccountTestInvoicingHttpCommon):
 
     def convert_document_to_invoice(self, document):
         invoice_date = '2020-01-01'
-        currency = self.setup_other_currency(document['currency'].name.upper(), rates=[(invoice_date, document['rate'])])
+        currency = self.setup_other_currency(document['currency'].name.upper(),
+                                             rates=[(invoice_date, document['rate'])])
         invoice = self.env['account.move'].create({
             'move_type': 'out_invoice',
             'invoice_date': invoice_date,
@@ -1075,7 +1093,8 @@ class TestTaxCommon(AccountTestInvoicingHttpCommon):
                 float_round(expected_values['total_excluded'], precision_rounding=rounding),
             )
             self.assertEqual(len(sub_results['taxes_data']), len(expected_values['taxes_data']))
-            for tax_data, (expected_base, expected_tax) in zip(sub_results['taxes_data'], expected_values['taxes_data']):
+            for tax_data, (expected_base, expected_tax) in zip(sub_results['taxes_data'],
+                                                               expected_values['taxes_data']):
                 self.assertEqual(
                     float_round(tax_data['base_amount'], precision_rounding=rounding),
                     float_round(expected_base, precision_rounding=rounding),
@@ -1126,7 +1145,8 @@ class TestTaxCommon(AccountTestInvoicingHttpCommon):
                     float_round(results['price_unit'], precision_rounding=rounding),
                 )
 
-    def _create_py_sub_test_taxes_computation(self, taxes, price_unit, quantity, product, precision_rounding, rounding_method, excluded_tax_ids):
+    def _create_py_sub_test_taxes_computation(self, taxes, price_unit, quantity, product, precision_rounding,
+                                              rounding_method, excluded_tax_ids):
         kwargs = {
             'product': product,
             'precision_rounding': precision_rounding,
@@ -1149,7 +1169,8 @@ class TestTaxCommon(AccountTestInvoicingHttpCommon):
             )
         return results
 
-    def _create_js_sub_test_taxes_computation(self, taxes, price_unit, quantity, product, precision_rounding, rounding_method, excluded_tax_ids):
+    def _create_js_sub_test_taxes_computation(self, taxes, price_unit, quantity, product, precision_rounding,
+                                              rounding_method, excluded_tax_ids):
         return {
             'test': 'taxes_computation',
             'taxes': [self._jsonify_tax(tax) for tax in taxes],
@@ -1162,16 +1183,16 @@ class TestTaxCommon(AccountTestInvoicingHttpCommon):
         }
 
     def assert_taxes_computation(
-        self,
-        taxes,
-        price_unit,
-        expected_values,
-        quantity=1,
-        product=None,
-        precision_rounding=0.01,
-        rounding_method='round_per_line',
-        excluded_special_modes=None,
-        excluded_tax_ids=None,
+            self,
+            taxes,
+            price_unit,
+            expected_values,
+            quantity=1,
+            product=None,
+            precision_rounding=0.01,
+            rounding_method='round_per_line',
+            excluded_special_modes=None,
+            excluded_tax_ids=None,
     ):
         def extra_function(results):
             results['excluded_special_modes'] = excluded_special_modes
@@ -1202,7 +1223,8 @@ class TestTaxCommon(AccountTestInvoicingHttpCommon):
         self.assertEqual(results['price_unit'], expected_price_unit)
 
     def _create_py_sub_test_adapt_price_unit_to_another_taxes(self, price_unit, original_taxes, new_taxes, product):
-        return {'price_unit': self.env['account.tax']._adapt_price_unit_to_another_taxes(price_unit, product, original_taxes, new_taxes)}
+        return {'price_unit': self.env['account.tax']._adapt_price_unit_to_another_taxes(price_unit, product,
+                                                                                         original_taxes, new_taxes)}
 
     def _create_js_sub_test_adapt_price_unit_to_another_taxes(self, price_unit, original_taxes, new_taxes, product):
         return {
@@ -1213,7 +1235,8 @@ class TestTaxCommon(AccountTestInvoicingHttpCommon):
             'new_taxes': [self._jsonify_tax(tax) for tax in new_taxes],
         }
 
-    def assert_adapt_price_unit_to_another_taxes(self, price_unit, original_taxes, new_taxes, expected_price_unit, product=None):
+    def assert_adapt_price_unit_to_another_taxes(self, price_unit, original_taxes, new_taxes, expected_price_unit,
+                                                 product=None):
         self._create_assert_test(
             expected_price_unit,
             self._create_py_sub_test_adapt_price_unit_to_another_taxes,
@@ -1311,7 +1334,8 @@ class TestAccountMergeCommon(AccountTestInvoicingCommon):
                     'balance': 10.0,
                 }),
                 Command.create({
-                    'account_id': self.env['account.account'].search([('company_ids', '=', account.company_ids.id)], limit=1).id,
+                    'account_id': self.env['account.account'].search([('company_ids', '=', account.company_ids.id)],
+                                                                     limit=1).id,
                     'balance': -10.0,
                 })
             ]

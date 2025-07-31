@@ -2,12 +2,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import models
-from odoo.modules.loading import force_demo
 from odoo.addons.base.models.ir_module import assert_log_admin_access
+from odoo.modules.loading import force_demo
 
 
 class IrDemo(models.TransientModel):
-
     _name = 'ir.demo'
     _description = 'Demo'
 

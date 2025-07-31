@@ -1,7 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.exceptions import UserError
 from odoo.addons.base.tests.common import TransactionCaseWithUserDemo
+from odoo.exceptions import UserError
 
 
 class TestEmbeddedActionsBase(TransactionCaseWithUserDemo):
@@ -119,7 +119,8 @@ class TestEmbeddedActionsBase(TransactionCaseWithUserDemo):
         self.env.user.write({'groups_id': [(4, arbitrary_group.id)]})
         res = self.get_embedded_actions_ids(self.parent_action)
         self.assertEqual(len(res), 3, "There should be 3 embedded records linked to the parent action")
-        self.assertTrue(self.embedded_action_1.id in res and self.embedded_action_2.id in res and embedded_action_custo.id in res, "The correct embedded actions\
+        self.assertTrue(
+            self.embedded_action_1.id in res and self.embedded_action_2.id in res and embedded_action_custo.id in res, "The correct embedded actions\
                         should be in embedded_actions")
 
     def test_create_embedded_action_with_action_and_python_method(self):

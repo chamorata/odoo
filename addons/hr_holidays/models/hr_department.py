@@ -1,15 +1,15 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+import ast
 from datetime import datetime, timezone
+
 from dateutil.relativedelta import relativedelta
 
-from odoo import api, fields, models
+from odoo import fields, models
 from odoo.osv import expression
-import ast
 
 
 class Department(models.Model):
-
     _inherit = 'hr.department'
 
     absence_of_today = fields.Integer(

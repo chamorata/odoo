@@ -80,7 +80,7 @@
         <record id="alert_office_3" model="lunch.alert">
             <field name="name">Alert for Office 3</field>
             <field name="message">Please order</field>
-            <field name="location_ids" eval="[(4, ref('location_office_3'))]" />
+            <field name="location_ids" eval="[(4, ref('location_office_3'))]"/>
             <field name="mode">chat</field>
         </record>
 
@@ -261,7 +261,7 @@
             <field name="category_id" ref="categ_sushi"/>
             <field name="price">13.80</field>
             <field name="supplier_id" ref="supplier_sushi_shop"/>
-            <field name="description">4 Sushi Salmon - 6 Maki Salmon - 4 Sashimi Salmon </field>
+            <field name="description">4 Sushi Salmon - 6 Maki Salmon - 4 Sashimi Salmon</field>
             <field name="image_1920" type="base64" file="lunch/static/img/salmon_sushi.png"/>
             <field name="new_until" eval="datetime.today() + relativedelta(weeks=1)"/>
             <field name="company_id" ref="base.main_company"/>
@@ -389,7 +389,7 @@
             <field name="company_id" ref="base.main_company"/>
         </record>
 
-         <record model="lunch.product" id="product_Napoli">
+        <record model="lunch.product" id="product_Napoli">
             <field name="name">Napoli Pasta</field>
             <field name="category_id" ref="categ_pasta"/>
             <field name="price">7.70</field>
@@ -405,7 +405,7 @@
             <field name="supplier_id" ref="supplier_pizza_inn"/>
         </record>
 
-         <record model="lunch.product" id="product_4formaggi">
+        <record model="lunch.product" id="product_4formaggi">
             <field name="name">4 Formaggi</field>
             <field name="category_id" ref="categ_pasta"/>
             <field name="price">5.50</field>

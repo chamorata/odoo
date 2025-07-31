@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.phone_validation.tools import phone_validation
 from werkzeug.exceptions import NotFound
 
 from odoo import http, _
-from odoo.addons.phone_validation.tools import phone_validation
 from odoo.http import request
 
 
@@ -70,8 +70,9 @@ class MailingSMSController(http.Controller):
             else:
                 blacklist_rec = request.env['phone.blacklist'].sudo().add(tocheck_number)
                 blacklist_rec._message_log(
-                    body=_('Blacklist through SMS Marketing unsubscribe (mailing ID: %(mailing_id)s - model: %(model)s)',
-                           mailing_id=trace.mass_mailing_id.id, model=trace.mass_mailing_id.mailing_model_id.display_name))
+                    body=_(
+                        'Blacklist through SMS Marketing unsubscribe (mailing ID: %(mailing_id)s - model: %(model)s)',
+                        mailing_id=trace.mass_mailing_id.id, model=trace.mass_mailing_id.mailing_model_id.display_name))
             lists_optin = request.env['mailing.subscription'].sudo().search([
                 ('contact_id.phone_sanitized', '=', tocheck_number),
                 ('list_id', 'not in', mailing_list_ids.ids),

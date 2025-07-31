@@ -27,4 +27,6 @@ class BaseModel(models.AbstractModel):
                 for key, value in translation.items():
                     translation[key] = field.translate.term_converter(value)
             source_lang = self._get_base_lang()
-        return self._update_field_translations(fname, translations, lambda old_term: sha256(old_term.encode()).hexdigest(), source_lang=source_lang)
+        return self._update_field_translations(fname, translations,
+                                               lambda old_term: sha256(old_term.encode()).hexdigest(),
+                                               source_lang=source_lang)

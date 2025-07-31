@@ -1,10 +1,9 @@
-import zeep
-
-from decimal import Decimal
 from datetime import date, datetime, timedelta
-from requests import Response
+from decimal import Decimal
 from types import SimpleNamespace, FunctionType
 
+import zeep
+from requests import Response
 
 TIMEOUT = 30
 SERIALIZABLE_TYPES = (
@@ -19,6 +18,7 @@ class Client:
     * restricting its attributes to a few, most-commonly used accross Odoo's modules,
     * serializing the returned values of its methods.
     """
+
     def __init__(self, *args, **kwargs):
         transport = kwargs.setdefault('transport', zeep.Transport())
         # The timeout for loading wsdl and xsd documents.
@@ -48,6 +48,7 @@ class Client:
     def __serialize_object_wrapper(cls, method):
         def wrapper(*args, **kwargs):
             return cls.__serialize_object(method(*args, **kwargs))
+
         return wrapper
 
     @property
@@ -96,6 +97,7 @@ class ReadOnlyMethodNamespace(SimpleNamespace):
     By default, `types.SympleNamespace` doesn't implement `__setitem__` and `__delitem__`,
     no need to implement them to ensure the read-only property of this class.
     """
+
     def __init__(self, **kwargs):
         assert all(
             (not key.startswith('_') and isinstance(value, FunctionType))

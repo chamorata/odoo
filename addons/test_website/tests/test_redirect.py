@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
+from unittest.mock import patch
+
 import odoo
 from odoo.tests import HttpCase, tagged
 from odoo.tools import mute_logger
-
-from unittest.mock import patch
 
 
 @tagged('-at_install', 'post_install')
@@ -22,7 +22,6 @@ class TestRedirect(HttpCase):
         })
 
     def test_01_redirect_308_model_converter(self):
-
         self.env['website.rewrite'].create({
             'name': 'Test Website Redirect',
             'redirect_type': '308',
@@ -57,11 +56,11 @@ class TestRedirect(HttpCase):
 
     def test_redirect_308_by_method_url_rewrite(self):
         self.env['website.rewrite'].create({
-            'name': 'Test Website Redirect',
-            'redirect_type': '308',
-            'url_from': url_from,
-            'url_to': f'{url_from}_new',
-        } for url_from in ('/get', '/post', '/get_post'))
+                                               'name': 'Test Website Redirect',
+                                               'redirect_type': '308',
+                                               'url_from': url_from,
+                                               'url_to': f'{url_from}_new',
+                                           } for url_from in ('/get', '/post', '/get_post'))
 
         self.env.ref('test_website.test_view').arch = '''
             <t>

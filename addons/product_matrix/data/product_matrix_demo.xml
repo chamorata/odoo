@@ -101,6 +101,7 @@
     <record id="product_template_attribute_line_color" model="product.template.attribute.line">
         <field name="product_tmpl_id" ref="matrix_product_template_shirt"/>
         <field name="attribute_id" ref="product.product_attribute_2"/>
-        <field name="value_ids" eval="[(6, 0, [ref('product_attribute_value_color_1'), ref('product_attribute_value_color_2'), ref('product_attribute_value_color_3'), ref('product_attribute_value_color_4')])]"/>
+        <field name="value_ids"
+               eval="[(6, 0, [ref('product_attribute_value_color_1'), ref('product_attribute_value_color_2'), ref('product_attribute_value_color_3'), ref('product_attribute_value_color_4')])]"/>
     </record>
 </odoo>

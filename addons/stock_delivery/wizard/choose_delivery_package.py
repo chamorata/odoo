@@ -37,7 +37,8 @@ class ChooseDeliveryPackage(models.TransientModel):
         if self.delivery_package_type_id.max_weight and self.shipping_weight > self.delivery_package_type_id.max_weight:
             warning_mess = {
                 'title': _('Package too heavy!'),
-                'message': _('The weight of your package is higher than the maximum weight authorized for this package type. Please choose another package type.')
+                'message': _(
+                    'The weight of your package is higher than the maximum weight authorized for this package type. Please choose another package type.')
             }
             return {'warning': warning_mess}
 

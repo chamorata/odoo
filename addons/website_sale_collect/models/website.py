@@ -18,8 +18,8 @@ class Website(models.Model):
         )
         for website in self:
             website.in_store_dm_id = in_store_delivery_methods.filtered_domain([
-               '|', ('website_id', '=', False), ('website_id', '=', website.id),
-               '|', ('company_id', '=', False), ('company_id', '=', website.company_id.id),
+                '|', ('website_id', '=', False), ('website_id', '=', website.id),
+                '|', ('company_id', '=', False), ('company_id', '=', website.company_id.id),
             ])[:1]
 
     def _get_product_available_qty(self, product, **kwargs):

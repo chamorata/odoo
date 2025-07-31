@@ -1,4 +1,5 @@
 import re
+
 from odoo import models, fields, _
 from odoo.exceptions import UserError
 
@@ -6,8 +7,9 @@ from odoo.exceptions import UserError
 class ResCompany(models.Model):
     _inherit = "res.company"
 
-    l10n_sa_private_key_id = fields.Many2one(string="ZATCA Private key", comodel_name='certificate.key', copy=False, domain=[('public', '=', False)],
-                                        help="The private key used to generate the CSR and obtain certificates",)
+    l10n_sa_private_key_id = fields.Many2one(string="ZATCA Private key", comodel_name='certificate.key', copy=False,
+                                             domain=[('public', '=', False)],
+                                             help="The private key used to generate the CSR and obtain certificates", )
 
     l10n_sa_api_mode = fields.Selection(
         [('sandbox', 'Sandbox'), ('preprod', 'Simulation (Pre-Production)'), ('prod', 'Production')],
@@ -35,7 +37,8 @@ class ResCompany(models.Model):
             if 'l10n_sa_api_mode' in vals:
                 if company.l10n_sa_api_mode == 'prod' and vals['l10n_sa_api_mode'] != 'prod':
                     raise UserError(_("You cannot change the ZATCA Submission Mode once it has been set to Production"))
-                journals = self.env['account.journal'].search(self.env['account.journal']._check_company_domain(company))
+                journals = self.env['account.journal'].search(
+                    self.env['account.journal']._check_company_domain(company))
                 journals._l10n_sa_reset_certificates()
                 journals.l10n_sa_latest_submission_hash = False
         return super().write(vals)

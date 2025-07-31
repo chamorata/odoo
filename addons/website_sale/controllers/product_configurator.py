@@ -1,10 +1,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.http import request, route
-from odoo.tools import float_is_zero
-
 from odoo.addons.sale.controllers.product_configurator import SaleProductConfiguratorController
 from odoo.addons.website_sale.controllers.main import WebsiteSale
+
+from odoo.http import request, route
+from odoo.tools import float_is_zero
 
 
 class WebsiteSaleProductConfiguratorController(SaleProductConfiguratorController, WebsiteSale):
@@ -16,7 +16,7 @@ class WebsiteSaleProductConfiguratorController(SaleProductConfiguratorController
         website=True,
     )
     def website_sale_should_show_product_configurator(
-        self, product_template_id, ptav_ids, is_product_configured
+            self, product_template_id, ptav_ids, is_product_configured
     ):
         """ Return whether the product configurator dialog should be shown.
 
@@ -37,9 +37,9 @@ class WebsiteSaleProductConfiguratorController(SaleProductConfiguratorController
         ))
         force_dialog = request.website.add_to_cart_action == 'force_dialog'
         return (
-            force_dialog
-            or has_optional_products
-            or not (single_product_variant.get('product_id') or is_product_configured)
+                force_dialog
+                or has_optional_products
+                or not (single_product_variant.get('product_id') or is_product_configured)
         )
 
     def _get_product_template(self, product_template_id):
@@ -103,7 +103,7 @@ class WebsiteSaleProductConfiguratorController(SaleProductConfiguratorController
         website=True,
     )
     def website_sale_product_configurator_update_cart(
-        self, main_product, optional_products, **kwargs
+            self, main_product, optional_products, **kwargs
     ):
         """ Add the provided main and optional products to the cart.
 
@@ -171,7 +171,7 @@ class WebsiteSaleProductConfiguratorController(SaleProductConfiguratorController
         return values
 
     def _get_basic_product_information(
-        self, product_or_template, pricelist, combination, currency=None, date=None, **kwargs
+            self, product_or_template, pricelist, combination, currency=None, date=None, **kwargs
     ):
         """ Override of `sale` to append website data and apply taxes.
 
@@ -208,7 +208,7 @@ class WebsiteSaleProductConfiguratorController(SaleProductConfiguratorController
                 basic_product_information['price'], precision_rounding=currency.rounding
             )
             basic_product_information['can_be_sold'] = not (
-                request.website.prevent_zero_price_sale and has_zero_price
+                    request.website.prevent_zero_price_sale and has_zero_price
             )
             # Don't compute the strikethrough price if there's a custom price (i.e. if `price_info`
             # is populated).
@@ -276,8 +276,8 @@ class WebsiteSaleProductConfiguratorController(SaleProductConfiguratorController
         # Second, try to use `compare_list_price` as the strikethrough price.
         # Don't apply taxes since this price should always be displayed as is.
         if (
-            request.env.user.has_group('website_sale.group_product_price_comparison')
-            and product_or_template.compare_list_price
+                request.env.user.has_group('website_sale.group_product_price_comparison')
+                and product_or_template.compare_list_price
         ):
             compare_list_price = product_or_template.currency_id._convert(
                 from_amount=product_or_template.compare_list_price,
@@ -303,8 +303,8 @@ class WebsiteSaleProductConfiguratorController(SaleProductConfiguratorController
         should_show_product = super()._should_show_product(product_template, parent_combination)
         if request.is_frontend:
             return (
-                should_show_product
-                and product_template._is_add_to_cart_possible(parent_combination)
+                    should_show_product
+                    and product_template._is_add_to_cart_possible(parent_combination)
             )
         return should_show_product
 

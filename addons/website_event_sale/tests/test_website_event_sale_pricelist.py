@@ -1,10 +1,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.fields import Command
-from odoo.tests import tagged
-
 from odoo.addons.website_event_sale.tests.common import TestWebsiteEventSaleCommon
 from odoo.addons.website_sale.controllers.main import WebsiteSale
+
+from odoo.fields import Command
+from odoo.tests import tagged
 
 
 @tagged('post_install', '-at_install')

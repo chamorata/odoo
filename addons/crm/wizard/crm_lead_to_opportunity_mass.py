@@ -16,7 +16,8 @@ class Lead2OpportunityMassConvert(models.TransientModel):
         default=lambda self: self.env.context.get('active_ids', []),
     )
     user_ids = fields.Many2many('res.users', string='Salespersons')
-    deduplicate = fields.Boolean('Apply deduplication', default=True, help='Merge with existing leads/opportunities of each partner')
+    deduplicate = fields.Boolean('Apply deduplication', default=True,
+                                 help='Merge with existing leads/opportunities of each partner')
     action = fields.Selection(selection_add=[
         ('each_exist_or_create', 'Use existing partner or create'),
     ], string='Related Customer', ondelete={

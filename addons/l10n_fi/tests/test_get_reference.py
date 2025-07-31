@@ -1,5 +1,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
 from odoo.tests import tagged
 
 
@@ -11,7 +12,7 @@ class InvoiceGetReferenceTest(AccountTestInvoicingCommon):
     def setUpClass(cls):
         super().setUpClass()
 
-        cls.invoice = cls.init_invoice('out_invoice', products=cls.product_a+cls.product_b)
+        cls.invoice = cls.init_invoice('out_invoice', products=cls.product_a + cls.product_b)
 
     def test_get_reference_finnish_invoice(self):
         self.assertFalse(self.invoice.payment_reference)

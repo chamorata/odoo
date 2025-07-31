@@ -44,7 +44,8 @@ class AccountDocumentDownloadController(http.Controller):
             headers = _get_headers(filename, 'zip', content)
             return request.make_response(content, headers)
 
-    @http.route('/account/download_invoice_documents/<models("account.move"):invoices>/<string:filetype>', type='http', auth='user')
+    @http.route('/account/download_invoice_documents/<models("account.move"):invoices>/<string:filetype>', type='http',
+                auth='user')
     def download_invoice_documents_filetype(self, invoices, filetype, allow_fallback=True):
         invoices.check_access('read')
         invoices.line_ids.check_access('read')

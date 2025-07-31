@@ -1,13 +1,12 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from freezegun import freeze_time
+from odoo.addons.delivery.tests.common import DeliveryCommon
+from odoo.addons.sale.tests.common import SaleCommon
 
 from odoo import Command
 from odoo.tests import Form, tagged
 from odoo.tools import float_compare
-
-from odoo.addons.delivery.tests.common import DeliveryCommon
-from odoo.addons.sale.tests.common import SaleCommon
 
 
 @tagged('post_install', '-at_install')
@@ -92,9 +91,10 @@ class TestDeliveryCost(DeliveryCommon, SaleCommon):
             ('product_id', '=', self.normal_delivery.product_id.id)])
         self.assertEqual(len(line), 1, "Delivery cost is not Added")
 
-        zin = str(delivery_wizard.display_price) + " " + str(delivery_wizard.delivery_price) + ' ' + line.company_id.country_id.code + line.company_id.name
+        zin = str(delivery_wizard.display_price) + " " + str(
+            delivery_wizard.delivery_price) + ' ' + line.company_id.country_id.code + line.company_id.name
         self.assertEqual(float_compare(line.price_subtotal, 10.0, precision_digits=2), 0,
-            "Delivery cost does not correspond to 10.0. %s %s" % (line.price_subtotal, zin))
+                         "Delivery cost does not correspond to 10.0. %s %s" % (line.price_subtotal, zin))
 
         # I confirm the sales order
 
@@ -134,7 +134,7 @@ class TestDeliveryCost(DeliveryCommon, SaleCommon):
 
         self.assertEqual(len(line), 1, "Delivery cost is not Added")
         self.assertEqual(float_compare(line.price_subtotal, 0, precision_digits=2), 0,
-            "Delivery cost is not correspond.")
+                         "Delivery cost is not correspond.")
 
         # I set default delivery policy
         self.env['res.config.settings'].create({}).execute()
@@ -221,7 +221,8 @@ class TestDeliveryCost(DeliveryCommon, SaleCommon):
     def test_01_taxes_on_delivery_cost(self):
         # Creating taxes and fiscal position
 
-        self.env.ref('base.group_user').write({'implied_ids': [(4, self.env.ref('product.group_product_pricelist').id)]})
+        self.env.ref('base.group_user').write(
+            {'implied_ids': [(4, self.env.ref('product.group_product_pricelist').id)]})
 
         tax_price_include, tax_price_exclude = self.env['account.tax'].create([{
             'name': '10% inc',
@@ -267,7 +268,7 @@ class TestDeliveryCost(DeliveryCommon, SaleCommon):
 
         # Now trying to add the delivery line using the delivery wizard, the results should be the same as before
         delivery_wizard = Form(self.env['choose.delivery.carrier'].with_context(default_order_id=sale_order.id,
-                          default_carrier_id=self.normal_delivery.id))
+                                                                                default_carrier_id=self.normal_delivery.id))
         choose_delivery_carrier = delivery_wizard.save()
         choose_delivery_carrier.button_confirm()
 
@@ -297,7 +298,8 @@ class TestDeliveryCost(DeliveryCommon, SaleCommon):
             ],
         })
         shipping_weight = sale_order._get_estimated_weight()
-        self.assertEqual(shipping_weight, self.product.weight, "Only positive quantity products' weights should be included in estimated weight")
+        self.assertEqual(shipping_weight, self.product.weight,
+                         "Only positive quantity products' weights should be included in estimated weight")
 
     def test_fixed_price_margins(self):
         """
@@ -316,7 +318,7 @@ class TestDeliveryCost(DeliveryCommon, SaleCommon):
         self.normal_delivery.fixed_margin = 100
         self.normal_delivery.margin = 4.2
         delivery_wizard = Form(self.env['choose.delivery.carrier'].with_context(default_order_id=sale_order.id,
-                          default_carrier_id=self.normal_delivery.id))
+                                                                                default_carrier_id=self.normal_delivery.id))
         choose_delivery_carrier = delivery_wizard.save()
         choose_delivery_carrier.button_confirm()
 

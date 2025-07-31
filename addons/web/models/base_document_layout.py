@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 import os
-from markupsafe import Markup
 from math import ceil
 
-from odoo import api, fields, models
+from markupsafe import Markup
 
+from odoo import api, fields, models
 from odoo.addons.base.models.ir_qweb_fields import nl2br
 from odoo.tools import html2plaintext, is_html_empty, image as tools
 from odoo.tools.misc import file_path
@@ -35,7 +35,8 @@ class BaseDocumentLayout(models.TransientModel):
     @api.model
     def _default_report_footer(self):
         company = self.env.company
-        footer_fields = [field for field in [company.phone, company.email, company.website, company.vat] if isinstance(field, str) and len(field) > 0]
+        footer_fields = [field for field in [company.phone, company.email, company.website, company.vat] if
+                         isinstance(field, str) and len(field) > 0]
         return Markup(' ').join(footer_fields)
 
     @api.model
@@ -63,7 +64,8 @@ class BaseDocumentLayout(models.TransientModel):
     preview_logo = fields.Binary(related='logo', string="Preview logo")
     report_header = fields.Html(related='company_id.report_header', readonly=False)
     report_footer = fields.Html(related='company_id.report_footer', readonly=False, default=_default_report_footer)
-    company_details = fields.Html(related='company_id.company_details', readonly=False, default=_default_company_details)
+    company_details = fields.Html(related='company_id.company_details', readonly=False,
+                                  default=_default_company_details)
     is_company_details_empty = fields.Boolean(compute='_compute_empty_company_details')
 
     # The paper format changes won't be reflected in the preview.
@@ -96,18 +98,18 @@ class BaseDocumentLayout(models.TransientModel):
     name = fields.Char(related='company_id.name', readonly=True)
     country_id = fields.Many2one(related="company_id.country_id", readonly=True)
 
-    @api.depends('logo_primary_color', 'logo_secondary_color', 'primary_color', 'secondary_color',)
+    @api.depends('logo_primary_color', 'logo_secondary_color', 'primary_color', 'secondary_color', )
     def _compute_custom_colors(self):
         for wizard in self:
             logo_primary = wizard.logo_primary_color or ''
             logo_secondary = wizard.logo_secondary_color or ''
             # Force lower case on color to ensure that FF01AA == ff01aa
             wizard.custom_colors = (
-                wizard.logo and wizard.primary_color and wizard.secondary_color
-                and not(
+                    wizard.logo and wizard.primary_color and wizard.secondary_color
+                    and not (
                     wizard.primary_color.lower() == logo_primary.lower()
                     and wizard.secondary_color.lower() == logo_secondary.lower()
-                )
+            )
             )
 
     @api.depends('logo')
@@ -117,9 +119,11 @@ class BaseDocumentLayout(models.TransientModel):
                 wizard_for_image = wizard.with_context(bin_size=False)
             else:
                 wizard_for_image = wizard
-            wizard.logo_primary_color, wizard.logo_secondary_color = wizard.extract_image_primary_secondary_colors(wizard_for_image.logo)
+            wizard.logo_primary_color, wizard.logo_secondary_color = wizard.extract_image_primary_secondary_colors(
+                wizard_for_image.logo)
 
-    @api.depends('report_layout_id', 'logo', 'font', 'primary_color', 'secondary_color', 'report_header', 'report_footer', 'layout_background', 'layout_background_image', 'company_details')
+    @api.depends('report_layout_id', 'logo', 'font', 'primary_color', 'secondary_color', 'report_header',
+                 'report_footer', 'layout_background', 'layout_background_image', 'company_details')
     def _compute_preview(self):
         """ compute a qweb based preview to display on the wizard """
         styles = self._get_asset_style()
@@ -155,8 +159,10 @@ class BaseDocumentLayout(models.TransientModel):
             wizard.logo = wizard.company_id.logo
             wizard.report_header = wizard.company_id.report_header
             # company_details and report_footer can store empty strings (set by the user) or false (meaning the user didn't set a value). Since both are falsy values, we use isinstance of string to differentiate them
-            wizard.report_footer = wizard.company_id.report_footer if isinstance(wizard.company_id.report_footer, str) else wizard.report_footer
-            wizard.company_details = wizard.company_id.company_details if isinstance(wizard.company_id.company_details, str) else wizard.company_details
+            wizard.report_footer = wizard.company_id.report_footer if isinstance(wizard.company_id.report_footer,
+                                                                                 str) else wizard.report_footer
+            wizard.company_details = wizard.company_id.company_details if isinstance(wizard.company_id.company_details,
+                                                                                     str) else wizard.company_details
             wizard.paperformat_id = wizard.company_id.paperformat_id
             wizard.external_report_layout_id = wizard.company_id.external_report_layout_id
             wizard.font = wizard.company_id.font
@@ -233,9 +239,9 @@ class BaseDocumentLayout(models.TransientModel):
 
         colors = []
         for color in image_resized.getcolors(w * h):
-            if not(color[1][0] > white_threshold and
-                   color[1][1] > white_threshold and
-                   color[1][2] > white_threshold) and color[1][3] > 0:
+            if not (color[1][0] > white_threshold and
+                    color[1][1] > white_threshold and
+                    color[1][2] > white_threshold) and color[1][3] > 0:
                 colors.append(color)
 
         if not colors:  # May happen when the whole image is white

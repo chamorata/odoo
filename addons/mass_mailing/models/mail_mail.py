@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import re
+
 import werkzeug.urls
 
 from odoo import api, fields, models, tools
@@ -79,7 +80,8 @@ class MailMail(models.Model):
             if not tools.is_html_empty(email_values['body']):
                 # replace generic link by recipient-specific one, except if we know
                 # by advance it won't work (i.e. testing mailing scenario)
-                if f'{base_url}/unsubscribe_from_list' in email_values['body'] and not self.env.context.get('mailing_test_mail'):
+                if f'{base_url}/unsubscribe_from_list' in email_values['body'] and not self.env.context.get(
+                        'mailing_test_mail'):
                     email_values['body'] = email_values['body'].replace(
                         f'{base_url}/unsubscribe_from_list',
                         unsubscribe_url,

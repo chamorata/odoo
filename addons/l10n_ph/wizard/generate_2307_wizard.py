@@ -2,8 +2,9 @@
 
 import base64
 
-from odoo import fields, models
 from odoo.addons.l10n_ph import utils
+
+from odoo import fields, models
 
 
 class Generate2307Wizard(models.TransientModel):

@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import babel
 import copy
 import logging
 import re
 import traceback
-
-from lxml import html
 from functools import reduce
+
+import babel
+from lxml import html
 from markupsafe import Markup, escape
 from werkzeug import urls
 
@@ -16,9 +16,11 @@ from odoo import _, api, fields, models, tools
 from odoo.addons.base.models.ir_qweb import QWebException
 from odoo.exceptions import UserError, AccessError
 from odoo.tools.mail import is_html_empty, prepend_html_content, html_normalize
-from odoo.tools.rendering_tools import convert_inline_template_to_qweb, parse_inline_template, render_inline_template, template_env_globals
+from odoo.tools.rendering_tools import convert_inline_template_to_qweb, parse_inline_template, render_inline_template, \
+    template_env_globals
 
 _logger = logging.getLogger(__name__)
+
 
 def format_date(env, date, pattern=False, lang_code=False):
     try:
@@ -33,11 +35,13 @@ def format_datetime(env, dt, tz=False, dt_format='medium', lang_code=False):
     except babel.core.UnknownLocaleError:
         return dt
 
+
 def format_time(env, time, tz=False, time_format='medium', lang_code=False):
     try:
         return tools.format_time(env, time, tz=tz, time_format=time_format, lang_code=lang_code)
     except babel.core.UnknownLocaleError:
         return time
+
 
 class MailRenderMixin(models.AbstractModel):
     _name = 'mail.render.mixin'
@@ -165,8 +169,10 @@ class MailRenderMixin(models.AbstractModel):
         template_ctx = {
             'body': html,
             'record_name': context_record.display_name if context_record else '',
-            'model_description': self.env['ir.model']._get(context_record._name).display_name if context_record else False,
-            'company': context_record['company_id'] if (context_record and 'company_id' in context_record) else self.env.company,
+            'model_description': self.env['ir.model']._get(
+                context_record._name).display_name if context_record else False,
+            'company': context_record['company_id'] if (
+                        context_record and 'company_id' in context_record) else self.env.company,
             'record': context_record,
         }
         if add_context:
@@ -240,7 +246,8 @@ class MailRenderMixin(models.AbstractModel):
         return False
 
     def _check_access_right_dynamic_template(self):
-        if not self.env.su and not self.env.user.has_group('mail.group_mail_template_editor') and self._has_unsafe_expression():
+        if not self.env.su and not self.env.user.has_group(
+                'mail.group_mail_template_editor') and self._has_unsafe_expression():
             group = self.env.ref('mail.group_mail_template_editor')
             raise AccessError(
                 _('Only members of %(group_name)s group are allowed to edit templates containing sensible placeholders',
@@ -261,10 +268,16 @@ class MailRenderMixin(models.AbstractModel):
         """
         render_context = {
             'ctx': self._context,
-            'format_date': lambda date, date_format=False, lang_code=False: format_date(self.env, date, date_format, lang_code),
-            'format_datetime': lambda dt, tz=False, dt_format=False, lang_code=False: format_datetime(self.env, dt, tz, dt_format, lang_code),
-            'format_time': lambda time, tz=False, time_format=False, lang_code=False: format_time(self.env, time, tz, time_format, lang_code),
-            'format_amount': lambda amount, currency, lang_code=False: tools.format_amount(self.env, amount, currency, lang_code),
+            'format_date': lambda date, date_format=False, lang_code=False: format_date(self.env, date, date_format,
+                                                                                        lang_code),
+            'format_datetime': lambda dt, tz=False, dt_format=False, lang_code=False: format_datetime(self.env, dt, tz,
+                                                                                                      dt_format,
+                                                                                                      lang_code),
+            'format_time': lambda time, tz=False, time_format=False, lang_code=False: format_time(self.env, time, tz,
+                                                                                                  time_format,
+                                                                                                  lang_code),
+            'format_amount': lambda amount, currency, lang_code=False: tools.format_amount(self.env, amount, currency,
+                                                                                           lang_code),
             'format_duration': lambda value: tools.format_duration(value),
             'is_html_empty': is_html_empty,
             'slug': self.env['ir.http']._slug,
@@ -307,7 +320,8 @@ class MailRenderMixin(models.AbstractModel):
         if add_context:
             variables.update(**add_context)
 
-        is_restricted = not self._unrestricted_rendering and not self.env.is_admin() and not self.env.user.has_group('mail.group_mail_template_editor')
+        is_restricted = not self._unrestricted_rendering and not self.env.is_admin() and not self.env.user.has_group(
+            'mail.group_mail_template_editor')
 
         for record in self.env[model].browse(res_ids):
             variables['object'] = record
@@ -327,14 +341,14 @@ class MailRenderMixin(models.AbstractModel):
                     group = self.env.ref('mail.group_mail_template_editor')
                     raise AccessError(
                         _('Only members of %(group_name)s group are allowed to edit templates containing sensible placeholders',
-                           group_name=group.name)
+                          group_name=group.name)
                     ) from e
                 _logger.info("Failed to render template: %s", template_src, exc_info=True)
                 raise UserError(
                     _("Failed to render QWeb template: %(template_src)s\n\n%(template_traceback)s)",
                       template_src=template_src,
                       template_traceback=traceback.format_exc())
-                    ) from e
+                ) from e
             results[record.id] = render_result
 
         return results
@@ -459,8 +473,8 @@ class MailRenderMixin(models.AbstractModel):
             return self._render_template_inline_template_regex(str(template_txt), model, res_ids)
 
         if (not self._unrestricted_rendering
-            and not self.env.is_admin()
-            and not self.env.user.has_group('mail.group_mail_template_editor')):
+                and not self.env.is_admin()
+                and not self.env.user.has_group('mail.group_mail_template_editor')):
             group = self.env.ref('mail.group_mail_template_editor')
             raise AccessError(
                 _('Only members of %(group_name)s group are allowed to edit templates containing sensible placeholders',
@@ -583,7 +597,7 @@ class MailRenderMixin(models.AbstractModel):
             raise ValueError(
                 _('Those values are not supported as options when rendering: %(param_names)s',
                   param_names=', '.join(set(options.keys()) - valid_render_options)
-                 )
+                  )
             )
 
         if engine == 'qweb_view':
@@ -683,7 +697,7 @@ class MailRenderMixin(models.AbstractModel):
             raise ValueError(
                 _('Rendering of %(field_name)s is not possible as not defined on template.',
                   field_name=field
-                 )
+                  )
             )
         if options is None:
             options = {}

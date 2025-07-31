@@ -34,7 +34,8 @@ class AccountMoveSendBatchWizard(models.TransientModel):
     def _compute_summary_data(self):
         extra_edis = self._get_all_extra_edis()
         sending_methods = dict(self.env['res.partner']._fields['invoice_sending_method'].selection)
-        sending_methods['manual'] = _('Manually')  # in batch sending, everything is done asynchronously, we never "Download"
+        sending_methods['manual'] = _(
+            'Manually')  # in batch sending, everything is done asynchronously, we never "Download"
 
         for wizard in self:
             edi_counter = Counter()
@@ -43,7 +44,8 @@ class AccountMoveSendBatchWizard(models.TransientModel):
             for move in wizard.move_ids:
                 edi_counter += Counter([edi for edi in self._get_default_extra_edis(move)])
                 sending_settings = self._get_default_sending_settings(move)
-                sending_method = next(iter(sending_settings['sending_methods']))  # In batch sending & in 18.0 there can only have !one sending method per move.
+                sending_method = next(iter(sending_settings[
+                                               'sending_methods']))  # In batch sending & in 18.0 there can only have !one sending method per move.
                 if self._is_applicable_to_move(sending_method, move, **sending_settings):
                     sending_method_counter[sending_method] += 1
 
@@ -80,7 +82,8 @@ class AccountMoveSendBatchWizard(models.TransientModel):
         if self.alerts:
             self._raise_danger_alerts(self.alerts)
         if force_synchronous:
-            self.env['account.move.send']._generate_and_send_invoices(self.move_ids, allow_fallback_pdf=allow_fallback_pdf)
+            self.env['account.move.send']._generate_and_send_invoices(self.move_ids,
+                                                                      allow_fallback_pdf=allow_fallback_pdf)
             return
 
         self.move_ids.sending_data = {

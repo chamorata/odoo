@@ -1,7 +1,8 @@
 import io
 import json
-from lxml import etree
 from zipfile import ZipFile
+
+from lxml import etree
 
 from odoo import http
 from odoo.tests.common import HttpCase

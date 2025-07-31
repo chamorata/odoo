@@ -26,11 +26,13 @@ class AccountMoveLine(models.Model):
 
         # "Price" is unit price calculation excluding tax and discount
         # "TotalDiscount" is total of "Price" * quantity * discount
-        tax_res = self.tax_ids.compute_all(self.price_unit, quantity=1, currency=self.currency_id, product=self.product_id, partner=self.partner_id, is_refund=self.is_refund)
+        tax_res = self.tax_ids.compute_all(self.price_unit, quantity=1, currency=self.currency_id,
+                                           product=self.product_id, partner=self.partner_id, is_refund=self.is_refund)
 
         line_val = {
             "Opt": "B" if product.type == "service" else "A",  # A: goods, B: service
-            "Code": product.l10n_id_product_code.code or self.env.ref('l10n_id_efaktur_coretax.product_code_000000_goods').code,
+            "Code": product.l10n_id_product_code.code or self.env.ref(
+                'l10n_id_efaktur_coretax.product_code_000000_goods').code,
             "Name": product.name,
             "Unit": self.product_uom_id.l10n_id_uom_code.code,
             "Price": idr.round(tax_res['total_excluded']),

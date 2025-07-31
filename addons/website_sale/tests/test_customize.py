@@ -1,13 +1,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import base64
-
-from odoo.fields import Command
-from odoo.tests import tagged
-from odoo.tools.misc import file_open
+from odoo.addons.sale.tests.product_configurator_common import TestProductConfiguratorCommon
 
 from odoo.addons.base.tests.common import HttpCaseWithUserDemo, HttpCaseWithUserPortal
-from odoo.addons.sale.tests.product_configurator_common import TestProductConfiguratorCommon
+from odoo.fields import Command
+from odoo.tests import tagged
+
 
 @tagged('post_install', '-at_install')
 class TestCustomize(HttpCaseWithUserDemo, HttpCaseWithUserPortal, TestProductConfiguratorCommon):
@@ -67,7 +65,8 @@ class TestCustomize(HttpCaseWithUserDemo, HttpCaseWithUserPortal, TestProductCon
     def test_01_admin_shop_customize_tour(self):
         # Enable Variant Group
         self.env.ref('product.group_product_variant').write({'users': [(4, self.env.ref('base.user_admin').id)]})
-        self.start_tour(self.env['website'].get_client_action_url('/shop?search=Test Product'), 'shop_customize', login="admin", timeout=120)
+        self.start_tour(self.env['website'].get_client_action_url('/shop?search=Test Product'), 'shop_customize',
+                        login="admin", timeout=120)
 
     def test_01_admin_shop_custom_attribute_value_tour(self):
         # Ensure that no pricelist is available during the test.
@@ -224,7 +223,8 @@ class TestCustomize(HttpCaseWithUserDemo, HttpCaseWithUserPortal, TestProductCon
             'show_line_subtotals_tax_selection': 'tax_included'
         }).execute()
 
-        self.start_tour(self.env['website'].get_client_action_url('/shop?search=Test Product'), 'shop_list_view_b2c', login="admin")
+        self.start_tour(self.env['website'].get_client_action_url('/shop?search=Test Product'), 'shop_list_view_b2c',
+                        login="admin")
 
     def test_07_editor_shop(self):
         self.env['product.pricelist'].create([
@@ -263,7 +263,6 @@ class TestCustomize(HttpCaseWithUserDemo, HttpCaseWithUserPortal, TestProductCon
                 ],
             },
         ])
-
 
         product_template = self.env['product.template'].create({
             'name': 'Test Product 2',

@@ -1,7 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import _, api, fields, models
 from odoo.addons.resource.models.utils import HOURS_PER_DAY
+
+from odoo import _, api, fields, models
 
 
 class HrLeaveAllocationGenerateMultiWizard(models.TransientModel):
@@ -33,7 +34,7 @@ class HrLeaveAllocationGenerateMultiWizard(models.TransientModel):
         ('accrual', 'Accrual Allocation')
     ], string="Allocation Type", default="regular", required=True)
     accrual_plan_id = fields.Many2one('hr.leave.accrual.plan',
-        domain="['|', ('time_off_type_id', '=', False), ('time_off_type_id', '=', holiday_status_id)]")
+                                      domain="['|', ('time_off_type_id', '=', False), ('time_off_type_id', '=', holiday_status_id)]")
     date_from = fields.Date('Start Date', default=fields.Date.context_today, required=True)
     date_to = fields.Date('End Date')
     notes = fields.Text('Reasons')
@@ -75,7 +76,8 @@ class HrLeaveAllocationGenerateMultiWizard(models.TransientModel):
         return [{
             'name': self.name,
             'holiday_status_id': self.holiday_status_id.id,
-            'number_of_days': self.duration if self.request_unit != "hour" else self.duration / hours_per_day[employee.id],
+            'number_of_days': self.duration if self.request_unit != "hour" else self.duration / hours_per_day[
+                employee.id],
             'employee_id': employee.id,
             'state': 'confirm',
             'allocation_type': self.allocation_type,
@@ -99,7 +101,8 @@ class HrLeaveAllocationGenerateMultiWizard(models.TransientModel):
             return {
                 'type': 'ir.actions.act_window',
                 'name': _('Generated Allocations'),
-                "views": [[self.env.ref('hr_holidays.hr_leave_allocation_view_tree').id, "list"], [self.env.ref('hr_holidays.hr_leave_allocation_view_form_manager').id, "form"]],
+                "views": [[self.env.ref('hr_holidays.hr_leave_allocation_view_tree').id, "list"],
+                          [self.env.ref('hr_holidays.hr_leave_allocation_view_form_manager').id, "form"]],
                 'view_mode': 'list',
                 'res_model': 'hr.leave.allocation',
                 'domain': [('id', 'in', allocations.ids)]

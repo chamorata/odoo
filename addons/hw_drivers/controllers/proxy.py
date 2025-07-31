@@ -5,6 +5,7 @@ from odoo import http
 
 proxy_drivers = {}
 
+
 class ProxyController(http.Controller):
     @http.route('/hw_proxy/hello', type='http', auth='none', cors='*')
     def hello(self):

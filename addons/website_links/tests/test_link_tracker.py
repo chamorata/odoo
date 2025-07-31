@@ -1,5 +1,6 @@
-from odoo.tests import TransactionCase, tagged, users
 from odoo.addons.mail.tests.common import mail_new_test_user
+
+from odoo.tests import TransactionCase, tagged, users
 
 
 @tagged('post_install', '-at_install')
@@ -8,7 +9,7 @@ class TestLinkTracker(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
 
-        cls.company_1 =  cls.env.company
+        cls.company_1 = cls.env.company
 
         cls.company_2 = cls.env['res.company'].create({
             'name': 'Company 2',
@@ -47,7 +48,7 @@ class TestLinkTracker(TransactionCase):
             'url': 'https://www.1odoo.com',
         })
         self.assertTrue(link_1.short_url.startswith(self.website_1.domain),
-            "Short URL should use company 1 website domain")
+                        "Short URL should use company 1 website domain")
 
         # Switch to Company 2
         self.env.user.company_id = self.company_2
@@ -55,8 +56,8 @@ class TestLinkTracker(TransactionCase):
             'url': 'https://www.2odoooo.com',
         })
         self.assertTrue(link_2.short_url.startswith(self.website_2.domain),
-            "Short URL should use company 2 website domain"
-        )
+                        "Short URL should use company 2 website domain"
+                        )
 
         # Remove website from Company 2
         # The short URL host should fallback to a default value

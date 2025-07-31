@@ -12,7 +12,6 @@ João Alfredo Gama Batista joao.gama@savoirfairelinux.com https://github.com/joa
 
 List of contributors:
 
-
 Rim Ben Dhaou rim.bendhaou@savoirfairelinux.com https://github.com/rimbendhaou
 Luis Garcia Ruiz luis.garcia@savoirfairelinux.com https://github.com/eilst
 Dimitar Apostolov dimitar.apostolov@savoirfairelinux.com https://github.com/dapostolov-sfl
@@ -30,7 +29,8 @@ Istvan SZALAÏ istvan.szalai@savoirfairelinux.com https://github.com/ventilooo (
 João Alfredo Gama Batista joao.gama@savoirfairelinux.com https://github.com/joaoalf (up to 2019-05-13)
 Julien Jezequel-Breard julien.jezequel-breard@savoirfairelinux.com https://github.com/jjbreard (up to 2019-05-13)
 Quentin Lavallée-Bourdeau quentin.lavallee@savoirfairelinux.com https://github.com/qtiplb (up to 2019-05-13)
-Jérome Boisvert-Chouinard jerome.boisvertchouinard@savoirfairelinux.com https://github.com/jbchouinard (up to 2017-10-17)
+Jérome Boisvert-Chouinard jerome.boisvertchouinard@savoirfairelinux.com https://github.com/jbchouinard (up to
+2017-10-17)
 Julie Moussu julie.mousse@savoirfairelinux.com https://github.com/JulieSFL (up to 2017-10-17)
 Pierre Lamarche pierre.lamarche@savoirfairelinux.com https://github.com/plamarche (up to 2017-10-17)
 David Cormier david.cormier@savoirfairelinux.com https://github.com/cormier (up to 2017-05-12)

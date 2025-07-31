@@ -2,13 +2,14 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from contextlib import contextmanager
-from markupsafe import Markup
 from unittest.mock import patch
 from uuid import uuid4
 
+from markupsafe import Markup
+from odoo.addons.mail.tests.common import MailCommon, mail_new_test_user
+
 from odoo import tools
 from odoo.addons.base.models.res_partner import Partner
-from odoo.addons.mail.tests.common import MailCommon, mail_new_test_user
 from odoo.tests import Form, tagged, users
 from odoo.tools import mute_logger
 
@@ -21,8 +22,10 @@ class TestPartner(MailCommon):
         super().setUpClass()
 
         cls.samples = [
-            ('"Raoul Grosbedon" <raoul@chirurgiens-dentistes.fr> ', 'Raoul Grosbedon', 'raoul@chirurgiens-dentistes.fr'),
-            ('ryu+giga-Sushi@aizubange.fukushima.jp', 'ryu+giga-sushi@aizubange.fukushima.jp', 'ryu+giga-sushi@aizubange.fukushima.jp'),
+            ('"Raoul Grosbedon" <raoul@chirurgiens-dentistes.fr> ', 'Raoul Grosbedon',
+             'raoul@chirurgiens-dentistes.fr'),
+            ('ryu+giga-Sushi@aizubange.fukushima.jp', 'ryu+giga-sushi@aizubange.fukushima.jp',
+             'ryu+giga-sushi@aizubange.fukushima.jp'),
             ('Raoul chirurgiens-dentistes.fr', 'Raoul chirurgiens-dentistes.fr', ''),
             (" Raoul O'hara  <!@historicalsociety.museum>", "Raoul O'hara", '!@historicalsociety.museum'),
             ('Raoul Grosbedon <raoul@CHIRURGIENS-dentistes.fr> ', 'Raoul Grosbedon', 'raoul@chirurgiens-dentistes.fr'),
@@ -31,8 +34,10 @@ class TestPartner(MailCommon):
             ('Patrick Caché <patrick@EXAMPLE.COM>', 'Patrick Da Beast Poilvache', 'patrick@example.com'),
             ('Patrick Caché <patrick.2@EXAMPLE.COM>', 'Patrick Caché', 'patrick.2@example.com'),
             # multi email
-            ('"Multi Email" <multi.email@example.com>, multi.email.2@example.com', 'Multi Email', 'multi.email@example.com')
+            ('"Multi Email" <multi.email@example.com>, multi.email.2@example.com', 'Multi Email',
+             'multi.email@example.com')
         ]
+
     @contextmanager
     def mockPartnerCalls(self):
         _original_create = Partner.create
@@ -46,8 +51,8 @@ class TestPartner(MailCommon):
 
         with patch.object(Partner, 'create',
                           autospec=True, side_effect=_res_partner_create) as mock_partner_create, \
-             patch.object(Partner, 'search',
-                          autospec=True, side_effect=_original_search) as mock_partner_search:
+                patch.object(Partner, 'search',
+                             autospec=True, side_effect=_original_search) as mock_partner_search:
             self._mock_partner_create = mock_partner_create
             self._mock_partner_search = mock_partner_search
             yield
@@ -110,10 +115,12 @@ class TestPartner(MailCommon):
             tracking_values = change_messages.tracking_value_ids
             self.assertIn(f'{self.env.company.name}, Some Street Name, Some City Name CA 94134, United States',
                           tracking_values.old_value_char)
-            self.assertIn(f'{self.env.company.name}, Some Other Street Name, Some Other City Name CA 94134, United States',
-                          tracking_values.new_value_char)
+            self.assertIn(
+                f'{self.env.company.name}, Some Other Street Name, Some Other City Name CA 94134, United States',
+                tracking_values.new_value_char)
             # none of the address fields are logged at the same time
-            self.assertEqual(set(), set(partner._address_fields()) & set(tracking_values.sudo().field_id.mapped('name')))
+            self.assertEqual(set(),
+                             set(partner._address_fields()) & set(tracking_values.sudo().field_id.mapped('name')))
 
     def test_discuss_mention_suggestions_priority(self):
         name = uuid4()  # unique name to avoid conflict with already existing users
@@ -126,8 +133,10 @@ class TestPartner(MailCommon):
         ]
         self.assertEqual(len(partners_format), 5, "should have found limit (5) partners")
         # return format for user is either a dict (there is a user and the dict is data) or a list of command (clear)
-        self.assertEqual(list(map(lambda p: p['isInternalUser'], partners_format)), [True, True, False, False, False], "should return internal users in priority")
-        self.assertEqual(list(map(lambda p: bool(p['userId']), partners_format)), [True, True, True, True, False], "should return partners without users last")
+        self.assertEqual(list(map(lambda p: p['isInternalUser'], partners_format)), [True, True, False, False, False],
+                         "should return internal users in priority")
+        self.assertEqual(list(map(lambda p: bool(p['userId']), partners_format)), [True, True, True, True, False],
+                         "should return partners without users last")
 
     @users('admin')
     def test_find_or_create(self):
@@ -139,13 +148,13 @@ class TestPartner(MailCommon):
         all_partners = []
 
         for (text_input, expected_name, expected_email), expected_partner, find_idx in zip(
-            self.samples,
-            [original_partner, False, False, False, original_partner, False,
-             # patrick example
-             False, False, False,
-             # multi email
-             False],
-            [0, 0, 0, 0, 0, 0, 0, 6, 0, 0],
+                self.samples,
+                [original_partner, False, False, False, original_partner, False,
+                 # patrick example
+                 False, False, False,
+                 # multi email
+                 False],
+                [0, 0, 0, 0, 0, 0, 0, 6, 0, 0],
         ):
             with self.subTest(text_input=text_input):
                 if not expected_partner and find_idx:
@@ -220,7 +229,7 @@ class TestPartner(MailCommon):
         # before trying to normalize is quite tolerant, allowing positive checks
         for email_input, match_partner, exp_email_partner in [
             ('classic.format@test.example.com,another.email@test.example.com',
-              partners[0], 'classic.format@test.example.com'),  # first found email matches existing
+             partners[0], 'classic.format@test.example.com'),  # first found email matches existing
             ('another.email@test.example.com,classic.format@test.example.com',
              self.env['res.partner'], 'another.email@test.example.com'),  # first found email does not match
             ('find.me.multi.1@test.example.com,find.me.multi.2@test.example.com',
@@ -268,7 +277,8 @@ class TestPartner(MailCommon):
             # new
             ('"New Customer" <new.customer@test.EXAMPLE.com>', 'New Customer', 'new.customer@test.example.com'),
             # duplicate (see in sample)
-            ('"Duplicated Raoul" <RAOUL@chirurgiens-dentistes.fr>', 'Raoul Grosbedon', 'raoul@chirurgiens-dentistes.fr'),
+            ('"Duplicated Raoul" <RAOUL@chirurgiens-dentistes.fr>', 'Raoul Grosbedon',
+             'raoul@chirurgiens-dentistes.fr'),
             # new (even if invalid)
             ('Invalid', 'Invalid', ''),
             # ignored, completely invalid
@@ -349,7 +359,8 @@ class TestPartner(MailCommon):
                 self.assertEqual(len(self._new_partners), 1)
                 # results
                 self.assertEqual(len(partner_list), len(samples))
-                self.assertTrue(len(set(partner.id for partner in partner_list)) == 1 and partner_list[0].id, 'Should have a unique new partner')
+                self.assertTrue(len(set(partner.id for partner in partner_list)) == 1 and partner_list[0].id,
+                                'Should have a unique new partner')
                 for partner in partner_list:
                     self.assertEqual(partner.email, expected_email)
                     self.assertEqual(partner.name, expected_name)

@@ -9,20 +9,22 @@ class ResConfigSettings(models.TransientModel):
     _inherit = 'res.config.settings'
 
     module_product_expiry = fields.Boolean("Expiration Dates",
-        help="Track following dates on lots & serial numbers: best before, removal, end of life, alert. \n Such dates are set automatically at lot/serial number creation based on values set on the product (in days).")
+                                           help="Track following dates on lots & serial numbers: best before, removal, end of life, alert. \n Such dates are set automatically at lot/serial number creation based on values set on the product (in days).")
     group_stock_production_lot = fields.Boolean("Lots & Serial Numbers",
-        implied_group='stock.group_production_lot', group="base.group_user,base.group_portal")
+                                                implied_group='stock.group_production_lot',
+                                                group="base.group_user,base.group_portal")
     group_stock_lot_print_gs1 = fields.Boolean("Print GS1 Barcodes for Lots & Serial Numbers",
-        implied_group='stock.group_stock_lot_print_gs1')
+                                               implied_group='stock.group_stock_lot_print_gs1')
     group_lot_on_delivery_slip = fields.Boolean("Display Lots & Serial Numbers on Delivery Slips",
-        implied_group='stock.group_lot_on_delivery_slip', group="base.group_user,base.group_portal")
+                                                implied_group='stock.group_lot_on_delivery_slip',
+                                                group="base.group_user,base.group_portal")
     group_stock_tracking_lot = fields.Boolean("Packages",
-        implied_group='stock.group_tracking_lot')
+                                              implied_group='stock.group_tracking_lot')
     group_stock_tracking_owner = fields.Boolean("Consignment",
-        implied_group='stock.group_tracking_owner')
+                                                implied_group='stock.group_tracking_owner')
     group_stock_adv_location = fields.Boolean("Multi-Step Routes",
-        implied_group='stock.group_adv_location',
-        help="Add and customize route operations to process product moves in your warehouse(s): e.g. unload > quality control > stock for incoming products, pick > pack > ship for outgoing products. \n You can also set putaway strategies on warehouse locations in order to send incoming products into specific child locations straight away (e.g. specific bins, racks).")
+                                              implied_group='stock.group_adv_location',
+                                              help="Add and customize route operations to process product moves in your warehouse(s): e.g. unload > quality control > stock for incoming products, pick > pack > ship for outgoing products. \n You can also set putaway strategies on warehouse locations in order to send incoming products into specific child locations straight away (e.g. specific bins, racks).")
     group_warning_stock = fields.Boolean("Warnings for Stock", implied_group='stock.group_warning_stock')
     group_stock_sign_delivery = fields.Boolean("Signature", implied_group='stock.group_stock_sign_delivery')
     module_stock_picking_batch = fields.Boolean("Batch, Wave & Cluster Transfers")
@@ -43,7 +45,7 @@ class ResConfigSettings(models.TransientModel):
     module_quality_control = fields.Boolean("Quality")
     module_quality_control_worksheet = fields.Boolean("Quality Worksheet")
     group_stock_multi_locations = fields.Boolean('Storage Locations', implied_group='stock.group_stock_multi_locations',
-        help="Store products in specific locations of your warehouse (e.g. bins, racks) and to track inventory accordingly.")
+                                                 help="Store products in specific locations of your warehouse (e.g. bins, racks) and to track inventory accordingly.")
     annual_inventory_month = fields.Selection(related='company_id.annual_inventory_month', readonly=False)
     annual_inventory_day = fields.Integer(related='company_id.annual_inventory_day', readonly=False)
     group_stock_reception_report = fields.Boolean("Reception Report", implied_group='stock.group_reception_report')
@@ -75,9 +77,11 @@ class ResConfigSettings(models.TransientModel):
         base_user = self.env.ref('base.group_user')
         base_user_implied_ids = base_user.implied_ids
         if not self.group_stock_multi_locations and location_grp in base_user_implied_ids and warehouse_grp in base_user_implied_ids:
-            raise UserError(_("You can't deactivate the multi-location if you have more than once warehouse by company"))
+            raise UserError(
+                _("You can't deactivate the multi-location if you have more than once warehouse by company"))
 
-        previous_group = self.default_get(['group_stock_multi_locations', 'group_stock_production_lot', 'group_stock_tracking_lot'])
+        previous_group = self.default_get(
+            ['group_stock_multi_locations', 'group_stock_production_lot', 'group_stock_tracking_lot'])
         super().set_values()
 
         if not self.env.user.has_group('stock.group_stock_manager'):
@@ -93,8 +97,8 @@ class ResConfigSettings(models.TransientModel):
             # Disable the views removing the create button from the location list and form.
             # Be resilient if the views have been deleted manually.
             for view in (
-                self.env.ref('stock.stock_location_view_tree2_editable', raise_if_not_found=False),
-                self.env.ref('stock.stock_location_view_form_editable', raise_if_not_found=False),
+                    self.env.ref('stock.stock_location_view_tree2_editable', raise_if_not_found=False),
+                    self.env.ref('stock.stock_location_view_form_editable', raise_if_not_found=False),
             ):
                 if view:
                     view.active = False
@@ -106,14 +110,15 @@ class ResConfigSettings(models.TransientModel):
             # Enable the views removing the create button from the location list and form.
             # Be resilient if the views have been deleted manually.
             for view in (
-                self.env.ref('stock.stock_location_view_tree2_editable', raise_if_not_found=False),
-                self.env.ref('stock.stock_location_view_form_editable', raise_if_not_found=False),
+                    self.env.ref('stock.stock_location_view_tree2_editable', raise_if_not_found=False),
+                    self.env.ref('stock.stock_location_view_form_editable', raise_if_not_found=False),
             ):
                 if view:
                     view.active = True
 
         if not self.group_stock_production_lot and previous_group.get('group_stock_production_lot'):
             if self.env['product.product'].search_count([('tracking', '!=', 'none')], limit=1):
-                raise UserError(_("You have product(s) in stock that have lot/serial number tracking enabled. \nSwitch off tracking on all the products before switching off this setting."))
+                raise UserError(
+                    _("You have product(s) in stock that have lot/serial number tracking enabled. \nSwitch off tracking on all the products before switching off this setting."))
 
         return

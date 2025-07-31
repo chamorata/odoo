@@ -1,7 +1,7 @@
 from lxml import etree
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 
 from odoo import Command
-from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.tests import tagged
 from odoo.tools import misc
 
@@ -189,7 +189,8 @@ class TestMyDATAInvoice(AccountTestInvoicingCommon):
 
     def test_mydata_send_bill_cls_expense(self):
         bill = self._create_mydata_bill()
-        self.assert_mydata_xml_tree(bill, expected_file_path='from_odoo/mydata_cls_expense.xml', send_classification=True)
+        self.assert_mydata_xml_tree(bill, expected_file_path='from_odoo/mydata_cls_expense.xml',
+                                    send_classification=True)
 
     ####################################################################################################
     # Test: assert built-in constraints

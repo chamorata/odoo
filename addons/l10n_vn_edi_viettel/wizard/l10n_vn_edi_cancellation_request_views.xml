@@ -11,7 +11,8 @@
                     <field name="agreement_document_date" placeholder="Agreement document date..."/>
                 </group>
                 <footer>
-                    <button string="Request Cancellation" name="button_request_cancel" type="object" default_focus="1" class="btn-primary"/>
+                    <button string="Request Cancellation" name="button_request_cancel" type="object" default_focus="1"
+                            class="btn-primary"/>
                     <button string="Close" special="cancel"/>
                 </footer>
             </form>

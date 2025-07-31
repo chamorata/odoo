@@ -21,7 +21,8 @@
                 <div t-else=""/>
                 <div t-if="props.attachmentsInfo and ongoingActivityCount == 0"
                      class="d-flex w-100 justify-content-center gap-1 px-2">
-                    <a t-attf-href="/web/content/#{props.attachmentsInfo.most_recent_id}?download=true" t-on-click.stop=""
+                    <a t-attf-href="/web/content/#{props.attachmentsInfo.most_recent_id}?download=true"
+                       t-on-click.stop=""
                        t-out="props.attachmentsInfo.most_recent_name"
                        class="d-inline-block text-truncate" style="max-width: 120px;"/>
                     <div t-if="props.attachmentsInfo.count > 1" class="text-nowrap">
@@ -33,7 +34,9 @@
                     <t t-if="totalActivityCount == ongoingActivityCount or ongoingActivityCount == 0"
                        t-out="totalActivityCount"/>
                     <t t-else="">
-                        <t t-out="ongoingActivityCount"/> / <t t-out="totalActivityCount"/>
+                        <t t-out="ongoingActivityCount"/>
+                        /
+                        <t t-out="totalActivityCount"/>
                     </t>
                 </div>
                 <div t-else=""/>

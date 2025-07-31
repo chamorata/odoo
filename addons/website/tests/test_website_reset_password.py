@@ -106,8 +106,10 @@ class TestWebsiteResetPassword(HttpCase):
         portal_group = self.env.ref('base.group_portal')
         login = 'user@example.com'  # same login for both users
         user_website_1, user_website_2 = self.env['res.users'].with_context(no_reset_password=True).create([
-            {'website_id': website_1.id, 'login': login, 'email': login, 'name': login, "groups_id": [Command.link(portal_group.id), Command.unlink(internal_group.id)]},
-            {'website_id': website_2.id, 'login': login, 'email': login, 'name': login, "groups_id": [Command.link(portal_group.id), Command.unlink(internal_group.id)]},
+            {'website_id': website_1.id, 'login': login, 'email': login, 'name': login,
+             "groups_id": [Command.link(portal_group.id), Command.unlink(internal_group.id)]},
+            {'website_id': website_2.id, 'login': login, 'email': login, 'name': login,
+             "groups_id": [Command.link(portal_group.id), Command.unlink(internal_group.id)]},
         ])
 
         self.assertFalse(user_website_1.signup_type)

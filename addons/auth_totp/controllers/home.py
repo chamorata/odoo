@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
 import re
-
 from datetime import datetime, timedelta
+
+from odoo.addons.web.controllers import home as web_home
 
 from odoo import http, _
 from odoo.exceptions import AccessDenied
 from odoo.http import request
-from odoo.addons.web.controllers import home as web_home
 
 TRUSTED_DEVICE_COOKIE = 'td_id'
-TRUSTED_DEVICE_AGE = 90*86400 # 90 days expiration
+TRUSTED_DEVICE_AGE = 90 * 86400  # 90 days expiration
 
 
 class Home(web_home.Home):
     @http.route(
         '/web/login/totp',
         type='http', auth='public', methods=['GET', 'POST'], sitemap=False,
-        website=True, multilang=False # website breaks the login layout...
+        website=True, multilang=False  # website breaks the login layout...
     )
     def web_totp(self, redirect=None, **kwargs):
         if request.session.uid:
@@ -55,9 +55,9 @@ class Home(web_home.Home):
                 response = request.redirect(self._login_redirect(request.session.uid, redirect=redirect))
                 if kwargs.get('remember'):
                     name = _("%(browser)s on %(platform)s",
-                        browser=request.httprequest.user_agent.browser.capitalize(),
-                        platform=request.httprequest.user_agent.platform.capitalize(),
-                    )
+                             browser=request.httprequest.user_agent.browser.capitalize(),
+                             platform=request.httprequest.user_agent.platform.capitalize(),
+                             )
 
                     if request.geoip.city.name:
                         name += f" ({request.geoip.city.name}, {request.geoip.country_name})"

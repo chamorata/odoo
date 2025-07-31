@@ -9,13 +9,16 @@
                 <field name="product_id" invisible="True"/>
                 <div>
                     The product is not available in sufficient quantity
-                    <span class="oe_inline" groups="stock.group_stock_multi_locations"> in
-                        <strong><field name="location_id" readonly="True"/></strong>.
+                    <span class="oe_inline" groups="stock.group_stock_multi_locations">in
+                        <strong>
+                            <field name="location_id" readonly="True"/>
+                        </strong>
+                        .
                     </span>
                 </div>
                 <div invisible="not quant_ids">
                     <br/>
-                    <strong>Current Inventory: </strong>
+                    <strong>Current Inventory:</strong>
                     <field name="quant_ids" style="margin-top:10px;">
                         <list>
                             <field name="location_id" options="{'no_create': True}"/>
@@ -38,10 +41,18 @@
         <field name="name">stock.warn.insufficient.qty.scrap</field>
         <field name="model">stock.warn.insufficient.qty.scrap</field>
         <field name="inherit_id" ref="stock.stock_warn_insufficient_qty_form_view"/>
-         <field name="mode">primary</field>
+        <field name="mode">primary</field>
         <field name="arch" type="xml">
             <xpath expr="//div[@name='description']" position="inside">
-                Do you confirm you want to scrap <strong><field name="quantity" readonly="True"/></strong><field name="product_uom_name" readonly="True" class="mx-1"/>from location <strong><field name="location_id" readonly="True"/></strong>? This may lead to inconsistencies in your inventory.
+                Do you confirm you want to scrap
+                <strong>
+                    <field name="quantity" readonly="True"/>
+                </strong>
+                <field name="product_uom_name" readonly="True" class="mx-1"/>from location
+                <strong>
+                    <field name="location_id" readonly="True"/>
+                </strong>
+                ? This may lead to inconsistencies in your inventory.
             </xpath>
             <xpath expr="//button[@name='cancel_button']" position="replace">
                 <button string="Discard" name="action_cancel" type="object" class="btn-primary"/>

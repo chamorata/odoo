@@ -31,7 +31,10 @@
                     <record id="vat_report_line_40_balance" model="account.report.expression">
                         <field name="label">balance</field>
                         <field name="engine">aggregation</field>
-                        <field name="formula">LV_41.balance + LV_411.balance + LV_42.balance + LV_421.balance + LV_43.balance + LV_482.balance + LV_49.balance + LV_50.balance + LV_51.balance + LV_511.balance</field>
+                        <field name="formula">LV_41.balance + LV_411.balance + LV_42.balance + LV_421.balance +
+                            LV_43.balance + LV_482.balance + LV_49.balance + LV_50.balance + LV_51.balance +
+                            LV_511.balance
+                        </field>
                     </record>
                 </field>
                 <field name="children_ids">
@@ -53,7 +56,9 @@
                         </field>
                     </record>
                     <record id="vat_report_line_411" model="account.report.line">
-                        <field name="name">Domestic transactions for which the recipient of the goods or services is liable for tax</field>
+                        <field name="name">Domestic transactions for which the recipient of the goods or services is
+                            liable for tax
+                        </field>
                         <field name="code">LV_411</field>
                         <field name="expression_ids">
                             <record id="vat_report_line_411_code" model="account.report.expression">
@@ -116,7 +121,9 @@
                             <record id="vat_report_line_43_balance" model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">aggregation</field>
-                                <field name="formula">LV_44.balance + LV_45.balance + LV_451.balance + LV_46.balance + LV_47.balance + LV_48.balance + LV_481.balance</field>
+                                <field name="formula">LV_44.balance + LV_45.balance + LV_451.balance + LV_46.balance +
+                                    LV_47.balance + LV_48.balance + LV_481.balance
+                                </field>
                             </record>
                         </field>
                         <field name="children_ids">
@@ -138,7 +145,9 @@
                                 </field>
                             </record>
                             <record id="vat_report_line_45" model="account.report.line">
-                                <field name="name">Goods supplied to EU Member States, other than those referred to in Article 42(16) of the Law</field>
+                                <field name="name">Goods supplied to EU Member States, other than those referred to in
+                                    Article 42(16) of the Law
+                                </field>
                                 <field name="code">LV_45</field>
                                 <field name="expression_ids">
                                     <record id="vat_report_line_45_code" model="account.report.expression">
@@ -166,7 +175,9 @@
                                 </field>
                             </record>
                             <record id="vat_report_line_451" model="account.report.line">
-                                <field name="name">Goods supplied to EU Member States as referred to in Article 42(16) of the Law</field>
+                                <field name="name">Goods supplied to EU Member States as referred to in Article 42(16)
+                                    of the Law
+                                </field>
                                 <field name="code">LV_451</field>
                                 <field name="expression_ids">
                                     <record id="vat_report_line_451_code" model="account.report.expression">
@@ -183,7 +194,9 @@
                                 </field>
                             </record>
                             <record id="vat_report_line_46" model="account.report.line">
-                                <field name="name">Supplies of non-Community goods in customs warehouses and free zones</field>
+                                <field name="name">Supplies of non-Community goods in customs warehouses and free
+                                    zones
+                                </field>
                                 <field name="code">LV_46</field>
                                 <field name="expression_ids">
                                     <record id="vat_report_line_46_code" model="account.report.expression">
@@ -352,7 +365,9 @@
                     <record id="vat_report_line_5x_balance" model="account.report.expression">
                         <field name="label">balance</field>
                         <field name="engine">aggregation</field>
-                        <field name="formula">LV_52.balance + LV_53.balance + LV_531.balance + LV_54.balance + LV_55.balance + LV_56.balance + LV_561.balance</field>
+                        <field name="formula">LV_52.balance + LV_53.balance + LV_531.balance + LV_54.balance +
+                            LV_55.balance + LV_56.balance + LV_561.balance
+                        </field>
                     </record>
                 </field>
                 <field name="children_ids">
@@ -490,7 +505,9 @@
                     <record id="vat_report_line_60_balance" model="account.report.expression">
                         <field name="label">balance</field>
                         <field name="engine">aggregation</field>
-                        <field name="formula">LV_61.balance + LV_62.balance + LV_63.balance + LV_64.balance + LV_65.balance</field>
+                        <field name="formula">LV_61.balance + LV_62.balance + LV_63.balance + LV_64.balance +
+                            LV_65.balance
+                        </field>
                     </record>
                 </field>
                 <field name="children_ids">
@@ -529,7 +546,9 @@
                         </field>
                     </record>
                     <record id="vat_report_line_63" model="account.report.line">
-                        <field name="name">VAT charged in accordance with Article 92(1)(4) of the Law (excluding line 64)</field>
+                        <field name="name">VAT charged in accordance with Article 92(1)(4) of the Law (excluding line
+                            64)
+                        </field>
                         <field name="code">LV_63</field>
                         <field name="expression_ids">
                             <record id="vat_report_line_63_code" model="account.report.expression">
@@ -599,7 +618,9 @@
                 </field>
             </record>
             <record id="vat_report_line_67" model="account.report.line">
-                <field name="name">Adjustments - reduction of tax calculated in previous tax periods for payment to the state budget</field>
+                <field name="name">Adjustments - reduction of tax calculated in previous tax periods for payment to the
+                    state budget
+                </field>
                 <field name="code">LV_67</field>
                 <field name="expression_ids">
                     <record id="vat_report_line_67_code" model="account.report.expression">
@@ -657,7 +678,9 @@
                 </field>
             </record>
             <record id="vat_report_line_70" model="account.report.line">
-                <field name="name">Amount of tax to be refunded from the state budget or amount of tax attributable to the next tax period, if P is greater than S</field>
+                <field name="name">Amount of tax to be refunded from the state budget or amount of tax attributable to
+                    the next tax period, if P is greater than S
+                </field>
                 <field name="code">LV_70</field>
                 <field name="expression_ids">
                     <record id="vat_report_line_70_code" model="account.report.expression">

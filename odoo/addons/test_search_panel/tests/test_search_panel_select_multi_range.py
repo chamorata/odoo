@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-import odoo.tests
 import json
+
+import odoo.tests
 
 SEARCH_PANEL_ERROR = {'error_msg': "Too many items to display.", }
 
@@ -24,7 +25,6 @@ class TestSelectRangeMulti(odoo.tests.TransactionCase):
         )
 
     def test_many2one(self):
-
         folders = self.GroupByModel.create([
             {'name': 'Folder 1', },
             {'name': 'Folder 2', },
@@ -34,7 +34,7 @@ class TestSelectRangeMulti(odoo.tests.TransactionCase):
 
         tags = self.TargetModel.create([
             {'name': 'Tag 1', 'folder_id': f2_id,
-                'color': 'Red', 'status': 'cool', },
+             'color': 'Red', 'status': 'cool', },
             {'name': 'Tag 2', 'folder_id': f1_id, 'status': 'cool', },
             {'name': 'Tag 3', 'color': 'Green', 'status': 'cool', },
         ])
@@ -61,11 +61,11 @@ class TestSelectRangeMulti(odoo.tests.TransactionCase):
             result['values'],
             [
                 {'__count': 2, 'display_name': 'Tag 1', 'id': t1_id,
-                    'group_id': f2_id, 'group_name': 'Folder 2', },
+                 'group_id': f2_id, 'group_name': 'Folder 2', },
                 {'__count': 1, 'display_name': 'Tag 2', 'id': t2_id,
-                    'group_id': f1_id, 'group_name': 'Folder 1', },
+                 'group_id': f1_id, 'group_name': 'Folder 1', },
                 {'__count': 0, 'display_name': 'Tag 3', 'id': t3_id,
-                    'group_id': False, 'group_name': 'Not Set', },
+                 'group_id': False, 'group_name': 'Not Set', },
             ]
         )
 
@@ -80,11 +80,11 @@ class TestSelectRangeMulti(odoo.tests.TransactionCase):
             result['values'],
             [
                 {'__count': 2, 'display_name': 'Tag 1', 'id': t1_id,
-                    'group_id': 'cool', 'group_name': 'Cool', },
+                 'group_id': 'cool', 'group_name': 'Cool', },
                 {'__count': 1, 'display_name': 'Tag 2', 'id': t2_id,
-                    'group_id': 'cool', 'group_name': 'Cool', },
+                 'group_id': 'cool', 'group_name': 'Cool', },
                 {'__count': 0, 'display_name': 'Tag 3', 'id': t3_id,
-                    'group_id': 'cool', 'group_name': 'Cool', },
+                 'group_id': 'cool', 'group_name': 'Cool', },
             ]
         )
 
@@ -99,11 +99,11 @@ class TestSelectRangeMulti(odoo.tests.TransactionCase):
             result['values'],
             [
                 {'__count': 2, 'display_name': 'Tag 1', 'id': t1_id,
-                    'group_id': 'Red', 'group_name': 'Red', },
+                 'group_id': 'Red', 'group_name': 'Red', },
                 {'__count': 1, 'display_name': 'Tag 2', 'id': t2_id,
-                    'group_id': False, 'group_name': 'Not Set', },
+                 'group_id': False, 'group_name': 'Not Set', },
                 {'__count': 0, 'display_name': 'Tag 3', 'id': t3_id,
-                    'group_id': 'Green', 'group_name': 'Green', },
+                 'group_id': 'Green', 'group_name': 'Green', },
             ]
         )
 
@@ -157,11 +157,11 @@ class TestSelectRangeMulti(odoo.tests.TransactionCase):
             result['values'],
             [
                 {'display_name': 'Tag 1', 'id': t1_id,
-                    'group_id': f2_id, 'group_name': 'Folder 2', },
+                 'group_id': f2_id, 'group_name': 'Folder 2', },
                 {'display_name': 'Tag 2', 'id': t2_id,
-                    'group_id': f1_id, 'group_name': 'Folder 1', },
+                 'group_id': f1_id, 'group_name': 'Folder 1', },
                 {'display_name': 'Tag 3', 'id': t3_id,
-                    'group_id': False, 'group_name': 'Not Set', },
+                 'group_id': False, 'group_name': 'Not Set', },
             ]
         )
 
@@ -204,9 +204,9 @@ class TestSelectRangeMulti(odoo.tests.TransactionCase):
             result['values'],
             [
                 {'__count': 2, 'display_name': 'Tag 1', 'id': t1_id,
-                    'group_id': f2_id, 'group_name': 'Folder 2', },
+                 'group_id': f2_id, 'group_name': 'Folder 2', },
                 {'__count': 1, 'display_name': 'Tag 2', 'id': t2_id,
-                    'group_id': f1_id, 'group_name': 'Folder 1', },
+                 'group_id': f1_id, 'group_name': 'Folder 1', },
             ]
         )
 
@@ -240,9 +240,9 @@ class TestSelectRangeMulti(odoo.tests.TransactionCase):
             result['values'],
             [
                 {'display_name': 'Tag 1', 'id': t1_id,
-                    'group_id': f2_id, 'group_name': 'Folder 2', },
+                 'group_id': f2_id, 'group_name': 'Folder 2', },
                 {'display_name': 'Tag 2', 'id': t2_id,
-                    'group_id': f1_id, 'group_name': 'Folder 1', },
+                 'group_id': f1_id, 'group_name': 'Folder 1', },
             ]
         )
 
@@ -280,7 +280,6 @@ class TestSelectRangeMulti(odoo.tests.TransactionCase):
         )
 
     def test_many2many(self):
-
         folders = self.GroupByModel.create([
             {'name': 'Folder 1', },
             {'name': 'Folder 2', },
@@ -290,7 +289,7 @@ class TestSelectRangeMulti(odoo.tests.TransactionCase):
 
         tags = self.TargetModel.create([
             {'name': 'Tag 1', 'folder_id': f2_id,
-                'color': 'Red', 'status': 'cool', },
+             'color': 'Red', 'status': 'cool', },
             {'name': 'Tag 2', 'folder_id': f1_id, 'status': 'cool', },
             {'name': 'Tag 3', 'color': 'Green', 'status': 'cool', },
         ])
@@ -317,11 +316,11 @@ class TestSelectRangeMulti(odoo.tests.TransactionCase):
             result['values'],
             [
                 {'__count': 2, 'display_name': 'Tag 1', 'id': t1_id,
-                    'group_id': f2_id, 'group_name': 'Folder 2', },
+                 'group_id': f2_id, 'group_name': 'Folder 2', },
                 {'__count': 2, 'display_name': 'Tag 2', 'id': t2_id,
-                    'group_id': f1_id, 'group_name': 'Folder 1', },
+                 'group_id': f1_id, 'group_name': 'Folder 1', },
                 {'__count': 2, 'display_name': 'Tag 3', 'id': t3_id,
-                    'group_id': False, 'group_name': 'Not Set', },
+                 'group_id': False, 'group_name': 'Not Set', },
             ]
         )
 
@@ -336,11 +335,11 @@ class TestSelectRangeMulti(odoo.tests.TransactionCase):
             result['values'],
             [
                 {'__count': 2, 'display_name': 'Tag 1', 'id': t1_id,
-                    'group_id': 'cool', 'group_name': 'Cool', },
+                 'group_id': 'cool', 'group_name': 'Cool', },
                 {'__count': 2, 'display_name': 'Tag 2', 'id': t2_id,
-                    'group_id': 'cool', 'group_name': 'Cool', },
+                 'group_id': 'cool', 'group_name': 'Cool', },
                 {'__count': 2, 'display_name': 'Tag 3', 'id': t3_id,
-                    'group_id': 'cool', 'group_name': 'Cool', },
+                 'group_id': 'cool', 'group_name': 'Cool', },
             ]
         )
 
@@ -355,11 +354,11 @@ class TestSelectRangeMulti(odoo.tests.TransactionCase):
             result['values'],
             [
                 {'__count': 2, 'display_name': 'Tag 1', 'id': t1_id,
-                    'group_id': 'Red', 'group_name': 'Red', },
+                 'group_id': 'Red', 'group_name': 'Red', },
                 {'__count': 2, 'display_name': 'Tag 2', 'id': t2_id,
-                    'group_id': False, 'group_name': 'Not Set', },
+                 'group_id': False, 'group_name': 'Not Set', },
                 {'__count': 2, 'display_name': 'Tag 3', 'id': t3_id,
-                    'group_id': 'Green', 'group_name': 'Green', },
+                 'group_id': 'Green', 'group_name': 'Green', },
             ]
         )
 
@@ -379,11 +378,11 @@ class TestSelectRangeMulti(odoo.tests.TransactionCase):
             result['values'],
             [
                 {'__count': 1, 'display_name': 'Tag 1', 'id': t1_id,
-                    'group_id': f2_id, 'group_name': 'Folder 2', },
+                 'group_id': f2_id, 'group_name': 'Folder 2', },
                 {'__count': 1, 'display_name': 'Tag 2', 'id': t2_id,
-                    'group_id': f1_id, 'group_name': 'Folder 1', },
+                 'group_id': f1_id, 'group_name': 'Folder 1', },
                 {'__count': 1, 'display_name': 'Tag 3', 'id': t3_id,
-                    'group_id': False, 'group_name': 'Not Set', },
+                 'group_id': False, 'group_name': 'Not Set', },
             ]
         )
 
@@ -402,11 +401,11 @@ class TestSelectRangeMulti(odoo.tests.TransactionCase):
             result['values'],
             [
                 {'__count': 2, 'display_name': 'Tag 1', 'id': t1_id,
-                    'group_id': 'Red', 'group_name': 'Red', },
+                 'group_id': 'Red', 'group_name': 'Red', },
                 {'__count': 1, 'display_name': 'Tag 2', 'id': t2_id,
-                    'group_id': False, 'group_name': 'Not Set', },
+                 'group_id': False, 'group_name': 'Not Set', },
                 {'__count': 1, 'display_name': 'Tag 3', 'id': t3_id,
-                    'group_id': 'Green', 'group_name': 'Green', },
+                 'group_id': 'Green', 'group_name': 'Green', },
             ]
         )
 
@@ -451,11 +450,11 @@ class TestSelectRangeMulti(odoo.tests.TransactionCase):
             result['values'],
             [
                 {'display_name': 'Tag 1', 'id': t1_id,
-                    'group_id': f2_id, 'group_name': 'Folder 2', },
+                 'group_id': f2_id, 'group_name': 'Folder 2', },
                 {'display_name': 'Tag 2', 'id': t2_id,
-                    'group_id': f1_id, 'group_name': 'Folder 1', },
+                 'group_id': f1_id, 'group_name': 'Folder 1', },
                 {'display_name': 'Tag 3', 'id': t3_id,
-                    'group_id': False, 'group_name': 'Not Set', },
+                 'group_id': False, 'group_name': 'Not Set', },
             ]
         )
 
@@ -499,7 +498,7 @@ class TestSelectRangeMulti(odoo.tests.TransactionCase):
             result['values'],
             [
                 {'__count': 1, 'display_name': 'Tag 1', 'id': t1_id,
-                    'group_id': f2_id, 'group_name': 'Folder 2', },
+                 'group_id': f2_id, 'group_name': 'Folder 2', },
             ]
         )
 
@@ -531,7 +530,6 @@ class TestSelectRangeMulti(odoo.tests.TransactionCase):
             ]
         )
 
-
         # no counters, no expand, group_by (many2one case), and search_domain
         result = self.SourceModel.search_panel_select_multi_range(
             'tag_ids',
@@ -542,7 +540,7 @@ class TestSelectRangeMulti(odoo.tests.TransactionCase):
             result['values'],
             [
                 {'display_name': 'Tag 1', 'id': t1_id,
-                    'group_id': f2_id, 'group_name': 'Folder 2', },
+                 'group_id': f2_id, 'group_name': 'Folder 2', },
             ]
         )
 

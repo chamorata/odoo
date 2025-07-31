@@ -5,11 +5,11 @@
         <AccordionItem class="'o_add_favorite text-truncate'" description.translate="Save current search">
             <div class="px-3 py-2">
                 <input type="text"
-                    class="o_input"
-                    t-ref="description"
-                    t-model.trim="state.description"
-                    t-on-keydown="onInputKeydown"
-                    />
+                       class="o_input"
+                       t-ref="description"
+                       t-model.trim="state.description"
+                       t-on-keydown="onInputKeydown"
+                />
                 <CheckBox value="state.isDefault" onChange.bind="onDefaultCheckboxChange">
                     <span data-tooltip="Use this filter by default when opening this view">Default filter</span>
                 </CheckBox>

@@ -9,7 +9,6 @@ from werkzeug.exceptions import Forbidden
 from odoo import SUPERUSER_ID, _
 from odoo.http import Controller, request, route
 
-
 _logger = logging.getLogger(__name__)
 
 

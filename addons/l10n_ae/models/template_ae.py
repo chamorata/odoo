@@ -1,6 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo import models, Command
 from odoo.addons.account.models.chart_template import template
+
+from odoo import models, Command
 
 
 class AccountChartTemplate(models.AbstractModel):
@@ -47,7 +48,7 @@ class AccountChartTemplate(models.AbstractModel):
     def _get_ae_account_journal(self):
         """ If UAE chart, we add 2 new journals TA and IFRS"""
         return {
-            "tax_adjustment":{
+            "tax_adjustment": {
                 "name": "Tax Adjustments",
                 "code": "TA",
                 "type": "general",

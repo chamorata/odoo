@@ -301,8 +301,8 @@ if env.context.get('old_values', None): # on write only
 if env.context.get('old_values', None):  # on write
     if 'user_id' in env.context['old_values'][record.id]:
         record.write({'is_assigned_to_admin': (record.user_id.id == 1)})""",
-                },
-            )
+            },
+        )
 
         partner = self.res_partner_1
         lead = self.create_lead(state='draft', partner_id=partner.id)
@@ -802,7 +802,8 @@ if env.context.get('old_values', None):  # on write
             trigger='on_unarchive',
             trigger_field_ids=[active_field.id],
             filter_domain="[('active', '=', True)]",
-            _actions={'state': 'object_write', 'evaluation_type': 'equation', 'update_path': 'name', 'value': "record.name + '!'"},
+            _actions={'state': 'object_write', 'evaluation_type': 'equation', 'update_path': 'name',
+                      'value': "record.name + '!'"},
         )
         lead = self.create_lead()
         self.assertEqual(lead.name, 'Lead Test')
@@ -859,9 +860,9 @@ if env.context.get('old_values', None):  # on write
     def test_004_check_method(self):
         model = self.env["ir.model"]._get("base.automation.lead.test")
         TIME_TRIGGERS = [
-           'on_time',
-           'on_time_created',
-           'on_time_updated',
+            'on_time',
+            'on_time_created',
+            'on_time_updated',
         ]
         self.env["base.automation"].search([('trigger', 'in', TIME_TRIGGERS)]).active = False
 
@@ -1116,7 +1117,8 @@ class TestCompute(common.TransactionCase):
         automation_form = Form(automation, view='base_automation.view_base_automation_form')
         automation_form.trigger = 'on_time_created'
         self.assertEqual(automation_form.filter_domain, False)
-        self.assertEqual(automation_form.trg_date_id, self.env.ref('test_base_automation.field_base_automation_lead_test__create_date'))
+        self.assertEqual(automation_form.trg_date_id,
+                         self.env.ref('test_base_automation.field_base_automation_lead_test__create_date'))
         self.assertEqual(automation_form.trigger_field_ids.ids, [])
         automation = automation_form.save()
         self.assertEqual(automation.filter_pre_domain, False)
@@ -1126,7 +1128,8 @@ class TestCompute(common.TransactionCase):
         automation_form = Form(automation, view='base_automation.view_base_automation_form')
         automation_form.trigger = 'on_time_updated'
         self.assertEqual(automation_form.filter_domain, False)
-        self.assertEqual(automation_form.trg_date_id, self.env.ref('test_base_automation.field_base_automation_lead_test__write_date'))
+        self.assertEqual(automation_form.trg_date_id,
+                         self.env.ref('test_base_automation.field_base_automation_lead_test__write_date'))
         self.assertEqual(automation_form.trigger_field_ids.ids, [])
         automation = automation_form.save()
         self.assertEqual(automation.filter_pre_domain, False)
@@ -1137,7 +1140,8 @@ class TestCompute(common.TransactionCase):
         automation_form.trigger = 'on_time'
         automation_form.trg_date_id = self.env.ref('test_base_automation.field_base_automation_lead_test__create_date')
         self.assertEqual(automation_form.filter_domain, False)
-        self.assertEqual(automation_form.trg_date_id, self.env.ref('test_base_automation.field_base_automation_lead_test__create_date'))
+        self.assertEqual(automation_form.trg_date_id,
+                         self.env.ref('test_base_automation.field_base_automation_lead_test__create_date'))
         self.assertEqual(automation_form.trigger_field_ids.ids, [])
         automation = automation_form.save()
         self.assertEqual(automation.filter_pre_domain, False)
@@ -1158,11 +1162,11 @@ class TestCompute(common.TransactionCase):
         self.assertEqual(automation_form.model_id.id, context.get('default_model_id'))
         self.assertEqual(automation_form.trigger, context.get('default_trigger'))
         self.assertEqual(automation_form.trigger_field_ids.ids, default_trigger_field_ids,
-            'trigger_field_ids should match the fields in the default filter domain.')
+                         'trigger_field_ids should match the fields in the default filter domain.')
 
         automation_form.trigger = 'on_stage_set'
         self.assertNotEqual(automation_form.trigger_field_ids.ids, default_trigger_field_ids,
-            'When user changes trigger, the trigger_field_ids field should be updated')
+                            'When user changes trigger, the trigger_field_ids field should be updated')
 
     def test_inversion(self):
         """ If a stored field B depends on A, an update to the trigger for A
@@ -1302,7 +1306,8 @@ class TestCompute(common.TransactionCase):
 
         obj.active = True
         # message doesn't have author_id, so it should be considered as external the automation should't be triggered
-        obj.message_post(author_id=False, email_from="test_abla@test.test", message_type="email", subtype_xmlid="mail.mt_comment")
+        obj.message_post(author_id=False, email_from="test_abla@test.test", message_type="email",
+                         subtype_xmlid="mail.mt_comment")
         self.assertTrue(obj.active)
 
         automation.trigger = "on_message_received"
@@ -1320,7 +1325,8 @@ class TestCompute(common.TransactionCase):
         obj.message_post(author_id=ext_partner.id, subtype_xmlid="mail.mt_comment")
         self.assertTrue(obj.active)
 
-        obj.message_post(author_id=False, email_from="test_abla@test.test", message_type="email", subtype_xmlid="mail.mt_comment")
+        obj.message_post(author_id=False, email_from="test_abla@test.test", message_type="email",
+                         subtype_xmlid="mail.mt_comment")
         self.assertFalse(obj.active)
 
     def test_multiple_mail_triggers(self):
@@ -1429,16 +1435,18 @@ class TestCompute(common.TransactionCase):
         self.assertEqual(aks_partner.child_ids.ids, [])
         self.assertEqual(bs_partner.parent_id.id, False)
 
+
 @common.tagged("post_install", "-at_install")
 class TestHttp(common.HttpCase):
     def test_webhook_trigger(self):
         model = self.env["ir.model"]._get("base.automation.linked.test")
         record_getter = "model.search([('name', '=', payload['name'])]) if payload.get('name') else None"
-        automation = create_automation(self, trigger="on_webhook", model_id=model.id, record_getter=record_getter, _actions={
-            "state": "object_write",
-            "update_path": "another_field",
-            "value": "written"
-        })
+        automation = create_automation(self, trigger="on_webhook", model_id=model.id, record_getter=record_getter,
+                                       _actions={
+                                           "state": "object_write",
+                                           "update_path": "another_field",
+                                           "value": "written"
+                                       })
 
         obj = self.env[model.model].create({"name": "some name"})
         response = self.url_open(automation.url, data=json.dumps({"name": "some name"}))
@@ -1460,13 +1468,15 @@ class TestHttp(common.HttpCase):
     def test_payload_in_action_server(self):
         model = self.env["ir.model"]._get("base.automation.linked.test")
         record_getter = "model.search([('name', '=', payload['name'])]) if payload.get('name') else None"
-        automation = create_automation(self, trigger="on_webhook", model_id=model.id, record_getter=record_getter, _actions={
-            "state": "code",
-            "code": "record.write({'another_field': json.dumps(payload)})"
-        })
+        automation = create_automation(self, trigger="on_webhook", model_id=model.id, record_getter=record_getter,
+                                       _actions={
+                                           "state": "code",
+                                           "code": "record.write({'another_field': json.dumps(payload)})"
+                                       })
 
         obj = self.env[model.model].create({"name": "some name"})
-        self.url_open(automation.url, data=json.dumps({"name": "some name", "test_key": "test_value"}), headers={"Content-Type": "application/json"})
+        self.url_open(automation.url, data=json.dumps({"name": "some name", "test_key": "test_value"}),
+                      headers={"Content-Type": "application/json"})
         self.assertEqual(json.loads(obj.another_field), {
             "name": "some name",
             "test_key": "test_value",
@@ -1488,10 +1498,11 @@ class TestHttp(common.HttpCase):
             "code": "record.write({'another_field': json.dumps(payload)})"
         })
         name_field_id = self.env.ref("test_base_automation.field_base_automation_linked_test__name")
-        automation_sender = create_automation(self, trigger="on_write", model_id=model.id, trigger_field_ids=[(6, 0, [name_field_id.id])], _actions={
-            "state": "webhook",
-            "webhook_url": automation_receiver.url,
-        })
+        automation_sender = create_automation(self, trigger="on_write", model_id=model.id,
+                                              trigger_field_ids=[(6, 0, [name_field_id.id])], _actions={
+                "state": "webhook",
+                "webhook_url": automation_receiver.url,
+            })
 
         obj.name = "new_name"
         self.cr.flush()
@@ -1517,10 +1528,11 @@ class TestHttp(common.HttpCase):
         )
         model = self.env["ir.model"]._get(model_name)
         active_field = self.env["ir.model.fields"]._get(model_name, "active")
-        create_automation(self, trigger="on_change", model_id=model.id, on_change_field_ids=[Command.set([active_field.id])], _actions={
-            "state": "code",
-            "code": "",
-        })
+        create_automation(self, trigger="on_change", model_id=model.id,
+                          on_change_field_ids=[Command.set([active_field.id])], _actions={
+                "state": "code",
+                "code": "",
+            })
         self.assertEqual(
             self.env[model_name].get_view(my_view.id)["arch"],
             '<form><field name="active" on_change="1"/></form>'

@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import models, fields, api, _
-from odoo.exceptions import ValidationError
 import stdnum.de.stnr
 import stdnum.exceptions
+
+from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
 
 
 class ResCompany(models.Model):
@@ -19,10 +20,10 @@ class ResCompany(models.Model):
 
     def write(self, vals):
         if (
-            'account_fiscal_country_id' in vals
-            and (german_companies := self.filtered(lambda c: c.account_fiscal_country_id.code == 'DE'))
-            and self.env['res.country'].browse(vals['account_fiscal_country_id']).code != 'DE'
-            and self.env['account.move'].search_count([('company_id', 'in', german_companies.ids)], limit=1)
+                'account_fiscal_country_id' in vals
+                and (german_companies := self.filtered(lambda c: c.account_fiscal_country_id.code == 'DE'))
+                and self.env['res.country'].browse(vals['account_fiscal_country_id']).code != 'DE'
+                and self.env['account.move'].search_count([('company_id', 'in', german_companies.ids)], limit=1)
         ):
             raise ValidationError(_("You cannot change the fiscal country."))
         return super().write(vals)

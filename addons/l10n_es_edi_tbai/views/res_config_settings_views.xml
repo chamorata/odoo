@@ -35,7 +35,9 @@
                             </div>
                             <br/>
                             <div>
-                                <button name="%(l10n_es_edi_tbai_certificate_action)d" type="action" class="oe_link">Manage certificates (TicketBAI)</button>
+                                <button name="%(l10n_es_edi_tbai_certificate_action)d" type="action" class="oe_link">
+                                    Manage certificates (TicketBAI)
+                                </button>
                             </div>
                         </div>
                     </div>

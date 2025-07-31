@@ -1,5 +1,5 @@
-import re
 import logging
+import re
 
 from odoo.tools.misc import OrderedSet
 
@@ -66,7 +66,8 @@ class TagsSelector(object):
         """ Return whether ``arg`` matches the specification: it must have at
             least one tag in ``self.include`` and none in ``self.exclude`` for each tag category.
         """
-        if not hasattr(test, 'test_tags'): # handle the case where the Test does not inherit from BaseCase and has no test_tags
+        if not hasattr(test,
+                       'test_tags'):  # handle the case where the Test does not inherit from BaseCase and has no test_tags
             _logger.debug("Skipping test '%s' because no test_tag found.", test)
             return False
 
@@ -96,7 +97,7 @@ class TagsSelector(object):
 
         if not any(_is_matching(test_filter) for test_filter in self.include):
             return False
-        
+
         for test_filter, parameter in self.parameters:
             if _is_matching(test_filter):
                 test._test_params.append(parameter)

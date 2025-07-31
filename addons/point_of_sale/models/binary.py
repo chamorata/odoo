@@ -1,6 +1,7 @@
+from odoo.addons.web.controllers.binary import Binary
+
 from odoo import http
 from odoo.http import request
-from odoo.addons.web.controllers.binary import Binary
 
 
 class PointOfSaleBinary(Binary):

@@ -4,7 +4,6 @@
 import base64
 import logging
 import threading
-import warnings
 
 from odoo import api, fields, models, tools, _, Command, SUPERUSER_ID
 from odoo.exceptions import ValidationError, UserError
@@ -41,16 +40,20 @@ class Company(models.Model):
     parent_ids = fields.Many2many('res.company', compute='_compute_parent_ids', compute_sudo=True)
     root_id = fields.Many2one('res.company', compute='_compute_parent_ids', compute_sudo=True)
     partner_id = fields.Many2one('res.partner', string='Partner', required=True)
-    report_header = fields.Html(string='Company Tagline', translate=True, help="Company tagline, which is included in a printed document's header or footer (depending on the selected layout).")
-    report_footer = fields.Html(string='Report Footer', translate=True, help="Footer text displayed at the bottom of all reports.")
-    company_details = fields.Html(string='Company Details', translate=True, help="Header text displayed at the top of all reports.")
+    report_header = fields.Html(string='Company Tagline', translate=True,
+                                help="Company tagline, which is included in a printed document's header or footer (depending on the selected layout).")
+    report_footer = fields.Html(string='Report Footer', translate=True,
+                                help="Footer text displayed at the bottom of all reports.")
+    company_details = fields.Html(string='Company Details', translate=True,
+                                  help="Header text displayed at the top of all reports.")
     is_company_details_empty = fields.Boolean(compute='_compute_empty_company_details')
     logo = fields.Binary(related='partner_id.image_1920', default=_get_logo, string="Company Logo", readonly=False)
     # logo_web: do not store in attachments, since the image is retrieved in SQL for
     # performance reasons (see addons/web/controllers/main.py, Binary.company_logo)
     logo_web = fields.Binary(compute='_compute_logo_web', store=True, attachment=False)
     uses_default_logo = fields.Boolean(compute='_compute_uses_default_logo', store=True)
-    currency_id = fields.Many2one('res.currency', string='Currency', required=True, default=lambda self: self._default_currency_id())
+    currency_id = fields.Many2one('res.currency', string='Currency', required=True,
+                                  default=lambda self: self._default_currency_id())
     user_ids = fields.Many2many('res.users', 'res_company_users_rel', 'cid', 'user_id', string='Accepted Users')
     street = fields.Char(compute='_compute_address', inverse='_inverse_street')
     street2 = fields.Char(compute='_compute_address', inverse='_inverse_street2')
@@ -61,7 +64,8 @@ class Company(models.Model):
         string="Fed. State", domain="[('country_id', '=?', country_id)]"
     )
     bank_ids = fields.One2many(related='partner_id.bank_ids', readonly=False)
-    country_id = fields.Many2one('res.country', compute='_compute_address', inverse='_inverse_country', string="Country")
+    country_id = fields.Many2one('res.country', compute='_compute_address', inverse='_inverse_country',
+                                 string="Country")
     # Technical field to hide country specific fields in company form view
     country_code = fields.Char(related='country_id.code', depends=['country_id'])
     email = fields.Char(related='partner_id.email', store=True, readonly=False)
@@ -70,13 +74,19 @@ class Company(models.Model):
     website = fields.Char(related='partner_id.website', readonly=False)
     vat = fields.Char(related='partner_id.vat', string="Tax ID", readonly=False)
     company_registry = fields.Char(related='partner_id.company_registry', string="Company ID", readonly=False)
-    paperformat_id = fields.Many2one('report.paperformat', 'Paper format', default=lambda self: self.env.ref('base.paperformat_euro', raise_if_not_found=False))
+    paperformat_id = fields.Many2one('report.paperformat', 'Paper format',
+                                     default=lambda self: self.env.ref('base.paperformat_euro',
+                                                                       raise_if_not_found=False))
     external_report_layout_id = fields.Many2one('ir.ui.view', 'Document Template')
-    font = fields.Selection([("Lato", "Lato"), ("Roboto", "Roboto"), ("Open_Sans", "Open Sans"), ("Montserrat", "Montserrat"), ("Oswald", "Oswald"), ("Raleway", "Raleway"), ('Tajawal', 'Tajawal'), ('Fira_Mono', 'Fira Mono')], default="Lato")
+    font = fields.Selection(
+        [("Lato", "Lato"), ("Roboto", "Roboto"), ("Open_Sans", "Open Sans"), ("Montserrat", "Montserrat"),
+         ("Oswald", "Oswald"), ("Raleway", "Raleway"), ('Tajawal', 'Tajawal'), ('Fira_Mono', 'Fira Mono')],
+        default="Lato")
     primary_color = fields.Char()
     secondary_color = fields.Char()
     color = fields.Integer(compute='_compute_color', inverse='_inverse_color')
-    layout_background = fields.Selection([('Blank', 'Blank'), ('Demo logo', 'Demo logo'), ('Custom', 'Custom')], default="Blank", required=True)
+    layout_background = fields.Selection([('Blank', 'Blank'), ('Demo logo', 'Demo logo'), ('Custom', 'Custom')],
+                                         default="Blank", required=True)
     layout_background_image = fields.Binary("Background Image")
     uninstalled_l10n_module_ids = fields.Many2many('ir.module.module', compute='_compute_uninstalled_l10n_module_ids')
     _sql_constraints = [
@@ -114,7 +124,8 @@ class Company(models.Model):
     @api.depends('parent_path')
     def _compute_parent_ids(self):
         for company in self.with_context(active_test=False):
-            company.parent_ids = self.browse(int(id) for id in company.parent_path.split('/') if id) if company.parent_path else company
+            company.parent_ids = self.browse(
+                int(id) for id in company.parent_path.split('/') if id) if company.parent_path else company
             company.root_id = company.parent_ids[0]
 
     @api.depends(lambda self: [f'partner_id.{fname}' for fname in self._get_company_address_field_names()])
@@ -222,14 +233,15 @@ class Company(models.Model):
         })
         mapping = dict(self.env.cr.fetchall())
         for company in self:
-            company.uninstalled_l10n_module_ids = self.env['ir.module.module'].browse(mapping.get(company.country_id.id))
+            company.uninstalled_l10n_module_ids = self.env['ir.module.module'].browse(
+                mapping.get(company.country_id.id))
 
     def install_l10n_modules(self):
         uninstalled_modules = self.uninstalled_l10n_module_ids
         is_ready_and_not_test = (
-            not tools.config['test_enable']
-            and (self.env.registry.ready or not self.env.registry._init)
-            and not getattr(threading.current_thread(), 'testing', False)
+                not tools.config['test_enable']
+                and (self.env.registry.ready or not self.env.registry._init)
+                and not getattr(threading.current_thread(), 'testing', False)
         )
         if uninstalled_modules and is_ready_and_not_test:
             return uninstalled_modules.button_immediate_install()
@@ -332,8 +344,8 @@ class Company(models.Model):
     def cache_invalidation_fields(self):
         # This list is not well defined and tests should be improved
         return {
-            'active', # user._get_company_ids and other potential cached search
-            'sequence', # user._get_company_ids and other potential cached search
+            'active',  # user._get_company_ids and other potential cached search
+            'sequence',  # user._get_company_ids and other potential cached search
         }
 
     def unlink(self):
@@ -350,9 +362,9 @@ class Company(models.Model):
         asset_invalidation_fields = {'font', 'primary_color', 'secondary_color', 'external_report_layout_id'}
 
         companies_needs_l10n = (
-            values.get('country_id')
-            and self.filtered(lambda company: not company.country_id)
-            or self.browse()
+                values.get('country_id')
+                and self.filtered(lambda company: not company.country_id)
+                or self.browse()
         )
         if not invalidation_fields.isdisjoint(values):
             self.env.registry.clear_cache()
@@ -413,14 +425,15 @@ class Company(models.Model):
                         active_users=company_active_users,
                     ))
 
-    @api.constrains(lambda self: self._get_company_root_delegated_field_names() +['parent_id'])
+    @api.constrains(lambda self: self._get_company_root_delegated_field_names() + ['parent_id'])
     def _check_root_delegated_fields(self):
         for company in self:
             if company.parent_id:
                 for fname in company._get_company_root_delegated_field_names():
                     if company[fname] != company.parent_id[fname]:
                         description = self.env['ir.model.fields']._get("res.company", fname).field_description
-                        raise ValidationError(_("The %s of a subsidiary must be the same as it's root company.", description))
+                        raise ValidationError(
+                            _("The %s of a subsidiary must be the same as it's root company.", description))
 
     @api.model
     def _get_main_company(self):

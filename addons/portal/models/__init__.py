@@ -2,10 +2,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from . import ir_http
-from . import ir_ui_view
 from . import ir_qweb
-from . import mail_thread
+from . import ir_ui_view
 from . import mail_message
+from . import mail_thread
 from . import portal_mixin
 from . import res_config_settings
 from . import res_partner

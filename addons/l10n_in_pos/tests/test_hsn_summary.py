@@ -1,6 +1,7 @@
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.addons.l10n_in.tests.test_hsn_summary import TestL10nInHSNSummary
 from odoo.addons.point_of_sale.tests.test_frontend import TestTaxCommonPOS
+
 from odoo.tests import tagged
 
 

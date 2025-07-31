@@ -1,18 +1,19 @@
-import pytz
-from datetime import datetime, timedelta
-from markupsafe import Markup
-from unittest.mock import patch, MagicMock
 from contextlib import contextmanager
+from datetime import datetime, timedelta
+from unittest.mock import patch, MagicMock
+
+import pytz
 from freezegun import freeze_time
+from markupsafe import Markup
+from odoo.addons.microsoft_calendar.models.microsoft_sync import MicrosoftSync
 
 from odoo import fields
-
 from odoo.tests.common import HttpCase
 
-from odoo.addons.microsoft_calendar.models.microsoft_sync import MicrosoftSync
 
 def mock_get_token(user):
     return f"TOKEN_FOR_USER_{user.id}"
+
 
 def _modified_date_in_the_future(event):
     """
@@ -21,13 +22,16 @@ def _modified_date_in_the_future(event):
     """
     return (event.write_date + timedelta(seconds=5)).strftime("%Y-%m-%dT%H:%M:%SZ")
 
+
 def patch_api(func):
     @patch.object(MicrosoftSync, '_microsoft_insert', MagicMock())
     @patch.object(MicrosoftSync, '_microsoft_delete', MagicMock())
     @patch.object(MicrosoftSync, '_microsoft_patch', MagicMock())
     def patched(self, *args, **kwargs):
         return func(self, *args, **kwargs)
+
     return patched
+
 
 # By inheriting from TransactionCase, postcommit hooks (so methods tagged with `@after_commit` in MicrosoftSync),
 # are not called because no commit is done.
@@ -345,18 +349,18 @@ class TestCommon(HttpCase):
                 },
                 'start': {
                     'dateTime': (
-                        self.start_date + timedelta(days=i * self.recurrent_event_interval)
+                            self.start_date + timedelta(days=i * self.recurrent_event_interval)
                     ).strftime("%Y-%m-%dT%H:%M:%S.0000000"),
                     'timeZone': 'UTC'
                 },
                 'end': {
                     'dateTime': (
-                        self.end_date + timedelta(days=i * self.recurrent_event_interval)
+                            self.end_date + timedelta(days=i * self.recurrent_event_interval)
                     ).strftime("%Y-%m-%dT%H:%M:%S.0000000"),
                     'timeZone': 'UTC'
                 },
-                'id': f'REC123_EVENT_{i+1}',
-                'iCalUId': f'REC456_EVENT_{i+1}',
+                'id': f'REC123_EVENT_{i + 1}',
+                'iCalUId': f'REC456_EVENT_{i + 1}',
                 'seriesMasterId': 'REC123',
                 'isAllDay': False,
                 'isCancelled': False,
@@ -384,7 +388,8 @@ class TestCommon(HttpCase):
                 isOrganizer=False,
                 attendees=[
                     {
-                        'emailAddress': {'address': self.organizer_user.email, 'name': self.organizer_user.display_name},
+                        'emailAddress': {'address': self.organizer_user.email,
+                                         'name': self.organizer_user.display_name},
                         'status': {'response': 'none', 'time': '0001-01-01T00:00:00Z'},
                         'type': 'required'
                     },
@@ -407,8 +412,8 @@ class TestCommon(HttpCase):
                 "stop": self.end_date + timedelta(days=i * self.recurrent_event_interval),
                 "until": self.recurrence_end_date.date(),
                 "microsoft_recurrence_master_id": "REC123",
-                "microsoft_id": f"REC123_EVENT_{i+1}",
-                "ms_universal_event_id": f"REC456_EVENT_{i+1}",
+                "microsoft_id": f"REC123_EVENT_{i + 1}",
+                "ms_universal_event_id": f"REC456_EVENT_{i + 1}",
                 "recurrency": True,
                 "follow_recurrence": True,
                 "active": True,
@@ -480,7 +485,8 @@ class TestCommon(HttpCase):
         self.env.user.microsoft_synchronization_stopped = False
 
         if not already_created:
-            self.recurrent_base_event = self.env["calendar.event"].with_context(dont_notify=True).with_user(self.organizer_user).create(
+            self.recurrent_base_event = self.env["calendar.event"].with_context(dont_notify=True).with_user(
+                self.organizer_user).create(
                 self.recurrent_event_values
             )
         self.recurrence = self.env["calendar.recurrence"].search([("base_event_id", "=", self.recurrent_base_event.id)])
@@ -493,8 +499,8 @@ class TestCommon(HttpCase):
             })
             for i, e in enumerate(self.recurrence.calendar_event_ids.sorted(key=lambda r: r.start)):
                 e.with_context(dont_notify=True).write({
-                    "microsoft_id": f"REC123_EVENT_{i+1}",
-                    "ms_universal_event_id": f"REC456_EVENT_{i+1}",
+                    "microsoft_id": f"REC123_EVENT_{i + 1}",
+                    "ms_universal_event_id": f"REC456_EVENT_{i + 1}",
                     "microsoft_recurrence_master_id": "REC123",
                 })
             self.recurrence.invalidate_recordset()

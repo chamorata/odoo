@@ -1,5 +1,6 @@
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
-from odoo.addons.stock_account.tests.test_anglo_saxon_valuation_reconciliation_common import ValuationReconciliationTestCommon
+from odoo.addons.stock_account.tests.test_anglo_saxon_valuation_reconciliation_common import \
+    ValuationReconciliationTestCommon
 
 
 class TestL10nRoEdiStockCommon(ValuationReconciliationTestCommon):
@@ -17,7 +18,8 @@ class TestL10nRoEdiStockCommon(ValuationReconciliationTestCommon):
             cls.warehouse.in_type_id.auto_batch = False
 
     @classmethod
-    def create_stock_picking(cls, partner, name=False, location_id=None, location_dest_id=None, picking_type=None, product_data=None):
+    def create_stock_picking(cls, partner, name=False, location_id=None, location_dest_id=None, picking_type=None,
+                             product_data=None):
         picking = cls.env['stock.picking'].create({
             'name': name or f'{cls.env.company.name} picking',
             'partner_id': partner.id,

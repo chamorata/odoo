@@ -4,18 +4,20 @@
 
 """ OpenERP core library."""
 
+import os.path
 # ----------------------------------------------------------
 # odoo must be a namespace package for odoo.addons to become one too
 # https://packaging.python.org/guides/packaging-namespace-packages/
 # ----------------------------------------------------------
 import pkgutil
-import os.path
+
 __path__ = [
     os.path.abspath(path)
     for path in pkgutil.extend_path(__path__, __name__)
 ]
 
 import sys
+
 MIN_PY_VERSION = (3, 10)
 MAX_PY_VERSION = (3, 12)
 assert sys.version_info > MIN_PY_VERSION, f"Outdated python version detected, Odoo requires Python >= {'.'.join(map(str, MIN_PY_VERSION))} to run."
@@ -46,8 +48,8 @@ def registry(database_name=None):
 # required to do as early as possible for evented and timezone
 # ----------------------------------------------------------
 from . import _monkeypatches
-_monkeypatches.patch_all()
 
+_monkeypatches.patch_all()
 
 # ----------------------------------------------------------
 # Imports

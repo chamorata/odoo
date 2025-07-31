@@ -1,15 +1,15 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from lxml import html
 from unittest.mock import patch
 
+from lxml import html
 from odoo.addons.website.controllers.main import Website
 from odoo.addons.website.tools import MockRequest
+
 from odoo.fields import Command
 from odoo.http import root
 from odoo.tests import common, HttpCase, tagged
-from odoo.tests.common import HOST
-from odoo.tools import config, mute_logger
+from odoo.tools import mute_logger
 
 
 @tagged('-at_install', 'post_install')
@@ -76,15 +76,19 @@ class TestPage(common.TransactionCase):
         self.assertEqual(len(cloned_page), 1, "A page with an URL /page_specific-1 should've been created")
         self.assertEqual(Page.search_count([]), total_pages + 1, "Should have cloned the page")
         # It should also copy its menu with new url/name/page_id (if the page has a menu)
-        self.assertEqual(len(cloned_menu), 1, "A specific page (with a menu) being cloned should have it's menu also cloned")
-        self.assertEqual(cloned_menu.page_id, cloned_page, "The new cloned menu and the new cloned page should be linked (m2o)")
+        self.assertEqual(len(cloned_menu), 1,
+                         "A specific page (with a menu) being cloned should have it's menu also cloned")
+        self.assertEqual(cloned_menu.page_id, cloned_page,
+                         "The new cloned menu and the new cloned page should be linked (m2o)")
         self.assertEqual(Menu.search_count([]), total_menus + 1, "Should have cloned the page menu")
         Page.clone_page(self.page_specific.id, page_name="about-us", clone_menu=True)
         cloned_page_about_us = Page.search([('url', '=', '/about-us')])
         cloned_menu_about_us = Menu.search([('url', '=', '/about-us')])
         self.assertEqual(len(cloned_page_about_us), 1, "A page with an URL /about-us should've been created")
-        self.assertEqual(len(cloned_menu_about_us), 1, "A specific page (with a menu) being cloned should have it's menu also cloned")
-        self.assertEqual(cloned_menu_about_us.page_id, cloned_page_about_us, "The new cloned menu and the new cloned page should be linked (m2o)")
+        self.assertEqual(len(cloned_menu_about_us), 1,
+                         "A specific page (with a menu) being cloned should have it's menu also cloned")
+        self.assertEqual(cloned_menu_about_us.page_id, cloned_page_about_us,
+                         "The new cloned menu and the new cloned page should be linked (m2o)")
         # It should also copy its menu with new url/name/page_id (if the page has a menu)
         self.assertEqual(Menu.search_count([]), total_menus + 2, "Should have cloned the page menu")
 
@@ -93,15 +97,21 @@ class TestPage(common.TransactionCase):
 
         # Copying a generic page should create a specific page with same URL
         Page.clone_page(self.page_1.id, clone_menu=True)
-        cloned_generic_page = Page.search([('url', '=', '/page_1'), ('id', '!=', self.page_1.id), ('website_id', '!=', False)])
-        self.assertEqual(len(cloned_generic_page), 1, "A generic page being cloned should create a specific one for the current website")
-        self.assertEqual(cloned_generic_page.url, self.page_1.url, "The URL of the cloned specific page should be the same as the generic page it has been cloned from")
-        self.assertEqual(Page.search_count([]), total_pages + 1, "Should have cloned the generic page as a specific page for this website")
-        self.assertEqual(Menu.search_count([]), total_menus, "It should not create a new menu as the generic page's menu belong to another website")
+        cloned_generic_page = Page.search(
+            [('url', '=', '/page_1'), ('id', '!=', self.page_1.id), ('website_id', '!=', False)])
+        self.assertEqual(len(cloned_generic_page), 1,
+                         "A generic page being cloned should create a specific one for the current website")
+        self.assertEqual(cloned_generic_page.url, self.page_1.url,
+                         "The URL of the cloned specific page should be the same as the generic page it has been cloned from")
+        self.assertEqual(Page.search_count([]), total_pages + 1,
+                         "Should have cloned the generic page as a specific page for this website")
+        self.assertEqual(Menu.search_count([]), total_menus,
+                         "It should not create a new menu as the generic page's menu belong to another website")
         # Except if the URL already exists for this website (its the case now that we already cloned it once)
         Page.clone_page(self.page_1.id, clone_menu=True)
         cloned_generic_page_2 = Page.search([('url', '=', '/page_1-1'), ('id', '!=', self.page_1.id)])
-        self.assertEqual(len(cloned_generic_page_2), 1, "A generic page being cloned should create a specific page with a new URL if there is already a specific page with that URL")
+        self.assertEqual(len(cloned_generic_page_2), 1,
+                         "A generic page being cloned should create a specific page with a new URL if there is already a specific page with that URL")
 
     def test_cow_page(self):
         Menu = self.env['website.menu']
@@ -201,9 +211,12 @@ class TestPage(common.TransactionCase):
         self.assertEqual(bool(self.page_1_menu.exists()), False)
 
         pages = Page.search([('url', '=', '/page_1')])
-        self.assertEqual(len(pages), Website.search_count([]) - 1, "A specific page for every website should have been created, except for the one from where we deleted the generic one.")
-        self.assertTrue(website_id not in pages.mapped('website_id').ids, "The website from which we deleted the generic page should not have a specific one.")
-        self.assertTrue(website_id not in View.search([('name', 'in', ('Base', 'Extension'))]).mapped('website_id').ids, "Same for views")
+        self.assertEqual(len(pages), Website.search_count([]) - 1,
+                         "A specific page for every website should have been created, except for the one from where we deleted the generic one.")
+        self.assertTrue(website_id not in pages.mapped('website_id').ids,
+                        "The website from which we deleted the generic page should not have a specific one.")
+        self.assertTrue(website_id not in View.search([('name', 'in', ('Base', 'Extension'))]).mapped('website_id').ids,
+                        "Same for views")
 
 
 @tagged('-at_install', 'post_install')
@@ -230,11 +243,13 @@ class WithContext(HttpCase):
 
     def test_unpublished_page(self):
         specific_page = self.page.copy({'website_id': self.env['website'].get_current_website().id})
-        specific_page.write({'is_published': False, 'arch': self.page.arch.replace('I am a generic page', 'I am a specific page')})
+        specific_page.write(
+            {'is_published': False, 'arch': self.page.arch.replace('I am a generic page', 'I am a specific page')})
 
         self.authenticate(None, None)
         r = self.url_open(specific_page.url)
-        self.assertEqual(r.status_code, 404, "Restricted users should see a 404 and not the generic one as we unpublished the specific one")
+        self.assertEqual(r.status_code, 404,
+                         "Restricted users should see a 404 and not the generic one as we unpublished the specific one")
 
         self.authenticate('admin', 'admin')
         r = self.url_open(specific_page.url)
@@ -269,7 +284,8 @@ class WithContext(HttpCase):
             # first call, no debug, traceback should not be visible
             r = self.url_open(self.page.url)
             self.assertEqual(r.status_code, 500, "15/0 raise a 500 error page")
-            self.assertNotIn('ZeroDivisionError: division by zero', r.text, "Error should not be shown when not in debug.")
+            self.assertNotIn('ZeroDivisionError: division by zero', r.text,
+                             "Error should not be shown when not in debug.")
 
             # second call, enable debug, traceback should be visible
             r = self.url_open(self.page.url + '?debug=1')
@@ -283,8 +299,8 @@ class WithContext(HttpCase):
             self.assertIn('ZeroDivisionError: division by zero', r.text, "Error should be shown in debug.")
 
     def test_04_visitor_no_session(self):
-        with patch.object(root.session_store, 'save') as session_save,\
-             MockRequest(self.env, website=self.env['website'].browse(1)):
+        with patch.object(root.session_store, 'save') as session_save, \
+                MockRequest(self.env, website=self.env['website'].browse(1)):
             # no session should be saved for website visitor
             self.url_open(self.page.url).raise_for_status()
             session_save.assert_not_called()

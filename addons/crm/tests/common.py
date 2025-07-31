@@ -10,8 +10,9 @@ from odoo.addons.crm.models.crm_lead import PARTNER_ADDRESS_FIELDS_TO_SYNC
 from odoo.addons.mail.tests.common import MailCase, mail_new_test_user
 from odoo.addons.phone_validation.tools import phone_validation
 from odoo.addons.sales_team.tests.common import TestSalesCommon
-from odoo.fields import Datetime
+
 from odoo import models, tools
+from odoo.fields import Datetime
 
 INCOMING_EMAIL = """Return-Path: {return_path}
 X-Original-To: {to}
@@ -46,7 +47,6 @@ Somebody."""
 
 
 class TestCrmCommon(TestSalesCommon, MailCase):
-
     FIELDS_FIRST_SET = [
         'name', 'partner_id', 'campaign_id', 'company_id', 'country_id',
         'team_id', 'state_id', 'stage_id', 'medium_id', 'source_id', 'user_id',
@@ -635,7 +635,7 @@ class TestLeadConvertCommon(TestCrmCommon):
         cls.assign_cron = cls.env.ref('crm.ir_cron_crm_lead_assign')
         cls.assign_cron.update({
             'active': True,
-            'interval_type':  'days',
+            'interval_type': 'days',
             'interval_number': 1,
         })
 
@@ -660,6 +660,7 @@ class TestLeadConvertCommon(TestCrmCommon):
         #         member_leads,
         #         'Assign domain not matching: %s' % member.crm_team_id.assignment_domain
         #     )
+
 
 class TestLeadConvertMassCommon(TestLeadConvertCommon):
 

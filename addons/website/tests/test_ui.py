@@ -3,13 +3,12 @@
 import base64
 import json
 
+from odoo.addons.web_editor.controllers.main import Web_Editor
 from werkzeug.urls import url_encode
 
-import odoo
 import odoo.tests
 from odoo import http
 from odoo.addons.base.tests.common import HttpCaseWithUserDemo
-from odoo.addons.web_editor.controllers.main import Web_Editor
 from odoo.fields import Command
 
 
@@ -59,7 +58,8 @@ class TestUiCustomizeTheme(odoo.tests.HttpCase):
         # avoid sql error on page website_id restrict
         Page.search([('website_id', '=', website_test.id)]).unlink()
         website_test.unlink()
-        self.assertEqual(Attachment.search_count([('url', '=', custom_url)]), 1, 'Should not left duplicates when deleting a website')
+        self.assertEqual(Attachment.search_count([('url', '=', custom_url)]), 1,
+                         'Should not left duplicates when deleting a website')
         self.assertTrue(so_attachment.exists(), 'Most attachment should not be deleted')
         self.assertFalse(so_attachment.website_id, 'Website should be removed')
 
@@ -140,13 +140,17 @@ class TestUiHtmlEditor(HttpCaseWithUserDemo):
         '''
         generic_page.arch = oe_structure_layout
         oe_structure_layout = generic_page.arch
-        self.start_tour(self.env['website'].get_client_action_url('/generic'), 'html_editor_multiple_templates', login='admin')
-        self.assertEqual(View.search_count([('key', '=', 'test.generic_view')]), 2, "homepage view should have been COW'd")
+        self.start_tour(self.env['website'].get_client_action_url('/generic'), 'html_editor_multiple_templates',
+                        login='admin')
+        self.assertEqual(View.search_count([('key', '=', 'test.generic_view')]), 2,
+                         "homepage view should have been COW'd")
         self.assertTrue(generic_page.arch == oe_structure_layout, "Generic homepage view should be untouched")
-        self.assertEqual(len(generic_page.inherit_children_ids.filtered(lambda v: 'oe_structure' in v.name)), 0, "oe_structure view should have been deleted when aboutus was COW")
+        self.assertEqual(len(generic_page.inherit_children_ids.filtered(lambda v: 'oe_structure' in v.name)), 0,
+                         "oe_structure view should have been deleted when aboutus was COW")
         specific_page = Website.with_context(website_id=1).viewref('test.generic_view')
         self.assertTrue(specific_page.arch != oe_structure_layout, "Specific homepage view should have been changed")
-        self.assertEqual(len(specific_page.inherit_children_ids.filtered(lambda v: 'oe_structure' in v.name)), 1, "oe_structure view should have been created on the specific tree")
+        self.assertEqual(len(specific_page.inherit_children_ids.filtered(lambda v: 'oe_structure' in v.name)), 1,
+                         "oe_structure view should have been created on the specific tree")
 
     def test_html_editor_scss(self):
         self.user_demo.write({
@@ -178,7 +182,8 @@ class TestUiHtmlEditor(HttpCaseWithUserDemo):
         # disable undraw, no third party should be called in tests
         # Mocked for the previews in the media dialog
         mock_media_library_search.routing_type = 'json'
-        Web_Editor.media_library_search = http.route(['/web_editor/media_library_search'], type='json', auth='user', website=True)(mock_media_library_search)
+        Web_Editor.media_library_search = http.route(['/web_editor/media_library_search'], type='json', auth='user',
+                                                     website=True)(mock_media_library_search)
 
         self.start_tour("/", 'website_media_dialog_undraw', login='admin')
 
@@ -228,8 +233,10 @@ class TestUiTranslate(odoo.tests.HttpCase):
 
         self.start_tour(self.env['website'].get_client_action_url('/'), 'translate_menu_name', login='admin')
 
-        self.assertNotEqual(new_menu.name, 'value pa-GB', msg="The new menu should not have its value edited, only its translation")
-        self.assertEqual(new_menu.with_context(lang=parseltongue.code).name, 'value pa-GB', msg="The new translation should be set")
+        self.assertNotEqual(new_menu.name, 'value pa-GB',
+                            msg="The new menu should not have its value edited, only its translation")
+        self.assertEqual(new_menu.with_context(lang=parseltongue.code).name, 'value pa-GB',
+                         msg="The new translation should be set")
 
     def test_translate_text_options(self):
         lang_en = self.env.ref('base.lang_en')
@@ -330,15 +337,18 @@ class TestUi(odoo.tests.HttpCase):
             'website_id': new_website.id,
         })
 
-        base_website_bundle = self.env['ir.qweb']._get_asset_bundle(asset_bundle_xmlid, assets_params={'website_id': website_default.id})
+        base_website_bundle = self.env['ir.qweb']._get_asset_bundle(asset_bundle_xmlid,
+                                                                    assets_params={'website_id': website_default.id})
         self.assertNotIn(custom_url, [f['url'] for f in base_website_bundle.files])
         base_website_css_version = base_website_bundle.get_version('css')
         base_website_js_version = base_website_bundle.get_version('js')
 
-        new_website_bundle_modified = self.env['ir.qweb']._get_asset_bundle('website.assets_wysiwyg', assets_params={'website_id': new_website.id})
+        new_website_bundle_modified = self.env['ir.qweb']._get_asset_bundle('website.assets_wysiwyg', assets_params={
+            'website_id': new_website.id})
         self.assertIn(custom_url, [f['url'] for f in new_website_bundle_modified.files])
         self.assertEqual(new_website_bundle_modified.get_version('css'), base_website_css_version)
-        self.assertNotEqual(new_website_bundle_modified.get_version('js'), base_website_js_version, "js version for new website should now have been changed")
+        self.assertNotEqual(new_website_bundle_modified.get_version('js'), base_website_js_version,
+                            "js version for new website should now have been changed")
 
         url_params = url_encode({'path': '/@/'})
         self.start_tour(f'/website/force/{website_default.id}?{url_params}', "generic_website_editor", login='admin')
@@ -423,7 +433,8 @@ class TestUi(odoo.tests.HttpCase):
     def test_10_website_conditional_visibility(self):
         self.start_tour(self.env['website'].get_client_action_url('/'), 'conditional_visibility_1', login='admin')
         self.start_tour('/odoo', 'conditional_visibility_2', login='admin')
-        self.start_tour(self.env['website'].get_client_action_url('/'), 'conditional_visibility_3', login='admin', step_delay=500, timeout=180)
+        self.start_tour(self.env['website'].get_client_action_url('/'), 'conditional_visibility_3', login='admin',
+                        step_delay=500, timeout=180)
         self.start_tour(self.env['website'].get_client_action_url('/'), 'conditional_visibility_4', login='admin')
         self.start_tour(self.env['website'].get_client_action_url('/'), 'conditional_visibility_5', login='admin')
 
@@ -574,14 +585,16 @@ class TestUi(odoo.tests.HttpCase):
             'action': 'ir.actions.act_window,%d' % (self.env.ref('base.open_module_tree').id,),
         })
         self.env.ref('base.user_admin').action_id = self.env.ref('base.menu_administration').id
-        self.assertFalse(menu_root.action, 'The top menu should not have an action (or the test/tour will not test anything).')
+        self.assertFalse(menu_root.action,
+                         'The top menu should not have an action (or the test/tour will not test anything).')
         self.start_tour('/', 'website_backend_menus_redirect', login='admin')
 
     def test_30_website_text_animations(self):
         self.start_tour("/", 'text_animations', login='admin')
 
     def test_31_website_edit_megamenu_big_icons_subtitles(self):
-        self.start_tour(self.env['website'].get_client_action_url('/'), 'edit_megamenu_big_icons_subtitles', login='admin')
+        self.start_tour(self.env['website'].get_client_action_url('/'), 'edit_megamenu_big_icons_subtitles',
+                        login='admin')
 
     def test_32_website_background_colorpicker(self):
         self.start_tour(self.env['website'].get_client_action_url("/"), "website_background_colorpicker", login="admin")
@@ -692,7 +705,8 @@ class TestUi(odoo.tests.HttpCase):
         self.start_tour(self.env['website'].get_client_action_url('/'), 'drop_404_ir_attachment_url', login='admin')
 
     def test_mobile_order_with_drag_and_drop(self):
-        self.start_tour(self.env['website'].get_client_action_url('/'), 'website_mobile_order_with_drag_and_drop', login='admin')
+        self.start_tour(self.env['website'].get_client_action_url('/'), 'website_mobile_order_with_drag_and_drop',
+                        login='admin')
 
     def test_powerbox_snippet(self):
         self.start_tour('/', 'website_powerbox_snippet', login='admin')

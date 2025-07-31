@@ -61,7 +61,7 @@ class SaleOrderOption(models.Model):
         help="This field will be checked if the option line's product is "
              "already present in the quotation.")
 
-    #=== COMPUTE METHODS ===#
+    # === COMPUTE METHODS ===#
 
     @api.depends('product_id')
     def _compute_name(self):
@@ -135,7 +135,7 @@ class SaleOrderOption(models.Model):
         """ Returns the domain of the products that can be added as a sale order option. """
         return [('sale_ok', '=', True)]
 
-    #=== ACTION METHODS ===#
+    # === ACTION METHODS ===#
 
     def button_add_to_order(self):
         self.add_option_to_order()

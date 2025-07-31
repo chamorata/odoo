@@ -21,7 +21,9 @@
                     <record id="account_tax_report_2A" model="account.report.line">
                         <field name="name">II.A NON-TAXABLE</field>
                         <field name="code">IIA_UNTAXED</field>
-                        <field name="aggregation_formula">II_A_2.balance + II_A_3.balance + II_A_4.balance + II_A_5.balance + II_A_6.balance + II_A_7.balance + II_A_8.balance</field>
+                        <field name="aggregation_formula">II_A_2.balance + II_A_3.balance + II_A_4.balance +
+                            II_A_5.balance + II_A_6.balance + II_A_7.balance + II_A_8.balance
+                        </field>
                         <field name="children_ids">
                             <record id="account_tax_report_2A2_base" model="account.report.line">
                                 <field name="name">II.A.2 INCOME FROM EXPORTS OF GOODS</field>
@@ -57,7 +59,8 @@
                                 </field>
                             </record>
                             <record id="account_tax_report_2A5_base" model="account.report.line">
-                                <field name="name">II.A.5 INCOME FROM SALES OF EXEMPT GOODS OR SERVICES BY DESTINATION</field>
+                                <field name="name">II.A.5 INCOME FROM SALES OF EXEMPT GOODS OR SERVICES BY DESTINATION
+                                </field>
                                 <field name="code">II_A_5</field>
                                 <field name="expression_ids">
                                     <record id="account_tax_report_2A5_base_tag" model="account.report.expression">
@@ -105,7 +108,9 @@
                     <record id="account_tax_report_2B" model="account.report.line">
                         <field name="name">II.B. TAXED</field>
                         <field name="code">IIB_TAXED</field>
-                        <field name="aggregation_formula">II_B_11.balance + II_B_12.balance + II_B_13.balance + II_B_14.balance + II_B_15.balance</field>
+                        <field name="aggregation_formula">II_B_11.balance + II_B_12.balance + II_B_13.balance +
+                            II_B_14.balance + II_B_15.balance
+                        </field>
                         <field name="children_ids">
                             <record id="account_tax_report_2B11_base" model="account.report.line">
                                 <field name="name">II.B.11 TRANSACTIONS TAXED AT 18%</field>
@@ -174,7 +179,9 @@
                     <record id="account_tax_report_3_21_total" model="account.report.line">
                         <field name="name">III.21 TOTAL ITBIS COLLECTED (Add Boxes 16+17+18+19+20)</field>
                         <field name="code">III_21</field>
-                        <field name="aggregation_formula">III_16.balance + III_17.balance + III_18.balance + III_19.balance + III_20.balance</field>
+                        <field name="aggregation_formula">III_16.balance + III_17.balance + III_18.balance +
+                            III_19.balance + III_20.balance
+                        </field>
                         <field name="children_ids">
                             <record id="account_tax_report_3_16_tax" model="account.report.line">
                                 <field name="name">III.16 ITBIS COLLECTED (18% of box 11)</field>
@@ -281,7 +288,8 @@
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
                     <record id="account_tax_report_A39_base" model="account.report.line">
-                        <field name="name">A.39 Services Subject to Withholding Individuals = Individuals and Entity</field>
+                        <field name="name">A.39 Services Subject to Withholding Individuals = Individuals and Entity
+                        </field>
                         <field name="code">A39</field>
                         <field name="expression_ids">
                             <record id="account_tax_report_A39_base_tag" model="account.report.expression">

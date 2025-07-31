@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+import random
 from datetime import date, datetime, timedelta
-from dateutil.relativedelta import relativedelta
-from freezegun import freeze_time
-from psycopg2 import IntegrityError
-from unittest.mock import patch
 from unittest.mock import DEFAULT
+from unittest.mock import patch
 
 import pytz
-import random
-
-from odoo import fields, exceptions, tests
+from dateutil.relativedelta import relativedelta
+from freezegun import freeze_time
 from odoo.addons.mail.models.mail_activity import MailActivity
 from odoo.addons.mail.tests.common import mail_new_test_user, MailCommon
 from odoo.addons.test_mail.models.test_mail_models import MailTestActivity
+from psycopg2 import IntegrityError
+
+from odoo import fields, exceptions, tests
 from odoo.tests import Form, HttpCase, users
 from odoo.tools import mute_logger
 
@@ -196,7 +196,8 @@ class TestActivityFlow(TestActivityCommon):
         rec = self.test_record.with_user(self.user_employee)
         with self.assertSinglePostNotifications(
                 [{'partner': self.partner_admin, 'type': 'email'}],
-                message_info={'content': 'assigned you the following activity', 'subtype': 'mail.mt_note', 'message_type': 'user_notification'}):
+                message_info={'content': 'assigned you the following activity', 'subtype': 'mail.mt_note',
+                              'message_type': 'user_notification'}):
             activity = rec.activity_schedule(
                 'test_mail.mail_act_test_todo',
                 user_id=self.user_admin.id)
@@ -229,7 +230,9 @@ class TestActivityFlow(TestActivityCommon):
             'summary': 'Email Summary',
         })
         call_activity_type = ActivityType.create({'name': 'call'})
-        with Form(self.env['mail.activity'].with_context(default_res_model_id=self.env['ir.model']._get_id('mail.test.activity'), default_res_id=self.test_record.id)) as ActivityForm:
+        with Form(self.env['mail.activity'].with_context(
+                default_res_model_id=self.env['ir.model']._get_id('mail.test.activity'),
+                default_res_id=self.test_record.id)) as ActivityForm:
             # `res_model_id` and `res_id` are invisible, see view `mail.mail_activity_view_form_popup`
             # they must be set using defaults, see `action_feedback_schedule_next`
             ActivityForm.activity_type_id = call_activity_type
@@ -359,7 +362,7 @@ class TestActivityMixin(TestActivityCommon):
             self.test_record.activity_feedback(
                 ['test_mail.mail_act_test_todo'],
                 user_id=self.user_admin.id,
-                feedback='Test feedback',)
+                feedback='Test feedback', )
             self.assertEqual(self.test_record.activity_ids, act2 | act3)
             self.assertFalse(act1.exists())
 
@@ -415,7 +418,8 @@ class TestActivityMixin(TestActivityCommon):
             test_users += mail_new_test_user(self.env, name=f'test_user_{i}', login=f'test_password_{i}')
         for user in test_users:
             self.test_record.activity_schedule(user_id=user.id)
-        archived_users = self.env['res.users'].browse(map(lambda x: x.id, random.sample(test_users, 2)))  # pick 2 users to archive
+        archived_users = self.env['res.users'].browse(
+            map(lambda x: x.id, random.sample(test_users, 2)))  # pick 2 users to archive
         archived_users.action_archive()
         active_users = test_users - archived_users
 
@@ -619,7 +623,7 @@ class TestActivityMixin(TestActivityCommon):
         activity_type.sudo().keep_done = True
 
         with patch('odoo.addons.mail.models.mail_activity.datetime', MockedDatetime), \
-            patch('odoo.addons.mail.models.mail_activity_mixin.datetime', MockedDatetime):
+                patch('odoo.addons.mail.models.mail_activity_mixin.datetime', MockedDatetime):
             origin_1_activity_1 = self.env['mail.activity'].create({
                 'summary': 'Test',
                 'activity_type_id': activity_type.id,
@@ -667,7 +671,8 @@ class TestActivityMixin(TestActivityCommon):
 
             result = self.env['mail.test.activity'].search([('activity_state', 'in', ('today', 'overdue'))])
             self.assertTrue(len(result) > 0)
-            self.assertEqual(result, all_activity_mixin_record.filtered(lambda p: p.activity_state in ('today', 'overdue')))
+            self.assertEqual(result,
+                             all_activity_mixin_record.filtered(lambda p: p.activity_state in ('today', 'overdue')))
 
             result = self.env['mail.test.activity'].search([('activity_state', 'not in', ('today',))])
             self.assertTrue(len(result) > 0)
@@ -677,7 +682,8 @@ class TestActivityMixin(TestActivityCommon):
             self.assertTrue(len(result) >= 3, "There is more than 3 records without an activity schedule on it")
             self.assertEqual(result, all_activity_mixin_record.filtered(lambda p: not p.activity_state))
 
-            result = self.env['mail.test.activity'].search([('activity_state', 'not in', ('planned', 'overdue', 'today'))])
+            result = self.env['mail.test.activity'].search(
+                [('activity_state', 'not in', ('planned', 'overdue', 'today'))])
             self.assertTrue(len(result) >= 3, "There is more than 3 records without an activity schedule on it")
             self.assertEqual(result, all_activity_mixin_record.filtered(lambda p: not p.activity_state))
 
@@ -685,7 +691,8 @@ class TestActivityMixin(TestActivityCommon):
             # because of falsy value
             result = self.env['mail.test.activity'].search([('activity_state', 'not in', ('today', False))])
             self.assertTrue(len(result) > 0)
-            self.assertEqual(result, all_activity_mixin_record.filtered(lambda p: p.activity_state not in ('today', False)))
+            self.assertEqual(result,
+                             all_activity_mixin_record.filtered(lambda p: p.activity_state not in ('today', False)))
 
             result = self.env['mail.test.activity'].search([('activity_state', 'in', ('today', False))])
             self.assertTrue(len(result) > 0)

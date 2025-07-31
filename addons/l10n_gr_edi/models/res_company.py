@@ -1,12 +1,12 @@
 import logging
-import requests
-
 from datetime import timedelta
+
+import requests
 from lxml import etree
+from odoo.addons.l10n_gr_edi.models.preferred_classification import INVOICE_TYPES_HAVE_EXPENSE
 from requests import RequestException
 
 from odoo import api, fields, models, Command
-from odoo.addons.l10n_gr_edi.models.preferred_classification import INVOICE_TYPES_HAVE_EXPENSE
 
 NS_MYDATA = {"ns": "http://www.aade.gr/myDATA/invoice/v1.0"}
 
@@ -43,7 +43,7 @@ class ResCompany(models.Model):
             try:
                 response = session.get(
                     url="https://mydataapidev.aade.gr/RequestDocs" if gr_company.l10n_gr_edi_test_env else
-                        "https://mydatapi.aade.gr/myDATA/RequestDocs",
+                    "https://mydatapi.aade.gr/myDATA/RequestDocs",
                     headers={'aade-user-id': gr_company.l10n_gr_edi_aade_id,
                              'ocp-apim-subscription-key': gr_company.l10n_gr_edi_aade_key},
                     params={'mark': 0, 'dateFrom': date_90_days_ago, 'dateTo': date_today},
@@ -61,11 +61,11 @@ class ResCompany(models.Model):
 
                 # Make sure not to create duplicate bill in the same company
                 if self.env['account.move'].search_count(
-                    domain=[
-                        ('l10n_gr_edi_mark', '=', find_value('mark')),
-                        ('company_id', '=', gr_company.id),
-                    ],
-                    limit=1,
+                        domain=[
+                            ('l10n_gr_edi_mark', '=', find_value('mark')),
+                            ('company_id', '=', gr_company.id),
+                        ],
+                        limit=1,
                 ):
                     continue
 
@@ -94,7 +94,8 @@ class ResCompany(models.Model):
                     'date': fields.Date.to_date(find_value('issueDate')),
                     'invoice_date': fields.Date.to_date(find_value('issueDate')),
                     'invoice_line_ids': invoice_line_ids,
-                    **({'l10n_gr_edi_inv_type': find_value('invoiceType')} if find_value('invoiceType') in INVOICE_TYPES_HAVE_EXPENSE else {}),
+                    **({'l10n_gr_edi_inv_type': find_value('invoiceType')} if find_value(
+                        'invoiceType') in INVOICE_TYPES_HAVE_EXPENSE else {}),
                 })
                 marks_to_create.append(find_value('mark'))
 

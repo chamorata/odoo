@@ -1,5 +1,5 @@
-
 from odoo.addons.account.controllers.portal import PortalAccount
+
 from odoo import http
 from odoo.http import request
 

@@ -12,21 +12,21 @@ class L10nItDeclarationOfIntent(models.Model):
     _order = 'protocol_number_part1, protocol_number_part2'
 
     state = fields.Selection([
-         ('draft', 'Draft'),
-         ('active', 'Active'),
-         ('revoked', 'Revoked'),
-         ('terminated', 'Terminated'),
-        ],
+        ('draft', 'Draft'),
+        ('active', 'Active'),
+        ('revoked', 'Revoked'),
+        ('terminated', 'Terminated'),
+    ],
         string="State",
         tracking=True,
         default='draft',
         required=True,
         readonly=True,
         help="The state of this Declaration of Intent. \n"
-        "- 'Draft' means that the Declaration of Intent still needs to be confirmed before being usable. \n"
-        "- 'Active' means that the Declaration of Intent is usable. \n"
-        "- 'Terminated' designates that the Declaration of Intent has been marked as not to use anymore without invalidating usages of it. \n"
-        "- 'Revoked' means the Declaration of Intent should not have been used. You will probably need to revert previous usages of it, if any.\n")
+             "- 'Draft' means that the Declaration of Intent still needs to be confirmed before being usable. \n"
+             "- 'Active' means that the Declaration of Intent is usable. \n"
+             "- 'Terminated' designates that the Declaration of Intent has been marked as not to use anymore without invalidating usages of it. \n"
+             "- 'Revoked' means the Declaration of Intent should not have been used. You will probably need to revert previous usages of it, if any.\n")
 
     company_id = fields.Many2one(
         comodel_name='res.company',
@@ -201,17 +201,20 @@ class L10nItDeclarationOfIntent(models.Model):
         errors = []
         for declaration in self:
             if not company or declaration.company_id != company:
-                errors.append(_("The Declaration of Intent belongs to company %(declaration_company)s, not %(company)s.",
-                                declaration_company=declaration.company_id.name, company=company.name))
+                errors.append(
+                    _("The Declaration of Intent belongs to company %(declaration_company)s, not %(company)s.",
+                      declaration_company=declaration.company_id.name, company=company.name))
             if not currency or declaration.currency_id != currency:
                 errors.append(_("The Declaration of Intent uses currency %(declaration_currency)s, not %(currency)s.",
                                 declaration_currency=declaration.currency_id.name, currency=currency.name))
             if not partner or declaration.partner_id != partner.commercial_partner_id:
-                errors.append(_("The Declaration of Intent belongs to partner %(declaration_partner)s, not %(partner)s.",
-                                declaration_partner=declaration.partner_id.name, partner=partner.commercial_partner_id.name))
+                errors.append(
+                    _("The Declaration of Intent belongs to partner %(declaration_partner)s, not %(partner)s.",
+                      declaration_partner=declaration.partner_id.name, partner=partner.commercial_partner_id.name))
         return errors
 
-    def _get_validity_warnings(self, company, partner, currency, date, invoiced_amount=0, only_blocking=False, sales_order=False):
+    def _get_validity_warnings(self, company, partner, currency, date, invoiced_amount=0, only_blocking=False,
+                               sales_order=False):
         """
         Check whether all declarations of intent in self are valid for the specified `company`, `partner`, `date` and `currency'.
         The checks for `date` and state of the declaration (except draft) are not considered blocking in case `invoiced_amount` is not positive.
@@ -230,8 +233,9 @@ class L10nItDeclarationOfIntent(models.Model):
                 if declaration.state != 'active':
                     errors.append(_("The Declaration of Intent must be active."))
                 if not sales_order and (not date or declaration.start_date > date or declaration.end_date < date):
-                    errors.append(_("The Declaration of Intent is valid from %(start_date)s to %(end_date)s, not on %(date)s.",
-                                    start_date=declaration.start_date, end_date=declaration.end_date, date=date))
+                    errors.append(
+                        _("The Declaration of Intent is valid from %(start_date)s to %(end_date)s, not on %(date)s.",
+                          start_date=declaration.start_date, end_date=declaration.end_date, date=date))
         return errors
 
     @api.model
@@ -253,7 +257,8 @@ class L10nItDeclarationOfIntent(models.Model):
     @api.ondelete(at_uninstall=False)
     def _unlink_except_linked_to_document(self):
         if self.invoice_ids or self.sale_order_ids:
-            raise UserError(_('You cannot delete Declarations of Intents that are already used on at least one Invoice or Sales Order.'))
+            raise UserError(
+                _('You cannot delete Declarations of Intents that are already used on at least one Invoice or Sales Order.'))
 
     def action_validate(self):
         """ Move a 'draft' Declaration of Intent to 'active'."""

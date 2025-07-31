@@ -6,7 +6,6 @@ import io
 import zipfile
 
 import odoo.http as http
-
 from odoo.exceptions import UserError
 from odoo.http import request, content_disposition
 

@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import odoo.tests
 from odoo.addons.product_matrix.tests.common import TestMatrixCommon
+
+import odoo.tests
 
 
 @odoo.tests.tagged('post_install', '-at_install')
@@ -24,7 +25,8 @@ class TestPurchaseMatrixUi(TestMatrixCommon):
         )
         self.assertFalse(dyn)
 
-        self.env['purchase.order.line'].search([('product_id', 'in', self.matrix_template.product_variant_ids.ids)]).order_id.button_confirm()
+        self.env['purchase.order.line'].search(
+            [('product_id', 'in', self.matrix_template.product_variant_ids.ids)]).order_id.button_confirm()
         self.matrix_template.flush_recordset()
         self.assertEqual(round(self.matrix_template.purchased_product_qty, 2), 51.8)
         for variant in self.matrix_template.product_variant_ids:
@@ -35,6 +37,7 @@ class TestPurchaseMatrixUi(TestMatrixCommon):
         # NB: the *2 is because the no_variant attribute doesn't create a variant
         # but still gives different order lines.
         self.assertEqual(
-            len(self.env['purchase.order.line'].search([('product_id', 'in', self.matrix_template.product_variant_ids.ids)])),
-            len(self.matrix_template.product_variant_ids)*2
+            len(self.env['purchase.order.line'].search(
+                [('product_id', 'in', self.matrix_template.product_variant_ids.ids)])),
+            len(self.matrix_template.product_variant_ids) * 2
         )

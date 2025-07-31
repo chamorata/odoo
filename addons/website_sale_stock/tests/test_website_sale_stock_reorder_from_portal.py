@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.website_sale_stock.tests.common import WebsiteSaleStockCommon
+
 from odoo import Command
 from odoo.tests import tagged
 from odoo.tests.common import HttpCase
-
-from odoo.addons.website_sale_stock.tests.common import WebsiteSaleStockCommon
 
 
 @tagged('post_install', '-at_install')

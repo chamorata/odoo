@@ -4,6 +4,7 @@ import ast
 from collections import defaultdict
 
 from dateutil.relativedelta import relativedelta
+
 from odoo import api, fields, models, SUPERUSER_ID, _
 from odoo.tools import SQL
 from odoo.tools.convert import convert_file
@@ -16,7 +17,8 @@ class Job(models.Model):
 
     @api.model
     def _default_address_id(self):
-        last_used_address = self.env['hr.job'].search([('company_id', 'in', self.env.companies.ids)], order='id desc', limit=1)
+        last_used_address = self.env['hr.job'].search([('company_id', 'in', self.env.companies.ids)], order='id desc',
+                                                      limit=1)
         if last_used_address:
             return last_used_address.address_id
         else:
@@ -47,17 +49,23 @@ class Job(models.Model):
         'hr.employee', related='department_id.manager_id', string="Department Manager",
         readonly=True, store=True)
     user_id = fields.Many2one('res.users', "Recruiter",
-        domain="[('share', '=', False), ('company_ids', 'in', company_id)]", default=lambda self: self.env.user,
-        tracking=True, help="The Recruiter will be the default value for all Applicants in this job \
+                              domain="[('share', '=', False), ('company_ids', 'in', company_id)]",
+                              default=lambda self: self.env.user,
+                              tracking=True, help="The Recruiter will be the default value for all Applicants in this job \
             position. The Recruiter is automatically added to all meetings with the Applicant.")
     document_ids = fields.One2many('ir.attachment', compute='_compute_document_ids', string="Documents", readonly=True)
     documents_count = fields.Integer(compute='_compute_document_ids', string="Document Count")
-    alias_id = fields.Many2one(help="Email alias for this job position. New emails will automatically create new applicants for this job position.")
+    alias_id = fields.Many2one(
+        help="Email alias for this job position. New emails will automatically create new applicants for this job position.")
     color = fields.Integer("Color Index")
     is_favorite = fields.Boolean(compute='_compute_is_favorite', inverse='_inverse_is_favorite')
-    favorite_user_ids = fields.Many2many('res.users', 'job_favorite_user_rel', 'job_id', 'user_id', default=_get_default_favorite_user_ids)
-    interviewer_ids = fields.Many2many('res.users', string='Interviewers', domain="[('share', '=', False), ('company_ids', 'in', company_id)]", help="The Interviewers set on the job position can see all Applicants in it. They have access to the information, the attachments, the meeting management and they can refuse him. You don't need to have Recruitment rights to be set as an interviewer.")
-    extended_interviewer_ids = fields.Many2many('res.users', 'hr_job_extended_interviewer_res_users', compute='_compute_extended_interviewer_ids', store=True)
+    favorite_user_ids = fields.Many2many('res.users', 'job_favorite_user_rel', 'job_id', 'user_id',
+                                         default=_get_default_favorite_user_ids)
+    interviewer_ids = fields.Many2many('res.users', string='Interviewers',
+                                       domain="[('share', '=', False), ('company_ids', 'in', company_id)]",
+                                       help="The Interviewers set on the job position can see all Applicants in it. They have access to the information, the attachments, the meeting management and they can refuse him. You don't need to have Recruitment rights to be set as an interviewer.")
+    extended_interviewer_ids = fields.Many2many('res.users', 'hr_job_extended_interviewer_res_users',
+                                                compute='_compute_extended_interviewer_ids', store=True)
     industry_id = fields.Many2one('res.partner.industry', 'Industry')
     date_from = fields.Date(help="Is set, update candidates availability once hired for that specific mission.")
     date_to = fields.Date()
@@ -81,8 +89,8 @@ class Job(models.Model):
                 ('job_id', 'in', self.ids),
                 ('date_closed', '!=', False),
                 '|',
-                    ('active', '=', False),
-                    ('active', '=', True),
+                ('active', '=', False),
+                ('active', '=', True),
             ],
             groupby=['job_id'],
             aggregates=['__count']))
@@ -168,9 +176,9 @@ class Job(models.Model):
         read_group_result = self.env['hr.applicant'].with_context(active_test=False)._read_group([
             ('job_id', 'in', self.ids),
             '|',
-                ('active', '=', True),
-                '&',
-                ('active', '=', False), ('refuse_reason_id', '!=', False),
+            ('active', '=', True),
+            '&',
+            ('active', '=', False), ('refuse_reason_id', '!=', False),
         ], ['job_id'], ['__count'])
         result = {job.id: count for job, count in read_group_result}
         for job in self:
@@ -355,9 +363,9 @@ class Job(models.Model):
             ],
             'search_view_id': self.env.ref('hr_recruitment.ir_attachment_view_search_inherit_hr_recruitment').ids,
             'domain': ['|',
-                '&', ('res_model', '=', 'hr.job'), ('res_id', 'in', self.ids),
-                '&', ('res_model', '=', 'hr.applicant'), ('res_id', 'in', self.application_ids.ids),
-            ],
+                       '&', ('res_model', '=', 'hr.job'), ('res_id', 'in', self.ids),
+                       '&', ('res_model', '=', 'hr.applicant'), ('res_id', 'in', self.application_ids.ids),
+                       ],
         }
 
     def action_open_activities(self):

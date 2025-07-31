@@ -4,8 +4,8 @@ import json
 from io import BytesIO
 from zipfile import ZipFile, ZIP_DEFLATED
 
-from odoo.tools import cloc
 from odoo.addons.base.tests import test_cloc
+from odoo.tools import cloc
 
 VALID_XML = """
 <templates id="template" xml:space="preserve">
@@ -33,6 +33,7 @@ VALID_XML_2 = """<?xml version="1.0" encoding="UTF-8"?>
 </odoo>
 """
 
+
 class TestClocFields(test_cloc.TestClocCustomization):
 
     def create_studio_module(self):
@@ -47,7 +48,6 @@ class TestClocFields(test_cloc.TestClocCustomization):
                 'state': 'installed',
                 'summary': 'Studio Customization',
             })
-
 
     def test_fields_from_import_module(self):
         """
@@ -239,8 +239,8 @@ class TestClocFields(test_cloc.TestClocCustomization):
                 ]
             },
             'cloc_exclude': [
-                    'static/**/*',
-                    'data/test.xml',
+                'static/**/*',
+                'data/test.xml',
             ],
             'license': 'LGPL-3',
         })

@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from datetime import timedelta
+
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.addons.mail.tests.common import MailCase
+
+from odoo import fields
 from odoo.tests import tagged, Form, new_test_user
 from odoo.tools import mute_logger, format_amount
-from odoo import fields
+
 
 @tagged('-at_install', 'post_install')
 class TestPurchaseDashboard(AccountTestInvoicingCommon, MailCase):
@@ -89,11 +92,14 @@ class TestPurchaseDashboard(AccountTestInvoicingCommon, MailCase):
         # Check dashboard values
         currency_id = self.env.company.currency_id
         zero_value_keys = ['all_waiting', 'my_waiting', 'my_late']
-        self.assertListEqual([dashboard_result[key] for key in zero_value_keys], [0]*len(zero_value_keys))
+        self.assertListEqual([dashboard_result[key] for key in zero_value_keys], [0] * len(zero_value_keys))
         self.assertEqual(dashboard_result['all_to_send'], 2)
         self.assertEqual(dashboard_result['my_to_send'], 1)
         self.assertEqual(dashboard_result['all_late'], 1)
-        self.assertEqual(dashboard_result['all_avg_order_value'], format_amount(self.env, self.tax_purchase_a.compute_all(700.0)['total_included'], currency_id))
+        self.assertEqual(dashboard_result['all_avg_order_value'],
+                         format_amount(self.env, self.tax_purchase_a.compute_all(700.0)['total_included'], currency_id))
         self.assertEqual(dashboard_result['all_avg_days_to_purchase'], 0)
-        self.assertEqual(dashboard_result['all_total_last_7_days'], format_amount(self.env, self.tax_purchase_a.compute_all(2100.0)['total_included'], currency_id))
+        self.assertEqual(dashboard_result['all_total_last_7_days'],
+                         format_amount(self.env, self.tax_purchase_a.compute_all(2100.0)['total_included'],
+                                       currency_id))
         self.assertEqual(dashboard_result['all_sent_rfqs'], 2)

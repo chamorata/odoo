@@ -1,6 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo import models
 from odoo.addons.account.models.chart_template import template
+
+from odoo import models
 
 
 class AccountChartTemplate(models.AbstractModel):
@@ -37,6 +38,7 @@ class AccountChartTemplate(models.AbstractModel):
                 'account_purchase_tax_id': 'account_tax_template_purchase_21',
             },
         }
+
     def _setup_utility_bank_accounts(self, template_code, company, template_data):
         super()._setup_utility_bank_accounts(template_code, company, template_data)
         if template_code == "lt":

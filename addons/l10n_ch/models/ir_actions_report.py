@@ -1,14 +1,17 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import io
+from pathlib import Path
+
+from reportlab.graphics.shapes import Drawing as ReportLabDrawing, Image as ReportLabImage
+
 from odoo import api, models
 from odoo.tools.pdf import OdooPdfFileReader, OdooPdfFileWriter
-from pathlib import Path
-from reportlab.graphics.shapes import Drawing as ReportLabDrawing, Image as ReportLabImage
-from reportlab.lib.units import mm
 
-CH_QR_CROSS_SIZE_RATIO = 0.1522 # Ratio between the side length of the Swiss QR-code cross image and the QR-code's
-CH_QR_CROSS_FILE = Path('../static/src/img/CH-Cross_7mm.png') # Image file containing the Swiss QR-code cross to add on top of the QR-code
+CH_QR_CROSS_SIZE_RATIO = 0.1522  # Ratio between the side length of the Swiss QR-code cross image and the QR-code's
+CH_QR_CROSS_FILE = Path(
+    '../static/src/img/CH-Cross_7mm.png')  # Image file containing the Swiss QR-code cross to add on top of the QR-code
+
 
 class IrActionsReport(models.Model):
     _inherit = 'ir.actions.report'
@@ -27,7 +30,8 @@ class IrActionsReport(models.Model):
         cross_width = CH_QR_CROSS_SIZE_RATIO * width
         cross_height = CH_QR_CROSS_SIZE_RATIO * height
         cross_path = Path(__file__).absolute().parent / CH_QR_CROSS_FILE
-        qr_cross = ReportLabImage((width/2 - cross_width/2) / zoom_x, (height/2 - cross_height/2) / zoom_y, cross_width / zoom_x, cross_height / zoom_y, cross_path.as_posix())
+        qr_cross = ReportLabImage((width / 2 - cross_width / 2) / zoom_x, (height / 2 - cross_height / 2) / zoom_y,
+                                  cross_width / zoom_x, cross_height / zoom_y, cross_path.as_posix())
         barcode_drawing.add(qr_cross)
 
     def _render_qweb_pdf_prepare_streams(self, report_ref, data, res_ids=None):

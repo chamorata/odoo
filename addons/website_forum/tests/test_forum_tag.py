@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import Command
 from odoo.addons.website_forum.tests.common import TestForumCommon
+
+from odoo import Command
 
 
 class TestForumTag(TestForumCommon):

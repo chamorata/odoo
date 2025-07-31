@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, models, _
-from odoo.tools import format_datetime
 from markupsafe import Markup
 
+from odoo import api, models
+from odoo.tools import format_datetime
 
 rec = 0
+
+
 def autoIncrement():
     global rec
     pStart = 1
@@ -63,7 +65,7 @@ class MrpStockReport(models.TransientModel):
                 ('lot_id', '=', context.get('lot_name') or rec_id),
                 ('state', '=', 'done'),
             ])
-        elif  rec_id and model == 'stock.move.line' and context.get('lot_name'):
+        elif rec_id and model == 'stock.move.line' and context.get('lot_name'):
             record = self.env[model].browse(rec_id)
             dummy, is_used = self._get_linked_move_lines(record)
             if is_used:
@@ -128,7 +130,9 @@ class MrpStockReport(models.TransientModel):
             'model_id': move_line.id,
             'model': 'stock.move.line',
             'product_id': move_line.product_id.display_name,
-            'product_qty_uom': "%s %s" % (self._quantity_to_str(move_line.product_uom_id, move_line.product_id.uom_id, move_line.quantity), move_line.product_id.uom_id.name),
+            'product_qty_uom': "%s %s" % (
+                self._quantity_to_str(move_line.product_uom_id, move_line.product_id.uom_id, move_line.quantity),
+                move_line.product_id.uom_id.name),
             'lot_name': move_line.lot_id.name,
             'lot_id': move_line.lot_id.id,
             'location_source': move_line.location_id.name,
@@ -196,7 +200,8 @@ class MrpStockReport(models.TransientModel):
             unfoldable = False
             if line.get('unfoldable'):
                 unfoldable = True
-            final_vals = self._make_dict_move(line['level'], parent_id=line['id'], move_line=model, unfoldable=unfoldable)
+            final_vals = self._make_dict_move(line['level'], parent_id=line['id'], move_line=model,
+                                              unfoldable=unfoldable)
             lines.append(self._final_vals_to_lines(final_vals, line['level'])[0])
         return lines
 
@@ -211,7 +216,8 @@ class MrpStockReport(models.TransientModel):
 
         context = dict(self.env.context)
         if context.get('active_id') and context.get('active_model'):
-            rcontext['reference'] = self.env[context.get('active_model')].browse(int(context.get('active_id'))).display_name
+            rcontext['reference'] = self.env[context.get('active_model')].browse(
+                int(context.get('active_id'))).display_name
 
         body = self.env['ir.ui.view'].with_context(context)._render_template(
             "stock.report_stock_inventory_print",
@@ -219,7 +225,9 @@ class MrpStockReport(models.TransientModel):
         )
 
         header = self.env['ir.actions.report']._render_template("web.internal_layout", values=rcontext)
-        header = self.env['ir.actions.report']._render_template("web.minimal_layout", values=dict(rcontext, subst=True, body=Markup(header.decode())))
+        header = self.env['ir.actions.report']._render_template("web.minimal_layout", values=dict(rcontext, subst=True,
+                                                                                                  body=Markup(
+                                                                                                      header.decode())))
 
         return self.env['ir.actions.report']._run_wkhtmltopdf(
             [body],

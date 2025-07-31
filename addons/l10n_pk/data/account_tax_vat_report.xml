@@ -692,9 +692,11 @@
                             <record id="l10n_pk_vat_expression_NST_S1" model="account.report.expression">
                                 <field name="label">tax</field>
                                 <field name="engine">aggregation</field>
-                                <field name="formula">SAL_TL.tax + SAL_SR_17.tax + SAL_SR_16.tax + SAL_SR_15.tax + SAL_SR_13.tax 
-                                                    + SAL_SR_10.tax + SAL_SR_8.tax + SAL_SR_5.tax + SAL_SR_3.tax + SAL_SR_2.tax 
-                                                    + SAL_SR_1.tax + SAL_SR_0.tax</field>
+                                <field name="formula">SAL_TL.tax + SAL_SR_17.tax + SAL_SR_16.tax + SAL_SR_15.tax +
+                                    SAL_SR_13.tax
+                                    + SAL_SR_10.tax + SAL_SR_8.tax + SAL_SR_5.tax + SAL_SR_3.tax + SAL_SR_2.tax
+                                    + SAL_SR_1.tax + SAL_SR_0.tax
+                                </field>
                             </record>
                         </field>
                     </record>
@@ -705,9 +707,11 @@
                             <record id="l10n_pk_vat_expression_NST_P1" model="account.report.expression">
                                 <field name="label">tax</field>
                                 <field name="engine">aggregation</field>
-                                <field name="formula">PUR_TL.tax + PUR_SR_17.tax + PUR_SR_16.tax + PUR_SR_15.tax + PUR_SR_13.tax 
-                                                    + PUR_SR_10.tax + PUR_SR_8.tax + PUR_SR_5.tax + PUR_SR_3.tax + PUR_SR_2.tax 
-                                                    + PUR_SR_1.tax + PUR_SR_0.tax</field>
+                                <field name="formula">PUR_TL.tax + PUR_SR_17.tax + PUR_SR_16.tax + PUR_SR_15.tax +
+                                    PUR_SR_13.tax
+                                    + PUR_SR_10.tax + PUR_SR_8.tax + PUR_SR_5.tax + PUR_SR_3.tax + PUR_SR_2.tax
+                                    + PUR_SR_1.tax + PUR_SR_0.tax
+                                </field>
                             </record>
                         </field>
                     </record>

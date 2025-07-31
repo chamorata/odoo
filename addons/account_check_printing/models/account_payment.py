@@ -34,8 +34,8 @@ class AccountPayment(models.Model):
     def _compute_show_check_number(self):
         for payment in self:
             payment.show_check_number = (
-                payment.payment_method_line_id.code == 'check_printing'
-                and payment.check_number
+                    payment.payment_method_line_id.code == 'check_printing'
+                    and payment.check_number
             )
 
     @api.constrains('check_number')
@@ -144,7 +144,8 @@ class AccountPayment(models.Model):
 
     def action_post(self):
         payment_method_check = self.env.ref('account_check_printing.account_payment_method_check')
-        for payment in self.filtered(lambda p: p.payment_method_id == payment_method_check and p.check_manual_sequencing):
+        for payment in self.filtered(
+                lambda p: p.payment_method_id == payment_method_check and p.check_manual_sequencing):
             sequence = payment.journal_id.check_sequence_id
             payment.check_number = sequence.next_by_id()
         return super(AccountPayment, self).action_post()
@@ -200,17 +201,19 @@ class AccountPayment(models.Model):
         check_layout = self.journal_id.bank_check_printing_layout or self.company_id.account_check_printing_layout
         redirect_action = self.env.ref('account.action_account_config')
         if not check_layout or check_layout == 'disabled':
-            msg = _("You have to choose a check layout. For this, go in Invoicing/Accounting Settings, search for 'Checks layout' and set one.")
+            msg = _(
+                "You have to choose a check layout. For this, go in Invoicing/Accounting Settings, search for 'Checks layout' and set one.")
             raise RedirectWarning(msg, redirect_action.id, _('Go to the configuration panel'))
         report_action = self.env.ref(check_layout, False)
         if not report_action:
-            msg = _("Something went wrong with Check Layout, please select another layout in Invoicing/Accounting Settings and try again.")
+            msg = _(
+                "Something went wrong with Check Layout, please select another layout in Invoicing/Accounting Settings and try again.")
             raise RedirectWarning(msg, redirect_action.id, _('Go to the configuration panel'))
         self.write({'is_sent': 'True'})
         return report_action.report_action(self)
 
     #######################
-    #CHECK PRINTING METHODS
+    # CHECK PRINTING METHODS
     #######################
     def _check_fill_line(self, amount_str):
         return amount_str and (amount_str + ' ').ljust(200, '*') or ''
@@ -264,13 +267,15 @@ class AccountPayment(models.Model):
             if invoice.currency_id.is_zero(amount_residual):
                 amount_residual_str = '-'
             else:
-                amount_residual_str = formatLang(self.env, invoice_sign * amount_residual, currency_obj=invoice.currency_id)
+                amount_residual_str = formatLang(self.env, invoice_sign * amount_residual,
+                                                 currency_obj=invoice.currency_id)
             amount_paid = current_amount if current_amount else sum(partials.mapped(partial_field))
 
             return {
                 'due_date': format_date(self.env, invoice.invoice_date_due),
                 'number': number,
-                'amount_total': formatLang(self.env, invoice_sign * invoice.amount_total, currency_obj=invoice.currency_id),
+                'amount_total': formatLang(self.env, invoice_sign * invoice.amount_total,
+                                           currency_obj=invoice.currency_id),
                 'amount_residual': amount_residual_str,
                 'amount_paid': formatLang(self.env, invoice_sign * amount_paid, currency_obj=self.currency_id),
                 'currency': invoice.currency_id,
@@ -278,8 +283,10 @@ class AccountPayment(models.Model):
 
         if self.move_id:
             # Decode the reconciliation to keep only invoices.
-            term_lines = self.move_id.line_ids.filtered(lambda line: line.account_id.account_type in ('asset_receivable', 'liability_payable'))
-            invoices = (term_lines.matched_debit_ids.debit_move_id.move_id + term_lines.matched_credit_ids.credit_move_id.move_id)\
+            term_lines = self.move_id.line_ids.filtered(
+                lambda line: line.account_id.account_type in ('asset_receivable', 'liability_payable'))
+            invoices = (
+                        term_lines.matched_debit_ids.debit_move_id.move_id + term_lines.matched_credit_ids.credit_move_id.move_id) \
                 .filtered(lambda x: x.is_outbound(include_receipts=True))
 
             # Group partials by invoices.

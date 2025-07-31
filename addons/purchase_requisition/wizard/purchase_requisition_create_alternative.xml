@@ -19,8 +19,9 @@
                         </group>
                     </group>
                     <footer>
-                        <button name="action_create_alternative" string="Create Alternative" data-hotkey="q" type="object" colspan="1" class="btn-primary"/>
-                        <button string="Cancel"  data-hotkey="x" special="cancel" colspan="1" class="btn-secondary"/>
+                        <button name="action_create_alternative" string="Create Alternative" data-hotkey="q"
+                                type="object" colspan="1" class="btn-primary"/>
+                        <button string="Cancel" data-hotkey="x" special="cancel" colspan="1" class="btn-secondary"/>
                     </footer>
                 </form>
             </field>

@@ -3,6 +3,7 @@
 
 from odoo.addons.mass_mailing.tests.common import MassMailCommon
 from odoo.addons.utm.tests.common import TestUTMCommon
+
 from odoo.exceptions import UserError
 from odoo.tests.common import tagged, users
 

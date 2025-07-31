@@ -16,13 +16,14 @@ try:
     from pdfminer.pdfpage import PDFPage
 except ImportError:
     PDFResourceManager = PDFPageInterpreter = TextConverter = PDFPage = None
-    _logger.warning("Attachment indexation of PDF documents is unavailable because the 'pdfminer' Python library cannot be found on the system. "
-                    "You may install it from https://pypi.org/project/pdfminer.six/ (e.g. `pip3 install pdfminer.six`)")
+    _logger.warning(
+        "Attachment indexation of PDF documents is unavailable because the 'pdfminer' Python library cannot be found on the system. "
+        "You may install it from https://pypi.org/project/pdfminer.six/ (e.g. `pip3 install pdfminer.six`)")
 
 FTYPES = ['docx', 'pptx', 'xlsx', 'opendoc', 'pdf']
 
-
 index_content_cache = LRU(1)
+
 
 def textToString(element):
     buff = u""

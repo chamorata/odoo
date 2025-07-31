@@ -1,4 +1,5 @@
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
 from odoo.tests import tagged, Form
 
 
@@ -35,9 +36,12 @@ class TestAccountPaymentMethodLine(AccountTestInvoicingCommon):
         cls.partner_b.property_inbound_payment_method_line_id = cls.inbound_payment_method_line_2
         cls.partner_c.property_inbound_payment_method_line_id = cls.inbound_payment_method_line_other_journal
 
-        cls.move_partner_a = cls.init_invoice(move_type='out_invoice', partner=cls.partner_a, products=cls.product_a, post=True)
-        cls.move_partner_b = cls.init_invoice(move_type='out_invoice', partner=cls.partner_b, products=cls.product_a, post=True)
-        cls.move_partner_c = cls.init_invoice(move_type='out_invoice', partner=cls.partner_c, products=cls.product_a, post=True)
+        cls.move_partner_a = cls.init_invoice(move_type='out_invoice', partner=cls.partner_a, products=cls.product_a,
+                                              post=True)
+        cls.move_partner_b = cls.init_invoice(move_type='out_invoice', partner=cls.partner_b, products=cls.product_a,
+                                              post=True)
+        cls.move_partner_c = cls.init_invoice(move_type='out_invoice', partner=cls.partner_c, products=cls.product_a,
+                                              post=True)
 
     def assertRegisterPayment(self, expected_journal, expected_payment_method, move_partner, payment_method_line=False):
         if payment_method_line and expected_payment_method:
@@ -49,7 +53,8 @@ class TestAccountPaymentMethodLine(AccountTestInvoicingCommon):
         ).create({})
 
         if not expected_payment_method:
-            expected_payment_method = payment.journal_id._get_available_payment_method_lines(payment.payment_type)[0]._origin
+            expected_payment_method = payment.journal_id._get_available_payment_method_lines(payment.payment_type)[
+                0]._origin
 
         self.assertRecordValues(payment, [{
             'journal_id': expected_journal.id,
@@ -99,7 +104,8 @@ class TestAccountPaymentMethodLine(AccountTestInvoicingCommon):
 
         # Test with two moves with same payment method lines but different partners
         self.partner_d = self.partner_a.copy()
-        move_partner_d = self.init_invoice(move_type='out_invoice', partner=self.partner_d, products=self.product_a, post=True)
+        move_partner_d = self.init_invoice(move_type='out_invoice', partner=self.partner_d, products=self.product_a,
+                                           post=True)
         self.assertRegisterPayment(
             self.bank_journal_1,
             self.inbound_payment_method_line_1,

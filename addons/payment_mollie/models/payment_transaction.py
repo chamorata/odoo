@@ -3,14 +3,13 @@
 import logging
 import pprint
 
+from odoo.addons.payment.const import CURRENCY_MINOR_UNITS
+from odoo.addons.payment_mollie import const
+from odoo.addons.payment_mollie.controllers.main import MollieController
 from werkzeug import urls
 
 from odoo import _, models
 from odoo.exceptions import ValidationError
-
-from odoo.addons.payment.const import CURRENCY_MINOR_UNITS
-from odoo.addons.payment_mollie import const
-from odoo.addons.payment_mollie.controllers.main import MollieController
 
 _logger = logging.getLogger(__name__)
 

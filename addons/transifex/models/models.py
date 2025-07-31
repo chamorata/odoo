@@ -3,6 +3,7 @@
 
 from odoo import models
 
+
 class BaseModel(models.AbstractModel):
     _inherit = 'base'
 

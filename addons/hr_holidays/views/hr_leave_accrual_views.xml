@@ -13,8 +13,10 @@
                         <div>
                             <field name="accrued_gain_time" invisible="1"/>
                             <field name="can_modify_value_type" invisible="1"/>
-                            <field name="added_value" widget="float_without_trailing_zeros" style="width: 4rem" class="me-1"/>
-                            <field name="added_value_type" style="width: 3.4rem" nolabel="1" readonly="not can_modify_value_type"/>
+                            <field name="added_value" widget="float_without_trailing_zeros" style="width: 4rem"
+                                   class="me-1"/>
+                            <field name="added_value_type" style="width: 3.4rem" nolabel="1"
+                                   readonly="not can_modify_value_type"/>
                         </div>
                         <div style="width: 5rem"/>
                         <div name="hourly" invisible="frequency != 'hourly'">
@@ -25,7 +27,8 @@
                         </div>
                         <div name="weekly" invisible="frequency != 'weekly'">
                             <field name="frequency" style="width: 4.5rem;"/>
-                            <label for="week_day" string="on" class="me-1"/><field name="week_day" style="width: 6.6rem"/>
+                            <label for="week_day" string="on" class="me-1"/>
+                            <field name="week_day" style="width: 6.6rem"/>
                         </div>
                         <div name="monthly" invisible="frequency != 'monthly'">
                             <field name="frequency" style="width: 4.5rem"/>
@@ -35,21 +38,27 @@
                         </div>
                         <div name="bimonthly" invisible="frequency != 'bimonthly'" style="width: 100%">
                             <field name="frequency" style="width: 7rem"/>
-                            <label for="first_day_display" string="on the" class="me-1"/><field name="first_day_display" required="1" style="width: 4rem"/>
-                            <label for="second_day_display" string="and on the" class="me-1"/><field name="second_day_display" required="1" style="width: 4.1rem"/>
+                            <label for="first_day_display" string="on the" class="me-1"/>
+                            <field name="first_day_display" required="1" style="width: 4rem"/>
+                            <label for="second_day_display" string="and on the" class="me-1"/>
+                            <field name="second_day_display" required="1" style="width: 4.1rem"/>
                             of the month
                         </div>
                         <div name="biyearly" invisible="frequency != 'biyearly'">
                             <field name="frequency" style="width: 6rem"/>
                             <label for="first_month_day_display" string="on the" class="me-1"/>
-                            <field name="first_month_day_display" required="1" style="width: 4.1rem"/>of <field name="first_month" required="1" style="width: 4.55rem"/>
+                            <field name="first_month_day_display" required="1" style="width: 4.1rem"/>of
+                            <field name="first_month" required="1" style="width: 4.55rem"/>
                             <label for="second_month_day_display" string="and" class="me-1"/>
-                            <field name="second_month_day_display" required="1" style="width: 4.1rem"/>of <field name="second_month" required="1" style="width: 5.4rem"/>
+                            <field name="second_month_day_display" required="1" style="width: 4.1rem"/>of
+                            <field name="second_month" required="1" style="width: 5.4rem"/>
                         </div>
                         <div name="yearly" invisible="frequency != 'yearly'">
                             <field name="frequency" style="width: 4rem"/>
                             <label for="yearly_day_display" string="on the" class="me-1"/>
-                            <field name="yearly_day_display" required="1" style="width: 4rem"/> of <field name="yearly_month" required="1" style="width: 5.4rem"/>
+                            <field name="yearly_day_display" required="1" style="width: 4rem"/>
+                            of
+                            <field name="yearly_month" required="1" style="width: 5.4rem"/>
                         </div>
                     </group>
                     <group name="maximum_leave">
@@ -58,7 +67,7 @@
                             <field name="cap_accrued_time" nolabel="1"/>
                             <span class="position-absolute" invisible="not cap_accrued_time">
                                 <field name="maximum_leave" style="width: 5rem" widget="float_without_trailing_zeros"
-                                    nolabel="1"/>
+                                       nolabel="1"/>
                                 <field name="added_value_type" readonly="1" style="white-space: nowrap;width: 5rem"/>
                             </span>
                         </span>
@@ -69,17 +78,21 @@
                         </div>
                         <div>
                             <field name="start_count" style="width: 2rem"/>
-                            <field name="start_type" style="width: 4.75rem"/> after allocation start date
+                            <field name="start_type" style="width: 4.75rem"/>
+                            after allocation start date
                         </div>
                         <div class="o_td_label">
                             <label for="action_with_unused_accruals" string="Carry over"/>
                         </div>
                         <div>
-                            <field name="action_with_unused_accruals" class="o_light_label" style="font-weight: 0" widget="radio"/><br/>
+                            <field name="action_with_unused_accruals" class="o_light_label" style="font-weight: 0"
+                                   widget="radio"/>
+                            <br/>
                             <div invisible="action_with_unused_accruals != 'maximum'">
                                 <label for="postpone_max_days" string="Up to"/>
                                 <field name="postpone_max_days" style="width: 3rem"/>
-                                <field name="added_value_type" nolabel="1" readonly="1" force_save="1" style="width: 5rem"/>
+                                <field name="added_value_type" nolabel="1" readonly="1" force_save="1"
+                                       style="width: 5rem"/>
                             </div>
                         </div>
                         <div invisible="action_with_unused_accruals == 'lost'">
@@ -89,13 +102,16 @@
                             <span>
                                 <field name="cap_accrued_time_yearly" nolabel="1"/>
                                 <span class="position-absolute" invisible="not cap_accrued_time_yearly">
-                                    <field name="maximum_leave_yearly" style="width: 5rem" widget="float_without_trailing_zeros"
-                                        nolabel="1"/>
-                                    <field name="added_value_type" readonly="1" style="white-space: nowrap;width: 5rem"/>
+                                    <field name="maximum_leave_yearly" style="width: 5rem"
+                                           widget="float_without_trailing_zeros"
+                                           nolabel="1"/>
+                                    <field name="added_value_type" readonly="1"
+                                           style="white-space: nowrap;width: 5rem"/>
                                 </span>
                             </span>
                         </div>
-                        <field name="postpone_max_days" class="w-25" invisible="action_with_unused_accruals != 'postponed'"/>
+                        <field name="postpone_max_days" class="w-25"
+                               invisible="action_with_unused_accruals != 'postponed'"/>
                         <div class="o_td_label" invisible="action_with_unused_accruals == 'lost'">
                             <label for="accrual_validity_count" string="Carry Over Validity"/>
                         </div>
@@ -103,8 +119,8 @@
                             <div>
                                 <field name="accrual_validity" style="width: 9.35rem"/>
                                 <div class="d-flex" invisible="not accrual_validity">
-                                    <field name="accrual_validity_count" />
-                                    <field name="accrual_validity_type" />
+                                    <field name="accrual_validity_count"/>
+                                    <field name="accrual_validity_type"/>
                                 </div>
                             </div>
                         </div>
@@ -130,10 +146,11 @@
         <field name="arch" type="xml">
             <form string="Accrual Plan">
                 <field name="active" invisible="1"/>
-                <field name="show_transition_mode" invisible="1" />
+                <field name="show_transition_mode" invisible="1"/>
                 <sheet>
-                    <div class="oe_button_box" name="button_box" invisible="not id" >
-                        <button name="action_open_accrual_plan_employees" type="object" class="oe_stat_button" icon="fa-users" invisible="employees_count == 0" groups="hr.group_hr_user">
+                    <div class="oe_button_box" name="button_box" invisible="not id">
+                        <button name="action_open_accrual_plan_employees" type="object" class="oe_stat_button"
+                                icon="fa-users" invisible="employees_count == 0" groups="hr.group_hr_user">
                             <field name="employees_count" widget="statinfo"/>
                         </button>
                     </div>
@@ -143,11 +160,13 @@
                             <field name="name"/>
                             <field name="accrued_gain_time" widget="radio"/>
                             <field name="carryover_date" widget="radio"/>
-                            <label for="carryover_month" string="Carry-Over Date" invisible="carryover_date != 'other'"/>
+                            <label for="carryover_month" string="Carry-Over Date"
+                                   invisible="carryover_date != 'other'"/>
                             <div name="carryover" invisible="carryover_date != 'other'">
                                 <field name="carryover_day" invisible="1"/>
-                                <field name="carryover_day_display"  required="1" style="width: 4.75rem;"/> of
-                                <field name="carryover_month"  required="1" style="width: 6rem;"/>
+                                <field name="carryover_day_display" required="1" style="width: 4.75rem;"/>
+                                of
+                                <field name="carryover_month" required="1" style="width: 6rem;"/>
                             </div>
                         </group>
                         <group>
@@ -166,10 +185,10 @@
                             </p>
                         </div>
                         <field name="level_ids" mode="kanban" nolabel="1"
-                            class="o_hr_holidays_plan_level_container"
-                            widget="accrual_levels_one2many"
-                            add-label="New Milestone"
-                            >
+                               class="o_hr_holidays_plan_level_container"
+                               widget="accrual_levels_one2many"
+                               add-label="New Milestone"
+                        >
                             <kanban default_order="sequence">
                                 <field name="sequence"/>
                                 <field name="action_with_unused_accruals"/>
@@ -182,7 +201,9 @@
                                         <div class="o_hr_holidays_body">
                                             <div class="o_hr_holidays_timeline text-center">
                                                 <t t-if="record.start_count.raw_value > 0">
-                                                    after <field name="start_count"/> <field name="start_type"/>
+                                                    after
+                                                    <field name="start_count"/>
+                                                    <field name="start_type"/>
                                                 </t>
                                                 <t t-else="">
                                                     initially
@@ -204,24 +225,39 @@
                                                 <div class="row w-100">
                                                     <div class="pe-0 me-0" style="width: 6rem;">
                                                         <field name="added_value" invisible="1"/>
-                                                        <span t-out="record.added_value.raw_value"/> <field name="added_value_type"/>,
+                                                        <span t-out="record.added_value.raw_value"/>
+                                                        <field name="added_value_type"/>,
                                                     </div>
                                                     <div class="col-auto m-0 p-0">
                                                         <field name="frequency" class="ms-1"/>
                                                         <t t-if="record.frequency.raw_value === 'weekly'">
-                                                            on <field name="week_day"/>
+                                                            on
+                                                            <field name="week_day"/>
                                                         </t>
                                                         <t t-elif="record.frequency.raw_value === 'monthly'">
-                                                            on the <field name="first_day"/> day of the month
+                                                            on the
+                                                            <field name="first_day"/>
+                                                            day of the month
                                                         </t>
                                                         <t t-elif="record.frequency.raw_value === 'bimonthly'">
-                                                            on the <field name="first_day"/> and on the <field name="second_day"/> days of the months
+                                                            on the
+                                                            <field name="first_day"/>
+                                                            and on the
+                                                            <field name="second_day"/>
+                                                            days of the months
                                                         </t>
                                                         <t t-elif="record.frequency.raw_value === 'biyearly'">
-                                                            on the <field name="first_month_day"/> <field name="first_month"/> and on the <field name="second_month_day"/> <field name="second_month"/>
+                                                            on the
+                                                            <field name="first_month_day"/>
+                                                            <field name="first_month"/>
+                                                            and on the
+                                                            <field name="second_month_day"/>
+                                                            <field name="second_month"/>
                                                         </t>
                                                         <t t-elif="record.frequency.raw_value === 'yearly'">
-                                                            on <field name="yearly_day"/> <field name="yearly_month"/>
+                                                            on
+                                                            <field name="yearly_day"/>
+                                                            <field name="yearly_month"/>
                                                         </t>
                                                     </div>
                                                 </div>
@@ -231,7 +267,9 @@
                                                     </div>
                                                     <div class="col-3 m-0 ps-1 d-flex">
                                                         <t t-if="record.cap_accrued_time.raw_value and record.maximum_leave.raw_value > 0">
-                                                            <field name="maximum_leave" widget="float_without_trailing_zeros"/> <field class="ms-1" name="added_value_type"/>
+                                                            <field name="maximum_leave"
+                                                                   widget="float_without_trailing_zeros"/>
+                                                            <field class="ms-1" name="added_value_type"/>
                                                         </t>
                                                         <t t-else="">
                                                             Unlimited
@@ -243,14 +281,22 @@
                                                         Carry over:
                                                     </div>
                                                     <div class="col-6 m-0 ps-1">
-                                                        <t t-if="record.action_with_unused_accruals.raw_value === 'all'">all
+                                                        <t t-if="record.action_with_unused_accruals.raw_value === 'all'">
+                                                            all
                                                             <span invisible="not accrual_validity">
-                                                                - Valid for <field name="accrual_validity_count"/> <field name="accrual_validity_type"/>
+                                                                - Valid for
+                                                                <field name="accrual_validity_count"/>
+                                                                <field name="accrual_validity_type"/>
                                                             </span>
                                                         </t>
-                                                        <t t-elif="record.action_with_unused_accruals.raw_value === 'maximum'">up to <field name="postpone_max_days" /> <t t-esc="record.added_value_type.raw_value" />
+                                                        <t t-elif="record.action_with_unused_accruals.raw_value === 'maximum'">
+                                                            up to
+                                                            <field name="postpone_max_days"/>
+                                                            <t t-esc="record.added_value_type.raw_value"/>
                                                             <span invisible="not accrual_validity">
-                                                                - Valid for <field name="accrual_validity_count"/> <field name="accrual_validity_type"/>
+                                                                - Valid for
+                                                                <field name="accrual_validity_count"/>
+                                                                <field name="accrual_validity_type"/>
                                                             </span>
                                                         </t>
                                                         <t t-else="">no</t>
@@ -273,7 +319,8 @@
         <field name="arch" type="xml">
             <search string="Group By">
                 <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
-                <filter string="Company" name='company_id' context="{'group_by':'company_id'}" groups="base.group_multi_company"/>
+                <filter string="Company" name='company_id' context="{'group_by':'company_id'}"
+                        groups="base.group_multi_company"/>
             </search>
         </field>
     </record>

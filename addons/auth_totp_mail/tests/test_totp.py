@@ -3,8 +3,9 @@
 
 import logging
 
-from odoo.tests import tagged, HttpCase
 from odoo.addons.auth_totp.tests.test_totp import TestTOTPMixin
+
+from odoo.tests import tagged, HttpCase
 
 _logger = logging.getLogger(__name__)
 

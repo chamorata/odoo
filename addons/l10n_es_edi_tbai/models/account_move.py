@@ -22,10 +22,10 @@ class AccountMove(models.Model):
     _inherit = 'account.move'
 
     l10n_es_tbai_state = fields.Selection([
-            ('to_send', 'To Send'),
-            ('sent', 'Sent'),
-            ('cancelled', 'Cancelled'),
-        ],
+        ('to_send', 'To Send'),
+        ('sent', 'Sent'),
+        ('cancelled', 'Cancelled'),
+    ],
         string='TicketBAI status',
         compute='_compute_l10n_es_tbai_state',
     )
@@ -73,7 +73,7 @@ class AccountMove(models.Model):
         selection=TBAI_REFUND_REASONS,
         string="Invoice Refund Reason Code (TicketBai)",
         help="BOE-A-1992-28740. Ley 37/1992, de 28 de diciembre, del Impuesto sobre el "
-        "Valor Añadido. Artículo 80. Modificación de la base imponible.",
+             "Valor Añadido. Artículo 80. Modificación de la base imponible.",
         copy=False,
     )
     l10n_es_tbai_reversed_ids = fields.Many2many(
@@ -102,12 +102,12 @@ class AccountMove(models.Model):
     def _compute_l10n_es_tbai_is_required(self):
         for move in self:
             move.l10n_es_tbai_is_required = (
-                move.company_id.l10n_es_tbai_is_enabled
-                and (
-                    move.is_sale_document()
-                    or move.is_purchase_document() and move.company_id.l10n_es_tbai_tax_agency == 'bizkaia'
-                )
-                and any(not line._l10n_es_tbai_is_ignored() for line in move.invoice_line_ids)
+                    move.company_id.l10n_es_tbai_is_enabled
+                    and (
+                            move.is_sale_document()
+                            or move.is_purchase_document() and move.company_id.l10n_es_tbai_tax_agency == 'bizkaia'
+                    )
+                    and any(not line._l10n_es_tbai_is_ignored() for line in move.invoice_line_ids)
             )
 
     @api.depends('l10n_es_tbai_post_document_id.chain_index')
@@ -148,7 +148,6 @@ class AccountMove(models.Model):
         if self.company_id.l10n_es_tbai_tax_agency == 'bizkaia' and self.is_purchase_document() and not self.ref:
             return _("You need to fill in the Reference field as the invoice number from your vendor.")
 
-
     def _l10n_es_tbai_get_attachment_name(self, cancel=False):
         return self.name + ('_post.xml' if not cancel else '_cancel.xml')
 
@@ -171,7 +170,8 @@ class AccountMove(models.Model):
                 test_suffix=test_suffix,
                 message=message,
             ),
-            attachment_ids=[self.l10n_es_tbai_post_document_id.xml_attachment_id.id] if not cancel else [self.l10n_es_tbai_cancel_document_id.xml_attachment_id.id],
+            attachment_ids=[self.l10n_es_tbai_post_document_id.xml_attachment_id.id] if not cancel else [
+                self.l10n_es_tbai_cancel_document_id.xml_attachment_id.id],
         )
 
     def _l10n_es_tbai_lock_move(self):
@@ -287,7 +287,8 @@ class AccountMove(models.Model):
             base_line['name'] = base_line['record'].name
         tax_amls = self.line_ids.filtered('tax_repartition_line_id')
         tax_lines = [self._prepare_tax_line_for_taxes_computation(x) for x in tax_amls]
-        self.env['l10n_es_edi_tbai.document']._add_base_lines_tax_amounts(base_lines, self.company_id, tax_lines=tax_lines)
+        self.env['l10n_es_edi_tbai.document']._add_base_lines_tax_amounts(base_lines, self.company_id,
+                                                                          tax_lines=tax_lines)
         taxes = self.invoice_line_ids.tax_ids.flatten_taxes_hierarchy()
         is_oss = any(tax._l10n_es_get_regime_code() == '17' for tax in taxes)
 
@@ -295,7 +296,7 @@ class AccountMove(models.Model):
             **self._l10n_es_tbai_get_credit_note_values(),
             'origin': self.invoice_origin and self.invoice_origin[:250] or 'manual',
             'taxes': taxes,
-            'rate':  abs(self.amount_total / self.amount_total_signed) if self.amount_total else 1,
+            'rate': abs(self.amount_total / self.amount_total_signed) if self.amount_total else 1,
             'base_lines': base_lines,
             'nosujeto_causa': 'IE' if is_oss else 'RL',
             **({'post_doc': self.l10n_es_tbai_post_document_id} if cancel else {}),
@@ -315,7 +316,7 @@ class AccountMove(models.Model):
             'ref': self.ref,
             'is_refund': self.move_type == 'in_refund',
             'invoice_date': self.invoice_date,
-             **self._l10n_es_tbai_get_vendor_bill_tax_values(),
+            **self._l10n_es_tbai_get_vendor_bill_tax_values(),
         }
         # Check if intracom
         mod_303_10 = self.env.ref('l10n_es.mod_303_casilla_10_balance')._get_matching_tags()
@@ -354,7 +355,7 @@ class AccountMove(models.Model):
                 results[tax]['base_amount'] += line.balance
 
             if ((tax := line.tax_line_id) and tax.l10n_es_type not in ('recargo', 'retencion') and
-                line.tax_repartition_line_id.factor_percent != -100.0):
+                    line.tax_repartition_line_id.factor_percent != -100.0):
                 results[tax]['tax_amount'] += line.balance
         iva_values = []
         for tax in results:

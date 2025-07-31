@@ -1,8 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.tests import tagged
-
 from odoo.addons.payment_xendit.tests.common import XenditCommon
+
+from odoo.tests import tagged
 
 
 @tagged('post_install', '-at_install')

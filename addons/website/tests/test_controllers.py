@@ -1,13 +1,13 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import json
+from unittest.mock import patch, Mock
 
+from odoo.addons.website.controllers.main import Website
 from werkzeug.urls import url_encode
 
-from unittest.mock import patch, Mock
 from odoo import tests
 from odoo.tools.misc import mute_logger, submap
-from odoo.addons.website.controllers.main import Website
 
 
 @tests.tagged('post_install', '-at_install')
@@ -142,13 +142,13 @@ class TestControllers(tests.HttpCase):
         # Test cases with different language inputs and expected hl and gl
         # values.
         test_cases = [
-            ('en_US', ['en', 'US']),         # US English
-            ('fr_FR', ['fr', 'FR']),         # French in France
-            ('es', ['es', '']),              # Spanish without country code
-            ('sr_RS@latin', ['sr', 'RS']),   # Serbian with script in Serbia
+            ('en_US', ['en', 'US']),  # US English
+            ('fr_FR', ['fr', 'FR']),  # French in France
+            ('es', ['es', '']),  # Spanish without country code
+            ('sr_RS@latin', ['sr', 'RS']),  # Serbian with script in Serbia
             ('zh_CN@pinyin', ['zh', 'CN']),  # Chinese with pinyin script in China
-            ('sr@latin', ['sr', '']),        # Serbian with script but no country
-            ('', ['en', 'US'])               # Default case (empty lang. input)
+            ('sr@latin', ['sr', '']),  # Serbian with script but no country
+            ('', ['en', 'US'])  # Default case (empty lang. input)
         ]
 
         for lang_input, expected_output in test_cases:

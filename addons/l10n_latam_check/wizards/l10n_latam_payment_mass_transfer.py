@@ -32,7 +32,7 @@ class L10nLatamPaymentMassTransfer(models.TransientModel):
     )
     check_ids = fields.Many2many(
         'l10n_latam.check', 'latam_tranfer_check_rel'
-        'transfer_id', 'check_id', check_company=True,
+                            'transfer_id', 'check_id', check_company=True,
     )
 
     @api.depends('check_ids')
@@ -66,7 +66,9 @@ class L10nLatamPaymentMassTransfer(models.TransientModel):
         """ This is nedeed because we would like to create a payment of type internal transfer for each check with the
         counterpart journal and then, when posting a second payment will be created automatically """
         self.ensure_one()
-        checks = self.check_ids.filtered(lambda x: x.payment_method_line_id.code == 'new_third_party_checks' and x.currency_id == self.check_ids[0].currency_id)
+        checks = self.check_ids.filtered(
+            lambda x: x.payment_method_line_id.code == 'new_third_party_checks' and x.currency_id == self.check_ids[
+                0].currency_id)
         currency_id = self.check_ids[0].currency_id
 
         pay_method_line = self.journal_id._get_available_payment_method_lines('outbound').filtered(

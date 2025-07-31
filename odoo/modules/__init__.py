@@ -5,10 +5,7 @@
 
 """
 
-from . import db, graph, loading, migration, module, registry, neutralize
-
 from odoo.modules.loading import load_modules, reset_modules_state
-
 from odoo.modules.module import (
     adapt_version,
     check_manifest_dependencies,
@@ -23,3 +20,4 @@ from odoo.modules.module import (
     get_manifest,
     load_openerp_module,
 )
+from . import db, graph, loading, migration, module, registry, neutralize

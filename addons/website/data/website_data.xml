@@ -34,8 +34,10 @@
             }"/>
             <span class="hidden" data-for="contactus_form" t-att-data-values="contactus_form_values"/>
             <div id="wrap" class="oe_structure oe_empty">
-                <section class="s_title parallax s_parallax_is_fixed bg-black-50 pt24 pb24" data-vcss="001" data-snippet="s_title" data-scroll-background-ratio="1">
-                    <span class="s_parallax_bg oe_img_bg" style="background-image: url('/web/image/website.s_parallax_default_image'); background-position: 50% 0;"/>
+                <section class="s_title parallax s_parallax_is_fixed bg-black-50 pt24 pb24" data-vcss="001"
+                         data-snippet="s_title" data-scroll-background-ratio="1">
+                    <span class="s_parallax_bg oe_img_bg"
+                          style="background-image: url('/web/image/website.s_parallax_default_image'); background-position: 50% 0;"/>
                     <div class="o_we_bg_filter bg-black-50"/>
                     <div class="container">
                         <h1>Contact us</h1>
@@ -46,66 +48,99 @@
                         <div class="row">
                             <div class="col-lg-7 mt-4 mt-lg-0">
                                 <p class="lead">
-                                    Contact us about anything related to our company or services.<br/>
+                                    Contact us about anything related to our company or services.
+                                    <br/>
                                     We'll do our best to get back to you as soon as possible.
                                 </p>
                                 <section class="s_website_form" data-vcss="001" data-snippet="s_website_form">
                                     <div class="container">
-                                        <form id="contactus_form" action="/website/form/" method="post" enctype="multipart/form-data" class="o_mark_required" data-mark="*" data-model_name="mail.mail" data-success-mode="redirect" data-success-page="/contactus-thank-you" data-pre-fill="true">
+                                        <form id="contactus_form" action="/website/form/" method="post"
+                                              enctype="multipart/form-data" class="o_mark_required" data-mark="*"
+                                              data-model_name="mail.mail" data-success-mode="redirect"
+                                              data-success-page="/contactus-thank-you" data-pre-fill="true">
                                             <div class="s_website_form_rows row s_col_no_bgcolor">
-                                                <div class="mb-3 col-lg-6 s_website_form_field s_website_form_custom s_website_form_required" data-type="char" data-name="Field">
-                                                    <label class="s_website_form_label" style="width: 200px" for="contact1">
+                                                <div class="mb-3 col-lg-6 s_website_form_field s_website_form_custom s_website_form_required"
+                                                     data-type="char" data-name="Field">
+                                                    <label class="s_website_form_label" style="width: 200px"
+                                                           for="contact1">
                                                         <span class="s_website_form_label_content">Name</span>
-                                                        <span class="s_website_form_mark"> *</span>
+                                                        <span class="s_website_form_mark">*</span>
                                                     </label>
-                                                    <input id="contact1" type="text" class="form-control s_website_form_input" name="name" required="" data-fill-with="name"/>
+                                                    <input id="contact1" type="text"
+                                                           class="form-control s_website_form_input" name="name"
+                                                           required="" data-fill-with="name"/>
                                                 </div>
-                                                <div class="mb-3 col-lg-6 s_website_form_field s_website_form_custom" data-type="char" data-name="Field">
-                                                    <label class="s_website_form_label" style="width: 200px" for="contact2">
+                                                <div class="mb-3 col-lg-6 s_website_form_field s_website_form_custom"
+                                                     data-type="char" data-name="Field">
+                                                    <label class="s_website_form_label" style="width: 200px"
+                                                           for="contact2">
                                                         <span class="s_website_form_label_content">Phone Number</span>
                                                     </label>
-                                                    <input id="contact2" type="tel" class="form-control s_website_form_input" name="phone" data-fill-with="phone"/>
+                                                    <input id="contact2" type="tel"
+                                                           class="form-control s_website_form_input" name="phone"
+                                                           data-fill-with="phone"/>
                                                 </div>
-                                                <div class="mb-3 col-lg-6 s_website_form_field s_website_form_required s_website_form_model_required" data-type="email" data-name="Field">
-                                                    <label class="s_website_form_label" style="width: 200px" for="contact3">
+                                                <div class="mb-3 col-lg-6 s_website_form_field s_website_form_required s_website_form_model_required"
+                                                     data-type="email" data-name="Field">
+                                                    <label class="s_website_form_label" style="width: 200px"
+                                                           for="contact3">
                                                         <span class="s_website_form_label_content">Email</span>
-                                                        <span class="s_website_form_mark"> *</span>
+                                                        <span class="s_website_form_mark">*</span>
                                                     </label>
-                                                    <input id="contact3" type="email" class="form-control s_website_form_input" name="email_from" required="" data-fill-with="email"/>
+                                                    <input id="contact3" type="email"
+                                                           class="form-control s_website_form_input" name="email_from"
+                                                           required="" data-fill-with="email"/>
                                                 </div>
-                                                <div class="mb-3 col-lg-6 s_website_form_field s_website_form_custom" data-type="char" data-name="Field">
-                                                    <label class="s_website_form_label" style="width: 200px" for="contact4">
+                                                <div class="mb-3 col-lg-6 s_website_form_field s_website_form_custom"
+                                                     data-type="char" data-name="Field">
+                                                    <label class="s_website_form_label" style="width: 200px"
+                                                           for="contact4">
                                                         <span class="s_website_form_label_content">Company</span>
                                                     </label>
-                                                    <input id="contact4" type="text" class="form-control s_website_form_input" name="company" data-fill-with="commercial_company_name"/>
+                                                    <input id="contact4" type="text"
+                                                           class="form-control s_website_form_input" name="company"
+                                                           data-fill-with="commercial_company_name"/>
                                                 </div>
-                                                <div class="mb-3 col-12 s_website_form_field s_website_form_required s_website_form_model_required" data-type="char" data-name="Field">
-                                                    <label class="s_website_form_label" style="width: 200px" for="contact5">
+                                                <div class="mb-3 col-12 s_website_form_field s_website_form_required s_website_form_model_required"
+                                                     data-type="char" data-name="Field">
+                                                    <label class="s_website_form_label" style="width: 200px"
+                                                           for="contact5">
                                                         <span class="s_website_form_label_content">Subject</span>
-                                                        <span class="s_website_form_mark"> *</span>
+                                                        <span class="s_website_form_mark">*</span>
                                                     </label>
-                                                    <input id="contact5" type="text" class="form-control s_website_form_input" name="subject" required=""/>
+                                                    <input id="contact5" type="text"
+                                                           class="form-control s_website_form_input" name="subject"
+                                                           required=""/>
                                                 </div>
-                                                <div class="mb-3 col-12 s_website_form_field s_website_form_custom s_website_form_required" data-type="text" data-name="Field">
-                                                    <label class="s_website_form_label" style="width: 200px" for="contact6">
+                                                <div class="mb-3 col-12 s_website_form_field s_website_form_custom s_website_form_required"
+                                                     data-type="text" data-name="Field">
+                                                    <label class="s_website_form_label" style="width: 200px"
+                                                           for="contact6">
                                                         <span class="s_website_form_label_content">Question</span>
-                                                        <span class="s_website_form_mark"> *</span>
+                                                        <span class="s_website_form_mark">*</span>
                                                     </label>
-                                                    <textarea id="contact6" class="form-control s_website_form_input" name="description" required="" rows="8"></textarea>
+                                                    <textarea id="contact6" class="form-control s_website_form_input"
+                                                              name="description" required="" rows="8"></textarea>
                                                 </div>
                                                 <div class="mb-3 col-12 s_website_form_field s_website_form_dnone">
                                                     <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                        <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="contact7">
+                                                        <label class="col-form-label col-sm-auto s_website_form_label"
+                                                               style="width: 200px" for="contact7">
                                                             <span class="s_website_form_label_content">Email To</span>
                                                         </label>
                                                         <div class="col-sm">
-                                                            <input id="contact7" type="hidden" class="form-control s_website_form_input" name="email_to"/>
+                                                            <input id="contact7" type="hidden"
+                                                                   class="form-control s_website_form_input"
+                                                                   name="email_to"/>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="mb-0 py-2 col-12 s_website_form_submit s_website_form_no_submit_label text-end" data-name="Submit Button">
+                                                <div class="mb-0 py-2 col-12 s_website_form_submit s_website_form_no_submit_label text-end"
+                                                     data-name="Submit Button">
                                                     <div style="width: 200px;" class="s_website_form_label"/>
-                                                    <a href="#" role="button" class="btn btn-primary s_website_form_send">Submit</a>
+                                                    <a href="#" role="button"
+                                                       class="btn btn-primary s_website_form_send">Submit
+                                                    </a>
                                                     <span id="s_website_form_result"></span>
                                                 </div>
                                             </div>
@@ -116,9 +151,18 @@
                             <div class="col-lg-4 offset-lg-1 mt-4 mt-lg-0">
                                 <h5>My Company</h5>
                                 <ul class="list-unstyled mb-0 ps-2">
-                                    <li><i class="fa fa-map-marker fa-fw me-2"/><span class="o_force_ltr">3575 Fake Buena Vista Avenue</span></li>
-                                    <li><i class="fa fa-phone fa-fw me-2"/><span class="o_force_ltr">+1 555-555-5556</span></li>
-                                    <li><i class="fa fa-1x fa-fw fa-envelope me-2"/><span>info@yourcompany.example.com</span></li>
+                                    <li>
+                                        <i class="fa fa-map-marker fa-fw me-2"/>
+                                        <span class="o_force_ltr">3575 Fake Buena Vista Avenue</span>
+                                    </li>
+                                    <li>
+                                        <i class="fa fa-phone fa-fw me-2"/>
+                                        <span class="o_force_ltr">+1 555-555-5556</span>
+                                    </li>
+                                    <li>
+                                        <i class="fa fa-1x fa-fw fa-envelope me-2"/>
+                                        <span>info@yourcompany.example.com</span>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
@@ -144,7 +188,8 @@
                                 <div class="row">
                                     <div class="col-lg-6 offset-lg-1 text-center">
                                         <div class="d-inline-block mx-auto p-4">
-                                            <i class="fa fa-paper-plane fa-2x mb-3 rounded-circle text-bg-success" role="presentation"/>
+                                            <i class="fa fa-paper-plane fa-2x mb-3 rounded-circle text-bg-success"
+                                               role="presentation"/>
                                             <h1 class="fw-bolder">Thank You!</h1>
                                             <p class="lead mb-0">Your message has been sent.</p>
                                             <p class="lead">We will get back to you shortly.</p>
@@ -154,16 +199,26 @@
                                     <div class="col-lg-4 offset-lg-1">
                                         <h5>My Company</h5>
                                         <ul class="list-unstyled mb-0 ps-2">
-                                            <li><i class="fa fa-map-marker fa-fw me-2"/><span class="o_force_ltr">3575 Fake Buena Vista Avenue</span></li>
-                                            <li><i class="fa fa-phone fa-fw me-2"/><span class="o_force_ltr">+1 555-555-5556</span></li>
-                                            <li><i class="fa fa-1x fa-fw fa-envelope me-2"/><span>info@yourcompany.example.com</span></li>
+                                            <li>
+                                                <i class="fa fa-map-marker fa-fw me-2"/>
+                                                <span class="o_force_ltr">3575 Fake Buena Vista Avenue</span>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-phone fa-fw me-2"/>
+                                                <span class="o_force_ltr">+1 555-555-5556</span>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-1x fa-fw fa-envelope me-2"/>
+                                                <span>info@yourcompany.example.com</span>
+                                            </li>
                                         </ul>
                                     </div>
                                 </div>
                             </div>
                         </section>
                     </div>
-                    <input t-if='website.plausible_shared_key' type='hidden' class='js_plausible_push' data-event-name='Lead Generation' data-event-params='{"CTA": "Contact Us"}' />
+                    <input t-if='website.plausible_shared_key' type='hidden' class='js_plausible_push'
+                           data-event-name='Lead Generation' data-event-params='{"CTA": "Contact Us"}'/>
                 </t>
             </t>
         </field>
@@ -177,18 +232,24 @@
                     <div class="container">
                         <h2 class="pt16">Cookie Policy</h2>
                         <p>
-                            Cookies are small bits of text sent by our servers to your computer or device when you access our services.
-                            They are stored in your browser and later sent back to our servers so that we can provide contextual content.
+                            Cookies are small bits of text sent by our servers to your computer or device when you
+                            access our services.
+                            They are stored in your browser and later sent back to our servers so that we can provide
+                            contextual content.
                             Without cookies, using the web would be a much more frustrating experience.
-                            We use them to support your activities on our website. For example, your session (so you don't have to login again) or your shopping cart.
+                            We use them to support your activities on our website. For example, your session (so you
+                            don't have to login again) or your shopping cart.
                             <br/>
-                            Cookies are also used to help us understand your preferences based on previous or current activity on our website (the pages you have
+                            Cookies are also used to help us understand your preferences based on previous or current
+                            activity on our website (the pages you have
                             visited), your language and country, which enables us to provide you with improved services.
-                            We also use cookies to help us compile aggregate data about site traffic and site interaction so that we can offer
+                            We also use cookies to help us compile aggregate data about site traffic and site
+                            interaction so that we can offer
                             better site experiences and tools in the future.
                         </p>
                         <p>
-                            Here is an overview of the cookies that may be stored on your device when you visit our website:
+                            Here is an overview of the cookies that may be stored on your device when you visit our
+                            website:
                         </p>
                         <div class="table-responsive">
                             <table class="small table table-bordered text-center">
@@ -202,82 +263,114 @@
                                 <tbody>
                                     <tr>
                                         <td>
-                                            <p>Session &amp; Security<br/>(essential)</p>
+                                            <p>Session &amp; Security<br/>(essential)
+                                            </p>
                                         </td>
                                         <td>
                                             <p>
-                                                Authenticate users, protect user data and allow the website to deliver the services users expects,
+                                                Authenticate users, protect user data and allow the website to deliver
+                                                the services users expects,
                                                 such as maintaining the content of their cart, or allowing file uploads.
                                             </p>
-                                            <p>The website will not work properly if you reject or discard those cookies.</p>
+                                            <p>The website will not work properly if you reject or discard those
+                                                cookies.
+                                            </p>
                                         </td>
                                         <td>
-                                            session_id (Odoo)<br/>
+                                            session_id (Odoo)
+                                            <br/>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>Preferences<br/>(essential)</p>
+                                            <p>Preferences<br/>(essential)
+                                            </p>
                                         </td>
                                         <td>
-                                            <p>Remember information about the preferred look or behavior of the website, such as your preferred language or region.</p>
-                                            <p>Your experience may be degraded if you discard those cookies, but the website will still work.</p>
+                                            <p>Remember information about the preferred look or behavior of the website,
+                                                such as your preferred language or region.
+                                            </p>
+                                            <p>Your experience may be degraded if you discard those cookies, but the
+                                                website will still work.
+                                            </p>
                                         </td>
                                         <td>
                                             frontend_lang (Odoo)
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td>Interaction History<br/>(optional)</td>
-                                        <td>
-                                            <p>
-                                                Used to collect information about your interactions with the website, the pages you've seen,
-                                                and any specific marketing campaign that brought you to the website.
-                                            </p>
-                                            <p>We may not be able to provide the best service to you if you reject those cookies, but the website will work.</p>
+                                        <td>Interaction History<br/>(optional)
                                         </td>
                                         <td>
-                                            im_livechat_previous_operator (Odoo)<br/>
-                                            utm_campaign (Odoo)<br/>
-                                            utm_source (Odoo)<br/>
+                                            <p>
+                                                Used to collect information about your interactions with the website,
+                                                the pages you've seen,
+                                                and any specific marketing campaign that brought you to the website.
+                                            </p>
+                                            <p>We may not be able to provide the best service to you if you reject those
+                                                cookies, but the website will work.
+                                            </p>
+                                        </td>
+                                        <td>
+                                            im_livechat_previous_operator (Odoo)
+                                            <br/>
+                                            utm_campaign (Odoo)
+                                            <br/>
+                                            utm_source (Odoo)
+                                            <br/>
                                             utm_medium (Odoo)
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>Advertising &amp; Marketing<br/>(optional)</p>
+                                            <p>Advertising &amp; Marketing<br/>(optional)
+                                            </p>
                                         </td>
                                         <td>
                                             <p>
-                                                Used to make advertising more engaging to users and more valuable to publishers and advertisers,
-                                                such as providing more relevant ads when you visit other websites that display ads or to improve reporting on ad campaign performance.
+                                                Used to make advertising more engaging to users and more valuable to
+                                                publishers and advertisers,
+                                                such as providing more relevant ads when you visit other websites that
+                                                display ads or to improve reporting on ad campaign performance.
                                             </p>
-                                            <p>Note that some third-party services may install additional cookies on your browser in order to identify you.</p>
+                                            <p>Note that some third-party services may install additional cookies on
+                                                your browser in order to identify you.
+                                            </p>
                                             <p>
-                                                You may opt-out of a third-party's use of cookies by visiting the <a href="https://optout.networkadvertising.org/?c=1" rel="nofollow">Network Advertising Initiative opt-out page</a>.
+                                                You may opt-out of a third-party's use of cookies by visiting the <a
+                                                    href="https://optout.networkadvertising.org/?c=1" rel="nofollow">
+                                                Network Advertising Initiative opt-out page</a>.
                                                 The website will still work if you reject or discard those cookies.
                                             </p>
                                         </td>
                                         <td>
-                                            __gads (Google)<br/>
+                                            __gads (Google)
+                                            <br/>
                                             __gac (Google)
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>Analytics<br/>(optional)</p>
+                                            <p>Analytics<br/>(optional)
+                                            </p>
                                         </td>
                                         <td>
                                             <p>
                                                 Understand how visitors engage with our website, via Google Analytics.
-                                                Learn more about <a href="https://developers.google.com/analytics/resources/concepts/gaConceptsCookies?hl=en">Analytics cookies and privacy information.</a>
+                                                Learn more about
+                                                <a href="https://developers.google.com/analytics/resources/concepts/gaConceptsCookies?hl=en">
+                                                    Analytics cookies and privacy information.
+                                                </a>
                                             </p>
                                             <p>The website will still work if you reject or discard those cookies.</p>
                                         </td>
                                         <td>
-                                            _ga (Google)<br/>
-                                            _gat (Google)<br/>
-                                            _gid (Google)<br/>
+                                            _ga (Google)
+                                            <br/>
+                                            _gat (Google)
+                                            <br/>
+                                            _gid (Google)
+                                            <br/>
                                             _gac_* (Google)
                                         </td>
                                     </tr>
@@ -285,10 +378,14 @@
                             </table>
                         </div>
                         <p>
-                            You can choose to have your computer warn you each time a cookie is being sent, or you can choose to turn off all cookies.
-                            Each browser is a little different, so look at your browser's Help menu to learn the correct way to modify your cookies.
+                            You can choose to have your computer warn you each time a cookie is being sent, or you can
+                            choose to turn off all cookies.
+                            Each browser is a little different, so look at your browser's Help menu to learn the correct
+                            way to modify your cookies.
                         </p>
-                        <p>We do not currently support Do Not Track signals, as there is no industry standard for compliance.</p>
+                        <p>We do not currently support Do Not Track signals, as there is no industry standard for
+                            compliance.
+                        </p>
                     </div>
                 </section>
             </div>
@@ -300,8 +397,10 @@
         <t t-call="website.layout">
             <div id="wrap">
                 <div class="oe_structure">
-                    <section class="s_title parallax s_parallax_is_fixed bg-black-50 pt24 pb24" data-vcss="001" data-snippet="s_title" data-scroll-background-ratio="1">
-                        <span class="s_parallax_bg oe_img_bg" style="background-image: url('/web/image/website.s_parallax_default_image'); background-position: 50% 0;"/>
+                    <section class="s_title parallax s_parallax_is_fixed bg-black-50 pt24 pb24" data-vcss="001"
+                             data-snippet="s_title" data-scroll-background-ratio="1">
+                        <span class="s_parallax_bg oe_img_bg"
+                              style="background-image: url('/web/image/website.s_parallax_default_image'); background-position: 50% 0;"/>
                         <div class="o_we_bg_filter bg-black-50"/>
                         <div class="container">
                             <h1>About us</h1>
@@ -316,8 +415,10 @@
         <t t-call="website.layout">
             <div id="wrap">
                 <div class="oe_structure">
-                    <section class="s_title parallax s_parallax_is_fixed bg-black-50 pt24 pb24" data-vcss="001" data-snippet="s_title" data-scroll-background-ratio="1">
-                        <span class="s_parallax_bg oe_img_bg" style="background-image: url('/web/image/website.s_parallax_default_image'); background-position: 50% 0;"/>
+                    <section class="s_title parallax s_parallax_is_fixed bg-black-50 pt24 pb24" data-vcss="001"
+                             data-snippet="s_title" data-scroll-background-ratio="1">
+                        <span class="s_parallax_bg oe_img_bg"
+                              style="background-image: url('/web/image/website.s_parallax_default_image'); background-position: 50% 0;"/>
                         <div class="o_we_bg_filter bg-black-50"/>
                         <div class="container">
                             <h1>Services</h1>
@@ -332,8 +433,10 @@
         <t t-call="website.layout">
             <div id="wrap">
                 <div class="oe_structure">
-                    <section class="s_title parallax s_parallax_is_fixed bg-black-50 pt24 pb24" data-vcss="001" data-snippet="s_title" data-scroll-background-ratio="1">
-                        <span class="s_parallax_bg oe_img_bg" style="background-image: url('/web/image/website.s_parallax_default_image'); background-position: 50% 0;"/>
+                    <section class="s_title parallax s_parallax_is_fixed bg-black-50 pt24 pb24" data-vcss="001"
+                             data-snippet="s_title" data-scroll-background-ratio="1">
+                        <span class="s_parallax_bg oe_img_bg"
+                              style="background-image: url('/web/image/website.s_parallax_default_image'); background-position: 50% 0;"/>
                         <div class="o_we_bg_filter bg-black-50"/>
                         <div class="container">
                             <h1>Pricing</h1>
@@ -348,8 +451,10 @@
         <t t-call="website.layout">
             <div id="wrap">
                 <div class="oe_structure">
-                    <section class="s_title parallax s_parallax_is_fixed bg-black-50 pt24 pb24" data-vcss="001" data-snippet="s_title" data-scroll-background-ratio="1">
-                        <span class="s_parallax_bg oe_img_bg" style="background-image: url('/web/image/website.s_parallax_default_image'); background-position: 50% 0;"/>
+                    <section class="s_title parallax s_parallax_is_fixed bg-black-50 pt24 pb24" data-vcss="001"
+                             data-snippet="s_title" data-scroll-background-ratio="1">
+                        <span class="s_parallax_bg oe_img_bg"
+                              style="background-image: url('/web/image/website.s_parallax_default_image'); background-position: 50% 0;"/>
                         <div class="o_we_bg_filter bg-black-50"/>
                         <div class="container">
                             <h1>Privacy Policy</h1>
@@ -504,8 +609,8 @@
 
         <!-- Default Menu to store module menus for new website -->
         <record id="main_menu" model="website.menu">
-          <field name="name">Default Main Menu</field>
-          <field name="url">/default-main-menu</field>
+            <field name="name">Default Main Menu</field>
+            <field name="url">/default-main-menu</field>
         </record>
         <record id="menu_home" model="website.menu">
             <field name="name">Home</field>

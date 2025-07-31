@@ -1,29 +1,37 @@
 # -*- coding: utf-8 -*-
 
-import qrcode
 import zipfile
 from io import BytesIO
 
+import qrcode
+from werkzeug.urls import url_unquote
+
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
-from odoo.tools.misc import split_every
 from odoo.osv.expression import AND
-from werkzeug.urls import url_unquote
+from odoo.tools.misc import split_every
 
 
 class ResConfigSettings(models.TransientModel):
     _inherit = "res.config.settings"
 
     pos_self_ordering_takeaway = fields.Boolean(related="pos_config_id.self_ordering_takeaway", readonly=False)
-    pos_self_ordering_service_mode = fields.Selection(related="pos_config_id.self_ordering_service_mode", readonly=False, required=True)
+    pos_self_ordering_service_mode = fields.Selection(related="pos_config_id.self_ordering_service_mode",
+                                                      readonly=False, required=True)
     pos_self_ordering_mode = fields.Selection(related="pos_config_id.self_ordering_mode", readonly=False, required=True)
-    pos_self_ordering_default_language_id = fields.Many2one(related="pos_config_id.self_ordering_default_language_id", readonly=False)
-    pos_self_ordering_available_language_ids = fields.Many2many(related="pos_config_id.self_ordering_available_language_ids", readonly=False)
-    pos_self_ordering_image_home_ids = fields.Many2many(related="pos_config_id.self_ordering_image_home_ids", readonly=False)
+    pos_self_ordering_default_language_id = fields.Many2one(related="pos_config_id.self_ordering_default_language_id",
+                                                            readonly=False)
+    pos_self_ordering_available_language_ids = fields.Many2many(
+        related="pos_config_id.self_ordering_available_language_ids", readonly=False)
+    pos_self_ordering_image_home_ids = fields.Many2many(related="pos_config_id.self_ordering_image_home_ids",
+                                                        readonly=False)
     pos_self_ordering_image_brand = fields.Image(related="pos_config_id.self_ordering_image_brand", readonly=False)
-    pos_self_ordering_image_brand_name = fields.Char(related="pos_config_id.self_ordering_image_brand_name", readonly=False)
-    pos_self_ordering_pay_after = fields.Selection(related="pos_config_id.self_ordering_pay_after", readonly=False, required=True)
-    pos_self_ordering_default_user_id = fields.Many2one(related="pos_config_id.self_ordering_default_user_id", readonly=False)
+    pos_self_ordering_image_brand_name = fields.Char(related="pos_config_id.self_ordering_image_brand_name",
+                                                     readonly=False)
+    pos_self_ordering_pay_after = fields.Selection(related="pos_config_id.self_ordering_pay_after", readonly=False,
+                                                   required=True)
+    pos_self_ordering_default_user_id = fields.Many2one(related="pos_config_id.self_ordering_default_user_id",
+                                                        readonly=False)
 
     @api.onchange("pos_self_ordering_default_user_id")
     def _onchange_default_user(self):
@@ -73,7 +81,8 @@ class ResConfigSettings(models.TransientModel):
         if self.pos_self_ordering_service_mode == 'counter' and self.pos_self_ordering_mode == 'mobile':
             self.pos_self_ordering_pay_after = "each"
 
-        if self.pos_self_ordering_mode not in ['nothing', 'consultation'] and self.pos_self_ordering_pay_after == "each" and not self.module_pos_preparation_display:
+        if self.pos_self_ordering_mode not in ['nothing',
+                                               'consultation'] and self.pos_self_ordering_pay_after == "each" and not self.module_pos_preparation_display:
             self.module_pos_preparation_display = True
 
     def custom_link_action(self):
@@ -110,7 +119,8 @@ class ResConfigSettings(models.TransientModel):
 
             for table in table_ids:
                 qr_images.append({
-                    'image': self._generate_single_qr_code(url_unquote(self.pos_config_id._get_self_order_url(table.id))),
+                    'image': self._generate_single_qr_code(
+                        url_unquote(self.pos_config_id._get_self_order_url(table.id))),
                     'name': f"{table.floor_id.name} - {table.table_number}",
                 })
         else:
@@ -197,5 +207,6 @@ class ResConfigSettings(models.TransientModel):
         for res_config in self:
             if res_config.pos_self_ordering_mode == 'kiosk':
                 currency_id = res_config.pos_journal_id.currency_id.id if res_config.pos_journal_id.currency_id else res_config.pos_config_id.company_id.currency_id.id
-                domain = AND([self.env['product.pricelist']._check_company_domain(res_config.pos_config_id.company_id), [('currency_id', '=', currency_id)]])
+                domain = AND([self.env['product.pricelist']._check_company_domain(res_config.pos_config_id.company_id),
+                              [('currency_id', '=', currency_id)]])
                 res_config.pos_available_pricelist_ids = self.env['product.pricelist'].search(domain)

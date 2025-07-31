@@ -15,8 +15,8 @@
                         <div class="o_row">
                             <field name="lot_qty"/>
                             <button name="action_generate_production_text"
-                                type="object" string="Generate"
-                                class="btn btn-secondary" title="Generate Serial Numbers"/>
+                                    type="object" string="Generate"
+                                    class="btn btn-secondary" title="Generate Serial Numbers"/>
                         </div>
                     </group>
                 </group>
@@ -34,7 +34,7 @@
                 <footer>
                     <button name="action_prepare" string="Prepare MO" type="object" class="btn-primary"/>
                     <button name="action_done" string="Produce" type="object" class="btn-primary"/>
-                    <button string="Discard" class="btn-secondary" special="cancel" />
+                    <button string="Discard" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>
         </field>

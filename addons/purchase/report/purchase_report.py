@@ -5,7 +5,7 @@
 # Please note that these reports are not multi-currency !!!
 #
 
-from odoo import fields, models, api
+from odoo import fields, models
 from odoo.tools.query import Query
 from odoo.tools.sql import SQL
 
@@ -32,7 +32,8 @@ class PurchaseReport(models.Model):
     company_id = fields.Many2one('res.company', 'Company', readonly=True)
     currency_id = fields.Many2one('res.currency', 'Currency', readonly=True)
     user_id = fields.Many2one('res.users', 'Buyer', readonly=True)
-    delay = fields.Float('Days to Confirm', digits=(16, 2), readonly=True, aggregator='avg', help="Amount of time between purchase approval and order by date.")
+    delay = fields.Float('Days to Confirm', digits=(16, 2), readonly=True, aggregator='avg',
+                         help="Amount of time between purchase approval and order by date.")
     delay_pass = fields.Float('Days to Receive', digits=(16, 2), readonly=True, aggregator='avg',
                               help="Amount of time between date planned and order by date for each purchase order line.")
     price_total = fields.Monetary('Total', readonly=True)

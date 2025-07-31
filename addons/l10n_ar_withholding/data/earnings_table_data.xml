@@ -1,7 +1,7 @@
 <odoo noupdate="1">
-<!--
-    Earnings regimenes according to scale:
--->
+    <!--
+        Earnings regimenes according to scale:
+    -->
 
     <record model="l10n_ar.earnings.scale" id="normal_scale">
         <field name="name">Normal Scale</field>
@@ -71,9 +71,9 @@
         <field name="excess_amount">96000</field>
     </record>
 
-<!--
-    Earnings regimenes according to scale: scale 119
--->
+    <!--
+        Earnings regimenes according to scale: scale 119
+    -->
 
 
     <record model="l10n_ar.earnings.scale" id="scale_119">

@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from traceback import format_exc
 import json
-import platform
 import logging
-from threading import Thread
+import platform
 import time
-import urllib3
+from threading import Thread
 
+import urllib3
 from odoo.addons.hw_drivers.tools import helpers
 from odoo.addons.hw_drivers.websocket_client import WebsocketClient
 
@@ -128,7 +127,8 @@ class Manager(Thread):
                 if iot_client:
                     iot_client.iot_channel = json.loads(resp.data).get('result', '')
             except json.decoder.JSONDecodeError:
-                _logger.exception('Could not load JSON data: Received data is not in valid JSON format\ncontent:\n%s', resp.data)
+                _logger.exception('Could not load JSON data: Received data is not in valid JSON format\ncontent:\n%s',
+                                  resp.data)
             except Exception:
                 _logger.exception('Could not reach configured server to send all IoT devices')
         else:
@@ -183,6 +183,7 @@ class Manager(Thread):
             except Exception:
                 # No matter what goes wrong, the Manager loop needs to keep running
                 _logger.exception("Manager loop unexpected error")
+
 
 # Must be started from main thread
 if DBusGMainLoop:

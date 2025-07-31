@@ -13,8 +13,8 @@ _logger = logging.getLogger(__name__)
 
 MANIFEST_KEYS = {
     'name', 'icon', 'addons_path', 'license',  # mandatory keys
-    *_DEFAULT_MANIFEST,                        # optional keys
-    'contributors', 'maintainer', 'url',       # unused "informative" keys
+    *_DEFAULT_MANIFEST,  # optional keys
+    'contributors', 'maintainer', 'url',  # unused "informative" keys
 }
 
 
@@ -44,7 +44,8 @@ class ManifestLinter(BaseCase):
     def _test_manifest_keys(self, module, manifest_data):
         manifest_keys = manifest_data.keys()
         unknown_keys = manifest_keys - MANIFEST_KEYS
-        self.assertEqual(unknown_keys, set(), f"Unknown manifest keys in module {module!r}. Either there are typos or they must be white listed.")
+        self.assertEqual(unknown_keys, set(),
+                         f"Unknown manifest keys in module {module!r}. Either there are typos or they must be white listed.")
 
     def _test_manifest_values(self, module, manifest_data):
         verified_keys = [
@@ -64,7 +65,7 @@ class ManifestLinter(BaseCase):
             if key in _DEFAULT_MANIFEST:
                 if key in verified_keys:
                     self.assertNotEqual(
-                       value,
+                        value,
                         _DEFAULT_MANIFEST[key],
                         f"Setting manifest key {key} to the default manifest value for module {module!r}. "
                         "You can remove this key from the dict to reduce noise/inconsistencies between manifests specifications"

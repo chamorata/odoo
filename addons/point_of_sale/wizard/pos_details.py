@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, fields, models, _
-from odoo.exceptions import UserError
+from odoo import api, fields, models
 
 
 class PosDetails(models.TransientModel):
@@ -30,7 +29,7 @@ class PosDetails(models.TransientModel):
     start_date = fields.Datetime(required=True, default=_default_start_date)
     end_date = fields.Datetime(required=True, default=fields.Datetime.now)
     pos_config_ids = fields.Many2many('pos.config', 'pos_detail_configs',
-        default=lambda s: s.env['pos.config'].search([]))
+                                      default=lambda s: s.env['pos.config'].search([]))
 
     @api.onchange('start_date')
     def _onchange_start_date(self):

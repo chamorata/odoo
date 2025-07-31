@@ -1,6 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.mail.tests import common
+
 from odoo.tests import new_test_user, tagged
 
 
@@ -16,13 +17,13 @@ class TestMailMessage(common.MailCommon):
         self.assertEqual(message.notification_ids.author_id, self.env.user.partner_id)
         self._reset_bus()
         with self.assertBus(
-            [
-                (self.cr.dbname, "res.partner", recipient.partner_id.id),
-                (self.cr.dbname, "res.partner", self.env.user.partner_id.id),
-            ],
-            [
-                {"type": "mail.message/delete", "payload": {"message_ids": [message.id]}},
-                {"type": "mail.message/delete", "payload": {"message_ids": [message.id]}},
-            ],
+                [
+                    (self.cr.dbname, "res.partner", recipient.partner_id.id),
+                    (self.cr.dbname, "res.partner", self.env.user.partner_id.id),
+                ],
+                [
+                    {"type": "mail.message/delete", "payload": {"message_ids": [message.id]}},
+                    {"type": "mail.message/delete", "payload": {"message_ids": [message.id]}},
+                ],
         ):
             message.unlink()

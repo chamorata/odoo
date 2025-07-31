@@ -1,5 +1,6 @@
-from odoo import Command
 from odoo.addons.point_of_sale.tests.test_frontend import TestPointOfSaleHttpCommon
+
+from odoo import Command
 from odoo.tests import tagged
 
 
@@ -72,7 +73,8 @@ class TestPosCashRounding(TestPointOfSaleHttpCommon):
             'only_round_cash_method': False,
         })
         with self.with_new_session(user=self.pos_user) as session:
-            self.start_pos_tour('test_cash_rounding_halfup_add_invoice_line_not_only_round_cash_method_pay_by_bank_and_cash')
+            self.start_pos_tour(
+                'test_cash_rounding_halfup_add_invoice_line_not_only_round_cash_method_pay_by_bank_and_cash')
             refund, order = self.env['pos.order'].search([('session_id', '=', session.id)], limit=2)
             self.assertRecordValues(order, [{
                 'amount_tax': 2.05,
@@ -134,7 +136,8 @@ class TestPosCashRounding(TestPointOfSaleHttpCommon):
             'only_round_cash_method': False,
         })
         with self.with_new_session(user=self.pos_user) as session:
-            self.start_pos_tour('test_cash_rounding_down_add_invoice_line_not_only_round_cash_method_with_residual_rounding')
+            self.start_pos_tour(
+                'test_cash_rounding_down_add_invoice_line_not_only_round_cash_method_with_residual_rounding')
             refund, order = self.env['pos.order'].search([('session_id', '=', session.id)], limit=2)
             self.assertRecordValues(order, [{
                 'amount_tax': 2.05,
@@ -225,7 +228,8 @@ class TestPosCashRounding(TestPointOfSaleHttpCommon):
             'only_round_cash_method': True,
         })
         with self.with_new_session(user=self.pos_user) as session:
-            self.start_pos_tour('test_cash_rounding_halfup_add_invoice_line_only_round_cash_method_pay_by_bank_and_cash')
+            self.start_pos_tour(
+                'test_cash_rounding_halfup_add_invoice_line_only_round_cash_method_pay_by_bank_and_cash')
             refund, order = self.env['pos.order'].search([('session_id', '=', session.id)], limit=2)
             self.assertRecordValues(order, [{
                 'amount_tax': 2.05,

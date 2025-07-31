@@ -14,8 +14,8 @@ class GamificationBadgeUser(models.Model):
     @api.constrains('employee_id')
     def _check_employee_related_user(self):
         for badge_user in self:
-            if badge_user.employee_id and badge_user.employee_id not in badge_user.user_id.\
-                with_context(allowed_company_ids=self.env.user.company_ids.ids).employee_ids:
+            if badge_user.employee_id and badge_user.employee_id not in badge_user.user_id. \
+                    with_context(allowed_company_ids=self.env.user.company_ids.ids).employee_ids:
                 raise ValidationError(_('The selected employee does not correspond to the selected user.'))
 
     def action_open_badge(self):
@@ -26,6 +26,7 @@ class GamificationBadgeUser(models.Model):
             'view_mode': 'form',
             'res_id': self.badge_id.id,
         }
+
 
 class GamificationBadge(models.Model):
     _inherit = 'gamification.badge'

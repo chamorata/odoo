@@ -67,7 +67,7 @@ class MailingTrace(models.Model):
         index='btree_not_null',
     )
     email = fields.Char(string="Email", help="Normalized email address")
-    message_id = fields.Char(string='Message-ID') # email Message-ID (RFC 2392)
+    message_id = fields.Char(string='Message-ID')  # email Message-ID (RFC 2392)
     medium_id = fields.Many2one(related='mass_mailing_id.medium_id')
     source_id = fields.Many2one(related='mass_mailing_id.source_id')
     # document
@@ -154,7 +154,8 @@ class MailingTrace(models.Model):
         open, click implies open. Let us avoid status override by skipping traces
         that are not already opened or replied. """
         traces = self + (self.search(domain) if domain else self.env['mailing.trace'])
-        traces.filtered(lambda t: t.trace_status not in ('open', 'reply')).write({'trace_status': 'open', 'open_datetime': fields.Datetime.now()})
+        traces.filtered(lambda t: t.trace_status not in ('open', 'reply')).write(
+            {'trace_status': 'open', 'open_datetime': fields.Datetime.now()})
         return traces
 
     def set_clicked(self, domain=None):

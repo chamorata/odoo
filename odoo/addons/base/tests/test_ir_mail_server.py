@@ -3,22 +3,21 @@
 
 import email.message
 import email.policy
-
 from unittest.mock import patch
 
 import psycopg2.errors
 
-from odoo import tools
 from odoo.addons.base.tests import test_mail_examples
 from odoo.addons.base.tests.common import MockSmtplibCase
 from odoo.tests import tagged, users
 from odoo.tests.common import TransactionCase
-from odoo.tools import mute_logger
 from odoo.tools import config
+from odoo.tools import mute_logger
 
 
 class _FakeSMTP:
     """SMTP stub"""
+
     def __init__(self):
         self.messages = []
         self.from_filter = 'example.com'
@@ -68,17 +67,19 @@ class TestIrMailServer(TransactionCase, MockSmtplibCase):
         msg['To'] = '"Joé Doe" <joe@example.com>'
 
         # Message-Id & References fields longer than 77 chars (bpo-35805)
-        msg['Message-Id'] = '<929227342217024.1596730490.324691772460938-example-30661-some.reference@test-123.example.com>'
-        msg['References'] = '<345227342212345.1596730777.324691772483620-example-30453-other.reference@test-123.example.com>'
+        msg[
+            'Message-Id'] = '<929227342217024.1596730490.324691772460938-example-30661-some.reference@test-123.example.com>'
+        msg[
+            'References'] = '<345227342212345.1596730777.324691772483620-example-30453-other.reference@test-123.example.com>'
 
         msg_on_the_wire = self._send_email(msg, fake_smtp)
         self.assertEqual(msg_on_the_wire,
-            'From: =?utf-8?q?Jo=C3=A9?= Doe <joe@example.com>\r\n'
-            'To: =?utf-8?q?Jo=C3=A9?= Doe <joe@example.com>\r\n'
-            'Message-Id: <929227342217024.1596730490.324691772460938-example-30661-some.reference@test-123.example.com>\r\n'
-            'References: <345227342212345.1596730777.324691772483620-example-30453-other.reference@test-123.example.com>\r\n'
-            '\r\n'
-        )
+                         'From: =?utf-8?q?Jo=C3=A9?= Doe <joe@example.com>\r\n'
+                         'To: =?utf-8?q?Jo=C3=A9?= Doe <joe@example.com>\r\n'
+                         'Message-Id: <929227342217024.1596730490.324691772460938-example-30661-some.reference@test-123.example.com>\r\n'
+                         'References: <345227342212345.1596730777.324691772483620-example-30453-other.reference@test-123.example.com>\r\n'
+                         '\r\n'
+                         )
 
     def test_content_alternative_correct_order(self):
         """
@@ -96,12 +97,12 @@ class TestIrMailServer(TransactionCase, MockSmtplibCase):
         msg_on_the_wire = self._send_email(msg, fake_smtp)
 
         self.assertGreater(msg_on_the_wire.index('text/html'), msg_on_the_wire.index('text/plain'),
-            "The html part should be preferred (=appear after) to the text part")
-        self.assertEqual(msg_on_the_wire.count('==============='), 2 + 2, # +2 for the header and the footer
-            "There should be 2 parts: one text and one html")
+                           "The html part should be preferred (=appear after) to the text part")
+        self.assertEqual(msg_on_the_wire.count('==============='), 2 + 2,  # +2 for the header and the footer
+                         "There should be 2 parts: one text and one html")
         self.assertEqual(msg_on_the_wire.count('MIME-Version: 1.0'), 3,
-            "There should be 3 headers MIME-Version: one on the enveloppe, "
-            "one on the html part, one on the text part")
+                         "There should be 3 headers MIME-Version: one on the enveloppe, "
+                         "one on the html part, one on the text part")
 
     def test_content_mail_body(self):
         bodies = [
@@ -158,20 +159,20 @@ class TestIrMailServer(TransactionCase, MockSmtplibCase):
             'smtp_encryption': 'none',
         })
         for from_filter, expected_test_email in zip(
-            [
-                'example_2.com, example_3.com',
-                'dummy.com, full_email@example_2.com, dummy2.com',
-                # fallback on user's email
-                ' ',
-                ',',
-                False,
-            ], [
-                'noreply@example_2.com',
-                'full_email@example_2.com',
-                self.env.user.email,
-                self.env.user.email,
-                self.env.user.email,
-            ],
+                [
+                    'example_2.com, example_3.com',
+                    'dummy.com, full_email@example_2.com, dummy2.com',
+                    # fallback on user's email
+                    ' ',
+                    ',',
+                    False,
+                ], [
+                    'noreply@example_2.com',
+                    'full_email@example_2.com',
+                    self.env.user.email,
+                    self.env.user.email,
+                    self.env.user.email,
+                ],
         ):
             with self.subTest(from_filter=from_filter):
                 test_server.from_filter = from_filter
@@ -201,7 +202,8 @@ class TestIrMailServer(TransactionCase, MockSmtplibCase):
             ('admin@mmail.example.com', 'mail.example.com'),
             ('admin@mail.example.com', 'mmail.example.com'),
             ('"admin@mail.example.com" <fake@test.mycompany.com>', 'mail.example.com'),
-            ('"fake@test.mycompany.com" <ADMIN@mail.example.com>', 'test.mycompany.com, wrong.mail.example.com, test3.com'),
+            ('"fake@test.mycompany.com" <ADMIN@mail.example.com>',
+             'test.mycompany.com, wrong.mail.example.com, test3.com'),
         ]
         for email, from_filter in tests:
             self.assertFalse(self.env['ir.mail_server']._match_from_filter(email, from_filter))
@@ -212,16 +214,16 @@ class TestIrMailServer(TransactionCase, MockSmtplibCase):
         simple Odoo DB so we have to spoof the FROM otherwise we cannot send
         any email. """
         for email_from, (expected_mail_server, expected_email_from) in zip(
-            [
-                'specific_user@test.mycompany.com',
-                'unknown_email@test.mycompany.com',
-                # no notification set, must be forced to spoof the FROM
-                '"Test" <test@unknown_domain.com>',
-            ], [
-                (self.mail_server_user, 'specific_user@test.mycompany.com'),
-                (self.mail_server_domain, 'unknown_email@test.mycompany.com'),
-                (self.mail_server_default, '"Test" <test@unknown_domain.com>'),
-            ],
+                [
+                    'specific_user@test.mycompany.com',
+                    'unknown_email@test.mycompany.com',
+                    # no notification set, must be forced to spoof the FROM
+                    '"Test" <test@unknown_domain.com>',
+                ], [
+                    (self.mail_server_user, 'specific_user@test.mycompany.com'),
+                    (self.mail_server_domain, 'unknown_email@test.mycompany.com'),
+                    (self.mail_server_default, '"Test" <test@unknown_domain.com>'),
+                ],
         ):
             with self.subTest(email_from=email_from):
                 mail_server, mail_from = self.env['ir.mail_server']._find_mail_server(email_from=email_from)
@@ -235,23 +237,24 @@ class TestIrMailServer(TransactionCase, MockSmtplibCase):
         IrMailServer = self.env['ir.mail_server']
 
         for mail_from, (expected_smtp_from, expected_msg_from, expected_mail_server) in zip(
-            [
-                'specific_user@test.mycompany.com',
-                '"Name" <test@unknown_domain.com>',
-                'test@unknown_domain.com',
-                '"Name" <unknown_name@test.mycompany.com>'
-            ], [
-                # A mail server is configured for the email
-                ('specific_user@test.mycompany.com', 'specific_user@test.mycompany.com', self.mail_server_user),
-                # No mail server are configured for the email address, so it will use the
-                # notifications email instead and encapsulate the old email
-                ('test@unknown_domain.com', '"Name" <test@unknown_domain.com>', self.mail_server_default),
-                # same situation, but the original email has no name part
-                ('test@unknown_domain.com', 'test@unknown_domain.com', self.mail_server_default),
-                # A mail server is configured for the entire domain name, so we can use the bounce
-                # email address because the mail server supports it
-                ('unknown_name@test.mycompany.com', '"Name" <unknown_name@test.mycompany.com>', self.mail_server_domain),
-            ]
+                [
+                    'specific_user@test.mycompany.com',
+                    '"Name" <test@unknown_domain.com>',
+                    'test@unknown_domain.com',
+                    '"Name" <unknown_name@test.mycompany.com>'
+                ], [
+                    # A mail server is configured for the email
+                    ('specific_user@test.mycompany.com', 'specific_user@test.mycompany.com', self.mail_server_user),
+                    # No mail server are configured for the email address, so it will use the
+                    # notifications email instead and encapsulate the old email
+                    ('test@unknown_domain.com', '"Name" <test@unknown_domain.com>', self.mail_server_default),
+                    # same situation, but the original email has no name part
+                    ('test@unknown_domain.com', 'test@unknown_domain.com', self.mail_server_default),
+                    # A mail server is configured for the entire domain name, so we can use the bounce
+                    # email address because the mail server supports it
+                    ('unknown_name@test.mycompany.com', '"Name" <unknown_name@test.mycompany.com>',
+                     self.mail_server_domain),
+                ]
         ):
             # test with and without providing an SMTP session, which should not impact test
             for provide_smtp in [False, True]:
@@ -377,25 +380,25 @@ class TestIrMailServer(TransactionCase, MockSmtplibCase):
         self.assertFalse(IrMailServer.search([]))
 
         for mail_from, (expected_smtp_from, expected_msg_from) in zip(
-            [
-                # inside "from_filter" domain
-                'specific_user@test.mycompany.com',
-                '"Formatted Name" <specific_user@test.mycompany.com>',
-                '"Formatted Name" <specific_user@test.MYCOMPANY.com>',
-                '"Formatted Name" <SPECIFIC_USER@test.mycompany.com>',
-                # outside "from_filter" domain
-                'test@unknown_domain.com',
-                '"Formatted Name" <test@unknown_domain.com>',
-            ], [
-                # inside "from_filter" domain: no rewriting
-                ('specific_user@test.mycompany.com', 'specific_user@test.mycompany.com'),
-                ('specific_user@test.mycompany.com', '"Formatted Name" <specific_user@test.mycompany.com>'),
-                ('specific_user@test.MYCOMPANY.com', '"Formatted Name" <specific_user@test.MYCOMPANY.com>'),
-                ('SPECIFIC_USER@test.mycompany.com', '"Formatted Name" <SPECIFIC_USER@test.mycompany.com>'),
-                # outside "from_filter" domain: spoofing, as fallback email can be found
-                ('test@unknown_domain.com', 'test@unknown_domain.com'),
-                ('test@unknown_domain.com', '"Formatted Name" <test@unknown_domain.com>'),
-            ]
+                [
+                    # inside "from_filter" domain
+                    'specific_user@test.mycompany.com',
+                    '"Formatted Name" <specific_user@test.mycompany.com>',
+                    '"Formatted Name" <specific_user@test.MYCOMPANY.com>',
+                    '"Formatted Name" <SPECIFIC_USER@test.mycompany.com>',
+                    # outside "from_filter" domain
+                    'test@unknown_domain.com',
+                    '"Formatted Name" <test@unknown_domain.com>',
+                ], [
+                    # inside "from_filter" domain: no rewriting
+                    ('specific_user@test.mycompany.com', 'specific_user@test.mycompany.com'),
+                    ('specific_user@test.mycompany.com', '"Formatted Name" <specific_user@test.mycompany.com>'),
+                    ('specific_user@test.MYCOMPANY.com', '"Formatted Name" <specific_user@test.MYCOMPANY.com>'),
+                    ('SPECIFIC_USER@test.mycompany.com', '"Formatted Name" <SPECIFIC_USER@test.mycompany.com>'),
+                    # outside "from_filter" domain: spoofing, as fallback email can be found
+                    ('test@unknown_domain.com', 'test@unknown_domain.com'),
+                    ('test@unknown_domain.com', '"Formatted Name" <test@unknown_domain.com>'),
+                ]
         ):
             for provide_smtp in [False, True]:  # providing smtp session should ont impact test
                 with self.subTest(mail_from=mail_from, provide_smtp=provide_smtp):
@@ -451,16 +454,16 @@ class TestIrMailServer(TransactionCase, MockSmtplibCase):
         }])
 
         for mail_from, (expected_smtp_from, expected_msg_from, expected_mail_server) in zip(
-            [
-                # check that the CLI server take the configuration in the odoo-bin argument
-                # except the from_filter which is taken on the mail server
-                'test@cli_example.com',
-                # other mail servers still work
-                'specific_user@test.mycompany.com',
-            ], [
-                ('test@cli_example.com', 'test@cli_example.com', server_other),
-                ('specific_user@test.mycompany.com', 'specific_user@test.mycompany.com', self.mail_server_user),
-            ],
+                [
+                    # check that the CLI server take the configuration in the odoo-bin argument
+                    # except the from_filter which is taken on the mail server
+                    'test@cli_example.com',
+                    # other mail servers still work
+                    'specific_user@test.mycompany.com',
+                ], [
+                    ('test@cli_example.com', 'test@cli_example.com', server_other),
+                    ('specific_user@test.mycompany.com', 'specific_user@test.mycompany.com', self.mail_server_user),
+                ],
         ):
             with self.subTest(mail_from=mail_from):
                 with self.mock_smtplib_connection():

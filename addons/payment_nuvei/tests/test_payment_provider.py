@@ -1,8 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.tests import tagged
-
 from odoo.addons.payment_nuvei.tests.common import NuveiCommon
+
+from odoo.tests import tagged
 
 
 @tagged('post_install', '-at_install')
@@ -45,4 +45,3 @@ class TestPaymentProvider(NuveiCommon):
         )
         received_signature = self.notification_data.get('advanceResponseChecksum')
         self.assertEqual(calculated_signature, received_signature)
-

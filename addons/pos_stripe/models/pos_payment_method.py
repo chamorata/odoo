@@ -13,7 +13,8 @@ class PosPaymentMethod(models.Model):
         return super()._get_payment_terminal_selection() + [('stripe', 'Stripe')]
 
     # Stripe
-    stripe_serial_number = fields.Char(help='[Serial number of the stripe terminal], for example: WSC513105011295', copy=False)
+    stripe_serial_number = fields.Char(help='[Serial number of the stripe terminal], for example: WSC513105011295',
+                                       copy=False)
 
     @api.model
     def _load_pos_data_fields(self, config_id):
@@ -31,7 +32,8 @@ class PosPaymentMethod(models.Model):
                                                   limit=1)
             if existing_payment_method:
                 raise ValidationError(_('Terminal %(terminal)s is already used on payment method %(payment_method)s.',
-                     terminal=payment_method.stripe_serial_number, payment_method=existing_payment_method.display_name))
+                                        terminal=payment_method.stripe_serial_number,
+                                        payment_method=existing_payment_method.display_name))
 
     def _get_stripe_payment_provider(self):
         stripe_payment_provider = self.env['payment.provider'].search([
@@ -58,12 +60,12 @@ class PosPaymentMethod(models.Model):
     def stripe_connection_token(self):
         if not self.env.user.has_group('point_of_sale.group_pos_user'):
             raise AccessError(_("Do not have access to fetch token from Stripe"))
-        
+
         return self.sudo()._get_stripe_payment_provider()._stripe_make_request('terminal/connection_tokens')
 
     def _stripe_calculate_amount(self, amount):
         currency = self.journal_id.currency_id or self.company_id.currency_id
-        return round(amount/currency.rounding)
+        return round(amount / currency.rounding)
 
     def stripe_payment_intent(self, amount):
         if not self.env.user.has_group('point_of_sale.group_pos_user'):

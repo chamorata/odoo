@@ -57,7 +57,7 @@ class SaleOrderTemplate(models.Model):
         help="If set, SO with this template will invoice in this journal; "
              "otherwise the sales journal with the lowest sequence is used.")
 
-    #=== COMPUTE METHODS ===#
+    # === COMPUTE METHODS ===#
 
     @api.depends('company_id')
     def _compute_require_signature(self):
@@ -73,10 +73,10 @@ class SaleOrderTemplate(models.Model):
     def _compute_prepayment_percent(self):
         for template in self:
             template.prepayment_percent = (
-                template.company_id or template.env.company
+                    template.company_id or template.env.company
             ).prepayment_percent
 
-    #=== ONCHANGE METHODS ===#
+    # === ONCHANGE METHODS ===#
 
     @api.onchange('prepayment_percent')
     def _onchange_prepayment_percent(self):
@@ -84,12 +84,13 @@ class SaleOrderTemplate(models.Model):
             if not template.prepayment_percent:
                 template.require_payment = False
 
-    #=== CONSTRAINT METHODS ===#
+    # === CONSTRAINT METHODS ===#
 
     @api.constrains('company_id', 'sale_order_template_line_ids', 'sale_order_template_option_ids')
     def _check_company_id(self):
         for template in self:
-            companies = template.mapped('sale_order_template_line_ids.product_id.company_id') | template.mapped('sale_order_template_option_ids.product_id.company_id')
+            companies = template.mapped('sale_order_template_line_ids.product_id.company_id') | template.mapped(
+                'sale_order_template_option_ids.product_id.company_id')
             if len(companies) > 1:
                 raise ValidationError(_("Your template cannot contain products from multiple companies."))
             elif companies and companies != template.company_id:
@@ -105,7 +106,7 @@ class SaleOrderTemplate(models.Model):
             if template.require_payment and not (0 < template.prepayment_percent <= 1.0):
                 raise ValidationError(_("Prepayment percentage must be a valid percentage."))
 
-    #=== CRUD METHODS ===#
+    # === CRUD METHODS ===#
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -126,10 +127,12 @@ class SaleOrderTemplate(models.Model):
         for lang in languages:
             for line in self.sale_order_template_line_ids:
                 if line.name == line.product_id.get_product_multiline_description_sale():
-                    line.with_context(lang=lang.code).name = line.product_id.with_context(lang=lang.code).get_product_multiline_description_sale()
+                    line.with_context(lang=lang.code).name = line.product_id.with_context(
+                        lang=lang.code).get_product_multiline_description_sale()
             for option in self.sale_order_template_option_ids:
                 if option.name == option.product_id.get_product_multiline_description_sale():
-                    option.with_context(lang=lang.code).name = option.product_id.with_context(lang=lang.code).get_product_multiline_description_sale()
+                    option.with_context(lang=lang.code).name = option.product_id.with_context(
+                        lang=lang.code).get_product_multiline_description_sale()
 
     @api.model
     def _demo_configure_template(self):

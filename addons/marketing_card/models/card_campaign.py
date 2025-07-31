@@ -1,9 +1,9 @@
 import base64
-import pytz
 from datetime import date, datetime
 
-from odoo import _, api, fields, models, exceptions
+import pytz
 
+from odoo import _, api, fields, models, exceptions
 from .card_template import TEMPLATE_DIMENSIONS
 
 
@@ -35,8 +35,10 @@ class CardCampaign(models.Model):
     mailing_count = fields.Integer(compute='_compute_mailing_count')
 
     card_ids = fields.One2many('card.card', inverse_name='campaign_id')
-    card_template_id = fields.Many2one('card.template', string="Design", default=_default_card_template_id, required=True)
-    image_preview = fields.Image(compute='_compute_image_preview', compute_sudo=False, readonly=True, store=True, attachment=False)
+    card_template_id = fields.Many2one('card.template', string="Design", default=_default_card_template_id,
+                                       required=True)
+    image_preview = fields.Image(compute='_compute_image_preview', compute_sudo=False, readonly=True, store=True,
+                                 attachment=False)
     link_tracker_id = fields.Many2one('link.tracker', ondelete="restrict")
     res_model = fields.Selection(
         string="Model Name", compute='_compute_res_model', selection='_get_model_selection',
@@ -49,7 +51,8 @@ class CardCampaign(models.Model):
     target_url = fields.Char(string='Post Link')
     target_url_click_count = fields.Integer(related="link_tracker_id.count")
 
-    user_id = fields.Many2one('res.users', string='Responsible', default=lambda self: self.env.user, domain="[('share', '=', False)]")
+    user_id = fields.Many2one('res.users', string='Responsible', default=lambda self: self.env.user,
+                              domain="[('share', '=', False)]")
 
     reward_message = fields.Html(string='Thank You Message')
     reward_target_url = fields.Char(string='Reward Link')
@@ -111,11 +114,13 @@ class CardCampaign(models.Model):
     @api.model
     def _get_render_fields(self):
         return [
-            'body_html', 'content_background', 'content_image1_path', 'content_image2_path', 'content_button', 'content_header',
+            'body_html', 'content_background', 'content_image1_path', 'content_image2_path', 'content_button',
+            'content_header',
             'content_header_dyn', 'content_header_path', 'content_header_color', 'content_sub_header',
             'content_sub_header_dyn', 'content_sub_header_path', 'content_section', 'content_section_dyn',
             'content_section_path', 'content_sub_section1', 'content_sub_section1_dyn', 'content_sub_header_color',
-            'content_sub_section1_path', 'content_sub_section2', 'content_sub_section2_dyn', 'content_sub_section2_path',
+            'content_sub_section1_path', 'content_sub_section2', 'content_sub_section2_dyn',
+            'content_sub_section2_path',
             'card_template_id',
         ]
 
@@ -376,8 +381,12 @@ class CardCampaign(models.Model):
         """Helper to get the right value for dynamic fields."""
         self.ensure_one()
         result = {
-            'image1': images[0] if (images := self.content_image1_path and self.content_image1_path in record and record.mapped(self.content_image1_path)) else False,
-            'image2': images[0] if (images := self.content_image2_path and self.content_image2_path in record and record.mapped(self.content_image2_path)) else False,
+            'image1': images[0] if (
+                images := self.content_image1_path and self.content_image1_path in record and record.mapped(
+                    self.content_image1_path)) else False,
+            'image2': images[0] if (
+                images := self.content_image2_path and self.content_image2_path in record and record.mapped(
+                    self.content_image2_path)) else False,
         }
         campaign_text_element_fields = (
             ('header', 'content_header', 'content_header_dyn', 'content_header_path'),
@@ -398,8 +407,8 @@ class CardCampaign(models.Model):
                     result[el] = self[path_field]
                 # force dates to their relevant timezone as that's what is usually wanted
                 if (
-                    isinstance(result[el], (date, datetime))
-                    and (tz := record._mail_get_timezone_with_default(default_tz=None))
+                        isinstance(result[el], (date, datetime))
+                        and (tz := record._mail_get_timezone_with_default(default_tz=None))
                 ):
                     result[el] = pytz.utc.localize(result[el]).astimezone(pytz.timezone(tz)).replace(tzinfo=None)
         return result

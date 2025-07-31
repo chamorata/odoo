@@ -223,7 +223,8 @@
                             </record>
                         </field>
                     </record>
-                    <record id="input_tax_carried_over" model="account.report.line">  <!-- todo this could be automated if we know where from -->
+                    <record id="input_tax_carried_over"
+                            model="account.report.line">  <!-- todo this could be automated if we know where from -->
                         <field name="name">36 Input Tax Carried Over from Previous Quarter</field>
                         <field name="code">36</field>
                         <field name="hierarchy_level">1</field>
@@ -236,7 +237,9 @@
                         </field>
                     </record>
                     <record id="input_tax_deferred" model="account.report.line">
-                        <field name="name">37 Input Tax Deferred on Capital Goods Exceeding P1 Million from Previous Quarter</field>
+                        <field name="name">37 Input Tax Deferred on Capital Goods Exceeding P1 Million from Previous
+                            Quarter
+                        </field>
                         <field name="code">37</field>
                         <field name="hierarchy_level">1</field>
                         <field name="expression_ids">
@@ -291,7 +294,8 @@
                             <record id="total_of_allowable_input_tax_balance" model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">aggregation</field>
-                                <field name="formula">36.balance + 37.balance + 38.balance + 39.balance + 40.balance</field>
+                                <field name="formula">36.balance + 37.balance + 38.balance + 39.balance + 40.balance
+                                </field>
                             </record>
                         </field>
                     </record>
@@ -342,7 +346,8 @@
                             <record id="domestic_purchase_balance" model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">aggregation</field>
-                                <field name="formula">42._vat_balance + 42._service_balance + 42._capital_balance</field>
+                                <field name="formula">42._vat_balance + 42._service_balance + 42._capital_balance
+                                </field>
                             </record>
                         </field>
                     </record>
@@ -441,7 +446,9 @@
                             <record id="total_current_tax_base" model="account.report.expression">
                                 <field name="label">tax_base</field>
                                 <field name="engine">aggregation</field>
-                                <field name="formula">42.tax_base + 43.tax_base + 44.tax_base + 45.tax_base + 46.tax_base + 47.tax_base</field>
+                                <field name="formula">42.tax_base + 43.tax_base + 44.tax_base + 45.tax_base +
+                                    46.tax_base + 47.tax_base
+                                </field>
                             </record>
                             <record id="total_current_tax_balance" model="account.report.expression">
                                 <field name="label">balance</field>
@@ -463,7 +470,9 @@
                         </field>
                     </record>
                     <record id="input_tax_exceeding_1_m" model="account.report.line">
-                        <field name="name">50 Input Tax on Purchases/Importation of Capital Goods exceeding P1 Million deferred for the succeeding period</field>
+                        <field name="name">50 Input Tax on Purchases/Importation of Capital Goods exceeding P1 Million
+                            deferred for the succeeding period
+                        </field>
                         <field name="code">50</field>
                         <field name="hierarchy_level">1</field>
                         <field name="expression_ids">

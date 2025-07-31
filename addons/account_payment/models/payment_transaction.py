@@ -15,7 +15,7 @@ class PaymentTransaction(models.Model):
         domain=[('move_type', 'in', ('out_invoice', 'out_refund', 'in_invoice', 'in_refund'))])
     invoices_count = fields.Integer(string="Invoices Count", compute='_compute_invoices_count')
 
-    #=== COMPUTE METHODS ===#
+    # === COMPUTE METHODS ===#
 
     @api.depends('invoice_ids')
     def _compute_invoices_count(self):
@@ -34,7 +34,7 @@ class PaymentTransaction(models.Model):
         for tx in self:
             tx.invoices_count = tx_data.get(tx.id, 0)
 
-    #=== ACTION METHODS ===#
+    # === ACTION METHODS ===#
 
     def action_view_invoices(self):
         """ Return the action for the views of the invoices linked to the transaction.
@@ -63,7 +63,7 @@ class PaymentTransaction(models.Model):
             action['domain'] = [('id', 'in', invoice_ids)]
         return action
 
-    #=== BUSINESS METHODS - PAYMENT FLOW ===#
+    # === BUSINESS METHODS - PAYMENT FLOW ===#
 
     @api.model
     def _compute_reference_prefix(self, provider_code, separator, **values):
@@ -94,7 +94,7 @@ class PaymentTransaction(models.Model):
                 return prefix
         return super()._compute_reference_prefix(provider_code, separator, **values)
 
-    #=== BUSINESS METHODS - POST-PROCESSING ===#
+    # === BUSINESS METHODS - POST-PROCESSING ===#
 
     def _post_process(self):
         """ Override of `payment` to add account-specific logic to the post-processing.
@@ -115,9 +115,9 @@ class PaymentTransaction(models.Model):
             # in payouts. As the reconciliation is done in the child transactions for partial voids
             # and captures, no payment is created for their source transactions either.
             if (
-                tx.operation != 'validation'
-                and not tx.payment_id
-                and not any(child.state in ['done', 'cancel'] for child in tx.child_transaction_ids)
+                    tx.operation != 'validation'
+                    and not tx.payment_id
+                    and not any(child.state in ['done', 'cancel'] for child in tx.child_transaction_ids)
             ):
                 tx.with_company(tx.company_id)._create_payment()
 
@@ -148,9 +148,9 @@ class PaymentTransaction(models.Model):
         reference = (f'{self.reference} - '
                      f'{self.partner_id.display_name or ""} - '
                      f'{self.provider_reference or ""}'
-                    )
+                     )
 
-        payment_method_line = self.provider_id.journal_id.inbound_payment_method_line_ids\
+        payment_method_line = self.provider_id.journal_id.inbound_payment_method_line_ids \
             .filtered(lambda l: l.payment_provider_id == self.provider_id)
         payment_values = {
             'amount': abs(self.amount),  # A tx may have a negative amount, but a payment must >= 0
@@ -181,7 +181,9 @@ class PaymentTransaction(models.Model):
                     'balance': -aml.balance,
                 })]
                 open_balance = next_payment_values['epd_discount_amount']
-                early_payment_values = self.env['account.move']._get_invoice_counterpart_amls_for_early_payment_discount(epd_aml_values_list, open_balance)
+                early_payment_values = self.env[
+                    'account.move']._get_invoice_counterpart_amls_for_early_payment_discount(epd_aml_values_list,
+                                                                                             open_balance)
                 for aml_values_list in early_payment_values.values():
                     if (aml_values_list):
                         aml_vl = aml_values_list[0]
@@ -210,12 +212,12 @@ class PaymentTransaction(models.Model):
 
             (payment.move_id.line_ids + invoices.line_ids).filtered(
                 lambda line: line.account_id == payment.destination_account_id
-                and not line.reconciled
+                             and not line.reconciled
             ).reconcile()
 
         return payment
 
-    #=== BUSINESS METHODS - LOGGING ===#
+    # === BUSINESS METHODS - LOGGING ===#
 
     def _log_message_on_linked_documents(self, message):
         """ Log a message on the payment and the invoices linked to the transaction.

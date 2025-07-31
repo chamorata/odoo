@@ -76,7 +76,7 @@ def urlopen(url):
         response = _urlopen(url)
         with open(file_path, 'wb') as fw:
             fw.write(response.read())
-    return open(file_path, 'rb')   # noqa: SIM115
+    return open(file_path, 'rb')  # noqa: SIM115
 
 
 def parse_version(vstring: str) -> Optional[Version]:
@@ -159,7 +159,8 @@ class PipPackage:
                 for release in rel:
                     if not release['filename'].endswith('.whl'):
                         continue
-                    if any(not s.isdigit() for s in rel_version.split('.')) or parse_version(rel_version) <= parse_version(version):
+                    if any(not s.isdigit() for s in rel_version.split('.')) or parse_version(
+                            rel_version) <= parse_version(version):
                         continue
                     is_candidate, _result = le.evaluate_link(Link(
                         comes_from=None,
@@ -169,7 +170,8 @@ class PipPackage:
                     ))
                     if is_candidate:
                         has_wheel_in_another_version = True
-                        stderr.write(f'WARNING: Wheel found for {self.name} ({python_version} {platform}) in {rel_version}\n')
+                        stderr.write(
+                            f'WARNING: Wheel found for {self.name} ({python_version} {platform}) in {rel_version}\n')
                         return (has_wheel_for_version, has_any_wheel, has_wheel_in_another_version)
 
         return (has_wheel_for_version, has_any_wheel, has_wheel_in_another_version)
@@ -234,6 +236,7 @@ class Debian(Distribution):
 class Ubuntu(Distribution):
     """ Ubuntu doesn't have an API, instead it has a huge text file
     """
+
     def __init__(self, release):
         super().__init__(release)
 
@@ -365,7 +368,8 @@ def main(args):
                     if platform_version == 'none':
                         deco = 'ok'
                     else:
-                        has_wheel_for_version, has_any_wheel, has_wheel_in_another_version = pip_infos.has_wheel_for(platform_version, pyver, platform)
+                        has_wheel_for_version, has_any_wheel, has_wheel_in_another_version = pip_infos.has_wheel_for(
+                            platform_version, pyver, platform)
                         if has_wheel_for_version:
                             deco = 'ok'
                         elif has_wheel_in_another_version:
@@ -462,7 +466,8 @@ def main(args):
             if output_format == 'html':
                 convert = ansitoimg.ansiToHTML
             with tempfile.NamedTemporaryFile() as tmp:
-                convert(output, tmp.name, width=(sum(sizes) + sum(len(sep) for sep in seps)), title='requirements-check.py')
+                convert(output, tmp.name, width=(sum(sizes) + sum(len(sep) for sep in seps)),
+                        title='requirements-check.py')
                 output = tmp.read().decode()
                 # remove mac like bullets
                 output = output.replace('''<g transform="translate(26,22)">

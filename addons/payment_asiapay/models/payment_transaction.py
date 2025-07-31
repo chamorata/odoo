@@ -2,15 +2,13 @@
 
 import logging
 
+from odoo.addons.payment import utils as payment_utils
+from odoo.addons.payment_asiapay import const
+from odoo.addons.payment_asiapay.controllers.main import AsiaPayController
 from werkzeug import urls
 
 from odoo import _, api, models
 from odoo.exceptions import ValidationError
-
-from odoo.addons.payment import utils as payment_utils
-from odoo.addons.payment_asiapay import const
-from odoo.addons.payment_asiapay.controllers.main import AsiaPayController
-
 
 _logger = logging.getLogger(__name__)
 
@@ -58,6 +56,7 @@ class PaymentTransaction(models.Model):
         :return: The dict of provider-specific processing values.
         :rtype: dict
         """
+
         def get_language_code(lang_):
             """ Return the language code corresponding to the provided lang.
 
@@ -164,7 +163,8 @@ class PaymentTransaction(models.Model):
         elif success_code in const.SUCCESS_CODE_MAPPING['error']:
             self._set_error(_(
                 "An error occurred during the processing of your payment (success code %(success_code)s; primary "
-                "response code %(response_code)s). Please try again.", success_code=success_code, response_code=primary_response_code,
+                "response code %(response_code)s). Please try again.", success_code=success_code,
+                response_code=primary_response_code,
             ))
         else:
             _logger.warning(

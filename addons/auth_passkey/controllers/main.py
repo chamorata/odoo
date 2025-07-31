@@ -1,7 +1,7 @@
-from odoo import http
-from odoo.http import request
 from odoo.addons.web.controllers.home import CREDENTIAL_PARAMS
 
+from odoo import http
+from odoo.http import request
 
 CREDENTIAL_PARAMS.append('webauthn_response')
 

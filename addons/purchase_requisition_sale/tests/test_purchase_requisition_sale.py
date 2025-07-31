@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.tests.common import TransactionCase
-from odoo.tests import Form
 from odoo import Command
+from odoo.tests import Form
+from odoo.tests.common import TransactionCase
 
 
 class TestPurchaseRequisitionSale(TransactionCase):
@@ -43,7 +43,8 @@ class TestPurchaseRequisitionSale(TransactionCase):
             ]
         })
         sale_order.action_confirm()
-        self.assertEqual(sale_order.purchase_order_count, 1, "A RFQ should be created, since `service_to_purchase` has been activated for this product")
+        self.assertEqual(sale_order.purchase_order_count, 1,
+                         "A RFQ should be created, since `service_to_purchase` has been activated for this product")
         purchase_order = sale_order._get_purchase_orders()
         self.assertEqual(len(purchase_order), 1, "There should be only one Purchase Order linked to this Sale Order")
 
@@ -60,5 +61,7 @@ class TestPurchaseRequisitionSale(TransactionCase):
         alt_po = purchase_order.alternative_po_ids.filtered(lambda po: po.id != purchase_order.id)
         linked_so = alt_po._get_sale_orders()
         self.assertEqual(len(linked_so), 1, "The Sale Order from the original Purchase Order should be linked")
-        self.assertEqual(linked_so.id, sale_order.id, "The Sale Order linked to the alternative PO must be the same as the original one")
-        self.assertEqual(sale_order.purchase_order_count, 2, "Both the original PO and the alternative one should be there")
+        self.assertEqual(linked_so.id, sale_order.id,
+                         "The Sale Order linked to the alternative PO must be the same as the original one")
+        self.assertEqual(sale_order.purchase_order_count, 2,
+                         "Both the original PO and the alternative one should be there")

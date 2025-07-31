@@ -5,6 +5,7 @@ import json
 from odoo.exceptions import UserError
 from odoo.http import Controller, request, Response, route
 
+
 class Profiling(Controller):
 
     @route('/web/set_profiling', type='http', auth='public', sitemap=False)
@@ -32,6 +33,7 @@ class Profiling(Controller):
         context = {
             'profile': profile,
             'url_root': request.httprequest.url_root,
-            'cdn': icp.sudo().get_param('speedscope_cdn', "https://cdn.jsdelivr.net/npm/speedscope@1.13.0/dist/release/")
+            'cdn': icp.sudo().get_param('speedscope_cdn',
+                                        "https://cdn.jsdelivr.net/npm/speedscope@1.13.0/dist/release/")
         }
         return request.render('web.view_speedscope_index', context)

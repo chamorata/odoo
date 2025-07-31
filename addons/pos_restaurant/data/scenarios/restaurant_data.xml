@@ -8,13 +8,13 @@
         <!-- Restaurant data scenario -->
         <record id="food" model="pos.category">
             <field name="name">Food</field>
-            <field name="image_128" type="base64" file="pos_restaurant/static/img/food_category.png" />
+            <field name="image_128" type="base64" file="pos_restaurant/static/img/food_category.png"/>
             <field name="sequence">9</field>
         </record>
 
         <record id="drinks" model="pos.category">
             <field name="name">Drinks</field>
-            <field name="image_128" type="base64" file="pos_restaurant/static/img/drink_category.png" />
+            <field name="image_128" type="base64" file="pos_restaurant/static/img/drink_category.png"/>
             <field name="sequence">10</field>
         </record>
 
@@ -28,7 +28,9 @@
             <field name="name">Bacon Burger</field>
             <field name="list_price">15.50</field>
             <field name="standard_price">13.95</field>
-            <field name="description_sale">200G Irish Black Angus beef, caramelized onions with paprika, chopped iceberg salad, red onions, grilled bacon, tomato sauce, pickles, barbecue sauce</field>
+            <field name="description_sale">200G Irish Black Angus beef, caramelized onions with paprika, chopped iceberg
+                salad, red onions, grilled bacon, tomato sauce, pickles, barbecue sauce
+            </field>
             <field name="type">consu</field>
             <field name="weight">0.01</field>
             <field name="uom_id" ref="uom.product_uom_unit"/>
@@ -36,7 +38,7 @@
             <field name="image_1920" type="base64" file="pos_restaurant/static/img/th-burger.png"/>
             <field name="available_in_pos" eval="True"/>
             <field name="categ_id" ref="product.product_category_1"/>
-            <field name="pos_categ_ids" eval="[(6, 0, [ref('food')])]" />
+            <field name="pos_categ_ids" eval="[(6, 0, [ref('food')])]"/>
         </record>
 
         <function model="ir.model.data" name="_update_xmlids">
@@ -44,7 +46,7 @@
                         'xml_id': 'pos_restaurant.product_bacon_burger_template',
                         'record': obj().env.ref('pos_restaurant.pos_food_bacon').product_tmpl_id,
                         'noupdate': True,
-                    }]" />
+                    }]"/>
         </function>
 
         <record model="product.attribute" id="product_sides_buns_pizza">
@@ -81,14 +83,17 @@
         <record model="product.template.attribute.line" id="product_attribute_line_bacon_sides">
             <field name="product_tmpl_id" ref="pos_restaurant.product_bacon_burger_template"/>
             <field name="attribute_id" ref="product_sides_buns_pizza"/>
-            <field name="value_ids" eval="[(6, 0, [ref('product_attribute_fries'), ref('product_attribute_sweet_potato'), ref('product_attribute_value_smashed_sweet_potatoes'), ref('product_attribute_value_potato_thyme'), ref('product_attribute_value_grilled_vegetables')])]" />
+            <field name="value_ids"
+                   eval="[(6, 0, [ref('product_attribute_fries'), ref('product_attribute_sweet_potato'), ref('product_attribute_value_smashed_sweet_potatoes'), ref('product_attribute_value_potato_thyme'), ref('product_attribute_value_grilled_vegetables')])]"/>
         </record>
 
         <record model="product.product" id="pos_food_cheeseburger">
             <field name="name">Cheese Burger</field>
             <field name="list_price">13.00</field>
             <field name="standard_price">11.7</field>
-            <field name="description_sale">200G Irish Black Angus beef, 9-month matured cheddar cheese, shredded iceberg lettuce, caramelised onions, crushed tomatoes and Chef’s sauce.</field>
+            <field name="description_sale">200G Irish Black Angus beef, 9-month matured cheddar cheese, shredded iceberg
+                lettuce, caramelised onions, crushed tomatoes and Chef’s sauce.
+            </field>
             <field name="type">consu</field>
             <field name="weight">0.01</field>
             <field name="uom_id" ref="uom.product_uom_unit"/>
@@ -96,7 +101,7 @@
             <field name="image_1920" type="base64" file="pos_restaurant/static/img/th-cheeseburger.png"/>
             <field name="available_in_pos" eval="True"/>
             <field name="categ_id" ref="product.product_category_1"/>
-            <field name="pos_categ_ids" eval="[(6, 0, [ref('food')])]" />
+            <field name="pos_categ_ids" eval="[(6, 0, [ref('food')])]"/>
         </record>
 
         <function model="ir.model.data" name="_update_xmlids">
@@ -104,20 +109,22 @@
                         'xml_id': 'pos_restaurant.product_cheese_burger_template',
                         'record': obj().env.ref('pos_restaurant.pos_food_cheeseburger').product_tmpl_id,
                         'noupdate': True,
-                    }]" />
+                    }]"/>
         </function>
 
         <record model="product.template.attribute.line" id="product_attribute_line_cheese_side">
             <field name="product_tmpl_id" ref="pos_restaurant.product_cheese_burger_template"/>
             <field name="attribute_id" ref="product_sides_buns_pizza"/>
-            <field name="value_ids" eval="[(6, 0, [ref('product_attribute_fries'), ref('product_attribute_sweet_potato'), ref('product_attribute_value_smashed_sweet_potatoes'), ref('product_attribute_value_potato_thyme'), ref('product_attribute_value_grilled_vegetables')])]" />
+            <field name="value_ids"
+                   eval="[(6, 0, [ref('product_attribute_fries'), ref('product_attribute_sweet_potato'), ref('product_attribute_value_smashed_sweet_potatoes'), ref('product_attribute_value_potato_thyme'), ref('product_attribute_value_grilled_vegetables')])]"/>
         </record>
 
         <record model="product.product" id="pos_food_margherita">
             <field name="name">Pizza Margherita</field>
             <field name="list_price">11.50</field>
             <field name="standard_price">10.35</field>
-            <field name="description_sale">Tomato sauce, Agerola mozzarella &quot;fior di latte&quot;, fresh basil</field>
+            <field name="description_sale">Tomato sauce, Agerola mozzarella &quot;fior di latte&quot;, fresh basil
+            </field>
             <field name="type">consu</field>
             <field name="weight">0.01</field>
             <field name="uom_id" ref="uom.product_uom_unit"/>
@@ -125,7 +132,7 @@
             <field name="image_1920" type="base64" file="pos_restaurant/static/img/th-pizza-ma.png"/>
             <field name="available_in_pos" eval="True"/>
             <field name="categ_id" ref="product.product_category_1"/>
-            <field name="pos_categ_ids" eval="[(6, 0, [ref('food')])]" />
+            <field name="pos_categ_ids" eval="[(6, 0, [ref('food')])]"/>
         </record>
 
         <function model="ir.model.data" name="_update_xmlids">
@@ -133,7 +140,7 @@
                         'xml_id': 'pos_restaurant.product_pizza_margherita_template',
                         'record': obj().env.ref('pos_restaurant.pos_food_margherita').product_tmpl_id,
                         'noupdate': True,
-                    }]" />
+                    }]"/>
         </function>
 
         <record model="product.attribute" id="product_extra_pizza">
@@ -170,7 +177,8 @@
         <record model="product.template.attribute.line" id="product_attribute_line_pizza_extra">
             <field name="product_tmpl_id" ref="pos_restaurant.product_pizza_margherita_template"/>
             <field name="attribute_id" ref="product_extra_pizza"/>
-            <field name="value_ids" eval="[(6, 0, [ref('product_attribute_value_peperoni'), ref('product_attribute_value_mushroom'), ref('product_attribute_value_black_olives'), ref('product_attribute_value_anchovy'), ref('product_attribute_value_extra_cheese')])]" />
+            <field name="value_ids"
+                   eval="[(6, 0, [ref('product_attribute_value_peperoni'), ref('product_attribute_value_mushroom'), ref('product_attribute_value_black_olives'), ref('product_attribute_value_anchovy'), ref('product_attribute_value_extra_cheese')])]"/>
         </record>
 
         <function model="ir.model.data" name="_update_xmlids">
@@ -231,7 +239,7 @@
             <field name="image_1920" type="base64" file="pos_restaurant/static/img/th-pizza-ve.png"/>
             <field name="available_in_pos" eval="True"/>
             <field name="categ_id" ref="product.product_category_1"/>
-            <field name="pos_categ_ids" eval="[(6, 0, [ref('food')])]" />
+            <field name="pos_categ_ids" eval="[(6, 0, [ref('food')])]"/>
         </record>
 
         <function model="ir.model.data" name="_update_xmlids">
@@ -239,13 +247,14 @@
                         'xml_id': 'pos_restaurant.product_pizza_vegetarian_template',
                         'record': obj().env.ref('pos_restaurant.pos_food_vege').product_tmpl_id,
                         'noupdate': True,
-                    }]" />
+                    }]"/>
         </function>
 
         <record model="product.template.attribute.line" id="product_attribute_line_pizza_vege_extra">
             <field name="product_tmpl_id" ref="pos_restaurant.product_pizza_vegetarian_template"/>
             <field name="attribute_id" ref="product_extra_pizza"/>
-            <field name="value_ids" eval="[(6, 0, [ref('product_attribute_value_peperoni'), ref('product_attribute_value_mushroom'), ref('product_attribute_value_black_olives'), ref('product_attribute_value_anchovy'), ref('product_attribute_value_extra_cheese')])]" />
+            <field name="value_ids"
+                   eval="[(6, 0, [ref('product_attribute_value_peperoni'), ref('product_attribute_value_mushroom'), ref('product_attribute_value_black_olives'), ref('product_attribute_value_anchovy'), ref('product_attribute_value_extra_cheese')])]"/>
         </record>
 
         <function model="ir.model.data" name="_update_xmlids">
@@ -306,7 +315,7 @@
             <field name="image_1920" type="base64" file="pos_restaurant/static/img/th-pasta-4f.png"/>
             <field name="available_in_pos" eval="True"/>
             <field name="categ_id" ref="product.product_category_1"/>
-            <field name="pos_categ_ids" eval="[(6, 0, [ref('food')])]" />
+            <field name="pos_categ_ids" eval="[(6, 0, [ref('food')])]"/>
         </record>
 
         <function model="ir.model.data" name="_update_xmlids">
@@ -314,7 +323,7 @@
                         'xml_id': 'pos_restaurant.product_pasta_4_formaggi_template',
                         'record': obj().env.ref('pos_restaurant.pos_food_4formaggi').product_tmpl_id,
                         'noupdate': True,
-                    }]" />
+                    }]"/>
         </function>
 
         <record model="product.attribute" id="product_extra_pasta">
@@ -336,7 +345,8 @@
         <record model="product.template.attribute.line" id="product_attribute_line_pasta_extra">
             <field name="product_tmpl_id" ref="pos_restaurant.product_pasta_4_formaggi_template"/>
             <field name="attribute_id" ref="product_extra_pasta"/>
-            <field name="value_ids" eval="[(6, 0, [ref('product_attribute_value_extra_cheese_pasta'), ref('product_attribute_value_mushroom_pasta')])]" />
+            <field name="value_ids"
+                   eval="[(6, 0, [ref('product_attribute_value_extra_cheese_pasta'), ref('product_attribute_value_mushroom_pasta')])]"/>
         </record>
 
         <function model="ir.model.data" name="_update_xmlids">
@@ -535,8 +545,8 @@
         <record id="burger_combo" model="product.combo">
             <field name="name">Burgers Choice</field>
             <field
-                name="combo_item_ids"
-                eval="[
+                    name="combo_item_ids"
+                    eval="[
                     Command.clear(),
                     Command.create({
                         'product_id': ref('pos_food_cheeseburger'),
@@ -553,8 +563,8 @@
         <record id="drink_combo" model="product.combo">
             <field name="name">Drinks choice</field>
             <field
-                name="combo_item_ids"
-                eval="[
+                    name="combo_item_ids"
+                    eval="[
                     Command.clear(),
                     Command.create({
                         'product_id': ref('coke'),

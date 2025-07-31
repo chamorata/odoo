@@ -170,7 +170,7 @@
             'web/static/src/core/**/*',
             'web/static/src/model/**/*',
             'web/static/src/search/**/*',
-            'web/static/src/webclient/icons.scss', # variables required in list_controller.scss
+            'web/static/src/webclient/icons.scss',  # variables required in list_controller.scss
             'web/static/src/views/**/*.js',
             'web/static/src/views/*.xml',
             'web/static/src/views/*.scss',
@@ -183,7 +183,7 @@
             'web/static/src/views/view_dialogs/**/*',
             'web/static/src/views/widgets/**/*',
             'web/static/src/webclient/**/*',
-            ('remove', 'web/static/src/webclient/clickbot/clickbot.js'), # lazy loaded
+            ('remove', 'web/static/src/webclient/clickbot/clickbot.js'),  # lazy loaded
             ('remove', 'web/static/src/views/form/button_box/*.scss'),
             ('remove', 'web/static/src/core/emoji_picker/emoji_data.js'),
 

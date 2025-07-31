@@ -3,10 +3,9 @@
 import hashlib
 import logging
 
-from odoo import fields, models
-
 from odoo.addons.payment_nuvei import const
 
+from odoo import fields, models
 
 _logger = logging.getLogger(__name__)
 

@@ -8,9 +8,10 @@ class CalendarProviderConfig(models.TransientModel):
     _name = 'calendar.popover.delete.wizard'
     _description = 'Calendar Popover Delete Wizard'
 
-
     record = fields.Many2one('calendar.event', 'Calendar Event')
-    delete = fields.Selection([('one', 'Delete this event'), ('next', 'Delete this and following events'), ('all', 'Delete all the events')], default='one')
+    delete = fields.Selection(
+        [('one', 'Delete this event'), ('next', 'Delete this and following events'), ('all', 'Delete all the events')],
+        default='one')
 
     def close(self):
         if not self.record or not self.delete:

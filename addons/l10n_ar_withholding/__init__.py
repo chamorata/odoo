@@ -1,10 +1,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+import logging
+
+from . import demo
 from . import models
 from . import wizards
-from . import demo
-
-import logging
 
 _logger = logging.getLogger(__name__)
 

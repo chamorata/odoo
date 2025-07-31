@@ -1,8 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from collections import defaultdict
+
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
-from collections import defaultdict
 
 
 class PurchaseRequisition(models.Model):
@@ -20,7 +21,7 @@ class PurchaseRequisition(models.Model):
     vendor_id = fields.Many2one('res.partner', string='Vendor', check_company=True)
     requisition_type = fields.Selection([
         ('blanket_order', 'Blanket Order'), ('purchase_template', 'Purchase Template')],
-         string='Agreement Type', required=True, default='blanket_order')
+        string='Agreement Type', required=True, default='blanket_order')
     date_start = fields.Date(string='Start Date', tracking=True)
     date_end = fields.Date(string='End Date', tracking=True)
     user_id = fields.Many2one(
@@ -54,7 +55,8 @@ class PurchaseRequisition(models.Model):
         ])
         if any(requisitions):
             title = _("Warning for %s", self.vendor_id.name)
-            message = _("There is already an open blanket order for this supplier. We suggest you complete this open blanket order, instead of creating a new one.")
+            message = _(
+                "There is already an open blanket order for this supplier. We suggest you complete this open blanket order, instead of creating a new one.")
             warning = {
                 'title': title,
                 'message': message
@@ -79,7 +81,8 @@ class PurchaseRequisition(models.Model):
         invalid_requsitions = self.filtered(lambda r: r.date_end and r.date_start and r.date_end < r.date_start)
         if invalid_requsitions:
             raise ValidationError(_(
-                "End date cannot be earlier than start date. Please check dates for agreements: %s", ', '.join(invalid_requsitions.mapped('name'))
+                "End date cannot be earlier than start date. Please check dates for agreements: %s",
+                ', '.join(invalid_requsitions.mapped('name'))
             ))
 
     @api.model_create_multi
@@ -89,17 +92,20 @@ class PurchaseRequisition(models.Model):
             requisition_type = vals.get('requisition_type', defaults['requisition_type'])
             company_id = vals.get('company_id', defaults['company_id'])
             if requisition_type == 'blanket_order':
-                vals['name'] = self.env['ir.sequence'].with_company(company_id).next_by_code('purchase.requisition.blanket.order')
+                vals['name'] = self.env['ir.sequence'].with_company(company_id).next_by_code(
+                    'purchase.requisition.blanket.order')
             else:
-                vals['name'] = self.env['ir.sequence'].with_company(company_id).next_by_code('purchase.requisition.purchase.template')
+                vals['name'] = self.env['ir.sequence'].with_company(company_id).next_by_code(
+                    'purchase.requisition.purchase.template')
         return super().create(vals_list)
 
     def write(self, vals):
         requisitions_to_rename = self.env['purchase.requisition']
         if 'requisition_type' in vals or 'company_id' in vals:
             requisitions_to_rename = self.filtered(lambda r:
-                r.requisition_type != vals.get('requisition_type', r.requisition_type) or
-                r.company_id.id != vals.get('company_id', r.company_id.id))
+                                                   r.requisition_type != vals.get('requisition_type',
+                                                                                  r.requisition_type) or
+                                                   r.company_id.id != vals.get('company_id', r.company_id.id))
         res = super().write(vals)
         for requisition in requisitions_to_rename:
             if requisition.state != 'draft':
@@ -128,7 +134,9 @@ class PurchaseRequisition(models.Model):
     def action_confirm(self):
         self.ensure_one()
         if not self.line_ids:
-            raise UserError(_("You cannot confirm agreement '%(agreement)s' because it does not contain any product lines.", agreement=self.name))
+            raise UserError(
+                _("You cannot confirm agreement '%(agreement)s' because it does not contain any product lines.",
+                  agreement=self.name))
         if self.requisition_type == 'blanket_order':
             for requisition_line in self.line_ids:
                 if requisition_line.price_unit <= 0.0:
@@ -146,9 +154,10 @@ class PurchaseRequisition(models.Model):
         """
         Generate all purchase order based on selected lines, should only be called on one agreement at a time
         """
-        if any(purchase_order.state in ['draft', 'sent', 'to approve'] for purchase_order in self.mapped('purchase_ids')):
+        if any(purchase_order.state in ['draft', 'sent', 'to approve'] for purchase_order in
+               self.mapped('purchase_ids')):
             raise UserError(_("To close this purchase requisition, cancel related Requests for Quotation.\n\n"
-                "Imagine the mess if someone confirms these duplicates: double the order, double the trouble :)"))
+                              "Imagine the mess if someone confirms these duplicates: double the order, double the trouble :)"))
         for requisition in self:
             for requisition_line in requisition.line_ids:
                 requisition_line.supplier_info_ids.sudo().unlink()
@@ -166,7 +175,8 @@ class PurchaseRequisitionLine(models.Model):
     _description = "Purchase Requisition Line"
     _rec_name = 'product_id'
 
-    product_id = fields.Many2one('product.product', string='Product', domain=[('purchase_ok', '=', True)], required=True)
+    product_id = fields.Many2one('product.product', string='Product', domain=[('purchase_ok', '=', True)],
+                                 required=True)
     product_uom_id = fields.Many2one(
         'uom.uom', 'Product Unit of Measure',
         compute='_compute_product_uom_id', store=True, readonly=False, precompute=True,
@@ -178,8 +188,10 @@ class PurchaseRequisitionLine(models.Model):
         string='Unit Price', digits='Product Price', default=0.0,
         compute="_compute_price_unit", readonly=False, store=True)
     qty_ordered = fields.Float(compute='_compute_ordered_qty', string='Ordered')
-    requisition_id = fields.Many2one('purchase.requisition', required=True, string='Purchase Agreement', ondelete='cascade')
-    company_id = fields.Many2one('res.company', related='requisition_id.company_id', string='Company', store=True, readonly=True)
+    requisition_id = fields.Many2one('purchase.requisition', required=True, string='Purchase Agreement',
+                                     ondelete='cascade')
+    company_id = fields.Many2one('res.company', related='requisition_id.company_id', string='Company', store=True,
+                                 readonly=True)
     supplier_info_ids = fields.One2many('product.supplierinfo', 'purchase_requisition_line_id')
 
     @api.depends('requisition_id.purchase_ids.state')
@@ -187,7 +199,8 @@ class PurchaseRequisitionLine(models.Model):
         line_found = defaultdict(set)
         for line in self:
             total = 0.0
-            for po in line.requisition_id.purchase_ids.filtered(lambda purchase_order: purchase_order.state in ['purchase', 'done']):
+            for po in line.requisition_id.purchase_ids.filtered(
+                    lambda purchase_order: purchase_order.state in ['purchase', 'done']):
                 for po_line in po.order_line.filtered(lambda order_line: order_line.product_id == line.product_id):
                     if po_line.product_uom != line.product_uom_id:
                         total += po_line.product_uom._compute_quantity(po_line.product_qty, line.product_uom_id)
@@ -204,7 +217,8 @@ class PurchaseRequisitionLine(models.Model):
         for line in self:
             line.product_uom_id = line.product_id.uom_id
 
-    @api.depends('product_id', 'company_id', 'requisition_id.date_start', 'product_qty', 'product_uom_id', 'requisition_id.vendor_id', 'requisition_id.requisition_type')
+    @api.depends('product_id', 'company_id', 'requisition_id.date_start', 'product_qty', 'product_uom_id',
+                 'requisition_id.vendor_id', 'requisition_id.requisition_type')
     def _compute_price_unit(self):
         for line in self:
             if line.requisition_id.state != 'draft' or line.requisition_id.requisition_type != 'purchase_template' or not line.requisition_id.vendor_id or not line.product_id:
@@ -218,9 +232,12 @@ class PurchaseRequisitionLine(models.Model):
     def create(self, vals_list):
         lines = super().create(vals_list)
         for line, vals in zip(lines, vals_list):
-            if line.requisition_id.requisition_type == 'blanket_order' and line.requisition_id.state not in ['draft', 'cancel', 'done']:
+            if line.requisition_id.requisition_type == 'blanket_order' and line.requisition_id.state not in ['draft',
+                                                                                                             'cancel',
+                                                                                                             'done']:
                 if vals['price_unit'] <= 0.0:
-                    raise UserError(_("You cannot have a negative or unit price of 0 for an already confirmed blanket order."))
+                    raise UserError(
+                        _("You cannot have a negative or unit price of 0 for an already confirmed blanket order."))
                 supplier_infos = self.env['product.supplierinfo'].search([
                     ('product_id', '=', vals.get('product_id')),
                     ('partner_id', '=', line.requisition_id.vendor_id.id),

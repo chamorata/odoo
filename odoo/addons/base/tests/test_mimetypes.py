@@ -62,6 +62,7 @@ TXT = b"""\
 Hello world!
 """
 
+
 class test_guess_mimetype(BaseCase):
 
     def test_default_mimetype_empty(self):
@@ -112,7 +113,6 @@ class test_guess_mimetype(BaseCase):
             mimetype = guess_mimetype(b"   " + content, default='test')
             self.assertNotIn("svg", mimetype)
 
-
     def test_mimetype_webp(self):
         content = base64.b64decode(WEBP)
         mimetype = guess_mimetype(content, default='test')
@@ -155,7 +155,7 @@ class test_guess_mimetype(BaseCase):
             self.assertEqual(fix('words.jpg', 'text/plain'), 'words.jpg.txt')
         self.assertEqual(capture.output, [
             "WARNING:odoo.tools.mimetypes:File 'image.txt' has an invalid "
-                "extension for mimetype 'image/jpeg', adding '.jpg'",
+            "extension for mimetype 'image/jpeg', adding '.jpg'",
             "WARNING:odoo.tools.mimetypes:File 'words.jpg' has an invalid "
-                "extension for mimetype 'text/plain', adding '.txt'",
+            "extension for mimetype 'text/plain', adding '.txt'",
         ])

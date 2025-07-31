@@ -1,4 +1,5 @@
 import json
+
 from odoo.tests.common import RecordCapturer, HttpCase
 
 
@@ -106,7 +107,7 @@ class TestPropertiesExportImport(HttpCase):
         )
         dict_fields = json.loads(res.content)['result']
         self.assertEqual(
-            [dict_field['id'] for dict_field in dict_fields], 
+            [dict_field['id'] for dict_field in dict_fields],
             [
                 'properties.bool_prop',
                 'id',
@@ -139,7 +140,7 @@ class TestPropertiesExportImport(HttpCase):
                 'properties.char_prop',
             ]
         )
-    
+
     def test_export_get_fields_inherits(self):
         self.authenticate('admin', 'admin')
 
@@ -158,7 +159,7 @@ class TestPropertiesExportImport(HttpCase):
         )
         dict_fields = json.loads(res.content)['result']
         self.assertEqual(
-            [dict_field['id'] for dict_field in dict_fields], 
+            [dict_field['id'] for dict_field in dict_fields],
             [
                 'properties.bool_prop',
                 'id',
@@ -198,7 +199,7 @@ class TestPropertiesExportImport(HttpCase):
         all_properties = [
             [f"properties.{property_dict_type['name']}"]
             for property_dict_type in self.definition_records[0].properties_definition
-            + self.definition_records[1].properties_definition
+                                      + self.definition_records[1].properties_definition
             if property_dict_type['type'] != 'separator'
         ]
         # Without import compatibility
@@ -274,7 +275,8 @@ class TestPropertiesExportImport(HttpCase):
             [
                 "Record Definition Id",
                 # Field of the first definition
-                f"TextType ({def_record_1.display_name})", f"One Selection ({def_record_1.display_name})", f"many2one ({def_record_1.display_name})",
+                f"TextType ({def_record_1.display_name})", f"One Selection ({def_record_1.display_name})",
+                f"many2one ({def_record_1.display_name})",
                 # Field of the second definition
                 f"CheckBox ({def_record_2.display_name})", "properties.tags_prop", f"M2M ({def_record_2.display_name})",
             ],
@@ -357,7 +359,8 @@ class TestPropertiesExportImport(HttpCase):
             [
                 "Id", "Record Definition Id",
                 # Field of the first definition
-                f"TextType ({def_record_1.display_name})", f"many2one ({def_record_1.display_name})", f"One Selection ({def_record_1.display_name})",
+                f"TextType ({def_record_1.display_name})", f"many2one ({def_record_1.display_name})",
+                f"One Selection ({def_record_1.display_name})",
                 # Field of the second definition
                 f"CheckBox ({def_record_2.display_name})", "properties.tags_prop", f"M2M ({def_record_2.display_name})",
             ],
@@ -430,7 +433,8 @@ class TestPropertiesExportImport(HttpCase):
         self.assertItemsEqual(results['messages'], [])
 
         self.assertEqual(records_created.mapped('properties'), [
-            {'char_prop': 'SSBIYXRlIHRoaXMgZmVhdHVyZQ==', 'selection_prop': 'selection_2', 'm2o_prop': self.partners[2].id},
+            {'char_prop': 'SSBIYXRlIHRoaXMgZmVhdHVyZQ==', 'selection_prop': 'selection_2',
+             'm2o_prop': self.partners[2].id},
             {'bool_prop': False, 'tags_prop': ['aa'], 'm2m_prop': self.partners[1].ids},
             {'char_prop': 'One Text', 'selection_prop': 'selection_1', 'm2o_prop': self.partners[1].id},
             {'bool_prop': True, 'tags_prop': ['bb'], 'm2m_prop': self.partners[1:].ids},

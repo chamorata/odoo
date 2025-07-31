@@ -44,9 +44,11 @@
                 <field name='internal_type'/>
                 <field name='country_id'/>
                 <filter name="active" string="Active" domain="[('active','=',True)]" help="Show active document types"/>
-                <filter name="inactive" string="Archived" domain="[('active','=',False)]" help="Show archived document types"/>
+                <filter name="inactive" string="Archived" domain="[('active','=',False)]"
+                        help="Show archived document types"/>
                 <group expand="1" string="Group By...">
-                    <filter string="Internal Type" name="group_by_internal_type" context="{'group_by':'internal_type'}"/>
+                    <filter string="Internal Type" name="group_by_internal_type"
+                            context="{'group_by':'internal_type'}"/>
                     <filter string="Localization" name="group_by_localization" context="{'group_by':'country_id'}"/>
                 </group>
             </search>
@@ -60,6 +62,7 @@
         <field name="context">{"search_default_active":1}</field>
     </record>
 
-    <menuitem action="action_document_type" id="menu_document_type" sequence="20" parent="account.account_account_menu"/>
+    <menuitem action="action_document_type" id="menu_document_type" sequence="20"
+              parent="account.account_account_menu"/>
 
 </odoo>

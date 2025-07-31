@@ -2,9 +2,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import platform
-from serial.tools.list_ports import comports
 
 from odoo.addons.hw_drivers.interface import Interface
+from serial.tools.list_ports import comports
 
 
 class SerialInterface(Interface):

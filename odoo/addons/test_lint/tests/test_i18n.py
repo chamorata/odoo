@@ -1,9 +1,8 @@
 import logging
 import re
 
-from . import lint_case
-
 from odoo import tools
+from . import lint_case
 
 _logger = logging.getLogger(__name__)
 

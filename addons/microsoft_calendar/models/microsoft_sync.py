@@ -3,23 +3,24 @@
 
 import logging
 from contextlib import contextmanager
+from datetime import timedelta
 from functools import wraps
+
 import pytz
 from dateutil.parser import parse
-from datetime import timedelta
+from odoo.addons.microsoft_account.models.microsoft_service import TIMEOUT
+from odoo.addons.microsoft_calendar.utils.microsoft_calendar import MicrosoftCalendarService
+from odoo.addons.microsoft_calendar.utils.microsoft_event import MicrosoftEvent
 
 from odoo import api, fields, models
 from odoo.modules.registry import Registry
 from odoo.osv import expression
 from odoo.sql_db import BaseCursor
 
-from odoo.addons.microsoft_calendar.utils.microsoft_event import MicrosoftEvent
-from odoo.addons.microsoft_calendar.utils.microsoft_calendar import MicrosoftCalendarService
-from odoo.addons.microsoft_account.models.microsoft_service import TIMEOUT
-
 _logger = logging.getLogger(__name__)
 
 MAX_RECURRENT_EVENT = 720
+
 
 # API requests are sent to Microsoft Calendar after the current transaction ends.
 # This ensures changes are sent to Microsoft only if they really happened in the Odoo database.
@@ -49,9 +50,11 @@ def after_commit(func):
 
     return wrapped
 
+
 @contextmanager
 def microsoft_calendar_token(user):
     yield user._get_microsoft_calendar_token()
+
 
 class MicrosoftSync(models.AbstractModel):
     _name = 'microsoft.calendar.sync'
@@ -169,7 +172,8 @@ class MicrosoftSync(models.AbstractModel):
         # --- create new recurrences and associated events ---
         for recurrent_master in recurrent_masters:
             new_calendar_recurrence = dict(
-                self.env['calendar.recurrence']._microsoft_to_odoo_values(recurrent_master, default_values, with_ids=True),
+                self.env['calendar.recurrence']._microsoft_to_odoo_values(recurrent_master, default_values,
+                                                                          with_ids=True),
                 need_sync_m=False
             )
             to_create = recurrents.filter(
@@ -185,15 +189,19 @@ class MicrosoftSync(models.AbstractModel):
                 to_create = list(to_create)[:MAX_RECURRENT_EVENT]
             for recurrent_event in to_create:
                 if recurrent_event.type == 'occurrence':
-                    value = self.env['calendar.event']._microsoft_to_odoo_recurrence_values(recurrent_event, base_values)
+                    value = self.env['calendar.event']._microsoft_to_odoo_recurrence_values(recurrent_event,
+                                                                                            base_values)
                 else:
                     value = self.env['calendar.event']._microsoft_to_odoo_values(recurrent_event, default_values)
 
                 to_create_values += [dict(value, need_sync_m=False)]
 
-            new_calendar_recurrence['calendar_event_ids'] = [(0, 0, to_create_value) for to_create_value in to_create_values]
-            new_recurrence_odoo = self.env['calendar.recurrence'].with_context(dont_notify=True).create(new_calendar_recurrence)
-            new_recurrence_odoo.base_event_id = new_recurrence_odoo.calendar_event_ids[0] if new_recurrence_odoo.calendar_event_ids else False
+            new_calendar_recurrence['calendar_event_ids'] = [(0, 0, to_create_value) for to_create_value in
+                                                             to_create_values]
+            new_recurrence_odoo = self.env['calendar.recurrence'].with_context(dont_notify=True).create(
+                new_calendar_recurrence)
+            new_recurrence_odoo.base_event_id = new_recurrence_odoo.calendar_event_ids[
+                0] if new_recurrence_odoo.calendar_event_ids else False
             new_recurrence |= new_recurrence_odoo
 
         # --- update events in existing recurrences ---
@@ -327,7 +335,8 @@ class MicrosoftSync(models.AbstractModel):
                 old_event_update_condition = True
                 if lower_bound_day_range:
                     update_time_diff = ms_event_updated_time - odoo_event_updated_time
-                    old_event_update_condition = odoo_event._check_old_event_update_required(int(lower_bound_day_range), update_time_diff)
+                    old_event_update_condition = odoo_event._check_old_event_update_required(int(lower_bound_day_range),
+                                                                                             update_time_diff)
 
                 if ms_event_updated_time >= odoo_event_updated_time and old_event_update_condition:
                     vals = dict(odoo_event._microsoft_to_odoo_values(mevent), need_sync_m=False)
@@ -444,7 +453,7 @@ class MicrosoftSync(models.AbstractModel):
 
     @api.model
     def _microsoft_to_odoo_values(
-        self, microsoft_event: MicrosoftEvent, default_reminders=(), default_values=None, with_ids=False
+            self, microsoft_event: MicrosoftEvent, default_reminders=(), default_values=None, with_ids=False
     ):
         """
         Implements this method to return a dict of Odoo values corresponding
@@ -501,7 +510,8 @@ class MicrosoftSync(models.AbstractModel):
         # Sync only events created/updated after last sync date (with 5 min of time acceptance).
         if self.env.user.microsoft_last_sync_date:
             time_offset = timedelta(minutes=5)
-            domain = expression.AND([domain, [('write_date', '>=', self.env.user.microsoft_last_sync_date - time_offset)]])
+            domain = expression.AND(
+                [domain, [('write_date', '>=', self.env.user.microsoft_last_sync_date - time_offset)]])
         return domain
 
     def _get_event_user_m(self, user_id=None):

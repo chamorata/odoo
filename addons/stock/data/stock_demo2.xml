@@ -312,15 +312,18 @@
 
         <!-- Adds move lines qty. done -->
         <function model="stock.move.line" name="write">
-            <value model="stock.move.line" search="[('picking_id', '=', ref('stock.outgoing_shipment_main_warehouse1'))]"/>
+            <value model="stock.move.line"
+                   search="[('picking_id', '=', ref('stock.outgoing_shipment_main_warehouse1'))]"/>
             <value eval="{'quantity': 100}"/>
         </function>
         <function model="stock.move.line" name="write">
-            <value model="stock.move.line" search="[('picking_id', '=', ref('stock.outgoing_shipment_main_warehouse5'))]"/>
+            <value model="stock.move.line"
+                   search="[('picking_id', '=', ref('stock.outgoing_shipment_main_warehouse5'))]"/>
             <value eval="{'quantity': 32}"/>
         </function>
         <function model="stock.move.line" name="write">
-            <value model="stock.move.line" search="[('picking_id', '=', ref('stock.outgoing_shipment_main_warehouse6'))]"/>
+            <value model="stock.move.line"
+                   search="[('picking_id', '=', ref('stock.outgoing_shipment_main_warehouse6'))]"/>
             <value eval="{'quantity': 50}"/>
         </function>
 

@@ -3,8 +3,9 @@
 
 from odoo.addons.sms.tests import common as sms_common
 from odoo.addons.test_mail.tests.test_performance import BaseMailPerformance
-from odoo.tests.common import users, warmup
+
 from odoo.tests import tagged
+from odoo.tests.common import users, warmup
 from odoo.tools import mute_logger
 
 
@@ -36,7 +37,8 @@ class TestSMSPerformance(BaseMailPerformance, sms_common.SMSCase):
     def test_message_sms_record_1_partner(self):
         record = self.test_record.with_user(self.env.user)
         pids = self.customer.ids
-        with self.subTest("QueryCount"), self.mockSMSGateway(sms_allow_unlink=True), self.assertQueryCount(employee=27):  # tms: 27
+        with self.subTest("QueryCount"), self.mockSMSGateway(sms_allow_unlink=True), self.assertQueryCount(
+                employee=27):  # tms: 27
             messages = record._message_sms(
                 body='Performance Test',
                 partner_ids=pids,
@@ -51,27 +53,31 @@ class TestSMSPerformance(BaseMailPerformance, sms_common.SMSCase):
     def test_message_sms_record_10_partners(self):
         record = self.test_record.with_user(self.env.user)
         pids = self.partners.ids
-        with self.subTest("QueryCount"), self.mockSMSGateway(sms_allow_unlink=True), self.assertQueryCount(employee=27):  # tms: 27
+        with self.subTest("QueryCount"), self.mockSMSGateway(sms_allow_unlink=True), self.assertQueryCount(
+                employee=27):  # tms: 27
             messages = record._message_sms(
                 body='Performance Test',
                 partner_ids=pids,
             )
 
         self.assertEqual(record.message_ids[0].body, '<p>Performance Test</p>')
-        self.assertSMSNotification([{'partner': partner} for partner in self.partners], 'Performance Test', messages, sent_unlink=True)
+        self.assertSMSNotification([{'partner': partner} for partner in self.partners], 'Performance Test', messages,
+                                   sent_unlink=True)
 
     @mute_logger('odoo.addons.sms.models.sms_sms')
     @users('employee')
     @warmup
     def test_message_sms_record_default(self):
         record = self.test_record.with_user(self.env.user)
-        with self.subTest("QueryCount"), self.mockSMSGateway(sms_allow_unlink=True), self.assertQueryCount(employee=28):  # tms: 28
+        with self.subTest("QueryCount"), self.mockSMSGateway(sms_allow_unlink=True), self.assertQueryCount(
+                employee=28):  # tms: 28
             messages = record._message_sms(
                 body='Performance Test',
             )
 
         self.assertEqual(record.message_ids[0].body, '<p>Performance Test</p>')
-        self.assertSMSNotification([{'number': '+32456999999', 'partner': self.customer}], 'Performance Test', messages, sent_unlink=True)
+        self.assertSMSNotification([{'number': '+32456999999', 'partner': self.customer}], 'Performance Test', messages,
+                                   sent_unlink=True)
 
 
 @tagged('mail_performance', 'post_install', '-at_install')

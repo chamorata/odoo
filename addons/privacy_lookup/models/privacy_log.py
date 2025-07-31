@@ -37,11 +37,13 @@ class PrivacyLog(models.Model):
     def _anonymize_email(self, label):
         def _anonymize_user(label):
             return '.'.join(e[0] + '*' * (len(e) - 1) for e in label.split('.') if e)
+
         def _anonymize_domain(label):
             if label in ['gmail.com', 'hotmail.com', 'yahoo.com']:  # More than half of addresses domains
                 return label
             split_domain = label.split('.')
             return '.'.join([e[0] + '*' * (len(e) - 1) for e in split_domain[:-1] if e] + [split_domain[-1]])
+
         if not label or '@' not in label:
             return UserError(_('This email address is not valid (%s)', label))
         user, domain = label.split('@')

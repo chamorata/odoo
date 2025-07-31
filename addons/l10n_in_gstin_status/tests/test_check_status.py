@@ -1,11 +1,12 @@
-from unittest.mock import patch
-from freezegun import freeze_time
-
-from odoo.addons.l10n_in.models.iap_account import IapAccount
-from odoo.tests.common import TransactionCase, tagged
-from odoo.exceptions import UserError
-from odoo.tools import mute_logger
 from datetime import date
+from unittest.mock import patch
+
+from freezegun import freeze_time
+from odoo.addons.l10n_in.models.iap_account import IapAccount
+
+from odoo.exceptions import UserError
+from odoo.tests.common import TransactionCase, tagged
+from odoo.tools import mute_logger
 
 
 @tagged('post_install_l10n', 'post_install', '-at_install')

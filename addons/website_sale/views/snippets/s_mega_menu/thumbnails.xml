@@ -2,16 +2,16 @@
 <odoo>
 
     <template
-        id="website_sale.s_mega_menu_thumbnails"
-        name="eCommerce: Menu - Thumbnails"
-        groups="base.group_user"
+            id="website_sale.s_mega_menu_thumbnails"
+            name="eCommerce: Menu - Thumbnails"
+            groups="base.group_user"
     >
         <section class="s_mega_menu_thumbnails pt24 o_colored_level o_cc o_cc1">
             <div class="container">
                 <div class="row ustify-content-center">
                     <t
-                        t-set="categories"
-                        t-value="request.env['product.public.category'].search([
+                            t-set="categories"
+                            t-value="request.env['product.public.category'].search([
                             ('parent_id', '=', False)
                         ])[:10]"
                     />
@@ -23,14 +23,14 @@
                         </t>
                         <div class="col-6 col-lg-2 text-center py-2">
                             <a
-                                t-att-href="'/shop/category/%s' % category.id"
-                                class="nav-link o_default_snippet_text p-0"
+                                    t-att-href="'/shop/category/%s' % category.id"
+                                    class="nav-link o_default_snippet_text p-0"
                             >
                                 <img
-                                    t-if="category.image_1920"
-                                    t-att-src="image_data_uri(category.image_1920)"
-                                    class="img-fluid rounded shadow"
-                                    alt=""
+                                        t-if="category.image_1920"
+                                        t-att-src="image_data_uri(category.image_1920)"
+                                        class="img-fluid rounded shadow"
+                                        alt=""
                                 />
                                 <br/>
                                 <span class="d-block p-2 small">

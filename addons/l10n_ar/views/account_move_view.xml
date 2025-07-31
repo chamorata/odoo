@@ -10,7 +10,8 @@
                 <field name="l10n_ar_afip_responsibility_type_id"/>
             </field>
             <group>
-                <filter string="AFIP Responsibility Type" domain="[]" name="l10n_ar_afip_responsibility_type_id_filter" context="{'group_by':'l10n_ar_afip_responsibility_type_id'}"/>
+                <filter string="AFIP Responsibility Type" domain="[]" name="l10n_ar_afip_responsibility_type_id_filter"
+                        context="{'group_by':'l10n_ar_afip_responsibility_type_id'}"/>
             </group>
         </field>
     </record>
@@ -23,9 +24,13 @@
         <field name="arch" type="xml">
             <group name="sale_info_group" position="inside">
                 <field name='l10n_ar_afip_concept' invisible="not l10n_latam_use_documents or country_code != 'AR'"/>
-                <label for="l10n_ar_afip_service_start" invisible="l10n_ar_afip_concept not in ('2', '3', '4') or country_code != 'AR'" string="Service Date"/>
+                <label for="l10n_ar_afip_service_start"
+                       invisible="l10n_ar_afip_concept not in ('2', '3', '4') or country_code != 'AR'"
+                       string="Service Date"/>
                 <div invisible="l10n_ar_afip_concept not in ('2', '3', '4') or country_code != 'AR'">
-                    <field name="l10n_ar_afip_service_start" class="oe_inline" readonly="state != 'draft'"/> to <field name="l10n_ar_afip_service_end" class="oe_inline" readonly="state != 'draft'"/>
+                    <field name="l10n_ar_afip_service_start" class="oe_inline" readonly="state != 'draft'"/>
+                    to
+                    <field name="l10n_ar_afip_service_end" class="oe_inline" readonly="state != 'draft'"/>
                 </div>
             </group>
         </field>

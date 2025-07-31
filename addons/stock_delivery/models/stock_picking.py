@@ -1,8 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from datetime import date
-from markupsafe import Markup
 import json
+from datetime import date
+
+from markupsafe import Markup
 
 from odoo import _, api, fields, models, SUPERUSER_ID
 from odoo.exceptions import UserError
@@ -21,10 +22,12 @@ class StockPicking(models.Model):
     carrier_price = fields.Float(string="Shipping Cost")
     delivery_type = fields.Selection(related='carrier_id.delivery_type', readonly=True)
     carrier_id = fields.Many2one("delivery.carrier", string="Carrier", check_company=True)
-    weight = fields.Float(compute='_cal_weight', digits='Stock Weight', store=True, help="Total weight of the products in the picking.", compute_sudo=True)
+    weight = fields.Float(compute='_cal_weight', digits='Stock Weight', store=True,
+                          help="Total weight of the products in the picking.", compute_sudo=True)
     carrier_tracking_ref = fields.Char(string='Tracking Reference', copy=False)
     carrier_tracking_url = fields.Char(string='Tracking URL', compute='_compute_carrier_tracking_url')
-    weight_uom_name = fields.Char(string='Weight unit of measure label', compute='_compute_weight_uom_name', readonly=True, default=_get_default_weight_uom)
+    weight_uom_name = fields.Char(string='Weight unit of measure label', compute='_compute_weight_uom_name',
+                                  readonly=True, default=_get_default_weight_uom)
     is_return_picking = fields.Boolean(compute='_compute_return_picking')
     return_label_ids = fields.One2many('ir.attachment', compute='_compute_return_label')
     destination_country_code = fields.Char(related='partner_id.country_id.code', string="Destination Country")
@@ -32,7 +35,8 @@ class StockPicking(models.Model):
     @api.depends('carrier_id', 'carrier_tracking_ref')
     def _compute_carrier_tracking_url(self):
         for picking in self:
-            picking.carrier_tracking_url = picking.carrier_id.get_tracking_link(picking) if picking.carrier_id and picking.carrier_tracking_ref else False
+            picking.carrier_tracking_url = picking.carrier_id.get_tracking_link(
+                picking) if picking.carrier_id and picking.carrier_tracking_ref else False
 
     @api.depends('carrier_id', 'move_ids_without_package')
     def _compute_return_picking(self):
@@ -45,7 +49,9 @@ class StockPicking(models.Model):
     def _compute_return_label(self):
         for picking in self:
             if picking.carrier_id:
-                picking.return_label_ids = self.env['ir.attachment'].search([('res_model', '=', 'stock.picking'), ('res_id', '=', picking.id), ('name', '=like', '%s%%' % picking.carrier_id.get_return_label_prefix())])
+                picking.return_label_ids = self.env['ir.attachment'].search(
+                    [('res_model', '=', 'stock.picking'), ('res_id', '=', picking.id),
+                     ('name', '=like', '%s%%' % picking.carrier_id.get_return_label_prefix())])
             else:
                 picking.return_label_ids = False
 
@@ -66,7 +72,10 @@ class StockPicking(models.Model):
         line_1 = _("Exception occurred with respect to carrier on the transfer")
         line_2 = _("Manual actions might be needed.")
         line_3 = _("Exception:")
-        return Markup('<div> {line_1} <a href="#" data-oe-model="stock.picking" data-oe-id="{picking_id}"> {picking_name}</a>. {line_2}<div class="mt16"><p>{line_3} {exception}</p></div></div>').format(line_1=line_1, line_2=line_2, line_3=line_3, picking_id=self.id, picking_name=self.name, exception=exception)
+        return Markup(
+            '<div> {line_1} <a href="#" data-oe-model="stock.picking" data-oe-id="{picking_id}"> {picking_name}</a>. {line_2}<div class="mt16"><p>{line_3} {exception}</p></div></div>').format(
+            line_1=line_1, line_2=line_2, line_3=line_3, picking_id=self.id, picking_name=self.name,
+            exception=exception)
 
     def _send_confirmation_email(self):
         # The carrier's API processes validity checks and parcels generation one picking at a time.
@@ -93,7 +102,7 @@ class StockPicking(models.Model):
                         date.today(),
                         note=pick._carrier_exception_note(exception_message),
                         user_id=pick.user_id.id or self.env.user.id or SUPERUSER_ID,
-                        )
+                    )
                 else:
                     raise e
 
@@ -105,7 +114,8 @@ class StockPicking(models.Model):
             if move_line_ids.carrier_id:
                 if len(move_line_ids.carrier_id) > 1 or any(not ml.carrier_id for ml in move_line_ids):
                     # avoid (duplicate) costs for products
-                    raise UserError(_("You cannot pack products into the same package when they have different carriers (i.e. check that all of their transfers have a carrier assigned and are using the same carrier)."))
+                    raise UserError(
+                        _("You cannot pack products into the same package when they have different carriers (i.e. check that all of their transfers have a carrier assigned and are using the same carrier)."))
                 return self._set_delivery_package_type(batch_pack=len(move_line_ids.picking_id) > 1)
         else:
             return res
@@ -125,7 +135,7 @@ class StockPicking(models.Model):
         # As we pass the `delivery_type` ('fixed' or 'base_on_rule' by default) in a key who
         # correspond to the `package_carrier_type` ('none' to default), we make a conversion.
         # No need conversion for other carriers as the `delivery_type` and
-        #`package_carrier_type` will be the same in these cases.
+        # `package_carrier_type` will be the same in these cases.
         if context['current_package_carrier_type'] in ['fixed', 'base_on_rule']:
             context['current_package_carrier_type'] = 'none'
         # Update the context 'default_package_type_id' passed from JS
@@ -148,11 +158,13 @@ class StockPicking(models.Model):
         res = self.carrier_id.send_shipping(self)[0]
         if self.carrier_id.free_over and self.sale_id:
             amount_without_delivery = self.sale_id._compute_amount_total_without_delivery()
-            if self.carrier_id._compute_currency(self.sale_id, amount_without_delivery, 'pricelist_to_company') >= self.carrier_id.amount:
+            if self.carrier_id._compute_currency(self.sale_id, amount_without_delivery,
+                                                 'pricelist_to_company') >= self.carrier_id.amount:
                 res['exact_price'] = 0.0
         self.carrier_price = self.carrier_id.with_context(order=self.sale_id)._apply_margins(res['exact_price'])
         if res['tracking_number']:
-            related_pickings = self.env['stock.picking'] if self.carrier_tracking_ref and res['tracking_number'] in self.carrier_tracking_ref else self
+            related_pickings = self.env['stock.picking'] if self.carrier_tracking_ref and res[
+                'tracking_number'] in self.carrier_tracking_ref else self
             accessed_moves = previous_moves = self.move_ids.move_orig_ids
             while previous_moves:
                 related_pickings |= previous_moves.picking_id
@@ -190,8 +202,8 @@ class StockPicking(models.Model):
     def _get_matching_delivery_lines(self):
         return self.sale_id.order_line.filtered(
             lambda l: l.is_delivery
-            and l.currency_id.is_zero(l.price_unit)
-            and l.product_id == self.carrier_id.product_id
+                      and l.currency_id.is_zero(l.price_unit)
+                      and l.product_id == self.carrier_id.product_id
         )
 
     def _prepare_sale_delivery_line_vals(self):
@@ -214,7 +226,8 @@ class StockPicking(models.Model):
     def open_website_url(self):
         self.ensure_one()
         if not self.carrier_tracking_url:
-            raise UserError(_("Your delivery method has no redirect on courier provider's website to track this order."))
+            raise UserError(
+                _("Your delivery method has no redirect on courier provider's website to track this order."))
 
         carrier_trackers = []
         try:

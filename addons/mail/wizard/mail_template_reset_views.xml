@@ -7,10 +7,12 @@
         <field name="arch" type="xml">
             <form>
                 <div>
-                    Are you sure you want to reset these email templates to their original configuration? Changes and translations will be lost.
+                    Are you sure you want to reset these email templates to their original configuration? Changes and
+                    translations will be lost.
                 </div>
                 <footer>
-                    <button string="Reset Template" class="btn btn-primary" type="object" name="reset_template" data-hotkey="q"/>
+                    <button string="Reset Template" class="btn btn-primary" type="object" name="reset_template"
+                            data-hotkey="q"/>
                     <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="x"/>
                 </footer>
             </form>
@@ -26,7 +28,8 @@
         <field name="target">new</field>
         <field name="context">{
             'default_template_ids': active_ids
-        }</field>
+            }
+        </field>
         <field name="view_id" ref="mail_template_reset_view_form"/>
     </record>
 </odoo>

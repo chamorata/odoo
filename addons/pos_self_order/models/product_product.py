@@ -1,6 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from __future__ import annotations
+
 from typing import List, Dict
+
 from odoo import api, models, fields
 from odoo.osv.expression import AND
 
@@ -33,6 +35,7 @@ class ProductTemplate(models.Model):
                     product._send_availability_status()
         return res
 
+
 class ProductProduct(models.Model):
     _inherit = "product.product"
 
@@ -47,7 +50,7 @@ class ProductProduct(models.Model):
         params = super()._load_pos_self_data_fields(config_id)
         params += ['public_description', 'list_price']
         return params
-    
+
     @api.model
     def _load_pos_self_data_domain(self, data):
         domain = super()._load_pos_self_data_domain(data)
@@ -71,9 +74,10 @@ class ProductProduct(models.Model):
             order='sequence,default_code,name',
             load=False
         )
-        combo_products = self.browse((p['id'] for p in products if p["type"]=="combo"))
+        combo_products = self.browse((p['id'] for p in products if p["type"] == "combo"))
         combo_products_choice = self.with_context(display_default_code=False).search_read(
-            [("id", 'in', combo_products.combo_ids.combo_item_ids.product_id.ids), ("id", "not in", [p['id'] for p in products])],
+            [("id", 'in', combo_products.combo_ids.combo_item_ids.product_id.ids),
+             ("id", "not in", [p['id'] for p in products])],
             fields,
             limit=config.get_limited_product_count(),
             order='sequence,default_code,name',

@@ -1,9 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import api, fields, models, _
-
-from odoo.tools import SQL
 from odoo.exceptions import UserError
+from odoo.tools import SQL
 
 
 class PurchaseBillMatch(models.Model):
@@ -27,8 +26,10 @@ class PurchaseBillMatch(models.Model):
     state = fields.Char(readonly=True)
 
     product_uom_id = fields.Many2one(comodel_name='uom.uom', related='product_id.uom_id')
-    product_uom_qty = fields.Float(compute='_compute_product_uom_qty', inverse='_inverse_product_uom_qty', readonly=False)
-    product_uom_price = fields.Float(compute='_compute_product_uom_price', inverse='_inverse_product_uom_price', readonly=False)
+    product_uom_qty = fields.Float(compute='_compute_product_uom_qty', inverse='_inverse_product_uom_qty',
+                                   readonly=False)
+    product_uom_price = fields.Float(compute='_compute_product_uom_price', inverse='_inverse_product_uom_price',
+                                     readonly=False)
     billed_amount_untaxed = fields.Monetary(compute='_compute_amount_untaxed_fields', currency_field='currency_id')
     purchase_amount_untaxed = fields.Monetary(compute='_compute_amount_untaxed_fields', currency_field='currency_id')
     reference = fields.Char(compute='_compute_reference')

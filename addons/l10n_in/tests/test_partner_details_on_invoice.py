@@ -1,9 +1,11 @@
-from odoo.tests import tagged
 import logging
 
 from odoo.addons.l10n_in.tests.common import L10nInTestInvoicingCommon
 
+from odoo.tests import tagged
+
 _logger = logging.getLogger(__name__)
+
 
 @tagged('post_install_l10n', 'post_install', '-at_install')
 class TestReports(L10nInTestInvoicingCommon):
@@ -55,12 +57,12 @@ class TestReports(L10nInTestInvoicingCommon):
             [{
                 'state': 'draft',
                 'l10n_in_gst_treatment': self.partner_b.l10n_in_gst_treatment,
-                'l10n_in_state_id': expected_pos_id, # POS doesn't change unless the partner changes
+                'l10n_in_state_id': expected_pos_id,  # POS doesn't change unless the partner changes
             }]
         )
         self.assertRecordValues(
             invoice_b_2,
-            [{ # check gst treatment and pos doesn't change on posted invoice
+            [{  # check gst treatment and pos doesn't change on posted invoice
                 'state': 'posted',
                 'l10n_in_gst_treatment': 'regular',
             }]

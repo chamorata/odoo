@@ -6,7 +6,7 @@ from odoo import fields, models, _
 from odoo.tools import format_list
 
 HIERARCHY_VALID_ATTRIBUTES = {
-    '__validate__',                     # ir.ui.view implementation detail
+    '__validate__',  # ir.ui.view implementation detail
     'class',
     'js_class',
     'string',
@@ -19,6 +19,7 @@ HIERARCHY_VALID_ATTRIBUTES = {
     'draggable',
     'default_order'
 }
+
 
 class View(models.Model):
     _inherit = 'ir.ui.view'

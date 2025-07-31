@@ -3,14 +3,13 @@
 
 # This assumes an existing but uninitialized database.
 
-from contextlib import contextmanager
 import unittest
+from contextlib import contextmanager
 
 from odoo import api, SUPERUSER_ID
+from odoo.modules.registry import Registry
 from odoo.tests import common
 from odoo.tests.common import BaseCase
-
-from odoo.modules.registry import Registry
 
 
 @contextmanager

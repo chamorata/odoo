@@ -27,21 +27,23 @@ class ResCompany(models.Model):
         if not uom:
             uom = self.env['uom.uom'].search([('category_id', '=', wtime.id)], limit=1)
         return uom
-    
+
     project_time_mode_id = fields.Many2one('uom.uom', string='Project Time Unit',
-        default=_default_project_time_mode_id,
-        help="This will set the unit of measure used in projects and tasks.\n"
-             "If you use the timesheet linked to projects, don't "
-             "forget to setup the right unit of measure in your employees.")
+                                           default=_default_project_time_mode_id,
+                                           help="This will set the unit of measure used in projects and tasks.\n"
+                                                "If you use the timesheet linked to projects, don't "
+                                                "forget to setup the right unit of measure in your employees.")
     timesheet_encode_uom_id = fields.Many2one('uom.uom', string="Timesheet Encoding Unit",
-        default=_default_timesheet_encode_uom_id, domain=lambda self: [('category_id', '=', self.env.ref('uom.uom_categ_wtime').id)])
+                                              default=_default_timesheet_encode_uom_id, domain=lambda self: [
+            ('category_id', '=', self.env.ref('uom.uom_categ_wtime').id)])
     internal_project_id = fields.Many2one(
         'project.project', string="Internal Project",
         help="Default project value for timesheet generated from time off type.")
 
     @api.constrains('internal_project_id')
     def _check_internal_project_id_company(self):
-        if self.filtered(lambda company: company.internal_project_id and company.internal_project_id.sudo().company_id != company):
+        if self.filtered(
+                lambda company: company.internal_project_id and company.internal_project_id.sudo().company_id != company):
             raise ValidationError(_('The Internal Project of a company should be in that company.'))
 
     @api.model_create_multi

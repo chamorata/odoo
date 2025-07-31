@@ -18,27 +18,27 @@ class DomainTest(HttpCaseWithUserDemo):
             resp = self.url_open(
                 '/web/domain/validate',
                 headers={'Content-Type': 'application/json'},
-                data=json.dumps({'params': {'model':'i', 'domain':[]}}),
+                data=json.dumps({'params': {'model': 'i', 'domain': []}}),
             )
         self.assertEqual(resp.json()['error']['data']['message'], "Invalid model: i")
 
         resp = self.url_open(
             '/web/domain/validate',
             headers={'Content-Type': 'application/json'},
-            data=json.dumps({'params': {'model':'res.users', 'domain':[]}}),
+            data=json.dumps({'params': {'model': 'res.users', 'domain': []}}),
         )
         self.assertEqual(resp.json()['result'], True)
 
         resp = self.url_open(
             '/web/domain/validate',
             headers={'Content-Type': 'application/json'},
-            data=json.dumps({'params': {'model':'res.users', 'domain':[('name', 'ilike', 'ad')]}}),
+            data=json.dumps({'params': {'model': 'res.users', 'domain': [('name', 'ilike', 'ad')]}}),
         )
         self.assertEqual(resp.json()['result'], True)
 
         resp = self.url_open(
             '/web/domain/validate',
             headers={'Content-Type': 'application/json'},
-            data=json.dumps({'params': {'model':'res.users', 'domain':[('hop')]}}),
+            data=json.dumps({'params': {'model': 'res.users', 'domain': [('hop')]}}),
         )
         self.assertEqual(resp.json()['result'], False)

@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from markupsafe import Markup
 from unittest.mock import patch
 
+from markupsafe import Markup
 from odoo.addons.mail.tests.common import MailCommon
+
 from odoo.exceptions import AccessError, ValidationError, UserError
 from odoo.tests import Form, HttpCase, tagged, users
 from odoo.tools import convert_file
@@ -57,7 +58,7 @@ class TestMailTemplate(MailCommon):
         with self.assertRaises(ValidationError), self.cr.savepoint():
             self.env['mail.template'].create({
                 'name': 'Test abstract template',
-                'model_id': self.env['ir.model']._get('mail.thread').id, # abstract model
+                'model_id': self.env['ir.model']._get('mail.thread').id,  # abstract model
             })
         # write
         template = self.env['mail.template'].create({
@@ -91,7 +92,8 @@ class TestMailTemplate(MailCommon):
         self.assertEqual(mail_template.name, 'New name')
 
         # Standard employee can create and edit non-dynamic templates
-        employee_template = self.env['mail.template'].with_user(self.user_employee).create({'body_html': '<p>foo</p>', 'model_id': model})
+        employee_template = self.env['mail.template'].with_user(self.user_employee).create(
+            {'body_html': '<p>foo</p>', 'model_id': model})
         employee_template.with_user(self.user_employee).body_html = '<p>bar</p>'
 
         employee_template = self.env['mail.template'].with_user(self.user_employee).create({
@@ -104,11 +106,13 @@ class TestMailTemplate(MailCommon):
 
         # Standard employee cannot create and edit templates with forbidden expression
         with self.assertRaises(AccessError):
-            self.env['mail.template'].with_user(self.user_employee).create({'body_html': '''<p t-out="'foo'"></p>''', 'model_id': model})
+            self.env['mail.template'].with_user(self.user_employee).create(
+                {'body_html': '''<p t-out="'foo'"></p>''', 'model_id': model})
 
         # If no model is specify, he can not write allowed expression
         with self.assertRaises(AccessError):
-            self.env['mail.template'].with_user(self.user_employee).create({'body_html': '''<p t-out="object.name"></p>'''})
+            self.env['mail.template'].with_user(self.user_employee).create(
+                {'body_html': '''<p t-out="object.name"></p>'''})
 
         # Standard employee cannot edit templates from another user, non-dynamic and dynamic
         with self.assertRaises(AccessError):
@@ -121,7 +125,8 @@ class TestMailTemplate(MailCommon):
 
         # Standard employee cannot create and edit templates with dynamic inline fields
         with self.assertRaises(AccessError):
-            self.env['mail.template'].with_user(self.user_employee).create({'email_to': '{{ object.partner_id.email }}', 'model_id': model})
+            self.env['mail.template'].with_user(self.user_employee).create(
+                {'email_to': '{{ object.partner_id.email }}', 'model_id': model})
 
         # Standard employee cannot edit his own templates if dynamic
         with self.assertRaises(AccessError):
@@ -158,7 +163,8 @@ class TestMailTemplate(MailCommon):
             with self.assertRaises(AccessError):
                 employee_template.with_context(raise_on_forbidden_code=False).email_to = '{{ %s }}' % expression
             with self.assertRaises(AccessError):
-                employee_template.with_context(raise_on_forbidden_code=False).body_html = '<p t-esc="%s"></p>' % expression
+                employee_template.with_context(
+                    raise_on_forbidden_code=False).body_html = '<p t-esc="%s"></p>' % expression
 
             # check that an admin can use the expression
             mail_template.with_user(self.user_admin).email_to = '{{ %s }}' % expression
@@ -195,7 +201,8 @@ class TestMailTemplate(MailCommon):
         for expression in forbidden_qweb_expressions:
             with self.assertRaises(AccessError):
                 employee_template.body_html = expression
-            self.assertTrue(self.env['mail.render.mixin']._has_unsafe_expression_template_qweb(expression, 'res.partner'))
+            self.assertTrue(
+                self.env['mail.render.mixin']._has_unsafe_expression_template_qweb(expression, 'res.partner'))
 
         # allowed expressions
         allowed_qweb_expressions = (
@@ -212,10 +219,11 @@ class TestMailTemplate(MailCommon):
                 'body_html': expression,
                 'model_id': model,
             })
-            self.assertFalse(self.env['mail.render.mixin']._has_unsafe_expression_template_qweb(expression, 'res.partner'))
+            self.assertFalse(
+                self.env['mail.render.mixin']._has_unsafe_expression_template_qweb(expression, 'res.partner'))
 
             with (patch('odoo.addons.base.models.ir_qweb.IrQWeb._render', side_effect=o_qweb_render) as qweb_render,
-                patch('odoo.addons.base.models.ir_qweb.unsafe_eval', side_effect=eval) as unsafe_eval):
+                  patch('odoo.addons.base.models.ir_qweb.unsafe_eval', side_effect=eval) as unsafe_eval):
                 rendered = template._render_field('body_html', record.ids)[record.id]
                 self.assertNotIn('t-out', rendered)
                 self.assertFalse(qweb_render.called)
@@ -224,7 +232,7 @@ class TestMailTemplate(MailCommon):
         # double check that we can detect the qweb rendering
         mail_template.body_html = '<t t-out="1+1"/>'
         with (patch('odoo.addons.base.models.ir_qweb.IrQWeb._render', side_effect=o_qweb_render) as qweb_render,
-            patch('odoo.addons.base.models.ir_qweb.unsafe_eval', side_effect=eval) as unsafe_eval):
+              patch('odoo.addons.base.models.ir_qweb.unsafe_eval', side_effect=eval) as unsafe_eval):
             rendered = mail_template._render_field('body_html', record.ids)[record.id]
             self.assertNotIn('t-out', rendered)
             self.assertTrue(qweb_render.called)
@@ -251,14 +259,16 @@ class TestMailTemplate(MailCommon):
         o_render = self.env['mail.render.mixin']._render_template_qweb_regex
         for template, excepted in templates:
             mail_template.body_html = template
-            with patch('odoo.addons.mail.models.mail_render_mixin.MailRenderMixin._render_template_qweb_regex', side_effect=o_render) as render:
+            with patch('odoo.addons.mail.models.mail_render_mixin.MailRenderMixin._render_template_qweb_regex',
+                       side_effect=o_render) as render:
                 rendered = mail_template._render_field('body_html', record.ids)[record.id]
                 self.assertEqual(rendered, excepted)
                 self.assertTrue(render.called)
 
         record.name = '<b> test </b>'
         mail_template.body_html = '<t t-out="object.name"/>'
-        with patch('odoo.addons.mail.models.mail_render_mixin.MailRenderMixin._render_template_qweb_regex', side_effect=o_render) as render:
+        with patch('odoo.addons.mail.models.mail_render_mixin.MailRenderMixin._render_template_qweb_regex',
+                   side_effect=o_render) as render:
             rendered = mail_template._render_field('body_html', record.ids)[record.id]
             self.assertEqual(rendered, "&lt;b&gt; test &lt;/b&gt;")
             self.assertTrue(render.called)
@@ -398,7 +408,7 @@ class TestMailTemplateReset(MailCommon):
             if lang == 'fr_FR':  # fr_FR has translations
                 translation_importer.model_translations['mail.template'] = {
                     'body_html': {'mail.mail_template_test': {'fr_FR': '<div>Hello Odoo FR</div>'}},
-                    'name':  {'mail.mail_template_test': {'fr_FR': "Mail: Test Mail Template FR"}},
+                    'name': {'mail.mail_template_test': {'fr_FR': "Mail: Test Mail Template FR"}},
                 }
 
         with patch('odoo.tools.translate.TranslationImporter.load_file', fake_load_file):
@@ -491,19 +501,22 @@ class TestSearchTemplateCategory(MailCommon):
         hidden_domain = [('template_category', 'in', ['hidden_template'])]
         hidden_templates = MailTemplate.search(hidden_domain) - self.existing
         self.assertEqual(len(hidden_templates), len(self.hidden_templates), "Hidden templates count mismatch")
-        self.assertEqual(set(hidden_templates.mapped('template_category')), {'hidden_template'}, "Computed field doesn't match 'hidden_template'")
+        self.assertEqual(set(hidden_templates.mapped('template_category')), {'hidden_template'},
+                         "Computed field doesn't match 'hidden_template'")
 
         # Search by base templates
         base_domain = [('template_category', 'in', ['base_template'])]
         base_templates = MailTemplate.search(base_domain) - self.existing
         self.assertEqual(len(base_templates), len(self.base_templates), "Base templates count mismatch")
-        self.assertEqual(set(base_templates.mapped('template_category')), {'base_template'}, "Computed field doesn't match 'base_template'")
+        self.assertEqual(set(base_templates.mapped('template_category')), {'base_template'},
+                         "Computed field doesn't match 'base_template'")
 
         # Search by custom templates
         custom_domain = [('template_category', 'in', ['custom_template'])]
         custom_templates = MailTemplate.search(custom_domain) - self.existing
         self.assertEqual(len(custom_templates), len(self.custom_templates), "Custom templates count mismatch")
-        self.assertEqual(set(custom_templates.mapped('template_category')), {'custom_template'}, "Computed field doesn't match 'custom_template'")
+        self.assertEqual(set(custom_templates.mapped('template_category')), {'custom_template'},
+                         "Computed field doesn't match 'custom_template'")
 
         # Combined search
         combined_domain = [('template_category', 'in', ['hidden_template', 'base_template', 'custom_template'])]

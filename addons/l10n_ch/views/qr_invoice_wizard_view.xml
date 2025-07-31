@@ -12,9 +12,12 @@
                     <field name="classic_inv_text"/>
                 </p>
                 <p>
-                    To be able to print all invoices in the QR format, you might need to : <br/>
-                    - check the account is a valid QR-IBAN<br/>
-                    - or check your company and the partners are located in Switzerland.<br/>
+                    To be able to print all invoices in the QR format, you might need to :
+                    <br/>
+                    - check the account is a valid QR-IBAN
+                    <br/>
+                    - or check your company and the partners are located in Switzerland.
+                    <br/>
                     Press Check Invalid Invoices to see a list of the invoices that were printed without a QR.
                 </p>
                 <footer>

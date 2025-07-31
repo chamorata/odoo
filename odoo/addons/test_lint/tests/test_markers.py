@@ -3,8 +3,8 @@
 
 import logging
 import os
-import odoo
 
+import odoo
 from . import lint_case
 
 _logger = logging.getLogger(__name__)

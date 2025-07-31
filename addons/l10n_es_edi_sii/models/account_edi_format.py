@@ -3,12 +3,11 @@ import math
 from collections import defaultdict
 
 import requests
+from odoo.addons.certificate.tools import CertificateAdapter
 
 from odoo import _, fields, models
 from odoo.tools import html_escape, zeep
 from odoo.tools.float_utils import float_round
-
-from odoo.addons.certificate.tools import CertificateAdapter
 
 # Custom patches to perform the WSDL requests.
 # Avoid failure on servers where the DH key is too small
@@ -36,9 +35,9 @@ class AccountEdiFormat(models.Model):
         def filter_to_apply(base_line, tax_data):
             # For intra-community, we do not take into account the negative repartition line
             return (
-                not tax_data['is_reverse_charge']
-                and tax_data['tax'].amount != -100.0
-                and tax_data['tax'].l10n_es_type != 'ignore'
+                    not tax_data['is_reverse_charge']
+                    and tax_data['tax'].amount != -100.0
+                    and tax_data['tax'].l10n_es_type != 'ignore'
             )
 
         def full_filter_invl_to_apply(invoice_line):
@@ -74,13 +73,15 @@ class AccountEdiFormat(models.Model):
                     values
                     for values in aggregated_values['tax_details'].values()
                     if (
-                        values['grouping_key']
-                        and values['grouping_key']['l10n_es_type'] == recargo_tax.l10n_es_type
-                        and values['grouping_key']['applied_tax_amount'] == recargo_tax.amount
+                            values['grouping_key']
+                            and values['grouping_key']['l10n_es_type'] == recargo_tax.l10n_es_type
+                            and values['grouping_key']['applied_tax_amount'] == recargo_tax.amount
                     )
                 ))
-                recargo_tax_details[recargo_main_tax.l10n_es_type, recargo_main_tax.amount]['tax_amount'] += recargo_values['tax_amount']
-                recargo_tax_details[recargo_main_tax.l10n_es_type, recargo_main_tax.amount]['applied_tax_amount'] = recargo_values['applied_tax_amount']
+                recargo_tax_details[recargo_main_tax.l10n_es_type, recargo_main_tax.amount]['tax_amount'] += \
+                recargo_values['tax_amount']
+                recargo_tax_details[recargo_main_tax.l10n_es_type, recargo_main_tax.amount]['applied_tax_amount'] = \
+                recargo_values['applied_tax_amount']
 
         tax_amount_deductible = 0.0
         tax_amount_retention = 0.0
@@ -140,7 +141,7 @@ class AccountEdiFormat(models.Model):
                 elif tax_values['l10n_es_type'] == 'ignore':
                     continue
 
-                if tax_values['l10n_es_type'] not in ['retencion', 'recargo']: # = in sujeto/sujeto_isp/no_deducible
+                if tax_values['l10n_es_type'] not in ['retencion', 'recargo']:  # = in sujeto/sujeto_isp/no_deducible
                     base_amount = sign * tax_values['base_amount']
                     tax_details_info.setdefault('DetalleIVA', [])
                     tax_info = {
@@ -180,9 +181,11 @@ class AccountEdiFormat(models.Model):
             tax_details_info['Sujeta']['NoExenta']['DesgloseIVA']['DetalleIVA'] += tax_subject_isp_info_list
 
         if not invoice.company_id.currency_id.is_zero(base_amount_not_subject) and invoice.is_sale_document():
-            tax_details_info['NoSujeta']['ImportePorArticulos7_14_Otros'] = float_round(sign * base_amount_not_subject, 2)
+            tax_details_info['NoSujeta']['ImportePorArticulos7_14_Otros'] = float_round(sign * base_amount_not_subject,
+                                                                                        2)
         if not invoice.company_id.currency_id.is_zero(base_amount_not_subject_loc) and invoice.is_sale_document():
-            tax_details_info['NoSujeta']['ImporteTAIReglasLocalizacion'] = float_round(sign * base_amount_not_subject_loc, 2)
+            tax_details_info['NoSujeta']['ImporteTAIReglasLocalizacion'] = float_round(
+                sign * base_amount_not_subject_loc, 2)
         if not tax_details_info and invoice.is_sale_document():
             if any(t['l10n_es_type'] == 'no_sujeto' for t in tax_details['tax_details'].values()):
                 tax_details_info['NoSujeta']['ImportePorArticulos7_14_Otros'] = 0
@@ -195,8 +198,8 @@ class AccountEdiFormat(models.Model):
             'tax_amount_deductible': tax_amount_deductible,
             'tax_amount_retention': tax_amount_retention,
             'base_amount_not_subject': base_amount_not_subject,
-            'S1_list': tax_subject_info_list, #TBAI has separate sections for S1 and S2
-            'S2_list': tax_subject_isp_info_list, #TBAI has separate sections for S1 and S2
+            'S1_list': tax_subject_info_list,  # TBAI has separate sections for S1 and S2
+            'S2_list': tax_subject_isp_info_list,  # TBAI has separate sections for S1 and S2
         }
 
     def _l10n_es_edi_get_partner_info(self, partner):
@@ -266,7 +269,8 @@ class AccountEdiFormat(models.Model):
                         **partner_info,
                         'NombreRazon': com_partner.name[:120],
                     }
-                invoice_node['ClaveRegimenEspecialOTrascendencia'] = invoice.invoice_line_ids.tax_ids._l10n_es_get_regime_code()
+                invoice_node[
+                    'ClaveRegimenEspecialOTrascendencia'] = invoice.invoice_line_ids.tax_ids._l10n_es_get_regime_code()
             else:
                 if invoice._l10n_es_is_dua():
                     partner_info = self._l10n_es_edi_get_partner_info(invoice.company_id.partner_id)
@@ -325,9 +329,9 @@ class AccountEdiFormat(models.Model):
                     invoice_node['TipoDesglose'] = {'DesgloseFactura': tax_details_info_vals['tax_details_info']}
 
                     invoice_node['ImporteTotal'] = float_round(sign * (
-                        tax_details_info_vals['tax_details']['base_amount']
-                        + tax_details_info_vals['tax_details']['tax_amount']
-                        - tax_details_info_vals['tax_amount_retention']
+                            tax_details_info_vals['tax_details']['base_amount']
+                            + tax_details_info_vals['tax_details']['tax_amount']
+                            - tax_details_info_vals['tax_amount_retention']
                     ), 2)
                 else:
                     tax_details_info_service_vals = self._l10n_es_edi_get_invoices_tax_details_info(
@@ -342,19 +346,21 @@ class AccountEdiFormat(models.Model):
                     if tax_details_info_service_vals['tax_details_info']:
                         invoice_node.setdefault('TipoDesglose', {})
                         invoice_node['TipoDesglose'].setdefault('DesgloseTipoOperacion', {})
-                        invoice_node['TipoDesglose']['DesgloseTipoOperacion']['PrestacionServicios'] = tax_details_info_service_vals['tax_details_info']
+                        invoice_node['TipoDesglose']['DesgloseTipoOperacion']['PrestacionServicios'] = \
+                        tax_details_info_service_vals['tax_details_info']
                     if tax_details_info_consu_vals['tax_details_info']:
                         invoice_node.setdefault('TipoDesglose', {})
                         invoice_node['TipoDesglose'].setdefault('DesgloseTipoOperacion', {})
-                        invoice_node['TipoDesglose']['DesgloseTipoOperacion']['Entrega'] = tax_details_info_consu_vals['tax_details_info']
+                        invoice_node['TipoDesglose']['DesgloseTipoOperacion']['Entrega'] = tax_details_info_consu_vals[
+                            'tax_details_info']
 
                     invoice_node['ImporteTotal'] = float_round(sign * (
-                        tax_details_info_service_vals['tax_details']['base_amount']
-                        + tax_details_info_service_vals['tax_details']['tax_amount']
-                        - tax_details_info_service_vals['tax_amount_retention']
-                        + tax_details_info_consu_vals['tax_details']['base_amount']
-                        + tax_details_info_consu_vals['tax_details']['tax_amount']
-                        - tax_details_info_consu_vals['tax_amount_retention']
+                            tax_details_info_service_vals['tax_details']['base_amount']
+                            + tax_details_info_service_vals['tax_details']['tax_amount']
+                            - tax_details_info_service_vals['tax_amount_retention']
+                            + tax_details_info_consu_vals['tax_details']['base_amount']
+                            + tax_details_info_consu_vals['tax_details']['tax_amount']
+                            - tax_details_info_consu_vals['tax_amount_retention']
                     ), 2)
 
             else:
@@ -371,25 +377,29 @@ class AccountEdiFormat(models.Model):
 
                 invoice_node['DesgloseFactura'] = {}
                 if tax_details_info_isp_vals['tax_details_info']:
-                    invoice_node['DesgloseFactura']['InversionSujetoPasivo'] = tax_details_info_isp_vals['tax_details_info']
+                    invoice_node['DesgloseFactura']['InversionSujetoPasivo'] = tax_details_info_isp_vals[
+                        'tax_details_info']
                 if tax_details_info_other_vals['tax_details_info']:
                     invoice_node['DesgloseFactura']['DesgloseIVA'] = tax_details_info_other_vals['tax_details_info']
 
-                if invoice._l10n_es_is_dua() or any(t.l10n_es_type == 'ignore' for t in invoice.invoice_line_ids.tax_ids):
+                if invoice._l10n_es_is_dua() or any(
+                        t.l10n_es_type == 'ignore' for t in invoice.invoice_line_ids.tax_ids):
                     invoice_node['ImporteTotal'] = float_round(sign * (
                             tax_details_info_isp_vals['tax_details']['base_amount']
                             + tax_details_info_isp_vals['tax_details']['tax_amount']
                             + tax_details_info_other_vals['tax_details']['base_amount']
                             + tax_details_info_other_vals['tax_details']['tax_amount']
                     ), 2)
-                else: # Intra-community -100 repartition line needs to be taken into account
+                else:  # Intra-community -100 repartition line needs to be taken into account
                     invoice_node['ImporteTotal'] = float_round(-invoice.amount_total_signed
-                                                         - sign * tax_details_info_isp_vals['tax_amount_retention']
-                                                         - sign * tax_details_info_other_vals['tax_amount_retention'], 2)
+                                                               - sign * tax_details_info_isp_vals[
+                                                                   'tax_amount_retention']
+                                                               - sign * tax_details_info_other_vals[
+                                                                   'tax_amount_retention'], 2)
 
                 invoice_node['CuotaDeducible'] = float_round(sign * (
-                    tax_details_info_isp_vals['tax_amount_deductible']
-                    + tax_details_info_other_vals['tax_amount_deductible']
+                        tax_details_info_isp_vals['tax_amount_deductible']
+                        + tax_details_info_other_vals['tax_amount_deductible']
                 ), 2)
 
             info_list.append(info)
@@ -544,9 +554,9 @@ class AccountEdiFormat(models.Model):
                             inv = candidate
                             break
                         if (
-                            partner_info.get('IDOtro')
-                            and respl_partner_info['IDOtro']
-                            and all(respl_partner_info['IDOtro'][k] == v for k, v in partner_info['IDOtro'].items())
+                                partner_info.get('IDOtro')
+                                and respl_partner_info['IDOtro']
+                                and all(respl_partner_info['IDOtro'][k] == v for k, v in partner_info['IDOtro'].items())
                         ):
                             inv = candidate
                             break
@@ -565,11 +575,12 @@ class AccountEdiFormat(models.Model):
                 inv.l10n_es_edi_csv = l10n_es_edi_csv
                 results[inv] = {'success': True}
                 if resp_line_state == 'AceptadoConErrores':
-                    inv.message_post(body=_("This was accepted with errors: ") + html_escape(respl.DescripcionErrorRegistro))
+                    inv.message_post(
+                        body=_("This was accepted with errors: ") + html_escape(respl.DescripcionErrorRegistro))
             elif (
-                (respl_dict.get('RegistroDuplicado') and respl.RegistroDuplicado.EstadoRegistro == 'Correcta')
-                or
-                (cancel and respl_dict.get('CodigoErrorRegistro') == 3001)
+                    (respl_dict.get('RegistroDuplicado') and respl.RegistroDuplicado.EstadoRegistro == 'Correcta')
+                    or
+                    (cancel and respl_dict.get('CodigoErrorRegistro') == 3001)
             ):
                 results[inv] = {'success': True}
                 inv.message_post(body=_("We saw that this invoice was sent correctly before, but we did not treat "
@@ -581,7 +592,8 @@ class AccountEdiFormat(models.Model):
 
             else:
                 results[inv] = {
-                    'error': _("[%(error_code)s] %(error_message)s", error_code=respl.CodigoErrorRegistro, error_message=respl.DescripcionErrorRegistro),
+                    'error': _("[%(error_code)s] %(error_message)s", error_code=respl.CodigoErrorRegistro,
+                               error_message=respl.DescripcionErrorRegistro),
                     'blocking_level': 'error',
                 }
 
@@ -641,7 +653,8 @@ class AccountEdiFormat(models.Model):
                 res.append(_("Line %s should only have one no sujeto (localizations) tax.", line.display_name))
             if sujeto_count + no_sujeto_loc_count + no_sujeto_count > 1:
                 res.append(_("Line %s should only have one main tax.", line.display_name))
-        if move.is_inbound() and move.commercial_partner_id._l10n_es_is_foreign() and not any(t.tax_scope for t in total_taxes):
+        if move.is_inbound() and move.commercial_partner_id._l10n_es_is_foreign() and not any(
+                t.tax_scope for t in total_taxes):
             res.append(
                 _("In case of a foreign customer, you need to configure the tax scope on taxes:\n%s",
                   "\n".join(total_taxes.mapped('name')))
@@ -679,7 +692,7 @@ class AccountEdiFormat(models.Model):
         info_list = self._l10n_es_edi_get_invoices_info(invoices)
 
         # Call the web service.
-        if not cancel: #retrocompatibility and mocks in tests
+        if not cancel:  # retrocompatibility and mocks in tests
             res = self._l10n_es_edi_call_web_service_sign(invoices, info_list)
         else:
             res = self._l10n_es_edi_call_web_service_sign_common(invoices, info_list, cancel=True)

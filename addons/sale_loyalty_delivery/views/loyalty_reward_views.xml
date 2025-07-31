@@ -21,7 +21,11 @@
         <field name="arch" type="xml">
             <div name="reward_info" position="inside">
                 <t t-elif="record.reward_type.raw_value === 'shipping'">
-                    Free shipping <t t-if="record.discount_max_amount.raw_value > 0">( Max <field name="discount_max_amount"/> )</t>
+                    Free shipping
+                    <t t-if="record.discount_max_amount.raw_value > 0">( Max
+                        <field name="discount_max_amount"/>
+                        )
+                    </t>
                 </t>
             </div>
         </field>

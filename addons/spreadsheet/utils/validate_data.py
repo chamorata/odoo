@@ -1,7 +1,7 @@
-from collections import defaultdict
-from itertools import chain
 import json
 import re
+from collections import defaultdict
+from itertools import chain
 
 markdown_link_regex = r"^\[([^\[]+)\]\((.+)\)$"
 
@@ -192,7 +192,6 @@ def fields_in_spreadsheet(data):
 
 
 def menus_xml_ids_in_spreadsheet(data):
-
     return set(data.get("chartOdooMenusReferences", {}).values()) | {
         url[len(xml_id_url_prefix):]
         for url in links_urls(data)

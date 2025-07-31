@@ -3,6 +3,7 @@
 
 from odoo.addons.survey.tests import common
 from psycopg2 import IntegrityError
+
 from odoo.exceptions import AccessError
 from odoo.tools import mute_logger
 
@@ -90,13 +91,13 @@ class TestCertificationBadge(common.TestSurveyCommon):
 
         challenge = self.env['gamification.challenge'].search([('reward_id', '=', self.certification_badge.id)])
         self.assertEqual(len(challenge), 1,
-            "A challenge should be created if the certification badge is activated on a certification survey")
+                         "A challenge should be created if the certification badge is activated on a certification survey")
         challenge_line = self.env['gamification.challenge.line'].search([('challenge_id', '=', challenge.id)])
         self.assertEqual(len(challenge_line), 1,
-            "A challenge_line should be created if the certification badge is activated on a certification survey")
+                         "A challenge_line should be created if the certification badge is activated on a certification survey")
         goal = challenge_line.definition_id
         self.assertEqual(len(goal), 1,
-            "A goal should be created if the certification badge is activated on a certification survey")
+                         "A goal should be created if the certification badge is activated on a certification survey")
 
         # don't give badge anymore
         self.certification_survey.write({'certification_give_badge': False})
@@ -107,13 +108,13 @@ class TestCertificationBadge(common.TestSurveyCommon):
 
         challenge = self.env['gamification.challenge'].search([('id', '=', challenge.id)])
         self.assertEqual(len(challenge), 0,
-            "The challenge should be deleted if the certification badge is unset from the certification survey")
+                         "The challenge should be deleted if the certification badge is unset from the certification survey")
         challenge_line = self.env['gamification.challenge.line'].search([('id', '=', challenge_line.id)])
         self.assertEqual(len(challenge_line), 0,
-            "The challenge_line should be deleted if the certification badge is unset from the certification survey")
+                         "The challenge_line should be deleted if the certification badge is unset from the certification survey")
         goal = self.env['gamification.goal'].search([('id', '=', goal.id)])
         self.assertEqual(len(goal), 0,
-            "The goal should be deleted if the certification badge is unset from the certification survey")
+                         "The goal should be deleted if the certification badge is unset from the certification survey")
 
         # re active the badge in the survey
         self.certification_survey.write({'certification_give_badge': True})
@@ -122,31 +123,36 @@ class TestCertificationBadge(common.TestSurveyCommon):
 
         challenge = self.env['gamification.challenge'].search([('reward_id', '=', self.certification_badge.id)])
         self.assertEqual(len(challenge), 1,
-            "A challenge should be created if the certification badge is activated on a certification survey")
+                         "A challenge should be created if the certification badge is activated on a certification survey")
         challenge_line = self.env['gamification.challenge.line'].search([('challenge_id', '=', challenge.id)])
         self.assertEqual(len(challenge_line), 1,
-            "A challenge_line should be created if the certification badge is activated on a certification survey")
+                         "A challenge_line should be created if the certification badge is activated on a certification survey")
         goal = challenge_line.definition_id
         self.assertEqual(len(goal), 1,
-            "A goal should be created if the certification badge is activated on a certification survey")
+                         "A goal should be created if the certification badge is activated on a certification survey")
 
         # If 'certification_give_badge' is True but no certification badge is linked, ValueError should be raised
         duplicate_survey = self.certification_survey.copy()
-        self.assertFalse(duplicate_survey.certification_give_badge, "Value for field 'certification_give_badge' should not be copied")
-        self.assertEqual(duplicate_survey.certification_badge_id, self.env['gamification.badge'], "Badge should be empty")
+        self.assertFalse(duplicate_survey.certification_give_badge,
+                         "Value for field 'certification_give_badge' should not be copied")
+        self.assertEqual(duplicate_survey.certification_badge_id, self.env['gamification.badge'],
+                         "Badge should be empty")
         with self.assertRaises(ValueError):
             duplicate_survey.write({'certification_give_badge': True})
 
     def test_certification_badge_access(self):
         self.certification_badge.with_user(self.survey_manager).write(
-            {'description': "Spoiler alert: I'm Aegon Targaryen and I sleep with the Dragon Queen, who is my aunt by the way! So I can do whatever I want! Even if I know nothing!"})
+            {
+                'description': "Spoiler alert: I'm Aegon Targaryen and I sleep with the Dragon Queen, who is my aunt by the way! So I can do whatever I want! Even if I know nothing!"})
         self.certification_badge.with_user(self.survey_user).write({'description': "Youpie Yeay!"})
         with self.assertRaises(AccessError):
-            self.certification_badge.with_user(self.user_emp).write({'description': "I'm a dude who think that has every right on the Iron Throne"})
+            self.certification_badge.with_user(self.user_emp).write(
+                {'description': "I'm a dude who think that has every right on the Iron Throne"})
         with self.assertRaises(AccessError):
             self.certification_badge.with_user(self.user_portal).write({'description': "Guy, you just can't do that!"})
         with self.assertRaises(AccessError):
-            self.certification_badge.with_user(self.user_public).write({'description': "What did you expect ? Schwepps!"})
+            self.certification_badge.with_user(self.user_public).write(
+                {'description': "What did you expect ? Schwepps!"})
 
     def test_badge_configuration_multi(self):
         vals = {
@@ -167,7 +173,8 @@ class TestCertificationBadge(common.TestSurveyCommon):
         certification_surveys = self.env['survey.survey'].browse([survey_1.id, survey_2.id, survey_3.id])
         self.assertEqual(len(certification_surveys), 3, 'There should be 3 certification survey created')
 
-        challenges = self.env['gamification.challenge'].search([('reward_id', 'in', certification_surveys.mapped('certification_badge_id').ids)])
+        challenges = self.env['gamification.challenge'].search(
+            [('reward_id', 'in', certification_surveys.mapped('certification_badge_id').ids)])
         self.assertEqual(len(challenges), 3, "3 challenges should be created")
         challenge_lines = self.env['gamification.challenge.line'].search([('challenge_id', 'in', challenges.ids)])
         self.assertEqual(len(challenge_lines), 3, "3 challenge_lines should be created")
@@ -192,7 +199,8 @@ class TestCertificationBadge(common.TestSurveyCommon):
             self.assertEqual(survey.certification_badge_id.active, True,
                              'Every badge should be reactivated if the 3 survey give badges again')
 
-        challenges = self.env['gamification.challenge'].search([('reward_id', 'in', certification_surveys.mapped('certification_badge_id').ids)])
+        challenges = self.env['gamification.challenge'].search(
+            [('reward_id', 'in', certification_surveys.mapped('certification_badge_id').ids)])
         self.assertEqual(len(challenges), 3, "3 challenges should be created")
         challenge_lines = self.env['gamification.challenge.line'].search([('challenge_id', 'in', challenges.ids)])
         self.assertEqual(len(challenge_lines), 3, "3 challenge_lines should be created")

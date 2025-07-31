@@ -20,7 +20,7 @@ class SaleAdvancePaymentInv(models.TransientModel):
         default='delivered',
         required=True,
         help="A standard invoice is issued with all the order lines ready for invoicing,"
-            "according to their invoicing policy (based on ordered or delivered quantity).")
+             "according to their invoicing policy (based on ordered or delivered quantity).")
     count = fields.Integer(string="Order Count", compute='_compute_count')
     sale_order_ids = fields.Many2many(
         'sale.order', default=lambda self: self.env.context.get('active_ids'))
@@ -62,7 +62,7 @@ class SaleAdvancePaymentInv(models.TransientModel):
         help="Create one invoice for all orders related to same customer and same invoicing address"
     )
 
-    #=== COMPUTE METHODS ===#
+    # === COMPUTE METHODS ===#
 
     @api.depends('sale_order_ids')
     def _compute_count(self):
@@ -112,7 +112,7 @@ class SaleAdvancePaymentInv(models.TransientModel):
             wizard.amount_invoiced = sum(wizard.sale_order_ids._origin.mapped('amount_invoiced'))
             wizard.amount_to_invoice = sum(wizard.sale_order_ids._origin.mapped('amount_to_invoice'))
 
-    #=== ONCHANGE METHODS ===#
+    # === ONCHANGE METHODS ===#
 
     @api.onchange('advance_payment_method')
     def _onchange_advance_payment_method(self):
@@ -120,7 +120,7 @@ class SaleAdvancePaymentInv(models.TransientModel):
             amount = self.default_get(['amount']).get('amount')
             return {'value': {'amount': amount}}
 
-    #=== CONSTRAINT METHODS ===#
+    # === CONSTRAINT METHODS ===#
 
     def _check_amount_is_positive(self):
         for wizard in self:
@@ -129,7 +129,7 @@ class SaleAdvancePaymentInv(models.TransientModel):
             elif wizard.advance_payment_method == 'fixed' and wizard.fixed_amount <= 0.00:
                 raise UserError(_('The value of the down payment amount must be positive.'))
 
-    #=== ACTION METHODS ===#
+    # === ACTION METHODS ===#
 
     def create_invoices(self):
         self._check_amount_is_positive()
@@ -146,7 +146,7 @@ class SaleAdvancePaymentInv(models.TransientModel):
             'domain': [('line_ids.sale_line_ids.order_id', 'in', self.sale_order_ids.ids), ('state', '=', 'draft')],
         }
 
-    #=== BUSINESS METHODS ===#
+    # === BUSINESS METHODS ===#
 
     def _create_invoices(self, sale_orders):
         self.ensure_one()
@@ -175,11 +175,11 @@ class SaleAdvancePaymentInv(models.TransientModel):
             if self.advance_payment_method == 'fixed':
                 delta_amount = (invoice.amount_total - self.fixed_amount) * (1 if invoice.is_inbound() else -1)
                 if not order.currency_id.is_zero(delta_amount):
-                    receivable_line = invoice.line_ids\
-                        .filtered(lambda aml: aml.account_id.account_type == 'asset_receivable')[:1]
-                    product_lines = invoice.line_ids\
+                    receivable_line = invoice.line_ids \
+                                          .filtered(lambda aml: aml.account_id.account_type == 'asset_receivable')[:1]
+                    product_lines = invoice.line_ids \
                         .filtered(lambda aml: aml.display_type == 'product')
-                    tax_lines = invoice.line_ids\
+                    tax_lines = invoice.line_ids \
                         .filtered(lambda aml: aml.tax_line_id.amount_type not in (False, 'fixed'))
 
                     if product_lines and tax_lines and receivable_line:
@@ -188,8 +188,8 @@ class SaleAdvancePaymentInv(models.TransientModel):
                         })]
                         delta_sign = 1 if delta_amount > 0 else -1
                         for lines, attr, sign in (
-                            (product_lines, 'price_total', -1),
-                            (tax_lines, 'amount_currency', 1),
+                                (product_lines, 'price_total', -1),
+                                (tax_lines, 'amount_currency', 1),
                         ):
                             remaining = delta_amount
                             lines_len = len(lines)
@@ -249,7 +249,8 @@ class SaleAdvancePaymentInv(models.TransientModel):
         down_payment_values = []
         for line in order_lines:
             base_line_values = line._prepare_base_line_for_taxes_computation(special_mode='total_excluded')
-            product_account = line['product_id'].product_tmpl_id.get_product_accounts(fiscal_pos=order.fiscal_position_id)
+            product_account = line['product_id'].product_tmpl_id.get_product_accounts(
+                fiscal_pos=order.fiscal_position_id)
             account = product_account.get('downpayment') or product_account.get('income')
             AccountTax._add_tax_details_in_base_line(base_line_values, order.company_id)
             tax_details = base_line_values['tax_details']
@@ -271,7 +272,7 @@ class SaleAdvancePaymentInv(models.TransientModel):
                     continue
 
                 if fixed_tax.include_base_amount:
-                    pct_tax = taxes[list(taxes).index(fixed_tax) + 1:]\
+                    pct_tax = taxes[list(taxes).index(fixed_tax) + 1:] \
                         .filtered(lambda t: t.is_base_affected and t.amount_type != 'fixed')
                 else:
                     pct_tax = self.env['account.tax']

@@ -24,9 +24,9 @@
                         type="object"
                         invisible="not l10n_in_ewaybill_id"
                         groups="stock.group_stock_manager">
-                        <div class="o_stat_info">
-                            <span class="o_stat_text">e-Waybill / Challan</span>
-                        </div>
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">e-Waybill / Challan</span>
+                    </div>
                 </button>
             </xpath>
         </field>

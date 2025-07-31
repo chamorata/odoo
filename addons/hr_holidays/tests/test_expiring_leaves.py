@@ -1,14 +1,14 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import date
+
 from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
+from odoo.addons.hr_holidays.tests.common import TestHrHolidaysCommon
 
 from odoo.addons.base.tests.common import HttpCase
 from odoo.tests.common import tagged
 from odoo.tests.common import users
-
-from odoo.addons.hr_holidays.tests.common import TestHrHolidaysCommon
 
 
 @tagged('post_install', '-at_install', 'carryover_expiring_leaves')
@@ -23,26 +23,27 @@ class TestExpiringLeaves(HttpCase, TestHrHolidaysCommon):
             'requires_allocation': 'yes',
             'allocation_validation_type': 'no_validation',
         })
-        cls.accrual_plan_with_accrual_validity = cls.env['hr.leave.accrual.plan'].with_context(tracking_disable=True).sudo().create({
+        cls.accrual_plan_with_accrual_validity = cls.env['hr.leave.accrual.plan'].with_context(
+            tracking_disable=True).sudo().create({
             'name': 'Test Accrual Plan With Accrual Validity',
             'carryover_date': 'other',
             'carryover_day': 1,
             'carryover_month': 'apr',
             'level_ids': [
                 (0, 0, {
-                'start_count': 0,
-                'start_type': 'day',
-                'added_value': 3,
-                'added_value_type': 'day',
-                'frequency': 'yearly',
-                'yearly_day': 1,
-                'yearly_month': 'jan',
-                'cap_accrued_time': False,
-                'action_with_unused_accruals': 'maximum',
-                'postpone_max_days': 5,
-                'accrual_validity': True,
-                'accrual_validity_count': 3,
-                'accrual_validity_type': 'month',
+                    'start_count': 0,
+                    'start_type': 'day',
+                    'added_value': 3,
+                    'added_value_type': 'day',
+                    'frequency': 'yearly',
+                    'yearly_day': 1,
+                    'yearly_month': 'jan',
+                    'cap_accrued_time': False,
+                    'action_with_unused_accruals': 'maximum',
+                    'postpone_max_days': 5,
+                    'accrual_validity': True,
+                    'accrual_validity_count': 3,
+                    'accrual_validity_type': 'month',
                 })
             ],
         })
@@ -72,15 +73,15 @@ class TestExpiringLeaves(HttpCase, TestHrHolidaysCommon):
             'carryover_month': 'dec',
             'level_ids': [
                 (0, 0, {
-                'start_count': 0,
-                'start_type': 'day',
-                'added_value': number_of_accrued_days,
-                'added_value_type': 'day',
-                'frequency': 'yearly',
-                'yearly_day': 1,
-                'yearly_month': 'jan',
-                'cap_accrued_time': False,
-                'action_with_unused_accruals': 'lost'
+                    'start_count': 0,
+                    'start_type': 'day',
+                    'added_value': number_of_accrued_days,
+                    'added_value_type': 'day',
+                    'frequency': 'yearly',
+                    'yearly_day': 1,
+                    'yearly_month': 'jan',
+                    'cap_accrued_time': False,
+                    'action_with_unused_accruals': 'lost'
                 })
             ],
         })
@@ -108,8 +109,8 @@ class TestExpiringLeaves(HttpCase, TestHrHolidaysCommon):
 
         # Assert the date of expiration
         self.assertEqual(allocation_data[logged_in_emp][0][1]['closest_allocation_expire'],
-                    allocation._get_carryover_date(target_date).strftime('%m/%d/%Y'),
-                    "The expiration date should match the carryover date")
+                         allocation._get_carryover_date(target_date).strftime('%m/%d/%Y'),
+                         "The expiration date should match the carryover date")
 
         # Assert the number of expiring leaves
         self.assertEqual(allocation_data[logged_in_emp][0][1]['closest_allocation_remaining'],
@@ -144,16 +145,16 @@ class TestExpiringLeaves(HttpCase, TestHrHolidaysCommon):
             'carryover_month': 'dec',
             'level_ids': [
                 (0, 0, {
-                'start_count': 0,
-                'start_type': 'day',
-                'added_value': number_of_accrued_days,
-                'added_value_type': 'day',
-                'frequency': 'yearly',
-                'yearly_day': 1,
-                'yearly_month': 'jan',
-                'cap_accrued_time': False,
-                'action_with_unused_accruals': 'maximum',
-                'postpone_max_days': carryover_limit,
+                    'start_count': 0,
+                    'start_type': 'day',
+                    'added_value': number_of_accrued_days,
+                    'added_value_type': 'day',
+                    'frequency': 'yearly',
+                    'yearly_day': 1,
+                    'yearly_month': 'jan',
+                    'cap_accrued_time': False,
+                    'action_with_unused_accruals': 'maximum',
+                    'postpone_max_days': carryover_limit,
                 })
             ],
         })
@@ -180,8 +181,8 @@ class TestExpiringLeaves(HttpCase, TestHrHolidaysCommon):
 
         # Assert the date of expiration
         self.assertEqual(allocation_data[logged_in_emp][0][1]['closest_allocation_expire'],
-                    allocation._get_carryover_date(target_date).strftime('%m/%d/%Y'),
-                    "The expiration date should match the carryover date")
+                         allocation._get_carryover_date(target_date).strftime('%m/%d/%Y'),
+                         "The expiration date should match the carryover date")
 
         # Assert the number of expiring leaves
         self.assertEqual(allocation_data[logged_in_emp][0][1]['closest_allocation_remaining'],
@@ -229,16 +230,16 @@ class TestExpiringLeaves(HttpCase, TestHrHolidaysCommon):
             'carryover_month': 'dec',
             'level_ids': [
                 (0, 0, {
-                'start_count': 0,
-                'start_type': 'day',
-                'added_value': number_of_accrued_days,
-                'added_value_type': 'day',
-                'frequency': 'yearly',
-                'yearly_day': 1,
-                'yearly_month': 'jan',
-                'cap_accrued_time': False,
-                'action_with_unused_accruals': 'maximum',
-                'postpone_max_days': carryover_limit,
+                    'start_count': 0,
+                    'start_type': 'day',
+                    'added_value': number_of_accrued_days,
+                    'added_value_type': 'day',
+                    'frequency': 'yearly',
+                    'yearly_day': 1,
+                    'yearly_month': 'jan',
+                    'cap_accrued_time': False,
+                    'action_with_unused_accruals': 'maximum',
+                    'postpone_max_days': carryover_limit,
                 })
             ],
         })
@@ -247,15 +248,15 @@ class TestExpiringLeaves(HttpCase, TestHrHolidaysCommon):
             'name': 'Test Accrual Plan With All Leaves Carried Over',
             'level_ids': [
                 (0, 0, {
-                'start_count': 0,
-                'start_type': 'day',
-                'added_value': number_of_accrued_days,
-                'added_value_type': 'day',
-                'frequency': 'yearly',
-                'yearly_day': 1,
-                'yearly_month': 'jan',
-                'cap_accrued_time': False,
-                'action_with_unused_accruals': 'all',
+                    'start_count': 0,
+                    'start_type': 'day',
+                    'added_value': number_of_accrued_days,
+                    'added_value_type': 'day',
+                    'frequency': 'yearly',
+                    'yearly_day': 1,
+                    'yearly_month': 'jan',
+                    'cap_accrued_time': False,
+                    'action_with_unused_accruals': 'all',
                 })
             ],
         })
@@ -292,8 +293,8 @@ class TestExpiringLeaves(HttpCase, TestHrHolidaysCommon):
 
         # Assert the date of expiration
         self.assertEqual(allocation_data[logged_in_emp][0][1]['closest_allocation_expire'],
-                    allocation_with_carryover._get_carryover_date(target_date).strftime('%m/%d/%Y'),
-                    "The expiration date should match the carryover date")
+                         allocation_with_carryover._get_carryover_date(target_date).strftime('%m/%d/%Y'),
+                         "The expiration date should match the carryover date")
 
         # Assert the number of expiring leaves
         self.assertEqual(allocation_data[logged_in_emp][0][1]['closest_allocation_remaining'],
@@ -330,15 +331,15 @@ class TestExpiringLeaves(HttpCase, TestHrHolidaysCommon):
             'carryover_month': 'dec',
             'level_ids': [
                 (0, 0, {
-                'start_count': 0,
-                'start_type': 'day',
-                'added_value': number_of_accrued_days,
-                'added_value_type': 'day',
-                'frequency': 'yearly',
-                'yearly_day': 1,
-                'yearly_month': 'jan',
-                'cap_accrued_time': False,
-                'action_with_unused_accruals': 'lost',
+                    'start_count': 0,
+                    'start_type': 'day',
+                    'added_value': number_of_accrued_days,
+                    'added_value_type': 'day',
+                    'frequency': 'yearly',
+                    'yearly_day': 1,
+                    'yearly_month': 'jan',
+                    'cap_accrued_time': False,
+                    'action_with_unused_accruals': 'lost',
                 })
             ],
         })
@@ -360,8 +361,8 @@ class TestExpiringLeaves(HttpCase, TestHrHolidaysCommon):
 
         # Assert the date of expiration
         self.assertEqual(allocation_data[logged_in_emp][0][1]['closest_allocation_expire'],
-                    allocation._get_carryover_date(target_date).strftime('%m/%d/%Y'),
-                    "The expiration date should match the carryover date")
+                         allocation._get_carryover_date(target_date).strftime('%m/%d/%Y'),
+                         "The expiration date should match the carryover date")
 
         # Assert the number of expiring leaves
         self.assertEqual(allocation_data[logged_in_emp][0][1]['closest_allocation_remaining'],
@@ -395,16 +396,16 @@ class TestExpiringLeaves(HttpCase, TestHrHolidaysCommon):
                 'carryover_date': 'year_start',
                 'level_ids': [
                     (0, 0, {
-                    'start_count': 0,
-                    'start_type': 'day',
-                    'added_value': 10,
-                    'added_value_type': 'day',
-                    'frequency': 'yearly',
-                    'yearly_day': 1,
-                    'yearly_month': 'jan',
-                    'cap_accrued_time': False,
-                    'action_with_unused_accruals': 'maximum',
-                    'postpone_max_days': 5,
+                        'start_count': 0,
+                        'start_type': 'day',
+                        'added_value': 10,
+                        'added_value_type': 'day',
+                        'frequency': 'yearly',
+                        'yearly_day': 1,
+                        'yearly_month': 'jan',
+                        'cap_accrued_time': False,
+                        'action_with_unused_accruals': 'maximum',
+                        'postpone_max_days': 5,
                     })
                 ],
             })
@@ -423,8 +424,8 @@ class TestExpiringLeaves(HttpCase, TestHrHolidaysCommon):
             allocation_data = self.leave_type.get_allocation_data(allocation.employee_id, target_date)
             # Assert the date of expiration
             self.assertEqual(allocation_data[logged_in_emp][0][1]['closest_allocation_expire'],
-                        (target_date + relativedelta(years=1)).strftime('%m/%d/%Y'),
-                        "The expiration date should be the carryover date of the year that follows the target date's year")
+                             (target_date + relativedelta(years=1)).strftime('%m/%d/%Y'),
+                             "The expiration date should be the carryover date of the year that follows the target date's year")
 
             # Assert the number of expiring leaves
             self.assertEqual(allocation_data[logged_in_emp][0][1]['closest_allocation_remaining'], 5)
@@ -454,16 +455,16 @@ class TestExpiringLeaves(HttpCase, TestHrHolidaysCommon):
             'carryover_month': 'sep',
             'level_ids': [
                 (0, 0, {
-                'start_count': 0,
-                'start_type': 'day',
-                'added_value': 3,
-                'added_value_type': 'day',
-                'frequency': 'yearly',
-                'yearly_day': 1,
-                'yearly_month': 'jan',
-                'cap_accrued_time': False,
-                'action_with_unused_accruals': 'maximum',
-                'postpone_max_days': 5,
+                    'start_count': 0,
+                    'start_type': 'day',
+                    'added_value': 3,
+                    'added_value_type': 'day',
+                    'frequency': 'yearly',
+                    'yearly_day': 1,
+                    'yearly_month': 'jan',
+                    'cap_accrued_time': False,
+                    'action_with_unused_accruals': 'maximum',
+                    'postpone_max_days': 5,
                 })
             ],
         })
@@ -497,8 +498,8 @@ class TestExpiringLeaves(HttpCase, TestHrHolidaysCommon):
         allocation_data = self.leave_type.get_allocation_data(logged_in_emp, target_date)
         # Assert the date of expiration
         self.assertEqual(allocation_data[logged_in_emp][0][1]['closest_allocation_expire'],
-                    (target_date + relativedelta(month=10)).strftime('%m/%d/%Y'),
-                    "The expiration date should be the expiration date of the second allocation because no days will expire on carryover date")
+                         (target_date + relativedelta(month=10)).strftime('%m/%d/%Y'),
+                         "The expiration date should be the expiration date of the second allocation because no days will expire on carryover date")
 
     @users('enguerran')
     def test_no_carried_over_leaves_for_flexible_resource(self):
@@ -527,15 +528,15 @@ class TestExpiringLeaves(HttpCase, TestHrHolidaysCommon):
             'carryover_month': 'dec',
             'level_ids': [
                 (0, 0, {
-                'start_count': 0,
-                'start_type': 'day',
-                'added_value': number_of_accrued_days,
-                'added_value_type': 'day',
-                'frequency': 'yearly',
-                'yearly_day': 1,
-                'yearly_month': 'jan',
-                'cap_accrued_time': False,
-                'action_with_unused_accruals': 'lost'
+                    'start_count': 0,
+                    'start_type': 'day',
+                    'added_value': number_of_accrued_days,
+                    'added_value_type': 'day',
+                    'frequency': 'yearly',
+                    'yearly_day': 1,
+                    'yearly_month': 'jan',
+                    'cap_accrued_time': False,
+                    'action_with_unused_accruals': 'lost'
                 })
             ],
         })
@@ -572,8 +573,8 @@ class TestExpiringLeaves(HttpCase, TestHrHolidaysCommon):
 
         # Assert the date of expiration
         self.assertEqual(allocation_data[logged_in_emp][0][1]['closest_allocation_expire'],
-                    allocation._get_carryover_date(target_date).strftime('%m/%d/%Y'),
-                    "The expiration date should match the carryover date")
+                         allocation._get_carryover_date(target_date).strftime('%m/%d/%Y'),
+                         "The expiration date should match the carryover date")
 
         # Assert the number of expiring leaves
         self.assertEqual(allocation_data[logged_in_emp][0][1]['closest_allocation_remaining'],
@@ -583,10 +584,11 @@ class TestExpiringLeaves(HttpCase, TestHrHolidaysCommon):
         # Days between the target date and the expiration date (accrual_plan's carryover date)
         remaining_days_before_expiration = (allocation._get_carryover_date(target_date) - target_date).days
         working_days_equivalent_needed = remaining_days_before_expiration * 24 / self.flex_40h_calendar.hours_per_day
-    
+
         # Assert the closest allocation duration (number of working days equivalent (8 hours/day) remaining before the allocation expires)
-        self.assertEqual(round(allocation_data[logged_in_emp][0][1]['closest_allocation_duration']), working_days_equivalent_needed,
-                            "The closest allocation duration should be the number of working days equivalent (8 hours/day) remaining before the allocation expires")
+        self.assertEqual(round(allocation_data[logged_in_emp][0][1]['closest_allocation_duration']),
+                         working_days_equivalent_needed,
+                         "The closest allocation duration should be the number of working days equivalent (8 hours/day) remaining before the allocation expires")
 
     @users('enguerran')
     def test_no_carried_over_leaves_for_fully_flexible_resource(self):
@@ -616,21 +618,21 @@ class TestExpiringLeaves(HttpCase, TestHrHolidaysCommon):
             'carryover_month': 'dec',
             'level_ids': [
                 (0, 0, {
-                'start_count': 0,
-                'start_type': 'day',
-                'added_value': number_of_accrued_days,
-                'added_value_type': 'day',
-                'frequency': 'yearly',
-                'yearly_day': 1,
-                'yearly_month': 'jan',
-                'cap_accrued_time': False,
-                'action_with_unused_accruals': 'lost'
+                    'start_count': 0,
+                    'start_type': 'day',
+                    'added_value': number_of_accrued_days,
+                    'added_value_type': 'day',
+                    'frequency': 'yearly',
+                    'yearly_day': 1,
+                    'yearly_month': 'jan',
+                    'cap_accrued_time': False,
+                    'action_with_unused_accruals': 'lost'
                 })
             ],
         })
 
         logged_in_emp = self.env.user.employee_id
-        logged_in_emp.resource_calendar_id = None       # Set as Fully flexible resource
+        logged_in_emp.resource_calendar_id = None  # Set as Fully flexible resource
 
         allocation = self.env['hr.leave.allocation'].sudo().create({
             'date_from': date(date.today().year, 1, 1),
@@ -654,8 +656,8 @@ class TestExpiringLeaves(HttpCase, TestHrHolidaysCommon):
 
         # Assert the date of expiration
         self.assertEqual(allocation_data[logged_in_emp][0][1]['closest_allocation_expire'],
-                    allocation._get_carryover_date(target_date).strftime('%m/%d/%Y'),
-                    "The expiration date should match the carryover date")
+                         allocation._get_carryover_date(target_date).strftime('%m/%d/%Y'),
+                         "The expiration date should match the carryover date")
 
         # Assert the number of expiring leaves
         self.assertEqual(allocation_data[logged_in_emp][0][1]['closest_allocation_remaining'],
@@ -666,8 +668,9 @@ class TestExpiringLeaves(HttpCase, TestHrHolidaysCommon):
         working_days_equivalent_needed = (allocation._get_carryover_date(target_date) - target_date).days + 1
 
         # Assert the closest allocation duration (number of working days equivalent (8 hours/day) remaining before the allocation expires)
-        self.assertEqual(round(allocation_data[logged_in_emp][0][1]['closest_allocation_duration']), working_days_equivalent_needed,
-                            "The closest allocation duration should be the number of working days equivalent (24 hours/day) remaining before the allocation expires")
+        self.assertEqual(round(allocation_data[logged_in_emp][0][1]['closest_allocation_duration']),
+                         working_days_equivalent_needed,
+                         "The closest allocation duration should be the number of working days equivalent (24 hours/day) remaining before the allocation expires")
 
     @users('enguerran')
     def test_carried_over_days_expiration_date(self):
@@ -692,23 +695,24 @@ class TestExpiringLeaves(HttpCase, TestHrHolidaysCommon):
         - If target date is 01/04/2024, then the expiration date should be 01/7/2024 because on 01/04/2024, 3 days will carryover for
           the second allocation and these 3 days will expire in 3 months.
         """
-        accrual_plan_without_accrual_validity = self.env['hr.leave.accrual.plan'].with_context(tracking_disable=True).sudo().create({
+        accrual_plan_without_accrual_validity = self.env['hr.leave.accrual.plan'].with_context(
+            tracking_disable=True).sudo().create({
             'name': 'Test Accrual Plan',
             'carryover_date': 'other',
             'carryover_day': 1,
             'carryover_month': 'apr',
             'level_ids': [
                 (0, 0, {
-                'start_count': 0,
-                'start_type': 'day',
-                'added_value': 3,
-                'added_value_type': 'day',
-                'frequency': 'yearly',
-                'yearly_day': 1,
-                'yearly_month': 'jan',
-                'cap_accrued_time': False,
-                'action_with_unused_accruals': 'maximum',
-                'postpone_max_days': 5,
+                    'start_count': 0,
+                    'start_type': 'day',
+                    'added_value': 3,
+                    'added_value_type': 'day',
+                    'frequency': 'yearly',
+                    'yearly_day': 1,
+                    'yearly_month': 'jan',
+                    'cap_accrued_time': False,
+                    'action_with_unused_accruals': 'maximum',
+                    'postpone_max_days': 5,
                 })
             ],
         })
@@ -742,8 +746,8 @@ class TestExpiringLeaves(HttpCase, TestHrHolidaysCommon):
         allocation_data = self.leave_type.get_allocation_data(logged_in_emp, target_date)
         # Assert the date of expiration
         self.assertEqual(allocation_data[logged_in_emp][0][1]['closest_allocation_expire'],
-                    (target_date + relativedelta(month=7)).strftime('%m/%d/%Y'),
-                    "The expiration date should be the carried over days expiration date of allocation 3")
+                         (target_date + relativedelta(month=7)).strftime('%m/%d/%Y'),
+                         "The expiration date should be the carried over days expiration date of allocation 3")
 
         # Assert the number of expiring leaves
         self.assertEqual(allocation_data[logged_in_emp][0][1]['closest_allocation_remaining'], 3)
@@ -797,8 +801,8 @@ class TestExpiringLeaves(HttpCase, TestHrHolidaysCommon):
         allocation_data = self.leave_type.get_allocation_data(logged_in_emp, target_date)
         # Assert the date of expiration
         self.assertEqual(allocation_data[logged_in_emp][0][1]['closest_allocation_expire'],
-                    (target_date + relativedelta(month=7)).strftime('%m/%d/%Y'),
-                    "The expiration date should be the carried over days expiration date of allocation 3")
+                         (target_date + relativedelta(month=7)).strftime('%m/%d/%Y'),
+                         "The expiration date should be the carried over days expiration date of allocation 3")
 
         # Assert the number of expiring leaves
         self.assertEqual(allocation_data[logged_in_emp][0][1]['closest_allocation_remaining'], 1)

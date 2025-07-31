@@ -3,9 +3,10 @@
 
 """ Implementation of "INVENTORY VALUATION TESTS (With valuation layers)" spreadsheet. """
 
-from odoo import Command
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.addons.stock_account.tests.test_stockvaluation import _create_accounting_data
+
+from odoo import Command
 from odoo.exceptions import ValidationError
 from odoo.tests import Form, tagged
 from odoo.tests.common import TransactionCase
@@ -33,7 +34,8 @@ class TestStockValuationCommon(TransactionCase):
         # Counter automatically incremented by `_make_in_move` and `_make_out_move`.
         self.days = 0
 
-    def _make_in_move(self, product, quantity, unit_cost=None, create_picking=False, loc_dest=None, pick_type=None, lot_ids=False):
+    def _make_in_move(self, product, quantity, unit_cost=None, create_picking=False, loc_dest=None, pick_type=None,
+                      lot_ids=False):
         """ Helper to create and validate a receipt move.
         """
         unit_cost = unit_cost or product.standard_price
@@ -55,7 +57,7 @@ class TestStockValuationCommon(TransactionCase):
                 'picking_type_id': in_move.picking_type_id.id,
                 'location_id': in_move.location_id.id,
                 'location_dest_id': in_move.location_dest_id.id,
-                })
+            })
             in_move.write({'picking_id': picking.id})
 
         in_move._action_confirm()
@@ -77,7 +79,8 @@ class TestStockValuationCommon(TransactionCase):
         self.days += 1
         return in_move.with_context(svl=True)
 
-    def _make_out_move(self, product, quantity, force_assign=None, create_picking=False, loc_src=None, pick_type=None, lot_ids=False):
+    def _make_out_move(self, product, quantity, force_assign=None, create_picking=False, loc_src=None, pick_type=None,
+                       lot_ids=False):
         """ Helper to create and validate a delivery move.
         """
         loc_src = loc_src or self.stock_location
@@ -97,7 +100,7 @@ class TestStockValuationCommon(TransactionCase):
                 'picking_type_id': out_move.picking_type_id.id,
                 'location_id': out_move.location_id.id,
                 'location_dest_id': out_move.location_dest_id.id,
-                })
+            })
             out_move.write({'picking_id': picking.id})
 
         out_move._action_confirm()
@@ -157,8 +160,9 @@ class TestStockValuationCommon(TransactionCase):
         return dropshipped
 
     def _make_return(self, move, quantity_to_return):
-        stock_return_picking = Form(self.env['stock.return.picking']\
-            .with_context(active_ids=[move.picking_id.id], active_id=move.picking_id.id, active_model='stock.picking'))
+        stock_return_picking = Form(self.env['stock.return.picking'] \
+                                    .with_context(active_ids=[move.picking_id.id], active_id=move.picking_id.id,
+                                                  active_model='stock.picking'))
         stock_return_picking = stock_return_picking.save()
         stock_return_picking.product_return_moves.quantity = quantity_to_return
         stock_return_picking_action = stock_return_picking.action_create_returns()
@@ -258,7 +262,8 @@ class TestStockValuationStandard(TestStockValuationCommon):
 
         self.assertEqual(self.product1.value_svl, 75)
         self.assertEqual(self.product1.quantity_svl, 5)
-        self.assertEqual(self.product1.stock_valuation_layer_ids.sorted()[-1].description, 'Product value manually modified (from 10.0 to 15.0)')
+        self.assertEqual(self.product1.stock_valuation_layer_ids.sorted()[-1].description,
+                         'Product value manually modified (from 10.0 to 15.0)')
 
     def test_negative_1(self):
         self.product1.product_tmpl_id.categ_id.property_valuation = 'manual_periodic'
@@ -337,7 +342,8 @@ class TestStockValuationStandard(TestStockValuationCommon):
         in_move.move_line_ids.quantity = 2
         in_move.picked = True
         res_dict = picking.button_validate()
-        wizard = self.env[(res_dict.get('res_model'))].with_context(res_dict.get('context')).browse(res_dict.get('res_id'))
+        wizard = self.env[(res_dict.get('res_model'))].with_context(res_dict.get('context')).browse(
+            res_dict.get('res_id'))
         wizard.process()
 
         self.assertTrue(product2.stock_valuation_layer_ids)
@@ -671,7 +677,8 @@ class TestStockValuationAVCO(TestStockValuationCommon):
         move3 = self._make_out_move(self.product1, 2, create_picking=True)
         move4 = self._make_return(move3, 2)
 
-        self.assertAlmostEqual(abs(move3.stock_valuation_layer_ids[0].value), abs(move4.stock_valuation_layer_ids[0].value))
+        self.assertAlmostEqual(abs(move3.stock_valuation_layer_ids[0].value),
+                               abs(move4.stock_valuation_layer_ids[0].value))
         self.assertAlmostEqual(self.product1.value_svl, 25.33)
         self.assertEqual(self.product1.quantity_svl, 2)
 
@@ -684,7 +691,7 @@ class TestStockValuationAVCO(TestStockValuationCommon):
         product_lot.write({'tracking': 'lot', 'standard_price': 5.0})
         product_lot.categ_id.property_cost_method = 'average'
         self.env['stock.quant'].create({
-            'location_id':  self.ref('stock.stock_location_stock'),
+            'location_id': self.ref('stock.stock_location_stock'),
             'product_id': product_lot.id,
             'inventory_quantity_auto_apply': 10.0,
             'lot_id': False,
@@ -911,7 +918,8 @@ class TestStockValuationFIFO(TestStockValuationCommon):
             product.product_tmpl_id.categ_id.property_cost_method = 'fifo'
             warehouse = self.env['stock.warehouse'].search([('company_id', '=', new_company.id)])
 
-            self._make_in_move(product, 0.5, loc_dest=warehouse.lot_stock_id, pick_type=warehouse.in_type_id, unit_cost=3)
+            self._make_in_move(product, 0.5, loc_dest=warehouse.lot_stock_id, pick_type=warehouse.in_type_id,
+                               unit_cost=3)
             self._make_out_move(product, 0.5, loc_src=warehouse.lot_stock_id, pick_type=warehouse.out_type_id)
 
             self.assertEqual(product.value_svl, 0.0)
@@ -1037,7 +1045,8 @@ class TestStockValuationChangeValuation(TestStockValuationCommon):
     @classmethod
     def setUpClass(cls):
         super(TestStockValuationChangeValuation, cls).setUpClass()
-        cls.stock_input_account, cls.stock_output_account, cls.stock_valuation_account, cls.expense_account, cls.stock_journal = _create_accounting_data(cls.env)
+        cls.stock_input_account, cls.stock_output_account, cls.stock_valuation_account, cls.expense_account, cls.stock_journal = _create_accounting_data(
+            cls.env)
         cls.product1.categ_id.property_valuation = 'real_time'
         cls.product1.write({
             'property_account_expense_id': cls.expense_account.id,
@@ -1073,7 +1082,8 @@ class TestStockValuationChangeValuation(TestStockValuationCommon):
         self.assertEqual(len(self.product1.stock_valuation_layer_ids.mapped('account_move_id')), 1)
         self.assertEqual(len(self.product1.stock_valuation_layer_ids), 3)
         for svl in self.product1.stock_valuation_layer_ids.sorted()[-2:]:
-            self.assertEqual(svl.description, 'Valuation method change for product category All: from manual_periodic to real_time.')
+            self.assertEqual(svl.description,
+                             'Valuation method change for product category All: from manual_periodic to real_time.')
 
     def test_standard_manual_to_auto_2(self):
         self.product1.product_tmpl_id.categ_id.property_cost_method = 'standard'
@@ -1162,6 +1172,7 @@ class TestStockValuationChangeValuation(TestStockValuationCommon):
             self.assertEqual(len(move.stock_valuation_layer_ids), 1)
             self.assertAlmostEqual(move.stock_valuation_layer_ids.unit_cost, self.product1.standard_price)
             self.assertAlmostEqual(abs(move.stock_valuation_layer_ids.value), 1123.39)
+
 
 @tagged('post_install', '-at_install')
 class TestAngloSaxonAccounting(AccountTestInvoicingCommon, TestStockValuationCommon):
@@ -1298,8 +1309,9 @@ class TestAngloSaxonAccounting(AccountTestInvoicingCommon, TestStockValuationCom
         return dropshipped
 
     def _make_return(self, move, quantity_to_return):
-        stock_return_picking = Form(self.env['stock.return.picking']\
-            .with_context(active_ids=[move.picking_id.id], active_id=move.picking_id.id, active_model='stock.picking'))
+        stock_return_picking = Form(self.env['stock.return.picking'] \
+                                    .with_context(active_ids=[move.picking_id.id], active_id=move.picking_id.id,
+                                                  active_model='stock.picking'))
         stock_return_picking = stock_return_picking.save()
         stock_return_picking.product_return_moves.quantity = quantity_to_return
         stock_return_picking_action = stock_return_picking.action_create_returns()
@@ -1333,7 +1345,8 @@ class TestAngloSaxonAccounting(AccountTestInvoicingCommon, TestStockValuationCom
         self._make_in_move(self.product1, 2, unit_cost=20)
         self.assertEqual(self.product1.standard_price, 15)
 
-        refund_wizard = self.env['account.move.reversal'].with_context(active_model="account.move", active_ids=invoice.ids).create({
+        refund_wizard = self.env['account.move.reversal'].with_context(active_model="account.move",
+                                                                       active_ids=invoice.ids).create({
             'journal_id': invoice.journal_id.id,
         })
         action = refund_wizard.refund_moves()
@@ -1358,16 +1371,20 @@ class TestAngloSaxonAccounting(AccountTestInvoicingCommon, TestStockValuationCom
         out_move = self._make_out_move(self.product1, 10, create_picking=True)
         return_move = self._make_return(out_move, 10)
 
-        valuation_line = out_move.account_move_ids.line_ids.filtered(lambda l: l.account_id == self.stock_valuation_account)
-        stock_out_line = out_move.account_move_ids.line_ids.filtered(lambda l: l.account_id == self.stock_output_account)
+        valuation_line = out_move.account_move_ids.line_ids.filtered(
+            lambda l: l.account_id == self.stock_valuation_account)
+        stock_out_line = out_move.account_move_ids.line_ids.filtered(
+            lambda l: l.account_id == self.stock_output_account)
 
         self.assertEqual(valuation_line.credit, 100)
         self.assertEqual(valuation_line.debit, 0)
         self.assertEqual(stock_out_line.credit, 0)
         self.assertEqual(stock_out_line.debit, 100)
 
-        valuation_line = return_move.account_move_ids.line_ids.filtered(lambda l: l.account_id == self.stock_valuation_account)
-        stock_out_line = return_move.account_move_ids.line_ids.filtered(lambda l: l.account_id == self.stock_output_account)
+        valuation_line = return_move.account_move_ids.line_ids.filtered(
+            lambda l: l.account_id == self.stock_valuation_account)
+        stock_out_line = return_move.account_move_ids.line_ids.filtered(
+            lambda l: l.account_id == self.stock_output_account)
 
         self.assertEqual(valuation_line.credit, -100)
         self.assertEqual(valuation_line.debit, 0)
@@ -1396,21 +1413,21 @@ class TestAngloSaxonAccounting(AccountTestInvoicingCommon, TestStockValuationCom
 
         # Dropshipping should be: Input -> Output
         self.assertRecordValues(origin_svls[0].account_move_id.line_ids, [
-            {'account_id': acc_in.id,        'debit': 0,  'credit': 20},
+            {'account_id': acc_in.id, 'debit': 0, 'credit': 20},
             {'account_id': acc_valuation.id, 'debit': 20, 'credit': 0},
         ])
         self.assertRecordValues(origin_svls[1].account_move_id.line_ids, [
-            {'account_id': acc_valuation.id, 'debit': 0,  'credit': 20},
-            {'account_id': acc_out.id,       'debit': 20, 'credit': 0},
+            {'account_id': acc_valuation.id, 'debit': 0, 'credit': 20},
+            {'account_id': acc_out.id, 'debit': 20, 'credit': 0},
         ])
         # Return should be: Output -> Input
         self.assertRecordValues(return_svls[0].account_move_id.line_ids, [
-            {'account_id': acc_out.id,       'debit': 0,  'credit': 20},
+            {'account_id': acc_out.id, 'debit': 0, 'credit': 20},
             {'account_id': acc_valuation.id, 'debit': 20, 'credit': 0},
         ])
         self.assertRecordValues(return_svls[1].account_move_id.line_ids, [
-            {'account_id': acc_valuation.id, 'debit': 0,  'credit': 20},
-            {'account_id': acc_in.id,        'debit': 20, 'credit': 0},
+            {'account_id': acc_valuation.id, 'debit': 0, 'credit': 20},
+            {'account_id': acc_in.id, 'debit': 20, 'credit': 0},
         ])
 
     def test_dropship_return_accounts_2(self):
@@ -1423,8 +1440,9 @@ class TestAngloSaxonAccounting(AccountTestInvoicingCommon, TestStockValuationCom
         move1 = self._make_dropship_move(self.product1, 2, unit_cost=10)
 
         # return to WH/Stock
-        stock_return_picking = Form(self.env['stock.return.picking']\
-            .with_context(active_ids=[move1.picking_id.id], active_id=move1.picking_id.id, active_model='stock.picking'))
+        stock_return_picking = Form(self.env['stock.return.picking'] \
+                                    .with_context(active_ids=[move1.picking_id.id], active_id=move1.picking_id.id,
+                                                  active_model='stock.picking'))
         stock_return_picking = stock_return_picking.save()
         stock_return_picking.product_return_moves.quantity = 2
         stock_return_picking_action = stock_return_picking.action_create_returns()
@@ -1447,15 +1465,15 @@ class TestAngloSaxonAccounting(AccountTestInvoicingCommon, TestStockValuationCom
 
         # Dropshipping should be: Input -> Output
         self.assertRecordValues(origin_svls[0].account_move_id.line_ids, [
-            {'account_id': acc_in.id,        'debit': 0,  'credit': 20},
+            {'account_id': acc_in.id, 'debit': 0, 'credit': 20},
             {'account_id': acc_valuation.id, 'debit': 20, 'credit': 0},
         ])
         self.assertRecordValues(origin_svls[1].account_move_id.line_ids, [
-            {'account_id': acc_valuation.id, 'debit': 0,  'credit': 20},
-            {'account_id': acc_out.id,       'debit': 20, 'credit': 0},
+            {'account_id': acc_valuation.id, 'debit': 0, 'credit': 20},
+            {'account_id': acc_out.id, 'debit': 20, 'credit': 0},
         ])
         # Return should be: Output -> Valuation
         self.assertRecordValues(return_svl.account_move_id.line_ids, [
-            {'account_id': acc_out.id,       'debit': 0,  'credit': 20},
+            {'account_id': acc_out.id, 'debit': 0, 'credit': 20},
             {'account_id': acc_valuation.id, 'debit': 20, 'credit': 0},
         ])

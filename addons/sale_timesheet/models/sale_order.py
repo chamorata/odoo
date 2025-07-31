@@ -10,13 +10,18 @@ from odoo.tools import float_compare
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
-    timesheet_count = fields.Float(string='Timesheet activities', compute='_compute_timesheet_count', groups="hr_timesheet.group_hr_timesheet_user", export_string_translation=False)
-    timesheet_encode_uom_id = fields.Many2one('uom.uom', related='company_id.timesheet_encode_uom_id', export_string_translation=False)
+    timesheet_count = fields.Float(string='Timesheet activities', compute='_compute_timesheet_count',
+                                   groups="hr_timesheet.group_hr_timesheet_user", export_string_translation=False)
+    timesheet_encode_uom_id = fields.Many2one('uom.uom', related='company_id.timesheet_encode_uom_id',
+                                              export_string_translation=False)
     timesheet_total_duration = fields.Integer("Timesheet Total Duration", compute='_compute_timesheet_total_duration',
-        help="Total recorded duration, expressed in the encoding UoM, and rounded to the unit", compute_sudo=True,
-        groups="hr_timesheet.group_hr_timesheet_user", export_string_translation=False)
-    show_hours_recorded_button = fields.Boolean(compute="_compute_show_hours_recorded_button", groups="hr_timesheet.group_hr_timesheet_user", export_string_translation=False)
-
+                                              help="Total recorded duration, expressed in the encoding UoM, and rounded to the unit",
+                                              compute_sudo=True,
+                                              groups="hr_timesheet.group_hr_timesheet_user",
+                                              export_string_translation=False)
+    show_hours_recorded_button = fields.Boolean(compute="_compute_show_hours_recorded_button",
+                                                groups="hr_timesheet.group_hr_timesheet_user",
+                                                export_string_translation=False)
 
     def _compute_timesheet_count(self):
         timesheets_per_so = {
@@ -52,11 +57,12 @@ class SaleOrder(models.Model):
 
         # Get SOs which their state is not equal to upselling and if at least a SOL has warning prepaid service upsell set to True and the warning has not already been displayed
         upsellable_orders = self.filtered(lambda so:
-            so.state == 'sale'
-            and so.invoice_status != 'upselling'
-            and so.id
-            and (so.user_id or so.partner_id.user_id)  # salesperson needed to assign upsell activity
-        )
+                                          so.state == 'sale'
+                                          and so.invoice_status != 'upselling'
+                                          and so.id
+                                          and (so.user_id or so.partner_id.user_id)
+                                          # salesperson needed to assign upsell activity
+                                          )
         super(SaleOrder, upsellable_orders.with_context(mail_activity_automation_skip=True))._compute_field_value(field)
         for order in upsellable_orders:
             upsellable_lines = order._get_prepaid_service_lines_to_upsell()
@@ -78,7 +84,7 @@ class SaleOrder(models.Model):
             [
                 ('order_id', 'in', self.ids),
                 '|', ('product_id.service_type', 'not in', ['milestones', 'manual']),
-                     ('product_id.invoice_policy', '!=', 'delivery'),
+                ('product_id.invoice_policy', '!=', 'delivery'),
             ]
         ]), aggregates=['order_id:array_agg'])[0][0]
 
@@ -92,16 +98,16 @@ class SaleOrder(models.Model):
         self.ensure_one()
         precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
         return self.order_line.filtered(lambda sol:
-            sol.is_service
-            and sol.invoice_status != "invoiced"
-            and not sol.has_displayed_warning_upsell  # we don't want to display many times the warning each time we timesheet on the SOL
-            and sol.product_id.service_policy == 'ordered_prepaid'
-            and float_compare(
-                sol.qty_delivered,
-                sol.product_uom_qty * (sol.product_id.service_upsell_threshold or 1.0),
-                precision_digits=precision
-            ) > 0
-        )
+                                        sol.is_service
+                                        and sol.invoice_status != "invoiced"
+                                        and not sol.has_displayed_warning_upsell  # we don't want to display many times the warning each time we timesheet on the SOL
+                                        and sol.product_id.service_policy == 'ordered_prepaid'
+                                        and float_compare(
+                                            sol.qty_delivered,
+                                            sol.product_uom_qty * (sol.product_id.service_upsell_threshold or 1.0),
+                                            precision_digits=precision
+                                        ) > 0
+                                        )
 
     def action_view_timesheet(self):
         self.ensure_one()
@@ -109,7 +115,10 @@ class SaleOrder(models.Model):
             return {'type': 'ir.actions.act_window_close'}
 
         action = self.env["ir.actions.actions"]._for_xml_id("sale_timesheet.timesheet_action_from_sales_order")
-        default_sale_line = next((sale_line for sale_line in self.order_line if sale_line.is_service and sale_line.product_id.service_policy in ['ordered_prepaid', 'delivered_timesheet']), self.env['sale.order.line'])
+        default_sale_line = next((sale_line for sale_line in self.order_line if
+                                  sale_line.is_service and sale_line.product_id.service_policy in ['ordered_prepaid',
+                                                                                                   'delivered_timesheet']),
+                                 self.env['sale.order.line'])
         context = {
             'search_default_billable_timesheet': True,
             'default_is_so_line_edited': True,
@@ -142,7 +151,9 @@ class SaleOrder(models.Model):
     def _reset_has_displayed_warning_upsell_order_lines(self):
         precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
         for line in self.order_line:
-            if line.has_displayed_warning_upsell and line.product_uom and float_compare(line.qty_delivered, line.product_uom_qty, precision_digits=precision) == 0:
+            if line.has_displayed_warning_upsell and line.product_uom and float_compare(line.qty_delivered,
+                                                                                        line.product_uom_qty,
+                                                                                        precision_digits=precision) == 0:
                 line.has_displayed_warning_upsell = False
 
     def _create_invoices(self, grouped=False, final=False, date=None):
@@ -150,6 +161,7 @@ class SaleOrder(models.Model):
         context in sale_make_invoice_advance_inv wizard.
         """
         moves = super()._create_invoices(grouped=grouped, final=final, date=date)
-        moves._link_timesheets_to_invoice(self.env.context.get("timesheet_start_date"), self.env.context.get("timesheet_end_date"))
+        moves._link_timesheets_to_invoice(self.env.context.get("timesheet_start_date"),
+                                          self.env.context.get("timesheet_end_date"))
         self._reset_has_displayed_warning_upsell_order_lines()
         return moves

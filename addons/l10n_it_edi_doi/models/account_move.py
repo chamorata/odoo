@@ -49,8 +49,8 @@ class AccountMove(models.Model):
         sale_types = self.env['account.move'].get_sale_types()
         for move in self:
             move.l10n_it_edi_doi_use = (
-                move.l10n_it_edi_doi_id
-                or (move.country_code == "IT" and move.move_type in sale_types)
+                    move.l10n_it_edi_doi_id
+                    or (move.country_code == "IT" and move.move_type in sale_types)
             )
 
     @api.depends('company_id', 'partner_id.commercial_partner_id', 'l10n_it_edi_doi_date', 'currency_id')
@@ -69,8 +69,9 @@ class AccountMove(models.Model):
             if move.l10n_it_edi_doi_id and not validity_warnings:
                 continue
 
-            declaration = self.env['l10n_it_edi_doi.declaration_of_intent']\
-                ._fetch_valid_declaration_of_intent(move.company_id, partner, move.currency_id, move.l10n_it_edi_doi_date)
+            declaration = self.env['l10n_it_edi_doi.declaration_of_intent'] \
+                ._fetch_valid_declaration_of_intent(move.company_id, partner, move.currency_id,
+                                                    move.l10n_it_edi_doi_date)
             move.l10n_it_edi_doi_id = declaration
 
     @api.depends('l10n_it_edi_doi_id', 'tax_totals', 'move_type')
@@ -101,9 +102,9 @@ class AccountMove(models.Model):
             declaration = move.l10n_it_edi_doi_id
 
             show_warning = (
-                declaration
-                and move.is_sale_document(include_receipts=False)
-                and move.state != 'cancel'
+                    declaration
+                    and move.is_sale_document(include_receipts=False)
+                    and move.state != 'cancel'
             )
             if not show_warning:
                 continue
@@ -121,9 +122,11 @@ class AccountMove(models.Model):
                         order = sale_line.order_id
                         if order.l10n_it_edi_doi_id == declaration:
                             linked_orders |= order
-                        qty_invoiced = invoice_line.product_uom_id._compute_quantity(invoice_line.quantity, sale_line.product_uom) * -move.direction_sign
+                        qty_invoiced = invoice_line.product_uom_id._compute_quantity(invoice_line.quantity,
+                                                                                     sale_line.product_uom) * -move.direction_sign
                         sale_line_id = sale_line.ids[0]  # do not just use `id` in case of NewId
-                        additional_invoiced_qty[sale_line_id] = additional_invoiced_qty.get(sale_line_id, 0) + qty_invoiced
+                        additional_invoiced_qty[sale_line_id] = additional_invoiced_qty.get(sale_line_id,
+                                                                                            0) + qty_invoiced
                 for order in linked_orders:
                     not_yet_invoiced = order.l10n_it_edi_doi_not_yet_invoiced
                     not_yet_invoiced_after_posting = order._l10n_it_edi_doi_get_amount_not_yet_invoiced(
@@ -137,7 +140,8 @@ class AccountMove(models.Model):
                 invoiced_amount=declaration_invoiced,
             )
 
-            threshold_warning = declaration._build_threshold_warning_message(declaration_invoiced, declaration_not_yet_invoiced)
+            threshold_warning = declaration._build_threshold_warning_message(declaration_invoiced,
+                                                                             declaration_not_yet_invoiced)
 
             move.l10n_it_edi_doi_warning = '{}\n\n{}'.format('\n'.join(validity_warnings), threshold_warning).strip()
 

@@ -12,7 +12,8 @@
                 <form string="Procurement group">
                     <sheet>
                         <div class="oe_button_box" name="button_box">
-                            <button name="%(do_view_pickings)d" string="Transfers" type="action" class="oe_stat_button" icon="fa-truck"/>
+                            <button name="%(do_view_pickings)d" string="Transfers" type="action" class="oe_stat_button"
+                                    icon="fa-truck"/>
                         </div>
                         <group>
                             <field name="name"/>
@@ -34,9 +35,11 @@
                     <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
                     <group expand='0' string='Group by...'>
                         <filter string='Route' name="groupby_route" context="{'group_by': 'route_id'}"/>
-                        <filter string='Destination Location' name="groupby_location_dest" context="{'group_by': 'location_dest_id'}"/>
-                        <filter string='Warehouse' name="groupby_warehouse" context="{'group_by': 'warehouse_id'}" groups="stock.group_stock_multi_warehouses"/>
-                   </group>
+                        <filter string='Destination Location' name="groupby_location_dest"
+                                context="{'group_by': 'location_dest_id'}"/>
+                        <filter string='Warehouse' name="groupby_warehouse" context="{'group_by': 'warehouse_id'}"
+                                groups="stock.group_stock_multi_warehouses"/>
+                    </group>
                 </search>
             </field>
         </record>
@@ -66,7 +69,9 @@
                         <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
                         <div class="oe_title">
                             <label for="name"/>
-                            <h1><field name="name"/></h1>
+                            <h1>
+                                <field name="name"/>
+                            </h1>
                         </div>
                         <group>
                             <group>
@@ -75,9 +80,11 @@
                                 <field name="picking_type_code_domain" invisible="1"/>
                                 <field name="action"/>
                                 <field name="picking_type_id"/>
-                                <field name="location_src_id" options="{'no_create': True}" required="action in ['pull', 'push', 'pull_push']"/>
+                                <field name="location_src_id" options="{'no_create': True}"
+                                       required="action in ['pull', 'push', 'pull_push']"/>
                                 <field name="location_dest_id" options="{'no_create': True}"/>
-                                <field name="location_dest_from_rule" invisible="action not in ['pull', 'pull_push']" groups="base.group_no_one"/>
+                                <field name="location_dest_from_rule" invisible="action not in ['pull', 'pull_push']"
+                                       groups="base.group_no_one"/>
                                 <field name="auto" invisible="action not in ['push', 'pull_push']"/>
                                 <field name="procure_method" invisible="action not in ['pull', 'pull_push']"/>
                             </group>
@@ -95,22 +102,28 @@
                                 <field name="route_id"/>
                                 <field name="warehouse_id" invisible="action == 'push'" groups="base.group_no_one"/>
                                 <field name="route_company_id" invisible="1"/>
-                                <field name="company_id" options="{'no_create': True}" required="action == 'push'" groups="base.group_multi_company"/>
+                                <field name="company_id" options="{'no_create': True}" required="action == 'push'"
+                                       groups="base.group_multi_company"/>
                                 <field name="sequence" string="Sequence" groups="base.group_no_one"/>
                             </group>
                             <group name="propagation_group" string="Propagation">
                                 <field name="group_propagation_option"/>
-                                <field name="group_id" invisible="group_propagation_option != 'fixed'" required="group_propagation_option == 'fixed'"/>
+                                <field name="group_id" invisible="group_propagation_option != 'fixed'"
+                                       required="group_propagation_option == 'fixed'"/>
                                 <field name="propagate_cancel" invisible="action == 'push'"/>
                                 <field name="propagate_warehouse_id" invisible="action == 'push'"/>
                             </group>
                             <group string="Options" invisible="action not in ['pull', 'push', 'pull_push']">
                                 <field name="partner_address_id" invisible="action == 'push'"/>
                                 <label for="delay"/>
-                                <div><field name="delay" class="oe_inline"/> days</div>
+                                <div>
+                                    <field name="delay" class="oe_inline"/>
+                                    days
+                                </div>
                             </group>
                         </group>
-                        <field name="push_domain" invisible="action not in ['push', 'pull_push']" widget="domain" options="{'model': 'stock.move'}"/>
+                        <field name="push_domain" invisible="action not in ['push', 'pull_push']" widget="domain"
+                               options="{'model': 'stock.move'}"/>
                     </sheet>
                 </form>
             </field>
@@ -141,10 +154,10 @@
         </record>
 
         <menuitem action="action_rules_form" id="menu_action_rules_form"
-        parent="menu_warehouse_config" sequence="5" groups="stock.group_adv_location"/>
+                  parent="menu_warehouse_config" sequence="5" groups="stock.group_adv_location"/>
 
         <menuitem id="stock.menu_procurement_compute"
-        parent="menu_stock_warehouse_mgmt" sequence="135" groups="base.group_no_one"
-        action="ir_cron_scheduler_action_ir_actions_server"/>
+                  parent="menu_stock_warehouse_mgmt" sequence="135" groups="base.group_no_one"
+                  action="ir_cron_scheduler_action_ir_actions_server"/>
     </data>
 </odoo>

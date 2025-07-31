@@ -22,10 +22,13 @@ class PackageType(models.Model):
     base_weight = fields.Float(string='Weight', help='Weight of the package type')
     max_weight = fields.Float('Max Weight', help='Maximum weight shippable in this packaging')
     barcode = fields.Char('Barcode', copy=False)
-    weight_uom_name = fields.Char(string='Weight unit of measure label', compute='_compute_weight_uom_name', default=_get_default_weight_uom)
-    length_uom_name = fields.Char(string='Length unit of measure label', compute='_compute_length_uom_name', default=_get_default_length_uom)
+    weight_uom_name = fields.Char(string='Weight unit of measure label', compute='_compute_weight_uom_name',
+                                  default=_get_default_weight_uom)
+    length_uom_name = fields.Char(string='Length unit of measure label', compute='_compute_length_uom_name',
+                                  default=_get_default_length_uom)
     company_id = fields.Many2one('res.company', 'Company', index=True)
-    storage_category_capacity_ids = fields.One2many('stock.storage.category.capacity', 'package_type_id', 'Storage Category Capacity', copy=True)
+    storage_category_capacity_ids = fields.One2many('stock.storage.category.capacity', 'package_type_id',
+                                                    'Storage Category Capacity', copy=True)
 
     _sql_constraints = [
         ('barcode_uniq', 'unique(barcode)', "A barcode can only be assigned to one package type!"),
@@ -45,4 +48,5 @@ class PackageType(models.Model):
 
     def copy_data(self, default=None):
         vals_list = super().copy_data(default=default)
-        return [dict(vals, name=self.env._("%s (copy)", package_type.name)) for package_type, vals in zip(self, vals_list)]
+        return [dict(vals, name=self.env._("%s (copy)", package_type.name)) for package_type, vals in
+                zip(self, vals_list)]

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.tests import Form
-
 from odoo.addons.mrp_subcontracting.tests.common import TestMrpSubcontractingCommon
+
+from odoo.tests import Form
 
 
 class TestSaleDropshippingFlows(TestMrpSubcontractingCommon):
@@ -108,16 +108,20 @@ class TestSaleDropshippingFlows(TestMrpSubcontractingCommon):
         for case in ['return', 'deliver again']:
             delivered_before_case = 1.0 if case == 'return' else 0.0
             delivered_after_case = 0.0 if case == 'return' else 1.0
-            return_form = Form(self.env['stock.return.picking'].with_context(active_ids=[picking.id], active_id=picking.id, active_model='stock.picking'))
+            return_form = Form(
+                self.env['stock.return.picking'].with_context(active_ids=[picking.id], active_id=picking.id,
+                                                              active_model='stock.picking'))
             with return_form.product_return_moves.edit(0) as line_form:
                 line_form.quantity = 1.0
             return_wizard = return_form.save()
             action = return_wizard.action_create_returns()
             picking = self.env['stock.picking'].browse(action['res_id'])
-            self.assertEqual(sale_order.order_line.qty_delivered, delivered_before_case, "Incorrect delivered qty for case '%s'" % case)
+            self.assertEqual(sale_order.order_line.qty_delivered, delivered_before_case,
+                             "Incorrect delivered qty for case '%s'" % case)
 
             picking.button_validate()
-            self.assertEqual(sale_order.order_line.qty_delivered, delivered_after_case, "Incorrect delivered qty for case '%s'" % case)
+            self.assertEqual(sale_order.order_line.qty_delivered, delivered_after_case,
+                             "Incorrect delivered qty for case '%s'" % case)
 
     def test_partial_return_kit_and_delivered_qty(self):
         """
@@ -166,7 +170,8 @@ class TestSaleDropshippingFlows(TestMrpSubcontractingCommon):
         self.assertEqual(sale_order.order_line.qty_delivered, 0.0, "Delivered components: 2/4")
 
         # Create a return of picking01 (with both components)
-        return_form = Form(self.env['stock.return.picking'].with_context(active_id=picking01.id, active_model='stock.picking'))
+        return_form = Form(
+            self.env['stock.return.picking'].with_context(active_id=picking01.id, active_model='stock.picking'))
         wizard = return_form.save()
         wizard.product_return_moves.write({'quantity': 2.0})
         res = wizard.action_create_returns()
@@ -190,7 +195,8 @@ class TestSaleDropshippingFlows(TestMrpSubcontractingCommon):
         self.assertEqual(sale_order.order_line.qty_delivered, 0.0, "Delivered components: 2/4")
 
         # Create a return of return01 (with 1 component)
-        return_form = Form(self.env['stock.return.picking'].with_context(active_id=return01.id, active_model='stock.picking'))
+        return_form = Form(
+            self.env['stock.return.picking'].with_context(active_id=return01.id, active_model='stock.picking'))
         wizard = return_form.save()
         wizard.product_return_moves.write({'quantity': 1.0})
         res = wizard.action_create_returns()
@@ -202,7 +208,8 @@ class TestSaleDropshippingFlows(TestMrpSubcontractingCommon):
         self.assertEqual(sale_order.order_line.qty_delivered, 0.0, "Delivered components: 3/4")
 
         # Create a second return of return01 (with 1 component, the last one)
-        return_form = Form(self.env['stock.return.picking'].with_context(active_id=return01.id, active_model='stock.picking'))
+        return_form = Form(
+            self.env['stock.return.picking'].with_context(active_id=return01.id, active_model='stock.picking'))
         wizard = return_form.save()
         wizard.product_return_moves.write({'quantity': 1.0})
         res = wizard.action_create_returns()

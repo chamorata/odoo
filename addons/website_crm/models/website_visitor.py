@@ -29,7 +29,8 @@ class WebsiteVisitor(models.Model):
             if not visitor.email:
                 visitor.email = next((lead.email_normalized for lead in visitor_leads if lead.email_normalized), False)
             if not visitor.mobile:
-                visitor.mobile = next((lead.mobile or lead.phone for lead in visitor_leads if lead.mobile or lead.phone), False)
+                visitor.mobile = next(
+                    (lead.mobile or lead.phone for lead in visitor_leads if lead.mobile or lead.phone), False)
 
     def _check_for_message_composer(self):
         check = super(WebsiteVisitor, self)._check_for_message_composer()

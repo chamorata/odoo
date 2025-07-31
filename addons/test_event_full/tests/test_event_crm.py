@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.test_event_full.tests.common import TestEventFullCommon
+
 from odoo.tests import tagged, users
 
 
@@ -70,12 +71,14 @@ class TestEventCrm(TestEventFullCommon):
         self.assertEqual(self.test_rule_order_done.lead_ids, self.env['crm.lead'])  # this one still not triggered
 
         # check existing lead has been updated with new registrations
-        self.assertLeadConvertion(self.test_rule_order, self.test_event.registration_ids, partner=customer_so.partner_id)
+        self.assertLeadConvertion(self.test_rule_order, self.test_event.registration_ids,
+                                  partner=customer_so.partner_id)
 
         # Confirm registrations -> trigger the "DONE" rule, one new lead linked to all
         # event registrations created in this test as all belong to the same SO
         self.test_event.registration_ids.write({'state': 'done'})
-        self.assertLeadConvertion(self.test_rule_order_done, self.test_event.registration_ids, partner=customer_so.partner_id)
+        self.assertLeadConvertion(self.test_rule_order_done, self.test_event.registration_ids,
+                                  partner=customer_so.partner_id)
 
     @users('user_sales_salesman')
     def test_event_crm_sale_mixed_group(self):
@@ -164,9 +167,9 @@ class TestEventCrm(TestEventFullCommon):
             'lead_type': 'lead',
         })
         event_registration = self.env['event.registration'].create({
-                    'name': 'Event Registration without answers added at first',
-                    'event_id': self.test_event.id,
-                    'partner_id': self.event_customer.id,
+            'name': 'Event Registration without answers added at first',
+            'event_id': self.test_event.id,
+            'partner_id': self.event_customer.id,
         })
         event_registration.write({
             'registration_answer_ids': [(0, 0, {
@@ -175,4 +178,4 @@ class TestEventCrm(TestEventFullCommon):
             })]
         })
         self.assertIn(self.test_event.question_ids[1].answer_ids[0].name, event_registration.lead_ids[0].description,
-            "lead description not updated with the answer to the question")
+                      "lead description not updated with the answer to the question")

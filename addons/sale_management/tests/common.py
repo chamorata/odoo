@@ -3,6 +3,7 @@
 
 from odoo.addons.sale.tests.common import SaleCommon
 
+
 class SaleManagementCommon(SaleCommon):
 
     @classmethod

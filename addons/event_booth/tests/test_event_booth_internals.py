@@ -4,6 +4,7 @@
 from datetime import datetime, timedelta
 
 from odoo.addons.event_booth.tests.common import TestEventBoothCommon
+
 from odoo.fields import Datetime as FieldsDatetime
 from odoo.tests.common import users, tagged
 
@@ -19,7 +20,7 @@ class TestEventData(TestEventBoothCommon):
         self.assertTrue(all(
             bool(customer[fname])
             for fname in ['name', 'email', 'country_id', 'phone']
-            )
+        )
         )
         customer_email = customer.email
 

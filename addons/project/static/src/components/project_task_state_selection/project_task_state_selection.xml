@@ -14,7 +14,9 @@
         <!-- Waiting state button -->
         <xpath expr="//t[@t-if='props.readonly']" position="after">
             <t t-elif="currentValue == '04_waiting_normal' and isView(['activity', 'kanban', 'list', 'calendar'])">
-                <button class="d-flex align-items-center btn fw-normal p-0 justify-content-center " title="This task is blocked by another unfinished task" t-att-class="{'o_task_state_list_view': isView(['list'])}">
+                <button class="d-flex align-items-center btn fw-normal p-0 justify-content-center "
+                        title="This task is blocked by another unfinished task"
+                        t-att-class="{'o_task_state_list_view': isView(['list'])}">
                     <i class="fa fa-lg fa-hourglass-o text-info"></i>
                 </button>
             </t>
@@ -30,11 +32,12 @@
                 >
                     <i t-attf-class="{{ stateIcon(currentValue) }} {{ statusColor(currentValue) }} {{ ['1_done', '1_canceled'].includes(currentValue) and isView(['activity', 'kanban']) ? 'opacity-50' : '' }}"></i>
                 </button>
-                <button t-else="" class="o_state_button btn oe_highlight rounded-pill" style="white-space: nowrap;" tabindex="-1"
-                    t-attf-class="#{currentValue == '1_done' ? 'btn-success' : 'btn-outline-secondary'}"
-                    t-att-class="{'bg-view border' : state.isStateButtonHighlighted}"
-                    t-on-click="toggleState" t-on-mouseenter="onMouseEnterStateButton"
-                    t-on-mouseleave="onMouseLeaveStateButton">
+                <button t-else="" class="o_state_button btn oe_highlight rounded-pill" style="white-space: nowrap;"
+                        tabindex="-1"
+                        t-attf-class="#{currentValue == '1_done' ? 'btn-success' : 'btn-outline-secondary'}"
+                        t-att-class="{'bg-view border' : state.isStateButtonHighlighted}"
+                        t-on-click="toggleState" t-on-mouseenter="onMouseEnterStateButton"
+                        t-on-mouseleave="onMouseLeaveStateButton">
                     <div class="d-flex align-items-center">
                         <span class="o_status_label">
                             <t t-if="state.isStateButtonHighlighted">
@@ -54,9 +57,14 @@
 
         <!-- Normal dropdown mode toggle button (displayed on the card/record by default) -->
         <xpath expr="//Dropdown/button/div" position="replace">
-            <div t-if="isView(['activity', 'kanban', 'list', 'calendar']) or this.env.isSmall" class="d-flex align-items-center" t-att-class="{'o_task_state_list_view': isView(['list'])}" t-att-title="label">
-                <i t-if="currentValue == '04_waiting_normal'" t-attf-class="{{ stateIcon(currentValue) }} {{ statusColor(currentValue) }}" style="color: #4A4F59;"/>
-                <i t-else="" t-attf-class="{{ stateIcon(currentValue) }} {{ statusColor(currentValue) }} {{ ['1_done', '1_canceled'].includes(currentValue) and isView(['activity', 'kanban']) ? 'opacity-50' : '' }}"/>
+            <div t-if="isView(['activity', 'kanban', 'list', 'calendar']) or this.env.isSmall"
+                 class="d-flex align-items-center" t-att-class="{'o_task_state_list_view': isView(['list'])}"
+                 t-att-title="label">
+                <i t-if="currentValue == '04_waiting_normal'"
+                   t-attf-class="{{ stateIcon(currentValue) }} {{ statusColor(currentValue) }}"
+                   style="color: #4A4F59;"/>
+                <i t-else=""
+                   t-attf-class="{{ stateIcon(currentValue) }} {{ statusColor(currentValue) }} {{ ['1_done', '1_canceled'].includes(currentValue) and isView(['activity', 'kanban']) ? 'opacity-50' : '' }}"/>
             </div>
             <div t-else="" class="d-flex align-items-center">
                 <t t-if="currentValue == '04_waiting_normal'">
@@ -86,7 +94,8 @@
         </xpath>
         <!-- Dropdown divider -->
         <xpath expr="//DropdownItem" position="before">
-            <div t-if="option[0] == '1_canceled' and (currentValue != '04_waiting_normal' or this.env.isSmall)" role="separator" class="dropdown-divider"/>
+            <div t-if="option[0] == '1_canceled' and (currentValue != '04_waiting_normal' or this.env.isSmall)"
+                 role="separator" class="dropdown-divider"/>
         </xpath>
         <!-- Approval mode dropdown button (class)-->
         <xpath expr="//DropdownItem/span[1]" position="attributes">

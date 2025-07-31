@@ -20,9 +20,9 @@ class ProductPricelistExportController(Controller):
         quantities = report_data['quantities']
         products = report_data['products']
         headers = [
-            _("Product"),
-            _("UOM"),
-        ] + [_("Quantity (%s UoM)", qty) for qty in quantities]
+                      _("Product"),
+                      _("UOM"),
+                  ] + [_("Quantity (%s UoM)", qty) for qty in quantities]
         if export_format == 'csv':
             return self._generate_csv(pricelist_name, quantities, products, headers)
         else:
@@ -34,9 +34,9 @@ class ProductPricelistExportController(Controller):
             variants = product.get('variants', [product])
             for variant in variants:
                 row = [
-                    variant['name'],
-                    variant['uom']
-                ] + [variant['price'].get(qty, 0.0) for qty in quantities]
+                          variant['name'],
+                          variant['uom']
+                      ] + [variant['price'].get(qty, 0.0) for qty in quantities]
                 rows.append(row)
         return rows
 

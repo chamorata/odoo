@@ -1,10 +1,11 @@
 from collections import defaultdict
+
 from lxml import etree
+from odoo.addons.account.tools import dict_to_xml
+from odoo.addons.account_edi_ubl_cii.tools import Invoice, CreditNote, DebitNote
 
 from odoo import _, models, Command
 from odoo.tools import html2plaintext, cleanup_xml_node, float_is_zero, float_repr, float_round
-from odoo.addons.account.tools import dict_to_xml
-from odoo.addons.account_edi_ubl_cii.tools import Invoice, CreditNote, DebitNote
 
 UBL_NAMESPACES = {
     'cbc': "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2",
@@ -16,6 +17,7 @@ class FloatFmt(float):
     """ A float with a given precision.
     The precision is used when formatting the float.
     """
+
     def __new__(cls, value, min_dp=2, max_dp=None):
         return super().__new__(cls, value)
 
@@ -105,8 +107,8 @@ class AccountEdiXmlUBL20(models.AbstractModel):
         # preventing the trigger of the rule.
         tax_scheme_id = 'VAT'
         if (
-            partner.country_id
-            and partner.vat and not partner.vat[:2].isalpha()
+                partner.country_id
+                and partner.vat and not partner.vat[:2].isalpha()
         ):
             tax_scheme_id = 'NOT_EU_VAT'
         return [{
@@ -146,7 +148,8 @@ class AccountEdiXmlUBL20(models.AbstractModel):
     def _get_partner_party_vals(self, partner, role):
         return {
             'partner': partner,
-            'party_identification_vals': self._get_partner_party_identification_vals_list(partner.commercial_partner_id),
+            'party_identification_vals': self._get_partner_party_identification_vals_list(
+                partner.commercial_partner_id),
             'party_name_vals': [{'name': partner.display_name}],
             'postal_address_vals': self._get_partner_address_vals(partner),
             'party_tax_scheme_vals': self._get_partner_party_tax_scheme_vals_list(partner.commercial_partner_id, role),
@@ -188,7 +191,8 @@ class AccountEdiXmlUBL20(models.AbstractModel):
             'delivery_location_vals': {
                 'delivery_address_vals': self._get_partner_address_vals(invoice.partner_shipping_id),
             },
-            'delivery_party_vals': self._get_partner_party_vals(invoice.partner_shipping_id, 'delivery') if invoice.partner_shipping_id else {},
+            'delivery_party_vals': self._get_partner_party_vals(invoice.partner_shipping_id,
+                                                                'delivery') if invoice.partner_shipping_id else {},
         }]
 
     def _get_bank_address_vals(self, bank):
@@ -226,7 +230,8 @@ class AccountEdiXmlUBL20(models.AbstractModel):
         }
 
         if partner_bank.bank_id:
-            vals['financial_institution_branch_vals'] = self._get_financial_institution_branch_vals(partner_bank.bank_id)
+            vals['financial_institution_branch_vals'] = self._get_financial_institution_branch_vals(
+                partner_bank.bank_id)
 
         return vals
 
@@ -533,7 +538,8 @@ class AccountEdiXmlUBL20(models.AbstractModel):
             'invoice_period_vals_list': [period_vals] if period_vals else []
         }
 
-    def _get_invoice_monetary_total_vals(self, invoice, taxes_vals, line_extension_amount, allowance_total_amount, charge_total_amount):
+    def _get_invoice_monetary_total_vals(self, invoice, taxes_vals, line_extension_amount, allowance_total_amount,
+                                         charge_total_amount):
         """ Method used to fill the cac:{Legal,Requested}MonetaryTotal node"""
         # We only handle rounding amounts that do not belong to any tax ('add_invoice_line' cash rounding strategy).
         # Rounding amounts belonging to a tax ('biggest_tax' strategy) are included already in the tax amounts.
@@ -622,7 +628,8 @@ class AccountEdiXmlUBL20(models.AbstractModel):
         # Compute values for invoice lines.
         line_extension_amount = 0.0
 
-        invoice_lines = invoice.invoice_line_ids.filtered(lambda line: line.display_type not in ('line_note', 'line_section') and line._check_edi_line_tax_required())
+        invoice_lines = invoice.invoice_line_ids.filtered(
+            lambda line: line.display_type not in ('line_note', 'line_section') and line._check_edi_line_tax_required())
         document_allowance_charge_vals_list = self._get_document_allowance_charge_vals_list(invoice, taxes_vals)
         invoice_line_vals_list = []
         for line_id, line in enumerate(invoice_lines):
@@ -725,7 +732,7 @@ class AccountEdiXmlUBL20(models.AbstractModel):
             vals['document_type'] = 'credit_note'
             vals['main_template'] = 'account_edi_ubl_cii.ubl_20_CreditNote'
             vals['vals']['document_type_code'] = 381
-        else: # invoice.move_type == 'out_invoice'
+        else:  # invoice.move_type == 'out_invoice'
             vals['document_type'] = 'invoice'
             vals['main_template'] = 'account_edi_ubl_cii.ubl_20_Invoice'
             vals['vals']['document_type_code'] = 380
@@ -773,7 +780,8 @@ class AccountEdiXmlUBL20(models.AbstractModel):
             'email': self._find_value(f'.//cac:{role}Party/cac:Party//cbc:ElectronicMail', tree),
             'name': self._find_value(f'.//cac:{role}Party/cac:Party//cbc:Name', tree) or
                     self._find_value(f'.//cac:{role}Party/cac:Party//cbc:RegistrationName', tree),
-            'country_code': self._find_value(f'.//cac:{role}Party/cac:Party//cac:Country//cbc:IdentificationCode', tree),
+            'country_code': self._find_value(f'.//cac:{role}Party/cac:Party//cac:Country//cbc:IdentificationCode',
+                                             tree),
             'street': self._find_value(f'.//cac:{role}Party/cac:Party//cbc:StreetName', tree),
             'street2': self._find_value(f'.//cac:{role}Party/cac:Party//cbc:AdditionalStreetName', tree),
             'city': self._find_value(f'.//cac:{role}Party/cac:Party//cbc:CityName', tree),
@@ -786,7 +794,8 @@ class AccountEdiXmlUBL20(models.AbstractModel):
         if qty_factor == -1:
             logs.append(_("The invoice has been converted into a credit note and the quantities have been reverted."))
         role = "AccountingCustomer" if invoice.journal_id.type == 'sale' else "AccountingSupplier"
-        partner, partner_logs = self._import_partner(invoice.company_id, **self._import_retrieve_partner_vals(tree, role))
+        partner, partner_logs = self._import_partner(invoice.company_id,
+                                                     **self._import_retrieve_partner_vals(tree, role))
         # Need to set partner before to compute bank and lines properly
         invoice.partner_id = partner.id
         invoice_values['currency_id'], currency_logs = self._import_currency(tree, './/{*}DocumentCurrencyCode')
@@ -794,7 +803,8 @@ class AccountEdiXmlUBL20(models.AbstractModel):
         invoice_values['invoice_date_due'] = self._find_value(('./cbc:DueDate', './/cbc:PaymentDueDate'), tree)
         # ==== partner_bank_id ====
         bank_detail_nodes = tree.findall('.//{*}PaymentMeans')
-        bank_details = [bank_detail_node.findtext('{*}PayeeFinancialAccount/{*}ID') for bank_detail_node in bank_detail_nodes]
+        bank_details = [bank_detail_node.findtext('{*}PayeeFinancialAccount/{*}ID') for bank_detail_node in
+                        bank_detail_nodes]
         if bank_details:
             self._import_partner_bank(invoice, bank_details)
 
@@ -820,7 +830,9 @@ class AccountEdiXmlUBL20(models.AbstractModel):
                 invoice_values['invoice_incoterm_id'] = incoterm.id
 
         # ==== Document level AllowanceCharge, Prepaid Amounts, Invoice Lines, Payable Rounding Amount ====
-        allowance_charges_line_vals, allowance_charges_logs = self._import_document_allowance_charges(tree, invoice, invoice.journal_id.type, qty_factor)
+        allowance_charges_line_vals, allowance_charges_logs = self._import_document_allowance_charges(tree, invoice,
+                                                                                                      invoice.journal_id.type,
+                                                                                                      qty_factor)
         logs += self._import_prepaid_amount(invoice, tree, './{*}LegalMonetaryTotal/{*}PrepaidAmount', qty_factor)
         line_tag = (
             'InvoiceLine'
@@ -828,7 +840,9 @@ class AccountEdiXmlUBL20(models.AbstractModel):
             else 'CreditNoteLine'
         )
         invoice_line_vals, line_logs = self._import_invoice_lines(invoice, tree, './{*}' + line_tag, qty_factor)
-        rounding_line_vals, rounding_logs = self._import_rounding_amount(invoice, tree, './{*}LegalMonetaryTotal/{*}PayableRoundingAmount', qty_factor)
+        rounding_line_vals, rounding_logs = self._import_rounding_amount(invoice, tree,
+                                                                         './{*}LegalMonetaryTotal/{*}PayableRoundingAmount',
+                                                                         qty_factor)
         line_vals = allowance_charges_line_vals + invoice_line_vals + rounding_line_vals
 
         invoice_values = {
@@ -908,7 +922,8 @@ class AccountEdiXmlUBL20(models.AbstractModel):
             if percentage is None:
                 percentage = elem.find('.//{*}Percent')
             amount = elem.find('.//{*}TaxAmount')
-            if (percentage is not None and percentage.text is not None) and (amount is not None and amount.text is not None):
+            if (percentage is not None and percentage.text is not None) and (
+                    amount is not None and amount.text is not None):
                 tax_percent = float(percentage.text)
                 # Compare the result with our tax total on the invoice, and apply correction if needed.
                 # First look for taxes matching the percentage in the xml.
@@ -959,7 +974,8 @@ class AccountEdiXmlUBL20(models.AbstractModel):
 
         # 3. Run constraints
         vals['document_node'] = document_node
-        errors = [constraint for constraint in self._export_invoice_constraints_new(invoice, vals).values() if constraint]
+        errors = [constraint for constraint in self._export_invoice_constraints_new(invoice, vals).values() if
+                  constraint]
 
         template = self._get_document_template(vals)
         nsmap = self._get_document_nsmap(vals)
@@ -1057,9 +1073,10 @@ class AccountEdiXmlUBL20(models.AbstractModel):
         customer = invoice.partner_id
 
         vals.update({
-            'document_type': 'debit_note' if 'debit_origin_id' in self.env['account.move']._fields and invoice.debit_origin_id
-                else 'credit_note' if invoice.move_type == 'out_refund'
-                else 'invoice',
+            'document_type': 'debit_note' if 'debit_origin_id' in self.env[
+                'account.move']._fields and invoice.debit_origin_id
+            else 'credit_note' if invoice.move_type == 'out_refund'
+            else 'invoice',
 
             'supplier': supplier,
             'customer': customer,
@@ -1068,15 +1085,18 @@ class AccountEdiXmlUBL20(models.AbstractModel):
             'currency_id': invoice.currency_id,
             'company_currency_id': invoice.company_id.currency_id,
 
-            'use_company_currency': False,  # If true, use the company currency for the amounts instead of the invoice currency
-            'fixed_taxes_as_allowance_charges': True,  # If true, include fixed taxes as AllowanceCharges on lines instead of as taxes
+            'use_company_currency': False,
+            # If true, use the company currency for the amounts instead of the invoice currency
+            'fixed_taxes_as_allowance_charges': True,
+            # If true, include fixed taxes as AllowanceCharges on lines instead of as taxes
         })
 
     def _add_invoice_base_lines_vals(self, vals):
         invoice = vals['invoice']
         base_lines, _tax_lines = invoice._get_rounded_base_and_tax_lines()
         vals['base_lines'] = [base_line for base_line in base_lines if base_line['special_type'] != 'cash_rounding']
-        vals['cash_rounding_base_lines'] = [base_line for base_line in base_lines if base_line['special_type'] == 'cash_rounding']
+        vals['cash_rounding_base_lines'] = [base_line for base_line in base_lines if
+                                            base_line['special_type'] == 'cash_rounding']
 
     def _add_invoice_currency_vals(self, vals):
         self._add_document_currency_vals(vals)
@@ -1317,7 +1337,8 @@ class AccountEdiXmlUBL20(models.AbstractModel):
                 vals[f'{key}{currency_suffix}'] = 0.0
 
         for base_line in vals['base_lines']:
-            aggregated_tax_details = self.env['account.tax']._aggregate_base_line_tax_details(base_line, fixed_total_grouping_function)
+            aggregated_tax_details = self.env['account.tax']._aggregate_base_line_tax_details(base_line,
+                                                                                              fixed_total_grouping_function)
 
             for currency_suffix in ['', '_currency']:
                 base_line_total_excluded = \
@@ -1339,23 +1360,25 @@ class AccountEdiXmlUBL20(models.AbstractModel):
 
         for currency_suffix in ['', '_currency']:
             vals[f'tax_exclusive_amount{currency_suffix}'] = vals[f'total_lines{currency_suffix}'] \
-                + vals[f'total_charge{currency_suffix}'] \
-                - vals[f'total_allowance{currency_suffix}']
+                                                             + vals[f'total_charge{currency_suffix}'] \
+                                                             - vals[f'total_allowance{currency_suffix}']
 
         def non_fixed_total_grouping_function(base_line, tax_data):
             if vals['fixed_taxes_as_allowance_charges'] and tax_data and tax_data['tax'].amount_type == 'fixed':
                 return None
             return vals['total_grouping_function'](base_line, tax_data)
 
-        base_lines_aggregated_tax_details = self.env['account.tax']._aggregate_base_lines_tax_details(vals['base_lines'], non_fixed_total_grouping_function)
-        aggregated_tax_details = self.env['account.tax']._aggregate_base_lines_aggregated_values(base_lines_aggregated_tax_details)
+        base_lines_aggregated_tax_details = self.env['account.tax']._aggregate_base_lines_tax_details(
+            vals['base_lines'], non_fixed_total_grouping_function)
+        aggregated_tax_details = self.env['account.tax']._aggregate_base_lines_aggregated_values(
+            base_lines_aggregated_tax_details)
         for currency_suffix in ['', '_currency']:
             vals[f'tax_inclusive_amount{currency_suffix}'] = vals[f'tax_exclusive_amount{currency_suffix}'] \
-                + sum(
-                    tax_details[f'tax_amount{currency_suffix}']
-                    for grouping_key, tax_details in aggregated_tax_details.items()
-                    if grouping_key
-                )
+                                                             + sum(
+                tax_details[f'tax_amount{currency_suffix}']
+                for grouping_key, tax_details in aggregated_tax_details.items()
+                if grouping_key
+            )
 
         # Cash rounding for 'add_invoice_line' cash rounding strategy
         # (For the 'biggest_tax' strategy the amounts are directly included in the tax amounts.)
@@ -1409,8 +1432,8 @@ class AccountEdiXmlUBL20(models.AbstractModel):
                 'cac:TaxScheme': {
                     'cbc:ID': {
                         '_text': ('NOT_EU_VAT' if commercial_partner.country_id and
-                                commercial_partner.vat and
-                                not commercial_partner.vat[:2].isalpha() else 'VAT')
+                                                  commercial_partner.vat and
+                                                  not commercial_partner.vat[:2].isalpha() else 'VAT')
                     }
                 },
             },
@@ -1458,16 +1481,21 @@ class AccountEdiXmlUBL20(models.AbstractModel):
 
     def _add_document_tax_total_nodes(self, document_node, vals):
         """ Generic helper to fill the TaxTotal and WithholdingTaxTotal nodes for a document. """
-        base_lines_aggregated_tax_details = self.env['account.tax']._aggregate_base_lines_tax_details(vals['base_lines'], vals['tax_grouping_function'])
-        aggregated_tax_details = self.env['account.tax']._aggregate_base_lines_aggregated_values(base_lines_aggregated_tax_details)
-        document_node['cac:TaxTotal'] = self._get_tax_total_node({**vals, 'aggregated_tax_details': aggregated_tax_details, 'role': 'document'})
+        base_lines_aggregated_tax_details = self.env['account.tax']._aggregate_base_lines_tax_details(
+            vals['base_lines'], vals['tax_grouping_function'])
+        aggregated_tax_details = self.env['account.tax']._aggregate_base_lines_aggregated_values(
+            base_lines_aggregated_tax_details)
+        document_node['cac:TaxTotal'] = self._get_tax_total_node(
+            {**vals, 'aggregated_tax_details': aggregated_tax_details, 'role': 'document'})
         document_node['cac:WithholdingTaxTotal'] = None
 
     def _add_tax_total_node_in_company_currency(self, document_node, vals):
         """ Generic helper to add a TaxTotal section in the company currency. """
         company_currency = vals['invoice'].company_id.currency_id
-        base_lines_aggregated_tax_details = self.env['account.tax']._aggregate_base_lines_tax_details(vals['base_lines'], vals['tax_grouping_function'])
-        aggregated_tax_details = self.env['account.tax']._aggregate_base_lines_aggregated_values(base_lines_aggregated_tax_details)
+        base_lines_aggregated_tax_details = self.env['account.tax']._aggregate_base_lines_tax_details(
+            vals['base_lines'], vals['tax_grouping_function'])
+        aggregated_tax_details = self.env['account.tax']._aggregate_base_lines_aggregated_values(
+            base_lines_aggregated_tax_details)
         tax_total_node_in_company_currency = self._get_tax_total_node({
             **vals,
             'aggregated_tax_details': aggregated_tax_details,
@@ -1628,7 +1656,8 @@ class AccountEdiXmlUBL20(models.AbstractModel):
         """ Generic helper to generate a document-level AllowanceCharge node given a base_line. """
         base_line = vals['base_line']
         currency_suffix = vals['currency_suffix']
-        aggregated_tax_details = self.env['account.tax']._aggregate_base_line_tax_details(base_line, vals['tax_grouping_function'])
+        aggregated_tax_details = self.env['account.tax']._aggregate_base_line_tax_details(base_line,
+                                                                                          vals['tax_grouping_function'])
         base_amount = base_line['tax_details'][f'total_excluded{currency_suffix}']
         return {
             'cbc:ChargeIndicator': {'_text': 'false' if base_amount < 0.0 else 'true'},
@@ -1661,7 +1690,8 @@ class AccountEdiXmlUBL20(models.AbstractModel):
             if vals['fixed_taxes_as_allowance_charges'] and tax_data and tax_data['tax'].amount_type == 'fixed':
                 return vals['total_grouping_function'](base_line, tax_data)
 
-        aggregated_tax_details = self.env['account.tax']._aggregate_base_line_tax_details(base_line, fixed_total_grouping_function)
+        aggregated_tax_details = self.env['account.tax']._aggregate_base_line_tax_details(base_line,
+                                                                                          fixed_total_grouping_function)
 
         for currency_suffix in ['', '_currency']:
             vals[f'total_fixed_taxes{currency_suffix}'] = sum(
@@ -1682,7 +1712,8 @@ class AccountEdiXmlUBL20(models.AbstractModel):
         discount_factor = 1 - (base_line['discount'] / 100.0)
 
         if discount_factor != 0.0:
-            gross_subtotal_currency = base_line['currency_id'].round(base_line['tax_details']['raw_total_excluded_currency'] / discount_factor)
+            gross_subtotal_currency = base_line['currency_id'].round(
+                base_line['tax_details']['raw_total_excluded_currency'] / discount_factor)
             gross_subtotal = company_currency.round(base_line['tax_details']['raw_total_excluded'] / discount_factor)
         else:
             gross_subtotal_currency = base_line['currency_id'].round(base_line['price_unit'] * base_line['quantity'])
@@ -1781,7 +1812,8 @@ class AccountEdiXmlUBL20(models.AbstractModel):
         for grouping_key, tax_details in fixed_tax_aggregated_tax_details.items():
             if grouping_key:
                 allowance_charge_nodes.append({
-                    'cbc:ChargeIndicator': {'_text': 'true' if tax_details[f'tax_amount{currency_suffix}'] > 0 else 'false'},
+                    'cbc:ChargeIndicator': {
+                        '_text': 'true' if tax_details[f'tax_amount{currency_suffix}'] > 0 else 'false'},
                     'cbc:AllowanceChargeReasonCode': {'_text': 'AEO'},
                     'cbc:AllowanceChargeReason': {'_text': grouping_key},
                     'cbc:Amount': {
@@ -1807,7 +1839,8 @@ class AccountEdiXmlUBL20(models.AbstractModel):
 
     def _add_document_line_tax_category_nodes(self, line_node, vals):
         base_line = vals['base_line']
-        aggregated_tax_details = self.env['account.tax']._aggregate_base_line_tax_details(base_line, vals['tax_grouping_function'])
+        aggregated_tax_details = self.env['account.tax']._aggregate_base_line_tax_details(base_line,
+                                                                                          vals['tax_grouping_function'])
         line_node.setdefault('cac:Item', {})['cac:ClassifiedTaxCategory'] = [
             self._get_tax_category_node({**vals, 'grouping_key': grouping_key})
             for grouping_key in aggregated_tax_details
@@ -1816,8 +1849,10 @@ class AccountEdiXmlUBL20(models.AbstractModel):
 
     def _add_document_line_tax_total_nodes(self, line_node, vals):
         base_line = vals['base_line']
-        aggregated_tax_details = self.env['account.tax']._aggregate_base_line_tax_details(base_line, vals['tax_grouping_function'])
-        line_node['cac:TaxTotal'] = self._get_tax_total_node({**vals, 'aggregated_tax_details': aggregated_tax_details, 'role': 'line'})
+        aggregated_tax_details = self.env['account.tax']._aggregate_base_line_tax_details(base_line,
+                                                                                          vals['tax_grouping_function'])
+        line_node['cac:TaxTotal'] = self._get_tax_total_node(
+            {**vals, 'aggregated_tax_details': aggregated_tax_details, 'role': 'line'})
 
     def _add_document_line_price_nodes(self, line_node, vals):
         currency_suffix = vals['currency_suffix']

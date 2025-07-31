@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
+from odoo import fields, Command
 from odoo.exceptions import ValidationError
 from odoo.tests import Form, tagged
-from odoo import fields, Command
 from odoo.tools.safe_eval import datetime
 
 
@@ -62,7 +63,7 @@ class TestAccountPaymentTerms(AccountTestInvoicingCommon):
             ],
         })
 
-        cls.invoice = cls.init_invoice('out_refund', products=cls.product_a+cls.product_b)
+        cls.invoice = cls.init_invoice('out_refund', products=cls.product_a + cls.product_b)
 
         cls.pay_term_a = cls.env['account.payment.term'].create({
             'name': "turlututu",
@@ -194,16 +195,16 @@ class TestAccountPaymentTerms(AccountTestInvoicingCommon):
     def test_payment_term_compute_method_with_cash_discount(self):
         self.pay_term_a.early_pay_discount_computation = 'included'
         computed_term_a = self.pay_term_a._compute_terms(
-                fields.Date.from_string('2016-01-01'), self.env.company.currency_id, self.env.company,
-                150.0, 150.0, 1.0, 1000.0, 1000.0,
-            )
+            fields.Date.from_string('2016-01-01'), self.env.company.currency_id, self.env.company,
+            150.0, 150.0, 1.0, 1000.0, 1000.0,
+        )
         self.assertDictEqual(
             {
                 'total_amount': computed_term_a.get("total_amount"),
                 'discount_balance': computed_term_a.get("discount_balance"),
                 'line_ids': computed_term_a.get("line_ids"),
             },
-            #What should be obtained
+            # What should be obtained
             {
                 'total_amount': 1150.0,
                 'discount_balance': 1035.0,
@@ -217,7 +218,8 @@ class TestAccountPaymentTerms(AccountTestInvoicingCommon):
 
     def test_payment_term_compute_method_with_cash_discount_and_cash_rounding(self):
         foreign_currency = self.other_currency
-        rate = self.env['res.currency']._get_conversion_rate(foreign_currency, self.env.company.currency_id, self.env.company, '2017-01-01')
+        rate = self.env['res.currency']._get_conversion_rate(foreign_currency, self.env.company.currency_id,
+                                                             self.env.company, '2017-01-01')
         self.assertEqual(rate, 0.5)
         self.pay_term_a.early_pay_discount_computation = 'included'
         computed_term_a = self.pay_term_a._compute_terms(
@@ -273,7 +275,8 @@ class TestAccountPaymentTerms(AccountTestInvoicingCommon):
 
     def test_payment_term_compute_method_without_cash_discount_with_cash_rounding(self):
         foreign_currency = self.other_currency
-        rate = self.env['res.currency']._get_conversion_rate(foreign_currency, self.env.company.currency_id, self.env.company, '2017-01-01')
+        rate = self.env['res.currency']._get_conversion_rate(foreign_currency, self.env.company.currency_id,
+                                                             self.env.company, '2017-01-01')
         self.assertEqual(rate, 0.5)
         self.pay_term_a.early_pay_discount_computation = 'included'
         computed_term_b = self.pay_term_b._compute_terms(
@@ -540,14 +543,16 @@ class TestAccountPaymentTerms(AccountTestInvoicingCommon):
             basic_case.invoice_payment_term_id = self.pay_term_days_end_of_month_10
             basic_case.invoice_date = '2023-12-12'
 
-        expected_date_basic_case = self.invoice.line_ids.filtered(lambda l: l.account_id == self.company_data['default_account_receivable']).mapped('date_maturity'),
+        expected_date_basic_case = self.invoice.line_ids.filtered(
+            lambda l: l.account_id == self.company_data['default_account_receivable']).mapped('date_maturity'),
         self.assertEqual(expected_date_basic_case[0], [fields.Date.from_string('2024-02-10')])
 
         with Form(self.invoice) as special_case:
             special_case.invoice_payment_term_id = self.pay_term_days_end_of_month_31
             special_case.invoice_date = '2023-12-12'
 
-        expected_date_special_case = self.invoice.line_ids.filtered(lambda l: l.account_id == self.company_data['default_account_receivable']).mapped('date_maturity'),
+        expected_date_special_case = self.invoice.line_ids.filtered(
+            lambda l: l.account_id == self.company_data['default_account_receivable']).mapped('date_maturity'),
         self.assertEqual(expected_date_special_case[0], [fields.Date.from_string('2024-02-29')])
 
     def test_payment_term_labels(self):

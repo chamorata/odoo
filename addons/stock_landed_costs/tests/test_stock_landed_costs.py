@@ -2,9 +2,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.stock_landed_costs.tests.common import TestStockLandedCostsCommon
+
+from odoo import fields
 from odoo.exceptions import ValidationError
 from odoo.tests import tagged
-from odoo import fields
 
 
 @tagged('post_install', '-at_install')
@@ -155,7 +156,8 @@ class TestStockLandedCosts(TestStockLandedCostsCommon):
         self.assertTrue(stock_landed_cost_1.account_move_id)
         self.assertEqual(len(stock_landed_cost_1.account_move_id.line_ids), 48)
 
-        lc_value = sum(stock_landed_cost_1.account_move_id.line_ids.filtered(lambda aml: aml.account_id.name.startswith('Expenses')).mapped('debit'))
+        lc_value = sum(stock_landed_cost_1.account_move_id.line_ids.filtered(
+            lambda aml: aml.account_id.name.startswith('Expenses')).mapped('debit'))
         product_value = abs(product_landed_cost_1.value_svl) + abs(product_landed_cost_2.value_svl)
         self.assertEqual(lc_value, product_value)
 
@@ -231,7 +233,8 @@ class TestStockLandedCosts(TestStockLandedCostsCommon):
             product_id=self.landed_cost.id,
             quantity=1
         )
-        self.assertTrue(account_move.invoice_line_ids.is_landed_costs_line, "The landed cost should appear in the move line.")
+        self.assertTrue(account_move.invoice_line_ids.is_landed_costs_line,
+                        "The landed cost should appear in the move line.")
         account_move._update_order_line_info(
             product_id=self.product.id,
             quantity=1

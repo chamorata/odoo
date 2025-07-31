@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import functools
 
 from odoo import _
 from odoo.exceptions import AccessError

@@ -3,7 +3,6 @@
 
 import datetime
 import logging
-
 from ast import literal_eval
 
 from odoo import api, exceptions, fields, models, _
@@ -45,7 +44,8 @@ class TeamMember(models.Model):
 
     def _get_lead_from_date(self, date_from, active_test=False):
         return {
-            (user.id, team.id): count for user, team, count in self.env['crm.lead'].with_context(active_test=active_test)._read_group(
+            (user.id, team.id): count for user, team, count in
+            self.env['crm.lead'].with_context(active_test=active_test)._read_group(
                 [
                     ('date_open', '>=', date_from),
                     ('team_id', 'in', self.crm_team_id.ids),

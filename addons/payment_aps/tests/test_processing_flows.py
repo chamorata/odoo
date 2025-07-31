@@ -2,13 +2,12 @@
 
 from unittest.mock import patch
 
+from odoo.addons.payment_aps.controllers.main import APSController
+from odoo.addons.payment_aps.tests.common import APSCommon
 from werkzeug.exceptions import Forbidden
 
 from odoo.tests import tagged
 from odoo.tools import mute_logger
-
-from odoo.addons.payment_aps.controllers.main import APSController
-from odoo.addons.payment_aps.tests.common import APSCommon
 
 
 @tagged('post_install', '-at_install')
@@ -21,7 +20,7 @@ class TestProcessingFlows(APSCommon):
         self._create_transaction(flow='redirect')
         url = self._build_url(APSController._return_url)
         with patch(
-            'odoo.addons.payment_aps.controllers.main.APSController._verify_notification_signature'
+                'odoo.addons.payment_aps.controllers.main.APSController._verify_notification_signature'
         ), patch(
             'odoo.addons.payment.models.payment_transaction.PaymentTransaction'
             '._handle_notification_data'
@@ -36,7 +35,7 @@ class TestProcessingFlows(APSCommon):
         self._create_transaction('redirect')
         url = self._build_url(APSController._webhook_url)
         with patch(
-            'odoo.addons.payment_aps.controllers.main.APSController._verify_notification_signature'
+                'odoo.addons.payment_aps.controllers.main.APSController._verify_notification_signature'
         ), patch(
             'odoo.addons.payment.models.payment_transaction.PaymentTransaction'
             '._handle_notification_data'
@@ -50,7 +49,7 @@ class TestProcessingFlows(APSCommon):
         self._create_transaction('redirect')
         url = self._build_url(APSController._return_url)
         with patch(
-            'odoo.addons.payment_aps.controllers.main.APSController._verify_notification_signature'
+                'odoo.addons.payment_aps.controllers.main.APSController._verify_notification_signature'
         ) as signature_check_mock, patch(
             'odoo.addons.payment.models.payment_transaction.PaymentTransaction'
             '._handle_notification_data'
@@ -64,7 +63,7 @@ class TestProcessingFlows(APSCommon):
         self._create_transaction('redirect')
         url = self._build_url(APSController._webhook_url)
         with patch(
-            'odoo.addons.payment_aps.controllers.main.APSController._verify_notification_signature'
+                'odoo.addons.payment_aps.controllers.main.APSController._verify_notification_signature'
         ) as signature_check_mock, patch(
             'odoo.addons.payment.models.payment_transaction.PaymentTransaction'
             '._handle_notification_data'

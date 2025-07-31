@@ -185,7 +185,7 @@ For more specific needs, you may also assign custom-defined actions
         # Unit test files
         'web.assets_unit_tests': [
             'mail/static/tests/**/*',
-            ('remove', 'mail/static/tests/legacy/**/*'), # to remove when all legacy tests are ported
+            ('remove', 'mail/static/tests/legacy/**/*'),  # to remove when all legacy tests are ported
             ('remove', 'mail/static/tests/tours/**/*'),
         ],
         'web.assets_tests': [

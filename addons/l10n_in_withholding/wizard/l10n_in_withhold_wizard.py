@@ -22,8 +22,10 @@ class L10nInWithholdWizard(models.TransientModel):
         active_record = self.env[active_model].browse(active_ids)
         result['reference'] = _("TDS of %s", active_record.name)
         if active_model == 'account.move':
-            if active_record.move_type not in ('out_invoice', 'out_refund', 'in_invoice', 'in_refund') or active_record.state != 'posted':
-                raise UserError(_("TDS must be created from Posted Customer Invoices, Customer Credit Notes, Vendor Bills or Vendor Refunds."))
+            if active_record.move_type not in ('out_invoice', 'out_refund', 'in_invoice',
+                                               'in_refund') or active_record.state != 'posted':
+                raise UserError(
+                    _("TDS must be created from Posted Customer Invoices, Customer Credit Notes, Vendor Bills or Vendor Refunds."))
             result['related_move_id'] = active_record.id
         elif active_model == 'account.payment':
             if not active_record.partner_id:
@@ -76,7 +78,8 @@ class L10nInWithholdWizard(models.TransientModel):
         readonly=False,
         store=True,
     )
-    l10n_in_withholding_warning = fields.Json(string="Withholding warning", compute='_compute_l10n_in_withholding_warning')
+    l10n_in_withholding_warning = fields.Json(string="Withholding warning",
+                                              compute='_compute_l10n_in_withholding_warning')
 
     #  ===== Computes =====
     @api.depends('related_move_id', 'related_payment_id')
@@ -94,7 +97,8 @@ class L10nInWithholdWizard(models.TransientModel):
     def _compute_type_name(self):
         for wizard in self:
             if wizard.related_payment_id:
-                wizard.type_name = _("Vendor Payment") if wizard.related_payment_id.partner_type == 'supplier' else _("Customer Payment")
+                wizard.type_name = _("Vendor Payment") if wizard.related_payment_id.partner_type == 'supplier' else _(
+                    "Customer Payment")
             else:
                 wizard.type_name = wizard.related_move_id.type_name
 
@@ -107,21 +111,27 @@ class L10nInWithholdWizard(models.TransientModel):
     def _compute_journal(self):
         for wizard in self:
             wizard.journal_id = wizard.company_id.parent_ids.l10n_in_withholding_journal_id[-1:] or \
-                                wizard.env['account.journal'].search([*self.env['account.journal']._check_company_domain(wizard.company_id), ('type', '=', 'general')], limit=1)
+                                wizard.env['account.journal'].search(
+                                    [*self.env['account.journal']._check_company_domain(wizard.company_id),
+                                     ('type', '=', 'general')], limit=1)
 
     @api.depends('related_payment_id', 'related_move_id', 'l10n_in_tds_tax_type', 'withhold_line_ids')
     def _compute_l10n_in_withholding_warning(self):
         for wizard in self:
             warnings = {}
             if wizard.l10n_in_tds_tax_type == 'purchase' and not wizard.related_move_id.commercial_partner_id.l10n_in_pan and any(
-                    line.tax_id.amount != max(line.tax_id.l10n_in_section_id.l10n_in_section_tax_ids, key=lambda t: abs(t.amount)).amount
+                    line.tax_id.amount != max(line.tax_id.l10n_in_section_id.l10n_in_section_tax_ids,
+                                              key=lambda t: abs(t.amount)).amount
                     for line in wizard.withhold_line_ids
-                ):
+            ):
                 warnings['lower_tds_tax'] = {
-                    'message': _("As the Partner's PAN missing/invalid, it's advisable to apply TDS at the higher rate.")
-                    }
+                    'message': _(
+                        "As the Partner's PAN missing/invalid, it's advisable to apply TDS at the higher rate.")
+                }
             precision = self.currency_id.decimal_places
-            if wizard.related_move_id and float_compare(wizard.related_move_id.amount_untaxed, sum(line.base for line in wizard.withhold_line_ids), precision_digits=precision) < 0:
+            if wizard.related_move_id and float_compare(wizard.related_move_id.amount_untaxed,
+                                                        sum(line.base for line in wizard.withhold_line_ids),
+                                                        precision_digits=precision) < 0:
                 message = _("The base amount of TDS lines is greater than the amount of the %s", wizard.type_name)
                 warnings['lower_move_amount'] = {
                     'message': message
@@ -189,6 +199,7 @@ class L10nInWithholdWizard(models.TransientModel):
         """
         Prepare the move lines for the withhold entry
         """
+
         def append_vals(quantity, price_unit, debit, credit, account_id, tax_ids):
             return {
                 'quantity': quantity,
@@ -215,7 +226,8 @@ class L10nInWithholdWizard(models.TransientModel):
         for line in self.withhold_line_ids:
             debit = line.base if withhold_type in ('in_withhold', 'out_refund_withhold') else 0.0
             credit = 0.0 if withhold_type in ('in_withhold', 'out_refund_withhold') else line.base
-            vals.append(append_vals(1.0, line.base, debit, credit, withholding_account_id, [Command.set(line.tax_id.ids)]))
+            vals.append(
+                append_vals(1.0, line.base, debit, credit, withholding_account_id, [Command.set(line.tax_id.ids)]))
             total_amount += line.base
             total_tax += line.amount
 

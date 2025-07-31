@@ -6,7 +6,8 @@
             <div class="search position-relative h-100 d-flex flex-grow-1">
                 <div class="input-group">
                     <input class="form-control form-control-lg bg-view border-light ps-2 ps-lg-5" t-ref="autofocus"
-                    t-model="state.searchInput" t-on-keydown="onSearchInputKeydown" t-on-keyup="onSearchInputKeyup" type="text" t-att-placeholder="props.placeholder" />
+                           t-model="state.searchInput" t-on-keydown="onSearchInputKeydown"
+                           t-on-keyup="onSearchInputKeyup" type="text" t-att-placeholder="props.placeholder"/>
                     <div t-if="state.showSearchFields and state.searchInput" class="fields">
                         <ul class="py-1 bg-view small">
                             <t t-foreach="searchFieldsList" t-as="fieldName" t-key="fieldName">
@@ -25,15 +26,16 @@
                         </ul>
                     </div>
                     <div t-if="props.config.filter.show"
-                        class="filter btn btn-secondary d-flex align-items-center dropdown-toggle"
-                        t-on-click.stop="() => { state.showFilterOptions = !state.showFilterOptions }">
+                         class="filter btn btn-secondary d-flex align-items-center dropdown-toggle"
+                         t-on-click.stop="() => { state.showFilterOptions = !state.showFilterOptions }">
                         <span>
-                            <t t-esc="props.config.filter.options.get(state.selectedFilter).text" />
+                            <t t-esc="props.config.filter.options.get(state.selectedFilter).text"/>
                         </span>
                         <ul t-if="state.showFilterOptions" class="options dropdown-menu dropdown-menu-end py-1">
                             <t t-foreach="filterOptionsList" t-as="key" t-key="key">
-                                <t t-set="_option" t-value="props.config.filter.options.get(key)" />
-                                <li class="dropdown-item" t-on-click="() => this._onSelectFilter(key)" t-att-class="{ 'indented': _option.indented }">
+                                <t t-set="_option" t-value="props.config.filter.options.get(key)"/>
+                                <li class="dropdown-item" t-on-click="() => this._onSelectFilter(key)"
+                                    t-att-class="{ 'indented': _option.indented }">
                                     <t t-esc="_option.text"></t>
                                 </li>
                             </t>

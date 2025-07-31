@@ -51,12 +51,13 @@
             </div>
             <div t-if="!props.readonly" class="oe_add">
                 <FileInput
-                    multiUpload="true"
-                    onUpload.bind="onFileUploaded"
-                    resModel="props.record.resModel"
-                    resId="props.record.resId or 0">
+                        multiUpload="true"
+                        onUpload.bind="onFileUploaded"
+                        resModel="props.record.resModel"
+                        resId="props.record.resId or 0">
                     <button class="btn btn-secondary o_attach" data-tooltip="Attach">
-                        <span class="fa fa-paperclip" aria-label="Attach"/> Attachments
+                        <span class="fa fa-paperclip" aria-label="Attach"/>
+                        Attachments
                     </button>
                 </FileInput>
             </div>

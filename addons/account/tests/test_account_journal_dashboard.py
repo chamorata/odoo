@@ -1,10 +1,11 @@
 from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
+from odoo.addons.account.tests.test_account_journal_dashboard_common import TestAccountJournalDashboardCommon
 
 from odoo import Command
-from odoo.addons.account.tests.test_account_journal_dashboard_common import TestAccountJournalDashboardCommon
 from odoo.tests import tagged
 from odoo.tools.misc import format_amount
+
 
 @tagged('post_install', '-at_install')
 class TestAccountJournalDashboard(TestAccountJournalDashboardCommon):
@@ -75,7 +76,8 @@ class TestAccountJournalDashboard(TestAccountJournalDashboardCommon):
         })
         partial_payment.action_post()
 
-        (invoice + partial_payment.move_id).line_ids.filtered(lambda line: line.account_type == 'asset_receivable').reconcile()
+        (invoice + partial_payment.move_id).line_ids.filtered(
+            lambda line: line.account_type == 'asset_receivable').reconcile()
 
         dashboard_data = journal._get_journal_dashboard_data_batched()[journal.id]
         self.assertEqual(dashboard_data['number_draft'], 1)
@@ -103,8 +105,8 @@ class TestAccountJournalDashboard(TestAccountJournalDashboardCommon):
         })
         payment.action_post()
 
-        (refund + payment.move_id).line_ids\
-            .filtered(lambda line: line.account_type == 'asset_receivable')\
+        (refund + payment.move_id).line_ids \
+            .filtered(lambda line: line.account_type == 'asset_receivable') \
             .reconcile()
 
         dashboard_data = journal._get_journal_dashboard_data_batched()[journal.id]
@@ -136,25 +138,36 @@ class TestAccountJournalDashboard(TestAccountJournalDashboardCommon):
 
         setup_values = [
             [self.company_data['default_journal_purchase'], foreign_currency],
-            [self.company_data['default_journal_purchase'].copy({'currency_id': foreign_currency.id, 'default_account_id': self.company_data['default_account_expense'].id}), foreign_currency],
-            [self.company_data['default_journal_purchase'].copy({'currency_id': foreign_currency.id, 'default_account_id': self.company_data['default_account_expense'].id}), company_currency],
-            [self.company_data['default_journal_purchase'].copy({'currency_id': company_currency.id, 'default_account_id': self.company_data['default_account_expense'].id}), company_currency],
-            [self.company_data['default_journal_purchase'].copy({'currency_id': company_currency.id, 'default_account_id': self.company_data['default_account_expense'].id}), foreign_currency],
+            [self.company_data['default_journal_purchase'].copy({'currency_id': foreign_currency.id,
+                                                                 'default_account_id': self.company_data[
+                                                                     'default_account_expense'].id}), foreign_currency],
+            [self.company_data['default_journal_purchase'].copy({'currency_id': foreign_currency.id,
+                                                                 'default_account_id': self.company_data[
+                                                                     'default_account_expense'].id}), company_currency],
+            [self.company_data['default_journal_purchase'].copy({'currency_id': company_currency.id,
+                                                                 'default_account_id': self.company_data[
+                                                                     'default_account_expense'].id}), company_currency],
+            [self.company_data['default_journal_purchase'].copy({'currency_id': company_currency.id,
+                                                                 'default_account_id': self.company_data[
+                                                                     'default_account_expense'].id}), foreign_currency],
         ]
 
         expected_vals_list = [
             # number_draft, sum_draft, number_waiting, sum_waiting, number_late, sum_late, currency
-            [            1,       100,              1,          55,            1,      55, company_currency],
-            [            1,       200,              1,         110,            1,     110, foreign_currency],
-            [            1,       400,              1,         220,            1,     220, foreign_currency],
-            [            1,       200,              1,         110,            1,     110, company_currency],
-            [            1,       100,              1,          55,            1,      55, company_currency],
+            [1, 100, 1, 55, 1, 55, company_currency],
+            [1, 200, 1, 110, 1, 110, foreign_currency],
+            [1, 400, 1, 220, 1, 220, foreign_currency],
+            [1, 200, 1, 110, 1, 110, company_currency],
+            [1, 100, 1, 55, 1, 55, company_currency],
         ]
 
         for (purchase_journal, bill_currency), expected_vals in zip(setup_values, expected_vals_list):
-            with self.subTest(purchase_journal_currency=purchase_journal.currency_id, bill_currency=bill_currency, expected_vals=expected_vals):
-                bill = self.init_invoice('in_invoice', invoice_date='2017-01-01', post=True, amounts=[200], currency=bill_currency, journal=purchase_journal)
-                _draft_bill = self.init_invoice('in_invoice', invoice_date='2017-01-01', post=False, amounts=[200], currency=bill_currency, journal=purchase_journal)
+            with self.subTest(purchase_journal_currency=purchase_journal.currency_id, bill_currency=bill_currency,
+                              expected_vals=expected_vals):
+                bill = self.init_invoice('in_invoice', invoice_date='2017-01-01', post=True, amounts=[200],
+                                         currency=bill_currency, journal=purchase_journal)
+                _draft_bill = self.init_invoice('in_invoice', invoice_date='2017-01-01', post=False, amounts=[200],
+                                                currency=bill_currency, journal=purchase_journal)
 
                 payment = self.init_payment(-90, post=True, date='2017-01-01', currency=bill_currency)
                 (bill + payment.move_id).line_ids.filtered_domain([
@@ -227,8 +240,8 @@ class TestAccountJournalDashboard(TestAccountJournalDashboardCommon):
             'move_type': 'out_invoice',
             'journal_id': journal.id,
             'partner_id': self.partner_a.id,
-            'invoice_date': f'1900-01-{i+1:02d}',
-            'date': f'2019-01-{i+1:02d}',
+            'invoice_date': f'1900-01-{i + 1:02d}',
+            'date': f'2019-01-{i + 1:02d}',
             'invoice_line_ids': [Command.create({
                 'product_id': self.product_a.id,
                 'quantity': 40.0,
@@ -240,10 +253,12 @@ class TestAccountJournalDashboard(TestAccountJournalDashboardCommon):
         gap_date = moves[3].date
 
         moves[:8].action_post()  # Only post 8 moves and keep 2 draft moves
-        self.assertFalse(journal._query_has_sequence_holes())  # no gap, no gap warning, and draft moves shouldn't trigger the warning
+        self.assertFalse(
+            journal._query_has_sequence_holes())  # no gap, no gap warning, and draft moves shouldn't trigger the warning
 
         moves[2:4].button_draft()
-        self.assertTrue(journal._query_has_sequence_holes())  # gap due to draft moves using sequence numbers, gap warning
+        self.assertTrue(
+            journal._query_has_sequence_holes())  # gap due to draft moves using sequence numbers, gap warning
         moves[3].unlink()
         self.assertTrue(journal._query_has_sequence_holes())  # gap due to missing sequence, gap warning
 
@@ -273,7 +288,8 @@ class TestAccountJournalDashboard(TestAccountJournalDashboardCommon):
 
         dashboard_data = bank_journal._get_journal_dashboard_data_batched()[bank_journal.id]
         self.assertEqual(dashboard_data['nb_misc_operations'], 0)
-        self.assertEqual(dashboard_data['account_balance'], (bank_journal.currency_id or self.env.company.currency_id).format(100))
+        self.assertEqual(dashboard_data['account_balance'],
+                         (bank_journal.currency_id or self.env.company.currency_id).format(100))
 
     def test_bank_journal_different_currency(self):
         """Test that the misc operations amount on the dashboard is correct

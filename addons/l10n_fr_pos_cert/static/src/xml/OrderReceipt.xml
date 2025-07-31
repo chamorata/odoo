@@ -16,7 +16,8 @@
                     Old unit price:
                     <span class="oldPrice">
                         <s>
-                            <t t-out="props.formatCurrency(line.taxed_lst_unit_price)" /> / Units
+                            <t t-out="props.formatCurrency(line.taxed_lst_unit_price)"/>
+                            / Units
                         </s>
                     </span>
                 </div>

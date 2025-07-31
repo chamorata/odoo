@@ -8,12 +8,15 @@
         <field name="arch" type="xml">
             <form string="Discount &amp; Loyalty">
                 <header>
-                    <button name="%(loyalty_generate_wizard_action)d" string="Generate Coupons" class="btn-primary" type="action"
-                        invisible="program_type != 'coupons'"/>
-                    <button name="%(loyalty_generate_wizard_action)d" string="Generate Gift Cards" class="btn-primary" type="action"
-                        invisible="program_type != 'gift_card'"/>
-                    <button name="%(loyalty_generate_wizard_action)d" string="Generate eWallet" class="btn-primary" type="action"
-                        invisible="program_type != 'ewallet'" context="{'default_mode': 'selected'}"/>
+                    <button name="%(loyalty_generate_wizard_action)d" string="Generate Coupons" class="btn-primary"
+                            type="action"
+                            invisible="program_type != 'coupons'"/>
+                    <button name="%(loyalty_generate_wizard_action)d" string="Generate Gift Cards" class="btn-primary"
+                            type="action"
+                            invisible="program_type != 'gift_card'"/>
+                    <button name="%(loyalty_generate_wizard_action)d" string="Generate eWallet" class="btn-primary"
+                            type="action"
+                            invisible="program_type != 'ewallet'" context="{'default_mode': 'selected'}"/>
                 </header>
                 <sheet>
                     <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
@@ -23,9 +26,13 @@
                                 <span class="o_stat_value">
                                     <field name="coupon_count"/>
                                 </span>
-                                <span class="o_stat_text" invisible="program_type not in ('coupons', 'next_order_coupons')">Coupons</span>
+                                <span class="o_stat_text"
+                                      invisible="program_type not in ('coupons', 'next_order_coupons')">Coupons
+                                </span>
                                 <span class="o_stat_text" invisible="program_type != 'loyalty'">Loyalty Cards</span>
-                                <span class="o_stat_text" invisible="program_type not in ('promotion', 'buy_x_get_y')">Promos</span>
+                                <span class="o_stat_text" invisible="program_type not in ('promotion', 'buy_x_get_y')">
+                                    Promos
+                                </span>
                                 <span class="o_stat_text" invisible="program_type != 'promo_code'">Discount</span>
                                 <span class="o_stat_text" invisible="program_type != 'gift_card'">Gift Cards</span>
                                 <span class="o_stat_text" invisible="program_type != 'ewallet'">eWallets</span>
@@ -44,45 +51,59 @@
                         <group>
                             <label for="program_type"/>
                             <div>
-                                <field name="program_type" widget="filterable_selection" readonly="coupon_count != 0" options="{'blacklisted_values': ['gift_card', 'ewallet']}"/>
+                                <field name="program_type" widget="filterable_selection" readonly="coupon_count != 0"
+                                       options="{'blacklisted_values': ['gift_card', 'ewallet']}"/>
                                 <p class="text-muted" invisible="program_type != 'coupons'" colspan="2">
-                                    Generate &amp; share coupon codes manually. It can be used in eCommerce, Point of Sale or regular orders to claim the Reward. You can define constraints on its usage through conditional rule.
+                                    Generate &amp; share coupon codes manually. It can be used in eCommerce, Point of
+                                    Sale or regular orders to claim the Reward. You can define constraints on its usage
+                                    through conditional rule.
                                     <div groups="base.group_no_one">
-                                        When generating coupon, you can define a specific points value that can be exchanged for rewards.
+                                        When generating coupon, you can define a specific points value that can be
+                                        exchanged for rewards.
                                     </div>
                                 </p>
                                 <p class="text-muted" invisible="program_type != 'loyalty'" colspan="2">
-                                    When customers make an order, they accumulate points they can exchange for rewards on the current order or on a future one.
+                                    When customers make an order, they accumulate points they can exchange for rewards
+                                    on the current order or on a future one.
                                 </p>
                                 <p class="text-muted" invisible="program_type != 'promotion'" colspan="2">
                                     Set up conditional rules on the order that will give access to rewards for customers
                                     <div groups="base.group_no_one">
-                                        Each rule can grant points to the customer he will be able to exchange against rewards
+                                        Each rule can grant points to the customer he will be able to exchange against
+                                        rewards
                                     </div>
                                 </p>
                                 <p class="text-muted" invisible="program_type != 'promo_code'" colspan="2">
-                                    Define Discount codes on conditional rules then share it with your customers for rewards.
+                                    Define Discount codes on conditional rules then share it with your customers for
+                                    rewards.
                                 </p>
                                 <p class="text-muted" invisible="program_type != 'buy_x_get_y'" colspan="2">
-                                    Grant 1 credit for each item bought then reward the customer with Y items in exchange of X credits.
+                                    Grant 1 credit for each item bought then reward the customer with Y items in
+                                    exchange of X credits.
                                 </p>
                                 <p class="text-muted" invisible="program_type != 'next_order_coupons'" colspan="2">
-                                    Drive repeat purchases by sending a unique, single-use coupon code for the next purchase when a customer buys something in your store.
+                                    Drive repeat purchases by sending a unique, single-use coupon code for the next
+                                    purchase when a customer buys something in your store.
                                 </p>
                                 <p class="text-muted" invisible="program_type != 'gift_card'" colspan="2">
-                                    Gift Cards are created manually or automatically sent by email when the customer orders a gift card product.
+                                    Gift Cards are created manually or automatically sent by email when the customer
+                                    orders a gift card product.
                                     <br/>
                                     Then, Gift Cards can be used to pay orders.
                                 </p>
                                 <p class="text-muted" invisible="program_type != 'ewallet'" colspan="2">
-                                    eWallets are created manually or automatically when the customer orders a eWallet product.
+                                    eWallets are created manually or automatically when the customer orders a eWallet
+                                    product.
                                     <br/>
                                     Then, eWallets are proposed during the checkout, to pay orders.
                                 </p>
                             </div>
-                            <field name="trigger_product_ids" string="Gift Card Products" widget="many2many_tags" invisible="program_type != 'gift_card'"/>
-                            <field name="trigger_product_ids" string="eWallet Products" widget="many2many_tags" invisible="program_type != 'ewallet'"/>
-                            <field name="payment_program_discount_product_id" groups="base.group_no_one" invisible="program_type not in ('gift_card', 'ewallet')"/>
+                            <field name="trigger_product_ids" string="Gift Card Products" widget="many2many_tags"
+                                   invisible="program_type != 'gift_card'"/>
+                            <field name="trigger_product_ids" string="eWallet Products" widget="many2many_tags"
+                                   invisible="program_type != 'ewallet'"/>
+                            <field name="payment_program_discount_product_id" groups="base.group_no_one"
+                                   invisible="program_type not in ('gift_card', 'ewallet')"/>
                             <field name="mail_template_id" invisible="program_type not in ('gift_card', 'ewallet')"/>
                             <field name="currency_id"/>
                             <field name="currency_symbol" invisible="1"/>
@@ -90,14 +111,21 @@
                                    widget="many2many_tags"
                                    invisible="program_type in ('gift_card', 'ewallet')"
                                    groups="product.group_product_pricelist"/>
-                            <field name="portal_point_name" invisible="program_type in ('loyalty', 'gift_card', 'ewallet')" string="Points Unit" groups="base.group_no_one"/>
-                            <field name="portal_point_name" invisible="program_type in ('gift_card', 'ewallet') or program_type != 'loyalty'" string="Points Unit"/>
+                            <field name="portal_point_name"
+                                   invisible="program_type in ('loyalty', 'gift_card', 'ewallet')" string="Points Unit"
+                                   groups="base.group_no_one"/>
+                            <field name="portal_point_name"
+                                   invisible="program_type in ('gift_card', 'ewallet') or program_type != 'loyalty'"
+                                   string="Points Unit"/>
                             <field name="portal_visible" invisible="1"/>
-                            <field name="portal_visible" groups="base.group_no_one" string="Show points Unit" invisible="program_type in ('gift_card', 'ewallet')"/>
+                            <field name="portal_visible" groups="base.group_no_one" string="Show points Unit"
+                                   invisible="program_type in ('gift_card', 'ewallet')"/>
                             <field name="trigger" invisible="1"/>
-                            <field name="trigger" string="Program trigger" groups="base.group_no_one" widget="selection" readonly="1" force_save="1"/>
+                            <field name="trigger" string="Program trigger" groups="base.group_no_one" widget="selection"
+                                   readonly="1" force_save="1"/>
                             <field name="applies_on" invisible="1"/>
-                            <field name="applies_on" string="Use points on" groups="base.group_no_one" widget="radio" force_save="1" readonly="program_type != 'loyalty'"/>
+                            <field name="applies_on" string="Use points on" groups="base.group_no_one" widget="radio"
+                                   force_save="1" readonly="program_type != 'loyalty'"/>
                         </group>
                         <group>
                             <field name="date_from" invisible="program_type in ('gift_card', 'ewallet')"/>
@@ -106,8 +134,13 @@
                             <span invisible="program_type in ('gift_card', 'ewallet')">
                                 <field name="limit_usage" class="oe_inline"/>
                                 <span invisible="not limit_usage">
-                                    to <field name="max_usage" class="oe_inline"/> usages
-                                    <span class="text-muted">(<field name="total_order_count" class="oe_inline" readonly="1"/> used)</span>
+                                    to
+                                    <field name="max_usage" class="oe_inline"/>
+                                    usages
+                                    <span class="text-muted">(
+                                        <field name="total_order_count" class="oe_inline" readonly="1"/>
+                                        used)
+                                    </span>
                                 </span>
                             </span>
                             <field name="company_id" invisible="1"/>
@@ -115,31 +148,40 @@
                             <field name="available_on" invisible="1"/>
                             <label class="o_form_label" for="available_on" string="Available On" invisible="1"/>
                             <div id="o_loyalty_program_availabilities" invisible="1"/>
-                            <field name="portal_point_name" invisible="program_type not in ('gift_card', 'ewallet')" string="Displayed as" groups="base.group_no_one"/>
+                            <field name="portal_point_name" invisible="program_type not in ('gift_card', 'ewallet')"
+                                   string="Displayed as" groups="base.group_no_one"/>
                         </group>
                     </group>
                     <notebook>
-                        <page string="Rules &amp; Rewards" name="rules_rewards" invisible="program_type in ('gift_card', 'ewallet')">
+                        <page string="Rules &amp; Rewards" name="rules_rewards"
+                              invisible="program_type in ('gift_card', 'ewallet')">
                             <group>
                                 <group>
                                     <field name="rule_ids" colspan="2" mode="kanban" nolabel="1" add-label="Add a rule"
-                                        class="o_loyalty_kanban_inline" widget="loyalty_one2many" context="{'currency_symbol': currency_symbol, 'program_type': program_type}"/>
+                                           class="o_loyalty_kanban_inline" widget="loyalty_one2many"
+                                           context="{'currency_symbol': currency_symbol, 'program_type': program_type}"/>
                                 </group>
                                 <group>
-                                    <field name="reward_ids" colspan="2" mode="kanban" nolabel="1" add-label="Add a reward"
-                                      class="o_loyalty_kanban_inline" widget="loyalty_one2many" context="{'currency_symbol': currency_symbol, 'program_type': program_type}"/>
+                                    <field name="reward_ids" colspan="2" mode="kanban" nolabel="1"
+                                           add-label="Add a reward"
+                                           class="o_loyalty_kanban_inline" widget="loyalty_one2many"
+                                           context="{'currency_symbol': currency_symbol, 'program_type': program_type}"/>
                                 </group>
                             </group>
                         </page>
-                        <page string="Rewards" name="rewards" groups="base.group_no_one" invisible="program_type not in ('gift_card', 'ewallet')">
+                        <page string="Rewards" name="rewards" groups="base.group_no_one"
+                              invisible="program_type not in ('gift_card', 'ewallet')">
                             <group>
                                 <group groups="base.group_no_one">
-                                    <field name="reward_ids" colspan="2" mode="kanban" nolabel="1" add-label="Add a reward"
-                                      class="o_loyalty_kanban_inline" widget="loyalty_one2many" context="{'currency_symbol': currency_symbol, 'program_type': program_type}"/>
+                                    <field name="reward_ids" colspan="2" mode="kanban" nolabel="1"
+                                           add-label="Add a reward"
+                                           class="o_loyalty_kanban_inline" widget="loyalty_one2many"
+                                           context="{'currency_symbol': currency_symbol, 'program_type': program_type}"/>
                                 </group>
                             </group>
                         </page>
-                        <page string="Communications" name="communications" invisible="applies_on == 'current' or program_type in ('gift_card', 'ewallet')">
+                        <page string="Communications" name="communications"
+                              invisible="applies_on == 'current' or program_type in ('gift_card', 'ewallet')">
                             <field name="communication_plan_ids" mode="list"/>
                         </page>
                     </notebook>

@@ -27,12 +27,12 @@ from ....webauthn.helpers.structs import AttestationStatement
 
 
 def verify_apple(
-    *,
-    attestation_statement: AttestationStatement,
-    attestation_object: bytes,
-    client_data_json: bytes,
-    credential_public_key: bytes,
-    pem_root_certs_bytes: List[bytes],
+        *,
+        attestation_statement: AttestationStatement,
+        attestation_object: bytes,
+        client_data_json: bytes,
+        credential_public_key: bytes,
+        pem_root_certs_bytes: List[bytes],
 ) -> bool:
     """
     https://www.w3.org/TR/webauthn-2/#sctn-apple-anonymous-attestation

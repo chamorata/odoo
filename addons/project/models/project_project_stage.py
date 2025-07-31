@@ -4,6 +4,7 @@
 from odoo import fields, models, _
 from odoo.exceptions import UserError
 
+
 class ProjectProjectStage(models.Model):
     _name = 'project.project.stage'
     _description = 'Project Stage'
@@ -12,10 +13,11 @@ class ProjectProjectStage(models.Model):
     active = fields.Boolean(default=True, export_string_translation=False)
     sequence = fields.Integer(default=50, export_string_translation=False)
     name = fields.Char(required=True, translate=True)
-    mail_template_id = fields.Many2one('mail.template', string='Email Template', domain=[('model', '=', 'project.project')],
-        help="If set, an email will be automatically sent to the customer when the project reaches this stage.")
+    mail_template_id = fields.Many2one('mail.template', string='Email Template',
+                                       domain=[('model', '=', 'project.project')],
+                                       help="If set, an email will be automatically sent to the customer when the project reaches this stage.")
     fold = fields.Boolean('Folded in Kanban',
-        help="If enabled, this stage will be displayed as folded in the Kanban view of your projects. Projects in a folded stage are considered as closed.")
+                          help="If enabled, this stage will be displayed as folded in the Kanban view of your projects. Projects in a folded stage are considered as closed.")
     company_id = fields.Many2one('res.company', string="Company")
 
     def copy_data(self, default=None):
@@ -43,16 +45,17 @@ class ProjectProjectStage(models.Model):
     def write(self, vals):
         if vals.get('company_id'):
             # Checking if there is a project with a different company_id than the target one. If so raise an error since this is not allowed
-            project = self.env['project.project'].search(['&', ('stage_id', 'in', self.ids), ('company_id', '!=', vals['company_id'])], limit=1)
+            project = self.env['project.project'].search(
+                ['&', ('stage_id', 'in', self.ids), ('company_id', '!=', vals['company_id'])], limit=1)
             if project:
                 company = self.env['res.company'].browse(vals['company_id'])
                 raise UserError(
                     _("You are not able to switch the company of this stage to %(company_name)s since it currently "
-                    "includes projects associated with %(project_company_name)s. Please ensure that this stage exclusively "
-                    "consists of projects linked to %(company_name)s.",
-                        company_name=company.name,
-                        project_company_name=project.company_id.name or "no company"
-                    )
+                      "includes projects associated with %(project_company_name)s. Please ensure that this stage exclusively "
+                      "consists of projects linked to %(company_name)s.",
+                      company_name=company.name,
+                      project_company_name=project.company_id.name or "no company"
+                      )
                 )
 
         if 'active' in vals and not vals['active']:

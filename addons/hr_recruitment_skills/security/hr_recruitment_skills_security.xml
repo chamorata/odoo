@@ -6,9 +6,10 @@
         <field name="model_id" ref="model_hr_candidate_skill"/>
         <field name="domain_force">[
             '|',
-                ('candidate_id.applicant_ids.job_id.interviewer_ids', 'in', user.id),
-                ('candidate_id.applicant_ids.interviewer_ids', 'in', user.id),
-        ]</field>
+            ('candidate_id.applicant_ids.job_id.interviewer_ids', 'in', user.id),
+            ('candidate_id.applicant_ids.interviewer_ids', 'in', user.id),
+            ]
+        </field>
         <field name="groups" eval="[(4, ref('hr_recruitment.group_hr_recruitment_interviewer'))]"/>
     </record>
 

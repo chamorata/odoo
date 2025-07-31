@@ -10,6 +10,7 @@ from odoo.exceptions import AccessDenied, AccessError, MissingError, UserError, 
 from odoo.http import content_disposition, Controller, request, route
 from odoo.tools import consteq
 
+
 # --------------------------------------------------
 # Misc tools
 # --------------------------------------------------
@@ -33,7 +34,7 @@ def pager(url, total, page=1, step=30, scope=5, url_args=None):
     page = max(1, min(int(page if str(page).isdigit() else 1), page_count))
     scope -= 1
 
-    pmin = max(page - int(math.floor(scope/2)), 1)
+    pmin = max(page - int(math.floor(scope / 2)), 1)
     pmax = min(pmin + scope, page_count)
 
     if pmax - pmin < scope:
@@ -77,7 +78,7 @@ def pager(url, total, page=1, step=30, scope=5, url_args=None):
             'num': page_count
         },
         "pages": [
-            {'url': get_url(page_num), 'num': page_num} for page_num in range(pmin, pmax+1)
+            {'url': get_url(page_num), 'num': page_num} for page_num in range(pmin, pmax + 1)
         ]
     }
 
@@ -129,7 +130,6 @@ def _build_url_w_params(url_string, query_params, remove_duplicates=True):
 
 
 class CustomerPortal(Controller):
-
     _items_per_page = 80
 
     def _prepare_portal_layout_values(self):
@@ -304,15 +304,18 @@ class CustomerPortal(Controller):
         `access_token`.
         """
         try:
-            attachment_sudo = self._document_check_access('ir.attachment', int(attachment_id), access_token=access_token)
+            attachment_sudo = self._document_check_access('ir.attachment', int(attachment_id),
+                                                          access_token=access_token)
         except (AccessError, MissingError) as e:
             raise UserError(_("The attachment does not exist or you do not have the rights to access it."))
 
         if attachment_sudo.res_model != 'mail.compose.message' or attachment_sudo.res_id != 0:
-            raise UserError(_("The attachment %s cannot be removed because it is not in a pending state.", attachment_sudo.name))
+            raise UserError(
+                _("The attachment %s cannot be removed because it is not in a pending state.", attachment_sudo.name))
 
         if attachment_sudo.env['mail.message'].search_count([('attachment_ids', 'in', attachment_sudo.ids)], limit=1):
-            raise UserError(_("The attachment %s cannot be removed because it is linked to a message.", attachment_sudo.name))
+            raise UserError(
+                _("The attachment %s cannot be removed because it is linked to a message.", attachment_sudo.name))
 
         return attachment_sudo.unlink()
 
@@ -344,7 +347,8 @@ class CustomerPortal(Controller):
             if partner_creation or partner.can_edit_vat():
                 if hasattr(partner, "check_vat"):
                     if data.get("country_id"):
-                        data["vat"] = request.env["res.partner"].fix_eu_vat_number(int(data.get("country_id")), data.get("vat"))
+                        data["vat"] = request.env["res.partner"].fix_eu_vat_number(int(data.get("country_id")),
+                                                                                   data.get("vat"))
                     partner_dummy = partner.new({
                         'vat': data['vat'],
                         'country_id': (int(data['country_id'])
@@ -356,7 +360,8 @@ class CustomerPortal(Controller):
                         error["vat"] = 'error'
                         error_message.append(e.args[0])
             else:
-                error_message.append(_('Changing VAT number is not allowed once document(s) have been issued for your account. Please contact us directly for this operation.'))
+                error_message.append(
+                    _('Changing VAT number is not allowed once document(s) have been issued for your account. Please contact us directly for this operation.'))
 
         # error message for empty required fields
         if [err for err in error.values() if err == 'missing']:
@@ -394,7 +399,8 @@ class CustomerPortal(Controller):
         try:
             document.check_access('read')
         except AccessError:
-            if not access_token or not document_sudo.access_token or not consteq(document_sudo.access_token, access_token):
+            if not access_token or not document_sudo.access_token or not consteq(document_sudo.access_token,
+                                                                                 access_token):
                 raise
         return document_sudo
 
@@ -458,8 +464,10 @@ class CustomerPortal(Controller):
         }
         if report_type == 'pdf':
             filename = "%s.pdf" % (re.sub(r'\W+', '_', model._get_report_base_filename()))
-            headers['Content-Disposition'] = content_disposition(filename, disposition_type='attachment' if download else 'inline')
+            headers['Content-Disposition'] = content_disposition(filename,
+                                                                 disposition_type='attachment' if download else 'inline')
         return headers
+
 
 def get_error(e, path=''):
     """ Recursively dereferences `path` (a period-separated sequence of dict

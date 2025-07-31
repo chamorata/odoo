@@ -40,7 +40,7 @@ class Category(models.Model):
         ('positive_color', 'CHECK(color >= 0)', 'The color code must be positive!')
     ]
 
-    @api.depends('name', 'parent.display_name')     # this definition is recursive
+    @api.depends('name', 'parent.display_name')  # this definition is recursive
     def _compute_display_name(self):
         for cat in self:
             if cat.parent:
@@ -93,7 +93,7 @@ class Discussion(models.Model):
     name = fields.Char(string='Title', required=True, help="Description of discussion.")
     moderator = fields.Many2one('res.users')
     categories = fields.Many2many('test_new_api.category',
-        'test_new_api_discussion_category', 'discussion', 'category')
+                                  'test_new_api_discussion_category', 'discussion', 'category')
     participants = fields.Many2many('res.users', context={'active_test': False})
     messages = fields.One2many('test_new_api.message', 'discussion', copy=True)
     message_concat = fields.Text(string='Message concatenate')
@@ -178,7 +178,7 @@ class Message(models.Model):
     def _compute_name(self):
         for message in self:
             message.name = self._context.get('compute_name',
-                "[%s] %s" % (message.discussion.name or '', message.author.name or ''))
+                                             "[%s] %s" % (message.discussion.name or '', message.author.name or ''))
 
     @api.constrains('name')
     def _check_name(self):
@@ -367,7 +367,7 @@ class MixedModel(models.Model):
     now = fields.Datetime(compute='_compute_now')
     lang = fields.Selection(string='Language', selection='_get_lang')
     reference = fields.Reference(string='Related Document',
-        selection='_reference_models')
+                                 selection='_reference_models')
     comment1 = fields.Html(sanitize=False)
     comment2 = fields.Html(sanitize_attributes=True, strip_classes=False)
     comment3 = fields.Html(sanitize_attributes=True, strip_classes=True)
@@ -552,6 +552,7 @@ class ComputeSudo(models.Model):
     def _compute_name_for_uid(self):
         for record in self:
             record.name_for_uid = self.env.user.name
+
 
 class MultiComputeInverse(models.Model):
     """ Model with the same inverse method for several fields. """
@@ -796,8 +797,8 @@ class ComputeCascade(models.Model):
     _description = 'Test New API Cascade'
 
     foo = fields.Char()
-    bar = fields.Char(compute='_compute_bar')               # depends on foo
-    baz = fields.Char(compute='_compute_baz', store=True)   # depends on bar
+    bar = fields.Char(compute='_compute_bar')  # depends on foo
+    baz = fields.Char(compute='_compute_baz', store=True)  # depends on bar
 
     @api.depends('foo')
     def _compute_bar(self):
@@ -1008,7 +1009,8 @@ class ModelImage(models.Model):
     image_512 = fields.Image("Image 512", related='image', max_width=512, max_height=512, store=True, readonly=False)
     image_256 = fields.Image("Image 256", related='image', max_width=256, max_height=256, store=False, readonly=False)
     image_128 = fields.Image("Image 128", max_width=128, max_height=128)
-    image_64 = fields.Image("Image 64", related='image', max_width=64, max_height=64, store=True, attachment=False, readonly=False)
+    image_64 = fields.Image("Image 64", related='image', max_width=64, max_height=64, store=True, attachment=False,
+                            readonly=False)
 
 
 class BinarySvg(models.Model):
@@ -1022,6 +1024,7 @@ class BinarySvg(models.Model):
         "image wo attachment", related="image_wo_attachment",
         store=True, attachment=False,
     )
+
 
 class MonetaryBase(models.Model):
     _name = 'test_new_api.monetary_base'
@@ -1150,6 +1153,7 @@ class AttachmentHost(models.Model):
         'test_new_api.attachment', 'res_id', auto_join=True,
         domain=lambda self: [('res_model', '=', self._name)],
     )
+
 
 class DecimalPrecisionTestModel(models.Model):
     _name = 'decimal.precision.test'
@@ -1313,7 +1317,8 @@ class ModelChildM2o(models.Model):
     def write(self, vals):
         res = super(ModelChildM2o, self).write(vals)
         if self.name == 'A':
-            raise ValidationError('the first existing child should not be changed when adding a new child to the parent')
+            raise ValidationError(
+                'the first existing child should not be changed when adding a new child to the parent')
         return res
 
 
@@ -1346,6 +1351,7 @@ class City(models.Model):
 
     name = fields.Char()
     country_id = fields.Many2one('test_new_api.country')
+
 
 # abstract model with a selection field
 class StateMixin(models.AbstractModel):
@@ -1529,7 +1535,7 @@ class ShareCacheComputeLine(models.Model):
 
     parent_id = fields.Many2one('test_new_api.model_shared_cache_compute_parent')
     amount = fields.Integer()
-    user_id = fields.Many2one('res.users', default= lambda self: self.env.user)  # Note: There is an ir.rule about this.
+    user_id = fields.Many2one('res.users', default=lambda self: self.env.user)  # Note: There is an ir.rule about this.
 
 
 class ComputeContainer(models.Model):
@@ -1691,6 +1697,7 @@ class ComputeEditableLine(models.Model):
     def _compute_one_compute(self):
         for rec in self:
             rec.one_compute = float_round(99.9999999, precision_rounding=rec.parent_id.precision_rounding)
+
 
 class ConstrainedUnlinks(models.Model):
     _name = 'test_new_api.model_constrained_unlinks'
@@ -2045,6 +2052,7 @@ class IndexedTranslation(models.Model):
 
     name = fields.Text('Name trigram', translate=True, index='trigram')
 
+
 class EmptyChar(models.Model):
     _name = 'test_new_api.empty_char'
     _description = 'A model to test emtpy char'
@@ -2144,6 +2152,7 @@ class CustomView(models.Model):
         """
         self.env.cr.execute(query)
 
+
 class CustomTableQuery(models.Model):
     _name = _description = "test_new_api.custom.table_query"
     _auto = False
@@ -2164,6 +2173,7 @@ class CustomTableQuery(models.Model):
             JOIN test_new_api_any_tag AS tag ON tag.id = rel.test_new_api_any_tag_id
             GROUP BY tag.id
         """
+
 
 class CustomTableQuerySQL(models.Model):
     _name = _description = "test_new_api.custom.table_query_sql"
@@ -2187,6 +2197,7 @@ class CustomTableQuerySQL(models.Model):
             GROUP BY tag.id
             """,
         )
+
 
 class ModelAutovacuumed(models.Model):
     _name = _description = 'test_new_api.autovacuumed'

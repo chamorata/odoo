@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, fields, models, _
 from odoo.addons.web_editor.tools import handle_history_divergence
+
+from odoo import api, fields, models
 
 
 class Job(models.Model):
@@ -15,11 +16,11 @@ class Job(models.Model):
     name = fields.Char(string='Job Position', required=True, index='trigram', translate=True)
     sequence = fields.Integer(default=10)
     expected_employees = fields.Integer(compute='_compute_employees', string='Total Forecasted Employees', store=True,
-        help='Expected number of employees for this job position after new recruitment.')
+                                        help='Expected number of employees for this job position after new recruitment.')
     no_of_employee = fields.Integer(compute='_compute_employees', string="Current Number of Employees", store=True,
-        help='Number of employees currently occupying this job position.')
+                                    help='Number of employees currently occupying this job position.')
     no_of_recruitment = fields.Integer(string='Target', copy=False,
-        help='Number of new employees you expect to recruit.', default=1)
+                                       help='Number of new employees you expect to recruit.', default=1)
     employee_ids = fields.One2many('hr.employee', 'job_id', string='Employees', groups='base.group_user')
     description = fields.Html(string='Job Description', sanitize_attributes=False)
     requirements = fields.Text('Requirements')
@@ -28,8 +29,10 @@ class Job(models.Model):
     contract_type_id = fields.Many2one('hr.contract.type', string='Employment Type')
 
     _sql_constraints = [
-        ('name_company_uniq', 'unique(name, company_id, department_id)', 'The name of the job position must be unique per department in company!'),
-        ('no_of_recruitment_positive', 'CHECK(no_of_recruitment >= 0)', 'The expected number of new employees must be positive.')
+        ('name_company_uniq', 'unique(name, company_id, department_id)',
+         'The name of the job position must be unique per department in company!'),
+        ('no_of_recruitment_positive', 'CHECK(no_of_recruitment >= 0)',
+         'The expected number of new employees must be positive.')
     ]
 
     @api.depends('no_of_recruitment', 'employee_ids.job_id', 'employee_ids.active')

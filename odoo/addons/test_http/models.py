@@ -2,7 +2,6 @@
 
 from odoo import models, fields, api
 
-
 MILKY_WAY_REGIONS = ['P3X', 'P4X', 'P2X', 'P5C']
 PEGASUS_REGIONS = ['M4R', 'P3Y', 'M6R']
 

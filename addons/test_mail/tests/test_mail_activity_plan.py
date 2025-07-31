@@ -2,11 +2,12 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import timedelta
+
 from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
+from odoo.addons.mail.tests.test_mail_activity import ActivityScheduleCase
 
 from odoo import Command, fields
-from odoo.addons.mail.tests.test_mail_activity import ActivityScheduleCase
 from odoo.exceptions import ValidationError
 from odoo.tests import Form, tagged, users
 from odoo.tools.misc import format_date
@@ -207,7 +208,7 @@ class TestActivitySchedule(ActivityScheduleCase):
         for test_idx, test_case in enumerate(['mono', 'multi']):
             test_records = test_records_all[test_idx].with_env(self.env)
             with self.subTest(test_case=test_case, test_records=test_records), \
-                 freeze_time(self.reference_now):
+                    freeze_time(self.reference_now):
                 # No plan_date specified (-> self.reference_now is used), No responsible specified
                 form = self._instantiate_activity_schedule_wizard(test_records)
                 self.assertFalse(form.plan_summary)

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import base64
+import json
 import logging
 import platform
-import json
 
 from passlib.context import CryptContext
 
@@ -30,7 +30,8 @@ class EtaUsbController(http.Controller):
             return False
         return crypt_context.verify(access_token, stored_hash)
 
-    @http.route('/hw_l10n_eg_eta/certificate', type='http', auth='none', cors='*', csrf=False, save_session=False, methods=['POST'])
+    @http.route('/hw_l10n_eg_eta/certificate', type='http', auth='none', cors='*', csrf=False, save_session=False,
+                methods=['POST'])
     def eta_certificate(self, pin, access_token):
         """
         Gets the certificate from the token and returns it to the main odoo instance so that we can prepare the
@@ -59,7 +60,8 @@ class EtaUsbController(http.Controller):
             session.logout()
             session.closeSession()
 
-    @http.route('/hw_l10n_eg_eta/sign', type='http', auth='none', cors='*', csrf=False, save_session=False, methods=['POST'])
+    @http.route('/hw_l10n_eg_eta/sign', type='http', auth='none', cors='*', csrf=False, save_session=False,
+                methods=['POST'])
     def eta_sign(self, pin, access_token, invoices):
         """
         Check if the access_token is valid and sign the invoices accessing the usb key with the pin.

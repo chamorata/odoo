@@ -2,8 +2,9 @@
 
 from datetime import date, datetime
 
-from odoo import tests
 from odoo.addons.hr_holidays.tests.common import TestHrHolidaysCommon
+
+from odoo import tests
 
 
 @tests.tagged('post_install', '-at_install')

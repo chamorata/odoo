@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import odoo.tests
 from odoo.addons.pos_self_order.tests.self_order_common_test import SelfOrderCommonTest
+
+import odoo.tests
 from odoo.tests import Command
+
 
 @odoo.tests.tagged("post_install", "-at_install")
 class TestSelfOrderKioskStripe(SelfOrderCommonTest):
@@ -31,4 +33,5 @@ class TestSelfOrderKioskStripe(SelfOrderCommonTest):
 
         res = self.pos_config.load_self_data()
         self.assertEqual(len(res['pos.payment.method']['data']), 1, 'Only one payment method should be loaded')
-        self.assertEqual(res['pos.payment.method']['data'][0]['name'], 'Stripe', 'The loaded payment method should be Stripe')
+        self.assertEqual(res['pos.payment.method']['data'][0]['name'], 'Stripe',
+                         'The loaded payment method should be Stripe')

@@ -9,21 +9,28 @@
             <field name="arch" type="xml">
                 <xpath expr="//group[@name='action_content']" position="inside">
                     <field name="activity_type_id" options="{'no_create': True, 'no_open': True}"
-                        required="state == 'next_activity'" invisible="state != 'next_activity'"/>
-                    <field name="activity_summary" placeholder="e.g. Discuss proposal" invisible="state != 'next_activity'"/>
+                           required="state == 'next_activity'" invisible="state != 'next_activity'"/>
+                    <field name="activity_summary" placeholder="e.g. Discuss proposal"
+                           invisible="state != 'next_activity'"/>
                 </xpath>
                 <xpath expr="//group[@name='action_content']" position="after">
                     <group invisible="state != 'next_activity'">
                         <label for="activity_date_deadline_range"/>
                         <div class="o_row">
                             <field name="activity_date_deadline_range" class="oe_inline"/>
-                            <field name="activity_date_deadline_range_type" class="oe_inline" required="state == 'next_activity' and activity_date_deadline_range &gt; 0"/>
+                            <field name="activity_date_deadline_range_type" class="oe_inline"
+                                   required="state == 'next_activity' and activity_date_deadline_range &gt; 0"/>
                         </div>
                         <field name="activity_user_type" required="state == 'next_activity'"/>
-                        <field name="activity_user_field_name" placeholder="e.g. user_id" invisible="activity_user_type == 'specific'" required="state == 'next_activity' and activity_user_type == 'generic'"/>
-                        <field name="activity_user_id" placeholder="Choose a user..." invisible="activity_user_type == 'generic'" required="state == 'next_activity' and activity_user_type == 'specific'"/>
+                        <field name="activity_user_field_name" placeholder="e.g. user_id"
+                               invisible="activity_user_type == 'specific'"
+                               required="state == 'next_activity' and activity_user_type == 'generic'"/>
+                        <field name="activity_user_id" placeholder="Choose a user..."
+                               invisible="activity_user_type == 'generic'"
+                               required="state == 'next_activity' and activity_user_type == 'specific'"/>
                     </group>
-                    <field name="activity_note" class="oe-bordered-editor" placeholder="Add a description to your activity..." invisible="state != 'next_activity'"/>
+                    <field name="activity_note" class="oe-bordered-editor"
+                           placeholder="Add a description to your activity..." invisible="state != 'next_activity'"/>
                 </xpath>
                 <xpath expr="//field[@name='link_field_id']" position="after">
                     <field name="partner_ids" string="Followers to add" widget="many2many_tags"

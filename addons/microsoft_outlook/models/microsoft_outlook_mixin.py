@@ -4,8 +4,8 @@
 import json
 import logging
 import time
-import requests
 
+import requests
 from werkzeug.urls import url_encode, url_join
 
 from odoo import _, api, fields, models
@@ -16,22 +16,22 @@ _logger = logging.getLogger(__name__)
 
 
 class MicrosoftOutlookMixin(models.AbstractModel):
-
     _name = 'microsoft.outlook.mixin'
     _description = 'Microsoft Outlook Mixin'
 
     _OUTLOOK_SCOPE = None
 
     is_microsoft_outlook_configured = fields.Boolean('Is Outlook Credential Configured',
-        compute='_compute_is_microsoft_outlook_configured')
+                                                     compute='_compute_is_microsoft_outlook_configured')
     microsoft_outlook_refresh_token = fields.Char(string='Outlook Refresh Token',
-        groups='base.group_system', copy=False)
+                                                  groups='base.group_system', copy=False)
     microsoft_outlook_access_token = fields.Char(string='Outlook Access Token',
-        groups='base.group_system', copy=False)
+                                                 groups='base.group_system', copy=False)
     microsoft_outlook_access_token_expiration = fields.Integer(string='Outlook Access Token Expiration Timestamp',
-        groups='base.group_system', copy=False)
+                                                               groups='base.group_system', copy=False)
     microsoft_outlook_uri = fields.Char(compute='_compute_outlook_uri', string='Authentication URI',
-        help='The URL to generate the authorization code from Outlook', groups='base.group_system')
+                                        help='The URL to generate the authorization code from Outlook',
+                                        groups='base.group_system')
 
     def _compute_is_microsoft_outlook_configured(self):
         Config = self.env['ir.config_parameter'].sudo()
@@ -154,8 +154,8 @@ class MicrosoftOutlookMixin(models.AbstractModel):
         self.ensure_one()
         now_timestamp = int(time.time())
         if not self.microsoft_outlook_access_token \
-           or not self.microsoft_outlook_access_token_expiration \
-           or self.microsoft_outlook_access_token_expiration < now_timestamp:
+                or not self.microsoft_outlook_access_token_expiration \
+                or self.microsoft_outlook_access_token_expiration < now_timestamp:
             if not self.microsoft_outlook_refresh_token:
                 raise UserError(_('Please connect with your Outlook account before using it.'))
             (

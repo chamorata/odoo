@@ -2,11 +2,11 @@
 
 import logging
 
-from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
-
 from odoo.addons.payment import utils as payment_utils
 from odoo.addons.payment.const import REPORT_REASONS_MAPPING
+
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -181,7 +181,7 @@ class PaymentProvider(models.Model):
     module_state = fields.Selection(string="Installation State", related='module_id.state')
     module_to_buy = fields.Boolean(string="Odoo Enterprise Module", related='module_id.to_buy')
 
-    #=== COMPUTE METHODS ===#
+    # === COMPUTE METHODS ===#
 
     @api.depends('code')
     def _compute_available_currency_ids(self):
@@ -244,7 +244,7 @@ class PaymentProvider(models.Model):
             'support_refund': 'none',
         })
 
-    #=== ONCHANGE METHODS ===#
+    # === ONCHANGE METHODS ===#
 
     @api.onchange('state')
     def _onchange_state_switch_is_published(self):
@@ -287,13 +287,13 @@ class PaymentProvider(models.Model):
         :raise UserError: If transactions are linked to the provider.
         """
         if self._origin.company_id != self.company_id and self.env['payment.transaction'].search_count(
-            [('provider_id', '=', self._origin.id)], limit=1
+                [('provider_id', '=', self._origin.id)], limit=1
         ):
             raise UserError(_(
                 "You cannot change the company of a payment provider with existing transactions."
             ))
 
-    #=== CRUD METHODS ===#
+    # === CRUD METHODS ===#
 
     @api.model_create_multi
     def create(self, values_list):
@@ -344,8 +344,8 @@ class PaymentProvider(models.Model):
         for field_name, field in self._fields.items():
             required_for_provider_code = getattr(field, 'required_if_provider', None)
             if required_for_provider_code and any(
-                required_for_provider_code == provider._get_code() and not provider[field_name]
-                for provider in enabled_providers
+                    required_for_provider_code == provider._get_code() and not provider[field_name]
+                    for provider in enabled_providers
             ):
                 ir_field = self.env['ir.model.fields']._get(self._name, field_name)
                 field_names.append(ir_field.field_description)
@@ -410,7 +410,7 @@ class PaymentProvider(models.Model):
                     " instead.", provider.name
                 ))
 
-    #=== ACTION METHODS ===#
+    # === ACTION METHODS ===#
 
     def button_immediate_install(self):
         """ Install the module and reload the page.
@@ -449,12 +449,12 @@ class PaymentProvider(models.Model):
             'context': {'active_test': False, 'create': False},
         }
 
-    #=== BUSINESS METHODS ===#
+    # === BUSINESS METHODS ===#
 
     @api.model
     def _get_compatible_providers(
-        self, company_id, partner_id, amount, currency_id=None, force_tokenization=False,
-        is_express_checkout=False, is_validation=False, report=None, **kwargs
+            self, company_id, partner_id, amount, currency_id=None, force_tokenization=False,
+            is_express_checkout=False, is_validation=False, report=None, **kwargs
     ):
         """ Search and return the providers matching the compatibility criteria.
 
@@ -493,8 +493,8 @@ class PaymentProvider(models.Model):
             unfiltered_providers = providers
             providers = providers.filtered(
                 lambda p: (
-                    not p.available_country_ids
-                    or partner.country_id.id in p.available_country_ids.ids
+                        not p.available_country_ids
+                        or partner.country_id.id in p.available_country_ids.ids
                 )
             )
             payment_utils.add_to_report(
@@ -513,8 +513,8 @@ class PaymentProvider(models.Model):
             unfiltered_providers = providers
             providers = providers.filtered(
                 lambda p: (
-                    not p.maximum_amount
-                    or currency.compare_amounts(p.maximum_amount, converted_amount) != -1
+                        not p.maximum_amount
+                        or currency.compare_amounts(p.maximum_amount, converted_amount) != -1
                 )
             )
             payment_utils.add_to_report(
@@ -529,8 +529,8 @@ class PaymentProvider(models.Model):
             unfiltered_providers = providers
             providers = providers.filtered(
                 lambda p: (
-                    not p.available_currency_ids
-                    or currency.id in p.available_currency_ids.ids
+                        not p.available_currency_ids
+                        or currency.id in p.available_currency_ids.ids
                 )
             )
             payment_utils.add_to_report(

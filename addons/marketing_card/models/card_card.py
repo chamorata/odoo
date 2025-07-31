@@ -13,7 +13,8 @@ class MarketingCard(models.Model):
     res_model = fields.Selection(related='campaign_id.res_model')
     res_id = fields.Many2oneReference('Record ID', model_field='res_model', required=True)
     image = fields.Image()
-    requires_sync = fields.Boolean(help="Whether the image needs to be updated to match the campaign template.", default=True)
+    requires_sync = fields.Boolean(help="Whether the image needs to be updated to match the campaign template.",
+                                   default=True)
     share_status = fields.Selection([
         ('shared', 'Shared'),
         ('visited', 'Visited'),
@@ -43,10 +44,12 @@ class MarketingCard(models.Model):
     @api.autovacuum
     def _gc_card(self):
         """Remove cards. Social networks are expected to cache the images on their side."""
-        timedelta_days = self.env['ir.config_parameter'].get_param('marketing_card.card_image_cleanup_interval_days', 60)
+        timedelta_days = self.env['ir.config_parameter'].get_param('marketing_card.card_image_cleanup_interval_days',
+                                                                   60)
         if not timedelta_days:
             return
-        self.with_context({"active_test": False}).search([('write_date', '<=', datetime.now() - timedelta(days=timedelta_days))]).unlink()
+        self.with_context({"active_test": False}).search(
+            [('write_date', '<=', datetime.now() - timedelta(days=timedelta_days))]).unlink()
 
     def _get_card_url(self):
         return self._get_path('card.jpg')

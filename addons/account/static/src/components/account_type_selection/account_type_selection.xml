@@ -9,9 +9,9 @@
                     <t t-if="!!group.children">
                         <t t-foreach="group.children" t-as="child" t-key="child[0]">
                             <option
-                                t-att-selected="child[0] === value"
-                                t-att-value="stringify(child[0])"
-                                t-out="child[1]"/>
+                                    t-att-selected="child[0] === value"
+                                    t-att-value="stringify(child[0])"
+                                    t-out="child[1]"/>
                         </t>
                     </t>
                 </optgroup>

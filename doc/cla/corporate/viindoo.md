@@ -65,8 +65,8 @@ Ngo Thanh Binh binhhp1702@gmail.com https://github.com/binh1702
 Tong Duc Anh tongducanh2000@gmail.com https://github.com/tongducanh
 Nguyen Duc Truong ndtruong.dev@gmail.com https://github.com/NDTruong-F
 Tran Anh Quy tquy446@gmail.com https://github.com/AnhQuy123
-Nguyen Ngoc Kim Cuong diamondnguyenkc@gmail.com https://github.com/diamondnguyenkc 
-Le Duc Anh  leducanh2010vnnd@gmail.com https://github.com/lebeo2010vnnd
+Nguyen Ngoc Kim Cuong diamondnguyenkc@gmail.com https://github.com/diamondnguyenkc
+Le Duc Anh leducanh2010vnnd@gmail.com https://github.com/lebeo2010vnnd
 Nguyen Tuan Anh tuananh25102k@gmail.com https://github.com/nguyentuananh25102000
 Ninh Duc Hieu duchieulp@gmail.com https://github.com/Hieu-Bom
 Cao Dinh Trung caodinhtrung2k@gmail.com https://github.com/CaoTrungCa
@@ -77,6 +77,6 @@ Pham Thu Ha phamthuha0970@gmail.com  https://github.com/phamthuha0970
 Do Trung Duc dotrungduc.it@gmail.com https://github.com/dotrungduc201291
 Luu Quang Huy huylq25122000@gmail.com https://github.com/huylq2512
 Le Anh Dung anhdung288.viindoo@gmail.com https://github.com/LeDungViindoo
-Nguyen Duy Quyen duyquyencnt55@gmail.com https://github.com/duyquyen96 
+Nguyen Duy Quyen duyquyencnt55@gmail.com https://github.com/duyquyen96
 Do Anh Dai doanhdai1997@gmail.com https://github.com/AnhDai1997
 Tran Dinh Tuyen trandinhtuyen2018@gmail.com https://github.com/TuyenTran12345

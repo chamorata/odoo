@@ -2,6 +2,7 @@
 
 from odoo import fields, models, tools
 
+
 class HrEmployeeSkillReport(models.BaseModel):
     _auto = False
     _name = 'hr.employee.skill.report'
@@ -40,4 +41,4 @@ class HrEmployeeSkillReport(models.BaseModel):
             LEFT OUTER JOIN hr_skill_type st ON st.id = sl.skill_type_id
             WHERE st.active IS True
         )
-        """ % (self._table, ))
+        """ % (self._table,))

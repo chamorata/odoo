@@ -11,7 +11,8 @@ class PosDailyReportPerEmployee(models.TransientModel):
 
     def _get_report_data(self, pos_session_id):
         pos_session = self.env['pos.session'].browse(pos_session_id)
-        return {'date_start': False, 'date_stop': False, 'config_ids': pos_session.config_id.ids, 'session_ids': pos_session.ids}
+        return {'date_start': False, 'date_stop': False, 'config_ids': pos_session.config_id.ids,
+                'session_ids': pos_session.ids}
 
     def get_single_report_print_action(self, pos_session_id):
         data = self._get_report_data(pos_session_id)

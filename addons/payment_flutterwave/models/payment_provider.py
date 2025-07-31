@@ -4,15 +4,13 @@ import logging
 import pprint
 
 import requests
+from odoo.addons.payment import utils as payment_utils
+from odoo.addons.payment.const import REPORT_REASONS_MAPPING
+from odoo.addons.payment_flutterwave import const
 from werkzeug.urls import url_join
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
-
-from odoo.addons.payment import utils as payment_utils
-from odoo.addons.payment.const import REPORT_REASONS_MAPPING
-from odoo.addons.payment_flutterwave import const
-
 
 _logger = logging.getLogger(__name__)
 
@@ -39,7 +37,7 @@ class PaymentProvider(models.Model):
         groups='base.group_system',
     )
 
-    #=== COMPUTE METHODS ===#
+    # === COMPUTE METHODS ===#
 
     def _compute_feature_support_fields(self):
         """ Override of `payment` to enable additional features. """

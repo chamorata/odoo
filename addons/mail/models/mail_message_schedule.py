@@ -3,7 +3,6 @@
 
 import json
 import logging
-
 from datetime import datetime
 
 from odoo import api, fields, models

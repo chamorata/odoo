@@ -8,7 +8,8 @@
             <xpath expr="//div[@id='tip_product']" position="after">
                 <div invisible="not pos_iface_tipproduct">
                     <field name="pos_adyen_ask_customer_for_tip" class="oe_inline"/>
-                    <label class="fw-normal" for="pos_adyen_ask_customer_for_tip" string="Add tip through payment terminal (Adyen)"/>
+                    <label class="fw-normal" for="pos_adyen_ask_customer_for_tip"
+                           string="Add tip through payment terminal (Adyen)"/>
                 </div>
             </xpath>
         </field>

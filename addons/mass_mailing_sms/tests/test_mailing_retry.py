@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from unittest.mock import patch
+
 from odoo.addons.mass_mailing_sms.tests.common import MassSMSCommon
+
 from odoo.addons.base.tests.test_ir_cron import CronMixinCase
 from odoo.tests.common import users
 
-from unittest.mock import patch
 
 class TestMailingRetrySMS(MassSMSCommon, CronMixinCase):
 
@@ -28,7 +30,7 @@ class TestMailingRetrySMS(MassSMSCommon, CronMixinCase):
 
         # force the SMS sending to fail to test our retry mechanism
         def patched_sms_sms_send(sms_records, unlink_failed=False, unlink_sent=True, raise_exception=False):
-            sms_records.write({'state': 'error', 'failure_type':'sms_credit'})
+            sms_records.write({'state': 'error', 'failure_type': 'sms_credit'})
 
         with patch('odoo.addons.sms.models.sms_sms.SmsSms._send', patched_sms_sms_send):
             self.env.ref('sms.ir_cron_sms_scheduler_action').sudo().method_direct_trigger()

@@ -27,9 +27,9 @@ def find_links_with_urls_and_labels(root_node, base_url, skip_regex=None, skip_p
             continue
         absolute_url = base_url + original_url if original_url.startswith(('/', '?', '#')) else original_url
         if (
-            (skip_regex and re.search(skip_regex, absolute_url))
-            or (skip_prefix and absolute_url.startswith(skip_prefix))
-            or (skip_list and any(re.search(s + r'([#?/]|$)', absolute_url) for s in skip_list))
+                (skip_regex and re.search(skip_regex, absolute_url))
+                or (skip_prefix and absolute_url.startswith(skip_prefix))
+                or (skip_list and any(re.search(s + r'([#?/]|$)', absolute_url) for s in skip_list))
         ):
             continue
 

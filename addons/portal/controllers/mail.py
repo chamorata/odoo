@@ -1,16 +1,16 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.mail.controllers import mail
+from odoo.addons.mail.tools.discuss import Store
+from odoo.addons.portal.utils import get_portal_partner
 from werkzeug import urls
 from werkzeug.exceptions import Forbidden, NotFound
 
 from odoo import http
+from odoo.exceptions import AccessError
 from odoo.http import request
 from odoo.osv import expression
 from odoo.tools import consteq
-from odoo.addons.mail.controllers import mail
-from odoo.addons.mail.tools.discuss import Store
-from odoo.addons.portal.utils import get_portal_partner
-from odoo.exceptions import AccessError
 
 
 class PortalChatter(http.Controller):
@@ -22,7 +22,8 @@ class PortalChatter(http.Controller):
         """ Tells if we can effectively post on the model based on content. """
         return bool(message) or bool(attachment_ids)
 
-    @http.route('/mail/avatar/mail.message/<int:res_id>/author_avatar/<int:width>x<int:height>', type='http', auth='public')
+    @http.route('/mail/avatar/mail.message/<int:res_id>/author_avatar/<int:width>x<int:height>', type='http',
+                auth='public')
     def portal_avatar(self, res_id=None, height=50, width=50, access_token=None, _hash=None, pid=None):
         """Get the avatar image in the chatter of the portal"""
         if access_token or (_hash and pid):
@@ -52,7 +53,7 @@ class PortalChatter(http.Controller):
             can_react = has_react_access
             if request.env.user._is_public():
                 if portal_partner := get_portal_partner(
-                    thread, kwargs.get("hash"), kwargs.get("pid"), kwargs.get("token")
+                        thread, kwargs.get("hash"), kwargs.get("pid"), kwargs.get("token")
                 ):
                     store.add(
                         thread,

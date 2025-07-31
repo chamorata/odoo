@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import json
+
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 
@@ -29,8 +30,8 @@ class SaleOrder(models.Model):
     grid = fields.Char(
         "Matrix local storage", store=False,
         help="Technical local storage of grid. "
-        "\nIf grid_update, will be loaded on the SO."
-        "\nIf not, represents the matrix to open.")
+             "\nIf grid_update, will be loaded on the SO."
+             "\nIf not, represents the matrix to open.")
 
     @api.onchange('grid_product_tmpl_id')
     def _set_grid_up(self):
@@ -57,7 +58,7 @@ class SaleOrder(models.Model):
                 product = product_template._create_product_variant(combination)
                 order_lines = self.order_line.filtered(
                     lambda line: line.product_id.id == product.id
-                    and line.product_no_variant_attribute_value_ids.ids == no_variant_attribute_values.ids
+                                 and line.product_no_variant_attribute_value_ids.ids == no_variant_attribute_values.ids
                 )
 
                 # if product variant already exist in order lines
@@ -90,7 +91,8 @@ class SaleOrder(models.Model):
                         Therefore, it only raises an Error for now.
                         """
                         if len(order_lines) > 1:
-                            raise ValidationError(_("You cannot change the quantity of a product present in multiple sale lines."))
+                            raise ValidationError(
+                                _("You cannot change the quantity of a product present in multiple sale lines."))
                         else:
                             order_lines[0].product_uom_qty = qty
                             # If we want to support multiple lines edition:
@@ -111,7 +113,7 @@ class SaleOrder(models.Model):
                         product_id=product.id,
                         product_uom_qty=qty,
                         product_no_variant_attribute_value_ids=no_variant_attribute_values.ids)
-                    ))
+                                      ))
             if new_lines:
                 # Add new SO lines
                 self.update(dict(order_line=new_lines))
@@ -123,6 +125,7 @@ class SaleOrder(models.Model):
         :return: matrix to display
         :rtype dict:
         """
+
         def has_ptavs(line, sorted_attr_ids):
             # TODO instead of sorting on ids, use odoo-defined order for matrix ?
             ptav = line.product_template_attribute_value_ids.ids
@@ -130,6 +133,7 @@ class SaleOrder(models.Model):
             pav = pnav + ptav
             pav.sort()
             return pav == sorted_attr_ids
+
         matrix = product_template._get_template_matrix(
             company_id=self.company_id,
             currency_id=self.currency_id,
@@ -155,7 +159,9 @@ class SaleOrder(models.Model):
         """
         matrixes = []
         if self.report_grids:
-            grid_configured_templates = self.order_line.filtered('is_configurable_product').product_template_id.filtered(lambda ptmpl: ptmpl.product_add_mode == 'matrix')
+            grid_configured_templates = self.order_line.filtered(
+                'is_configurable_product').product_template_id.filtered(
+                lambda ptmpl: ptmpl.product_add_mode == 'matrix')
             for template in grid_configured_templates:
                 if len(self.order_line.filtered(lambda line: line.product_template_id == template)) > 1:
                     matrix = self._get_matrix(template)

@@ -3,12 +3,13 @@
 
 from odoo import fields, models, api
 
+
 class LoyaltyCard(models.Model):
     _name = 'loyalty.card'
     _inherit = ['loyalty.card', 'pos.load.mixin']
 
     source_pos_order_id = fields.Many2one('pos.order', "PoS Order Reference",
-        help="PoS order where this coupon was generated.")
+                                          help="PoS order where this coupon was generated.")
 
     @api.model
     def _load_pos_data_domain(self, data):

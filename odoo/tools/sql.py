@@ -250,15 +250,15 @@ def table_kind(cr, tablename: str) -> TableKind | None:
 # on 1 byte, columns aligned on 8 bytes(values have been chosen to minimize
 # padding in rows; unknown column types are put last)
 SQL_ORDER_BY_TYPE = defaultdict(lambda: 16, {
-    'int4': 1,          # 4 bytes aligned on 4 bytes
-    'varchar': 2,       # variable aligned on 4 bytes
-    'date': 3,          # 4 bytes aligned on 4 bytes
-    'jsonb': 4,         # jsonb
-    'text': 5,          # variable aligned on 4 bytes
-    'numeric': 6,       # variable aligned on 4 bytes
-    'bool': 7,          # 1 byte aligned on 1 byte
-    'timestamp': 8,     # 8 bytes aligned on 8 bytes
-    'float8': 9,        # 8 bytes aligned on 8 bytes
+    'int4': 1,  # 4 bytes aligned on 4 bytes
+    'varchar': 2,  # variable aligned on 4 bytes
+    'date': 3,  # 4 bytes aligned on 4 bytes
+    'jsonb': 4,  # jsonb
+    'text': 5,  # variable aligned on 4 bytes
+    'numeric': 6,  # variable aligned on 4 bytes
+    'bool': 7,  # 1 byte aligned on 1 byte
+    'timestamp': 8,  # 8 bytes aligned on 8 bytes
+    'float8': 9,  # 8 bytes aligned on 8 bytes
 })
 
 

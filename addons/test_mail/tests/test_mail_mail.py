@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import psycopg2
-import pytz
 import re
 import smtplib
-from email import message_from_string
-
 from datetime import datetime, timedelta
-from freezegun import freeze_time
-from markupsafe import Markup
-from OpenSSL.SSL import Error as SSLError
+from email import message_from_string
 from socket import gaierror, timeout
 from unittest.mock import call, patch, PropertyMock
 
+import psycopg2
+import pytz
+from OpenSSL.SSL import Error as SSLError
+from freezegun import freeze_time
+from markupsafe import Markup
+from odoo.addons.mail.tests.common import MailCommon
+
 from odoo import api, Command, fields, SUPERUSER_ID
 from odoo.addons.base.models.ir_mail_server import MailDeliveryException
-from odoo.addons.mail.tests.common import MailCommon
 from odoo.exceptions import AccessError
 from odoo.tests import common, tagged, users
 from odoo.tools import formataddr, mute_logger
@@ -259,9 +259,9 @@ class TestMailMail(MailCommon):
         expected_datetimes = [
             False, False, False,
             now, now - pytz.timezone('Australia/Brisbane').utcoffset(now),
-            now - timedelta(days=1), now + timedelta(days=1), now + timedelta(days=1),
-            now + timedelta(hours=-1),
-            now + timedelta(hours=1),
+                 now - timedelta(days=1), now + timedelta(days=1), now + timedelta(days=1),
+                 now + timedelta(hours=-1),
+                 now + timedelta(hours=1),
         ]
         expected_states = [
             # falsy values = send now
@@ -275,12 +275,14 @@ class TestMailMail(MailCommon):
             {'body_html': '<p>Test</p>',
              'email_to': 'test@example.com',
              'scheduled_date': scheduled_datetime,
-            } for scheduled_datetime in scheduled_datetimes
+             } for scheduled_datetime in scheduled_datetimes
         ])
 
         for mail, expected_datetime, scheduled_datetime in zip(mails, expected_datetimes, scheduled_datetimes):
             self.assertEqual(mail.scheduled_date, expected_datetime,
-                             'Scheduled date: %s should be stored as %s, received %s' % (scheduled_datetime, expected_datetime, mail.scheduled_date))
+                             'Scheduled date: %s should be stored as %s, received %s' % (scheduled_datetime,
+                                                                                         expected_datetime,
+                                                                                         mail.scheduled_date))
             self.assertEqual(mail.state, 'outgoing')
 
         with freeze_time(now):
@@ -300,7 +302,7 @@ class TestMailMail(MailCommon):
             (False, 10),  # maximum available
         ]:
             with self.subTest(queue_batch_size=queue_batch_size), \
-                 self.mock_mail_gateway():
+                    self.mock_mail_gateway():
                 self.env['ir.config_parameter'].sudo().set_param('mail.mail.queue.batch.size', queue_batch_size)
                 mails = self.env['mail.mail'].create([
                     {
@@ -325,7 +327,7 @@ class TestMailMail(MailCommon):
             (False, 1),
         ]:
             with self.subTest(session_batch_size=session_batch_size), \
-                 self.mock_mail_gateway():
+                    self.mock_mail_gateway():
                 self.env['ir.config_parameter'].sudo().set_param('mail.session.batch.size', session_batch_size)
                 mails = self.env['mail.mail'].create([
                     {
@@ -376,10 +378,12 @@ class TestMailMail(MailCommon):
             with self.mock_mail_gateway():
                 mail.send(raise_exception=False)
             self.assertEqual(self._mails[0]['email_from'], email_from)
-            self.assertEqual(mail.failure_reason, f"Malformed 'Return-Path' or 'From' address: {email_from} - It should contain one valid plain ASCII email")
+            self.assertEqual(mail.failure_reason,
+                             f"Malformed 'Return-Path' or 'From' address: {email_from} - It should contain one valid plain ASCII email")
             self.assertEqual(mail.failure_type, 'mail_from_invalid')
             self.assertEqual(mail.state, 'exception')
-            self.assertEqual(notification.failure_reason, f"Malformed 'Return-Path' or 'From' address: {email_from} - It should contain one valid plain ASCII email")
+            self.assertEqual(notification.failure_reason,
+                             f"Malformed 'Return-Path' or 'From' address: {email_from} - It should contain one valid plain ASCII email")
             self.assertEqual(notification.failure_type, 'mail_from_invalid')
             self.assertEqual(notification.notification_status, 'exception')
 
@@ -395,7 +399,8 @@ class TestMailMail(MailCommon):
             mail.write({'email_to': email_to})
             with self.mock_mail_gateway():
                 mail.send(raise_exception=False)
-            self.assertEqual(mail.failure_reason, 'Error without exception. Probably due to sending an email without computed recipients.')
+            self.assertEqual(mail.failure_reason,
+                             'Error without exception. Probably due to sending an email without computed recipients.')
             self.assertFalse(mail.failure_type, 'Mail: missing email_to: no failure type, should be updated')
             self.assertEqual(mail.state, 'exception')
             if email_to == ' ':
@@ -404,23 +409,27 @@ class TestMailMail(MailCommon):
                 self.assertEqual(notification.notification_status, 'exception')
             else:
                 self.assertFalse(notification.failure_reason, 'Mail: failure reason not propagated')
-                self.assertEqual(notification.failure_type, False, 'Mail: missing email_to: notification is wrongly set as sent')
-                self.assertEqual(notification.notification_status, 'sent', 'Mail: missing email_to: notification is wrongly set as sent')
+                self.assertEqual(notification.failure_type, False,
+                                 'Mail: missing email_to: notification is wrongly set as sent')
+                self.assertEqual(notification.notification_status, 'sent',
+                                 'Mail: missing email_to: notification is wrongly set as sent')
 
         # MailServer.send_email(): _prepare_email_message: invalid To
         for email_to, failure_type in zip(
-            self.emails_invalid,
-            ['mail_email_missing', 'mail_email_missing']
+                self.emails_invalid,
+                ['mail_email_missing', 'mail_email_missing']
         ):
             self._reset_data()
             mail.write({'email_to': email_to})
             with self.mock_mail_gateway():
                 mail.send(raise_exception=False)
-            self.assertEqual(mail.failure_reason, 'Error without exception. Probably due to sending an email without computed recipients.')
+            self.assertEqual(mail.failure_reason,
+                             'Error without exception. Probably due to sending an email without computed recipients.')
             self.assertFalse(mail.failure_type, 'Mail: invalid email_to: no failure type, should be updated')
             self.assertEqual(mail.state, 'exception')
             self.assertFalse(notification.failure_reason, 'Mail: failure reason not propagated')
-            self.assertEqual(notification.failure_type, failure_type, 'Mail: invalid email_to: missing instead of invalid')
+            self.assertEqual(notification.failure_type, failure_type,
+                             'Mail: invalid email_to: missing instead of invalid')
             self.assertEqual(notification.notification_status, 'exception')
 
         # MailServer.send_email(): _prepare_email_message: invalid To (ascii)
@@ -429,8 +438,10 @@ class TestMailMail(MailCommon):
             mail.write({'email_to': email_to})
             with self.mock_mail_gateway():
                 mail.send(raise_exception=False)
-            self.assertEqual(mail.failure_reason, 'Error without exception. Probably due to sending an email without computed recipients.')
-            self.assertFalse(mail.failure_type, 'Mail: invalid (ascii) recipient partner: no failure type, should be updated')
+            self.assertEqual(mail.failure_reason,
+                             'Error without exception. Probably due to sending an email without computed recipients.')
+            self.assertFalse(mail.failure_type,
+                             'Mail: invalid (ascii) recipient partner: no failure type, should be updated')
             self.assertEqual(mail.state, 'exception')
             self.assertEqual(notification.failure_type, 'mail_email_invalid')
             self.assertEqual(notification.notification_status, 'exception')
@@ -479,11 +490,13 @@ class TestMailMail(MailCommon):
             notification.write({'res_partner_id': partner.id})
             with self.mock_mail_gateway():
                 mail.send(raise_exception=False)
-            self.assertEqual(mail.failure_reason, 'Error without exception. Probably due to sending an email without computed recipients.')
+            self.assertEqual(mail.failure_reason,
+                             'Error without exception. Probably due to sending an email without computed recipients.')
             self.assertFalse(mail.failure_type, 'Mail: void recipient partner: no failure type, should be updated')
             self.assertEqual(mail.state, 'exception')
             self.assertFalse(notification.failure_reason, 'Mail: failure reason not propagated')
-            self.assertEqual(notification.failure_type, 'mail_email_invalid', 'Mail: void recipient partner: should be missing, not invalid')
+            self.assertEqual(notification.failure_type, 'mail_email_invalid',
+                             'Mail: void recipient partner: should be missing, not invalid')
             self.assertEqual(notification.notification_status, 'exception')
 
         # wrong values
@@ -493,7 +506,8 @@ class TestMailMail(MailCommon):
             notification.write({'res_partner_id': partner.id})
             with self.mock_mail_gateway():
                 mail.send(raise_exception=False)
-            self.assertEqual(mail.failure_reason, 'Error without exception. Probably due to sending an email without computed recipients.')
+            self.assertEqual(mail.failure_reason,
+                             'Error without exception. Probably due to sending an email without computed recipients.')
             self.assertFalse(mail.failure_type, 'Mail: invalid recipient partner: no failure type, should be updated')
             self.assertEqual(mail.state, 'exception')
             self.assertFalse(notification.failure_reason, 'Mail: failure reason not propagated')
@@ -507,8 +521,10 @@ class TestMailMail(MailCommon):
             notification.write({'res_partner_id': partner.id})
             with self.mock_mail_gateway():
                 mail.send(raise_exception=False)
-            self.assertEqual(mail.failure_reason, 'Error without exception. Probably due to sending an email without computed recipients.')
-            self.assertFalse(mail.failure_type, 'Mail: invalid (ascii) recipient partner: no failure type, should be updated')
+            self.assertEqual(mail.failure_reason,
+                             'Error without exception. Probably due to sending an email without computed recipients.')
+            self.assertFalse(mail.failure_type,
+                             'Mail: invalid (ascii) recipient partner: no failure type, should be updated')
             self.assertEqual(mail.state, 'exception')
             self.assertEqual(notification.failure_type, 'mail_email_invalid')
             self.assertEqual(notification.notification_status, 'exception')
@@ -554,9 +570,12 @@ class TestMailMail(MailCommon):
             notification.write({'res_partner_id': partner.id})
             with self.mock_mail_gateway():
                 mail.send(raise_exception=False)
-            self.assertFalse(mail.failure_reason, 'Mail: at least one valid recipient, mail is sent to avoid send loops and spam')
-            self.assertFalse(mail.failure_type, 'Mail: at least one valid recipient, mail is sent to avoid send loops and spam')
-            self.assertEqual(mail.state, 'sent', 'Mail: at least one valid recipient, mail is sent to avoid send loops and spam')
+            self.assertFalse(mail.failure_reason,
+                             'Mail: at least one valid recipient, mail is sent to avoid send loops and spam')
+            self.assertFalse(mail.failure_type,
+                             'Mail: at least one valid recipient, mail is sent to avoid send loops and spam')
+            self.assertEqual(mail.state, 'sent',
+                             'Mail: at least one valid recipient, mail is sent to avoid send loops and spam')
             self.assertFalse(notification.failure_reason, 'Mail: void email considered as invalid')
             self.assertEqual(notification.failure_type, 'mail_email_invalid', 'Mail: void email considered as invalid')
             self.assertEqual(notification.notification_status, 'exception')
@@ -579,9 +598,12 @@ class TestMailMail(MailCommon):
             mail.write({'email_to': email_to})
             with self.mock_mail_gateway():
                 mail.send(raise_exception=False)
-            self.assertFalse(mail.failure_reason, 'Mail: at least one valid recipient, mail is sent to avoid send loops and spam')
-            self.assertFalse(mail.failure_type, 'Mail: at least one valid recipient, mail is sent to avoid send loops and spam')
-            self.assertEqual(mail.state, 'sent', 'Mail: at least one valid recipient, mail is sent to avoid send loops and spam')
+            self.assertFalse(mail.failure_reason,
+                             'Mail: at least one valid recipient, mail is sent to avoid send loops and spam')
+            self.assertFalse(mail.failure_type,
+                             'Mail: at least one valid recipient, mail is sent to avoid send loops and spam')
+            self.assertEqual(mail.state, 'sent',
+                             'Mail: at least one valid recipient, mail is sent to avoid send loops and spam')
             self.assertFalse(notification.failure_reason)
             self.assertFalse(notification.failure_type)
             self.assertEqual(notification.notification_status, 'sent')
@@ -597,7 +619,8 @@ class TestMailMail(MailCommon):
             with self.mock_mail_gateway():
                 mail.send(raise_exception=False)
 
-            self.assertFalse(mail.failure_type, 'Mail: at least one valid recipient, mail is sent to avoid send loops and spam')
+            self.assertFalse(mail.failure_type,
+                             'Mail: at least one valid recipient, mail is sent to avoid send loops and spam')
             self.assertEqual(mail.state, 'sent')
             self.assertFalse(notification.failure_type)
             self.assertEqual(notification.notification_status, 'sent')
@@ -617,16 +640,16 @@ class TestMailMail(MailCommon):
 
             # classic errors that may be raised during sending, just to test their current support
             for error, msg in [
-                    (smtplib.SMTPServerDisconnected('SMTPServerDisconnected'), 'SMTPServerDisconnected'),
-                    (smtplib.SMTPResponseException('code', 'SMTPResponseException'), 'code\nSMTPResponseException'),
-                    (smtplib.SMTPNotSupportedError('SMTPNotSupportedError'), 'SMTPNotSupportedError'),
-                    (smtplib.SMTPException('SMTPException'), 'SMTPException'),
-                    (SSLError('SSLError'), 'SSLError'),
-                    (gaierror('gaierror'), 'gaierror'),
-                    (timeout('timeout'), 'timeout')]:
-
+                (smtplib.SMTPServerDisconnected('SMTPServerDisconnected'), 'SMTPServerDisconnected'),
+                (smtplib.SMTPResponseException('code', 'SMTPResponseException'), 'code\nSMTPResponseException'),
+                (smtplib.SMTPNotSupportedError('SMTPNotSupportedError'), 'SMTPNotSupportedError'),
+                (smtplib.SMTPException('SMTPException'), 'SMTPException'),
+                (SSLError('SSLError'), 'SSLError'),
+                (gaierror('gaierror'), 'gaierror'),
+                (timeout('timeout'), 'timeout')]:
                 def _connect(*args, **kwargs):
                     raise error
+
                 self.connect_mocked.side_effect = _connect
 
                 mail.send(raise_exception=False)
@@ -648,28 +671,36 @@ class TestMailMail(MailCommon):
 
             # should always raise for those errors, even with raise_exception=False
             for error, error_class in [
-                    (smtplib.SMTPServerDisconnected("Some exception"), smtplib.SMTPServerDisconnected),
-                    (MemoryError("Some exception"), MemoryError)]:
+                (smtplib.SMTPServerDisconnected("Some exception"), smtplib.SMTPServerDisconnected),
+                (MemoryError("Some exception"), MemoryError)]:
                 def _send_email(*args, **kwargs):
                     raise error
+
                 self.send_email_mocked.side_effect = _send_email
 
                 with self.assertRaises(error_class):
                     mail.send(raise_exception=False)
-                self.assertFalse(mail.failure_reason, 'SMTPServerDisconnected/MemoryError during Send raises and lead to a rollback')
-                self.assertFalse(mail.failure_type, 'SMTPServerDisconnected/MemoryError during Send raises and lead to a rollback')
-                self.assertEqual(mail.state, 'outgoing', 'SMTPServerDisconnected/MemoryError during Send raises and lead to a rollback')
-                self.assertFalse(notification.failure_reason, 'SMTPServerDisconnected/MemoryError during Send raises and lead to a rollback')
-                self.assertFalse(notification.failure_type, 'SMTPServerDisconnected/MemoryError during Send raises and lead to a rollback')
-                self.assertEqual(notification.notification_status, 'ready', 'SMTPServerDisconnected/MemoryError during Send raises and lead to a rollback')
+                self.assertFalse(mail.failure_reason,
+                                 'SMTPServerDisconnected/MemoryError during Send raises and lead to a rollback')
+                self.assertFalse(mail.failure_type,
+                                 'SMTPServerDisconnected/MemoryError during Send raises and lead to a rollback')
+                self.assertEqual(mail.state, 'outgoing',
+                                 'SMTPServerDisconnected/MemoryError during Send raises and lead to a rollback')
+                self.assertFalse(notification.failure_reason,
+                                 'SMTPServerDisconnected/MemoryError during Send raises and lead to a rollback')
+                self.assertFalse(notification.failure_type,
+                                 'SMTPServerDisconnected/MemoryError during Send raises and lead to a rollback')
+                self.assertEqual(notification.notification_status, 'ready',
+                                 'SMTPServerDisconnected/MemoryError during Send raises and lead to a rollback')
 
             # MailDeliveryException: should be catched; other issues are sub-catched under
             # a MailDeliveryException and are catched
             for error, msg in [
-                    (MailDeliveryException("Some exception"), 'Some exception'),
-                    (ValueError("Unexpected issue"), 'Unexpected issue')]:
+                (MailDeliveryException("Some exception"), 'Some exception'),
+                (ValueError("Unexpected issue"), 'Unexpected issue')]:
                 def _send_email(*args, **kwargs):
                     raise error
+
                 self.send_email_mocked.side_effect = _send_email
 
                 self._reset_data()
@@ -687,6 +718,7 @@ class TestMailMail(MailCommon):
         """ Test various values on mail.mail, notably default values """
         msg = self.env['mail.mail'].create({})
         self.assertEqual(msg.message_type, 'email_outgoing', 'Mails should have outgoing email type by default')
+
 
 @tagged('mail_mail', 'mail_server')
 class TestMailMailServer(MailCommon):
@@ -751,15 +783,18 @@ class TestMailMailServer(MailCommon):
         with self.mock_smtplib_connection():
             mails.send()
 
-        self.assertEqual(self.find_mail_server_mocked.call_count, 4, 'Must be called only once per "mail from" when the mail server is not forced')
+        self.assertEqual(self.find_mail_server_mocked.call_count, 4,
+                         'Must be called only once per "mail from" when the mail server is not forced')
         self.assertEqual(len(self.emails), 25)
 
         # Check call to the connect method to ensure that we authenticate
         # to the right mail server with the right login
-        self.assertEqual(self.connect_mocked.call_count, 4, 'Must be called once per batch which share the same mail server and the same smtp from')
+        self.assertEqual(self.connect_mocked.call_count, 4,
+                         'Must be called once per batch which share the same mail server and the same smtp from')
         self.connect_mocked.assert_has_calls(
             calls=[
-                call(smtp_from=f'{self.default_from}@{self.alias_domain}', mail_server_id=self.mail_server_notification.id),
+                call(smtp_from=f'{self.default_from}@{self.alias_domain}',
+                     mail_server_id=self.mail_server_notification.id),
                 call(smtp_from='user_1@test_2.com', mail_server_id=self.mail_server_domain_2.id),
                 call(smtp_from='user_2@test_2.com', mail_server_id=self.mail_server_domain_2.id),
                 call(smtp_from='user_1@test_2.com', mail_server_id=self.mail_server_domain.id),
@@ -771,8 +806,10 @@ class TestMailMailServer(MailCommon):
                                   emails_count=5, from_filter=self.mail_server_notification.from_filter)
         self.assertSMTPEmailsSent(message_from=f'"test_2" <{self.default_from}@{self.alias_domain}>',
                                   emails_count=5, from_filter=self.mail_server_notification.from_filter)
-        self.assertSMTPEmailsSent(message_from='user_1@test_2.com', emails_count=5, mail_server=self.mail_server_domain_2)
-        self.assertSMTPEmailsSent(message_from='user_2@test_2.com', emails_count=5, mail_server=self.mail_server_domain_2)
+        self.assertSMTPEmailsSent(message_from='user_1@test_2.com', emails_count=5,
+                                  mail_server=self.mail_server_domain_2)
+        self.assertSMTPEmailsSent(message_from='user_2@test_2.com', emails_count=5,
+                                  mail_server=self.mail_server_domain_2)
         self.assertSMTPEmailsSent(message_from='user_1@test_2.com', emails_count=5, mail_server=self.mail_server_domain)
 
     @mute_logger('odoo.addons.mail.models.mail_mail')
@@ -793,10 +830,11 @@ class TestMailMailServer(MailCommon):
         self.assertEqual(len(self._mails), 3, 'Mail: sent 3 emails: 1 for email_to, 1 / recipient')
         self.assertEqual(
             sorted(sorted(_mail['email_to']) for _mail in self._mails),
-            sorted([sorted(['"Raoul, le Grand" <test.email.1@test.example.com>', '"Micheline, l\'immense" <test.email.2@test.example.com>']),
+            sorted([sorted(['"Raoul, le Grand" <test.email.1@test.example.com>',
+                            '"Micheline, l\'immense" <test.email.2@test.example.com>']),
                     [formataddr((self.user_employee.name, self.user_employee.email_normalized))],
                     [formataddr(("Tony Customer", 'tony.customer@test.example.com'))]
-                   ]),
+                    ]),
             'Mail: formatting issues should have been removed as much as possible'
         )
         # CC are added to first email
@@ -826,10 +864,10 @@ class TestMailMailServer(MailCommon):
         self.assertEqual(
             sorted(sorted(_mail['email_to']) for _mail in self._mails),
             sorted([sorted(['test.email.1@test.example.com', 'test.email.2@test.example.com']),
-                   [formataddr((self.user_employee.name, self.user_employee.email_normalized))],
+                    [formataddr((self.user_employee.name, self.user_employee.email_normalized))],
                     sorted([formataddr(("Tony Customer", 'tony.customer@test.example.com')),
                             formataddr(("Tony Customer", 'norbert.customer@test.example.com'))]),
-                   ]),
+                    ]),
             'Mail: formatting issues should have been removed as much as possible (multi emails in a single address are managed '
             'like separate emails when sending with recipient_ids'
         )
@@ -856,10 +894,10 @@ class TestMailMailServer(MailCommon):
         self.assertEqual(
             sorted(sorted(_mail['email_to']) for _mail in self._mails),
             sorted([sorted(['test.email.1@test.example.com', 'test.email.2@test.example.com']),
-                   [formataddr((self.user_employee.name, self.user_employee.email_normalized))],
+                    [formataddr((self.user_employee.name, self.user_employee.email_normalized))],
                     sorted([formataddr(("Tony Customer", 'tony.customer@test.example.com')),
                             formataddr(("Tony Customer", 'norbert.customer@test.example.com'))]),
-                   ]),
+                    ]),
             'Mail: formatting issues should have been removed as much as possible (multi emails in a single address are managed '
             'like separate emails when sending with recipient_ids (and partner name is always used as name part)'
         )
@@ -893,19 +931,21 @@ class TestMailMailServer(MailCommon):
             'email': 'Uppercase.Partner.youpie@example.gov.uni',
         })
         for recipient_values, exp_recipients in zip(
-            [
-                {'email_to': 'Uppercase.Customer.to@example.gov.uni'},
-                {'email_to': '"Formatted Customer" <Uppercase.Customer.to@example.gov.uni>', 'email_cc': '"UpCc" <Uppercase.Customer.cc@example.gov.uni>'},
-                {'recipient_ids': [(4, customer.id)], 'email_cc': '"UpCc" <Uppercase.Customer.cc@example.gov.uni>'},
-            ], [
-                [(['uppercase.customer.to@example.gov.uni'], [])],
-                [(['"Formatted Customer" <uppercase.customer.to@example.gov.uni>'], ['"UpCc" <uppercase.customer.cc@example.gov.uni>'])],
-                # partner-based recipients are not mixed with emails-only, even if only CC
                 [
-                    (['"Uppercase Partner" <uppercase.partner.youpie@example.gov.uni>'], []),
-                    ([], ['"UpCc" <uppercase.customer.cc@example.gov.uni>']),
-                ],
-            ]
+                    {'email_to': 'Uppercase.Customer.to@example.gov.uni'},
+                    {'email_to': '"Formatted Customer" <Uppercase.Customer.to@example.gov.uni>',
+                     'email_cc': '"UpCc" <Uppercase.Customer.cc@example.gov.uni>'},
+                    {'recipient_ids': [(4, customer.id)], 'email_cc': '"UpCc" <Uppercase.Customer.cc@example.gov.uni>'},
+                ], [
+                    [(['uppercase.customer.to@example.gov.uni'], [])],
+                    [(['"Formatted Customer" <uppercase.customer.to@example.gov.uni>'],
+                      ['"UpCc" <uppercase.customer.cc@example.gov.uni>'])],
+                    # partner-based recipients are not mixed with emails-only, even if only CC
+                    [
+                        (['"Uppercase Partner" <uppercase.partner.youpie@example.gov.uni>'], []),
+                        ([], ['"UpCc" <uppercase.customer.cc@example.gov.uni>']),
+                    ],
+                ]
         ):
             with self.subTest(values=recipient_values):
                 mail = self.env['mail.mail'].create({
@@ -933,6 +973,7 @@ class TestMailMailServer(MailCommon):
         business record are never turned into links because their lifespans are not
         controlled by the user (might even be deleted right after the message is sent).
         """
+
         def count_attachments(message):
             if isinstance(message, str):
                 return 0
@@ -1005,7 +1046,7 @@ class TestMailMailServer(MailCommon):
                         self.assertTrue(all(attachment.access_token for attachment in attachments),
                                         'Original attachment should have been modified (access_token added)')
                         self.assertTrue(all(attachment.access_token in message_cleaned for attachment in attachments),
-                                         'All attachments should have been turned into download links')
+                                        'All attachments should have been turned into download links')
                     else:
                         self.assertEqual(count_attachments(message_parsed), n_attachment,
                                          'All attachments should be present')
@@ -1054,12 +1095,14 @@ class TestMailMailRace(common.TransactionCase):
         # patch send_email in order to create a concurent update and check the notif is already locked by _send()
         this = self  # coding in javascript ruinned my life
         bounce_deferred = []
+
         @api.model
         def send_email(self, message, *args, **kwargs):
             with this.registry.cursor() as cr, mute_logger('odoo.sql_db'):
                 try:
                     # try ro aquire lock (no wait) on notification (should fail)
-                    cr.execute("SELECT notification_status FROM mail_notification WHERE id = %s FOR UPDATE NOWAIT", [notif.id])
+                    cr.execute("SELECT notification_status FROM mail_notification WHERE id = %s FOR UPDATE NOWAIT",
+                               [notif.id])
                 except psycopg2.OperationalError:
                     # record already locked by send, all good
                     bounce_deferred.append(True)

@@ -71,4 +71,5 @@ class TimesheetsAnalysisReport(models.Model):
 
     def init(self):
         drop_view_if_exists(self.env.cr, self._table)
-        self.env.cr.execute(SQL("""CREATE or REPLACE VIEW %s as (%s)""", SQL.identifier(self._table), SQL(self._table_query)))
+        self.env.cr.execute(
+            SQL("""CREATE or REPLACE VIEW %s as (%s)""", SQL.identifier(self._table), SQL(self._table_query)))

@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.fields import Datetime, Date
 from odoo.addons.hr_contract.tests.common import TestContractCommon
+
+from odoo.fields import Datetime, Date
 
 
 class TestContractCalendars(TestContractCommon):
@@ -38,7 +39,8 @@ class TestContractCalendars(TestContractCommon):
         # Employee's calendar should change
         self.assertEqual(self.employee.resource_calendar_id, self.calendar_richard)
         self.contract_cdd.state = 'open'
-        self.assertEqual(self.employee.resource_calendar_id, self.contract_cdd.resource_calendar_id, "The employee should have the calendar of its contract.")
+        self.assertEqual(self.employee.resource_calendar_id, self.contract_cdd.resource_calendar_id,
+                         "The employee should have the calendar of its contract.")
 
     def test_set_fully_flexible_contract_should_change_resource_calendar(self):
         # Setting a running contract with fully flexible calendar should set the employee's calendar to False (fully flexible)
@@ -48,7 +50,6 @@ class TestContractCalendars(TestContractCommon):
         self.assertFalse(self.employee.resource_calendar_id, "The employee should have a fully flexible calendar.")
 
     def test_contract_transfer_leaves(self):
-
         def create_calendar_leave(start, end, resource=None):
             return self.env['resource.calendar.leaves'].create({
                 'name': 'leave name',
@@ -72,13 +73,15 @@ class TestContractCalendars(TestContractCommon):
         end = Datetime.to_datetime('2015-11-28 18:00:00')
         leave3 = create_calendar_leave(start, end)
 
-        self.calendar_richard.transfer_leaves_to(self.calendar_35h, resources=self.employee.resource_id, from_date=Date.to_date('2015-11-21'))
+        self.calendar_richard.transfer_leaves_to(self.calendar_35h, resources=self.employee.resource_id,
+                                                 from_date=Date.to_date('2015-11-21'))
 
         self.assertEqual(leave1.calendar_id, self.calendar_richard, "It should stay in Richard's calendar")
         self.assertEqual(leave3.calendar_id, self.calendar_richard, "Global leave should stay in original calendar")
         self.assertEqual(leave2.calendar_id, self.calendar_35h, "It should be transfered to the other calendar")
 
         # Transfer global leaves
-        self.calendar_richard.transfer_leaves_to(self.calendar_35h, resources=None, from_date=Date.to_date('2015-11-21'))
+        self.calendar_richard.transfer_leaves_to(self.calendar_35h, resources=None,
+                                                 from_date=Date.to_date('2015-11-21'))
 
         self.assertEqual(leave3.calendar_id, self.calendar_35h, "Global leave should be transfered")

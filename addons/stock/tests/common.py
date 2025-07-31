@@ -65,7 +65,8 @@ class TestStockCommon(TestProductCommon):
         cls.productE = cls.ProductObj.create({'name': 'Product E', 'is_storable': True})
 
         # Configure unit of measure.
-        cls.uom_kg = cls.env['uom.uom'].search([('category_id', '=', cls.categ_kgm), ('uom_type', '=', 'reference')], limit=1)
+        cls.uom_kg = cls.env['uom.uom'].search([('category_id', '=', cls.categ_kgm), ('uom_type', '=', 'reference')],
+                                               limit=1)
         cls.uom_kg.write({
             'name': 'Test-KG',
             'rounding': 0.000001})
@@ -88,7 +89,8 @@ class TestStockCommon(TestProductCommon):
             'factor': 100000.0,
             'rounding': 0.001})
         # Check Unit
-        cls.uom_unit = cls.env['uom.uom'].search([('category_id', '=', cls.categ_unit), ('uom_type', '=', 'reference')], limit=1)
+        cls.uom_unit = cls.env['uom.uom'].search([('category_id', '=', cls.categ_unit), ('uom_type', '=', 'reference')],
+                                                 limit=1)
         cls.uom_unit.write({
             'name': 'Test-Unit',
             'rounding': 0.001})
@@ -112,12 +114,18 @@ class TestStockCommon(TestProductCommon):
             'rounding': 1.0})
 
         # Product for different unit of measure.
-        cls.DozA = cls.ProductObj.create({'name': 'Dozon-A', 'is_storable': True, 'uom_id': cls.uom_dozen.id, 'uom_po_id': cls.uom_dozen.id})
-        cls.SDozA = cls.ProductObj.create({'name': 'SuperDozon-A', 'is_storable': True, 'uom_id': cls.uom_sdozen.id, 'uom_po_id': cls.uom_sdozen.id})
-        cls.SDozARound = cls.ProductObj.create({'name': 'SuperDozenRound-A', 'is_storable': True, 'uom_id': cls.uom_sdozen_round.id, 'uom_po_id': cls.uom_sdozen_round.id})
+        cls.DozA = cls.ProductObj.create(
+            {'name': 'Dozon-A', 'is_storable': True, 'uom_id': cls.uom_dozen.id, 'uom_po_id': cls.uom_dozen.id})
+        cls.SDozA = cls.ProductObj.create(
+            {'name': 'SuperDozon-A', 'is_storable': True, 'uom_id': cls.uom_sdozen.id, 'uom_po_id': cls.uom_sdozen.id})
+        cls.SDozARound = cls.ProductObj.create(
+            {'name': 'SuperDozenRound-A', 'is_storable': True, 'uom_id': cls.uom_sdozen_round.id,
+             'uom_po_id': cls.uom_sdozen_round.id})
         cls.UnitA = cls.ProductObj.create({'name': 'Unit-A', 'is_storable': True})
-        cls.kgB = cls.ProductObj.create({'name': 'kg-B', 'is_storable': True, 'uom_id': cls.uom_kg.id, 'uom_po_id': cls.uom_kg.id})
-        cls.gB = cls.ProductObj.create({'name': 'g-B', 'is_storable': True, 'uom_id': cls.uom_gm.id, 'uom_po_id': cls.uom_gm.id})
+        cls.kgB = cls.ProductObj.create(
+            {'name': 'kg-B', 'is_storable': True, 'uom_id': cls.uom_kg.id, 'uom_po_id': cls.uom_kg.id})
+        cls.gB = cls.ProductObj.create(
+            {'name': 'g-B', 'is_storable': True, 'uom_id': cls.uom_gm.id, 'uom_po_id': cls.uom_gm.id})
 
         cls.env.ref('base.group_user').write({'implied_ids': [
             (4, cls.env.ref('base.group_multi_company').id),

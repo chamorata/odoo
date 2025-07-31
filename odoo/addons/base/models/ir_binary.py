@@ -1,7 +1,8 @@
 import logging
-import werkzeug.http
 from datetime import datetime
 from mimetypes import guess_extension
+
+import werkzeug.http
 
 from odoo import models
 from odoo.exceptions import MissingError, UserError
@@ -10,7 +11,6 @@ from odoo.tools import file_open, replace_exceptions
 from odoo.tools.image import image_process, image_guess_size_from_field_name
 from odoo.tools.mimetypes import guess_mimetype, get_extension
 from odoo.tools.misc import verify_limited_field_access_token
-
 
 DEFAULT_PLACEHOLDER_PATH = 'web/static/img/placeholder.png'
 _logger = logging.getLogger(__name__)
@@ -88,8 +88,8 @@ class IrBinary(models.AbstractModel):
         return Stream.from_binary_field(record, field_name)
 
     def _get_stream_from(
-        self, record, field_name='raw', filename=None, filename_field='name',
-        mimetype=None, default_mimetype='application/octet-stream',
+            self, record, field_name='raw', filename=None, filename_field='name',
+            mimetype=None, default_mimetype='application/octet-stream',
     ):
         """
         Create a :class:odoo.http.Stream: from a record's binary field.
@@ -146,15 +146,15 @@ class IrBinary(models.AbstractModel):
 
             stream.download_name = stream.download_name.replace('\n', '_').replace('\r', '_')
             if (not get_extension(stream.download_name)
-                and stream.mimetype != 'application/octet-stream'):
+                    and stream.mimetype != 'application/octet-stream'):
                 stream.download_name += guess_extension(stream.mimetype) or ''
 
         return stream
 
     def _get_image_stream_from(
-        self, record, field_name='raw', filename=None, filename_field='name',
-        mimetype=None, default_mimetype='image/png', placeholder=None,
-        width=0, height=0, crop=False, quality=0,
+            self, record, field_name='raw', filename=None, filename_field='name',
+            mimetype=None, default_mimetype='image/png', placeholder=None,
+            width=0, height=0, crop=False, quality=0,
     ):
         """
         Create a :class:odoo.http.Stream: from a record's binary field,

@@ -79,7 +79,7 @@ class MailTestLang(models.Model):
 
         local_msg_vals = dict(msg_vals or {})
 
-        for group in [g for g in groups if g[0] in('follower', 'customer')]:
+        for group in [g for g in groups if g[0] in ('follower', 'customer')]:
             group_options = group[2]
             group_options['has_button_access'] = True
             group_options['actions'] = [
@@ -87,6 +87,7 @@ class MailTestLang(models.Model):
                  'title': _('NotificationButtonTitle')}
             ]
         return groups
+
 
 # ------------------------------------------------------------
 # TRACKING MODELS
@@ -169,7 +170,8 @@ class MailTestTrackMonetary(models.Model):
     _inherit = ['mail.thread']
 
     company_id = fields.Many2one('res.company')
-    company_currency = fields.Many2one("res.currency", string='Currency', related='company_id.currency_id', readonly=True, tracking=True)
+    company_currency = fields.Many2one("res.currency", string='Currency', related='company_id.currency_id',
+                                       readonly=True, tracking=True)
     revenue = fields.Monetary('Revenue', currency_field='company_currency', tracking=True)
 
 

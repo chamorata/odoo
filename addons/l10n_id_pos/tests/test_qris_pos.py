@@ -1,8 +1,10 @@
+from unittest.mock import patch
+
+from freezegun import freeze_time
+from odoo.addons.account.tests.common import AccountTestInvoicingHttpCommon
+
 from odoo.exceptions import ValidationError
 from odoo.tests import tagged
-from odoo.addons.account.tests.common import AccountTestInvoicingHttpCommon
-from unittest.mock import patch
-from freezegun import freeze_time
 
 
 @tagged('post_install_l10n', 'post_install', '-at_install')
@@ -49,8 +51,10 @@ class TestPosQris(AccountTestInvoicingHttpCommon):
         })
 
         cls.company = cls.company_data['company']
-        cls.pos_receivable_bank = cls.copy_account(cls.company.account_default_pos_receivable_account_id, {'name': 'POS Receivable Bank'})
-        cls.outstanding_bank = cls.copy_account(cls.outbound_payment_method_line.payment_account_id, {'name': 'Outstanding Bank'})
+        cls.pos_receivable_bank = cls.copy_account(cls.company.account_default_pos_receivable_account_id,
+                                                   {'name': 'POS Receivable Bank'})
+        cls.outstanding_bank = cls.copy_account(cls.outbound_payment_method_line.payment_account_id,
+                                                {'name': 'Outstanding Bank'})
 
         cls.company_data['default_journal_bank'].write({'bank_account_id': cls.acc_qris_id.id})
 
@@ -155,11 +159,14 @@ class TestPosQris(AccountTestInvoicingHttpCommon):
                 }
 
         self.main_pos_config.with_user(self.pos_user).open_ui()
-        with patch('odoo.addons.l10n_id.models.res_bank._l10n_id_make_qris_request', side_effect=_patched_make_qris_request):
-            self.start_tour("/pos/ui?config_id=%d" % self.main_pos_config.id, 'PaymentScreenQRISPaymentFail', login="pos_user")
+        with patch('odoo.addons.l10n_id.models.res_bank._l10n_id_make_qris_request',
+                   side_effect=_patched_make_qris_request):
+            self.start_tour("/pos/ui?config_id=%d" % self.main_pos_config.id, 'PaymentScreenQRISPaymentFail',
+                            login="pos_user")
 
     def test_tour_qris_payment_success(self):
         """ Successful fetching status should proceed next to go to receipt screen"""
+
         def _patched_make_qris_request(endpoint, params):
             if endpoint == 'show_qris.php':
                 return {
@@ -181,14 +188,18 @@ class TestPosQris(AccountTestInvoicingHttpCommon):
                     },
                     "qris_api_version_code": "2206091709"
                 }
+
         self.main_pos_config.with_user(self.pos_user).open_ui()
-        with patch('odoo.addons.l10n_id.models.res_bank._l10n_id_make_qris_request', side_effect=_patched_make_qris_request):
-            self.start_tour("/pos/ui?config_id=%d" % self.main_pos_config.id, 'PaymentScreenQRISPaymentSuccess', login="pos_user")
+        with patch('odoo.addons.l10n_id.models.res_bank._l10n_id_make_qris_request',
+                   side_effect=_patched_make_qris_request):
+            self.start_tour("/pos/ui?config_id=%d" % self.main_pos_config.id, 'PaymentScreenQRISPaymentSuccess',
+                            login="pos_user")
 
     @freeze_time("2024-02-27 04:15:00")
     def test_only_call_api_call_once(self):
         """ Simulate generating QR, cancel the popup, when we click show QR again, it shouldn't trigger
         to fetch new QR code from QRIS"""
+
         def _patched_make_qris_request(endpoint, params):
             if endpoint == 'show_qris.php':
                 return {
@@ -210,15 +221,19 @@ class TestPosQris(AccountTestInvoicingHttpCommon):
                     },
                     "qris_api_version_code": "2206091709"
                 }
+
         self.main_pos_config.with_user(self.pos_user).open_ui()
-        with patch('odoo.addons.l10n_id.models.res_bank._l10n_id_make_qris_request', side_effect=_patched_make_qris_request) as patched:
-            self.start_tour("/pos/ui?config_id=%d" % self.main_pos_config.id, 'PayementScreenQRISFetchQR', login="pos_user")
+        with patch('odoo.addons.l10n_id.models.res_bank._l10n_id_make_qris_request',
+                   side_effect=_patched_make_qris_request) as patched:
+            self.start_tour("/pos/ui?config_id=%d" % self.main_pos_config.id, 'PayementScreenQRISFetchQR',
+                            login="pos_user")
             self.assertEqual(patched.call_count, 1)
 
     @freeze_time("2024-02-27 04:15:00")
     def test_qris_change_amount(self):
         """ Test that when user changes the amount of order after generating QRIS QR for the first time,
         it should request for new QR code afterwards. Therefore, there should be 2 API calls instead"""
+
         def _patched_make_qris_request(endpoint, params):
             if endpoint == 'show_qris.php':
                 return {
@@ -230,8 +245,11 @@ class TestPosQris(AccountTestInvoicingHttpCommon):
                         "qris_nmid": "ID1020021181745"
                     }
                 }
+
         self.main_pos_config.with_user(self.pos_user).open_ui()
         self.main_pos_config.current_session_id.set_opening_control(0, 'notes')
-        with patch('odoo.addons.l10n_id.models.res_bank._l10n_id_make_qris_request', side_effect=_patched_make_qris_request) as patched:
-            self.start_tour("/pos/ui?config_id=%d" % self.main_pos_config.id, 'PayementScreenQRISChangeAmount', login="pos_user")
+        with patch('odoo.addons.l10n_id.models.res_bank._l10n_id_make_qris_request',
+                   side_effect=_patched_make_qris_request) as patched:
+            self.start_tour("/pos/ui?config_id=%d" % self.main_pos_config.id, 'PayementScreenQRISChangeAmount',
+                            login="pos_user")
             self.assertEqual(patched.call_count, 2)

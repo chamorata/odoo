@@ -22,7 +22,8 @@
                         <field name="name">1. Goods sales</field>
                         <field name="code">NE_GOODS</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_ne_sales_goods_balance" model="account.report.expression">
+                            <record id="account_tax_report_line_ne_sales_goods_balance"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">NE_1</field>
@@ -33,7 +34,8 @@
                         <field name="name">2. Service sales</field>
                         <field name="code">NE_SERVICE</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_ne_sales_service_balance" model="account.report.expression">
+                            <record id="account_tax_report_line_ne_sales_service_balance"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">NE_2</field>
@@ -44,7 +46,8 @@
                         <field name="name">3. Self Deliveries</field>
                         <field name="code">NE_SELF</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_ne_sales_self_balance" model="account.report.expression">
+                            <record id="account_tax_report_line_ne_sales_self_balance"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">NE_3</field>
@@ -55,7 +58,8 @@
                         <field name="name">4. Taxable turnover (1+2+3)</field>
                         <field name="code">NE_TAXABLE</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_ne_sales_imposable_balance" model="account.report.expression">
+                            <record id="account_tax_report_line_ne_sales_imposable_balance"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">aggregation</field>
                                 <field name="formula">NE_GOODS.balance + NE_SERVICE.balance + NE_SELF.balance</field>
@@ -66,7 +70,8 @@
                         <field name="name">5. Export turnover</field>
                         <field name="code">NE_EXPORT</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_ne_sales_export_balance" model="account.report.expression">
+                            <record id="account_tax_report_line_ne_sales_export_balance"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">NE_5</field>
@@ -77,7 +82,8 @@
                         <field name="name">6. Other exempted turnover</field>
                         <field name="code">NE_EXEMPT</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_ne_sales_exempt_balance" model="account.report.expression">
+                            <record id="account_tax_report_line_ne_sales_exempt_balance"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">NE_6</field>
@@ -88,7 +94,8 @@
                         <field name="name">7. Total turnover (4+5+6)</field>
                         <field name="code">NE_TOTAL_TURNOVER</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_ne_sales_total_turnover_balance" model="account.report.expression">
+                            <record id="account_tax_report_line_ne_sales_total_turnover_balance"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">aggregation</field>
                                 <field name="formula">NE_TAXABLE.balance + NE_EXPORT.balance + NE_EXEMPT.balance</field>
@@ -98,7 +105,7 @@
                 </field>
             </record>
             <record id="account_tax_report_line_ne_gross" model="account.report.line">
-                <field name="name">II. Gross VAT </field>
+                <field name="name">II. Gross VAT</field>
                 <field name="code">NE_GROSS</field>
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
@@ -124,7 +131,8 @@
                         <field name="name">10. VAT on imported investments</field>
                         <field name="code">NE_IMPORT_INVEST</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_ne_deductible_imported_invest_balance" model="account.report.expression">
+                            <record id="account_tax_report_line_ne_deductible_imported_invest_balance"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">NE_10</field>
@@ -135,18 +143,21 @@
                         <field name="name">11. VAT on local investments</field>
                         <field name="code">NE_LOCAL_INVEST</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_ne_deductible_local_invest_balance" model="account.report.expression">
+                            <record id="account_tax_report_line_ne_deductible_local_invest_balance"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">NE_11</field>
                             </record>
                         </field>
                     </record>
-                    <record id="account_tax_report_line_ne_deductible_imported_goods_services" model="account.report.line">
+                    <record id="account_tax_report_line_ne_deductible_imported_goods_services"
+                            model="account.report.line">
                         <field name="name">12. VAT on imported goods and services</field>
                         <field name="code">NE_IMPORT_GOODS_SERVICES</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_ne_deductible_imported_goods_services_balance" model="account.report.expression">
+                            <record id="account_tax_report_line_ne_deductible_imported_goods_services_balance"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">NE_12</field>
@@ -157,7 +168,8 @@
                         <field name="name">13. VAT on local goods and services</field>
                         <field name="code">NE_LOCAL_GOODS_SERVICES</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_ne_deductible_local_goods_services_balance" model="account.report.expression">
+                            <record id="account_tax_report_line_ne_deductible_local_goods_services_balance"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">NE_13</field>
@@ -168,7 +180,8 @@
                         <field name="name">14. VAT withheld by customers</field>
                         <field name="code">NE_WITHHELD</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_ne_deductible_withheld_balance" model="account.report.expression">
+                            <record id="account_tax_report_line_ne_deductible_withheld_balance"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">NE_14</field>
@@ -179,12 +192,14 @@
                         <field name="name">15. Credit reported (line 21 of last month)</field>
                         <field name="code">NE_REPORTED</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_ne_deductible_reported_balance" model="account.report.expression">
+                            <record id="account_tax_report_line_ne_deductible_reported_balance"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">aggregation</field>
                                 <field name="formula">NE_REPORTED._applied_carryover_balance</field>
                             </record>
-                            <record id="account_tax_report_line_ne_deductible_reported_balance_carryover" model="account.report.expression">
+                            <record id="account_tax_report_line_ne_deductible_reported_balance_carryover"
+                                    model="account.report.expression">
                                 <field name="label">_applied_carryover_balance</field>
                                 <field name="engine">external</field>
                                 <field name="formula">most_recent</field>
@@ -196,7 +211,8 @@
                         <field name="name">16. VAT on self deliveries</field>
                         <field name="code">NE_VAT_SELF_DELIVERIES</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_ne_deductible_self_balance" model="account.report.expression">
+                            <record id="account_tax_report_line_ne_deductible_self_balance"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">NE_16</field>
@@ -207,10 +223,14 @@
                         <field name="name">17. Total deductible VAT (10 to 16)</field>
                         <field name="code">NE_DEDUCTIBLE_TOTAL</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_ne_deductible_total_balance" model="account.report.expression">
+                            <record id="account_tax_report_line_ne_deductible_total_balance"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">aggregation</field>
-                                <field name="formula">NE_IMPORT_INVEST.balance + NE_LOCAL_INVEST.balance + NE_IMPORT_GOODS_SERVICES.balance + NE_LOCAL_GOODS_SERVICES.balance + NE_WITHHELD.balance + NE_REPORTED.balance + NE_VAT_SELF_DELIVERIES.balance</field>
+                                <field name="formula">NE_IMPORT_INVEST.balance + NE_LOCAL_INVEST.balance +
+                                    NE_IMPORT_GOODS_SERVICES.balance + NE_LOCAL_GOODS_SERVICES.balance +
+                                    NE_WITHHELD.balance + NE_REPORTED.balance + NE_VAT_SELF_DELIVERIES.balance
+                                </field>
                             </record>
                         </field>
                     </record>
@@ -229,7 +249,8 @@
                                 <field name="name">18. - Additional deductible vat</field>
                                 <field name="code">NE_DEDUCTIBLE_ADDITION</field>
                                 <field name="expression_ids">
-                                    <record id="account_tax_report_line_ne_net_deductible_addition_balance" model="account.report.expression">
+                                    <record id="account_tax_report_line_ne_net_deductible_addition_balance"
+                                            model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">external</field>
                                         <field name="formula">sum</field>
@@ -241,7 +262,8 @@
                                 <field name="name">19. - VAT to repay</field>
                                 <field name="code">NE_REPAY</field>
                                 <field name="expression_ids">
-                                    <record id="account_tax_report_line_ne_net_repay_balance" model="account.report.expression">
+                                    <record id="account_tax_report_line_ne_net_repay_balance"
+                                            model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">external</field>
                                         <field name="formula">sum</field>
@@ -255,11 +277,14 @@
                         <field name="name">20. Net VAT to pay (8+19-17-18)</field>
                         <field name="code">NE_TO_PAY</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_ne_net_to_pay_balance" model="account.report.expression">
+                            <record id="account_tax_report_line_ne_net_to_pay_balance"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">aggregation</field>
                                 <field name="subformula">if_above(XOF(0))</field>
-                                <field name="formula">NE_GROSS_VAT.balance + NE_REPAY.balance - NE_DEDUCTIBLE_TOTAL.balance - NE_DEDUCTIBLE_ADDITION.balance</field>
+                                <field name="formula">NE_GROSS_VAT.balance + NE_REPAY.balance -
+                                    NE_DEDUCTIBLE_TOTAL.balance - NE_DEDUCTIBLE_ADDITION.balance
+                                </field>
                             </record>
                         </field>
                     </record>
@@ -267,14 +292,18 @@
                         <field name="name">21. Credit VAT to report (17+18-8-19)</field>
                         <field name="code">NE_CREDIT_TO_REPORT</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_ne_credit_to_report_balance" model="account.report.expression">
+                            <record id="account_tax_report_line_ne_credit_to_report_balance"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">aggregation</field>
                                 <field name="subformula">if_above(XOF(0))</field>
-                                <field name="formula">NE_DEDUCTIBLE_TOTAL.balance + NE_DEDUCTIBLE_ADDITION.balance - NE_GROSS_VAT.balance - NE_REPAY.balance</field>
+                                <field name="formula">NE_DEDUCTIBLE_TOTAL.balance + NE_DEDUCTIBLE_ADDITION.balance -
+                                    NE_GROSS_VAT.balance - NE_REPAY.balance
+                                </field>
                                 <field name="carryover_target" eval="False"/>
                             </record>
-                            <record id="account_tax_report_line_ne_credit_to_report_carryover" model="account.report.expression">
+                            <record id="account_tax_report_line_ne_credit_to_report_carryover"
+                                    model="account.report.expression">
                                 <field name="label">_carryover_balance</field>
                                 <field name="engine">aggregation</field>
                                 <field name="formula">NE_CREDIT_TO_REPORT.balance</field>

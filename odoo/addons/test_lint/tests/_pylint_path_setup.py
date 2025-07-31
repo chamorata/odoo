@@ -9,6 +9,7 @@ from astroid import modutils
 from astroid.interpreter._import import spec
 from pylint.lint import utils
 
+
 def register(linter):
     # very old pylint (/ astroid) versions not compatible with this plugin but
     # not really needing it either as they don't try importing stuff nearly as
@@ -28,6 +29,7 @@ def register(linter):
             normp = os.path.normcase(os.path.abspath(p.strip()))
             odoo.addons.__path__.append(normp)
 
+
 def modpath_from_file(filename, path):
     if filename == "./addons":
         return ['odoo', 'addons']
@@ -37,17 +39,19 @@ def modpath_from_file(filename, path):
         modutils.check_modpath_has_init,
     )
 
+
 class AddonsPackageFinder(spec.Finder):
     """Finder which special cases odoo and odoo.addons, such that they're
     forcefully discovered as namespace packages since otherwise they get
     discovered as directory packages.
     """
+
     def find_module(
-        self,
-        modname: str,
-        module_parts: Sequence[str],
-        processed: list[str],
-        submodule_path: Sequence[str] | None,
+            self,
+            modname: str,
+            module_parts: Sequence[str],
+            processed: list[str],
+            submodule_path: Sequence[str] | None,
     ) -> spec.ModuleSpec | None:
         modname = '.'.join([*processed, modname])
         if modname in ('odoo', 'odoo.addons'):
@@ -63,4 +67,3 @@ class AddonsPackageFinder(spec.Finder):
 
     def contribute_to_path(self, spec: spec.ModuleSpec, processed: list[str]) -> Sequence[str] | None:
         return spec.submodule_search_locations
-

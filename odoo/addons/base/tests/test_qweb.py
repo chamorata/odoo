@@ -1,22 +1,16 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import collections
-import json
-import os.path
-import re
-import markupsafe
-
-from lxml import etree, html
-from lxml.builder import E
-from copy import deepcopy
 from textwrap import dedent
 
-from odoo.tests.common import TransactionCase
+import markupsafe
+from lxml import etree, html
+
 from odoo.addons.base.models.ir_qweb import QWebException, render
+from odoo.exceptions import UserError, MissingError
+from odoo.tests.common import TransactionCase
 from odoo.tools import misc, mute_logger
 from odoo.tools.json import scriptsafe as json_scriptsafe
-from odoo.exceptions import UserError, ValidationError, MissingError
 
 unsafe_eval = eval
 
@@ -35,11 +29,11 @@ class TestQWebTField(TransactionCase):
         self.assertEqual(
             etree.fromstring(result),
             etree.fromstring('<span data-oe-model="res.company" data-oe-id="%d" '
-                  'data-oe-field="name" data-oe-type="char" '
-                  'data-oe-expression="company.name">%s</span>' % (
-                company.id,
-                "My Test Company",
-            )),
+                             'data-oe-field="name" data-oe-type="char" '
+                             'data-oe-expression="company.name">%s</span>' % (
+                                 company.id,
+                                 "My Test Company",
+                             )),
         )
 
     def test_i18n(self):
@@ -51,11 +45,11 @@ class TestQWebTField(TransactionCase):
         self.assertEqual(
             etree.fromstring(result),
             etree.fromstring('<span data-oe-model="res.company" data-oe-id="%d" '
-                  'data-oe-field="name" data-oe-type="char" '
-                  'data-oe-expression="company.name">%s</span>' % (
-                company.id,
-                misc.html_escape(s),
-            )),
+                             'data-oe-field="name" data-oe-type="char" '
+                             'data-oe-expression="company.name">%s</span>' % (
+                                 company.id,
+                                 misc.html_escape(s),
+                             )),
         )
 
     def test_reject_crummy_tags(self):
@@ -94,7 +88,8 @@ class TestQWebTField(TransactionCase):
                 </t>
             """
         })
-        rendered = self.env['ir.qweb']._render(view.id, {'malicious': '1</script><script>alert("pwned")</script><script>'})
+        rendered = self.env['ir.qweb']._render(view.id,
+                                               {'malicious': '1</script><script>alert("pwned")</script><script>'})
         self.assertIn('alert', rendered, "%r doesn't seem to be rendered" % rendered)
         doc = etree.fromstring(rendered)
         self.assertEqual(len(doc.xpath('//script')), 1)
@@ -344,7 +339,8 @@ class TestQWebNS(TransactionCase):
             </root>
         """
 
-        values = dict(h1="http://www.example.org/table", h2="http://www.w3.org/TD/html4/", f="http://www.example.org/furniture")
+        values = dict(h1="http://www.example.org/table", h2="http://www.w3.org/TD/html4/",
+                      f="http://www.example.org/furniture")
 
         view1 = self.env['ir.ui.view'].create({
             'name': "dummy",
@@ -372,7 +368,8 @@ class TestQWebNS(TransactionCase):
             """
         })
 
-        expected_result = etree.fromstring("""<Invoice xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2">test</Invoice>""")
+        expected_result = etree.fromstring(
+            """<Invoice xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2">test</Invoice>""")
 
         self.assertEqual(etree.fromstring(self.env['ir.qweb']._render(view1.id)), expected_result)
 
@@ -526,7 +523,8 @@ class TestQWebNS(TransactionCase):
             """
         })
 
-        expected_result = etree.fromstring("""<cfdi:Comprobante xmlns:cfdi="http://www.sat.gob.mx/cfd/3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sat.gob.mx/cfd/3 http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv32.xsd">abc</cfdi:Comprobante>""")
+        expected_result = etree.fromstring(
+            """<cfdi:Comprobante xmlns:cfdi="http://www.sat.gob.mx/cfd/3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sat.gob.mx/cfd/3 http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv32.xsd">abc</cfdi:Comprobante>""")
 
         self.assertEqual(etree.fromstring(self.env['ir.qweb']._render(view1.id)), expected_result)
 
@@ -541,7 +539,8 @@ class TestQWebNS(TransactionCase):
             """
         })
 
-        expected_result = etree.fromstring("""<cfdi:Comprobante xmlns:cfdi="http://www.sat.gob.mx/cfd/3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sat.gob.mx/cfd/3 http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv32.xsd">abc</cfdi:Comprobante>""")
+        expected_result = etree.fromstring(
+            """<cfdi:Comprobante xmlns:cfdi="http://www.sat.gob.mx/cfd/3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sat.gob.mx/cfd/3 http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv32.xsd">abc</cfdi:Comprobante>""")
 
         self.assertEqual(etree.fromstring(self.env['ir.qweb']._render(view1.id)), expected_result)
 
@@ -589,12 +588,14 @@ class TestQWebNS(TransactionCase):
         self.assertEqual(set(result_etree.nsmap.items()), expected_ns)
 
         # check that the t-call did its work
-        cac_lines = result_etree.findall('.//cac:line', namespaces={'cac': 'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2'})
+        cac_lines = result_etree.findall('.//cac:line', namespaces={
+            'cac': 'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2'})
         self.assertEqual(len(cac_lines), 2)
         self.assertEqual(result.count('Appel'), 2)
 
         # check that the t-call dit not output again the xmlns declaration
-        self.assertEqual(result.count('xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"'), 1)
+        self.assertEqual(
+            result.count('xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"'), 1)
 
     def test_render_static_xml_with_extension(self):
         """ Test the extension of a view by an xpath expression on a ns prefixed element.
@@ -670,7 +671,6 @@ class TestQWebNS(TransactionCase):
         with self.assertRaises(QWebException, msg=error_msg):
             self.env['ir.qweb']._render(view1.id)
 
-
     def test_render_static_xml_with_void_element(self):
         """ Test the rendering on a namespaced view with dynamic URI (need default namespace uri).
         """
@@ -700,43 +700,44 @@ class TestQWebNS(TransactionCase):
 
         self.assertEqual(etree.fromstring(rendering), etree.fromstring(expected_result))
 
+
 class TestQWebBasic(TransactionCase):
     def test_compile_expr(self):
         tests = [
-            #pylint: disable=C0326
+            # pylint: disable=C0326
             # source,                                   values,                         result
-            ("1 +2+ 3",                                 {},                             6),
-            ("(((1 +2+ 3)))",                           {},                             6),
-            ("(1) +(2+ (3))",                           {},                             6),
-            ("a == 5",                                  {'a': 5},                       True),
-            ("{'a': True}",                             {},                             {'a': True}),
-            ("object.count(1)",                         {'object': [1, 2, 1 ,1]},       3),
-            ("dict(a=True)",                            {},                             {'a': True}),
-            ("fn(a=11, b=22) or a",                     {'a': 1, 'fn': lambda a,b: 0},  1),
-            ("fn(a=11, b=22) or a",                     {'a': 1, 'fn': lambda a,b: b},  22),
-            ("(lambda a: a)(5)",                        {},                             5),
-            ("(lambda a: a[0])([5])",                   {},                             5),
-            ("(lambda test: len(test))('aaa')",         {},                             3),
-            ("{'a': lambda a: a[0], 'b': 3}['a']([5])", {},                             5),
-            ("list(map(lambda a: a[0], r))",            {'r': [(1,11), (2,22)]},        [1, 2]),
-            ("z + (head or 'z')",                       {'z': 'a'},                     "az"),
-            ("z + (head or 'z')",                       {'z': 'a', 'head': 'b'},        "ab"),
-            ("{a:b for a, b in [(1,11), (2, 22)]}",     {},                             {1: 11, 2: 22}),
-            ("any({x == 2 for x in [1,2,3]})",          {},                             True),
-            ("any({x == 5 for x in [1,2,3]})",          {},                             False),
-            ("{x:y for x,y in [('a', 11),('b', 22)]}",  {},                             {'a': 11, 'b': 22}),
-            ("[(y,x) for x,y in [(1, 11),(2, 22)]]",    {},                             [(11, 1), (22, 2)]),
-            ("(lambda a: a + 5)(x)",                    {'x': 10},                      15),
-            ("(lambda a: a + x)(5)",                    {'x': 10},                      15),
-            ("sum(x for x in range(4)) + ((x))",        {'x': 10},                      16),
-            ("['test_' + x for x in ['a', 'b']]",       {},                             ['test_a', 'test_b']),
+            ("1 +2+ 3", {}, 6),
+            ("(((1 +2+ 3)))", {}, 6),
+            ("(1) +(2+ (3))", {}, 6),
+            ("a == 5", {'a': 5}, True),
+            ("{'a': True}", {}, {'a': True}),
+            ("object.count(1)", {'object': [1, 2, 1, 1]}, 3),
+            ("dict(a=True)", {}, {'a': True}),
+            ("fn(a=11, b=22) or a", {'a': 1, 'fn': lambda a, b: 0}, 1),
+            ("fn(a=11, b=22) or a", {'a': 1, 'fn': lambda a, b: b}, 22),
+            ("(lambda a: a)(5)", {}, 5),
+            ("(lambda a: a[0])([5])", {}, 5),
+            ("(lambda test: len(test))('aaa')", {}, 3),
+            ("{'a': lambda a: a[0], 'b': 3}['a']([5])", {}, 5),
+            ("list(map(lambda a: a[0], r))", {'r': [(1, 11), (2, 22)]}, [1, 2]),
+            ("z + (head or 'z')", {'z': 'a'}, "az"),
+            ("z + (head or 'z')", {'z': 'a', 'head': 'b'}, "ab"),
+            ("{a:b for a, b in [(1,11), (2, 22)]}", {}, {1: 11, 2: 22}),
+            ("any({x == 2 for x in [1,2,3]})", {}, True),
+            ("any({x == 5 for x in [1,2,3]})", {}, False),
+            ("{x:y for x,y in [('a', 11),('b', 22)]}", {}, {'a': 11, 'b': 22}),
+            ("[(y,x) for x,y in [(1, 11),(2, 22)]]", {}, [(11, 1), (22, 2)]),
+            ("(lambda a: a + 5)(x)", {'x': 10}, 15),
+            ("(lambda a: a + x)(5)", {'x': 10}, 15),
+            ("sum(x for x in range(4)) + ((x))", {'x': 10}, 16),
+            ("['test_' + x for x in ['a', 'b']]", {}, ['test_a', 'test_b']),
             ("""1 and 2 and 0
-                or 9""",                                {},                             9),
-            ('[x for x in (1,2)]',                      {},                             [1, 2]),  # LOAD_FAST_AND_CLEAR
-            ('list(x for x in (1,2))',                  {},                             [1, 2]),  # END_FOR, CALL_INTRINSIC_1
-            ('v if v is None else w',                   {'v': False, 'w': 'foo'},       'foo'),  # POP_JUMP_IF_NONE
-            ('v if v is not None else w',               {'v': None, 'w': 'foo'},        'foo'),  # POP_JUMP_IF_NOT_NONE
-            ('{a for a in (1, 2)}',                     {},                             {1, 2}),  # RERAISE
+                or 9""", {}, 9),
+            ('[x for x in (1,2)]', {}, [1, 2]),  # LOAD_FAST_AND_CLEAR
+            ('list(x for x in (1,2))', {}, [1, 2]),  # END_FOR, CALL_INTRINSIC_1
+            ('v if v is None else w', {'v': False, 'w': 'foo'}, 'foo'),  # POP_JUMP_IF_NONE
+            ('v if v is not None else w', {'v': None, 'w': 'foo'}, 'foo'),  # POP_JUMP_IF_NOT_NONE
+            ('{a for a in (1, 2)}', {}, {1, 2}),  # RERAISE
         ]
 
         IrQweb = self.env['ir.qweb']
@@ -825,7 +826,7 @@ class TestQWebBasic(TransactionCase):
             </t>'''
         })
         values = {'other': 'any value'}
-        with self.assertRaises(Exception): # NotImplementedError for 'lambda a=open' and Undefined value 'open'.
+        with self.assertRaises(Exception):  # NotImplementedError for 'lambda a=open' and Undefined value 'open'.
             self.env['ir.qweb']._render(t.id, values)
 
     def test_foreach_iter_list(self):
@@ -1451,7 +1452,7 @@ class TestQWebBasic(TransactionCase):
         with self.assertRaises(MissingError, msg="Not Found"):
             self.env['ir.qweb']._render(-9999)
 
-    @mute_logger('odoo.addons.base.models.ir_qweb') # warning for template not found
+    @mute_logger('odoo.addons.base.models.ir_qweb')  # warning for template not found
     def test_error_message_6(self):
         # Error not found a second rendering (first rendering with option hide this error).
         html = self.env['ir.qweb']._render(-9999, raise_if_not_found=False)
@@ -1470,7 +1471,7 @@ class TestQWebBasic(TransactionCase):
         with self.assertRaises(UserError, msg="Not Found"):
             self.env['ir.qweb']._render(-9999)
 
-    @mute_logger('odoo.addons.base.models.ir_qweb') # warning for template not found
+    @mute_logger('odoo.addons.base.models.ir_qweb')  # warning for template not found
     def test_error_message_8(self):
         # UserError not found a second rendering (first rendering with option hide this error).
         html = self.env['ir.qweb']._render(-9999, raise_if_not_found=False)
@@ -1609,11 +1610,13 @@ class TestQWebBasic(TransactionCase):
         partner.barcode = '4012345678901'
         view.arch = """<div t-field="partner.barcode" t-options="{'widget': 'barcode', 'symbology': 'EAN13', 'width': 100, 'height': 30, 'img_style': 'width:100%;', 'img_alt': 'Barcode'}"/>"""
         ean_rendered = self.env['ir.qweb']._render(view.id, values={'partner': partner}).strip()
-        self.assertRegex(ean_rendered, r'<div><img style="width:100%;" alt="Barcode" src="data:image/png;base64,\S+"></div>')
+        self.assertRegex(ean_rendered,
+                         r'<div><img style="width:100%;" alt="Barcode" src="data:image/png;base64,\S+"></div>')
 
         view.arch = """<div t-field="partner.barcode" t-options="{'widget': 'barcode', 'symbology': 'auto', 'width': 100, 'height': 30, 'img_style': 'width:100%;', 'img_alt': 'Barcode'}"/>"""
         auto_rendered = self.env['ir.qweb']._render(view.id, values={'partner': partner}).strip()
-        self.assertRegex(auto_rendered, r'<div><img style="width:100%;" alt="Barcode" src="data:image/png;base64,\S+"></div>')
+        self.assertRegex(auto_rendered,
+                         r'<div><img style="width:100%;" alt="Barcode" src="data:image/png;base64,\S+"></div>')
 
     def test_render_comment_tail(self):
         """ Test the rendering of a tail text, near a comment.
@@ -1853,6 +1856,7 @@ class TestQWebBasic(TransactionCase):
 
         rendered = self.env['ir.qweb']._render(view.id)
         self.assertEqual(str(rendered), result)
+
 
 class TestQwebCache(TransactionCase):
     def test_render_xml_cache_base(self):
@@ -2566,7 +2570,8 @@ class TestQwebCache(TransactionCase):
                 <div>cache: 101</div>
             </section>
         """
-        self.assertEqual(etree.fromstring(render), etree.fromstring(result), 'rendering 1 (101 != 1: cached t-set should never be applied on root rendering)')
+        self.assertEqual(etree.fromstring(render), etree.fromstring(result),
+                         'rendering 1 (101 != 1: cached t-set should never be applied on root rendering)')
 
         render = IrQweb._render(template_page.id, {
             'cache_id': 1,
@@ -2578,7 +2583,8 @@ class TestQwebCache(TransactionCase):
                 <div>cache: 101</div>
             </section>
         """
-        self.assertEqual(etree.fromstring(render), etree.fromstring(result), 'rendering 2 (102 != 2: cached t-set should never be applied on root rendering)')
+        self.assertEqual(etree.fromstring(render), etree.fromstring(result),
+                         'rendering 2 (102 != 2: cached t-set should never be applied on root rendering)')
 
         render = IrQweb._render(template_page.id, {
             'cache_id': 3,
@@ -2590,7 +2596,8 @@ class TestQwebCache(TransactionCase):
                 <div>cache: 103</div>
             </section>
         """
-        self.assertEqual(etree.fromstring(render), etree.fromstring(result), 'rendering 3 (103 != 3: cached t-set should never be applied on root rendering)')
+        self.assertEqual(etree.fromstring(render), etree.fromstring(result),
+                         'rendering 3 (103 != 3: cached t-set should never be applied on root rendering)')
 
     def test_render_xml_nocache_use_the_root_values_and_cached_values(self):
         template_page = self.env['ir.ui.view'].create({
@@ -2619,7 +2626,8 @@ class TestQwebCache(TransactionCase):
                 <div>cache: 101</div>
             </section>
         """
-        self.assertEqual(etree.fromstring(render), etree.fromstring(result), 'rendering 1 (1 != 101: new cached values should be add to the root rendering)')
+        self.assertEqual(etree.fromstring(render), etree.fromstring(result),
+                         'rendering 1 (1 != 101: new cached values should be add to the root rendering)')
 
         render = IrQweb._render(template_page.id, {
             'cache_id': 1,
@@ -2631,7 +2639,8 @@ class TestQwebCache(TransactionCase):
                 <div>cache: 101</div>
             </section>
         """
-        self.assertEqual(etree.fromstring(render), etree.fromstring(result), 'rendering 2 (102 != 2: cached values should be used)')
+        self.assertEqual(etree.fromstring(render), etree.fromstring(result),
+                         'rendering 2 (102 != 2: cached values should be used)')
 
         render = IrQweb._render(template_page.id, {
             'cache_id': 3,
@@ -2643,7 +2652,8 @@ class TestQwebCache(TransactionCase):
                 <div>cache: 103</div>
             </section>
         """
-        self.assertEqual(etree.fromstring(render), etree.fromstring(result), 'rendering 3 (3 != 103: new cached values should be add to the root rendering)')
+        self.assertEqual(etree.fromstring(render), etree.fromstring(result),
+                         'rendering 3 (3 != 103: new cached values should be add to the root rendering)')
 
     def test_render_xml_nocache_use_the_root_values_and_cached_values_error(self):
         template_page = self.env['ir.ui.view'].create({
@@ -2695,7 +2705,8 @@ class TestQwebCache(TransactionCase):
                 </section>
             </root>
         """
-        self.assertEqual(etree.fromstring(render), etree.fromstring(result), 'rendering 1 (1 != 101: cached t-set should is applied on first rendering)')
+        self.assertEqual(etree.fromstring(render), etree.fromstring(result),
+                         'rendering 1 (1 != 101: cached t-set should is applied on first rendering)')
 
         render = IrQweb._render(template_page.id, {
             'cache_id': 1,
@@ -2709,7 +2720,8 @@ class TestQwebCache(TransactionCase):
                 </section>
             </root>
         """
-        self.assertEqual(etree.fromstring(render), etree.fromstring(result), 'rendering 2 (2 != 102: cached t-set should be applied the template part are rendered every time)')
+        self.assertEqual(etree.fromstring(render), etree.fromstring(result),
+                         'rendering 2 (2 != 102: cached t-set should be applied the template part are rendered every time)')
 
         render = IrQweb._render(template_page.id, {
             'cache_id': 3,
@@ -2723,7 +2735,8 @@ class TestQwebCache(TransactionCase):
                 </section>
             </root>
         """
-        self.assertEqual(etree.fromstring(render), etree.fromstring(result), 'rendering 3 (3 != 103: cached t-set should applied because the new cache key is created)')
+        self.assertEqual(etree.fromstring(render), etree.fromstring(result),
+                         'rendering 3 (3 != 103: cached t-set should applied because the new cache key is created)')
 
     def test_render_xml_cache_with_t_set_in_cache(self):
         template_page = self.env['ir.ui.view'].create({
@@ -3065,7 +3078,6 @@ class TestQwebCache(TransactionCase):
         result = etree.fromstring(IrQweb._render(view1.id, {'cache_id': 1, 'condition': True, 'value': [10, 20, 30]}))
         self.assertEqual(result, expected_result, 'Next rendering use cache')
 
-
         expected_result = etree.fromstring("""
             <div class="toto">
                 <table>
@@ -3167,8 +3179,10 @@ class TestQwebCache(TransactionCase):
                 </t>
             """)
         }
+
         def load(template_name):
             return (templates[template_name], template_name)
+
         rendering = render('html', {'val': 3}, load).strip()
 
         self.assertEqual(html.document_fromstring(rendering), html.document_fromstring(expected))

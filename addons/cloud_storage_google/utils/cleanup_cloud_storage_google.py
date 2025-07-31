@@ -1,13 +1,13 @@
 import json
 import logging
-import requests
 import xmlrpc.client
-
 from concurrent.futures import ThreadPoolExecutor
-from google.oauth2 import service_account
-from google.auth.transport.requests import Request
 from itertools import islice
 from urllib.parse import quote
+
+import requests
+from google.auth.transport.requests import Request
+from google.oauth2 import service_account
 
 # This is a script to manually clean up unused google blobs.
 

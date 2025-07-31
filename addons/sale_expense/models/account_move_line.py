@@ -12,7 +12,8 @@ class AccountMoveLine(models.Model):
         """
         self.ensure_one()
         if self.expense_id:  # expense flow is different from vendor bill reinvoice flow
-            return self.expense_id.product_id.expense_policy in {'sales_price', 'cost'} and self.expense_id.sale_order_id
+            return self.expense_id.product_id.expense_policy in {'sales_price',
+                                                                 'cost'} and self.expense_id.sale_order_id
         return super()._sale_can_be_reinvoice()
 
     def _get_so_mapping_from_expense(self):
@@ -39,7 +40,8 @@ class AccountMoveLine(models.Model):
     def _sale_create_reinvoice_sale_line(self):
         expensed_lines = self.filtered('expense_id')
         res = super(AccountMoveLine, self - expensed_lines)._sale_create_reinvoice_sale_line()
-        res.update(super(AccountMoveLine, expensed_lines.with_context({'force_split_lines': True}))._sale_create_reinvoice_sale_line())
+        res.update(super(AccountMoveLine,
+                         expensed_lines.with_context({'force_split_lines': True}))._sale_create_reinvoice_sale_line())
         return res
 
 

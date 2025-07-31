@@ -5,10 +5,18 @@
                 <table id="l10n_account_withholding" class="table table-borderless border-bottom pt-2 mb-5">
                     <thead>
                         <tr>
-                            <th><span>Tax</span></th>
-                            <th><span>Withholding number</span></th>
-                            <th class="text-end"><span>Base</span></th>
-                            <th class="text-end"><span>Amount</span></th>
+                            <th>
+                                <span>Tax</span>
+                            </th>
+                            <th>
+                                <span>Withholding number</span>
+                            </th>
+                            <th class="text-end">
+                                <span>Base</span>
+                            </th>
+                            <th class="text-end">
+                                <span>Amount</span>
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -21,10 +29,12 @@
                                     <span t-out="line.name"/>
                                 </td>
                                 <td class="text-end">
-                                    <span t-out="abs(line.base_amount)" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                    <span t-out="abs(line.base_amount)"
+                                          t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
                                 </td>
                                 <td class="text-end">
-                                    <span t-out="abs(line.amount)" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                    <span t-out="abs(line.amount)"
+                                          t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
                                 </td>
                             </tr>
                         </t>

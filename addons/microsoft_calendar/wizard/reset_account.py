@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import fields, models
-
 from odoo.addons.microsoft_calendar.models.microsoft_sync import microsoft_calendar_token
+
+from odoo import fields, models
 
 
 class ResetMicrosoftAccount(models.TransientModel):
@@ -16,8 +16,8 @@ class ResetMicrosoftAccount(models.TransientModel):
          ('delete_microsoft', "Delete from the current Microsoft Calendar account"),
          ('delete_odoo', "Delete from Odoo"),
          ('delete_both', "Delete from both"),
-    ], string="User's Existing Events", required=True, default='dont_delete',
-    help="This will only affect events for which the user is the owner")
+         ], string="User's Existing Events", required=True, default='dont_delete',
+        help="This will only affect events for which the user is the owner")
     sync_policy = fields.Selection([
         ('new', "Synchronize only new events"),
         ('all', "Synchronize all existing events"),

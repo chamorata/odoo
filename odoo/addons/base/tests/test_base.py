@@ -2,14 +2,12 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import ast
-
 from textwrap import dedent
 
 from odoo import Command
 from odoo.tests.common import TransactionCase, BaseCase
 from odoo.tools import mute_logger
 from odoo.tools.safe_eval import safe_eval, const_eval, expr_eval
-from odoo.addons.base.tests.common import TransactionCaseWithUserDemo
 
 
 class TestSafeEval(BaseCase):
@@ -72,12 +70,12 @@ class TestSafeEval(BaseCase):
     def test_03_literal_eval_arithmetic(self):
         """ Try arithmetic expression in literal_eval to verify it does not work """
         with self.assertRaises(ValueError):
-           ast.literal_eval('(1, {"a": 2*9}, (True, False, None))')
+            ast.literal_eval('(1, {"a": 2*9}, (True, False, None))')
 
     def test_04_literal_eval_forbidden(self):
         """ Try forbidden expressions in literal_eval to verify they are not allowed """
         with self.assertRaises(ValueError):
-           ast.literal_eval('{"a": True.__class__}')
+            ast.literal_eval('{"a": True.__class__}')
 
     @mute_logger('odoo.tools.safe_eval')
     def test_05_safe_eval_forbiddon(self):
@@ -174,7 +172,7 @@ class TestGroups(TransactionCase):
         self.assertItemsEqual(groups.ids, [g.id for g in all_groups if 'Sales /' in g.full_name],
                               "did not match search for 'Sales /'")
 
-        groups = all_groups.search([('full_name', 'in', ['Administration / Access Rights','Contact Creation'])])
+        groups = all_groups.search([('full_name', 'in', ['Administration / Access Rights', 'Contact Creation'])])
         self.assertTrue(groups, "did not match search for 'Administration / Access Rights' and 'Contact Creation'")
 
         groups = all_groups.search([('full_name', 'like', '/')])
@@ -217,14 +215,17 @@ class TestGroups(TransactionCase):
 
         a = self.env['res.groups'].create({'name': 'A', 'users': [Command.set(u1.ids)]})
         b = self.env['res.groups'].create({'name': 'B', 'users': [Command.set(u1.ids)]})
-        c = self.env['res.groups'].create({'name': 'C', 'implied_ids': [Command.set(a.ids)], 'users': [Command.set([p.id, u2.id, default.id])]})
-        d = self.env['res.groups'].create({'name': 'D', 'implied_ids': [Command.set(a.ids)], 'users': [Command.set([u2.id, default.id])]})
+        c = self.env['res.groups'].create(
+            {'name': 'C', 'implied_ids': [Command.set(a.ids)], 'users': [Command.set([p.id, u2.id, default.id])]})
+        d = self.env['res.groups'].create(
+            {'name': 'D', 'implied_ids': [Command.set(a.ids)], 'users': [Command.set([u2.id, default.id])]})
 
         def assertUsersEqual(users, group):
             self.assertEqual(
                 sorted([r.login for r in users]),
                 sorted([r.login for r in group.with_context(active_test=False).users])
             )
+
         # sanity checks
         assertUsersEqual([u1, u2, p, default], a)
         assertUsersEqual([u1], b)

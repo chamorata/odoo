@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.project import _check_exists_collaborators_for_project_sharing
+
+from odoo import fields
 from . import controllers
 from . import models
 from . import report
 from . import wizard
-
-from odoo import fields
-
-from odoo.addons.project import _check_exists_collaborators_for_project_sharing
 
 
 def create_internal_project(env):
@@ -31,8 +30,8 @@ def create_internal_project(env):
 
     _check_exists_collaborators_for_project_sharing(env)
 
-def _uninstall_hook(env):
 
+def _uninstall_hook(env):
     def update_action_window(xmlid):
         act_window = env.ref(xmlid, raise_if_not_found=False)
         if act_window and act_window.domain and 'is_internal_project' in act_window.domain:

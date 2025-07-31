@@ -1,9 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.sale.tests.test_sale_product_attribute_value_config import TestSaleProductAttributeValueCommon
+
 from odoo.fields import Command
 from odoo.tests import tagged
-
-from odoo.addons.sale.tests.test_sale_product_attribute_value_config import TestSaleProductAttributeValueCommon
 
 
 @tagged('post_install', '-at_install', 'product_attribute')
@@ -155,12 +155,15 @@ class TestWebsiteSaleProductAttributeValueConfig(TestSaleProductAttributeValueCo
         website.invalidate_recordset(['fiscal_position_id'])
         combination_info = product._get_combination_info()
         self.assertEqual(round(combination_info['price'], 2), 434.78, "434.78$ + 0% tax (mapped from fp 15% -> 0%)")
-        self.assertEqual(round(combination_info['list_price'], 2), 434.78, "434.78$ + 0% tax (mapped from fp 15% -> 0%)")
+        self.assertEqual(round(combination_info['list_price'], 2), 434.78,
+                         "434.78$ + 0% tax (mapped from fp 15% -> 0%)")
         self.assertEqual(combination_info['price_extra'], 173.91, "173.91$ + 0% tax (mapped from fp 15% -> 0%)")
 
         # Try same flow with tax included for apply tax
         tax0.write({'name': "Test tax 5", 'amount': 5, 'price_include_override': 'tax_included'})
         combination_info = product._get_combination_info()
-        self.assertEqual(round(combination_info['price'], 2), 456.52, "434.78$ + 5% tax (mapped from fp 15% -> 5% for BE)")
-        self.assertEqual(round(combination_info['list_price'], 2), 456.52, "434.78$ + 5% tax (mapped from fp 15% -> 5% for BE)")
+        self.assertEqual(round(combination_info['price'], 2), 456.52,
+                         "434.78$ + 5% tax (mapped from fp 15% -> 5% for BE)")
+        self.assertEqual(round(combination_info['list_price'], 2), 456.52,
+                         "434.78$ + 5% tax (mapped from fp 15% -> 5% for BE)")
         self.assertEqual(combination_info['price_extra'], 182.61, "173.91$ + 5% tax (mapped from fp 15% -> 5% for BE)")

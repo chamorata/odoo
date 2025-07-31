@@ -7,10 +7,10 @@ import sys
 from pathlib import Path
 
 import odoo
-from . import Command
-from .server import main
 from odoo.modules.module import get_module_root, MANIFEST_NAMES
 from odoo.service.db import _create_empty_database, DatabaseExists
+from . import Command
+from .server import main
 
 
 class Start(Command):
@@ -30,10 +30,9 @@ class Start(Command):
             description=self.__doc__.strip(),
         )
         parser.add_argument('--path', default=".",
-            help="Directory where your project's modules are stored (will autodetect from current dir)")
+                            help="Directory where your project's modules are stored (will autodetect from current dir)")
         parser.add_argument("-d", "--database", dest="db_name", default=None,
-                         help="Specify the database name (default to project's directory name")
-
+                            help="Specify the database name (default to project's directory name")
 
         args, unknown = parser.parse_known_args(args=cmdargs)
 
@@ -73,11 +72,13 @@ class Start(Command):
         # Remove --path /-p options from the command arguments
         def to_remove(i, l):
             return l[i] == '-p' or l[i].startswith('--path') or \
-                (i > 0 and l[i-1] in ['-p', '--path'])
+                (i > 0 and l[i - 1] in ['-p', '--path'])
+
         cmdargs = [v for i, v in enumerate(cmdargs)
                    if not to_remove(i, cmdargs)]
 
         main(cmdargs)
+
 
 def die(message, code=1):
     print(message, file=sys.stderr)

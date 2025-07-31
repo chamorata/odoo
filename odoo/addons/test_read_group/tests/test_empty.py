@@ -6,6 +6,7 @@ class TestEmptyDate(common.TransactionCase):
     """ Test what happens when grouping on date fields and getting a "false"
     grouping value
     """
+
     def setUp(self):
         super(TestEmptyDate, self).setUp()
         self.Model = self.env['test_read_group.on_date']
@@ -64,5 +65,6 @@ class TestEmptyDate(common.TransactionCase):
 
     def test_field_error(self):
         Model = self.env['test_read_group.aggregate']
-        with self.assertRaisesRegex(ValueError, "Invalid field 'not_another_field' on model 'test_read_group.aggregate'"):
+        with self.assertRaisesRegex(ValueError,
+                                    "Invalid field 'not_another_field' on model 'test_read_group.aggregate'"):
             Model.read_group([], ['value', 'not_another_field'], ['partner_id', 'not_a_field'])

@@ -5,8 +5,8 @@ from collections import Counter
 
 from odoo.modules import get_modules
 from odoo.tests.common import TransactionCase
-from odoo.tools.translate import TranslationFileReader
 from odoo.tools.misc import file_path
+from odoo.tools.translate import TranslationFileReader
 
 
 class PotLinter(TransactionCase):

@@ -44,7 +44,8 @@ class ResPartner(models.Model):
             default_for_country = pls
             actual = partner.specific_property_product_pricelist
             # update at each change country, and so erase old pricelist
-            if partner.property_product_pricelist or (actual and default_for_country and default_for_country.id != actual.id):
+            if partner.property_product_pricelist or (
+                    actual and default_for_country and default_for_country.id != actual.id):
                 partner.specific_property_product_pricelist = False if partner.property_product_pricelist.id == default_for_country.id else partner.property_product_pricelist.id
 
     def _commercial_fields(self):

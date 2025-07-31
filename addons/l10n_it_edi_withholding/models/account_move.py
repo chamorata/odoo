@@ -3,10 +3,11 @@
 
 import logging
 import re
+
 from markupsafe import Markup
+from odoo.addons.l10n_it_edi.models.account_move import get_float
 
 from odoo import _, api, fields, models
-from odoo.addons.l10n_it_edi.models.account_move import get_float
 from odoo.tools import float_compare
 
 _logger = logging.getLogger(__name__)
@@ -15,15 +16,20 @@ _logger = logging.getLogger(__name__)
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
-    l10n_it_amount_vat_signed = fields.Monetary(string='VAT', compute='_compute_amount_extended', currency_field='company_currency_id')
-    l10n_it_amount_pension_fund_signed = fields.Monetary(string='Pension Fund', compute='_compute_amount_extended', currency_field='company_currency_id')
-    l10n_it_amount_withholding_signed = fields.Monetary(string='Withholding', compute='_compute_amount_extended', currency_field='company_currency_id')
-    l10n_it_amount_before_withholding_signed = fields.Monetary(string='Total Before Withholding', compute='_compute_amount_extended', currency_field='company_currency_id')
+    l10n_it_amount_vat_signed = fields.Monetary(string='VAT', compute='_compute_amount_extended',
+                                                currency_field='company_currency_id')
+    l10n_it_amount_pension_fund_signed = fields.Monetary(string='Pension Fund', compute='_compute_amount_extended',
+                                                         currency_field='company_currency_id')
+    l10n_it_amount_withholding_signed = fields.Monetary(string='Withholding', compute='_compute_amount_extended',
+                                                        currency_field='company_currency_id')
+    l10n_it_amount_before_withholding_signed = fields.Monetary(string='Total Before Withholding',
+                                                               compute='_compute_amount_extended',
+                                                               currency_field='company_currency_id')
 
     @api.depends('amount_total_signed')
     def _compute_amount_extended(self):
         for move in self:
-            totals = {None: 0.0, 'vat':0.0, 'withholding': 0.0, 'pension_fund': 0.0}
+            totals = {None: 0.0, 'vat': 0.0, 'withholding': 0.0, 'pension_fund': 0.0}
             if move.is_invoice(True):
                 for line in [line for line in move.line_ids if line.tax_line_id]:
                     kind = line.tax_line_id._l10n_it_get_tax_kind()
@@ -31,7 +37,8 @@ class AccountMove(models.Model):
             move.l10n_it_amount_vat_signed = totals['vat']
             move.l10n_it_amount_withholding_signed = totals['withholding']
             move.l10n_it_amount_pension_fund_signed = totals['pension_fund']
-            move.l10n_it_amount_before_withholding_signed = move.amount_untaxed_signed + totals['vat'] + totals['pension_fund']
+            move.l10n_it_amount_before_withholding_signed = move.amount_untaxed_signed + totals['vat'] + totals[
+                'pension_fund']
 
     @api.model
     def _l10n_it_edi_grouping_function_base_lines(self, base_line, tax_data):
@@ -81,7 +88,8 @@ class AccountMove(models.Model):
             }
 
         AccountTax = self.env['account.tax']
-        base_lines_aggregated_values = AccountTax._aggregate_base_lines_tax_details(base_lines, grouping_function_withholding)
+        base_lines_aggregated_values = AccountTax._aggregate_base_lines_tax_details(base_lines,
+                                                                                    grouping_function_withholding)
         values_per_grouping_key = AccountTax._aggregate_base_lines_aggregated_values(base_lines_aggregated_values)
         withholding_values = []
         for values in values_per_grouping_key.values():
@@ -104,7 +112,8 @@ class AccountMove(models.Model):
             tax = tax_data['tax']
             flatten_taxes = base_line['tax_ids'].flatten_taxes_hierarchy()
             vat_tax = flatten_taxes.filtered(lambda t: t._l10n_it_filter_kind('vat') and t.amount >= 0)[:1]
-            withholding_tax = flatten_taxes.filtered(lambda t: t._l10n_it_filter_kind('withholding') and t.sequence > tax.sequence)[:1]
+            withholding_tax = flatten_taxes.filtered(
+                lambda t: t._l10n_it_filter_kind('withholding') and t.sequence > tax.sequence)[:1]
             return {
                 'tax_amount_field': -23.0 if tax.amount == -11.5 else tax.amount,
                 'vat_tax_amount_field': -23.0 if vat_tax.amount == -11.5 else vat_tax.amount,
@@ -115,7 +124,8 @@ class AccountMove(models.Model):
                 'skip': not tax._l10n_it_filter_kind('pension_fund') or tax.l10n_it_pension_fund_type == 'TC07',
             }
 
-        base_lines_aggregated_values = AccountTax._aggregate_base_lines_tax_details(base_lines, grouping_function_pension_funds)
+        base_lines_aggregated_values = AccountTax._aggregate_base_lines_tax_details(base_lines,
+                                                                                    grouping_function_pension_funds)
         values_per_grouping_key = AccountTax._aggregate_base_lines_aggregated_values(base_lines_aggregated_values)
         pension_fund_values = []
         for values in values_per_grouping_key.values():
@@ -186,25 +196,32 @@ class AccountMove(models.Model):
             vat_taxes, withholding_taxes, pension_fund_taxes = (all_taxes._l10n_it_filter_kind(kind) for kind in
                                                                 ('vat', 'withholding', 'pension_fund'))
             if len(vat_taxes.filtered(lambda x: x.amount >= 0)) != 1:
-                errors.append(_("Bad tax configuration for line %s, there must be one and only one VAT tax per line", invoice_line.name))
+                errors.append(_("Bad tax configuration for line %s, there must be one and only one VAT tax per line",
+                                invoice_line.name))
             if len(pension_fund_taxes) > 1 or len(withholding_taxes) > 1:
-                errors.append(_("Bad tax configuration for line %s, there must be one Withholding tax and one Pension Fund tax at max.", invoice_line.name))
+                errors.append(
+                    _("Bad tax configuration for line %s, there must be one Withholding tax and one Pension Fund tax at max.",
+                      invoice_line.name))
         return errors
 
     # -------------------------------------------------------------------------
     # Import
     # -------------------------------------------------------------------------
 
-    def _l10n_it_edi_search_tax_for_import(self, company, percentage, extra_domain=None, vat_only=True, l10n_it_exempt_reason=False):
+    def _l10n_it_edi_search_tax_for_import(self, company, percentage, extra_domain=None, vat_only=True,
+                                           l10n_it_exempt_reason=False):
         """ In case no withholding_type or pension_fund is specified, exclude taxes that have it.
             It means that we're searching for VAT taxes, especially in the base l10n_it_edi module
         """
         if vat_only:
-            extra_domain = (extra_domain or []) + [('l10n_it_withholding_type', '=', False), ('l10n_it_pension_fund_type', '=', False)]
-        return super()._l10n_it_edi_search_tax_for_import(company, percentage, extra_domain=extra_domain, l10n_it_exempt_reason=l10n_it_exempt_reason)
+            extra_domain = (extra_domain or []) + [('l10n_it_withholding_type', '=', False),
+                                                   ('l10n_it_pension_fund_type', '=', False)]
+        return super()._l10n_it_edi_search_tax_for_import(company, percentage, extra_domain=extra_domain,
+                                                          l10n_it_exempt_reason=l10n_it_exempt_reason)
 
     def _l10n_it_edi_get_extra_info(self, company, document_type, body_tree, incoming=True):
-        extra_info, message_to_log = super()._l10n_it_edi_get_extra_info(company, document_type, body_tree, incoming=incoming)
+        extra_info, message_to_log = super()._l10n_it_edi_get_extra_info(company, document_type, body_tree,
+                                                                         incoming=incoming)
 
         type_tax_use_domain = extra_info['type_tax_use_domain']
 
@@ -385,9 +402,11 @@ class AccountMove(models.Model):
             price_unit = get_float(parent_element, './PrezzoUnitario')
             base_amount = self._get_l10_it_edi_get_taxable_amount_from_summary_data(parent_element.xpath('..')[0])
             enasarco_percentage = -self.currency_id.round(enasarco_amount / base_amount * 100) if base_amount else 0.0
-            type_tax_use_domain = [('type_tax_use', '=', 'purchase' if self.is_outbound(include_receipts=True) else 'sale')]
+            type_tax_use_domain = [
+                ('type_tax_use', '=', 'purchase' if self.is_outbound(include_receipts=True) else 'sale')]
             domain = [('l10n_it_pension_fund_type', '=', 'TC07')] + type_tax_use_domain
-            if enasarco_tax := self._l10n_it_edi_search_tax_for_import(self.company_id, enasarco_percentage, domain, vat_only=False):
+            if enasarco_tax := self._l10n_it_edi_search_tax_for_import(self.company_id, enasarco_percentage, domain,
+                                                                       vat_only=False):
                 to_remove_index = int(get_float(parent_element, './NumeroLinea')) - 1
                 self.invoice_line_ids[to_remove_index].unlink()
                 self.invoice_line_ids.tax_ids |= enasarco_tax

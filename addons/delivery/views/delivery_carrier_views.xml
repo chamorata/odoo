@@ -24,12 +24,13 @@
         <field name="model">delivery.carrier</field>
         <field name="arch" type="xml">
             <search string="Delivery Carrier">
-                <field name="name" string="Carrier" />
+                <field name="name" string="Carrier"/>
                 <field name="delivery_type"/>
                 <separator/>
                 <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
                 <group expand="1" string="Group By">
-                    <filter string="Provider" name="provider" context="{'group_by':'delivery_type', 'residual_visible':True}"/>
+                    <filter string="Provider" name="provider"
+                            context="{'group_by':'delivery_type', 'residual_visible':True}"/>
                 </group>
             </search>
         </field>
@@ -93,35 +94,37 @@
                             <field name="debug_logging" invisible="1"/>
                             <label for="delivery_type"/>
                             <div>
-                                <field name="delivery_type" />
-                                <button string="Install more Providers" name="install_more_provider" type="object" class="oe_link oe_edit_only"/>
+                                <field name="delivery_type"/>
+                                <button string="Install more Providers" name="install_more_provider" type="object"
+                                        class="oe_link oe_edit_only"/>
                             </div>
-                            <field name="integration_level" widget="radio" invisible="delivery_type == 'fixed' or delivery_type == 'base_on_rule'"/>
+                            <field name="integration_level" widget="radio"
+                                   invisible="delivery_type == 'fixed' or delivery_type == 'base_on_rule'"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                         </group>
                         <group name="delivery_details">
                             <field name="currency_id" invisible="1"/>
                             <field name="fixed_price"
-                                    widget="monetary"
-                                    class="oe_inline"
-                                    invisible="delivery_type != 'fixed'"/>
+                                   widget="monetary"
+                                   class="oe_inline"
+                                   invisible="delivery_type != 'fixed'"/>
                             <field name="margin"
-                                    string="Margin on Rate"
-                                    widget="percentage"
-                                    class="oe_inline"
-                                    invisible="delivery_type == 'fixed'"/>
+                                   string="Margin on Rate"
+                                   widget="percentage"
+                                   class="oe_inline"
+                                   invisible="delivery_type == 'fixed'"/>
                             <field name="fixed_margin"
-                                    string="Additional margin"
-                                    widget="monetary"
-                                    invisible="delivery_type == 'fixed'"/>
+                                   string="Additional margin"
+                                   widget="monetary"
+                                   invisible="delivery_type == 'fixed'"/>
                             <label for="free_over" invisible="delivery_type == 'base_on_rule'"/>
                             <div name="free_over_amount" invisible="delivery_type == 'base_on_rule'">
                                 <field name="free_over"/>
                                 <field name="amount"
-                                        widget="monetary"
-                                        class="oe_inline"
-                                        invisible="not free_over"
-                                        required="free_over"/>
+                                       widget="monetary"
+                                       class="oe_inline"
+                                       invisible="not free_over"
+                                       required="free_over"/>
                             </div>
                             <field name="product_id" context="{
                                 'default_type': 'service',
@@ -129,10 +132,14 @@
                                 'default_purchase_ok': False,
                                 'default_invoice_policy': 'order',
                             }"/>
-                            <field name="tracking_url" placeholder="i.e. https://ekartlogistics.com/shipmenttrack/&lt;shipmenttrackingnumber&gt;" invisible="delivery_type not in ('fixed', 'base_on_rule')"/>
-                            <field name="invoice_policy" widget="radio" invisible="delivery_type in ('fixed', 'base_on_rule') or integration_level == 'rate'"/>
+                            <field name="tracking_url"
+                                   placeholder="i.e. https://ekartlogistics.com/shipmenttrack/&lt;shipmenttrackingnumber&gt;"
+                                   invisible="delivery_type not in ('fixed', 'base_on_rule')"/>
+                            <field name="invoice_policy" widget="radio"
+                                   invisible="delivery_type in ('fixed', 'base_on_rule') or integration_level == 'rate'"/>
                             <field name="supports_shipping_insurance" invisible="1"/>
-                            <label for="shipping_insurance" String="Shipping Insurance" invisible="not supports_shipping_insurance"/>
+                            <label for="shipping_insurance" String="Shipping Insurance"
+                                   invisible="not supports_shipping_insurance"/>
                             <div invisible="not supports_shipping_insurance">
                                 <field name="shipping_insurance" class="oe_inline"/>%
                             </div>
@@ -147,24 +154,25 @@
                         <page string="Availability" name="destination">
                             <group col="1">
                                 <p>
-                                    Filling this form allows you to make the shipping method available according to the content of the order or its destination.
+                                    Filling this form allows you to make the shipping method available according to the
+                                    content of the order or its destination.
                                 </p>
                                 <group>
                                     <group name="country_details" string="Destination">
                                         <field name="country_ids"
-                                                widget="many2many_tags"
-                                                options="{'no_open': True, 'no_create': True}"/>
+                                               widget="many2many_tags"
+                                               options="{'no_open': True, 'no_create': True}"/>
                                         <field name="state_ids"
-                                                widget="many2many_tags"
-                                                domain="[('country_id', 'in', country_ids)]"
-                                                readonly="not country_ids"
-                                                force_save="1"
-                                                options="{'no_create': True}"/>
+                                               widget="many2many_tags"
+                                               domain="[('country_id', 'in', country_ids)]"
+                                               readonly="not country_ids"
+                                               force_save="1"
+                                               options="{'no_create': True}"/>
                                         <field name="zip_prefix_ids"
-                                                widget="many2many_tags"
-                                                readonly="not country_ids"
-                                                force_save="1"
-                                                options="{'no_create_edit': True}"/>
+                                               widget="many2many_tags"
+                                               readonly="not country_ids"
+                                               force_save="1"
+                                               options="{'no_create_edit': True}"/>
                                     </group>
                                     <group name="content" string="Content">
                                         <label for="max_weight"/>
@@ -178,11 +186,11 @@
                                             <field name="volume_uom_name"/>
                                         </div>
                                         <field name="must_have_tag_ids"
-                                                widget="many2many_tags"
-                                                options="{'no_open': True, 'no_create': True}"/>
+                                               widget="many2many_tags"
+                                               options="{'no_open': True, 'no_create': True}"/>
                                         <field name="excluded_tag_ids"
-                                                widget="many2many_tags"
-                                                options="{'no_open': True, 'no_create': True}"/>
+                                               widget="many2many_tags"
+                                               options="{'no_open': True, 'no_create': True}"/>
                                     </group>
                                 </group>
                                 <p class="fst-italic" invisible="country_ids">
@@ -191,7 +199,8 @@
                             </group>
                         </page>
                         <page string="Description" name="description">
-                            <field name="carrier_description" placeholder="Shipping method details to be included at bottom sales orders and their confirmation emails. E.g. Instructions for customers to follow."/>
+                            <field name="carrier_description"
+                                   placeholder="Shipping method details to be included at bottom sales orders and their confirmation emails. E.g. Instructions for customers to follow."/>
                         </page>
                     </notebook>
                 </sheet>
@@ -206,22 +215,24 @@
         <field name="context">{'search_default_group_by_provider': True}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-            Define a new delivery method
-            </p><p>
-            Each carrier (e.g. UPS) can have several delivery methods (e.g.
-            UPS Express, UPS Standard) with a set of pricing rules attached
-            to each method.
-            </p><p>
-            These methods allow to automatically compute the delivery price
-            according to your settings; on the sales order (based on the
-            quotation) or the invoice (based on the delivery orders).
+                Define a new delivery method
+            </p>
+            <p>
+                Each carrier (e.g. UPS) can have several delivery methods (e.g.
+                UPS Express, UPS Standard) with a set of pricing rules attached
+                to each method.
+            </p>
+            <p>
+                These methods allow to automatically compute the delivery price
+                according to your settings; on the sales order (based on the
+                quotation) or the invoice (based on the delivery orders).
             </p>
         </field>
     </record>
 
     <menuitem id="sale_menu_action_delivery_carrier_form"
-        action="action_delivery_carrier_form"
-        parent="sale.menu_sales_config"
-        sequence="4"/>
+              action="action_delivery_carrier_form"
+              parent="sale.menu_sales_config"
+              sequence="4"/>
 
 </odoo>

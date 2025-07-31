@@ -4,8 +4,9 @@
 from collections import defaultdict
 from datetime import timedelta
 
-from odoo import api, fields, models
 from odoo.addons.rating.models import rating_data
+
+from odoo import api, fields, models
 from odoo.osv import expression
 from odoo.tools.float_utils import float_compare
 
@@ -23,23 +24,28 @@ class RatingParentMixin(models.AbstractModel):
         "Rating Satisfaction",
         compute="_compute_rating_percentage_satisfaction", compute_sudo=True,
         store=False, help="Percentage of happy ratings")
-    rating_count = fields.Integer(string='# Ratings', compute="_compute_rating_percentage_satisfaction", compute_sudo=True)
+    rating_count = fields.Integer(string='# Ratings', compute="_compute_rating_percentage_satisfaction",
+                                  compute_sudo=True)
     rating_avg = fields.Float('Average Rating', groups='base.group_user',
-        compute='_compute_rating_percentage_satisfaction', compute_sudo=True, search='_search_rating_avg')
+                              compute='_compute_rating_percentage_satisfaction', compute_sudo=True,
+                              search='_search_rating_avg')
     rating_avg_percentage = fields.Float('Average Rating (%)', groups='base.group_user',
-        compute='_compute_rating_percentage_satisfaction', compute_sudo=True)
+                                         compute='_compute_rating_percentage_satisfaction', compute_sudo=True)
 
     @api.depends('rating_ids.rating', 'rating_ids.consumed')
     def _compute_rating_percentage_satisfaction(self):
         # build domain and fetch data
-        domain = [('parent_res_model', '=', self._name), ('parent_res_id', 'in', self.ids), ('rating', '>=', rating_data.RATING_LIMIT_MIN), ('consumed', '=', True)]
+        domain = [('parent_res_model', '=', self._name), ('parent_res_id', 'in', self.ids),
+                  ('rating', '>=', rating_data.RATING_LIMIT_MIN), ('consumed', '=', True)]
         if self._rating_satisfaction_days:
-            domain += [('write_date', '>=', fields.Datetime.to_string(fields.datetime.now() - timedelta(days=self._rating_satisfaction_days)))]
+            domain += [('write_date', '>=', fields.Datetime.to_string(
+                fields.datetime.now() - timedelta(days=self._rating_satisfaction_days)))]
         data = self.env['rating.rating']._read_group(domain, ['parent_res_id', 'rating'], ['__count'])
 
         # get repartition of grades per parent id
         default_grades = {'great': 0, 'okay': 0, 'bad': 0}
-        grades_per_parent = dict((parent_id, dict(default_grades)) for parent_id in self.ids)  # map: {parent_id: {'great': 0, 'bad': 0, 'ok': 0}}
+        grades_per_parent = dict((parent_id, dict(default_grades)) for parent_id in
+                                 self.ids)  # map: {parent_id: {'great': 0, 'bad': 0, 'ok': 0}}
         rating_scores_per_parent = defaultdict(int)  # contains the total of the rating values per record
         for parent_id, rating, count in data:
             grade = rating_data._rating_to_grade(rating)
@@ -58,7 +64,8 @@ class RatingParentMixin(models.AbstractModel):
     def _search_rating_avg(self, operator, value):
         if operator not in rating_data.OPERATOR_MAPPING:
             raise NotImplementedError('This operator %s is not supported in this search method.' % operator)
-        domain = [('parent_res_model', '=', self._name), ('consumed', '=', True), ('rating', '>=', rating_data.RATING_LIMIT_MIN)]
+        domain = [('parent_res_model', '=', self._name), ('consumed', '=', True),
+                  ('rating', '>=', rating_data.RATING_LIMIT_MIN)]
         if self._rating_satisfaction_days:
             min_date = fields.datetime.now() - timedelta(days=self._rating_satisfaction_days)
             domain = expression.AND([domain, [('write_date', '>=', fields.Datetime.to_string(min_date))]])

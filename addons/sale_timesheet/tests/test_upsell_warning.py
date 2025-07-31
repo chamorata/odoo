@@ -71,7 +71,8 @@ class TestUpsellWarning(TestCommonSaleTimesheet):
         # Normally this method is called at the end of _compute_invoice_status and other compute method. Here, we simulate for invoice_status field
         so._compute_field_value(so._fields['invoice_status'])
 
-        self.assertEqual(len(so.activity_search(['sale.mail_act_sale_upsell'])), 0, 'No upsell warning should appear in the SO.')
+        self.assertEqual(len(so.activity_search(['sale.mail_act_sale_upsell'])), 0,
+                         'No upsell warning should appear in the SO.')
         timesheet.write({
             'unit_amount': 6,
         })
@@ -83,7 +84,8 @@ class TestUpsellWarning(TestCommonSaleTimesheet):
         so._compute_field_value(so._fields['invoice_status'])
 
         # 5) Check if the SO has an 'sale.mail_act_sale_upsell' activity.
-        self.assertEqual(len(so.activity_search(['sale.mail_act_sale_upsell'])), 1, 'A upsell warning should appear in the SO.')
+        self.assertEqual(len(so.activity_search(['sale.mail_act_sale_upsell'])), 1,
+                         'A upsell warning should appear in the SO.')
 
     def test_display_upsell_warning_when_invoiced(self):
         """ Test to display an upsell warning when threshold value (10000%) exceed while creating invoice.
@@ -152,7 +154,8 @@ class TestUpsellWarning(TestCommonSaleTimesheet):
         so._compute_field_value(so._fields['invoice_status'])
 
         # 6) Check if the SO has an 'sale.mail_act_sale_upsell' activity.
-        self.assertEqual(len(so.activity_search(['sale.mail_act_sale_upsell'])), 0, 'No upsell warning should appear in the SO.')
+        self.assertEqual(len(so.activity_search(['sale.mail_act_sale_upsell'])), 0,
+                         'No upsell warning should appear in the SO.')
 
     def test_display_upsell_warning_multiple_times(self):
         """ Test to display an upsell warning caused by an SO line that has already produced an upsell warning previously.
@@ -217,7 +220,8 @@ class TestUpsellWarning(TestCommonSaleTimesheet):
         so.order_line._compute_qty_delivered()
         # Normally this method is called at the end of _get_invoice_status and other compute method. Here, we simulate for invoice_status field
         so._compute_field_value(so._fields['invoice_status'])
-        self.assertEqual(len(so.activity_search(['sale.mail_act_sale_upsell'])), 1, 'An upsell warning should appear in the SO.')
+        self.assertEqual(len(so.activity_search(['sale.mail_act_sale_upsell'])), 1,
+                         'An upsell warning should appear in the SO.')
 
         # 5) Update the ordered quantity of the SOL to match its delivered quantity
         so.order_line.write({
@@ -232,7 +236,8 @@ class TestUpsellWarning(TestCommonSaleTimesheet):
         # Normally this method is called at the end of _get_invoice_status and other compute method. Here, we simulate for invoice_status field
         so._compute_field_value(so._fields['invoice_status'])
         # No 'sale.mail_act_sale_upsell' activity should appear as it was marked as done
-        self.assertEqual(len(so.activity_search(['sale.mail_act_sale_upsell'])), 0, 'No upsell warning should appear in the SO.')
+        self.assertEqual(len(so.activity_search(['sale.mail_act_sale_upsell'])), 0,
+                         'No upsell warning should appear in the SO.')
 
         # 8) Timesheet again in the task to satisfy the condition for the SOL to display an upsell warning
         self.env['account.analytic.line'].create({
@@ -247,4 +252,5 @@ class TestUpsellWarning(TestCommonSaleTimesheet):
         so._compute_field_value(so._fields['invoice_status'])
 
         # 9) Check if the SO has an 'sale.mail_act_sale_upsell' activity
-        self.assertEqual(len(so.activity_search(['sale.mail_act_sale_upsell'])), 1, 'A upsell warning should appear in the SO.')
+        self.assertEqual(len(so.activity_search(['sale.mail_act_sale_upsell'])), 1,
+                         'A upsell warning should appear in the SO.')

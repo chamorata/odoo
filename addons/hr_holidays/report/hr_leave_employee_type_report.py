@@ -17,7 +17,7 @@ class LeaveReport(models.Model):
     department_id = fields.Many2one('hr.department', string='Department', readonly=True)
     leave_type = fields.Many2one("hr.leave.type", string="Time Off Type", readonly=True)
     holiday_status = fields.Selection([
-        ('taken', 'Taken'), #taken = validated
+        ('taken', 'Taken'),  # taken = validated
         ('left', 'Left'),
         ('planned', 'Planned')
     ])
@@ -27,7 +27,7 @@ class LeaveReport(models.Model):
         ('refuse', 'Refused'),
         ('validate1', 'Second Approval'),
         ('validate', 'Approved')
-        ], string='Status', readonly=True)
+    ], string='Status', readonly=True)
     date_from = fields.Datetime('Start Date', readonly=True)
     date_to = fields.Datetime('End Date', readonly=True)
     company_id = fields.Many2one('res.company', string="Company", readonly=True)

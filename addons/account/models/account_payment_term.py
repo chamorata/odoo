@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
+from dateutil.relativedelta import relativedelta
+
 from odoo import api, fields, models, _, Command
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import format_date, formatLang, frozendict, date_utils
 from odoo.tools.float_utils import float_round
-
-from dateutil.relativedelta import relativedelta
 
 
 class AccountPaymentTerm(models.Model):
@@ -21,9 +21,11 @@ class AccountPaymentTerm(models.Model):
         return self._context.get('example_date') or fields.Date.today()
 
     name = fields.Char(string='Payment Terms', translate=True, required=True)
-    active = fields.Boolean(default=True, help="If the active field is set to False, it will allow you to hide the payment terms without removing it.")
+    active = fields.Boolean(default=True,
+                            help="If the active field is set to False, it will allow you to hide the payment terms without removing it.")
     note = fields.Html(string='Description on the Invoice', translate=True)
-    line_ids = fields.One2many('account.payment.term.line', 'payment_id', string='Terms', copy=True, default=_default_line_ids)
+    line_ids = fields.One2many('account.payment.term.line', 'payment_id', string='Terms', copy=True,
+                               default=_default_line_ids)
     company_id = fields.Many2one('res.company', string='Company')
     fiscal_country_codes = fields.Char(compute='_compute_fiscal_country_codes')
     sequence = fields.Integer(required=True, default=10)
@@ -36,8 +38,10 @@ class AccountPaymentTerm(models.Model):
     example_preview = fields.Html(compute='_compute_example_preview')
     example_preview_discount = fields.Html(compute='_compute_example_preview')
 
-    discount_percentage = fields.Float(string='Discount %', help='Early Payment Discount granted for this payment term', default=2.0)
-    discount_days = fields.Integer(string='Discount Days', help='Number of days before the early payment proposition expires', default=10)
+    discount_percentage = fields.Float(string='Discount %', help='Early Payment Discount granted for this payment term',
+                                       default=2.0)
+    discount_days = fields.Integer(string='Discount Days',
+                                   help='Number of days before the early payment proposition expires', default=10)
     early_pay_discount_computation = fields.Selection([
         ('included', 'On early payment'),
         ('excluded', 'Never'),
@@ -85,14 +89,16 @@ class AccountPaymentTerm(models.Model):
         for payment_term in self:
             payment_term.example_invalid = not payment_term.line_ids
 
-    @api.depends('currency_id', 'example_amount', 'example_date', 'line_ids.value', 'line_ids.value_amount', 'line_ids.nb_days', 'early_discount', 'discount_percentage', 'discount_days')
+    @api.depends('currency_id', 'example_amount', 'example_date', 'line_ids.value', 'line_ids.value_amount',
+                 'line_ids.nb_days', 'early_discount', 'discount_percentage', 'discount_days')
     def _compute_example_preview(self):
         for record in self:
             example_preview = ""
             record.example_preview_discount = ""
             currency = record.currency_id
             if record.early_discount:
-                date = record._get_last_discount_date_formatted(record.example_date or fields.Date.context_today(record))
+                date = record._get_last_discount_date_formatted(
+                    record.example_date or fields.Date.context_today(record))
                 discount_amount = record._get_amount_due_after_discount(record.example_amount, 0.0)
                 record.example_preview_discount = _(
                     "Early Payment Discount: <b>%(amount)s</b> if paid before <b>%(date)s</b>",
@@ -116,7 +122,7 @@ class AccountPaymentTerm(models.Model):
                     example_preview += "<div>"
                     example_preview += _(
                         "<b>%(count)s#</b> Installment of <b>%(amount)s</b> due on <b style='color: #704A66;'>%(date)s</b>",
-                        count=i+1,
+                        count=i + 1,
                         amount=formatLang(self.env, amount, currency_obj=currency),
                         date=date,
                     )
@@ -150,7 +156,8 @@ class AccountPaymentTerm(models.Model):
         for terms in self:
             total_percent = sum(line.value_amount for line in terms.line_ids if line.value == 'percent')
             if float_round(total_percent, precision_digits=round_precision) != 100:
-                raise ValidationError(_('The Payment Term must have at least one percent line and the sum of the percent must be 100%.'))
+                raise ValidationError(
+                    _('The Payment Term must have at least one percent line and the sum of the percent must be 100%.'))
             if len(terms.line_ids) > 1 and terms.early_discount:
                 raise ValidationError(
                     _("The Early Payment Discount functionality can only be used with payment terms using a single 100% line. "))
@@ -159,7 +166,8 @@ class AccountPaymentTerm(models.Model):
             if terms.early_discount and terms.discount_days <= 0:
                 raise ValidationError(_("The Early Payment Discount days must be strictly positive."))
 
-    def _compute_terms(self, date_ref, currency, company, tax_amount, tax_amount_currency, sign, untaxed_amount, untaxed_amount_currency, cash_rounding=None):
+    def _compute_terms(self, date_ref, currency, company, tax_amount, tax_amount_currency, sign, untaxed_amount,
+                       untaxed_amount_currency, cash_rounding=None):
         """Get the distribution of this payment term.
         :param date_ref: The move date to take into account
         :param currency: the move's currency
@@ -194,17 +202,21 @@ class AccountPaymentTerm(models.Model):
             # Early discount is only available on single line, 100% payment terms.
             discount_percentage = self.discount_percentage / 100.0
             if self.early_pay_discount_computation in ('excluded', 'mixed'):
-                pay_term['discount_balance'] = company_currency.round(total_amount - untaxed_amount * discount_percentage)
-                pay_term['discount_amount_currency'] = currency.round(total_amount_currency - untaxed_amount_currency * discount_percentage)
+                pay_term['discount_balance'] = company_currency.round(
+                    total_amount - untaxed_amount * discount_percentage)
+                pay_term['discount_amount_currency'] = currency.round(
+                    total_amount_currency - untaxed_amount_currency * discount_percentage)
             else:
                 pay_term['discount_balance'] = company_currency.round(total_amount * (1 - discount_percentage))
                 pay_term['discount_amount_currency'] = currency.round(total_amount_currency * (1 - discount_percentage))
 
             if cash_rounding:
-                cash_rounding_difference_currency = cash_rounding.compute_difference(currency, pay_term['discount_amount_currency'])
+                cash_rounding_difference_currency = cash_rounding.compute_difference(currency, pay_term[
+                    'discount_amount_currency'])
                 if not currency.is_zero(cash_rounding_difference_currency):
                     pay_term['discount_amount_currency'] += cash_rounding_difference_currency
-                    pay_term['discount_balance'] = company_currency.round(pay_term['discount_amount_currency'] / rate) if rate else 0.0
+                    pay_term['discount_balance'] = company_currency.round(
+                        pay_term['discount_amount_currency'] / rate) if rate else 0.0
 
         residual_amount = total_amount
         residual_amount_currency = total_amount_currency
@@ -237,10 +249,12 @@ class AccountPaymentTerm(models.Model):
                 #   * We assume `total_amount_currency` is cash rounded.
                 #   * We only subtract cash rounded amounts.
                 # Thus the balance line is cash rounded.
-                cash_rounding_difference_currency = cash_rounding.compute_difference(currency, term_vals['foreign_amount'])
+                cash_rounding_difference_currency = cash_rounding.compute_difference(currency,
+                                                                                     term_vals['foreign_amount'])
                 if not currency.is_zero(cash_rounding_difference_currency):
                     term_vals['foreign_amount'] += cash_rounding_difference_currency
-                    term_vals['company_amount'] = company_currency.round(term_vals['foreign_amount'] / rate) if rate else 0.0
+                    term_vals['company_amount'] = company_currency.round(
+                        term_vals['foreign_amount'] / rate) if rate else 0.0
 
             residual_amount -= term_vals['company_amount']
             residual_amount_currency -= term_vals['foreign_amount']
@@ -251,7 +265,8 @@ class AccountPaymentTerm(models.Model):
     @api.ondelete(at_uninstall=False)
     def _unlink_except_referenced_terms(self):
         if self.env['account.move'].search_count([('invoice_payment_term_id', 'in', self.ids)], limit=1):
-            raise UserError(_('You can not delete payment terms as other records still reference it. However, you can archive it.'))
+            raise UserError(
+                _('You can not delete payment terms as other records still reference it. However, you can archive it.'))
 
     def _get_last_discount_date(self, date_ref):
         self.ensure_one()
@@ -277,19 +292,19 @@ class AccountPaymentTermLine(models.Model):
     _order = "id"
 
     value = fields.Selection([
-            ('percent', 'Percent'),
-            ('fixed', 'Fixed')
-        ], required=True, default='percent',
+        ('percent', 'Percent'),
+        ('fixed', 'Fixed')
+    ], required=True, default='percent',
         help="Select here the kind of valuation related to this payment terms line.")
     value_amount = fields.Float(string='Due', digits='Payment Terms',
                                 help="For percent enter a ratio between 0-100.",
                                 compute='_compute_value_amount', store=True, readonly=False)
     delay_type = fields.Selection([
-            ('days_after', 'Days after invoice date'),
-            ('days_after_end_of_month', 'Days after end of month'),
-            ('days_after_end_of_next_month', 'Days after end of next month'),
-            ('days_end_of_month_on_the', 'Days end of month on the'),
-        ], required=True, default='days_after')
+        ('days_after', 'Days after invoice date'),
+        ('days_after_end_of_month', 'Days after end of month'),
+        ('days_after_end_of_next_month', 'Days after end of next month'),
+        ('days_end_of_month_on_the', 'Days end of month on the'),
+    ], required=True, default='days_after')
     display_days_next_month = fields.Boolean(compute='_compute_display_days_next_month')
     days_next_month = fields.Char(
         string='Days on the next month',
@@ -298,7 +313,8 @@ class AccountPaymentTermLine(models.Model):
         size=2,
     )
     nb_days = fields.Integer(string='Days', readonly=False, store=True, compute='_compute_days')
-    payment_id = fields.Many2one('account.payment.term', string='Payment Terms', required=True, index=True, ondelete='cascade')
+    payment_id = fields.Many2one('account.payment.term', string='Payment Terms', required=True, index=True,
+                                 ondelete='cascade')
 
     def _get_due_date(self, date_ref):
         self.ensure_one()
@@ -342,7 +358,7 @@ class AccountPaymentTermLine(models.Model):
     @api.depends('payment_id')
     def _compute_days(self):
         for line in self:
-            #Line.payment_id.line_ids[-1] is the new line that has been just added when clicking "add a new line"
+            # Line.payment_id.line_ids[-1] is the new line that has been just added when clicking "add a new line"
             if not line.nb_days and len(line.payment_id.line_ids) > 1:
                 line.nb_days = line.payment_id.line_ids[-2].nb_days + 30
             else:

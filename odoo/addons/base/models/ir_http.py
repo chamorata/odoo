@@ -1,15 +1,15 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-#----------------------------------------------------------
+# ----------------------------------------------------------
 # ir_http modular http routing
-#----------------------------------------------------------
+# ----------------------------------------------------------
 import hashlib
 import json
 import logging
 import os
 import re
 import threading
-import unicodedata
 
+import unicodedata
 import werkzeug
 import werkzeug.exceptions
 import werkzeug.routing
@@ -128,6 +128,7 @@ class FasterRule(werkzeug.routing.Rule):
     are actually not build so often.
     This classe makes calls to _compile_builder lazy
     """
+
     def _compile_builder(self, append_unknown=True):
         return LazyCompiledBuilder(self, super()._compile_builder, append_unknown)
 
@@ -183,9 +184,9 @@ class IrHttp(models.AbstractModel):
         except ValueError:
             return None, None
 
-    #------------------------------------------------------
+    # ------------------------------------------------------
     # Routing map
-    #------------------------------------------------------
+    # ------------------------------------------------------
 
     @classmethod
     def _get_converters(cls) -> dict[str, type]:
@@ -193,7 +194,8 @@ class IrHttp(models.AbstractModel):
 
     @classmethod
     def _match(cls, path_info):
-        rule, args = request.env['ir.http'].routing_map().bind_to_environ(request.httprequest.environ).match(path_info=path_info, return_rule=True)
+        rule, args = request.env['ir.http'].routing_map().bind_to_environ(request.httprequest.environ).match(
+            path_info=path_info, return_rule=True)
         return rule, args
 
     @classmethod
@@ -218,10 +220,10 @@ class IrHttp(models.AbstractModel):
             https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Sec-Fetch-User
             """
             return (
-                headers.get("Sec-Fetch-Dest") == "document"
-                and headers.get("Sec-Fetch-Mode") == "navigate"
-                and headers.get("Sec-Fetch-Site") in ('none', 'same-origin')
-                and headers.get("Sec-Fetch-User") == "?1"
+                    headers.get("Sec-Fetch-Dest") == "document"
+                    and headers.get("Sec-Fetch-Mode") == "navigate"
+                    and headers.get("Sec-Fetch-Site") in ('none', 'same-origin')
+                    and headers.get("Sec-Fetch-User") == "?1"
             )
 
         if token := get_http_authorization_bearer_token():
@@ -298,8 +300,8 @@ class IrHttp(models.AbstractModel):
                 request.httprequest.max_content_length = int(value)
         except ValueError:  # better not crash on ALL requests
             _logger.error("invalid %s: %r, using %s instead",
-                key, value, request.httprequest.max_content_length,
-            )
+                          key, value, request.httprequest.max_content_length,
+                          )
 
         request.dispatcher.pre_dispatch(rule, args)
 

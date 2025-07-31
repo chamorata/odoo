@@ -1,8 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import re
 
-from odoo import models, fields, api, _
 from odoo.addons.mail.tools.mail_validation import mail_validate
+
+from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 from odoo.tools import float_repr
 
@@ -40,7 +41,7 @@ class ResPartnerBank(models.Model):
                 raise ValidationError(_("%s is not a valid email.", value))
 
             if bank.proxy_type == "br_cpf_cnpj" and (
-                not self.partner_id.check_vat_br(value) or any(not char.isdecimal() for char in value)
+                    not self.partner_id.check_vat_br(value) or any(not char.isdecimal() for char in value)
             ):
                 raise ValidationError(_("%s is not a valid CPF or CNPJ (don't include periods or dashes).", value))
 
@@ -109,13 +110,13 @@ class ResPartnerBank(models.Model):
         return super()._get_error_messages_for_qr(qr_method, debtor_partner, currency)
 
     def _check_for_qr_code_errors(
-        self, qr_method, amount, currency, debtor_partner, free_communication, structured_communication
+            self, qr_method, amount, currency, debtor_partner, free_communication, structured_communication
     ):
         """Override."""
         if (
-            qr_method == "emv_qr"
-            and self.country_code == "BR"
-            and self.proxy_type not in ("email", "mobile", "br_cpf_cnpj", "br_random")
+                qr_method == "emv_qr"
+                and self.country_code == "BR"
+                and self.proxy_type not in ("email", "mobile", "br_cpf_cnpj", "br_random")
         ):
             return _(
                 "To generate a Pix code the proxy type for %s must be Email Address, Mobile Number, CPF/CNPJ (BR) or Random Key (BR).",

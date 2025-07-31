@@ -7,9 +7,9 @@
         <field name="arch" type="xml">
             <xpath expr="//filter[@name='filter_res_users']" position='after'>
                 <filter string="Course" name="filter_slide_channel"
-                    domain="[('origin_ref', 'ilike', 'slide.channel,')]"/>
+                        domain="[('origin_ref', 'ilike', 'slide.channel,')]"/>
                 <filter string="Quiz" name="filter_slide_slide"
-                    domain="[('origin_ref', 'ilike', 'slide.slide,')]"/>
+                        domain="[('origin_ref', 'ilike', 'slide.slide,')]"/>
             </xpath>
         </field>
     </record>

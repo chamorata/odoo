@@ -12,7 +12,8 @@
         <div role="radiogroup">
             <div class="d-flex justify-content-between justify-content-md-start my-3 my-sm-2">
                 <div class="form-check w-md-50">
-                    <input type="radio" class="form-check-input ms-0 me-2" id="input_tomorrow_morning" value="morning" t-model="state.selectedOption"/>
+                    <input type="radio" class="form-check-input ms-0 me-2" id="input_tomorrow_morning" value="morning"
+                           t-model="state.selectedOption"/>
                     <label class="form-check-label" for="input_tomorrow_morning">
                         Tomorrow Morning
                     </label>
@@ -21,7 +22,8 @@
             </div>
             <div class="d-flex justify-content-between justify-content-md-start my-3 my-sm-2">
                 <div class="form-check w-md-50">
-                    <input type="radio" class="form-check-input ms-0 me-2" id="input_tomorrow_afternoon" value="afternoon" t-model="state.selectedOption"/>
+                    <input type="radio" class="form-check-input ms-0 me-2" id="input_tomorrow_afternoon"
+                           value="afternoon" t-model="state.selectedOption"/>
                     <label class="form-check-label" for="input_tomorrow_afternoon">
                         Tomorrow Afternoon
                     </label>
@@ -30,7 +32,8 @@
             </div>
             <div class="d-flex justify-content-between justify-content-md-start my-3 my-sm-2">
                 <div class="form-check w-md-50">
-                    <input type="radio" class="form-check-input ms-0 me-2" id="input_monday_morning" value="monday" t-model="state.selectedOption"/>
+                    <input type="radio" class="form-check-input ms-0 me-2" id="input_monday_morning" value="monday"
+                           t-model="state.selectedOption"/>
                     <label class="form-check-label" for="input_monday_morning">
                         Next Monday Morning
                     </label>
@@ -39,7 +42,8 @@
             </div>
             <div class="d-flex justify-content-between justify-content-md-start my-3 my-sm-2">
                 <div class="form-check my-auto w-md-50">
-                    <input type="radio" class="form-check-input ms-0 me-2" id="input_specific_date" value="custom" t-model="state.selectedOption"/>
+                    <input type="radio" class="form-check-input ms-0 me-2" id="input_specific_date" value="custom"
+                           t-model="state.selectedOption"/>
                     <label class="form-check-label" for="input_specific_date">
                         Pick a specific time
                     </label>

@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.stock_landed_costs.tests.test_stockvaluationlayer import TestStockValuationLCCommon
+
 from odoo.tests import tagged, Form
 
 
@@ -16,7 +17,8 @@ class TestStockLandedCostsBranches(TestStockValuationLCCommon):
             'name': 'Branch',
             'parent_id': cls.company.id,
         })
-        cls.env['account.chart.template'].try_loading(cls.company.chart_template, company=cls.branch, install_demo=False)
+        cls.env['account.chart.template'].try_loading(cls.company.chart_template, company=cls.branch,
+                                                      install_demo=False)
         cls.env.user.company_id = cls.branch
 
         cls.vendor1 = cls.env['res.partner'].create({'name': 'vendor1'})

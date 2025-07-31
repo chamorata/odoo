@@ -90,9 +90,12 @@ class IrDefault(models.Model):
         except KeyError:
             raise ValidationError(_("Invalid field %(model)s.%(field)s", model=model_name, field=field_name))
         except Exception:
-            raise ValidationError(_("Invalid value for %(model)s.%(field)s: %(value)s", model=model_name, field=field_name, value=value))
-        if field.type == 'integer' and not (-2**31 < parsed < 2**31-1):
-            raise ValidationError(_("Invalid value for %(model)s.%(field)s: %(value)s is out of bounds (integers should be between -2,147,483,648 and 2,147,483,647)", model=model_name, field=field_name, value=value))
+            raise ValidationError(
+                _("Invalid value for %(model)s.%(field)s: %(value)s", model=model_name, field=field_name, value=value))
+        if field.type == 'integer' and not (-2 ** 31 < parsed < 2 ** 31 - 1):
+            raise ValidationError(
+                _("Invalid value for %(model)s.%(field)s: %(value)s is out of bounds (integers should be between -2,147,483,648 and 2,147,483,647)",
+                  model=model_name, field=field_name, value=value))
 
         # update existing default for the same scope, or create one
         field = self.env['ir.model.fields']._get(model_name, field_name)

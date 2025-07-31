@@ -20,7 +20,8 @@ class HolidaysRequest(models.Model):
 
         def is_non_working_day(calendar, date):
             return not calendar._works_on_date(date) or any(
-                datetime.date(holiday['date_from']) <= date <= datetime.date(holiday['date_to']) for holiday in public_holidays
+                datetime.date(holiday['date_from']) <= date <= datetime.date(holiday['date_to']) for holiday in
+                public_holidays
             )
 
         def count_sandwich_days(calendar, date, direction):
@@ -69,7 +70,8 @@ class HolidaysRequest(models.Model):
         for leave in indian_leaves:
             if leave.holiday_status_id.l10n_in_is_sandwich_leave:
                 days, hours = result[leave.id]
-                updated_days = leave._l10n_in_apply_sandwich_rule(public_holidays, leaves_by_employee.get(leave.employee_id, []))
+                updated_days = leave._l10n_in_apply_sandwich_rule(public_holidays,
+                                                                  leaves_by_employee.get(leave.employee_id, []))
                 result[leave.id] = (updated_days, hours)
                 if updated_days and leave.state not in ['validate', 'validate1']:
                     leave.l10n_in_contains_sandwich_leaves = updated_days != days

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-import odoo
-
 from odoo.addons.point_of_sale.tests.common import TestPoSCommon
+
+import odoo
 
 
 @odoo.tests.tagged('post_install', '-at_install')
@@ -13,7 +13,6 @@ class TestPoSSaleMarginReport(TestPoSCommon):
         self.config = self.basic_config
 
     def test_pos_sale_margin_report(self):
-
         product1 = self.create_product('Product 1', self.categ_basic, 150, standard_price=50)
 
         self.open_new_session()
@@ -30,7 +29,7 @@ class TestPoSSaleMarginReport(TestPoSCommon):
                 'price_subtotal': 150,
                 'price_subtotal_incl': 150,
                 'total_cost': 50,
-            }),],
+            }), ],
             'amount_total': 150.0,
             'amount_tax': 0.0,
             'amount_paid': 0.0,

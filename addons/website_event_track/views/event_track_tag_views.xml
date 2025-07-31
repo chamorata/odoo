@@ -48,7 +48,7 @@
                     <group>
                         <field name="name"/>
                         <field name="color" widget="color_picker"/>
-                    <field name="category_id"/>
+                        <field name="category_id"/>
                     </group>
                 </sheet>
             </form>
@@ -74,7 +74,8 @@
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create a Track Tag
-            </p><p>
+            </p>
+            <p>
                 Add tags to your tracks to help your attendees browse your event web pages.
             </p>
         </field>

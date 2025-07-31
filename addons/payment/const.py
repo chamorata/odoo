@@ -4,7 +4,6 @@ from odoo.tools.translate import LazyTranslate
 
 _lt = LazyTranslate(__name__, default_lang='en_US')
 
-
 # According to https://en.wikipedia.org/wiki/ISO_4217#Minor_unit_fractions
 CURRENCY_MINOR_UNITS = {
     'ADF': 2,

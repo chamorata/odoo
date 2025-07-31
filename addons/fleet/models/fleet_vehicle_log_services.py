@@ -16,7 +16,8 @@ class FleetVehicleLogServices(models.Model):
     manager_id = fields.Many2one('res.users', 'Fleet Manager', related='vehicle_id.manager_id', store=True)
     amount = fields.Monetary('Cost')
     description = fields.Char('Description')
-    odometer_id = fields.Many2one('fleet.vehicle.odometer', 'Odometer', help='Odometer measure of the vehicle at the moment of this log')
+    odometer_id = fields.Many2one('fleet.vehicle.odometer', 'Odometer',
+                                  help='Odometer measure of the vehicle at the moment of this log')
     odometer = fields.Float(
         compute="_get_odometer", inverse='_set_odometer', string='Odometer Value',
         help='Odometer measure of the vehicle at the moment of this log')
@@ -24,7 +25,8 @@ class FleetVehicleLogServices(models.Model):
     date = fields.Date(help='Date when the cost has been executed', default=fields.Date.context_today)
     company_id = fields.Many2one('res.company', 'Company', default=lambda self: self.env.company)
     currency_id = fields.Many2one('res.currency', related='company_id.currency_id')
-    purchaser_id = fields.Many2one('res.partner', string="Driver", compute='_compute_purchaser_id', readonly=False, store=True)
+    purchaser_id = fields.Many2one('res.partner', string="Driver", compute='_compute_purchaser_id', readonly=False,
+                                   store=True)
     inv_ref = fields.Char('Vendor Reference')
     vendor_id = fields.Many2one('res.partner', 'Vendor')
     notes = fields.Text()

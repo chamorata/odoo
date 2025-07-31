@@ -1,9 +1,10 @@
 # coding: utf-8
 from datetime import datetime
 
+from odoo.addons.account_edi.tests.common import AccountEdiTestCommon
+
 from odoo import Command
 from odoo.tests import tagged
-from odoo.addons.account_edi.tests.common import AccountEdiTestCommon
 
 
 @tagged('post_install_l10n', '-at_install', 'post_install')
@@ -35,7 +36,8 @@ class TestSaEdiCommon(AccountEdiTestCommon):
             'city': 'المدينة المنورة',
             'zip': '42317',
         })
-        cls.customer_invoice_journal = cls.env['account.journal'].search([('company_id', '=', cls.company.id), ('type', '=', 'sale')], limit=1)
+        cls.customer_invoice_journal = cls.env['account.journal'].search(
+            [('company_id', '=', cls.company.id), ('type', '=', 'sale')], limit=1)
         cls.customer_invoice_journal.l10n_sa_serial_number = '123456789'
         cls.partner_us = cls.env['res.partner'].create({
             'name': 'Chichi Lboukla',
@@ -87,7 +89,8 @@ class TestSaEdiCommon(AccountEdiTestCommon):
         })
 
         # 15% tax
-        cls.tax_15 = cls.env['account.tax'].search([('company_id', '=', cls.company.id), ('amount', '=', 15.0)], limit=1)
+        cls.tax_15 = cls.env['account.tax'].search([('company_id', '=', cls.company.id), ('amount', '=', 15.0)],
+                                                   limit=1)
 
         # Large cabinet product
         cls.product_a = cls.env['product.product'].create({
@@ -226,7 +229,7 @@ class TestSaEdiCommon(AccountEdiTestCommon):
 
         debit_note_wizard = self.env['account.debit.note'].with_context(
             {'active_ids': [invoice.id], 'active_model': 'account.move', 'default_copy_lines': True}).create({
-                'reason': 'Totes forgot'})
+            'reason': 'Totes forgot'})
         res = debit_note_wizard.create_debit()
         debit_note = self.env['account.move'].browse(res['res_id'])
         debit_note.l10n_sa_confirmation_datetime = datetime.now()
@@ -235,7 +238,8 @@ class TestSaEdiCommon(AccountEdiTestCommon):
 
     def _create_credit_note(self, **kwargs):
         move = self._create_invoice(**kwargs)
-        move_reversal = self.env['account.move.reversal'].with_context(active_model="account.move", active_ids=move.ids).create({
+        move_reversal = self.env['account.move.reversal'].with_context(active_model="account.move",
+                                                                       active_ids=move.ids).create({
             'reason': 'no reason',
             'journal_id': move.journal_id.id,
         })

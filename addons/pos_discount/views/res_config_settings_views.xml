@@ -3,7 +3,7 @@
     <record id="res_config_settings_view_form" model="ir.ui.view">
         <field name="name">res.config.settings.view.form.inherit.pos_discount</field>
         <field name="model">res.config.settings</field>
-        <field name="inherit_id" ref="point_of_sale.res_config_settings_view_form" />
+        <field name="inherit_id" ref="point_of_sale.res_config_settings_view_form"/>
         <field name="arch" type="xml">
             <div id="warning_text_pos_discount" position="replace">
                 <div class="row">

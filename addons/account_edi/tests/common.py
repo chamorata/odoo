@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo.addons.account.tests.common import AccountTestInvoicingCommon
-
+import base64
 from contextlib import contextmanager
 from functools import wraps
 from unittest.mock import patch
 
-import base64
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 
 
 def _generate_mocked_needs_web_services(needs_web_services):
@@ -18,6 +17,7 @@ def _mocked_get_move_applicability(edi_format, move):
         'post': edi_format._post_invoice_edi,
         'cancel': edi_format._cancel_invoice_edi,
     }
+
 
 def _mocked_check_move_configuration_success(edi_format, move):
     return []
@@ -58,6 +58,7 @@ class AccountEdiTestCommon(AccountTestInvoicingCommon):
             def wrapper(self):
                 self.edi_format_ref = edi_format_ref
                 function(self)
+
             return wrapper
 
         return _decorator
@@ -89,21 +90,24 @@ class AccountEdiTestCommon(AccountTestInvoicingCommon):
         try:
             with patch('odoo.addons.account_edi.models.account_edi_format.AccountEdiFormat._needs_web_services',
                        new=_needs_web_services_method), \
-                 patch('odoo.addons.account_edi.models.account_edi_format.AccountEdiFormat._check_move_configuration',
-                       new=_check_move_configuration_method), \
-                 patch('odoo.addons.account_edi.models.account_edi_format.AccountEdiFormat._get_move_applicability',
-                       new=_get_move_applicability_method):
+                    patch(
+                        'odoo.addons.account_edi.models.account_edi_format.AccountEdiFormat._check_move_configuration',
+                        new=_check_move_configuration_method), \
+                    patch('odoo.addons.account_edi.models.account_edi_format.AccountEdiFormat._get_move_applicability',
+                          new=_get_move_applicability_method):
 
                 yield
         finally:
             pass
 
     def edi_cron(self):
-        self.env['account.edi.document'].sudo().search([('state', 'in', ('to_send', 'to_cancel'))])._process_documents_web_services(with_commit=False)
+        self.env['account.edi.document'].sudo().search(
+            [('state', 'in', ('to_send', 'to_cancel'))])._process_documents_web_services(with_commit=False)
 
     def assert_generated_file_equal(self, invoice, expected_values, applied_xpath=None):
         invoice.action_post()
-        invoice.edi_document_ids._process_documents_web_services(with_commit=False)  # synchronous are called in post, but there's no CRON in tests for asynchronous
+        invoice.edi_document_ids._process_documents_web_services(
+            with_commit=False)  # synchronous are called in post, but there's no CRON in tests for asynchronous
         attachment = invoice._get_edi_attachment(self.edi_format)
         if not attachment:
             raise ValueError('No attachment was generated after posting EDI')

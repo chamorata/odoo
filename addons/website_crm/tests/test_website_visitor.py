@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 
 from odoo.addons.crm.tests.common import TestCrmCommon
 from odoo.addons.website.tests.test_website_visitor import WebsiteVisitorTestsCommon
+
 from odoo.tests import tagged
 from odoo.tests.common import users
 

@@ -3,17 +3,16 @@
 import base64
 import json
 import logging
-import pytz
 import re
 from collections import defaultdict
 from datetime import datetime
 
 import psycopg2.errors
+import pytz
+from odoo.addons.l10n_in_ewaybill_stock.tools.ewaybill_api import EWayBillApi, EWayBillError
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
-from odoo.addons.l10n_in_ewaybill_stock.tools.ewaybill_api import EWayBillApi, EWayBillError
-
 
 _logger = logging.getLogger(__name__)
 
@@ -173,8 +172,8 @@ class Ewaybill(models.Model):
                     ewaybill.partner_bill_to_id = partner_invoice_id
 
             if (
-                ewaybill.picking_type_code == 'dropship' and
-                (dest_partner := ewaybill.picking_id._get_l10n_in_dropship_dest_partner())
+                    ewaybill.picking_type_code == 'dropship' and
+                    (dest_partner := ewaybill.picking_id._get_l10n_in_dropship_dest_partner())
             ):
                 ewaybill.partner_ship_to_id = dest_partner
                 ewaybill.partner_ship_from_id = ewaybill.picking_id.partner_id
@@ -183,12 +182,12 @@ class Ewaybill(models.Model):
     def _compute_fiscal_position(self):
         for ewaybill in self.filtered(lambda ewb: ewb.state == 'pending'):
             ewaybill.fiscal_position_id = (
-                self.env['account.fiscal.position'].with_company(ewaybill.company_id)._get_fiscal_position(
-                    ewaybill.picking_type_code == 'incoming'
-                    and ewaybill.partner_bill_from_id
-                    or ewaybill.partner_bill_to_id
-                )
-                or ewaybill.picking_id._l10n_in_get_fiscal_position()
+                    self.env['account.fiscal.position'].with_company(ewaybill.company_id)._get_fiscal_position(
+                        ewaybill.picking_type_code == 'incoming'
+                        and ewaybill.partner_bill_from_id
+                        or ewaybill.partner_bill_to_id
+                    )
+                    or ewaybill.picking_id._l10n_in_get_fiscal_position()
             )
 
     @api.depends('partner_ship_from_id', 'partner_ship_to_id', 'partner_bill_from_id', 'partner_bill_to_id')
@@ -208,9 +207,9 @@ class Ewaybill(models.Model):
     def _compute_display_name(self):
         for ewaybill in self:
             ewaybill.display_name = (
-                (ewaybill.state == 'pending' and _('Pending'))
-                or (ewaybill.state == 'challan' and _('Challan'))
-                or ewaybill.name
+                    (ewaybill.state == 'pending' and _('Pending'))
+                    or (ewaybill.state == 'challan' and _('Challan'))
+                    or ewaybill.name
             )
 
     @api.depends('mode')
@@ -580,41 +579,42 @@ class Ewaybill(models.Model):
                 for key, fun in key_paired_function
                 for place, partner in partner_detail
             }
+
         ewaybill_json = {
-                # document details
-                "supplyType": self.supply_type,
-                "subSupplyType": self.type_id.sub_type_code,
-                "docType": self.type_id.code,
-                "transactionType": get_transaction_type(
-                    self.partner_bill_from_id,
-                    self.partner_ship_from_id,
-                    self.partner_bill_to_id,
-                    self.partner_ship_to_id
-                ),
-                "transDistance": str(self.distance),
-                "docNo": self.document_number,
-                "docDate": (self.document_date or fields.Datetime.now()).strftime("%d/%m/%Y"),
-                # bill details
-                **prepare_details(
-                    key_paired_function={
-                        'Gstin': lambda p: p.commercial_partner_id.vat or "URP",
-                        'TrdName': lambda p: p.commercial_partner_id.name,
-                        'StateCode': self._get_partner_state_code,
-                    }.items(),
-                    partner_detail={'from': self.partner_bill_from_id, 'to': self.partner_bill_to_id}.items()
-                ),
-                # shipping details
-                **prepare_details(
-                    key_paired_function={
-                        "Addr1": lambda p: p.street and p.street[:120] or "",
-                        "Addr2": lambda p: p.street2 and p.street2[:120] or "",
-                        "Place": lambda p: p.city and p.city[:50] or "",
-                        "Pincode": lambda p: int(p.zip) if p.country_id.code == "IN" else 999999,
-                    }.items(),
-                    partner_detail={'from': self.partner_ship_from_id, 'to': self.partner_ship_to_id}.items()
-                ),
-                "actToStateCode": self._get_partner_state_code(self.partner_ship_to_id),
-                "actFromStateCode": self._get_partner_state_code(self.partner_ship_from_id),
+            # document details
+            "supplyType": self.supply_type,
+            "subSupplyType": self.type_id.sub_type_code,
+            "docType": self.type_id.code,
+            "transactionType": get_transaction_type(
+                self.partner_bill_from_id,
+                self.partner_ship_from_id,
+                self.partner_bill_to_id,
+                self.partner_ship_to_id
+            ),
+            "transDistance": str(self.distance),
+            "docNo": self.document_number,
+            "docDate": (self.document_date or fields.Datetime.now()).strftime("%d/%m/%Y"),
+            # bill details
+            **prepare_details(
+                key_paired_function={
+                    'Gstin': lambda p: p.commercial_partner_id.vat or "URP",
+                    'TrdName': lambda p: p.commercial_partner_id.name,
+                    'StateCode': self._get_partner_state_code,
+                }.items(),
+                partner_detail={'from': self.partner_bill_from_id, 'to': self.partner_bill_to_id}.items()
+            ),
+            # shipping details
+            **prepare_details(
+                key_paired_function={
+                    "Addr1": lambda p: p.street and p.street[:120] or "",
+                    "Addr2": lambda p: p.street2 and p.street2[:120] or "",
+                    "Place": lambda p: p.city and p.city[:50] or "",
+                    "Pincode": lambda p: int(p.zip) if p.country_id.code == "IN" else 999999,
+                }.items(),
+                partner_detail={'from': self.partner_ship_from_id, 'to': self.partner_ship_to_id}.items()
+            ),
+            "actToStateCode": self._get_partner_state_code(self.partner_ship_to_id),
+            "actFromStateCode": self._get_partner_state_code(self.partner_ship_from_id),
         }
         if self.type_id.sub_type_code == '8':
             ewaybill_json["subSupplyDesc"] = self.type_description

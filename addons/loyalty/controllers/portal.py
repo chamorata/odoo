@@ -1,10 +1,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import _, fields
-from odoo.http import request, route
-
 from odoo.addons.portal.controllers.portal import CustomerPortal
 from odoo.addons.portal.controllers.portal import pager as portal_pager
+
+from odoo import _, fields
+from odoo.http import request, route
 
 
 class CustomerPortalLoyalty(CustomerPortal):
@@ -19,8 +19,8 @@ class CustomerPortalLoyalty(CustomerPortal):
                     ('program_id.active', '=', True),
                     ('program_id.program_type', 'in', ['loyalty', 'ewallet']),
                     '|',
-                        ('expiration_date', '>=', fields.Date().today()),
-                        ('expiration_date', '=', False),
+                    ('expiration_date', '>=', fields.Date().today()),
+                    ('expiration_date', '=', False),
                 ],
                 groupby=['program_id'],
                 aggregates=['id:recordset'],

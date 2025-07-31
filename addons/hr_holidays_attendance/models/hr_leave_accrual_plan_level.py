@@ -17,8 +17,8 @@ class AccrualPlanLevel(models.Model):
         store=True,
         readonly=False,
         help='If the source is set to "Calendar", the amount of worked hours will be computed based '
-        "on the Employee's working schedule. Otherwise, the amount of worked hours will be based "
-        'on Attendance records.')
+             "on the Employee's working schedule. Otherwise, the amount of worked hours will be based "
+             'on Attendance records.')
 
     @api.depends('accrued_gain_time')
     def _compute_frequency_hourly_source(self):

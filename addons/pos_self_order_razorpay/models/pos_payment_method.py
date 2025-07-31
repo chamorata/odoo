@@ -1,4 +1,5 @@
 import uuid
+
 from odoo import models, api
 from odoo.osv import expression
 

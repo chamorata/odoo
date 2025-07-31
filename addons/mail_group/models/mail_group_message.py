@@ -38,13 +38,15 @@ class MailGroupMessage(models.Model):
     mail_group_id = fields.Many2one(
         'mail.group', string='Group',
         required=True, ondelete='cascade')
-    mail_message_id = fields.Many2one('mail.message', 'Mail Message', required=True, ondelete='cascade', index=True, copy=False)
+    mail_message_id = fields.Many2one('mail.message', 'Mail Message', required=True, ondelete='cascade', index=True,
+                                      copy=False)
     # Parent and children
     group_message_parent_id = fields.Many2one(
         'mail.group.message', string='Parent', store=True)
     group_message_child_ids = fields.One2many('mail.group.message', 'group_message_parent_id', string='Children')
     # Moderation
-    author_moderation = fields.Selection([('ban', 'Banned'), ('allow', 'Whitelisted')], string='Author Moderation Status',
+    author_moderation = fields.Selection([('ban', 'Banned'), ('allow', 'Whitelisted')],
+                                         string='Author Moderation Status',
                                          compute='_compute_author_moderation')
     is_group_moderated = fields.Boolean('Is Group Moderated', related='mail_group_id.moderation')
     moderation_status = fields.Selection(
@@ -98,7 +100,7 @@ class MailGroupMessage(models.Model):
                     field: vals.pop(field)
                     for field in self.env['mail.message']._fields
                     if field in vals
-                    and field in self.env['mail.thread']._get_message_create_valid_field_names()
+                       and field in self.env['mail.thread']._get_message_create_valid_field_names()
                 }).id
         return super(MailGroupMessage, self).create(values_list)
 

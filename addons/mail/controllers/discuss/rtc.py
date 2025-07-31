@@ -1,13 +1,14 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from collections import defaultdict
+
+from odoo.addons.mail.models.discuss.mail_guest import add_guest_to_context
+from odoo.addons.mail.tools.discuss import Store
 from werkzeug.exceptions import NotFound
 
 from odoo import http
 from odoo.http import request
 from odoo.tools import file_open
-from odoo.addons.mail.models.discuss.mail_guest import add_guest_to_context
-from odoo.addons.mail.tools.discuss import Store
 
 
 class RtcController(http.Controller):
@@ -28,9 +29,9 @@ class RtcController(http.Controller):
             # sudo: discuss.channel.rtc.session - only keeping sessions matching the current user
             session_sudo = request.env["discuss.channel.rtc.session"].sudo().browse(int(sender_session_id)).exists()
             if (
-                not session_sudo
-                or (session_sudo.guest_id and session_sudo.guest_id != guest)
-                or (session_sudo.partner_id and session_sudo.partner_id != request.env.user.partner_id)
+                    not session_sudo
+                    or (session_sudo.guest_id and session_sudo.guest_id != guest)
+                    or (session_sudo.partner_id and session_sudo.partner_id != request.env.user.partner_id)
             ):
                 continue
             notifications_by_session[session_sudo].append(([int(sid) for sid in target_session_ids], content))

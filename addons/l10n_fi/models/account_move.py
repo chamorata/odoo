@@ -1,8 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
+import logging
 import re
+
 from odoo import api, models, _
 from odoo.exceptions import UserError
-import logging
 
 log = logging.getLogger(__name__)
 

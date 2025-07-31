@@ -8,7 +8,8 @@ class PurchaseRequisition(models.Model):
     _inherit = 'purchase.requisition'
 
     def _default_picking_type_id(self):
-        picking_type = self.env['stock.picking.type'].search([('warehouse_id.company_id', '=', self.env.company.id), ('code', '=', 'incoming')], limit=1)
+        picking_type = self.env['stock.picking.type'].search(
+            [('warehouse_id.company_id', '=', self.env.company.id), ('code', '=', 'incoming')], limit=1)
         if not picking_type:
             self.env['stock.warehouse']._warehouse_redirect_warning()
         return picking_type
@@ -25,6 +26,7 @@ class PurchaseRequisitionLine(models.Model):
     move_dest_id = fields.Many2one('stock.move', 'Downstream Move')
 
     def _prepare_purchase_order_line(self, name, product_qty=0.0, price_unit=0.0, taxes_ids=False):
-        res = super(PurchaseRequisitionLine, self)._prepare_purchase_order_line(name, product_qty, price_unit, taxes_ids)
+        res = super(PurchaseRequisitionLine, self)._prepare_purchase_order_line(name, product_qty, price_unit,
+                                                                                taxes_ids)
         res['move_dest_ids'] = self.move_dest_id and [(4, self.move_dest_id.id)] or []
         return res

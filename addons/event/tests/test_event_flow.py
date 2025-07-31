@@ -5,8 +5,8 @@ import datetime
 
 from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
-
 from odoo.addons.event.tests.common import EventCase
+
 from odoo.tests.common import tagged, users
 from odoo.tools import mute_logger
 
@@ -23,7 +23,8 @@ class TestEventFlow(EventCase):
             default_event = self.env['event.event'].create({
                 'name': 'Test Default Event',
             })
-        self.assertEqual(default_event.date_begin, datetime.datetime.strptime('2022-09-05 15:30:00', '%Y-%m-%d %H:%M:%S'))
+        self.assertEqual(default_event.date_begin,
+                         datetime.datetime.strptime('2022-09-05 15:30:00', '%Y-%m-%d %H:%M:%S'))
         self.assertEqual(default_event.date_end, datetime.datetime.strptime('2022-09-06 15:30:00', '%Y-%m-%d %H:%M:%S'))
 
         specific_datetimes = {

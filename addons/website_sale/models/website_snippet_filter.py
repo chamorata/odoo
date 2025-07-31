@@ -13,7 +13,7 @@ class WebsiteSnippetFilter(models.Model):
     product_cross_selling = fields.Boolean(
         string="About cross selling products",
         help="True only for product filters that require a product_id because they relate to"
-            " cross selling",
+             " cross selling",
     )
 
     def _prepare_values(self, limit=None, **kwargs):
@@ -194,7 +194,7 @@ class WebsiteSnippetFilter(models.Model):
         return products
 
     def _get_products_recently_sold_with(
-        self, website, limit, domain, product_template_id, **kwargs,
+            self, website, limit, domain, product_template_id, **kwargs,
     ):
         products = self.env['product.product']
         current_template = self.env['product.template'].browse(
@@ -247,7 +247,7 @@ class WebsiteSnippetFilter(models.Model):
         return products
 
     def _get_products_alternative_products(
-        self, website, limit, domain, product_template_id=None, **kwargs,
+            self, website, limit, domain, product_template_id=None, **kwargs,
     ):
         products = self.env['product.product']
         current_template = self.env['product.template'].browse(

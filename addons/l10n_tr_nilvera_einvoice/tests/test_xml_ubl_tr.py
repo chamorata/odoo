@@ -1,8 +1,9 @@
-from odoo.addons.account.tests.common import AccountTestInvoicingCommon
-from odoo.tests import tagged
-from odoo import Command
-from odoo.tools import file_open
 from freezegun import freeze_time
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
+from odoo import Command
+from odoo.tests import tagged
+from odoo.tools import file_open
 
 
 @tagged('post_install_l10n', 'post_install', '-at_install')
@@ -97,7 +98,8 @@ class TestUBLTR(AccountTestInvoicingCommon):
         with freeze_time('2025-03-05'):
             generated_xml = self._generate_invoice_xml(currency_id=self.env.ref('base.USD').id)
 
-        with file_open('l10n_tr_nilvera_einvoice/tests/expected_xmls/invoice_einvoice_multicurrency.xml', 'rb') as expected_xml_file:
+        with file_open('l10n_tr_nilvera_einvoice/tests/expected_xmls/invoice_einvoice_multicurrency.xml',
+                       'rb') as expected_xml_file:
             expected_xml = expected_xml_file.read()
 
         self.assertXmlTreeEqual(
@@ -125,7 +127,8 @@ class TestUBLTR(AccountTestInvoicingCommon):
         with freeze_time('2025-03-05'):
             generated_xml = self._generate_invoice_xml(currency_id=self.env.ref('base.USD').id)
 
-        with file_open('l10n_tr_nilvera_einvoice/tests/expected_xmls/invoice_earchive_multicurrency.xml', 'rb') as expected_xml_file:
+        with file_open('l10n_tr_nilvera_einvoice/tests/expected_xmls/invoice_earchive_multicurrency.xml',
+                       'rb') as expected_xml_file:
             expected_xml = expected_xml_file.read()
 
         self.assertXmlTreeEqual(

@@ -12,13 +12,19 @@ class PaymentWizard(models.TransientModel):
         ('stripe', "Credit & Debit card (via Stripe)"),
         ('paypal', "PayPal"),
         ('manual', "Custom payment instructions"),
-    ], string="Payment Method", default=lambda self: self._get_default_payment_provider_onboarding_value('payment_method'))
-    paypal_email_account = fields.Char("Email", default=lambda self: self._get_default_payment_provider_onboarding_value('paypal_email_account'))
+    ], string="Payment Method",
+        default=lambda self: self._get_default_payment_provider_onboarding_value('payment_method'))
+    paypal_email_account = fields.Char("Email",
+                                       default=lambda self: self._get_default_payment_provider_onboarding_value(
+                                           'paypal_email_account'))
 
     # Account-specific logic. It's kept here rather than moved in `account_payment` as it's not used by `account` module.
-    manual_name = fields.Char("Method", default=lambda self: self._get_default_payment_provider_onboarding_value('manual_name'))
-    journal_name = fields.Char("Bank Name", default=lambda self: self._get_default_payment_provider_onboarding_value('journal_name'))
-    acc_number = fields.Char("Account Number", default=lambda self: self._get_default_payment_provider_onboarding_value('acc_number'))
+    manual_name = fields.Char("Method",
+                              default=lambda self: self._get_default_payment_provider_onboarding_value('manual_name'))
+    journal_name = fields.Char("Bank Name",
+                               default=lambda self: self._get_default_payment_provider_onboarding_value('journal_name'))
+    acc_number = fields.Char("Account Number",
+                             default=lambda self: self._get_default_payment_provider_onboarding_value('acc_number'))
     manual_post_msg = fields.Html("Payment Instructions")
 
     _data_fetched = fields.Boolean(store=False)
@@ -65,7 +71,8 @@ class PaymentWizard(models.TransientModel):
                 ('code', '=', 'paypal'),
 
             ], limit=1)
-            self._payment_provider_onboarding_cache['paypal_email_account'] = provider['paypal_email_account'] or self.env.company.email
+            self._payment_provider_onboarding_cache['paypal_email_account'] = provider[
+                                                                                  'paypal_email_account'] or self.env.company.email
         else:
             self._payment_provider_onboarding_cache['paypal_email_account'] = self.env.company.email
 
@@ -101,7 +108,7 @@ class PaymentWizard(models.TransientModel):
                 if not provider:
                     base_provider = self.env.ref('payment.payment_provider_paypal')
                     # Use sudo to access payment provider record that can be in different company.
-                    provider = base_provider.sudo().copy(default={'company_id':self.env.company.id})
+                    provider = base_provider.sudo().copy(default={'company_id': self.env.company.id})
                 provider.write({
                     'paypal_email_account': self.paypal_email_account,
                     'state': 'enabled',

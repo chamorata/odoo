@@ -18,19 +18,21 @@ class StockMove(models.Model):
         self.ensure_one()
         return ((self.picking_type_id.code == 'mrp_operation' and self.production_id) or
                 super()._should_force_price_unit()
-        )
+                )
 
     def _ignore_automatic_valuation(self):
         return super()._ignore_automatic_valuation() or bool(self.raw_material_production_id)
 
     def _get_src_account(self, accounts_data):
         if self._is_production():
-            return self.location_id.valuation_out_account_id.id or accounts_data['production'].id or accounts_data['stock_input'].id
+            return self.location_id.valuation_out_account_id.id or accounts_data['production'].id or accounts_data[
+                'stock_input'].id
         return super()._get_src_account(accounts_data)
 
     def _get_dest_account(self, accounts_data):
         if self._is_production_consumed():
-            return self.location_dest_id.valuation_in_account_id.id or accounts_data['production'].id or accounts_data['stock_output'].id
+            return self.location_dest_id.valuation_in_account_id.id or accounts_data['production'].id or accounts_data[
+                'stock_output'].id
         return super()._get_dest_account(accounts_data)
 
     def _is_production(self):
@@ -47,14 +49,14 @@ class StockMove(models.Model):
         price_unit_map = {
             move.id: (
                 (move.unbuild_id.mo_id.move_finished_ids |
-                move.unbuild_id.mo_id.move_raw_ids).stock_valuation_layer_ids.filtered(
+                 move.unbuild_id.mo_id.move_raw_ids).stock_valuation_layer_ids.filtered(
                     lambda svl: svl.product_id == move.product_id
                 )[0].unit_cost,
                 move.company_id.currency_id.round,
             )
             for move in unbuild_moves.sudo()
             if move.product_id.cost_method != 'standard' and
-            move.unbuild_id.mo_id.move_finished_ids.stock_valuation_layer_ids
+               move.unbuild_id.mo_id.move_finished_ids.stock_valuation_layer_ids
         }
         svl_vals_list = super()._get_out_svl_vals(forced_quantity)
         if price_unit_map:
@@ -72,7 +74,8 @@ class StockMove(models.Model):
         for move in self:
             if move.unbuild_id:
                 product_unbuild_map[move.product_id] |= move.unbuild_id
-        return super(StockMove, self.with_context(product_unbuild_map=product_unbuild_map))._create_out_svl(forced_quantity)
+        return super(StockMove, self.with_context(product_unbuild_map=product_unbuild_map))._create_out_svl(
+            forced_quantity)
 
     def _get_all_related_sm(self, product):
         moves = super()._get_all_related_sm(product)

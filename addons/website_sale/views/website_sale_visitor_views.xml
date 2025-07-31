@@ -35,7 +35,7 @@
         <field name="domain">[('visitor_id', '=', active_id), ('product_id', '!=', False)]</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_empty_folder">
-              No product views yet for this visitor
+                No product views yet for this visitor
             </p>
         </field>
     </record>
@@ -65,8 +65,8 @@
         <field name="arch" type="xml">
             <xpath expr="//button[@name='%(website.website_visitor_page_action)d']" position="after">
                 <button name="%(website_sale.website_sale_visitor_product_action)d" type="action"
-                    class="oe_stat_button"
-                    icon="fa-tags">
+                        class="oe_stat_button"
+                        icon="fa-tags">
                     <field name="visitor_product_count" widget="statinfo" string="Product Views"/>
                 </button>
             </xpath>
@@ -96,7 +96,9 @@
                 <field name="product_ids"/>
             </field>
             <xpath expr="//div[@id='o_page_count']" position="after">
-                 <div id="o_product_count">Visited Products<field name="product_count" class="float-end fw-bold"/></div>
+                <div id="o_product_count">Visited Products
+                    <field name="product_count" class="float-end fw-bold"/>
+                </div>
             </xpath>
         </field>
     </record>

@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo.addons.account.tests.common import AccountTestInvoicingCommon
-from odoo.tests import Form, tagged
-
 from datetime import datetime, timedelta
+
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
+from odoo.tests import Form, tagged
 
 
 @tagged('post_install', '-at_install')
@@ -124,7 +125,8 @@ class TestPurchaseOrderReport(AccountTestInvoicingCommon):
             ['order_id'],
         )
         self.assertEqual(round(report[0]['delay']), -10, msg="The PO has been confirmed 10 days in advance")
-        self.assertEqual(round(report[0]['delay_pass']), 5, msg="There are 5 days between the order date and the planned date")
+        self.assertEqual(round(report[0]['delay_pass']), 5,
+                         msg="There are 5 days between the order date and the planned date")
 
     def test_02_po_report_note_section_filter(self):
         po = self.env['purchase.order'].create({

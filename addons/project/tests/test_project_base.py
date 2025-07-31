@@ -1,9 +1,9 @@
 from lxml import etree
 
 from odoo import Command, fields
+from odoo.exceptions import UserError
 from odoo.tests import Form, users
 from odoo.tests.common import TransactionCase
-from odoo.exceptions import UserError
 
 
 class TestProjectCommon(TransactionCase):
@@ -87,7 +87,7 @@ class TestProjectCommon(TransactionCase):
                     'name': 'Won',
                     'sequence': 10,
                 })]
-            })
+        })
 
     def format_and_process(self, template, to='groups@example.com, other@gmail.com', subject='Frogs',
                            extra='', email_from='Sylvie Lelitre <test.sylvie.lelitre@agrolait.com>',
@@ -122,7 +122,8 @@ class TestProjectBase(TestProjectCommon):
         self.assertEqual(task_count, 1, "The project should have 1 task")
 
         project_unlink.unlink()
-        self.assertNotEqual(task_count, 0, "The all tasks linked to project should be deleted when user delete the project")
+        self.assertNotEqual(task_count, 0,
+                            "The all tasks linked to project should be deleted when user delete the project")
 
     def test_auto_assign_stages_when_importing_tasks(self):
         self.assertFalse(self.project_pigs.type_ids)
@@ -187,7 +188,7 @@ class TestProjectBase(TestProjectCommon):
         self.assertTrue(project2.is_favorite)
         project1.is_favorite = True
         project2.is_favorite = False
-        projects.invalidate_recordset(['is_favorite']) # To force 'is_favorite' to recompute
+        projects.invalidate_recordset(['is_favorite'])  # To force 'is_favorite' to recompute
         self.assertTrue(project1.is_favorite)
         self.assertFalse(project2.is_favorite)
 
@@ -239,13 +240,15 @@ class TestProjectBase(TestProjectCommon):
         self.assertFalse(partner.company_id)
         self.assertFalse(self.project_pigs.company_id)
         self.project_pigs.company_id = company_1
-        self.assertEqual(self.project_pigs.company_id, company_1, "The company of the project should have been updated.")
+        self.assertEqual(self.project_pigs.company_id, company_1,
+                         "The company of the project should have been updated.")
         self.project_pigs.company_id = False
         # if the partner company is set, the project's should also be set
         partner.company_id = company_1
 
         # If the partner has a company, the project must have the same
-        self.assertEqual(partner.company_id, self.project_pigs.company_id, "The company of the project should have been updated.")
+        self.assertEqual(partner.company_id, self.project_pigs.company_id,
+                         "The company of the project should have been updated.")
 
         # The partner has a company and the project has a company. The partner's can only be set to False, the project's can not be changed
         with self.assertRaises(UserError):
@@ -267,13 +270,13 @@ class TestProjectBase(TestProjectCommon):
             # Cannot change the company of a partner that part of multiple projects with different companies
             self.project_goats.partner_id.company_id = company_2
 
-
         # The project has a company, but the partner has none. The partner can only be set to False/project.company but the project can have any new company.
         with self.assertRaises(UserError):
             # Cannot change the company of a partner if both the project and its partner have a company
             partner.company_id = company_2
         self.project_pigs.company_id = company_2
-        self.assertEqual(self.project_pigs.company_id, company_2, "The company of the project should have been updated.")
+        self.assertEqual(self.project_pigs.company_id, company_2,
+                         "The company of the project should have been updated.")
         self.project_pigs.company_id = False
         self.assertFalse(self.project_pigs.company_id, "The company of the project should have been set to False.")
         self.project_pigs.company_id = company_1
@@ -305,8 +308,10 @@ class TestProjectBase(TestProjectCommon):
         self.assertFalse(self.project_goats.date)
 
         self.project_goats.write({'date_start': '2021-09-27', 'date': '2021-09-28'})
-        self.assertEqual(fields.Date.to_string(self.project_goats.date_start), '2021-09-27', "The start date should be set.")
-        self.assertEqual(fields.Date.to_string(self.project_goats.date), '2021-09-28', "The expiration date should be set.")
+        self.assertEqual(fields.Date.to_string(self.project_goats.date_start), '2021-09-27',
+                         "The start date should be set.")
+        self.assertEqual(fields.Date.to_string(self.project_goats.date), '2021-09-28',
+                         "The expiration date should be set.")
 
         self.project_goats.date_start = False
         self.assertFalse(fields.Date.to_string(self.project_goats.date_start), "The start date should be unset.")
@@ -315,14 +320,17 @@ class TestProjectBase(TestProjectCommon):
         self.project_goats.write({'date_start': '2021-09-27', 'date': '2021-09-28'})
         self.project_goats.date = False
         self.assertFalse(fields.Date.to_string(self.project_goats.date), "The expiration date should be unset.")
-        self.assertFalse(fields.Date.to_string(self.project_goats.date_start), "The start date should be unset as well.")
+        self.assertFalse(fields.Date.to_string(self.project_goats.date_start),
+                         "The start date should be unset as well.")
 
         self.project_goats.write({'date_start': '2021-09-27'})
-        self.assertFalse(fields.Date.to_string(self.project_goats.date_start), "The start date should be unset since expiration date if not set.")
+        self.assertFalse(fields.Date.to_string(self.project_goats.date_start),
+                         "The start date should be unset since expiration date if not set.")
         self.assertFalse(fields.Date.to_string(self.project_goats.date), "The expiration date should stay be unset.")
 
         self.project_goats.write({'date': '2021-09-28'})
-        self.assertFalse(fields.Date.to_string(self.project_goats.date), "The expiration date should be unset since the start date if not set.")
+        self.assertFalse(fields.Date.to_string(self.project_goats.date),
+                         "The expiration date should be unset since the start date if not set.")
         self.assertFalse(fields.Date.to_string(self.project_goats.date_start), "The start date should be unset.")
 
         self.project_pigs.write({'date_start': '2021-09-23', 'date': '2021-09-24'})
@@ -331,14 +339,18 @@ class TestProjectBase(TestProjectCommon):
         projects = self.project_goats + self.project_pigs
         projects.write({'date_start': '2021-09-27', 'date': '2021-09-28'})
         for p in projects:
-            self.assertEqual(fields.Date.to_string(p.date_start), '2021-09-27', f'The start date of {p.name} should be updated.')
-            self.assertEqual(fields.Date.to_string(p.date), '2021-09-28', f'The expiration date of {p.name} should be updated.')
+            self.assertEqual(fields.Date.to_string(p.date_start), '2021-09-27',
+                             f'The start date of {p.name} should be updated.')
+            self.assertEqual(fields.Date.to_string(p.date), '2021-09-28',
+                             f'The expiration date of {p.name} should be updated.')
         self.project_goats.date_start = False
         projects.write({'date_start': '2021-09-30'})
         self.assertFalse(fields.Date.to_string(self.project_goats.date_start), 'The start date should not be updated')
         self.assertFalse(fields.Date.to_string(self.project_goats.date), 'The expiration date should not be updated')
-        self.assertEqual(fields.Date.to_string(self.project_pigs.date_start), '2021-09-27', 'The start date should not be updated.')
-        self.assertEqual(fields.Date.to_string(self.project_pigs.date), '2021-09-28', 'The expiration date should not be updated.')
+        self.assertEqual(fields.Date.to_string(self.project_pigs.date_start), '2021-09-27',
+                         'The start date should not be updated.')
+        self.assertEqual(fields.Date.to_string(self.project_pigs.date), '2021-09-28',
+                         'The expiration date should not be updated.')
         projects.write({'date_start': False})
         for p in projects:
             self.assertFalse(fields.Date.to_string(p.date_start), f'The start date of {p.name} should be set to False.')
@@ -361,21 +373,31 @@ class TestProjectBase(TestProjectCommon):
 
         projects.write({'date_start': '2021-09-27', 'date': '2021-09-28'})
         for p in projects:
-            self.assertEqual(fields.Date.to_string(p.date_start), '2021-09-27', f'The start date of {p.name} should be updated.')
-            self.assertEqual(fields.Date.to_string(p.date), '2021-09-28', f'The expiration date of {p.name} should be updated.')
+            self.assertEqual(fields.Date.to_string(p.date_start), '2021-09-27',
+                             f'The start date of {p.name} should be updated.')
+            self.assertEqual(fields.Date.to_string(p.date), '2021-09-28',
+                             f'The expiration date of {p.name} should be updated.')
 
         # Case 3: both projects have a different date range set
         self.project_pigs.write({'date_start': '2021-09-23', 'date': '2021-09-30'})
         projects.write({'date_start': '2021-09-22'})
-        self.assertEqual(fields.Date.to_string(self.project_goats.date_start), '2021-09-22', 'The start date should be updated.')
-        self.assertEqual(fields.Date.to_string(self.project_goats.date), '2021-09-28', 'The expiration date should not be updated.')
-        self.assertEqual(fields.Date.to_string(self.project_pigs.date_start), '2021-09-22', 'The start date should be updated.')
-        self.assertEqual(fields.Date.to_string(self.project_pigs.date), '2021-09-30', 'The expiration date should not be updated.')
+        self.assertEqual(fields.Date.to_string(self.project_goats.date_start), '2021-09-22',
+                         'The start date should be updated.')
+        self.assertEqual(fields.Date.to_string(self.project_goats.date), '2021-09-28',
+                         'The expiration date should not be updated.')
+        self.assertEqual(fields.Date.to_string(self.project_pigs.date_start), '2021-09-22',
+                         'The start date should be updated.')
+        self.assertEqual(fields.Date.to_string(self.project_pigs.date), '2021-09-30',
+                         'The expiration date should not be updated.')
         projects.write({'date': '2021-09-29'})
-        self.assertEqual(fields.Date.to_string(self.project_goats.date_start), '2021-09-22', 'The start date should not be updated.')
-        self.assertEqual(fields.Date.to_string(self.project_goats.date), '2021-09-29', 'The expiration date should be updated.')
-        self.assertEqual(fields.Date.to_string(self.project_pigs.date_start), '2021-09-22', 'The start date should not be updated.')
-        self.assertEqual(fields.Date.to_string(self.project_pigs.date), '2021-09-29', 'The expiration date should be updated.')
+        self.assertEqual(fields.Date.to_string(self.project_goats.date_start), '2021-09-22',
+                         'The start date should not be updated.')
+        self.assertEqual(fields.Date.to_string(self.project_goats.date), '2021-09-29',
+                         'The expiration date should be updated.')
+        self.assertEqual(fields.Date.to_string(self.project_pigs.date_start), '2021-09-22',
+                         'The start date should not be updated.')
+        self.assertEqual(fields.Date.to_string(self.project_pigs.date), '2021-09-29',
+                         'The expiration date should be updated.')
         projects.write({'date_start': False})
         for p in projects:
             self.assertFalse(fields.Date.to_string(p.date_start), f'The start date of {p.name} should be set to False.')
@@ -390,8 +412,10 @@ class TestProjectBase(TestProjectCommon):
         self.project_pigs.write({'date_start': '2021-09-23', 'date': '2021-09-30'})
         projects.write({'date_start': '2021-09-25', 'date': '2021-09-26'})
         for p in projects:
-            self.assertEqual(fields.Date.to_string(p.date_start), '2021-09-25', f'The start date of {p.name} should be updated.')
-            self.assertEqual(fields.Date.to_string(p.date), '2021-09-26', f'The expiration date of {p.name} should be updated.')
+            self.assertEqual(fields.Date.to_string(p.date_start), '2021-09-25',
+                             f'The start date of {p.name} should be updated.')
+            self.assertEqual(fields.Date.to_string(p.date), '2021-09-26',
+                             f'The expiration date of {p.name} should be updated.')
 
     def test_create_task_in_batch_with_email_cc(self):
         user_a, user_b, user_c = self.env['res.users'].create([{
@@ -460,7 +484,8 @@ class TestProjectBase(TestProjectCommon):
         task.active = False
         project_dup = project.copy()
         self.assertTrue(project_dup.active, "Active project should remain active when duplicating an active project")
-        self.assertFalse(project_dup.tasks.active, "Archived task should remain archived when duplicating an active project")
+        self.assertFalse(project_dup.tasks.active,
+                         "Archived task should remain archived when duplicating an active project")
 
         # Duplicate archived project with archived task
         project.active = False
@@ -474,7 +499,8 @@ class TestProjectBase(TestProjectCommon):
             "name": f"Project {x}",
         } for x in range(10)])
         projects._create_analytic_account()
-        self.assertEqual(projects.mapped("name"), projects.account_id.mapped("name"), "The analytic accounts names should match with the projects.")
+        self.assertEqual(projects.mapped("name"), projects.account_id.mapped("name"),
+                         "The analytic accounts names should match with the projects.")
 
     def test_task_count(self):
         project1, project2 = self.env['project.project'].create([
@@ -489,14 +515,16 @@ class TestProjectBase(TestProjectCommon):
                 Command.create({'name': 'subtask2', 'project_id': project1.id, 'state': '1_canceled'}),
                 Command.create({'name': 'subtask3', 'project_id': project2.id}),
                 Command.create({'name': 'subtask4', 'project_id': project1.id, 'display_in_project': True}),
-                Command.create({'name': 'subtask5', 'project_id': project1.id, 'state': '1_canceled', 'display_in_project': True}),
+                Command.create(
+                    {'name': 'subtask5', 'project_id': project1.id, 'state': '1_canceled', 'display_in_project': True}),
                 Command.create({'name': 'subtask6', 'project_id': project1.id, 'child_ids': [
                     Command.create({'name': 'subsubtask1', 'project_id': project2.id}),
                     Command.create({'name': 'subsubtask1', 'project_id': project1.id, 'display_in_project': True})
                 ]}),
                 Command.create({'name': 'subtask7', 'state': '1_done', 'project_id': project1.id, 'child_ids': [
                     Command.create({'name': 'subsubtask1', 'project_id': project1.id, 'state': '1_done'}),
-                    Command.create({'name': 'subsubtask1', 'project_id': project1.id, 'display_in_project': True, 'state': '1_done'}),
+                    Command.create({'name': 'subsubtask1', 'project_id': project1.id, 'display_in_project': True,
+                                    'state': '1_done'}),
                 ]}),
             ]}
         ])

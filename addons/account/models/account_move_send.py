@@ -1,4 +1,5 @@
 from collections import defaultdict
+
 from markupsafe import Markup
 
 from odoo import _, api, models, modules, tools
@@ -42,7 +43,8 @@ class AccountMoveSend(models.AbstractModel):
 
     @api.model
     def _get_default_pdf_report_id(self, move):
-        return move.partner_id.with_company(move.company_id).invoice_template_pdf_report_id or self.env.ref('account.account_invoices')
+        return move.partner_id.with_company(move.company_id).invoice_template_pdf_report_id or self.env.ref(
+            'account.account_invoices')
 
     @api.model
     def _get_default_mail_template_id(self, move):
@@ -53,17 +55,24 @@ class AccountMoveSend(models.AbstractModel):
         """ Returns a dict with all the necessary data to generate and send invoices.
         Either takes the provided custom_settings, or the default value.
         """
+
         def get_setting(key, from_cron=False, default_value=None):
-            return custom_settings.get(key) if key in custom_settings else move.sending_data.get(key) if from_cron else default_value
+            return custom_settings.get(key) if key in custom_settings else move.sending_data.get(
+                key) if from_cron else default_value
 
         vals = {
-            'sending_methods': get_setting('sending_methods', default_value={self._get_default_sending_method(move)}) or {},
+            'sending_methods': get_setting('sending_methods',
+                                           default_value={self._get_default_sending_method(move)}) or {},
             'extra_edis': get_setting('extra_edis', default_value=self._get_default_extra_edis(move)) or {},
             'pdf_report': get_setting('pdf_report') or self._get_default_pdf_report_id(move),
             'author_user_id': get_setting('author_user_id', from_cron=from_cron) or self.env.user.id,
             'author_partner_id': get_setting('author_partner_id', from_cron=from_cron) or self.env.user.partner_id.id,
         }
-        vals['invoice_edi_format'] = get_setting('invoice_edi_format', default_value=self._get_default_invoice_edi_format(move, sending_methods=vals['sending_methods']))
+        vals['invoice_edi_format'] = get_setting('invoice_edi_format',
+                                                 default_value=self._get_default_invoice_edi_format(move,
+                                                                                                    sending_methods=
+                                                                                                    vals[
+                                                                                                        'sending_methods']))
         if 'email' in vals['sending_methods']:
             mail_template = get_setting('mail_template') or self._get_default_mail_template_id(move)
             mail_lang = get_setting('mail_lang') or self._get_default_mail_lang(move, mail_template)
@@ -77,10 +86,16 @@ class AccountMoveSend(models.AbstractModel):
             vals.update({
                 'mail_template': mail_template,
                 'mail_lang': mail_lang,
-                'mail_body': get_setting('mail_body', default_value=self._get_default_mail_body(move, mail_template, mail_lang)),
-                'mail_subject': get_setting('mail_subject', default_value=self._get_default_mail_subject(move, mail_template, mail_lang)),
-                'mail_partner_ids': get_setting('mail_partner_ids', default_value=self._get_default_mail_partner_ids(move, mail_template, mail_lang).ids),
-                'mail_attachments_widget': get_setting('mail_attachments_widget', default_value=mail_attachments_widget),
+                'mail_body': get_setting('mail_body',
+                                         default_value=self._get_default_mail_body(move, mail_template, mail_lang)),
+                'mail_subject': get_setting('mail_subject',
+                                            default_value=self._get_default_mail_subject(move, mail_template,
+                                                                                         mail_lang)),
+                'mail_partner_ids': get_setting('mail_partner_ids',
+                                                default_value=self._get_default_mail_partner_ids(move, mail_template,
+                                                                                                 mail_lang).ids),
+                'mail_attachments_widget': get_setting('mail_attachments_widget',
+                                                       default_value=mail_attachments_widget),
             })
         return vals
 
@@ -119,8 +134,8 @@ class AccountMoveSend(models.AbstractModel):
     def _get_mail_default_field_value_from_template(self, mail_template, lang, move, field, **kwargs):
         if not mail_template:
             return
-        return mail_template\
-            .with_context(lang=lang)\
+        return mail_template \
+            .with_context(lang=lang) \
             ._render_field(field, move.ids, **kwargs)[move._origin.id]
 
     @api.model
@@ -168,8 +183,10 @@ class AccountMoveSend(models.AbstractModel):
     # -------------------------------------------------------------------------
 
     @api.model
-    def _get_default_mail_attachments_widget(self, move, mail_template, invoice_edi_format=None, extra_edis=None, pdf_report=None):
-        return self._get_placeholder_mail_attachments_data(move, invoice_edi_format=invoice_edi_format, extra_edis=extra_edis) \
+    def _get_default_mail_attachments_widget(self, move, mail_template, invoice_edi_format=None, extra_edis=None,
+                                             pdf_report=None):
+        return self._get_placeholder_mail_attachments_data(move, invoice_edi_format=invoice_edi_format,
+                                                           extra_edis=extra_edis) \
             + self._get_placeholder_mail_template_dynamic_attachments_data(move, mail_template, pdf_report=pdf_report) \
             + self._get_invoice_extra_attachments_data(move) \
             + self._get_mail_template_attachments_data(mail_template)
@@ -211,7 +228,8 @@ class AccountMoveSend(models.AbstractModel):
         # In case the report selected to do so is also added in dynamic attachments of the mail template, we need to
         # filter them out to avoid duplicated placeholders, since they are already added in the
         # _get_placeholder_mail_attachments_data method.
-        invoice_template = (pdf_report or self._get_default_pdf_report_id(move)) + self.env.ref('account.account_invoices')
+        invoice_template = (pdf_report or self._get_default_pdf_report_id(move)) + self.env.ref(
+            'account.account_invoices')
         extra_mail_templates = mail_template.report_template_ids - invoice_template
         filename = move._get_invoice_report_filename()
         return [
@@ -278,10 +296,11 @@ class AccountMoveSend(models.AbstractModel):
         if ((
                 custom_settings.get('pdf_report')
                 and not custom_settings['pdf_report'].is_invoice_report
-            )
-            or any(not self._get_default_pdf_report_id(move).is_invoice_report for move in moves)
+        )
+                or any(not self._get_default_pdf_report_id(move).is_invoice_report for move in moves)
         ):
-            raise UserError(_("The sending of invoices is not set up properly, make sure the report used is set for invoices."))
+            raise UserError(
+                _("The sending of invoices is not set up properly, make sure the report used is set for invoices."))
 
     @api.model
     def _format_error_text(self, error):
@@ -351,8 +370,10 @@ class AccountMoveSend(models.AbstractModel):
         for pdf_report, group_invoices_data in grouped_invoices_by_report.items():
             ids = [inv.id for inv in group_invoices_data]
 
-            content, report_type = self.env['ir.actions.report'].with_company(company_id)._pre_render_qweb_pdf(pdf_report.report_name, res_ids=ids)
-            content_by_id = self.env['ir.actions.report']._get_splitted_report(pdf_report.report_name, content, report_type)
+            content, report_type = self.env['ir.actions.report'].with_company(company_id)._pre_render_qweb_pdf(
+                pdf_report.report_name, res_ids=ids)
+            content_by_id = self.env['ir.actions.report']._get_splitted_report(pdf_report.report_name, content,
+                                                                               report_type)
             if len(content_by_id) == 1 and False in content_by_id:
                 raise ValidationError(_("Cannot identify the invoices in the generated PDF: %s", ids))
 
@@ -373,7 +394,8 @@ class AccountMoveSend(models.AbstractModel):
         :param invoice_data:    The collected data for the invoice so far.
         """
         pdf_report = invoice_data['pdf_report']
-        content, report_type = self.env['ir.actions.report'].with_company(invoice.company_id)._pre_render_qweb_pdf(pdf_report.report_name, invoice.ids, data={'proforma': True})
+        content, report_type = self.env['ir.actions.report'].with_company(invoice.company_id)._pre_render_qweb_pdf(
+            pdf_report.report_name, invoice.ids, data={'proforma': True})
         content_by_id = self.env['ir.actions.report']._get_splitted_report(pdf_report.report_name, content, report_type)
 
         invoice_data['proforma_pdf_attachment_values'] = {
@@ -401,7 +423,8 @@ class AccountMoveSend(models.AbstractModel):
         """
         # create an attachment that will become 'invoice_pdf_report_file'
         # note: Binary is used for security reason
-        attachment_to_create = [invoice_data['pdf_attachment_values'] for invoice_data in invoices_data.values() if invoice_data.get('pdf_attachment_values')]
+        attachment_to_create = [invoice_data['pdf_attachment_values'] for invoice_data in invoices_data.values() if
+                                invoice_data.get('pdf_attachment_values')]
         if not attachment_to_create:
             return
 
@@ -445,28 +468,29 @@ class AccountMoveSend(models.AbstractModel):
         partner_ids = kwargs.get('partner_ids', [])
         author_id = kwargs.pop('author_id')
 
-        new_message = move\
+        new_message = move \
             .with_context(
-                no_document=True,
-                no_new_invoice=True,
-                mail_notify_author=author_id in partner_ids,
-                email_notification_allow_footer=True,
-            ).message_post(
-                message_type='comment',
-                **kwargs,
-                **{  # noqa: PIE804
-                    'email_layout_xmlid': self._get_mail_layout(),
-                    'email_add_signature': not mail_template,
-                    'mail_auto_delete': mail_template.auto_delete,
-                    'mail_server_id': mail_template.mail_server_id.id,
-                    'reply_to_force_new': False,
-                }
-            )
+            no_document=True,
+            no_new_invoice=True,
+            mail_notify_author=author_id in partner_ids,
+            email_notification_allow_footer=True,
+        ).message_post(
+            message_type='comment',
+            **kwargs,
+            **{  # noqa: PIE804
+                'email_layout_xmlid': self._get_mail_layout(),
+                'email_add_signature': not mail_template,
+                'mail_auto_delete': mail_template.auto_delete,
+                'mail_server_id': mail_template.mail_server_id.id,
+                'reply_to_force_new': False,
+            }
+        )
 
         # Prevent duplicated attachments linked to the invoice.
         new_message.attachment_ids.invalidate_recordset(['res_id', 'res_model'], flush=False)
         if new_message.attachment_ids.ids:
-            self.env.cr.execute("UPDATE ir_attachment SET res_id = NULL WHERE id IN %s", [tuple(new_message.attachment_ids.ids)])
+            self.env.cr.execute("UPDATE ir_attachment SET res_id = NULL WHERE id IN %s",
+                                [tuple(new_message.attachment_ids.ids)])
         new_message.attachment_ids.write({
             'res_model': new_message._name,
             'res_id': new_message.id,
@@ -516,15 +540,15 @@ class AccountMoveSend(models.AbstractModel):
                 attachment_widget
                 for attachment_widget in mail_attachments_widget
                 if attachment_widget.get('dynamic_report')
-                and not attachment_widget.get('skip')
+                   and not attachment_widget.get('skip')
             ]
 
             attachments_to_create = []
             for dynamic_report in dynamic_reports:
-                content, _report_format = self.env['ir.actions.report']\
-                .with_company(move.company_id)\
-                .with_context(from_account_move_send=True)\
-                ._render(dynamic_report['dynamic_report'], move.ids)
+                content, _report_format = self.env['ir.actions.report'] \
+                    .with_company(move.company_id) \
+                    .with_context(from_account_move_send=True) \
+                    ._render(dynamic_report['dynamic_report'], move.ids)
 
                 attachments_to_create.append({
                     'raw': content,
@@ -627,7 +651,8 @@ class AccountMoveSend(models.AbstractModel):
         batches = []
         pdf_to_generate = {}
         for invoice, invoice_data in invoices_data_pdf.items():
-            if not invoice_data.get('error') and not invoice.invoice_pdf_report_id:  # we don't regenerate pdf if it already exists
+            if not invoice_data.get(
+                    'error') and not invoice.invoice_pdf_report_id:  # we don't regenerate pdf if it already exists
                 pdf_to_generate[invoice] = invoice_data
 
                 if (len(pdf_to_generate) > int(batch_size)):
@@ -681,7 +706,7 @@ class AccountMoveSend(models.AbstractModel):
                 invoice_data.pop('error')
                 self._prepare_invoice_proforma_pdf_report(invoice, invoice_data)
                 self._hook_invoice_document_after_pdf_report_render(invoice, invoice_data)
-                invoice_data['proforma_pdf_attachment'] = self.env['ir.attachment']\
+                invoice_data['proforma_pdf_attachment'] = self.env['ir.attachment'] \
                     .create(invoice_data.pop('proforma_pdf_attachment_values'))
 
     def _check_sending_data(self, moves, **custom_settings):
@@ -696,7 +721,8 @@ class AccountMoveSend(models.AbstractModel):
         ) if 'sending_methods' in custom_settings else True
 
     @api.model
-    def _generate_and_send_invoices(self, moves, from_cron=False, allow_raising=True, allow_fallback_pdf=False, **custom_settings):
+    def _generate_and_send_invoices(self, moves, from_cron=False, allow_raising=True, allow_fallback_pdf=False,
+                                    **custom_settings):
         """ Generate and send the moves given custom_settings if provided, else their default configuration set on related partner/company.
         :param moves: account.move to process
         :param from_cron: whether the processing comes from a cron.

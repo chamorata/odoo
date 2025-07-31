@@ -3,15 +3,15 @@
 
 import logging
 import mimetypes
+
 import requests
 import werkzeug.utils
+from odoo.addons.html_editor.controllers.main import HTML_Editor
 from werkzeug.urls import url_encode
 
 from odoo import http, tools, _
 from odoo.http import request
 from odoo.tools.mimetypes import guess_mimetype
-
-from odoo.addons.html_editor.controllers.main import HTML_Editor
 
 logger = logging.getLogger(__name__)
 
@@ -56,6 +56,7 @@ class Web_Unsplash(http.Controller):
                 .....
             }
         """
+
         def slugify(s):
             ''' Keeps only alphanumeric characters, hyphens and spaces from a string.
                 The string will also be truncated to 1024 characters max.
@@ -81,7 +82,8 @@ class Web_Unsplash(http.Controller):
         for key, value in unsplashurls.items():
             url = value.get('url')
             try:
-                if not url.startswith(('https://images.unsplash.com/', 'https://plus.unsplash.com/')) and not request.env.registry.in_test_mode():
+                if not url.startswith(('https://images.unsplash.com/',
+                                       'https://plus.unsplash.com/')) and not request.env.registry.in_test_mode():
                     logger.exception("ERROR: Unknown Unsplash URL!: " + url)
                     raise Exception(_("ERROR: Unknown Unsplash URL!"))
 

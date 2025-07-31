@@ -80,7 +80,8 @@ class ResCompany(models.Model):
     @api.model
     def _create_missing_subcontracting_dropshipping_sequence(self):
         company_ids = self.env['res.company'].search([])
-        company_has_seq = self.env['ir.sequence'].search([('code', '=', 'mrp.subcontracting.dropshipping')]).mapped('company_id')
+        company_has_seq = self.env['ir.sequence'].search([('code', '=', 'mrp.subcontracting.dropshipping')]).mapped(
+            'company_id')
         company_todo_sequence = company_ids - company_has_seq
         company_todo_sequence._create_subcontracting_dropshipping_sequence()
 

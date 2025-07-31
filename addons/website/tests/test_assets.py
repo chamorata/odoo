@@ -3,8 +3,6 @@ import re
 
 import odoo.tests
 
-from odoo.tools import config
-
 
 @odoo.tests.common.tagged('post_install', '-at_install')
 class TestWebsiteAssets(odoo.tests.HttpCase):
@@ -68,7 +66,7 @@ class TestWebsiteAssets(odoo.tests.HttpCase):
 
     def test_02_t_cache_invalidation(self):
         self.authenticate(None, None)
-        page = self.url_open('/').text # add to cache
+        page = self.url_open('/').text  # add to cache
         public_assets_links = re.findall(r'(/web/assets/\d+/\w{7}/web.assets_frontend\..+)"/>', page)
         self.assertTrue(public_assets_links)
         self.authenticate('admin', 'admin')
@@ -79,7 +77,8 @@ class TestWebsiteAssets(odoo.tests.HttpCase):
         self.assertEqual(public_assets_links, admin_assets_links)
 
         snippets = self.env['ir.asset'].search([
-            ('path', '=like', 'website/static/src/snippets/s_social_media/000.scss'), # arbitrary, a unused css one that doesn't make the page fail when archived.
+            ('path', '=like', 'website/static/src/snippets/s_social_media/000.scss'),
+            # arbitrary, a unused css one that doesn't make the page fail when archived.
             ('bundle', '=', 'web.assets_frontend'),
         ])
         self.assertTrue(snippets)
@@ -93,13 +92,15 @@ class TestWebsiteAssets(odoo.tests.HttpCase):
         self.assertTrue(new_admin_assets_links)
 
         self.assertEqual(public_assets_links, admin_assets_links)
-        self.assertNotEqual(new_admin_assets_links, admin_assets_links, "we expect a change since ir_assets were written")
+        self.assertNotEqual(new_admin_assets_links, admin_assets_links,
+                            "we expect a change since ir_assets were written")
 
         self.authenticate(None, None)
         page = self.url_open('/').text
 
         new_public_assets_links = re.findall(r'(/web/assets/\d+/\w{7}/web.assets_frontend\..+)"/>', page)
-        self.assertEqual(new_admin_assets_links, new_public_assets_links, "t-cache should have been invalidated for public user too")
+        self.assertEqual(new_admin_assets_links, new_public_assets_links,
+                         "t-cache should have been invalidated for public user too")
 
     def test_invalid_unlink(self):
         self.env['ir.attachment'].search([('url', '=like', '/web/assets/%')]).unlink()
@@ -123,7 +124,8 @@ class TestWebsiteAssets(odoo.tests.HttpCase):
             'website_id': website_default.id,
         })
 
-        website_bundle = self.env['ir.qweb']._get_asset_bundle(asset_bundle_xmlid, assets_params={'website_id': website_default.id})
+        website_bundle = self.env['ir.qweb']._get_asset_bundle(asset_bundle_xmlid,
+                                                               assets_params={'website_id': website_default.id})
         self.assertIn(custom_url, [f['url'] for f in website_bundle.files])
         base_website_css_version = website_bundle.get_version('css')
 
@@ -134,7 +136,8 @@ class TestWebsiteAssets(odoo.tests.HttpCase):
         website_attach = website_bundle.css()
         self.assertTrue(website_attach.exists())
         no_website_bundle.css()
-        self.assertTrue(website_attach.exists(), 'attachment for website should still exist after generating attachment for no website')
+        self.assertTrue(website_attach.exists(),
+                        'attachment for website should still exist after generating attachment for no website')
 
 
 @odoo.tests.tagged('-at_install', 'post_install')
@@ -144,42 +147,50 @@ class TestWebAssets(odoo.tests.HttpCase):
 
         with odoo.tools.mute_logger('odoo.addons.web.controllers.binary'):
             self.assertEqual(
-                self.url_open(f'/web/assets/{website_id}/debug/hello/web.assets_frontend.css', allow_redirects=False).status_code,
+                self.url_open(f'/web/assets/{website_id}/debug/hello/web.assets_frontend.css',
+                              allow_redirects=False).status_code,
                 404,
                 "unexpected direction extra",
             )
             self.assertEqual(
-                self.url_open(f'/web/assets/{website_id}/debug/web.assets_f_ontend.js', allow_redirects=False).status_code,
+                self.url_open(f'/web/assets/{website_id}/debug/web.assets_f_ontend.js',
+                              allow_redirects=False).status_code,
                 404,
                 "bundle name contains `_` and should be escaped wildcard",
             )
             self.assertEqual(
-                self.url_open(f'/web/assets/{website_id}/debug/web.assets_frontend.rtl.js', allow_redirects=False).status_code,
+                self.url_open(f'/web/assets/{website_id}/debug/web.assets_frontend.rtl.js',
+                              allow_redirects=False).status_code,
                 404,
                 "js cannot have `rtl` has extra",
             )
             self.assertEqual(
-                self.url_open(f'/web/assets/{website_id}/debug/web.assets_frontend.rtl.js', allow_redirects=False).status_code,
+                self.url_open(f'/web/assets/{website_id}/debug/web.assets_frontend.rtl.js',
+                              allow_redirects=False).status_code,
                 404,
                 "js cannot have `rtl` has extra",
             )
             self.assertEqual(
-                self.url_open(f'/web/{website_id+1}/assets/debug/web.assets_frontend.css', allow_redirects=False).status_code,
+                self.url_open(f'/web/{website_id + 1}/assets/debug/web.assets_frontend.css',
+                              allow_redirects=False).status_code,
                 404,
                 "website_id does not exist",
             )
             self.assertEqual(
-                self.url_open(f'/web/assets/{website_id}/debug/web.assets_frontend.aa.css', allow_redirects=False).status_code,
+                self.url_open(f'/web/assets/{website_id}/debug/web.assets_frontend.aa.css',
+                              allow_redirects=False).status_code,
                 404,
                 "invalid direction",
             )
             self.assertEqual(
-                self.url_open(f'/web/assets/{website_id}/any/web.assets_frontend.min.rtl.css', allow_redirects=False).status_code,
+                self.url_open(f'/web/assets/{website_id}/any/web.assets_frontend.min.rtl.css',
+                              allow_redirects=False).status_code,
                 404,
                 "min and direction inverted",
             )
             self.assertEqual(
-                self.url_open(f'/web/assets/{website_id}/any/web.assets_frontend.js', allow_redirects=False).status_code,
+                self.url_open(f'/web/assets/{website_id}/any/web.assets_frontend.js',
+                              allow_redirects=False).status_code,
                 404,
                 "missing min in non debug mode",
             )
@@ -201,7 +212,8 @@ class TestWebAssets(odoo.tests.HttpCase):
             200,
         )
         self.assertEqual(
-            self.url_open(f'/web/assets/{website_id}/debug/web.assets_frontend.rtl.css', allow_redirects=False).status_code,
+            self.url_open(f'/web/assets/{website_id}/debug/web.assets_frontend.rtl.css',
+                          allow_redirects=False).status_code,
             200,
         )
         self.assertEqual(
@@ -209,24 +221,30 @@ class TestWebAssets(odoo.tests.HttpCase):
             200,
         )
         self.assertEqual(
-            self.url_open(f'/web/assets/{website_id}/any/web.assets_frontend.rtl.min.css', allow_redirects=False).status_code,
+            self.url_open(f'/web/assets/{website_id}/any/web.assets_frontend.rtl.min.css',
+                          allow_redirects=False).status_code,
             200,
         )
 
         self.assertEqual(
-            self.url_open(f'/web/assets/{website_id}/any/web.assets_frontend.min.css', allow_redirects=False).status_code,
+            self.url_open(f'/web/assets/{website_id}/any/web.assets_frontend.min.css',
+                          allow_redirects=False).status_code,
             200,
         )
         self.assertEqual(
-            self.url_open(f'/web/assets/{website_id}/any/web.assets_frontend.min.js', allow_redirects=False).status_code,
+            self.url_open(f'/web/assets/{website_id}/any/web.assets_frontend.min.js',
+                          allow_redirects=False).status_code,
             200,
         )
 
         # redirect urls
         invalid_version = '1234567'
         self.assertEqual(
-            self.url_open(f'/web/assets/{website_id}/{invalid_version}/web.assets_frontend.min.css', allow_redirects=False).headers['location'].split('/assets/')[1],
-            self.env['ir.qweb']._get_asset_bundle('web.assets_frontend', assets_params={'website_id': website_id}).get_link('css').split('/assets/')[1],
+            self.url_open(f'/web/assets/{website_id}/{invalid_version}/web.assets_frontend.min.css',
+                          allow_redirects=False).headers['location'].split('/assets/')[1],
+            self.env['ir.qweb']._get_asset_bundle('web.assets_frontend',
+                                                  assets_params={'website_id': website_id}).get_link('css').split(
+                '/assets/')[1],
         )
 
     def test_ensure_correct_website_asset(self):
@@ -236,9 +254,11 @@ class TestWebAssets(odoo.tests.HttpCase):
         unique = self.env['ir.qweb']._get_asset_bundle('web.assets_frontend').get_version('js')
         base_url = self.env['ir.asset']._get_asset_bundle_url('web.assets_frontend.min.js', '%', {})
         base_url_versioned = self.env['ir.asset']._get_asset_bundle_url('web.assets_frontend.min.js', unique, {})
-        website_url = self.env['ir.asset']._get_asset_bundle_url('web.assets_frontend.min.js', '%', {'website_id': website_id})
+        website_url = self.env['ir.asset']._get_asset_bundle_url('web.assets_frontend.min.js', '%',
+                                                                 {'website_id': website_id})
         # we expect the unique to be the same in this case, but there is no garantee
-        website_url_versioned = self.env['ir.asset']._get_asset_bundle_url('web.assets_frontend.min.js', unique, {'website_id': website_id})
+        website_url_versioned = self.env['ir.asset']._get_asset_bundle_url('web.assets_frontend.min.js', unique,
+                                                                           {'website_id': website_id})
 
         self.env['ir.attachment'].search([('url', '=like', '%web.assets_frontend.min.js')]).unlink()
 

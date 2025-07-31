@@ -32,10 +32,14 @@ class SaleOrder(models.Model):
         for so in self:
             if not any(line.service_tracking == 'event' for line in so.order_line):
                 continue
-            so_lines_missing_events = so.order_line.filtered(lambda line: line.service_tracking == 'event' and not line.event_id)
+            so_lines_missing_events = so.order_line.filtered(
+                lambda line: line.service_tracking == 'event' and not line.event_id)
             if so_lines_missing_events:
-                so_lines_descriptions = "".join(f"\n- {so_line_description.name}" for so_line_description in so_lines_missing_events)
-                raise ValidationError(_("Please make sure all your event related lines are configured before confirming this order:%s", so_lines_descriptions))
+                so_lines_descriptions = "".join(
+                    f"\n- {so_line_description.name}" for so_line_description in so_lines_missing_events)
+                raise ValidationError(
+                    _("Please make sure all your event related lines are configured before confirming this order:%s",
+                      so_lines_descriptions))
             # Initialize registrations
             so.order_line._init_registrations()
             if len(self) == 1:
@@ -89,6 +93,7 @@ class SaleOrder(models.Model):
                         'registration_ids': str(event_registrations.ids),
                         'tickets_hash': event._get_tickets_access_hash(event_registrations.ids),
                     })),
-                    'title': _("Get Your Tickets") if has_single_event else _("%(event_name)s - Tickets", event_name=event.name)
+                    'title': _("Get Your Tickets") if has_single_event else _("%(event_name)s - Tickets",
+                                                                              event_name=event.name)
                 })
         return groups

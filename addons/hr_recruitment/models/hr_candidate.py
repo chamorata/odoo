@@ -13,11 +13,11 @@ class HrCandidate(models.Model):
     _name = "hr.candidate"
     _description = "Candidate"
     _inherit = ['mail.thread.cc',
-               'mail.thread.main.attachment',
-               'mail.thread.blacklist',
-               'mail.thread.phone',
-               'mail.activity.mixin',
-    ]
+                'mail.thread.main.attachment',
+                'mail.thread.blacklist',
+                'mail.thread.phone',
+                'mail.activity.mixin',
+                ]
     _order = "priority desc, availability asc, id desc"
     _mailing_enabled = True
     _primary_email = 'email_from'
@@ -51,7 +51,8 @@ class HrCandidate(models.Model):
         index='btree_not_null')
     linkedin_profile = fields.Char('LinkedIn Profile')
     type_id = fields.Many2one('hr.recruitment.degree', "Degree")
-    availability = fields.Date("Availability", help="The date at which the applicant will be available to start working", tracking=True)
+    availability = fields.Date("Availability",
+                               help="The date at which the applicant will be available to start working", tracking=True)
     categ_ids = fields.Many2many('hr.applicant.category', string="Tags")
     color = fields.Integer("Color Index", default=0)
     priority = fields.Selection(AVAILABLE_PRIORITIES, string="Evaluation", compute="_compute_priority", store=True)
@@ -61,7 +62,8 @@ class HrCandidate(models.Model):
         default=lambda self: self.env.user if self.env.user.id != SUPERUSER_ID else False,
         domain="[('share', '=', False), ('company_ids', 'in', company_id)]",
         tracking=True)
-    employee_id = fields.Many2one('hr.employee', string="Employee", help="Employee linked to the candidate.", copy=False)
+    employee_id = fields.Many2one('hr.employee', string="Employee", help="Employee linked to the candidate.",
+                                  copy=False)
     emp_is_active = fields.Boolean(string="Employee Active", related='employee_id.active')
     employee_name = fields.Char(related='employee_id.name', string="Employee Name", readonly=False, tracking=False)
 
@@ -78,8 +80,10 @@ class HrCandidate(models.Model):
     attachment_count = fields.Integer(
         string="Number of Attachments",
         compute='_compute_attachment_count')
-    candidate_properties = fields.Properties('Properties', definition='company_id.candidate_properties_definition', copy=True)
-    attachment_ids = fields.One2many('ir.attachment', 'res_id', domain=[('res_model', '=', 'hr.candidate')], string='Attachments')
+    candidate_properties = fields.Properties('Properties', definition='company_id.candidate_properties_definition',
+                                             copy=True)
+    attachment_ids = fields.One2many('ir.attachment', 'res_id', domain=[('res_model', '=', 'hr.candidate')],
+                                     string='Attachments')
 
     def init(self):
         self.env.cr.execute("""
@@ -95,7 +99,8 @@ class HrCandidate(models.Model):
     @api.depends('partner_phone')
     def _compute_partner_phone_sanitized(self):
         for candidate in self:
-            candidate.partner_phone_sanitized = candidate._phone_format(fname='partner_phone') or candidate.partner_phone
+            candidate.partner_phone_sanitized = candidate._phone_format(
+                fname='partner_phone') or candidate.partner_phone
 
     @api.depends('partner_id')
     def _compute_partner_phone_email(self):
@@ -105,7 +110,7 @@ class HrCandidate(models.Model):
             candidate.email_from = candidate.partner_id.email
             if not candidate.partner_phone:
                 candidate.partner_phone = candidate.partner_id.phone
-    
+
     def _phone_get_number_fields(self):
         return ['partner_phone']
 
@@ -116,7 +121,8 @@ class HrCandidate(models.Model):
             if not candidate.partner_id:
                 if not candidate.partner_name:
                     raise UserError(_('You must define a Contact Name for this candidate.'))
-                candidate.partner_id = self.env['res.partner'].with_context(default_lang=self.env.lang).find_or_create(candidate.email_from)
+                candidate.partner_id = self.env['res.partner'].with_context(default_lang=self.env.lang).find_or_create(
+                    candidate.email_from)
             if candidate.partner_name and not candidate.partner_id.name:
                 candidate.partner_id.name = candidate.partner_name
             if tools.email_normalize(candidate.email_from) != tools.email_normalize(candidate.partner_id.email):
@@ -137,7 +143,8 @@ class HrCandidate(models.Model):
             for candidate in self:
                 domain = candidate._get_similar_candidates_domain()
                 if domain:
-                    candidate.similar_candidates_count = max(0, self.env["hr.candidate"].with_context(active_test=False).search_count(domain) - 1)
+                    candidate.similar_candidates_count = max(0, self.env["hr.candidate"].with_context(
+                        active_test=False).search_count(domain) - 1)
                 else:
                     candidate.similar_candidates_count = 0
             return
@@ -201,7 +208,8 @@ class HrCandidate(models.Model):
             if not candidate.applicant_ids:
                 candidate.priority = "0"
             else:
-                candidate.priority = str(round(sum(int(a.priority) for a in candidate.applicant_ids) / len(candidate.applicant_ids)))
+                candidate.priority = str(
+                    round(sum(int(a.priority) for a in candidate.applicant_ids) / len(candidate.applicant_ids)))
 
     def _compute_applications_count(self):
         result = defaultdict(lambda: {"total": 0, "refused": 0, "accepted": 0})
@@ -301,7 +309,8 @@ class HrCandidate(models.Model):
             })
 
         partners = self.partner_id
-        if self.env.user.has_group('hr_recruitment.group_hr_recruitment_interviewer') and not self.env.user.has_group('hr_recruitment.group_hr_recruitment_user'):
+        if self.env.user.has_group('hr_recruitment.group_hr_recruitment_interviewer') and not self.env.user.has_group(
+                'hr_recruitment.group_hr_recruitment_user'):
             partners |= self.env.user.partner_id
         else:
             partners |= self.user_id.partner_id
@@ -324,7 +333,8 @@ class HrCandidate(models.Model):
     @api.ondelete(at_uninstall=False)
     def _unlink_except_linked_employee(self):
         if self.employee_id:
-            raise UserError(_("The candidate is linked to an employee, to avoid losing information, archive it instead."))
+            raise UserError(
+                _("The candidate is linked to an employee, to avoid losing information, archive it instead."))
 
     def create_employee_from_candidate(self):
         self.ensure_one()
@@ -366,7 +376,8 @@ class HrCandidate(models.Model):
         }
 
     def _check_interviewer_access(self):
-        if self.env.user.has_group('hr_recruitment.group_hr_recruitment_interviewer') and not self.env.user.has_group('hr_recruitment.group_hr_recruitment_user'):
+        if self.env.user.has_group('hr_recruitment.group_hr_recruitment_interviewer') and not self.env.user.has_group(
+                'hr_recruitment.group_hr_recruitment_user'):
             raise UserError(_('You are not allowed to perform this action.'))
 
     def action_open_attachments(self):

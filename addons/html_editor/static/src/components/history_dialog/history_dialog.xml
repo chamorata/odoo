@@ -27,7 +27,7 @@
                                     <HtmlViewer config="getConfig('revisionContent')"/>
                                 </div>
                             </t>
-                            <t t-else="" t-out="props.noContentHelper" />
+                            <t t-else="" t-out="props.noContentHelper"/>
                         </t>
                         <t t-set-slot="comparison" name="'comparison'" isVisible="true" title="notebookTabs[1]">
                             <div class="pe-none">

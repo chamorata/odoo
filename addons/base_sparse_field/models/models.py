@@ -2,7 +2,7 @@
 
 from collections import defaultdict
 
-from odoo import models, fields, api, _
+from odoo import models, fields, _
 from odoo.exceptions import UserError
 
 
@@ -20,18 +20,20 @@ class IrModelFields(models.Model):
         ('serialized', 'serialized'),
     ], ondelete={'serialized': 'cascade'})
     serialization_field_id = fields.Many2one('ir.model.fields', string='Serialization Field',
-        ondelete='cascade', domain="[('ttype','=','serialized'), ('model_id', '=', model_id)]",
-        help="If set, this field will be stored in the sparse structure of the "
-             "serialization field, instead of having its own database column. "
-             "This cannot be changed after creation.",
-    )
+                                             ondelete='cascade',
+                                             domain="[('ttype','=','serialized'), ('model_id', '=', model_id)]",
+                                             help="If set, this field will be stored in the sparse structure of the "
+                                                  "serialization field, instead of having its own database column. "
+                                                  "This cannot be changed after creation.",
+                                             )
 
     def write(self, vals):
         # Limitation: renaming a sparse field or changing the storing system is
         # currently not allowed
         if 'serialization_field_id' in vals or 'name' in vals:
             for field in self:
-                if 'serialization_field_id' in vals and field.serialization_field_id.id != vals['serialization_field_id']:
+                if 'serialization_field_id' in vals and field.serialization_field_id.id != vals[
+                    'serialization_field_id']:
                     raise UserError(_('Changing the storing system for field "%s" is not allowed.', field.name))
                 if field.serialization_field_id and (field.name != vals['name']):
                     raise UserError(_('Renaming sparse field "%s" is not allowed', field.name))

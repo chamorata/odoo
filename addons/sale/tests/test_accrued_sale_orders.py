@@ -1,7 +1,8 @@
-from odoo import Command
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
-from odoo.tests import tagged, freeze_time
+
+from odoo import Command
 from odoo.exceptions import UserError
+from odoo.tests import tagged, freeze_time
 
 
 @freeze_time('2022-01-01')
@@ -47,8 +48,8 @@ class TestAccruedSaleOrders(AccountTestInvoicingCommon):
                     'price_unit': cls.product_a.list_price,
                     'tax_id': False,
                     'analytic_distribution': {
-                        cls.analytic_account_a.id : 80.0,
-                        cls.analytic_account_b.id : 20.0,
+                        cls.analytic_account_a.id: 80.0,
+                        cls.analytic_account_b.id: 20.0,
                     },
                 }),
                 Command.create({
@@ -59,7 +60,7 @@ class TestAccruedSaleOrders(AccountTestInvoicingCommon):
                     'price_unit': cls.product_b.list_price,
                     'tax_id': False,
                     'analytic_distribution': {
-                        cls.analytic_account_b.id : 100.0,
+                        cls.analytic_account_b.id: 100.0,
                     },
                 })
             ]
@@ -123,13 +124,19 @@ class TestAccruedSaleOrders(AccountTestInvoicingCommon):
 
         self.assertRecordValues(self.env['account.move'].search(self.wizard.create_entries()['domain']).line_ids, [
             # reverse move lines
-            {'account_id': self.account_revenue.id, 'debit': 10000.0, 'credit': 0.0, 'analytic_distribution': {str(self.analytic_account_a.id): 80.0, str(self.analytic_account_b.id): 20.0}},
-            {'account_id': self.alt_inc_account.id, 'debit': 2000.0, 'credit': 0.0, 'analytic_distribution': {str(self.analytic_account_b.id): 100.0}},
-            {'account_id': self.account_expense.id, 'debit': 0.0, 'credit': 12000.0, 'analytic_distribution': {str(self.analytic_account_a.id): 66.67, str(self.analytic_account_b.id): 33.33}},
+            {'account_id': self.account_revenue.id, 'debit': 10000.0, 'credit': 0.0,
+             'analytic_distribution': {str(self.analytic_account_a.id): 80.0, str(self.analytic_account_b.id): 20.0}},
+            {'account_id': self.alt_inc_account.id, 'debit': 2000.0, 'credit': 0.0,
+             'analytic_distribution': {str(self.analytic_account_b.id): 100.0}},
+            {'account_id': self.account_expense.id, 'debit': 0.0, 'credit': 12000.0,
+             'analytic_distribution': {str(self.analytic_account_a.id): 66.67, str(self.analytic_account_b.id): 33.33}},
             # move lines
-            {'account_id': self.account_revenue.id, 'debit': 0.0, 'credit': 10000.0, 'analytic_distribution': {str(self.analytic_account_a.id): 80.0, str(self.analytic_account_b.id): 20.0}},
-            {'account_id': self.alt_inc_account.id, 'debit': 0.0, 'credit': 2000.0, 'analytic_distribution': {str(self.analytic_account_b.id): 100.0}},
-            {'account_id': self.account_expense.id, 'debit': 12000.0, 'credit': 0.0, 'analytic_distribution': {str(self.analytic_account_a.id): 66.67, str(self.analytic_account_b.id): 33.33}},
+            {'account_id': self.account_revenue.id, 'debit': 0.0, 'credit': 10000.0,
+             'analytic_distribution': {str(self.analytic_account_a.id): 80.0, str(self.analytic_account_b.id): 20.0}},
+            {'account_id': self.alt_inc_account.id, 'debit': 0.0, 'credit': 2000.0,
+             'analytic_distribution': {str(self.analytic_account_b.id): 100.0}},
+            {'account_id': self.account_expense.id, 'debit': 12000.0, 'credit': 0.0,
+             'analytic_distribution': {str(self.analytic_account_a.id): 66.67, str(self.analytic_account_b.id): 33.33}},
 
         ])
 

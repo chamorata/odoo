@@ -1,4 +1,5 @@
 from datetime import timedelta
+
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
@@ -7,7 +8,8 @@ class AccountUpdateTaxTagsWizard(models.TransientModel):
     _name = 'account.update.tax.tags.wizard'
     _description = 'Update Tax Tags Wizard'
 
-    company_id = fields.Many2one(comodel_name='res.company', required=True, readonly=True, default=lambda self: self.env.company)
+    company_id = fields.Many2one(comodel_name='res.company', required=True, readonly=True,
+                                 default=lambda self: self.env.company)
     date_from = fields.Date(
         string='Starting from',
         help='Date from which journal items will be updated.',

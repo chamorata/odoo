@@ -3,6 +3,7 @@
 from odoo import Command
 from odoo.tests.common import TransactionCase, new_test_user
 
+
 class DashboardTestCommon(TransactionCase):
     @classmethod
     def setUpClass(cls):

@@ -1,17 +1,20 @@
 import base64
 import uuid
+from base64 import b64decode, b64encode
+from datetime import datetime
+
+from lxml import etree
 from markupsafe import Markup
+
 from odoo import _, fields, models, api
 from odoo.tools import float_repr
-from datetime import datetime
-from base64 import b64decode, b64encode
-from lxml import etree
 
 
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
-    l10n_sa_uuid = fields.Char(string='Document UUID (SA)', copy=False, help="Universally unique identifier of the Invoice")
+    l10n_sa_uuid = fields.Char(string='Document UUID (SA)', copy=False,
+                               help="Universally unique identifier of the Invoice")
 
     l10n_sa_invoice_signature = fields.Char("Unsigned XML Signature", copy=False)
 
@@ -36,7 +39,8 @@ class AccountMove(models.Model):
         phase_one_moves = self.env['account.move']
         for move in self:
             zatca_document = move.edi_document_ids.filtered(lambda d: d.edi_format_id.code == 'sa_zatca')
-            if move.country_code == 'SA' and move.move_type in ('out_invoice', 'out_refund') and zatca_document and move.state != 'draft':
+            if move.country_code == 'SA' and move.move_type in ('out_invoice',
+                                                                'out_refund') and zatca_document and move.state != 'draft':
                 qr_code_str = ''
                 if move._l10n_sa_is_simplified():
                     x509_cert_sudo = move.journal_id.sudo().l10n_sa_production_csid_certificate_id
@@ -55,7 +59,6 @@ class AccountMove(models.Model):
                 # we call super to trigger the initial QR code generation for Phase 1
                 phase_one_moves |= move
         super(AccountMove, phase_one_moves)._compute_qr_code_str()
-
 
     def _l10n_sa_get_qr_code_encoding(self, tag, field, int_length=1):
         """
@@ -109,13 +112,15 @@ class AccountMove(models.Model):
             amount_tax_enc = self._l10n_sa_get_qr_code_encoding(5, float_repr(abs(amount_tax), 2).encode())
             invoice_hash_enc = self._l10n_sa_get_qr_code_encoding(6, invoice_hash)
             signature_enc = self._l10n_sa_get_qr_code_encoding(7, signature.encode())
-            public_key_enc = self._l10n_sa_get_qr_code_encoding(8, base64.b64decode(certificate._get_public_key_bytes(formatting='base64')))
+            public_key_enc = self._l10n_sa_get_qr_code_encoding(8, base64.b64decode(
+                certificate._get_public_key_bytes(formatting='base64')))
 
             qr_code_str = (seller_name_enc + seller_vat_enc + timestamp_enc + amount_total_enc +
                            amount_tax_enc + invoice_hash_enc + signature_enc + public_key_enc)
 
             if is_b2c:
-                qr_code_str += self._l10n_sa_get_qr_code_encoding(9, base64.b64decode(certificate._get_signature_bytes(formatting='base64')))
+                qr_code_str += self._l10n_sa_get_qr_code_encoding(9, base64.b64decode(
+                    certificate._get_signature_bytes(formatting='base64')))
 
         return qr_code_str
 
@@ -161,7 +166,8 @@ class AccountMove(models.Model):
         # We generate the XML content
         xml_content = edi_format._l10n_sa_generate_zatca_template(self)
         # Once the required values are generated, we hash the invoice, then use it to generate a Signature
-        invoice_hash_hex = self.env['account.edi.xml.ubl_21.zatca']._l10n_sa_generate_invoice_xml_hash(xml_content).decode()
+        invoice_hash_hex = self.env['account.edi.xml.ubl_21.zatca']._l10n_sa_generate_invoice_xml_hash(
+            xml_content).decode()
         self.l10n_sa_invoice_signature = edi_format._l10n_sa_get_digital_signature(self.journal_id.company_id,
                                                                                    invoice_hash_hex).decode()
         return xml_content
@@ -171,7 +177,8 @@ class AccountMove(models.Model):
             Save submitted invoice XML hash in case of either Rejection or Acceptance.
         """
         self.ensure_one()
-        self.journal_id.l10n_sa_latest_submission_hash = self.env['account.edi.xml.ubl_21.zatca']._l10n_sa_generate_invoice_xml_hash(
+        self.journal_id.l10n_sa_latest_submission_hash = self.env[
+            'account.edi.xml.ubl_21.zatca']._l10n_sa_generate_invoice_xml_hash(
             xml_content)
         bootstrap_cls, title, content = ("success", _("Invoice Successfully Submitted to ZATCA"),
                                          "" if (not error or not response_data) else response_data)
@@ -212,14 +219,15 @@ class AccountMove(models.Model):
                 </p>
             """) % (_('The invoice was accepted by ZATCA, but returned warnings. Please, check the response below:'),
                     f"[{status_code}] " if status_code else "",
-                    Markup("<br/>").join([Markup("<b>%s</b> : %s") % (m['code'], m['message']) for m in response_data['validationResults']['warningMessages']]))
+                    Markup("<br/>").join([Markup("<b>%s</b> : %s") % (m['code'], m['message']) for m in
+                                          response_data['validationResults']['warningMessages']]))
         self.with_context(no_new_invoice=True).message_post(body=Markup("""
                 <div role='alert' class='alert alert-%s'>
                     <h4 class='alert-heading'>%s</h4>%s
                 </div>
             """) % (bootstrap_cls, title, content),
-            attachment_ids=attachment and [attachment.id] or []
-        )
+                                                            attachment_ids=attachment and [attachment.id] or []
+                                                            )
 
     def _is_l10n_sa_eligibile_invoice(self):
         self.ensure_one()
@@ -231,12 +239,14 @@ class AccountMove(models.Model):
             Seller Vat Number (BT-31), Date (BT-2), Time (KSA-25), Invoice Number (BT-1)
         """
         if self._is_l10n_sa_eligibile_invoice():
-            return self.with_context(l10n_sa_file_format=False).env['account.edi.xml.ubl_21.zatca']._export_invoice_filename(self)
+            return self.with_context(l10n_sa_file_format=False).env[
+                'account.edi.xml.ubl_21.zatca']._export_invoice_filename(self)
         return super()._get_report_base_filename()
 
     def _get_invoice_report_filename(self, extension='pdf'):
         if self._is_l10n_sa_eligibile_invoice():
-            return self.with_context(l10n_sa_file_format=extension).env['account.edi.xml.ubl_21.zatca']._export_invoice_filename(self)
+            return self.with_context(l10n_sa_file_format=extension).env[
+                'account.edi.xml.ubl_21.zatca']._export_invoice_filename(self)
         return super()._get_invoice_report_filename(extension)
 
     def _l10n_sa_is_in_chain(self):
@@ -285,9 +295,9 @@ class AccountMoveLine(models.Model):
         AccountTax = self.env['account.tax']
         for line in self:
             if (
-                line.move_id.country_code == 'SA'
-                and line.move_id.is_invoice(include_receipts=True)
-                and line.display_type == 'product'
+                    line.move_id.country_code == 'SA'
+                    and line.move_id.is_invoice(include_receipts=True)
+                    and line.display_type == 'product'
             ):
                 base_line = line.move_id._prepare_product_base_line_for_taxes_computation(line)
                 AccountTax._add_tax_details_in_base_line(base_line, line.company_id)

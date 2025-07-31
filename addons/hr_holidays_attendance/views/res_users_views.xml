@@ -5,14 +5,14 @@
         <field name="inherit_id" ref="hr.res_users_view_form_profile"/>
         <field name="arch" type="xml">
             <xpath expr="//header" position="inside">
-                <field name="employee_id" invisible="1" />
-                <field name="request_overtime" invisible="1" />
+                <field name="employee_id" invisible="1"/>
+                <field name="request_overtime" invisible="1"/>
                 <button
-                    name="%(hr_leave_allocation_overtime_action)d"
-                    string="Deduct Extra Hours"
-                    type="action"
-                    context="{'default_employee_id': employee_id, 'deduct_extra_hours': True, 'deduct_extra_hours_employee_request': True}"
-                    invisible="not request_overtime"/>
+                        name="%(hr_leave_allocation_overtime_action)d"
+                        string="Deduct Extra Hours"
+                        type="action"
+                        context="{'default_employee_id': employee_id, 'deduct_extra_hours': True, 'deduct_extra_hours_employee_request': True}"
+                        invisible="not request_overtime"/>
             </xpath>
         </field>
     </record>

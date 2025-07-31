@@ -22,7 +22,6 @@ import threading
 import time
 import traceback
 import typing
-import unicodedata
 import warnings
 import zlib
 from collections import defaultdict
@@ -37,6 +36,7 @@ import babel
 import babel.dates
 import markupsafe
 import pytz
+import unicodedata
 from lxml import etree, objectify
 
 import odoo
@@ -44,7 +44,6 @@ import odoo.addons
 # get_encodings, ustr and exception_to_unicode were originally from tools.misc.
 # There are moved to loglevels until we refactor tools.
 from odoo.loglevels import exception_to_unicode, get_encodings, ustr  # noqa: F401
-
 from .config import config
 from .float_utils import float_round
 from .which import which
@@ -132,9 +131,10 @@ class Sentinel(enum.Enum):
 
 SENTINEL = Sentinel.SENTINEL
 
-#----------------------------------------------------------
+
+# ----------------------------------------------------------
 # Subprocesses
-#----------------------------------------------------------
+# ----------------------------------------------------------
 
 def find_in_path(name):
     path = os.environ.get('PATH', os.defpath).split(os.pathsep)
@@ -142,9 +142,10 @@ def find_in_path(name):
         path.append(config['bin_path'])
     return which(name, path=os.pathsep.join(path))
 
-#----------------------------------------------------------
+
+# ----------------------------------------------------------
 # Postgres subprocesses
-#----------------------------------------------------------
+# ----------------------------------------------------------
 
 def find_pg_tool(name):
     path = None
@@ -154,6 +155,7 @@ def find_pg_tool(name):
         return which(name, path=path)
     except IOError:
         raise Exception('Command `%s` not found.' % name)
+
 
 def exec_pg_environ():
     """
@@ -288,9 +290,9 @@ def file_open_temporary_directory(env: Environment):
             env.transaction._Transaction__file_open_tmp_paths = ()
 
 
-#----------------------------------------------------------
+# ----------------------------------------------------------
 # iterables
-#----------------------------------------------------------
+# ----------------------------------------------------------
 def flatten(list):
     """Flatten a list of elements into a unique list
     Author: Christophe Simonis (christophe@tinyerp.com)
@@ -420,6 +422,7 @@ def merge_sequences(*iterables: Iterable[T]) -> list[T]:
 try:
     import xlwt
 
+
     # add some sanitization to respect the excel sheet name restrictions
     # as the sheet name is often translatable, can not control the input
     class PatchedWorkbook(xlwt.Workbook):
@@ -431,6 +434,7 @@ try:
             name = name[:31]
             return super(PatchedWorkbook, self).add_sheet(name, cell_overwrite_ok=cell_overwrite_ok)
 
+
     xlwt.Workbook = PatchedWorkbook
 
 except ImportError:
@@ -438,6 +442,7 @@ except ImportError:
 
 try:
     import xlsxwriter
+
 
     # add some sanitization to respect the excel sheet name restrictions
     # as the sheet name is often translatable, can not control the input
@@ -452,6 +457,7 @@ try:
                 # maximum size is 31 characters
                 name = name[:31]
             return super(PatchedXlsxWorkbook, self).add_worksheet(name, **kw)
+
 
     xlsxwriter.Workbook = PatchedXlsxWorkbook
 
@@ -497,13 +503,13 @@ def mod10r(number: str) -> str:
     Output return: the same number completed with the recursive mod10
     key
     """
-    codec=[0,9,4,6,8,2,7,1,3,5]
+    codec = [0, 9, 4, 6, 8, 2, 7, 1, 3, 5]
     report = 0
-    result=""
+    result = ""
     for digit in number:
         result += digit
         if digit.isdigit():
-            report = codec[ (int(digit) + report) % 10 ]
+            report = codec[(int(digit) + report) % 10]
     return result + str((10 - report) % 10)
 
 
@@ -541,9 +547,9 @@ def human_size(sz: float | str) -> str | typing.Literal[False]:
         return False
     units = ('bytes', 'Kb', 'Mb', 'Gb', 'Tb')
     if isinstance(sz, str):
-        sz=len(sz)
+        sz = len(sz)
     s, i = float(sz), 0
-    while s >= 1024 and i < len(units)-1:
+    while s >= 1024 and i < len(units) - 1:
         s /= 1024
         i += 1
     return "%0.2f %s" % (s, units[i])
@@ -563,43 +569,43 @@ DATE_LENGTH = len(datetime.date.today().strftime(DEFAULT_SERVER_DATE_FORMAT))
 # the C standard (1989 version), always available on platforms
 # with a C standard implementation.
 DATETIME_FORMATS_MAP = {
-        '%C': '', # century
-        '%D': '%m/%d/%Y', # modified %y->%Y
-        '%e': '%d',
-        '%E': '', # special modifier
-        '%F': '%Y-%m-%d',
-        '%g': '%Y', # modified %y->%Y
-        '%G': '%Y',
-        '%h': '%b',
-        '%k': '%H',
-        '%l': '%I',
-        '%n': '\n',
-        '%O': '', # special modifier
-        '%P': '%p',
-        '%R': '%H:%M',
-        '%r': '%I:%M:%S %p',
-        '%s': '', #num of seconds since epoch
-        '%T': '%H:%M:%S',
-        '%t': ' ', # tab
-        '%u': ' %w',
-        '%V': '%W',
-        '%y': '%Y', # Even if %y works, it's ambiguous, so we should use %Y
-        '%+': '%Y-%m-%d %H:%M:%S',
+    '%C': '',  # century
+    '%D': '%m/%d/%Y',  # modified %y->%Y
+    '%e': '%d',
+    '%E': '',  # special modifier
+    '%F': '%Y-%m-%d',
+    '%g': '%Y',  # modified %y->%Y
+    '%G': '%Y',
+    '%h': '%b',
+    '%k': '%H',
+    '%l': '%I',
+    '%n': '\n',
+    '%O': '',  # special modifier
+    '%P': '%p',
+    '%R': '%H:%M',
+    '%r': '%I:%M:%S %p',
+    '%s': '',  # num of seconds since epoch
+    '%T': '%H:%M:%S',
+    '%t': ' ',  # tab
+    '%u': ' %w',
+    '%V': '%W',
+    '%y': '%Y',  # Even if %y works, it's ambiguous, so we should use %Y
+    '%+': '%Y-%m-%d %H:%M:%S',
 
-        # %Z is a special case that causes 2 problems at least:
-        #  - the timezone names we use (in res_user.context_tz) come
-        #    from pytz, but not all these names are recognized by
-        #    strptime(), so we cannot convert in both directions
-        #    when such a timezone is selected and %Z is in the format
-        #  - %Z is replaced by an empty string in strftime() when
-        #    there is not tzinfo in a datetime value (e.g when the user
-        #    did not pick a context_tz). The resulting string does not
-        #    parse back if the format requires %Z.
-        # As a consequence, we strip it completely from format strings.
-        # The user can always have a look at the context_tz in
-        # preferences to check the timezone.
-        '%z': '',
-        '%Z': '',
+    # %Z is a special case that causes 2 problems at least:
+    #  - the timezone names we use (in res_user.context_tz) come
+    #    from pytz, but not all these names are recognized by
+    #    strptime(), so we cannot convert in both directions
+    #    when such a timezone is selected and %Z is in the format
+    #  - %Z is replaced by an empty string in strftime() when
+    #    there is not tzinfo in a datetime value (e.g when the user
+    #    did not pick a context_tz). The resulting string does not
+    #    parse back if the format requires %Z.
+    # As a consequence, we strip it completely from format strings.
+    # The user can always have a look at the context_tz in
+    # preferences to check the timezone.
+    '%z': '',
+    '%Z': '',
 }
 
 POSIX_TO_LDML = {
@@ -607,7 +613,7 @@ POSIX_TO_LDML = {
     'A': 'EEEE',
     'b': 'MMM',
     'B': 'MMMM',
-    #'c': '',
+    # 'c': '',
     'd': 'dd',
     'H': 'HH',
     'I': 'hh',
@@ -623,8 +629,8 @@ POSIX_TO_LDML = {
     'Y': 'yyyy',
     # see comments above, and babel's format_datetime assumes an UTC timezone
     # for naive datetime objects
-    #'z': 'Z',
-    #'Z': 'z',
+    # 'z': 'Z',
+    # 'Z': 'z',
 }
 
 
@@ -651,13 +657,13 @@ def posix_to_ldml(fmt: str, locale: babel.Locale) -> str:
             quoted = []
 
         if pc:
-            if c == '%': # escaped percent
+            if c == '%':  # escaped percent
                 buf.append('%')
-            elif c == 'x': # date format, short seems to match
+            elif c == 'x':  # date format, short seems to match
                 buf.append(locale.date_formats['short'].pattern)
-            elif c == 'X': # time format, seems to include seconds. short does not
+            elif c == 'X':  # time format, seems to include seconds. short does not
                 buf.append(locale.time_formats['medium'].pattern)
-            else: # look up format char in static mapping
+            else:  # look up format char in static mapping
                 buf.append(POSIX_TO_LDML[c])
             pc = False
         elif c == '%':
@@ -712,6 +718,7 @@ def discardattr(obj: object, key: str) -> None:
     except AttributeError:
         pass
 
+
 # ---------------------------------------------
 # String management
 # ---------------------------------------------
@@ -763,6 +770,7 @@ class mute_logger(logging.Handler):
         with mute_logger('odoo.foo.bar'):
             do_suff()
     """
+
     def __init__(self, *loggers):
         super().__init__()
         self.loggers = loggers
@@ -785,6 +793,7 @@ class mute_logger(logging.Handler):
         def deco(*args, **kwargs):
             with self:
                 return func(*args, **kwargs)
+
         return deco
 
     def emit(self, record):
@@ -794,6 +803,7 @@ class mute_logger(logging.Handler):
 class lower_logging(logging.Handler):
     """Temporary lower the max logging level.
     """
+
     def __init__(self, max_level, to_level=None):
         super().__init__()
         self.old_handlers = None
@@ -821,7 +831,9 @@ class lower_logging(logging.Handler):
             record.levelname = f'_{record.levelname}'
             record.levelno = self.to_level
             self.had_error_log = True
-            record.args = tuple(arg.replace('Traceback (most recent call last):', '_Traceback_ (most recent call last):') if isinstance(arg, str) else arg for arg in record.args)
+            record.args = tuple(
+                arg.replace('Traceback (most recent call last):', '_Traceback_ (most recent call last):') if isinstance(
+                    arg, str) else arg for arg in record.args)
 
         if logging.getLogger(record.name).isEnabledFor(record.levelno):
             for handler in self.old_handlers:
@@ -1089,6 +1101,7 @@ class OrderedSet(MutableSet[T], typing.Generic[T]):
 
 class LastOrderedSet(OrderedSet[T], typing.Generic[T]):
     """ A set collection that remembers the elements last insertion order. """
+
     def add(self, elem):
         self.discard(elem)
         super().add(elem)
@@ -1233,12 +1246,17 @@ class Reverse(object):
         self.val = val
 
     def __eq__(self, other): return self.val == other.val
+
     def __ne__(self, other): return self.val != other.val
 
     def __ge__(self, other): return self.val <= other.val
+
     def __gt__(self, other): return self.val < other.val
+
     def __le__(self, other): return self.val >= other.val
+
     def __lt__(self, other): return self.val > other.val
+
 
 class replace_exceptions(ContextDecorator):
     """
@@ -1263,6 +1281,7 @@ class replace_exceptions(ContextDecorator):
     :param exceptions: the exception classes to catch and replace.
     :param by: the exception to raise instead.
     """
+
     def __init__(self, *exceptions, by):
         if not exceptions:
             raise ValueError("Missing exceptions")
@@ -1323,15 +1342,15 @@ def babel_locale_parse(lang_code: str | None) -> babel.Locale:
 
 
 def formatLang(
-    env: Environment,
-    value: float | typing.Literal[''],
-    digits: int = 2,
-    grouping: bool = True,
-    monetary: bool | Sentinel = SENTINEL,
-    dp: str | None = None,
-    currency_obj=None,
-    rounding_method: typing.Literal['HALF-UP', 'HALF-DOWN', 'HALF-EVEN', "UP", "DOWN"] = 'HALF-EVEN',
-    rounding_unit: typing.Literal['decimals', 'units', 'thousands', 'lakhs', 'millions'] = 'decimals',
+        env: Environment,
+        value: float | typing.Literal[''],
+        digits: int = 2,
+        grouping: bool = True,
+        monetary: bool | Sentinel = SENTINEL,
+        dp: str | None = None,
+        currency_obj=None,
+        rounding_method: typing.Literal['HALF-UP', 'HALF-DOWN', 'HALF-EVEN', "UP", "DOWN"] = 'HALF-EVEN',
+        rounding_unit: typing.Literal['decimals', 'units', 'thousands', 'lakhs', 'millions'] = 'decimals',
 ) -> str:
     """
     This function will format a number `value` to the appropriate format of the language used.
@@ -1378,9 +1397,9 @@ def formatLang(
 
     rounding_unit_mapping = {
         'decimals': 1,
-        'thousands': 10**3,
-        'lakhs': 10**5,
-        'millions': 10**6,
+        'thousands': 10 ** 3,
+        'lakhs': 10 ** 5,
+        'millions': 10 ** 6,
         'units': 1,
     }
 
@@ -1399,10 +1418,10 @@ def formatLang(
 
 
 def format_date(
-    env: Environment,
-    value: datetime.datetime | datetime.date | str,
-    lang_code: str | None = None,
-    date_format: str | typing.Literal[False] = False,
+        env: Environment,
+        value: datetime.datetime | datetime.date | str,
+        lang_code: str | None = None,
+        date_format: str | typing.Literal[False] = False,
 ) -> str:
     """
         Formats the date in a given format.
@@ -1461,11 +1480,11 @@ def parse_date(env: Environment, value: str, lang_code: str | None = None) -> da
 
 
 def format_datetime(
-    env: Environment,
-    value: datetime.datetime | str,
-    tz: str | typing.Literal[False] = False,
-    dt_format: str = 'medium',
-    lang_code: str | None = None,
+        env: Environment,
+        value: datetime.datetime | str,
+        tz: str | typing.Literal[False] = False,
+        dt_format: str = 'medium',
+        lang_code: str | None = None,
 ) -> str:
     """ Formats the datetime in a given format.
 
@@ -1509,11 +1528,11 @@ def format_datetime(
 
 
 def format_time(
-    env: Environment,
-    value: datetime.time | datetime.datetime | str,
-    tz: str | typing.Literal[False] = False,
-    time_format: str = 'medium',
-    lang_code: str | None = None,
+        env: Environment,
+        value: datetime.time | datetime.datetime | str,
+        tz: str | typing.Literal[False] = False,
+        time_format: str = 'medium',
+        lang_code: str | None = None,
 ) -> str:
     """ Format the given time (hour, minute and second) with the current user preference (language, format, ...)
 
@@ -1552,10 +1571,10 @@ def format_time(
 
 
 def _format_time_ago(
-    env: Environment,
-    time_delta: datetime.timedelta,
-    lang_code: str | None = None,
-    add_direction: bool = True,
+        env: Environment,
+        time_delta: datetime.timedelta,
+        lang_code: str | None = None,
+        add_direction: bool = True,
 ) -> str:
     if not lang_code:
         langs: list[str] = [code for code, _ in env['res.lang'].get_installed()]
@@ -1617,7 +1636,7 @@ def format_amount(env: Environment, amount: float, currency, lang_code: str | No
     fmt = "%.{0}f".format(currency.decimal_places)
     lang = env['res.lang'].browse(get_lang(env, lang_code).id)
 
-    formatted_amount = lang.format(fmt, currency.round(amount), grouping=True)\
+    formatted_amount = lang.format(fmt, currency.round(amount), grouping=True) \
         .replace(r' ', u'\N{NO-BREAK SPACE}').replace(r'-', u'-\N{ZERO WIDTH NO-BREAK SPACE}')
 
     pre = post = u''
@@ -1667,6 +1686,7 @@ class ReadonlyDict(Mapping[K, T], typing.Generic[K, T]):
           data.update({'baz', 'xyz'}) # raises exception
           dict.update(data, {'baz': 'xyz'}) # raises exception
     """
+
     def __init__(self, data):
         self.__data = dict(data)
 
@@ -1695,6 +1715,7 @@ class DotDict(dict):
           foo = DotDict({'bar': False})
           return foo.bar
     """
+
     def __getattr__(self, attrib):
         val = self.get(attrib)
         return DotDict(val) if isinstance(val, dict) else val
@@ -1710,6 +1731,7 @@ def get_diff(data_from, data_to, custom_style=False, dark_color_scheme=False):
     :param bool dark_color_scheme: true if dark color scheme is used
     :return: a string containing the diff in an HTML table format.
     """
+
     def handle_style(html_diff, custom_style, dark_color_scheme):
         """ The HtmlDiff lib will add some useful classes on the DOM to
         identify elements. Simply append to those classes some BS4 ones.
@@ -1816,7 +1838,7 @@ def verify_hash_signed(env, scope, payload):
     :return: The payload_values if the check was successful, None otherwise.
     """
 
-    token = base64.urlsafe_b64decode(payload.encode()+b'===')
+    token = base64.urlsafe_b64decode(payload.encode() + b'===')
     version = token[:1]
     if version != b'\x01':
         raise ValueError('Unknown token version')
@@ -1825,7 +1847,8 @@ def verify_hash_signed(env, scope, payload):
     expiration_value = int.from_bytes(expiration_value, byteorder='little')
     hash_value_expected = hmac(env, scope, f'1:{message}:{expiration_value}', hash_function=hashlib.sha256)
 
-    if consteq(hash_value, hash_value_expected) and (expiration_value == 0 or datetime.datetime.now().timestamp() < expiration_value):
+    if consteq(hash_value, hash_value_expected) and (
+            expiration_value == 0 or datetime.datetime.now().timestamp() < expiration_value):
         message_values = json.loads(message)
         return message_values
     return None
@@ -1886,6 +1909,8 @@ def verify_limited_field_access_token(record, field_name, access_token):
 
 
 ADDRESS_REGEX = re.compile(r'^(.*?)(\s[0-9][0-9\S]*)?(?: - (.+))?$', flags=re.DOTALL)
+
+
 def street_split(street):
     match = ADDRESS_REGEX.match(street or '')
     results = match.groups('') if match else ('', '', '')
@@ -1913,8 +1938,8 @@ def has_list_types(values, types: tuple[type, ...]) -> bool:
     :param types: The types of the elements in the list / tuple
     """
     return (
-        isinstance(values, (list, tuple)) and len(values) == len(types)
-        and all(itertools.starmap(isinstance, zip(values, types)))
+            isinstance(values, (list, tuple)) and len(values) == len(types)
+            and all(itertools.starmap(isinstance, zip(values, types)))
     )
 
 
@@ -1923,7 +1948,7 @@ def get_flag(country_code: str) -> str:
 
     This emoji is composed of the two regional indicator emoji of the country code.
     """
-    return "".join(chr(int(f"1f1{ord(c)+165:02x}", base=16)) for c in country_code)
+    return "".join(chr(int(f"1f1{ord(c) + 165:02x}", base=16)) for c in country_code)
 
 
 def format_frame(frame) -> str:

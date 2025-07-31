@@ -18,7 +18,7 @@ class PaymentProvider(models.Model):
         copy=False,
     )
 
-    #=== COMPUTE METHODS ===#
+    # === COMPUTE METHODS ===#
 
     def _ensure_payment_method_line(self, allow_create=True):
         self.ensure_one()
@@ -76,10 +76,11 @@ class PaymentProvider(models.Model):
         if self.code in ['custom', 'demo']:
             return False
         account_ref = 'account_journal_payment_debit_account_id' if payment_method_id.payment_type == 'inbound' else 'account_journal_payment_credit_account_id'
-        chart_template = self.with_context(allowed_company_ids=self.company_id.root_id.ids).env['account.chart.template']
+        chart_template = self.with_context(allowed_company_ids=self.company_id.root_id.ids).env[
+            'account.chart.template']
         outstanding_account_id = (
-            chart_template.ref(account_ref, raise_if_not_found=False)
-            or self.company_id.transfer_account_id
+                chart_template.ref(account_ref, raise_if_not_found=False)
+                or self.company_id.transfer_account_id
         ).id
         return outstanding_account_id
 
@@ -112,7 +113,7 @@ class PaymentProvider(models.Model):
     def _get_provider_payment_method(self, code):
         return self.env['account.payment.method'].search([('code', '=', code)], limit=1)
 
-    #=== BUSINESS METHODS ===#
+    # === BUSINESS METHODS ===#
 
     @api.model
     def _setup_provider(self, code):
@@ -131,7 +132,8 @@ class PaymentProvider(models.Model):
             })
 
     def _check_existing_payment(self, payment_method):
-        existing_payment_count = self.env['account.payment'].search_count([('payment_method_id', '=', payment_method.id)], limit=1)
+        existing_payment_count = self.env['account.payment'].search_count(
+            [('payment_method_id', '=', payment_method.id)], limit=1)
         return bool(existing_payment_count)
 
     @api.model

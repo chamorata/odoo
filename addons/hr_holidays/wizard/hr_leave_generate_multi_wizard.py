@@ -1,6 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import datetime, timedelta
+
 from pytz import timezone, UTC
 
 from odoo import fields, models, _
@@ -64,8 +65,10 @@ class HrLeaveGenerateMultiWizard(models.TransientModel):
         employees = self._get_employees_from_allocation_mode()
 
         tz = timezone(self.company_id.resource_calendar_id.tz or self.env.user.tz or 'UTC')
-        date_from_tz = tz.localize(datetime.combine(self.date_from, datetime.min.time())).astimezone(UTC).replace(tzinfo=None)
-        date_to_tz = tz.localize(datetime.combine(self.date_to, datetime.max.time())).astimezone(UTC).replace(tzinfo=None)
+        date_from_tz = tz.localize(datetime.combine(self.date_from, datetime.min.time())).astimezone(UTC).replace(
+            tzinfo=None)
+        date_to_tz = tz.localize(datetime.combine(self.date_to, datetime.max.time())).astimezone(UTC).replace(
+            tzinfo=None)
 
         conflicting_leaves = self.env['hr.leave'].with_context(
             tracking_disable=True,
@@ -81,7 +84,9 @@ class HrLeaveGenerateMultiWizard(models.TransientModel):
             # YTI: More complex use cases could be managed later
             invalid_time_off = conflicting_leaves.filtered(lambda l: l.leave_type_request_unit == 'hour')
             if invalid_time_off:
-                raise UserError(_('Automatic time off spliting during batch generation is not managed for ovelapping time off declared in hours. Conflicting time off:\n%s', '\n'.join(f"- {l.display_name}" for l in invalid_time_off)))
+                raise UserError(
+                    _('Automatic time off spliting during batch generation is not managed for ovelapping time off declared in hours. Conflicting time off:\n%s',
+                      '\n'.join(f"- {l.display_name}" for l in invalid_time_off)))
 
             conflicting_leaves._split_leaves(self.date_from, self.date_to + timedelta(days=1))
 
@@ -102,7 +107,8 @@ class HrLeaveGenerateMultiWizard(models.TransientModel):
         return {
             'type': 'ir.actions.act_window',
             'name': _('Generated Time Off'),
-            "views": [[self.env.ref('hr_holidays.hr_leave_view_tree').id, "list"], [self.env.ref('hr_holidays.hr_leave_view_form_manager').id, "form"]],
+            "views": [[self.env.ref('hr_holidays.hr_leave_view_tree').id, "list"],
+                      [self.env.ref('hr_holidays.hr_leave_view_form_manager').id, "form"]],
             'view_mode': 'list',
             'res_model': 'hr.leave',
             'domain': [('id', 'in', leaves.ids)]

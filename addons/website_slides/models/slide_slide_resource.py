@@ -23,8 +23,10 @@ class SlideResource(models.Model):
     sequence = fields.Integer(string="Sequence")
 
     _sql_constraints = [
-        ('check_url', "CHECK (resource_type != 'url' OR link IS NOT NULL)", 'A resource of type url must contain a link.'),
-        ('check_file_type', "CHECK (resource_type != 'file' OR link IS NULL)", 'A resource of type file cannot contain a link.'),
+        ('check_url', "CHECK (resource_type != 'url' OR link IS NOT NULL)",
+         'A resource of type url must contain a link.'),
+        ('check_file_type', "CHECK (resource_type != 'file' OR link IS NULL)",
+         'A resource of type file cannot contain a link.'),
     ]
 
     @api.depends('resource_type')
@@ -66,4 +68,5 @@ class SlideResource(models.Model):
     def _check_link_type(self):
         for record in self:
             if record.resource_type != 'file' and record.data:
-                raise ValidationError(_("Resource %(resource_name)s is a link and should not contain a data file", resource_name=record.name))
+                raise ValidationError(_("Resource %(resource_name)s is a link and should not contain a data file",
+                                        resource_name=record.name))

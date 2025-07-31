@@ -2,15 +2,13 @@
 
 import logging
 import time
+from unittest.mock import patch
 
 import odoo
 import odoo.tests
-
-from odoo.tests.common import HttpCase
 from odoo.modules.module import get_manifest
+from odoo.tests.common import HttpCase
 from odoo.tools import mute_logger
-
-from unittest.mock import patch
 
 _logger = logging.getLogger(__name__)
 
@@ -19,7 +17,8 @@ class TestAssetsGenerateTimeCommon(odoo.tests.TransactionCase):
 
     def generate_bundles(self, unlink=True):
         if unlink:
-            self.env['ir.attachment'].search([('url', '=like', '/web/assets/%')]).unlink()  # delete existing attachement
+            self.env['ir.attachment'].search(
+                [('url', '=like', '/web/assets/%')]).unlink()  # delete existing attachement
         installed_module_names = self.env['ir.module.module'].search([('state', '=', 'installed')]).mapped('name')
         bundles = {
             key
@@ -80,6 +79,7 @@ class TestPregenerateTime(HttpCase):
         duration = time.time() - start
         _logger.info('All bundle checked in %.2fs', duration)
 
+
 @odoo.tests.tagged('post_install', '-at_install', '-standard', 'assets_bundle')
 class TestAssetsGenerateTime(TestAssetsGenerateTimeCommon):
     """
@@ -97,6 +97,7 @@ class TestAssetsGenerateTime(TestAssetsGenerateTimeCommon):
         for bundle, duration in self.generate_bundles():
             threshold = thresholds.get(bundle, 2)
             self.assertLess(duration, threshold, "Bundle %r took more than %s sec" % (bundle, threshold))
+
 
 @odoo.tests.tagged('post_install', '-at_install')
 class TestLoad(HttpCase):
@@ -131,6 +132,7 @@ class TestWebAssetsCursors(HttpCase):
     We don't want to open another cursor to generate the bundle if the check is done with a read/write
     cursor, if we don't have a replica.
     """
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -149,17 +151,20 @@ class TestWebAssetsCursors(HttpCase):
         """
         cursors = []
         original_cursor = self.env.registry.cursor
+
         def cursor(readonly=False):
             cursor = original_cursor(readonly=readonly)
             cursors.append(('ro' if cursor.readonly else 'rw', '(ro_requested)' if readonly else '(rw_requested)'))
             return cursor
 
         with patch.object(self.env.registry, 'cursor', cursor):
-            response = self.url_open(f'/web/assets/{self.bundle_version}/{self.bundle_name}.min.css', allow_redirects=False)
+            response = self.url_open(f'/web/assets/{self.bundle_version}/{self.bundle_name}.min.css',
+                                     allow_redirects=False)
             self.assertEqual(response.status_code, 200)
 
         # remove the check_signaling cursor
-        self.assertEqual(cursors[0][1], '(rw_requested)', "the first cursor used for match and check signaling should be rw")
+        self.assertEqual(cursors[0][1], '(rw_requested)',
+                         "the first cursor used for match and check signaling should be rw")
         return cursors[1:]
 
     def test_web_binary_keep_cursor_ro(self):

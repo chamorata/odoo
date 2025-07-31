@@ -88,7 +88,8 @@ class TestAnalyticPlanOperations(TransactionCase):
             'code': 'manda',
             'plan_id': mandatory_plan.id,
         }])
-        distribution_model = self.env['account.analytic.distribution.model'].create({}).with_context(validate_analytic=True)
+        distribution_model = self.env['account.analytic.distribution.model'].create({}).with_context(
+            validate_analytic=True)
 
         # the configuration makes it raise an error
         distribution_model.analytic_distribution = {f"{test_account.id}": 100}
@@ -123,7 +124,8 @@ class TestAnalyticPlanOperations(TransactionCase):
             'code': 'manda',
             'plan_id': plan.id,
         }])
-        distribution_model = self.env['account.analytic.distribution.model'].create({}).with_context(validate_analytic=True)
+        distribution_model = self.env['account.analytic.distribution.model'].create({}).with_context(
+            validate_analytic=True)
 
         # mandatory applicability is only in company_2, should not raise for company_1
         distribution_model._validate_distribution(business_domain='general', company_id=self.env.company.id)

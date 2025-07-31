@@ -29,11 +29,11 @@ class PricelistItem(models.Model):
     date_start = fields.Datetime(
         string="Start Date",
         help="Starting datetime for the pricelist item validation\n"
-            "The displayed value depends on the timezone set in your preferences.")
+             "The displayed value depends on the timezone set in your preferences.")
     date_end = fields.Datetime(
         string="End Date",
         help="Ending datetime for the pricelist item validation\n"
-            "The displayed value depends on the timezone set in your preferences.")
+             "The displayed value depends on the timezone set in your preferences.")
 
     min_quantity = fields.Float(
         string="Min. Quantity",
@@ -157,7 +157,7 @@ class PricelistItem(models.Model):
         help="Explicit rule name for this pricelist line.")
     rule_tip = fields.Char(compute='_compute_rule_tip')
 
-    #=== COMPUTE METHODS ===#
+    # === COMPUTE METHODS ===#
 
     @api.depends('applied_on', 'categ_id', 'product_tmpl_id', 'product_id')
     def _compute_name(self):
@@ -225,11 +225,11 @@ class PricelistItem(models.Model):
                     )
                 discount_type, percentage = self._get_displayed_discount(item)
                 item.price = _("%(percentage)s %% %(discount_type)s on %(base)s %(extra)s",
-                    percentage=percentage,
-                    discount_type=discount_type,
-                    base=base_str,
-                    extra=extra_fee_str,
-                )
+                               percentage=percentage,
+                               discount_type=discount_type,
+                               base=base_str,
+                               extra=extra_fee_str,
+                               )
 
     @api.depends('price_discount')
     def _compute_price_markup(self):
@@ -281,11 +281,12 @@ class PricelistItem(models.Model):
             return _("markup"), self._get_integer(item.price_markup)
         return _("discount"), self._get_integer(item.price_discount)
 
-    #=== CONSTRAINT METHODS ===#
+    # === CONSTRAINT METHODS ===#
 
     @api.constrains('base_pricelist_id', 'pricelist_id', 'base')
     def _check_pricelist_recursion(self):
-        if any(item.base == 'pricelist' and item.pricelist_id and item.pricelist_id == item.base_pricelist_id for item in self):
+        if any(item.base == 'pricelist' and item.pricelist_id and item.pricelist_id == item.base_pricelist_id for item
+               in self):
             raise ValidationError(_('You cannot assign the Main Pricelist as Other Pricelist in PriceList Item'))
 
     @api.constrains('date_start', 'date_end')
@@ -315,7 +316,7 @@ class PricelistItem(models.Model):
             elif item.applied_on == "0_product_variant" and not item.product_id:
                 raise ValidationError(_("Please specify the product variant for which this rule should be applied"))
 
-    #=== ONCHANGE METHODS ===#
+    # === ONCHANGE METHODS ===#
 
     @api.onchange('base')
     def _onchange_base(self):
@@ -396,7 +397,7 @@ class PricelistItem(models.Model):
         if not self.env.context.get('default_applied_on', False):
             # If we aren't coming from a specific product template/variant.
             variants_rules = self.filtered('product_id')
-            template_rules = (self-variants_rules).filtered('product_tmpl_id')
+            template_rules = (self - variants_rules).filtered('product_tmpl_id')
             category_rules = self.filtered(lambda cat: cat.categ_id and cat.categ_id.name != 'All')
             variants_rules.update({'applied_on': '0_product_variant'})
             template_rules.update({'applied_on': '1_product'})
@@ -413,7 +414,7 @@ class PricelistItem(models.Model):
     def _onchange_validity_period(self):
         self._check_date_range()
 
-    #=== CRUD METHODS ===#
+    # === CRUD METHODS ===#
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -460,7 +461,7 @@ class PricelistItem(models.Model):
                 values.update(dict(categ_id=None))
         return super().write(values)
 
-    #=== BUSINESS METHODS ===#
+    # === BUSINESS METHODS ===#
 
     def _is_applicable_for(self, product, qty_in_product_uom):
         """Check whether the current rule is valid for the given product & qty.
@@ -482,8 +483,8 @@ class PricelistItem(models.Model):
 
         elif self.applied_on == "2_product_category":
             if (
-                product.categ_id != self.categ_id
-                and not product.categ_id.parent_path.startswith(self.categ_id.parent_path)
+                    product.categ_id != self.categ_id
+                    and not product.categ_id.parent_path.startswith(self.categ_id.parent_path)
             ):
                 res = False
         else:
@@ -492,8 +493,8 @@ class PricelistItem(models.Model):
                 if self.applied_on == "1_product" and product.id != self.product_tmpl_id.id:
                     res = False
                 elif self.applied_on == "0_product_variant" and not (
-                    product.product_variant_count == 1
-                    and product.product_variant_id.id == self.product_id.id
+                        product.product_variant_count == 1
+                        and product.product_variant_id.id == self.product_id.id
                 ):
                     # product self acceptable on template if has only one variant
                     res = False
@@ -585,7 +586,7 @@ class PricelistItem(models.Model):
         elif rule_base == "standard_price":
             src_currency = product.cost_currency_id
             price = product._price_compute(rule_base, uom=uom, date=date)[product.id]
-        else: # list_price
+        else:  # list_price
             src_currency = product.currency_id
             price = product._price_compute(rule_base, uom=uom, date=date)[product.id]
 

@@ -30,7 +30,8 @@ def test_01_cow_views_inherit_on_module_update(env):
     parent_view.with_context(_force_unlink=True, active_test=False)._get_specific_views().unlink()
     child_view.with_context(_force_unlink=True, active_test=False)._get_specific_views().unlink()
     # Change `inherit_id` so the module update will set it back to the XML value
-    child_view.write({'inherit_id': parent_view.id, 'arch': child_view.arch_db.replace('o_footer_copyright_name', 'text-center')})
+    child_view.write(
+        {'inherit_id': parent_view.id, 'arch': child_view.arch_db.replace('o_footer_copyright_name', 'text-center')})
     # Trigger COW on view
     child_view.with_context(website_id=1).write({'name': 'COW Website 1'})
     child_cow_view = child_view._get_specific_views()
@@ -42,8 +43,8 @@ def test_01_cow_views_inherit_on_module_update(env):
     # 3. Upgrade the module
     portal_module = env['ir.module.module'].search([('name', '=', 'portal')])
     portal_module.button_immediate_upgrade()
-    env.reset()     # clear the set of environments
-    env = env()     # get an environment that refers to the new registry
+    env.reset()  # clear the set of environments
+    env = env()  # get an environment that refers to the new registry
 
     # 4. Ensure cow view also got its inherit_id updated
     expected_parent_view = env.ref('portal.frontend_layout')  # XML data
@@ -79,8 +80,8 @@ def test_02_cow_views_inherit_on_module_update(env):
     # 3. Upgrade the module
     portal_module = env['ir.module.module'].search([('name', '=', 'portal')])
     portal_module.button_immediate_upgrade()
-    env.reset()     # clear the set of environments
-    env = env()     # get an environment that refers to the new registry
+    env.reset()  # clear the set of environments
+    env = env()  # get an environment that refers to the new registry
 
     # 4. Ensure cow view also got its inherit_id updated
     assert view_D.inherit_id == view_B, "Generic view security check."

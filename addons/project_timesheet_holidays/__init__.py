@@ -11,7 +11,8 @@ def post_init(env):
     """
     type_ids_ref = env.ref('hr_timesheet.internal_project_default_stage', raise_if_not_found=False)
     type_ids = [(4, type_ids_ref.id)] if type_ids_ref else []
-    companies = env['res.company'].search(['|', ('internal_project_id', '=', False), ('leave_timesheet_task_id', '=', False)])
+    companies = env['res.company'].search(
+        ['|', ('internal_project_id', '=', False), ('leave_timesheet_task_id', '=', False)])
     internal_projects_by_company_dict = None
     project = env['project.project']
     for company in companies:
@@ -23,7 +24,8 @@ def post_init(env):
                     ('allow_timesheets', '=', True),
                     ('company_id', 'in', companies.ids),
                 ], ['company_id', 'id'])
-                internal_projects_by_company_dict = {res['company_id'][0]: res['id'] for res in internal_projects_by_company_read}
+                internal_projects_by_company_dict = {res['company_id'][0]: res['id'] for res in
+                                                     internal_projects_by_company_read}
             project_id = internal_projects_by_company_dict.get(company.id, False)
             if not project_id:
                 project_id = project.create({
@@ -44,7 +46,8 @@ def post_init(env):
                 'leave_timesheet_task_id': task.id,
             })
 
-    for hr_leave_type in env['hr.leave.type'].search([('timesheet_generate', '=', True), ('company_id', '!=', False), ('timesheet_project_id', '=', False)]):
+    for hr_leave_type in env['hr.leave.type'].search(
+            [('timesheet_generate', '=', True), ('company_id', '!=', False), ('timesheet_project_id', '=', False)]):
         project_id = hr_leave_type.company_id.internal_project_id
         default_task_id = hr_leave_type.company_id.leave_timesheet_task_id
         hr_leave_type.write({

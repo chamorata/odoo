@@ -23,7 +23,8 @@ class SurveyUserInput(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
     # answer description
-    survey_id = fields.Many2one('survey.survey', string='Survey', required=True, readonly=True, index=True, ondelete='cascade')
+    survey_id = fields.Many2one('survey.survey', string='Survey', required=True, readonly=True, index=True,
+                                ondelete='cascade')
     scoring_type = fields.Selection(string="Scoring", related="survey_id.scoring_type")
     start_datetime = fields.Datetime('Start date and time', readonly=True)
     end_datetime = fields.Datetime('End date and time', readonly=True)
@@ -39,38 +40,50 @@ class SurveyUserInput(models.Model):
     attempts_limit = fields.Integer("Number of attempts", related='survey_id.attempts_limit')
     attempts_count = fields.Integer("Attempts Count", compute='_compute_attempts_info')
     attempts_number = fields.Integer("Attempt n°", compute='_compute_attempts_info')
-    survey_time_limit_reached = fields.Boolean("Survey Time Limit Reached", compute='_compute_survey_time_limit_reached')
+    survey_time_limit_reached = fields.Boolean("Survey Time Limit Reached",
+                                               compute='_compute_survey_time_limit_reached')
     # identification / access
-    access_token = fields.Char('Identification token', default=lambda self: str(uuid.uuid4()), readonly=True, required=True, copy=False)
-    invite_token = fields.Char('Invite token', readonly=True, copy=False)  # no unique constraint, as it identifies a pool of attempts
+    access_token = fields.Char('Identification token', default=lambda self: str(uuid.uuid4()), readonly=True,
+                               required=True, copy=False)
+    invite_token = fields.Char('Invite token', readonly=True,
+                               copy=False)  # no unique constraint, as it identifies a pool of attempts
     partner_id = fields.Many2one('res.partner', string='Contact', readonly=True, index='btree_not_null')
     email = fields.Char('Email', readonly=True)
-    nickname = fields.Char('Nickname', help="Attendee nickname, mainly used to identify them in the survey session leaderboard.")
+    nickname = fields.Char('Nickname',
+                           help="Attendee nickname, mainly used to identify them in the survey session leaderboard.")
     # questions / answers
     user_input_line_ids = fields.One2many('survey.user_input.line', 'user_input_id', string='Answers', copy=True)
     predefined_question_ids = fields.Many2many('survey.question', string='Predefined Questions', readonly=True)
-    scoring_percentage = fields.Float("Score (%)", compute="_compute_scoring_values", store=True, compute_sudo=True)  # stored for perf reasons
-    scoring_total = fields.Float("Total Score", compute="_compute_scoring_values", store=True, compute_sudo=True, digits=(10, 2))  # stored for perf reasons
-    scoring_success = fields.Boolean('Quizz Passed', compute='_compute_scoring_success', store=True, compute_sudo=True)  # stored for perf reasons
+    scoring_percentage = fields.Float("Score (%)", compute="_compute_scoring_values", store=True,
+                                      compute_sudo=True)  # stored for perf reasons
+    scoring_total = fields.Float("Total Score", compute="_compute_scoring_values", store=True, compute_sudo=True,
+                                 digits=(10, 2))  # stored for perf reasons
+    scoring_success = fields.Boolean('Quizz Passed', compute='_compute_scoring_success', store=True,
+                                     compute_sudo=True)  # stored for perf reasons
     survey_first_submitted = fields.Boolean(string='Survey First Submitted')
     # live sessions
     is_session_answer = fields.Boolean('Is in a Session', help="Is that user input part of a survey session or not.")
-    question_time_limit_reached = fields.Boolean("Question Time Limit Reached", compute='_compute_question_time_limit_reached')
+    question_time_limit_reached = fields.Boolean("Question Time Limit Reached",
+                                                 compute='_compute_question_time_limit_reached')
 
     _sql_constraints = [
         ('unique_token', 'UNIQUE (access_token)', 'An access token must be unique!'),
     ]
 
-    @api.depends('user_input_line_ids.answer_score', 'user_input_line_ids.question_id', 'predefined_question_ids.answer_score')
+    @api.depends('user_input_line_ids.answer_score', 'user_input_line_ids.question_id',
+                 'predefined_question_ids.answer_score')
     def _compute_scoring_values(self):
         for user_input in self:
             # sum(multi-choice question scores) + sum(simple answer_type scores)
             total_possible_score = 0
             for question in user_input.predefined_question_ids:
                 if question.question_type == 'simple_choice':
-                    total_possible_score += max([score for score in question.mapped('suggested_answer_ids.answer_score') if score > 0], default=0)
+                    total_possible_score += max(
+                        [score for score in question.mapped('suggested_answer_ids.answer_score') if score > 0],
+                        default=0)
                 elif question.question_type == 'multiple_choice':
-                    total_possible_score += sum(score for score in question.mapped('suggested_answer_ids.answer_score') if score > 0)
+                    total_possible_score += sum(
+                        score for score in question.mapped('suggested_answer_ids.answer_score') if score > 0)
                 elif question.is_scored_question:
                     total_possible_score += question.answer_score
 
@@ -99,7 +112,8 @@ class SurveyUserInput(models.Model):
                 start_time = user_input.start_datetime
                 time_limit = user_input.survey_id.time_limit
                 user_input.survey_time_limit_reached = user_input.survey_id.is_time_limited and \
-                    fields.Datetime.now() >= start_time + relativedelta(minutes=time_limit)
+                                                       fields.Datetime.now() >= start_time + relativedelta(
+                    minutes=time_limit)
             else:
                 user_input.survey_time_limit_reached = False
 
@@ -115,14 +129,16 @@ class SurveyUserInput(models.Model):
                 start_time = user_input.survey_id.session_question_start_time
                 time_limit = user_input.survey_id.session_question_id.time_limit
                 user_input.question_time_limit_reached = user_input.survey_id.session_question_id.is_time_limited and \
-                    fields.Datetime.now() >= start_time + relativedelta(seconds=time_limit)
+                                                         fields.Datetime.now() >= start_time + relativedelta(
+                    seconds=time_limit)
             else:
                 user_input.question_time_limit_reached = False
 
     @api.depends('state', 'test_entry', 'survey_id.is_attempts_limited', 'partner_id', 'email', 'invite_token')
     def _compute_attempts_info(self):
         attempts_to_compute = self.filtered(
-            lambda user_input: user_input.state == 'done' and not user_input.test_entry and user_input.survey_id.is_attempts_limited
+            lambda
+                user_input: user_input.state == 'done' and not user_input.test_entry and user_input.survey_id.is_attempts_limited
         )
 
         for user_input in (self - attempts_to_compute):
@@ -248,7 +264,8 @@ class SurveyUserInput(models.Model):
         for user_input in self:
             if user_input.survey_id.certification and user_input.scoring_success:
                 if user_input.survey_id.certification_mail_template_id and not user_input.test_entry:
-                    user_input.survey_id.certification_mail_template_id.send_mail(user_input.id, email_layout_xmlid="mail.mail_notification_light")
+                    user_input.survey_id.certification_mail_template_id.send_mail(user_input.id,
+                                                                                  email_layout_xmlid="mail.mail_notification_light")
                 if user_input.survey_id.certification_give_badge:
                     badge_ids.append(user_input.survey_id.certification_badge_id.id)
 
@@ -439,19 +456,25 @@ class SurveyUserInput(models.Model):
 
         for question in scored_questions:
             if question.question_type == 'simple_choice':
-                question_incorrect_scored_answers = question.suggested_answer_ids.filtered(lambda answer: not answer.is_correct and answer.answer_score > 0)
+                question_incorrect_scored_answers = question.suggested_answer_ids.filtered(
+                    lambda answer: not answer.is_correct and answer.answer_score > 0)
 
             if question.question_type in ['simple_choice', 'multiple_choice']:
-                question_correct_suggested_answers = question.suggested_answer_ids.filtered(lambda answer: answer.is_correct)
+                question_correct_suggested_answers = question.suggested_answer_ids.filtered(
+                    lambda answer: answer.is_correct)
 
             question_section = question.page_id.title or _('Uncategorized')
             for user_input in self:
                 user_input_lines = user_input.user_input_line_ids.filtered(lambda line:
-                    line.question_id == question and (line.answer_type != 'char_box' or question.comment_count_as_answer))
+                                                                           line.question_id == question and (
+                                                                                       line.answer_type != 'char_box' or question.comment_count_as_answer))
                 if question.question_type == 'simple_choice':
-                    answer_result_key = self._simple_choice_question_answer_result(user_input_lines, question_correct_suggested_answers, question_incorrect_scored_answers)
+                    answer_result_key = self._simple_choice_question_answer_result(user_input_lines,
+                                                                                   question_correct_suggested_answers,
+                                                                                   question_incorrect_scored_answers)
                 elif question.question_type == 'multiple_choice':
-                    answer_result_key = self._multiple_choice_question_answer_result(user_input_lines, question_correct_suggested_answers)
+                    answer_result_key = self._multiple_choice_question_answer_result(user_input_lines,
+                                                                                     question_correct_suggested_answers)
                 else:
                     answer_result_key = self._simple_question_answer_result(user_input_lines)
 
@@ -489,8 +512,10 @@ class SurveyUserInput(models.Model):
         return res
 
     def _multiple_choice_question_answer_result(self, user_input_lines, question_correct_suggested_answers):
-        correct_user_input_lines = user_input_lines.filtered(lambda line: line.answer_is_correct and not line.skipped).mapped('suggested_answer_id')
-        incorrect_user_input_lines = user_input_lines.filtered(lambda line: not line.answer_is_correct and not line.skipped)
+        correct_user_input_lines = user_input_lines.filtered(
+            lambda line: line.answer_is_correct and not line.skipped).mapped('suggested_answer_id')
+        incorrect_user_input_lines = user_input_lines.filtered(
+            lambda line: not line.answer_is_correct and not line.skipped)
         if question_correct_suggested_answers and correct_user_input_lines == question_correct_suggested_answers:
             return 'correct'
         elif correct_user_input_lines and correct_user_input_lines < question_correct_suggested_answers:
@@ -500,8 +525,10 @@ class SurveyUserInput(models.Model):
         else:
             return 'skipped'
 
-    def _simple_choice_question_answer_result(self, user_input_line, question_correct_suggested_answers, question_incorrect_scored_answers):
-        user_answer = user_input_line.suggested_answer_id if not user_input_line.skipped else self.env['survey.question.answer']
+    def _simple_choice_question_answer_result(self, user_input_line, question_correct_suggested_answers,
+                                              question_incorrect_scored_answers):
+        user_answer = user_input_line.suggested_answer_id if not user_input_line.skipped else self.env[
+            'survey.question.answer']
         if user_answer in question_correct_suggested_answers:
             return 'correct'
         elif user_answer in question_incorrect_scored_answers:
@@ -630,8 +657,8 @@ class SurveyUserInput(models.Model):
         page_or_question_key = 'page_id' if self.survey_id.questions_layout == 'page_per_section' else 'question_id'
         page_or_question_ids = skipped_mandatory_answer_ids.mapped(page_or_question_key).sorted()
 
-        if self.last_displayed_page_id not in page_or_question_ids\
-            or self.last_displayed_page_id == page_or_question_ids[-1]:
+        if self.last_displayed_page_id not in page_or_question_ids \
+                or self.last_displayed_page_id == page_or_question_ids[-1]:
             return page_or_question_ids[0]
 
         current_page_index = page_or_question_ids.ids.index(self.last_displayed_page_id.id)
@@ -698,7 +725,8 @@ class SurveyUserInput(models.Model):
             else:
                 body = _('Someone just participated in "%(survey_title)s".', survey_title=survey_title)
 
-            user_input.message_post(author_id=author_id, body=body, subtype_xmlid='survey.mt_survey_user_input_completed')
+            user_input.message_post(author_id=author_id, body=body,
+                                    subtype_xmlid='survey.mt_survey_user_input_completed')
 
 
 class SurveyUserInputLine(models.Model):
@@ -708,7 +736,8 @@ class SurveyUserInputLine(models.Model):
     _order = 'question_sequence, id'
 
     # survey data
-    user_input_id = fields.Many2one('survey.user_input', string='User Input', ondelete='cascade', required=True, index=True)
+    user_input_id = fields.Many2one('survey.user_input', string='User Input', ondelete='cascade', required=True,
+                                    index=True)
     survey_id = fields.Many2one(related='user_input_id.survey_id', string='Survey', store=True, readonly=False)
     question_id = fields.Many2one('survey.question', string='Question', ondelete='cascade', required=True, index=True)
     page_id = fields.Many2one(related='question_id.page_id', string="Section", readonly=False)
@@ -828,9 +857,11 @@ class SurveyUserInputLine(models.Model):
                 'date': '=',
                 'datetime': '=',
             }
-            return ['&', ('question_id', '=', self.question_id.id), (value_field[self.answer_type], operators[self.answer_type], self._get_answer_value())]
+            return ['&', ('question_id', '=', self.question_id.id),
+                    (value_field[self.answer_type], operators[self.answer_type], self._get_answer_value())]
         elif self.answer_type == 'suggestion':
-            return self.suggested_answer_id._get_answer_matching_domain(self.matrix_row_id.id if self.matrix_row_id else False)
+            return self.suggested_answer_id._get_answer_matching_domain(
+                self.matrix_row_id.id if self.matrix_row_id else False)
 
     @api.model
     def _get_answer_score_values(self, vals, compute_speed_score=True):

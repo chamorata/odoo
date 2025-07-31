@@ -1,14 +1,15 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.tests import tagged
-
 from odoo.addons.project_hr_expense.tests.test_project_profitability import TestProjectHrExpenseProfitabilityCommon
 from odoo.addons.sale.tests.common import TestSaleCommon
 from odoo.addons.sale_project.tests.test_project_profitability import TestProjectProfitabilityCommon
 
+from odoo.tests import tagged
+
 
 @tagged('-at_install', 'post_install')
-class TestProjectSaleExpenseProfitability(TestProjectProfitabilityCommon, TestProjectHrExpenseProfitabilityCommon, TestSaleCommon):
+class TestProjectSaleExpenseProfitability(TestProjectProfitabilityCommon, TestProjectHrExpenseProfitabilityCommon,
+                                          TestSaleCommon):
 
     @classmethod
     def setUpClass(cls):
@@ -62,7 +63,7 @@ class TestProjectSaleExpenseProfitability(TestProjectProfitabilityCommon, TestPr
         expense_foreign = self.env['hr.expense'].create({
             'name': 'Expense foreign',
             'employee_id': foreign_employee.id,
-            'product_id': self.product_c.id, # Foreign currency product must have no cost
+            'product_id': self.product_c.id,  # Foreign currency product must have no cost
             'total_amount_currency': 350.00 * 0.5,  # 0.5 is the exchange rate
             'company_id': foreign_company.id,
             'analytic_distribution': {account.id: 100},
@@ -110,16 +111,19 @@ class TestProjectSaleExpenseProfitability(TestProjectProfitabilityCommon, TestPr
                 'is_expense': True,
             },
         ])
-        expense_sol = self.sale_order.order_line.filtered(lambda sol: sol.product_id == self.company_data['product_order_sales_price'])
+        expense_sol = self.sale_order.order_line.filtered(
+            lambda sol: sol.product_id == self.company_data['product_order_sales_price'])
 
         expense_profitability = project._get_expenses_profitability_items(False)
         self.assertDictEqual(
             expense_profitability.get('revenues', {}),
-            {'id': 'expenses', 'sequence': expense_sequence, 'invoiced': 0.0, 'to_invoice': expense_sol.untaxed_amount_to_invoice},
+            {'id': 'expenses', 'sequence': expense_sequence, 'invoiced': 0.0,
+             'to_invoice': expense_sol.untaxed_amount_to_invoice},
         )
         self.assertDictEqual(
             expense_profitability['costs'],
-            {'id': 'expenses', 'sequence': expense_sequence, 'billed': expense.currency_id.round(-expense.untaxed_amount_currency), 'to_bill': 0.0},
+            {'id': 'expenses', 'sequence': expense_sequence,
+             'billed': expense.currency_id.round(-expense.untaxed_amount_currency), 'to_bill': 0.0},
         )
 
         self.assertDictEqual(
@@ -127,7 +131,8 @@ class TestProjectSaleExpenseProfitability(TestProjectProfitabilityCommon, TestPr
             {
                 'revenues': {
                     'data': [expense_profitability['revenues']],
-                    'total': {k: v for k, v in expense_profitability['revenues'].items() if k in ['to_invoice', 'invoiced']},
+                    'total': {k: v for k, v in expense_profitability['revenues'].items() if
+                              k in ['to_invoice', 'invoiced']},
                 },
                 'costs': {
                     'data': [expense_profitability['costs']],
@@ -142,11 +147,13 @@ class TestProjectSaleExpenseProfitability(TestProjectProfitabilityCommon, TestPr
         expense_profitability = project._get_expenses_profitability_items(False)
         self.assertDictEqual(
             expense_profitability.get('revenues', {}),
-            {'id': 'expenses', 'sequence': expense_sequence, 'invoiced': 0.0, 'to_invoice': expense_sol.untaxed_amount_to_invoice + expense_sol_foreign.untaxed_amount_to_invoice * 0.2},
+            {'id': 'expenses', 'sequence': expense_sequence, 'invoiced': 0.0,
+             'to_invoice': expense_sol.untaxed_amount_to_invoice + expense_sol_foreign.untaxed_amount_to_invoice * 0.2},
         )
         self.assertDictEqual(
             expense_profitability['costs'],
-            {'id': 'expenses', 'sequence': expense_sequence, 'billed': expense.currency_id.round(billed), 'to_bill': 0.0},
+            {'id': 'expenses', 'sequence': expense_sequence, 'billed': expense.currency_id.round(billed),
+             'to_bill': 0.0},
         )
 
         self.assertDictEqual(
@@ -154,7 +161,8 @@ class TestProjectSaleExpenseProfitability(TestProjectProfitabilityCommon, TestPr
             {
                 'revenues': {
                     'data': [expense_profitability['revenues']],
-                    'total': {k: v for k, v in expense_profitability['revenues'].items() if k in ['to_invoice', 'invoiced']},
+                    'total': {k: v for k, v in expense_profitability['revenues'].items() if
+                              k in ['to_invoice', 'invoiced']},
                 },
                 'costs': {
                     'data': [expense_profitability['costs']],
@@ -164,17 +172,18 @@ class TestProjectSaleExpenseProfitability(TestProjectProfitabilityCommon, TestPr
         )
         invoice = self.env['sale.advance.payment.inv'] \
             .with_context({
-                'active_model': 'sale.order',
-                'active_id': self.sale_order.id,
-            }).create({
-                'advance_payment_method': 'delivered',
-            })._create_invoices(self.sale_order)
+            'active_model': 'sale.order',
+            'active_id': self.sale_order.id,
+        }).create({
+            'advance_payment_method': 'delivered',
+        })._create_invoices(self.sale_order)
         invoice.action_post()
 
         expense_profitability = project._get_expenses_profitability_items(False)
         self.assertDictEqual(
             expense_profitability.get('revenues', {}),
-            {'id': 'expenses', 'sequence': expense_sequence, 'invoiced': expense_sol.untaxed_amount_invoiced, 'to_invoice': expense_sol_foreign.untaxed_amount_to_invoice * 0.2},
+            {'id': 'expenses', 'sequence': expense_sequence, 'invoiced': expense_sol.untaxed_amount_invoiced,
+             'to_invoice': expense_sol_foreign.untaxed_amount_to_invoice * 0.2},
         )
 
         credit_note = invoice._reverse_moves()
@@ -183,42 +192,48 @@ class TestProjectSaleExpenseProfitability(TestProjectProfitabilityCommon, TestPr
         expense_profitability = project._get_expenses_profitability_items(False)
         self.assertDictEqual(
             expense_profitability.get('revenues', {}),
-            {'id': 'expenses', 'sequence': expense_sequence, 'invoiced': 0.0, 'to_invoice': expense_sol.untaxed_amount_to_invoice + expense_sol_foreign.untaxed_amount_to_invoice * 0.2},
+            {'id': 'expenses', 'sequence': expense_sequence, 'invoiced': 0.0,
+             'to_invoice': expense_sol.untaxed_amount_to_invoice + expense_sol_foreign.untaxed_amount_to_invoice * 0.2},
         )
 
         self.sale_order._action_cancel()
         expense_profitability = project._get_expenses_profitability_items(False)
         self.assertDictEqual(
             expense_profitability.get('revenues', {}),
-            {'id': 'expenses', 'sequence': expense_sequence, 'invoiced': 0.0, 'to_invoice': expense_sol_foreign.untaxed_amount_to_invoice * 0.2},
+            {'id': 'expenses', 'sequence': expense_sequence, 'invoiced': 0.0,
+             'to_invoice': expense_sol_foreign.untaxed_amount_to_invoice * 0.2},
         )
         self.assertDictEqual(
             expense_profitability['costs'],
-            {'id': 'expenses', 'sequence': expense_sequence, 'billed': expense.currency_id.round(billed), 'to_bill': 0.0},
+            {'id': 'expenses', 'sequence': expense_sequence, 'billed': expense.currency_id.round(billed),
+             'to_bill': 0.0},
         )
 
         expense_sheet.action_reset_expense_sheets()
         expense_profitability = project._get_expenses_profitability_items(False)
         self.assertDictEqual(
             expense_profitability.get('revenues', {}),
-            {'id': 'expenses', 'sequence': expense_sequence, 'invoiced': 0.0, 'to_invoice': expense_sol_foreign.untaxed_amount_to_invoice * 0.2},
+            {'id': 'expenses', 'sequence': expense_sequence, 'invoiced': 0.0,
+             'to_invoice': expense_sol_foreign.untaxed_amount_to_invoice * 0.2},
         )
         self.assertDictEqual(
             expense_profitability.get('costs', {}),
-            {'id': 'expenses', 'sequence': expense_sequence, 'billed': expense.currency_id.round(-expense_foreign.untaxed_amount_currency * 0.2), 'to_bill': 0.0},
+            {'id': 'expenses', 'sequence': expense_sequence,
+             'billed': expense.currency_id.round(-expense_foreign.untaxed_amount_currency * 0.2), 'to_bill': 0.0},
         )
 
         invoice = self.env['sale.advance.payment.inv'].with_context({
-                'active_model': 'sale.order',
-                'active_id': so_foreign.id,
-            }).create({
-                'advance_payment_method': 'delivered',
-            })._create_invoices(so_foreign)
+            'active_model': 'sale.order',
+            'active_id': so_foreign.id,
+        }).create({
+            'advance_payment_method': 'delivered',
+        })._create_invoices(so_foreign)
         invoice.action_post()
         expense_profitability = project._get_expenses_profitability_items(False)
         self.assertDictEqual(
             expense_profitability.get('revenues', {}),
-            {'id': 'expenses', 'sequence': expense_sequence, 'invoiced': expense_sol_foreign.untaxed_amount_invoiced * 0.2, 'to_invoice': 0.0},
+            {'id': 'expenses', 'sequence': expense_sequence,
+             'invoiced': expense_sol_foreign.untaxed_amount_invoiced * 0.2, 'to_invoice': 0.0},
         )
 
         credit_note = invoice._reverse_moves()
@@ -227,7 +242,8 @@ class TestProjectSaleExpenseProfitability(TestProjectProfitabilityCommon, TestPr
         expense_profitability = project._get_expenses_profitability_items(False)
         self.assertDictEqual(
             expense_profitability.get('revenues', {}),
-            {'id': 'expenses', 'sequence': expense_sequence, 'invoiced': 0.0, 'to_invoice': expense_sol_foreign.untaxed_amount_to_invoice * 0.2},
+            {'id': 'expenses', 'sequence': expense_sequence, 'invoiced': 0.0,
+             'to_invoice': expense_sol_foreign.untaxed_amount_to_invoice * 0.2},
         )
 
         so_foreign._action_cancel()
@@ -238,7 +254,8 @@ class TestProjectSaleExpenseProfitability(TestProjectProfitabilityCommon, TestPr
         )
         self.assertDictEqual(
             expense_profitability['costs'],
-            {'id': 'expenses', 'sequence': expense_sequence, 'billed': expense.currency_id.round(-expense_foreign.untaxed_amount_currency * 0.2), 'to_bill': 0.0},
+            {'id': 'expenses', 'sequence': expense_sequence,
+             'billed': expense.currency_id.round(-expense_foreign.untaxed_amount_currency * 0.2), 'to_bill': 0.0},
         )
 
         expense_sheet_foreign.action_reset_expense_sheets()
@@ -310,10 +327,10 @@ class TestProjectSaleExpenseProfitability(TestProjectProfitabilityCommon, TestPr
         domain = [
             ('order_id', 'in', sale_items.order_id.ids),
             '|',
-                '|',
-                    ('project_id', 'in', project.ids),
-                    ('project_id', '=', False),
-                ('id', 'in', sale_items.ids),
+            '|',
+            ('project_id', 'in', project.ids),
+            ('project_id', '=', False),
+            ('id', 'in', sale_items.ids),
         ]
 
         revenue_items_from_sol = project._get_revenues_items_from_sol(domain, False)
@@ -324,6 +341,8 @@ class TestProjectSaleExpenseProfitability(TestProjectProfitabilityCommon, TestPr
             project_profitability.get('revenues', {}),
             {
                 'data': [expense_profitability['revenues'], revenue_items_from_sol['data'][0]],
-                'total': {'invoiced': expense_profitability['revenues']['invoiced'] + revenue_items_from_sol['total']['invoiced'], 'to_invoice': expense_profitability['revenues']['to_invoice'] + revenue_items_from_sol['total']['to_invoice']},
+                'total': {'invoiced': expense_profitability['revenues']['invoiced'] + revenue_items_from_sol['total'][
+                    'invoiced'], 'to_invoice': expense_profitability['revenues']['to_invoice'] +
+                                               revenue_items_from_sol['total']['to_invoice']},
             },
         )

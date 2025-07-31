@@ -2,12 +2,12 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import date
+
 from dateutil.relativedelta import relativedelta
+from odoo.addons.hr_holidays.tests.common import TestHrHolidaysCommon
 
 from odoo.exceptions import AccessError
 from odoo.tools import date_utils
-
-from odoo.addons.hr_holidays.tests.common import TestHrHolidaysCommon
 
 
 class TestHrLeaveType(TestHrHolidaysCommon):
@@ -69,6 +69,6 @@ class TestHrLeaveType(TestHrHolidaysCommon):
             default_date_to='2024-08-21 09:00:00',
             tz='Pacific/Saipan',
             employee_id=employee.id,
-            ).search([('has_valid_allocation', '=', True)], limit=1)
+        ).search([('has_valid_allocation', '=', True)], limit=1)
 
         self.assertFalse(leave_types, "Got valid leaves outside vaild period")

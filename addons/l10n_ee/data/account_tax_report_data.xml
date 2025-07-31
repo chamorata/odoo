@@ -145,7 +145,9 @@
                     <record id="tax_report_line_3_balance" model="account.report.expression">
                         <field name="label">balance</field>
                         <field name="engine">aggregation</field>
-                        <field name="formula">l10n_ee_vat_3.tax_tags + l10n_ee_vat_3_1.balance + l10n_ee_vat_3_2.balance</field>
+                        <field name="formula">l10n_ee_vat_3.tax_tags + l10n_ee_vat_3_1.balance +
+                            l10n_ee_vat_3_2.balance
+                        </field>
                     </record>
                     <record id="tax_report_line_3_tag" model="account.report.expression">
                         <field name="label">tax_tags</field>
@@ -155,7 +157,9 @@
                 </field>
                 <field name="children_ids">
                     <record id="tax_report_line_3_1" model="account.report.line">
-                        <field name="name">3.1 - Intra-Community supply of goods and services provided to a taxable person or taxable person with limited liability of another Member State, total, incl.</field>
+                        <field name="name">3.1 - Intra-Community supply of goods and services provided to a taxable
+                            person or taxable person with limited liability of another Member State, total, incl.
+                        </field>
                         <field name="code">l10n_ee_vat_3_1</field>
                         <field name="expression_ids">
                             <record id="tax_report_line_3_1_balance" model="account.report.expression">
@@ -239,12 +243,17 @@
                     <record id="tax_report_line_4_tag" model="account.report.expression">
                         <field name="label">balance</field>
                         <field name="engine">aggregation</field>
-                        <field name="formula">l10n_ee_vat_1_24.balance * 0.24 + l10n_ee_vat_1.balance * 0.22 + l10n_ee_vat_1_2.balance * 0.22 + l10n_ee_vat_1_1.balance * 0.2 + l10n_ee_vat_2.balance * 0.09 + l10n_ee_vat_2_1.balance * 0.05 + l10n_ee_vat_2_2.balance * 0.13</field>
+                        <field name="formula">l10n_ee_vat_1_24.balance * 0.24 + l10n_ee_vat_1.balance * 0.22 +
+                            l10n_ee_vat_1_2.balance * 0.22 + l10n_ee_vat_1_1.balance * 0.2 + l10n_ee_vat_2.balance *
+                            0.09 + l10n_ee_vat_2_1.balance * 0.05 + l10n_ee_vat_2_2.balance * 0.13
+                        </field>
                     </record>
                     <record id="tax_report_line_4_tag_no_rounding" model="account.report.expression">
                         <field name="label">balance_from_tags</field>
                         <field name="engine">aggregation</field>
-                        <field name="formula">l10n_ee_vat_1_24.tax + l10n_ee_vat_1.tax + l10n_ee_vat_1_1.tax + l10n_ee_vat_1_2.tax + l10n_ee_vat_2.tax + l10n_ee_vat_2_1.tax + l10n_ee_vat_2_2.tax</field>
+                        <field name="formula">l10n_ee_vat_1_24.tax + l10n_ee_vat_1.tax + l10n_ee_vat_1_1.tax +
+                            l10n_ee_vat_1_2.tax + l10n_ee_vat_2.tax + l10n_ee_vat_2_1.tax + l10n_ee_vat_2_2.tax
+                        </field>
                     </record>
                 </field>
             </record>
@@ -268,7 +277,9 @@
                     <record id="tax_report_line_5_balance" model="account.report.expression">
                         <field name="label">balance</field>
                         <field name="engine">aggregation</field>
-                        <field name="formula">l10n_ee_vat_5.tax_tags + l10n_ee_vat_5_1.balance + l10n_ee_vat_5_2.balance + l10n_ee_vat_5_3.balance + l10n_ee_vat_5_4.balance</field>
+                        <field name="formula">l10n_ee_vat_5.tax_tags + l10n_ee_vat_5_1.balance + l10n_ee_vat_5_2.balance
+                            + l10n_ee_vat_5_3.balance + l10n_ee_vat_5_4.balance
+                        </field>
                     </record>
                     <record id="tax_report_line_5_tag" model="account.report.expression">
                         <field name="label">tax_tags</field>
@@ -300,7 +311,9 @@
                         </field>
                     </record>
                     <record id="tax_report_line_5_3" model="account.report.line">
-                        <field name="name">5.3 - VAT paid or payable on acquisition of a car used for business purposes (100%), and on acquisition of goods and receipt of services for such car</field>
+                        <field name="name">5.3 - VAT paid or payable on acquisition of a car used for business purposes
+                            (100%), and on acquisition of goods and receipt of services for such car
+                        </field>
                         <field name="code">l10n_ee_vat_5_3</field>
                         <field name="expression_ids">
                             <record id="tax_report_line_5_3_tag" model="account.report.expression">
@@ -325,7 +338,9 @@
                         </field>
                     </record>
                     <record id="tax_report_line_5_4" model="account.report.line">
-                        <field name="name">5.4 - VAT paid or payable on acquisition of a car used partially for business purposes, and on acquisition of goods and receipt of services for such car</field>
+                        <field name="name">5.4 - VAT paid or payable on acquisition of a car used partially for business
+                            purposes, and on acquisition of goods and receipt of services for such car
+                        </field>
                         <field name="code">l10n_ee_vat_5_4</field>
                         <field name="expression_ids">
                             <record id="tax_report_line_5_4_tag" model="account.report.expression">
@@ -352,7 +367,9 @@
                 </field>
             </record>
             <record id="tax_report_line_6" model="account.report.line">
-                <field name="name">6 - Intra-Community acquisitions of goods and services received from a taxable person of another Member State, total, incl.</field>
+                <field name="name">6 - Intra-Community acquisitions of goods and services received from a taxable person
+                    of another Member State, total, incl.
+                </field>
                 <field name="code">l10n_ee_vat_6</field>
                 <field name="hierarchy_level">0</field>
                 <field name="expression_ids">
@@ -399,7 +416,9 @@
                 </field>
                 <field name="children_ids">
                     <record id="tax_report_line_7_1" model="account.report.line">
-                        <field name="name">7.1 - Acquisition of immovables, scrap metal, precious metal and metal products subject to value added tax under the special arrangements (VAT Act §41¹)</field>
+                        <field name="name">7.1 - Acquisition of immovables, scrap metal, precious metal and metal
+                            products subject to value added tax under the special arrangements (VAT Act §41¹)
+                        </field>
                         <field name="code">l10n_ee_vat_7_1</field>
                         <field name="expression_ids">
                             <record id="tax_report_line_7_1_tag" model="account.report.expression">
@@ -424,7 +443,10 @@
                 </field>
             </record>
             <record id="tax_report_line_9" model="account.report.line">
-                <field name="name">9 - Supply of immovables, scrap metal, precious metal and metal products subject to value added tax under the special arrangements (VAT Act §41¹) and taxable value of goods to be installed or assembled in another Member State</field>
+                <field name="name">9 - Supply of immovables, scrap metal, precious metal and metal products subject to
+                    value added tax under the special arrangements (VAT Act §41¹) and taxable value of goods to be
+                    installed or assembled in another Member State
+                </field>
                 <field name="code">l10n_ee_vat_9</field>
                 <field name="hierarchy_level">0</field>
                 <field name="expression_ids">
@@ -466,7 +488,9 @@
                     <record id="tax_report_line_12_formula" model="account.report.expression">
                         <field name="label">balance</field>
                         <field name="engine">aggregation</field>
-                        <field name="formula">l10n_ee_vat_4.balance + l10n_ee_vat_4_1.balance - l10n_ee_vat_5.balance + l10n_ee_vat_10.balance - l10n_ee_vat_11.balance</field>
+                        <field name="formula">l10n_ee_vat_4.balance + l10n_ee_vat_4_1.balance - l10n_ee_vat_5.balance +
+                            l10n_ee_vat_10.balance - l10n_ee_vat_11.balance
+                        </field>
                         <field name="subformula">if_above(EUR(0))</field>
                     </record>
                 </field>
@@ -478,7 +502,9 @@
                     <record id="tax_report_line_13_formula" model="account.report.expression">
                         <field name="label">balance</field>
                         <field name="engine">aggregation</field>
-                        <field name="formula">-(l10n_ee_vat_4.balance + l10n_ee_vat_4_1.balance - l10n_ee_vat_5.balance + l10n_ee_vat_10.balance - l10n_ee_vat_11.balance)</field>
+                        <field name="formula">-(l10n_ee_vat_4.balance + l10n_ee_vat_4_1.balance - l10n_ee_vat_5.balance
+                            + l10n_ee_vat_10.balance - l10n_ee_vat_11.balance)
+                        </field>
                         <field name="subformula">if_above(EUR(0))</field>
                     </record>
                 </field>

@@ -7,38 +7,98 @@
       "colNumber": 5,
       "rowNumber": 56,
       "rows": {
-        "6": { "size": 40 },
-        "22": { "size": 40 },
-        "23": { "size": 40 },
-        "24": { "size": 29 },
-        "25": { "size": 29 },
-        "26": { "size": 29 },
-        "27": { "size": 29 },
-        "28": { "size": 29 },
-        "29": { "size": 29 },
-        "30": { "size": 29 },
-        "31": { "size": 29 },
-        "32": { "size": 29 },
-        "33": { "size": 29 },
-        "35": { "size": 40 },
-        "36": { "size": 40 },
-        "37": { "size": 29 },
-        "38": { "size": 29 },
-        "39": { "size": 29 },
-        "40": { "size": 29 },
-        "41": { "size": 29 },
-        "42": { "size": 29 },
-        "43": { "size": 29 },
-        "44": { "size": 29 },
-        "45": { "size": 29 },
-        "46": { "size": 29 }
+        "6": {
+          "size": 40
+        },
+        "22": {
+          "size": 40
+        },
+        "23": {
+          "size": 40
+        },
+        "24": {
+          "size": 29
+        },
+        "25": {
+          "size": 29
+        },
+        "26": {
+          "size": 29
+        },
+        "27": {
+          "size": 29
+        },
+        "28": {
+          "size": 29
+        },
+        "29": {
+          "size": 29
+        },
+        "30": {
+          "size": 29
+        },
+        "31": {
+          "size": 29
+        },
+        "32": {
+          "size": 29
+        },
+        "33": {
+          "size": 29
+        },
+        "35": {
+          "size": 40
+        },
+        "36": {
+          "size": 40
+        },
+        "37": {
+          "size": 29
+        },
+        "38": {
+          "size": 29
+        },
+        "39": {
+          "size": 29
+        },
+        "40": {
+          "size": 29
+        },
+        "41": {
+          "size": 29
+        },
+        "42": {
+          "size": 29
+        },
+        "43": {
+          "size": 29
+        },
+        "44": {
+          "size": 29
+        },
+        "45": {
+          "size": 29
+        },
+        "46": {
+          "size": 29
+        }
       },
       "cols": {
-        "0": { "size": 374 },
-        "1": { "size": 100 },
-        "2": { "size": 50 },
-        "3": { "size": 375 },
-        "4": { "size": 100 }
+        "0": {
+          "size": 374
+        },
+        "1": {
+          "size": 100
+        },
+        "2": {
+          "size": 50
+        },
+        "3": {
+          "size": 375
+        },
+        "4": {
+          "size": 100
+        }
       },
       "merges": [],
       "cells": {
@@ -48,85 +108,219 @@
         "A23": {
           "content": "[Top Venues](odoo://view/{\"viewType\":\"pivot\",\"action\":{\"domain\":[[\"address_id\",\"!=\",false]],\"context\":{\"group_by\":[\"address_id\"],\"pivot_measures\":[\"__count\"],\"pivot_column_groupby\":[],\"pivot_row_groupby\":[\"address_id\"]},\"modelName\":\"event.event\",\"views\":[[false,\"kanban\"],[false,\"calendar\"],[false,\"list\"],[false,\"form\"],[false,\"pivot\"],[false,\"graph\"],[false,\"search\"]]},\"threshold\":0,\"name\":\"Events\"})"
         },
-        "A24": { "content": "=_t(\"Venue\")" },
-        "A25": { "content": "=PIVOT.HEADER(1,\"#address_id\",1)" },
-        "A26": { "content": "=PIVOT.HEADER(1,\"#address_id\",2)" },
-        "A27": { "content": "=PIVOT.HEADER(1,\"#address_id\",3)" },
-        "A28": { "content": "=PIVOT.HEADER(1,\"#address_id\",4)" },
-        "A29": { "content": "=PIVOT.HEADER(1,\"#address_id\",5)" },
-        "A30": { "content": "=PIVOT.HEADER(1,\"#address_id\",6)" },
-        "A31": { "content": "=PIVOT.HEADER(1,\"#address_id\",7)" },
-        "A32": { "content": "=PIVOT.HEADER(1,\"#address_id\",8)" },
-        "A33": { "content": "=PIVOT.HEADER(1,\"#address_id\",9)" },
-        "A34": { "content": "=PIVOT.HEADER(1,\"#address_id\",10)" },
+        "A24": {
+          "content": "=_t(\"Venue\")"
+        },
+        "A25": {
+          "content": "=PIVOT.HEADER(1,\"#address_id\",1)"
+        },
+        "A26": {
+          "content": "=PIVOT.HEADER(1,\"#address_id\",2)"
+        },
+        "A27": {
+          "content": "=PIVOT.HEADER(1,\"#address_id\",3)"
+        },
+        "A28": {
+          "content": "=PIVOT.HEADER(1,\"#address_id\",4)"
+        },
+        "A29": {
+          "content": "=PIVOT.HEADER(1,\"#address_id\",5)"
+        },
+        "A30": {
+          "content": "=PIVOT.HEADER(1,\"#address_id\",6)"
+        },
+        "A31": {
+          "content": "=PIVOT.HEADER(1,\"#address_id\",7)"
+        },
+        "A32": {
+          "content": "=PIVOT.HEADER(1,\"#address_id\",8)"
+        },
+        "A33": {
+          "content": "=PIVOT.HEADER(1,\"#address_id\",9)"
+        },
+        "A34": {
+          "content": "=PIVOT.HEADER(1,\"#address_id\",10)"
+        },
         "A36": {
           "content": "[Top Tags](odoo://view/{\"viewType\":\"pivot\",\"action\":{\"domain\":[[\"tag_ids\",\"!=\",false]],\"context\":{\"group_by\":[\"tag_ids\"],\"pivot_measures\":[\"__count\"],\"pivot_column_groupby\":[],\"pivot_row_groupby\":[\"tag_ids\"]},\"modelName\":\"event.event\",\"views\":[[false,\"kanban\"],[false,\"calendar\"],[false,\"list\"],[false,\"form\"],[false,\"pivot\"],[false,\"graph\"],[false,\"search\"]]},\"threshold\":0,\"name\":\"Events\"})"
         },
-        "A37": { "content": "=_t(\"Tag\")" },
-        "A38": { "content": "=PIVOT.HEADER(3,\"#tag_ids\",1)" },
-        "A39": { "content": "=PIVOT.HEADER(3,\"#tag_ids\",2)" },
-        "A40": { "content": "=PIVOT.HEADER(3,\"#tag_ids\",3)" },
-        "A41": { "content": "=PIVOT.HEADER(3,\"#tag_ids\",4)" },
-        "A42": { "content": "=PIVOT.HEADER(3,\"#tag_ids\",5)" },
-        "A43": { "content": "=PIVOT.HEADER(3,\"#tag_ids\",6)" },
-        "A44": { "content": "=PIVOT.HEADER(3,\"#tag_ids\",7)" },
-        "A45": { "content": "=PIVOT.HEADER(3,\"#tag_ids\",8)" },
-        "A46": { "content": "=PIVOT.HEADER(3,\"#tag_ids\",9)" },
-        "A47": { "content": "=PIVOT.HEADER(3,\"#tag_ids\",10)" },
-        "B24": { "content": "=_t(\"Events\")" },
-        "B25": { "content": "=PIVOT.VALUE(1,\"__count\",\"#address_id\",1)" },
-        "B26": { "content": "=PIVOT.VALUE(1,\"__count\",\"#address_id\",2)" },
-        "B27": { "content": "=PIVOT.VALUE(1,\"__count\",\"#address_id\",3)" },
-        "B28": { "content": "=PIVOT.VALUE(1,\"__count\",\"#address_id\",4)" },
-        "B29": { "content": "=PIVOT.VALUE(1,\"__count\",\"#address_id\",5)" },
-        "B30": { "content": "=PIVOT.VALUE(1,\"__count\",\"#address_id\",6)" },
-        "B31": { "content": "=PIVOT.VALUE(1,\"__count\",\"#address_id\",7)" },
-        "B32": { "content": "=PIVOT.VALUE(1,\"__count\",\"#address_id\",8)" },
-        "B33": { "content": "=PIVOT.VALUE(1,\"__count\",\"#address_id\",9)" },
-        "B34": { "content": "=PIVOT.VALUE(1,\"__count\",\"#address_id\",10)" },
-        "B37": { "content": "=_t(\"Events\")" },
-        "B38": { "content": "=PIVOT.VALUE(3,\"__count\",\"#tag_ids\",1)" },
-        "B39": { "content": "=PIVOT.VALUE(3,\"__count\",\"#tag_ids\",2)" },
-        "B40": { "content": "=PIVOT.VALUE(3,\"__count\",\"#tag_ids\",3)" },
-        "B41": { "content": "=PIVOT.VALUE(3,\"__count\",\"#tag_ids\",4)" },
-        "B42": { "content": "=PIVOT.VALUE(3,\"__count\",\"#tag_ids\",5)" },
-        "B43": { "content": "=PIVOT.VALUE(3,\"__count\",\"#tag_ids\",6)" },
-        "B44": { "content": "=PIVOT.VALUE(3,\"__count\",\"#tag_ids\",7)" },
-        "B45": { "content": "=PIVOT.VALUE(3,\"__count\",\"#tag_ids\",8)" },
-        "B46": { "content": "=PIVOT.VALUE(3,\"__count\",\"#tag_ids\",9)" },
-        "B47": { "content": "=PIVOT.VALUE(3,\"__count\",\"#tag_ids\",10)" },
+        "A37": {
+          "content": "=_t(\"Tag\")"
+        },
+        "A38": {
+          "content": "=PIVOT.HEADER(3,\"#tag_ids\",1)"
+        },
+        "A39": {
+          "content": "=PIVOT.HEADER(3,\"#tag_ids\",2)"
+        },
+        "A40": {
+          "content": "=PIVOT.HEADER(3,\"#tag_ids\",3)"
+        },
+        "A41": {
+          "content": "=PIVOT.HEADER(3,\"#tag_ids\",4)"
+        },
+        "A42": {
+          "content": "=PIVOT.HEADER(3,\"#tag_ids\",5)"
+        },
+        "A43": {
+          "content": "=PIVOT.HEADER(3,\"#tag_ids\",6)"
+        },
+        "A44": {
+          "content": "=PIVOT.HEADER(3,\"#tag_ids\",7)"
+        },
+        "A45": {
+          "content": "=PIVOT.HEADER(3,\"#tag_ids\",8)"
+        },
+        "A46": {
+          "content": "=PIVOT.HEADER(3,\"#tag_ids\",9)"
+        },
+        "A47": {
+          "content": "=PIVOT.HEADER(3,\"#tag_ids\",10)"
+        },
+        "B24": {
+          "content": "=_t(\"Events\")"
+        },
+        "B25": {
+          "content": "=PIVOT.VALUE(1,\"__count\",\"#address_id\",1)"
+        },
+        "B26": {
+          "content": "=PIVOT.VALUE(1,\"__count\",\"#address_id\",2)"
+        },
+        "B27": {
+          "content": "=PIVOT.VALUE(1,\"__count\",\"#address_id\",3)"
+        },
+        "B28": {
+          "content": "=PIVOT.VALUE(1,\"__count\",\"#address_id\",4)"
+        },
+        "B29": {
+          "content": "=PIVOT.VALUE(1,\"__count\",\"#address_id\",5)"
+        },
+        "B30": {
+          "content": "=PIVOT.VALUE(1,\"__count\",\"#address_id\",6)"
+        },
+        "B31": {
+          "content": "=PIVOT.VALUE(1,\"__count\",\"#address_id\",7)"
+        },
+        "B32": {
+          "content": "=PIVOT.VALUE(1,\"__count\",\"#address_id\",8)"
+        },
+        "B33": {
+          "content": "=PIVOT.VALUE(1,\"__count\",\"#address_id\",9)"
+        },
+        "B34": {
+          "content": "=PIVOT.VALUE(1,\"__count\",\"#address_id\",10)"
+        },
+        "B37": {
+          "content": "=_t(\"Events\")"
+        },
+        "B38": {
+          "content": "=PIVOT.VALUE(3,\"__count\",\"#tag_ids\",1)"
+        },
+        "B39": {
+          "content": "=PIVOT.VALUE(3,\"__count\",\"#tag_ids\",2)"
+        },
+        "B40": {
+          "content": "=PIVOT.VALUE(3,\"__count\",\"#tag_ids\",3)"
+        },
+        "B41": {
+          "content": "=PIVOT.VALUE(3,\"__count\",\"#tag_ids\",4)"
+        },
+        "B42": {
+          "content": "=PIVOT.VALUE(3,\"__count\",\"#tag_ids\",5)"
+        },
+        "B43": {
+          "content": "=PIVOT.VALUE(3,\"__count\",\"#tag_ids\",6)"
+        },
+        "B44": {
+          "content": "=PIVOT.VALUE(3,\"__count\",\"#tag_ids\",7)"
+        },
+        "B45": {
+          "content": "=PIVOT.VALUE(3,\"__count\",\"#tag_ids\",8)"
+        },
+        "B46": {
+          "content": "=PIVOT.VALUE(3,\"__count\",\"#tag_ids\",9)"
+        },
+        "B47": {
+          "content": "=PIVOT.VALUE(3,\"__count\",\"#tag_ids\",10)"
+        },
         "D7": {
           "content": "[Registration Status](odoo://view/{\"viewType\":\"graph\",\"action\":{\"domain\":[],\"context\":{\"group_by\":[\"state\"],\"graph_measure\":\"__count\",\"graph_mode\":\"bar\",\"graph_groupbys\":[\"state\"]},\"modelName\":\"event.registration\",\"views\":[[false,\"graph\"],[false,\"pivot\"],[false,\"kanban\"],[false,\"list\"],[false,\"form\"],[false,\"search\"]]},\"threshold\":0,\"name\":\"Attendees\"})"
         },
         "D23": {
           "content": "[Top Templates](odoo://view/{\"viewType\":\"pivot\",\"action\":{\"domain\":[[\"event_type_id\",\"!=\",false]],\"context\":{\"group_by\":[\"event_type_id\"],\"pivot_measures\":[\"__count\"],\"pivot_column_groupby\":[],\"pivot_row_groupby\":[\"event_type_id\"]},\"modelName\":\"event.event\",\"views\":[[false,\"kanban\"],[false,\"calendar\"],[false,\"list\"],[false,\"form\"],[false,\"pivot\"],[false,\"graph\"],[false,\"search\"]]},\"threshold\":0,\"name\":\"Events\"})"
         },
-        "D24": { "content": "=_t(\"Template\")" },
-        "D25": { "content": "=PIVOT.HEADER(2,\"#event_type_id\",1)" },
-        "D26": { "content": "=PIVOT.HEADER(2,\"#event_type_id\",2)" },
-        "D27": { "content": "=PIVOT.HEADER(2,\"#event_type_id\",3)" },
-        "D28": { "content": "=PIVOT.HEADER(2,\"#event_type_id\",4)" },
-        "D29": { "content": "=PIVOT.HEADER(2,\"#event_type_id\",5)" },
-        "D30": { "content": "=PIVOT.HEADER(2,\"#event_type_id\",6)" },
-        "D31": { "content": "=PIVOT.HEADER(2,\"#event_type_id\",7)" },
-        "D32": { "content": "=PIVOT.HEADER(2,\"#event_type_id\",8)" },
-        "D33": { "content": "=PIVOT.HEADER(2,\"#event_type_id\",9)" },
-        "D34": { "content": "=PIVOT.HEADER(2,\"#event_type_id\",10)" },
+        "D24": {
+          "content": "=_t(\"Template\")"
+        },
+        "D25": {
+          "content": "=PIVOT.HEADER(2,\"#event_type_id\",1)"
+        },
+        "D26": {
+          "content": "=PIVOT.HEADER(2,\"#event_type_id\",2)"
+        },
+        "D27": {
+          "content": "=PIVOT.HEADER(2,\"#event_type_id\",3)"
+        },
+        "D28": {
+          "content": "=PIVOT.HEADER(2,\"#event_type_id\",4)"
+        },
+        "D29": {
+          "content": "=PIVOT.HEADER(2,\"#event_type_id\",5)"
+        },
+        "D30": {
+          "content": "=PIVOT.HEADER(2,\"#event_type_id\",6)"
+        },
+        "D31": {
+          "content": "=PIVOT.HEADER(2,\"#event_type_id\",7)"
+        },
+        "D32": {
+          "content": "=PIVOT.HEADER(2,\"#event_type_id\",8)"
+        },
+        "D33": {
+          "content": "=PIVOT.HEADER(2,\"#event_type_id\",9)"
+        },
+        "D34": {
+          "content": "=PIVOT.HEADER(2,\"#event_type_id\",10)"
+        },
         "D36": {
           "content": "[Top Organizers](odoo://view/{\"viewType\":\"pivot\",\"action\":{\"domain\":[[\"organizer_id\",\"!=\",false]],\"context\":{\"group_by\":[\"organizer_id\"],\"pivot_measures\":[\"__count\"],\"pivot_column_groupby\":[],\"pivot_row_groupby\":[\"organizer_id\"]},\"modelName\":\"event.event\",\"views\":[[false,\"kanban\"],[false,\"calendar\"],[false,\"list\"],[false,\"form\"],[false,\"pivot\"],[false,\"graph\"],[false,\"search\"]]},\"threshold\":0,\"name\":\"Events\"})"
         },
-        "D37": { "content": "=_t(\"Organizer\")" },
-        "D38": { "content": "=PIVOT.HEADER(4,\"#organizer_id\",1)" },
-        "D39": { "content": "=PIVOT.HEADER(4,\"#organizer_id\",2)" },
-        "D40": { "content": "=PIVOT.HEADER(4,\"#organizer_id\",3)" },
-        "D41": { "content": "=PIVOT.HEADER(4,\"#organizer_id\",4)" },
-        "D42": { "content": "=PIVOT.HEADER(4,\"#organizer_id\",5)" },
-        "D43": { "content": "=PIVOT.HEADER(4,\"#organizer_id\",6)" },
-        "D44": { "content": "=PIVOT.HEADER(4,\"#organizer_id\",7)" },
-        "D45": { "content": "=PIVOT.HEADER(4,\"#organizer_id\",8)" },
-        "D46": { "content": "=PIVOT.HEADER(4,\"#organizer_id\",9)" },
-        "D47": { "content": "=PIVOT.HEADER(4,\"#organizer_id\",10)" },
-        "E24": { "content": "=_t(\"Events\")" },
+        "D37": {
+          "content": "=_t(\"Organizer\")"
+        },
+        "D38": {
+          "content": "=PIVOT.HEADER(4,\"#organizer_id\",1)"
+        },
+        "D39": {
+          "content": "=PIVOT.HEADER(4,\"#organizer_id\",2)"
+        },
+        "D40": {
+          "content": "=PIVOT.HEADER(4,\"#organizer_id\",3)"
+        },
+        "D41": {
+          "content": "=PIVOT.HEADER(4,\"#organizer_id\",4)"
+        },
+        "D42": {
+          "content": "=PIVOT.HEADER(4,\"#organizer_id\",5)"
+        },
+        "D43": {
+          "content": "=PIVOT.HEADER(4,\"#organizer_id\",6)"
+        },
+        "D44": {
+          "content": "=PIVOT.HEADER(4,\"#organizer_id\",7)"
+        },
+        "D45": {
+          "content": "=PIVOT.HEADER(4,\"#organizer_id\",8)"
+        },
+        "D46": {
+          "content": "=PIVOT.HEADER(4,\"#organizer_id\",9)"
+        },
+        "D47": {
+          "content": "=PIVOT.HEADER(4,\"#organizer_id\",10)"
+        },
+        "E24": {
+          "content": "=_t(\"Events\")"
+        },
         "E25": {
           "content": "=PIVOT.VALUE(2,\"__count\",\"#event_type_id\",1)"
         },
@@ -157,17 +351,39 @@
         "E34": {
           "content": "=PIVOT.VALUE(2,\"__count\",\"#event_type_id\",10)"
         },
-        "E37": { "content": "=_t(\"Events\")" },
-        "E38": { "content": "=PIVOT.VALUE(4,\"__count\",\"#organizer_id\",1)" },
-        "E39": { "content": "=PIVOT.VALUE(4,\"__count\",\"#organizer_id\",2)" },
-        "E40": { "content": "=PIVOT.VALUE(4,\"__count\",\"#organizer_id\",3)" },
-        "E41": { "content": "=PIVOT.VALUE(4,\"__count\",\"#organizer_id\",4)" },
-        "E42": { "content": "=PIVOT.VALUE(4,\"__count\",\"#organizer_id\",5)" },
-        "E43": { "content": "=PIVOT.VALUE(4,\"__count\",\"#organizer_id\",6)" },
-        "E44": { "content": "=PIVOT.VALUE(4,\"__count\",\"#organizer_id\",7)" },
-        "E45": { "content": "=PIVOT.VALUE(4,\"__count\",\"#organizer_id\",8)" },
-        "E46": { "content": "=PIVOT.VALUE(4,\"__count\",\"#organizer_id\",9)" },
-        "E47": { "content": "=PIVOT.VALUE(4,\"__count\",\"#organizer_id\",10)" }
+        "E37": {
+          "content": "=_t(\"Events\")"
+        },
+        "E38": {
+          "content": "=PIVOT.VALUE(4,\"__count\",\"#organizer_id\",1)"
+        },
+        "E39": {
+          "content": "=PIVOT.VALUE(4,\"__count\",\"#organizer_id\",2)"
+        },
+        "E40": {
+          "content": "=PIVOT.VALUE(4,\"__count\",\"#organizer_id\",3)"
+        },
+        "E41": {
+          "content": "=PIVOT.VALUE(4,\"__count\",\"#organizer_id\",4)"
+        },
+        "E42": {
+          "content": "=PIVOT.VALUE(4,\"__count\",\"#organizer_id\",5)"
+        },
+        "E43": {
+          "content": "=PIVOT.VALUE(4,\"__count\",\"#organizer_id\",6)"
+        },
+        "E44": {
+          "content": "=PIVOT.VALUE(4,\"__count\",\"#organizer_id\",7)"
+        },
+        "E45": {
+          "content": "=PIVOT.VALUE(4,\"__count\",\"#organizer_id\",8)"
+        },
+        "E46": {
+          "content": "=PIVOT.VALUE(4,\"__count\",\"#organizer_id\",9)"
+        },
+        "E47": {
+          "content": "=PIVOT.VALUE(4,\"__count\",\"#organizer_id\",10)"
+        }
       },
       "styles": {
         "A7": 1,
@@ -232,7 +448,9 @@
             "rangeValues": "B25:B34"
           },
           "id": "813e8f10-5d2d-42bf-994d-84a21425573c",
-          "ranges": ["A25:A34"]
+          "ranges": [
+            "A25:A34"
+          ]
         },
         {
           "rule": {
@@ -241,7 +459,9 @@
             "rangeValues": "E25:E34"
           },
           "id": "95cfb086-980c-418f-b6cf-65663c0fe449",
-          "ranges": ["D25:D34"]
+          "ranges": [
+            "D25:D34"
+          ]
         },
         {
           "rule": {
@@ -250,7 +470,9 @@
             "rangeValues": "B38:B47"
           },
           "id": "3a61df0c-f147-4d90-a6a7-08e4b50e495a",
-          "ranges": ["A38:A47"]
+          "ranges": [
+            "A38:A47"
+          ]
         },
         {
           "rule": {
@@ -259,7 +481,9 @@
             "rangeValues": "E38:E47"
           },
           "id": "0b11b334-4302-4e29-b4e7-e2d964d6c999",
-          "ranges": ["D38:D47"]
+          "ranges": [
+            "D38:D47"
+          ]
         }
       ],
       "figures": [
@@ -271,11 +495,15 @@
           "height": 345,
           "tag": "chart",
           "data": {
-            "title": { "text": "" },
+            "title": {
+              "text": ""
+            },
             "background": "#FFFFFF",
             "legendPosition": "none",
             "metaData": {
-              "groupBy": ["state"],
+              "groupBy": [
+                "state"
+              ],
               "measure": "__count",
               "order": null,
               "resModel": "event.registration",
@@ -287,7 +515,9 @@
                 "registration_view_hide_group_by_create_date_week": 1
               },
               "domain": [],
-              "groupBy": ["state"],
+              "groupBy": [
+                "state"
+              ],
               "orderBy": []
             },
             "type": "odoo_bar",
@@ -326,11 +556,15 @@
           "height": 345,
           "tag": "chart",
           "data": {
-            "title": { "text": "" },
+            "title": {
+              "text": ""
+            },
             "background": "#FFFFFF",
             "legendPosition": "none",
             "metaData": {
-              "groupBy": ["stage_id"],
+              "groupBy": [
+                "stage_id"
+              ],
               "measure": "__count",
               "order": null,
               "resModel": "event.event",
@@ -340,7 +574,9 @@
               "comparison": null,
               "context": {},
               "domain": [],
-              "groupBy": ["stage_id"],
+              "groupBy": [
+                "stage_id"
+              ],
               "orderBy": []
             },
             "type": "odoo_bar",
@@ -382,7 +618,11 @@
             "baselineColorDown": "#DC6965",
             "baselineColorUp": "#00A04A",
             "baselineMode": "percentage",
-            "title": { "text": "Events", "bold": true, "color": "#434343" },
+            "title": {
+              "text": "Events",
+              "bold": true,
+              "color": "#434343"
+            },
             "type": "scorecard",
             "background": "#EFF6FF",
             "baseline": "Data!E3",
@@ -402,7 +642,11 @@
             "baselineColorDown": "#DC6965",
             "baselineColorUp": "#00A04A",
             "baselineMode": "percentage",
-            "title": { "text": "Revenue", "bold": true, "color": "#434343" },
+            "title": {
+              "text": "Revenue",
+              "bold": true,
+              "color": "#434343"
+            },
             "type": "scorecard",
             "background": "#FFF7ED",
             "baseline": "Data!E4",
@@ -422,7 +666,11 @@
             "baselineColorDown": "#DC6965",
             "baselineColorUp": "#00A04A",
             "baselineMode": "percentage",
-            "title": { "text": "Attendees", "bold": true, "color": "#434343" },
+            "title": {
+              "text": "Attendees",
+              "bold": true,
+              "color": "#434343"
+            },
             "type": "scorecard",
             "background": "#EFF6FF",
             "baseline": "Data!E2",
@@ -435,7 +683,10 @@
       "tables": [],
       "areGridLinesVisible": true,
       "isVisible": true,
-      "headerGroups": { "ROW": [], "COL": [] },
+      "headerGroups": {
+        "ROW": [],
+        "COL": []
+      },
       "dataValidationRules": [],
       "comments": {}
     },
@@ -446,35 +697,87 @@
       "rowNumber": 101,
       "rows": {},
       "cols": {
-        "1": { "size": 93 },
-        "2": { "size": 93 },
-        "3": { "size": 93 },
-        "4": { "size": 93 }
+        "1": {
+          "size": 93
+        },
+        "2": {
+          "size": 93
+        },
+        "3": {
+          "size": 93
+        },
+        "4": {
+          "size": 93
+        }
       },
       "merges": [],
       "cells": {
-        "A1": { "content": "=_t(\"KPI\")" },
-        "A2": { "content": "=_t(\"Attendees\")" },
-        "A3": { "content": "=_t(\"Events\")" },
-        "A4": { "content": "=_t(\"Revenue\")" },
-        "B1": { "content": "=_t(\"Current\")" },
-        "B2": { "content": "=PIVOT.VALUE(5,\"__count\")" },
-        "B3": { "content": "=PIVOT.VALUE(9,\"__count\")" },
-        "B4": { "content": "=PIVOT.VALUE(7,\"sale_price_untaxed\")" },
-        "C1": { "content": "=_t(\"Previous\")" },
-        "C2": { "content": "=PIVOT.VALUE(6,\"__count\")" },
-        "C3": { "content": "=PIVOT.VALUE(10,\"__count\")" },
-        "C4": { "content": "=PIVOT.VALUE(8,\"sale_price_untaxed\")" },
-        "D1": { "content": "=_t(\"Current\")" },
-        "D2": { "content": "=FORMAT.LARGE.NUMBER(B2)" },
-        "D3": { "content": "=FORMAT.LARGE.NUMBER(B3)" },
-        "D4": { "content": "=FORMAT.LARGE.NUMBER(B4)" },
-        "E1": { "content": "=_t(\"Previous\")" },
-        "E2": { "content": "=FORMAT.LARGE.NUMBER(C2)" },
-        "E3": { "content": "=FORMAT.LARGE.NUMBER(C3)" },
-        "E4": { "content": "=FORMAT.LARGE.NUMBER(C4)" }
+        "A1": {
+          "content": "=_t(\"KPI\")"
+        },
+        "A2": {
+          "content": "=_t(\"Attendees\")"
+        },
+        "A3": {
+          "content": "=_t(\"Events\")"
+        },
+        "A4": {
+          "content": "=_t(\"Revenue\")"
+        },
+        "B1": {
+          "content": "=_t(\"Current\")"
+        },
+        "B2": {
+          "content": "=PIVOT.VALUE(5,\"__count\")"
+        },
+        "B3": {
+          "content": "=PIVOT.VALUE(9,\"__count\")"
+        },
+        "B4": {
+          "content": "=PIVOT.VALUE(7,\"sale_price_untaxed\")"
+        },
+        "C1": {
+          "content": "=_t(\"Previous\")"
+        },
+        "C2": {
+          "content": "=PIVOT.VALUE(6,\"__count\")"
+        },
+        "C3": {
+          "content": "=PIVOT.VALUE(10,\"__count\")"
+        },
+        "C4": {
+          "content": "=PIVOT.VALUE(8,\"sale_price_untaxed\")"
+        },
+        "D1": {
+          "content": "=_t(\"Current\")"
+        },
+        "D2": {
+          "content": "=FORMAT.LARGE.NUMBER(B2)"
+        },
+        "D3": {
+          "content": "=FORMAT.LARGE.NUMBER(B3)"
+        },
+        "D4": {
+          "content": "=FORMAT.LARGE.NUMBER(B4)"
+        },
+        "E1": {
+          "content": "=_t(\"Previous\")"
+        },
+        "E2": {
+          "content": "=FORMAT.LARGE.NUMBER(C2)"
+        },
+        "E3": {
+          "content": "=FORMAT.LARGE.NUMBER(C3)"
+        },
+        "E4": {
+          "content": "=FORMAT.LARGE.NUMBER(C4)"
+        }
       },
-      "styles": { "A1:C1": 5, "D1:E1": 6, "D2:E4": 7 },
+      "styles": {
+        "A1:C1": 5,
+        "D1:E1": 6,
+        "D2:E4": 7
+      },
       "formats": {},
       "borders": {},
       "conditionalFormats": [],
@@ -482,47 +785,113 @@
       "tables": [],
       "areGridLinesVisible": true,
       "isVisible": true,
-      "headerGroups": { "ROW": [], "COL": [] },
+      "headerGroups": {
+        "ROW": [],
+        "COL": []
+      },
       "dataValidationRules": [],
       "comments": {}
     }
   ],
   "styles": {
-    "1": { "textColor": "#01666b", "fontSize": 16, "bold": true },
-    "2": { "textColor": "#434343", "bold": true, "fontSize": 11 },
-    "3": { "textColor": "#434343", "verticalAlign": "middle" },
+    "1": {
+      "textColor": "#01666b",
+      "fontSize": 16,
+      "bold": true
+    },
+    "2": {
+      "textColor": "#434343",
+      "bold": true,
+      "fontSize": 11
+    },
+    "3": {
+      "textColor": "#434343",
+      "verticalAlign": "middle"
+    },
     "4": {
       "textColor": "#434343",
       "bold": true,
       "fontSize": 11,
       "align": "center"
     },
-    "5": { "bold": true },
-    "6": { "bold": true, "fillColor": "#f2f2f2" },
-    "7": { "fillColor": "#f2f2f2" }
+    "5": {
+      "bold": true
+    },
+    "6": {
+      "bold": true,
+      "fillColor": "#f2f2f2"
+    },
+    "7": {
+      "fillColor": "#f2f2f2"
+    }
   },
   "formats": {},
   "borders": {
-    "1": { "bottom": { "style": "thin", "color": "#CCCCCC" } },
-    "2": { "top": { "style": "thin", "color": "#CCCCCC" } },
+    "1": {
+      "bottom": {
+        "style": "thin",
+        "color": "#CCCCCC"
+      }
+    },
+    "2": {
+      "top": {
+        "style": "thin",
+        "color": "#CCCCCC"
+      }
+    },
     "3": {
-      "bottom": { "style": "thick", "color": "#FFFFFF" },
-      "right": { "style": "thick", "color": "#FFFFFF" }
+      "bottom": {
+        "style": "thick",
+        "color": "#FFFFFF"
+      },
+      "right": {
+        "style": "thick",
+        "color": "#FFFFFF"
+      }
     },
     "4": {
-      "top": { "style": "thick", "color": "#FFFFFF" },
-      "bottom": { "style": "thick", "color": "#FFFFFF" },
-      "right": { "style": "thick", "color": "#FFFFFF" }
+      "top": {
+        "style": "thick",
+        "color": "#FFFFFF"
+      },
+      "bottom": {
+        "style": "thick",
+        "color": "#FFFFFF"
+      },
+      "right": {
+        "style": "thick",
+        "color": "#FFFFFF"
+      }
     },
-    "5": { "top": { "style": "thick", "color": "#FFFFFF" } },
+    "5": {
+      "top": {
+        "style": "thick",
+        "color": "#FFFFFF"
+      }
+    },
     "6": {
-      "bottom": { "style": "thick", "color": "#FFFFFF" },
-      "left": { "style": "thick", "color": "#FFFFFF" }
+      "bottom": {
+        "style": "thick",
+        "color": "#FFFFFF"
+      },
+      "left": {
+        "style": "thick",
+        "color": "#FFFFFF"
+      }
     },
     "7": {
-      "top": { "style": "thick", "color": "#FFFFFF" },
-      "bottom": { "style": "thick", "color": "#FFFFFF" },
-      "left": { "style": "thick", "color": "#FFFFFF" }
+      "top": {
+        "style": "thick",
+        "color": "#FFFFFF"
+      },
+      "bottom": {
+        "style": "thick",
+        "color": "#FFFFFF"
+      },
+      "left": {
+        "style": "thick",
+        "color": "#FFFFFF"
+      }
     }
   },
   "revisionId": "START_REVISION",
@@ -566,19 +935,37 @@
         }
       },
       "context": {},
-      "domain": [["address_id", "!=", false]],
+      "domain": [
+        [
+          "address_id",
+          "!=",
+          false
+        ]
+      ],
       "id": "1",
-      "measures": [{ "id": "__count", "fieldName": "__count" }],
+      "measures": [
+        {
+          "id": "__count",
+          "fieldName": "__count"
+        }
+      ],
       "model": "event.event",
       "name": "Event by Venue",
       "sortedColumn": {
-        "groupId": [[], []],
+        "groupId": [
+          [],
+          []
+        ],
         "measure": "__count",
         "order": "desc"
       },
       "formulaId": "1",
       "columns": [],
-      "rows": [{ "fieldName": "address_id" }]
+      "rows": [
+        {
+          "fieldName": "address_id"
+        }
+      ]
     },
     "2": {
       "type": "ODOO",
@@ -606,19 +993,37 @@
         }
       },
       "context": {},
-      "domain": [["event_type_id", "!=", false]],
+      "domain": [
+        [
+          "event_type_id",
+          "!=",
+          false
+        ]
+      ],
       "id": "2",
-      "measures": [{ "id": "__count", "fieldName": "__count" }],
+      "measures": [
+        {
+          "id": "__count",
+          "fieldName": "__count"
+        }
+      ],
       "model": "event.event",
       "name": "Event by Template",
       "sortedColumn": {
-        "groupId": [[], []],
+        "groupId": [
+          [],
+          []
+        ],
         "measure": "__count",
         "order": "desc"
       },
       "formulaId": "2",
       "columns": [],
-      "rows": [{ "fieldName": "event_type_id" }]
+      "rows": [
+        {
+          "fieldName": "event_type_id"
+        }
+      ]
     },
     "3": {
       "type": "ODOO",
@@ -646,19 +1051,37 @@
         }
       },
       "context": {},
-      "domain": [["tag_ids", "!=", false]],
+      "domain": [
+        [
+          "tag_ids",
+          "!=",
+          false
+        ]
+      ],
       "id": "3",
-      "measures": [{ "id": "__count", "fieldName": "__count" }],
+      "measures": [
+        {
+          "id": "__count",
+          "fieldName": "__count"
+        }
+      ],
       "model": "event.event",
       "name": "Event by Tags",
       "sortedColumn": {
-        "groupId": [[], []],
+        "groupId": [
+          [],
+          []
+        ],
         "measure": "__count",
         "order": "desc"
       },
       "formulaId": "3",
       "columns": [],
-      "rows": [{ "fieldName": "tag_ids" }]
+      "rows": [
+        {
+          "fieldName": "tag_ids"
+        }
+      ]
     },
     "4": {
       "type": "ODOO",
@@ -686,19 +1109,37 @@
         }
       },
       "context": {},
-      "domain": [["organizer_id", "!=", false]],
+      "domain": [
+        [
+          "organizer_id",
+          "!=",
+          false
+        ]
+      ],
       "id": "4",
-      "measures": [{ "id": "__count", "fieldName": "__count" }],
+      "measures": [
+        {
+          "id": "__count",
+          "fieldName": "__count"
+        }
+      ],
       "model": "event.event",
       "name": "Event by Organizer",
       "sortedColumn": {
-        "groupId": [[], []],
+        "groupId": [
+          [],
+          []
+        ],
         "measure": "__count",
         "order": "desc"
       },
       "formulaId": "4",
       "columns": [],
-      "rows": [{ "fieldName": "organizer_id" }]
+      "rows": [
+        {
+          "fieldName": "organizer_id"
+        }
+      ]
     },
     "5": {
       "type": "ODOO",
@@ -725,10 +1166,17 @@
           "type": "many2one"
         }
       },
-      "context": { "registration_view_hide_group_by_create_date_week": 1 },
+      "context": {
+        "registration_view_hide_group_by_create_date_week": 1
+      },
       "domain": [],
       "id": "5",
-      "measures": [{ "id": "__count", "fieldName": "__count" }],
+      "measures": [
+        {
+          "id": "__count",
+          "fieldName": "__count"
+        }
+      ],
       "model": "event.registration",
       "name": "attendees - current",
       "sortedColumn": null,
@@ -761,10 +1209,17 @@
           "type": "many2one"
         }
       },
-      "context": { "registration_view_hide_group_by_create_date_week": 1 },
+      "context": {
+        "registration_view_hide_group_by_create_date_week": 1
+      },
       "domain": [],
       "id": "6",
-      "measures": [{ "id": "__count", "fieldName": "__count" }],
+      "measures": [
+        {
+          "id": "__count",
+          "fieldName": "__count"
+        }
+      ],
       "model": "event.registration",
       "name": "attendees - previous",
       "sortedColumn": null,
@@ -798,12 +1253,19 @@
         }
       },
       "context": {
-        "pivot_measures": ["__count__", "sale_price_untaxed", "sale_price"]
+        "pivot_measures": [
+          "__count__",
+          "sale_price_untaxed",
+          "sale_price"
+        ]
       },
       "domain": [],
       "id": "7",
       "measures": [
-        { "id": "sale_price_untaxed", "fieldName": "sale_price_untaxed" }
+        {
+          "id": "sale_price_untaxed",
+          "fieldName": "sale_price_untaxed"
+        }
       ],
       "model": "event.sale.report",
       "name": "untaxed revenue - current",
@@ -838,14 +1300,27 @@
         }
       },
       "context": {
-        "pivot_measures": ["__count__", "sale_price_untaxed", "sale_price"]
+        "pivot_measures": [
+          "__count__",
+          "sale_price_untaxed",
+          "sale_price"
+        ]
       },
       "domain": [],
       "id": "8",
       "measures": [
-        { "id": "__count", "fieldName": "__count" },
-        { "id": "sale_price_untaxed", "fieldName": "sale_price_untaxed" },
-        { "id": "sale_price", "fieldName": "sale_price" }
+        {
+          "id": "__count",
+          "fieldName": "__count"
+        },
+        {
+          "id": "sale_price_untaxed",
+          "fieldName": "sale_price_untaxed"
+        },
+        {
+          "id": "sale_price",
+          "fieldName": "sale_price"
+        }
       ],
       "model": "event.sale.report",
       "name": "untaxed revenue - previous",
@@ -882,7 +1357,12 @@
       "context": {},
       "domain": [],
       "id": "9",
-      "measures": [{ "id": "__count", "fieldName": "__count" }],
+      "measures": [
+        {
+          "id": "__count",
+          "fieldName": "__count"
+        }
+      ],
       "model": "event.event",
       "name": "events - current",
       "sortedColumn": null,
@@ -918,7 +1398,12 @@
       "context": {},
       "domain": [],
       "id": "10",
-      "measures": [{ "id": "__count", "fieldName": "__count" }],
+      "measures": [
+        {
+          "id": "__count",
+          "fieldName": "__count"
+        }
+      ],
       "model": "event.event",
       "name": "events - previous",
       "sortedColumn": null,

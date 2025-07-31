@@ -1,8 +1,8 @@
-from odoo import fields
-from odoo.tests import tagged
-
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
+from odoo import fields
 from odoo.addons.base.tests.test_ir_cron import CronMixinCase
+from odoo.tests import tagged
 
 
 @tagged('post_install', '-at_install')

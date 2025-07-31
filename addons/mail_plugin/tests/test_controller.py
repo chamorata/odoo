@@ -6,6 +6,7 @@ from unittest.mock import Mock, patch
 
 from odoo.addons.iap.tools import iap_tools
 from odoo.addons.mail_plugin.tests.common import TestMailPluginControllerCommon, mock_auth_method_outlook
+
 from odoo.exceptions import AccessError
 
 
@@ -46,9 +47,9 @@ class TestMailPluginController(TestMailPluginControllerCommon):
         mocked_request_enrich = Mock()
 
         with patch(
-            "odoo.addons.iap.models.iap_enrich_api.IapEnrichAPI"
-            "._request_enrich",
-            new=mocked_request_enrich,
+                "odoo.addons.iap.models.iap_enrich_api.IapEnrichAPI"
+                "._request_enrich",
+                new=mocked_request_enrich,
         ):
             result = self.url_open(
                 "/mail_plugin/partner/get",

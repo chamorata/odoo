@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.google_calendar.utils.google_calendar import GoogleCalendarService
+
 from odoo import models
 
-from odoo.addons.google_calendar.utils.google_calendar import GoogleCalendarService
 
 class Attendee(models.Model):
     _name = 'calendar.attendee'
@@ -20,7 +21,6 @@ class Attendee(models.Model):
         res = super().do_accept()
         self._sync_event()
         return res
-
 
     def do_decline(self):
         # Synchronize event after state change

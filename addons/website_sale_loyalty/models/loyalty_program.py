@@ -3,6 +3,7 @@
 
 from odoo import fields, models
 
+
 class LoyaltyProgram(models.Model):
     _name = 'loyalty.program'
     _inherit = ['loyalty.program', 'website.multi.mixin']

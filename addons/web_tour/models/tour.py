@@ -1,6 +1,7 @@
-from odoo import api, fields, models, Command
-import json
 import base64
+import json
+
+from odoo import api, fields, models, Command
 
 
 class Tour(models.Model):
@@ -12,7 +13,8 @@ class Tour(models.Model):
     step_ids = fields.One2many("web_tour.tour.step", "tour_id")
     url = fields.Char(string="Starting URL", default="/odoo")
     sharing_url = fields.Char(compute="_compute_sharing_url", string="Sharing URL")
-    rainbow_man_message = fields.Html(default="<b>Good job!</b> You went through all steps of this tour.", translate=True)
+    rainbow_man_message = fields.Html(default="<b>Good job!</b> You went through all steps of this tour.",
+                                      translate=True)
     sequence = fields.Integer(default=1000)
     custom = fields.Boolean(string="Custom")
     user_consumed_ids = fields.Many2many("res.users")

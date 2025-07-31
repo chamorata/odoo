@@ -2,9 +2,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import http, _
-from odoo.http import Controller, request
 from odoo.exceptions import ValidationError
+from odoo.http import Controller, request
 from odoo.tools.misc import mute_logger
+
 
 class Domain(Controller):
 

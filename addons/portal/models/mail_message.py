@@ -1,9 +1,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.portal.utils import get_portal_partner
+
 from odoo import models
 from odoo.http import request
 from odoo.tools import format_datetime, groupby
-from odoo.addons.portal.utils import get_portal_partner
 
 
 class MailMessage(models.Model):
@@ -100,9 +101,11 @@ class MailMessage(models.Model):
                 values['attachment_ids'] = message_to_attachments.get(message.id, {})
             if 'author_avatar_url' in properties_names:
                 if options and options.get("token"):
-                    values['author_avatar_url'] = f'/mail/avatar/mail.message/{message.id}/author_avatar/50x50?access_token={options["token"]}'
+                    values[
+                        'author_avatar_url'] = f'/mail/avatar/mail.message/{message.id}/author_avatar/50x50?access_token={options["token"]}'
                 elif options and options.get("hash") and options.get("pid"):
-                    values['author_avatar_url'] = f'/mail/avatar/mail.message/{message.id}/author_avatar/50x50?_hash={options["hash"]}&pid={options["pid"]}'
+                    values[
+                        'author_avatar_url'] = f'/mail/avatar/mail.message/{message.id}/author_avatar/50x50?_hash={options["hash"]}&pid={options["pid"]}'
                 else:
                     values['author_avatar_url'] = f'/web/image/mail.message/{message.id}/author_avatar/50x50'
             if 'is_message_subtype_note' in properties_names:
@@ -154,7 +157,7 @@ class MailMessage(models.Model):
         attachment_values['filename'] = attachment_values['name']
         attachment_values['mimetype'] = (
             'application/octet-stream' if safari and
-            'video' in (attachment_values["mimetype"] or "")
+                                          'video' in (attachment_values["mimetype"] or "")
             else attachment_values["mimetype"])
         return attachment_values
 

@@ -1,10 +1,10 @@
 # -*- encoding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+import re
+
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
-
-import re
 
 
 class Efaktur(models.Model):
@@ -41,7 +41,8 @@ class Efaktur(models.Model):
         :param number (str): number to be restored
         """
         number_int = int(number)
-        efaktur_range = self.search([('company_id', '=', company_id), ('min', '<=', number), ('max', '>=', number)], limit=1)
+        efaktur_range = self.search([('company_id', '=', company_id), ('min', '<=', number), ('max', '>=', number)],
+                                    limit=1)
 
         # if the released number is the last popped number from the range, we simply extend the availability
         if efaktur_range.next_num == int(number) + 1:
@@ -89,7 +90,8 @@ class Efaktur(models.Model):
                 raise ValidationError(_("First 5 digits should be same in Start Number and End Number."))
 
             if int(record.min[-8:]) > int(record.max[-8:]):
-                raise ValidationError(_("Last 8 digits of End Number should be greater than the last 8 digit of Start Number"))
+                raise ValidationError(
+                    _("Last 8 digits of End Number should be greater than the last 8 digit of Start Number"))
 
             if (int(record.max) - int(record.min)) > 10000:
                 raise ValidationError(_("The difference between the two numbers must not be greater than 10.000"))

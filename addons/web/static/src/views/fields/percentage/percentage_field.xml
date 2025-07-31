@@ -8,12 +8,12 @@
         <t t-else="">
             <div class="d-flex">
                 <input
-                    t-ref="numpadDecimal"
-                    t-attf-class="o_input"
-                    t-att-placeholder="props.placeholder"
-                    type="text"
-                    inputmode="decimal"
-                    autocomplete="off"
+                        t-ref="numpadDecimal"
+                        t-attf-class="o_input"
+                        t-att-placeholder="props.placeholder"
+                        type="text"
+                        inputmode="decimal"
+                        autocomplete="off"
                 />
                 <span>%</span>
             </div>

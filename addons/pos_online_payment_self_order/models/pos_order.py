@@ -8,7 +8,8 @@ from odoo.osv import expression
 class PosOrder(models.Model):
     _inherit = 'pos.order'
 
-    use_self_order_online_payment = fields.Boolean(compute='_compute_use_self_order_online_payment', store=True, readonly=True)
+    use_self_order_online_payment = fields.Boolean(compute='_compute_use_self_order_online_payment', store=True,
+                                                   readonly=True)
 
     @api.depends('config_id.self_order_online_payment_method_id')
     def _compute_use_self_order_online_payment(self):
@@ -32,7 +33,8 @@ class PosOrder(models.Model):
 
         can_change_self_order_domain = [('state', '=', 'draft')]
         if vals['use_self_order_online_payment']:
-            can_change_self_order_domain = expression.AND([can_change_self_order_domain, [('config_id.self_order_online_payment_method_id', '!=', False)]])
+            can_change_self_order_domain = expression.AND(
+                [can_change_self_order_domain, [('config_id.self_order_online_payment_method_id', '!=', False)]])
 
         can_change_self_order_orders = self.filtered_domain(can_change_self_order_domain)
         cannot_change_self_order_orders = self - can_change_self_order_orders
@@ -47,7 +49,8 @@ class PosOrder(models.Model):
 
         return res
 
-    @api.depends('use_self_order_online_payment', 'config_id.self_order_online_payment_method_id', 'config_id.payment_method_ids')
+    @api.depends('use_self_order_online_payment', 'config_id.self_order_online_payment_method_id',
+                 'config_id.payment_method_ids')
     def _compute_online_payment_method_id(self):
         for order in self:
             if order.use_self_order_online_payment:
@@ -60,9 +63,11 @@ class PosOrder(models.Model):
 
     def get_and_set_online_payments_data(self, next_online_payment_amount=False):
         res = super().get_and_set_online_payments_data(next_online_payment_amount)
-        if 'paid_order' not in res and not res.get('deleted', False) and not isinstance(next_online_payment_amount, bool):
+        if 'paid_order' not in res and not res.get('deleted', False) and not isinstance(next_online_payment_amount,
+                                                                                        bool):
             # This method is only called in the POS frontend flow, not self order.
             # If the next online payment is 0, then the online payment of the frontend
             # flow is cancelled, and the default flow is self order if it is configured.
-            self.use_self_order_online_payment = tools.float_is_zero(next_online_payment_amount, precision_rounding=self.currency_id.rounding) and self.config_id.self_order_online_payment_method_id
+            self.use_self_order_online_payment = tools.float_is_zero(next_online_payment_amount,
+                                                                     precision_rounding=self.currency_id.rounding) and self.config_id.self_order_online_payment_method_id
         return res

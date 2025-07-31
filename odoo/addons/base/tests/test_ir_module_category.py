@@ -3,6 +3,7 @@
 from odoo.exceptions import ValidationError
 from odoo.tests.common import TransactionCase
 
+
 class TestModuleCategory(TransactionCase):
 
     def test_parent_circular_dependencies(self):

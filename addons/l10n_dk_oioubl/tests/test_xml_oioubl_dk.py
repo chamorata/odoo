@@ -1,8 +1,8 @@
 from freezegun import freeze_time
+from odoo.addons.account.tests.test_account_move_send import TestAccountMoveSendCommon
+from odoo.addons.l10n_account_edi_ubl_cii_tests.tests.common import TestUBLCommon
 
 from odoo import Command, fields
-from odoo.addons.l10n_account_edi_ubl_cii_tests.tests.common import TestUBLCommon
-from odoo.addons.account.tests.test_account_move_send import TestAccountMoveSendCommon
 from odoo.exceptions import UserError
 from odoo.tests import tagged
 from odoo.tools import file_open
@@ -122,7 +122,8 @@ class TestUBLDK(TestUBLCommon, TestAccountMoveSendCommon):
     def test_export_invoice_two_line_partner_dk(self):
         invoice = self.create_post_and_send_invoice()
         self.assertTrue(invoice.ubl_cii_xml_id)
-        self._assert_invoice_attachment(invoice.ubl_cii_xml_id, xpaths=None, expected_file_path="from_odoo/oioubl_out_invoice_partner_dk.xml")
+        self._assert_invoice_attachment(invoice.ubl_cii_xml_id, xpaths=None,
+                                        expected_file_path="from_odoo/oioubl_out_invoice_partner_dk.xml")
 
     @freeze_time('2017-01-01')
     def test_export_invoice_two_line_foreign_partner_be(self):
@@ -130,32 +131,37 @@ class TestUBLDK(TestUBLCommon, TestAccountMoveSendCommon):
         self.company_data['company'].partner_id.peppol_endpoint = '0239843188'
         invoice = self.create_post_and_send_invoice(partner=self.partner_b)
         self.assertTrue(invoice.ubl_cii_xml_id)
-        self._assert_invoice_attachment(invoice.ubl_cii_xml_id, xpaths=None, expected_file_path="from_odoo/oioubl_out_invoice_foreign_partner_be.xml")
+        self._assert_invoice_attachment(invoice.ubl_cii_xml_id, xpaths=None,
+                                        expected_file_path="from_odoo/oioubl_out_invoice_foreign_partner_be.xml")
 
     @freeze_time('2017-01-01')
     def test_export_invoice_two_line_foreign_partner_fr(self):
         invoice = self.create_post_and_send_invoice(partner=self.partner_c)
         self.assertTrue(invoice.ubl_cii_xml_id)
-        self._assert_invoice_attachment(invoice.ubl_cii_xml_id, xpaths=None, expected_file_path="from_odoo/oioubl_out_invoice_foreign_partner_fr.xml")
+        self._assert_invoice_attachment(invoice.ubl_cii_xml_id, xpaths=None,
+                                        expected_file_path="from_odoo/oioubl_out_invoice_foreign_partner_fr.xml")
 
     @freeze_time('2017-01-01')
     def test_export_credit_note_two_line_partner_dk(self):
         refund = self.create_post_and_send_invoice(move_type='out_refund')
         self.assertTrue(refund.ubl_cii_xml_id)
-        self._assert_invoice_attachment(refund.ubl_cii_xml_id, xpaths=None, expected_file_path="from_odoo/oioubl_out_refund_partner_dk.xml")
+        self._assert_invoice_attachment(refund.ubl_cii_xml_id, xpaths=None,
+                                        expected_file_path="from_odoo/oioubl_out_refund_partner_dk.xml")
 
     @freeze_time('2017-01-01')
     def test_export_credit_note_two_line_partner_fr(self):
         refund = self.create_post_and_send_invoice(partner=self.partner_c, move_type='out_refund')
         self.assertTrue(refund.ubl_cii_xml_id)
-        self._assert_invoice_attachment(refund.ubl_cii_xml_id, xpaths=None, expected_file_path="from_odoo/oioubl_out_refund_foreign_partner_fr.xml")
+        self._assert_invoice_attachment(refund.ubl_cii_xml_id, xpaths=None,
+                                        expected_file_path="from_odoo/oioubl_out_refund_foreign_partner_fr.xml")
 
     @freeze_time('2017-01-01')
     def test_oioubl_export_should_still_be_valid_when_currency_has_more_precision_digit(self):
         self.company_data['company'].currency_id.rounding = 0.001
         invoice = self.create_post_and_send_invoice()
         self.assertTrue(invoice.ubl_cii_xml_id)
-        self._assert_invoice_attachment(invoice.ubl_cii_xml_id, xpaths=None, expected_file_path="from_odoo/oioubl_out_invoice_partner_dk.xml")
+        self._assert_invoice_attachment(invoice.ubl_cii_xml_id, xpaths=None,
+                                        expected_file_path="from_odoo/oioubl_out_invoice_partner_dk.xml")
 
     @freeze_time('2017-01-01')
     def test_oioubl_export_should_raise_an_error_when_partner_building_number_is_missing(self):
@@ -177,7 +183,8 @@ class TestUBLDK(TestUBLCommon, TestAccountMoveSendCommon):
         self.partner_a.peppol_endpoint = False
         invoice = self.create_post_and_send_invoice()
         self.assertTrue(invoice.ubl_cii_xml_id)
-        self._assert_invoice_attachment(invoice.ubl_cii_xml_id, xpaths=None, expected_file_path="from_odoo/oioubl_out_invoice_partner_dk.xml")
+        self._assert_invoice_attachment(invoice.ubl_cii_xml_id, xpaths=None,
+                                        expected_file_path="from_odoo/oioubl_out_invoice_partner_dk.xml")
 
     @freeze_time('2017-01-01')
     def test_export_partner_fr_without_siret_should_raise_an_error(self):
@@ -219,76 +226,76 @@ class TestUBLDK(TestUBLCommon, TestAccountMoveSendCommon):
         file_name = 'external/ADVORD_01_01_00_Invoice_v2p1.xml'
         bill = self.import_bill_xml_file_in_purchase_journal(file_name)
         self.assertRecordValues(bill, ({
-            'ref': 'A00095678',
-            'invoice_date': fields.Date.from_string('2006-04-10'),
-            'amount_total': 6_250.00,
-        },))
+                                           'ref': 'A00095678',
+                                           'invoice_date': fields.Date.from_string('2006-04-10'),
+                                           'amount_total': 6_250.00,
+                                       },))
         self.assertRecordValues(bill.invoice_line_ids, ({
-            'name': 'Fine toy',
-            'quantity': 1,
-            'price_unit': 5_000.00,
-            'price_subtotal': 5_000.00,
-            'price_total': 6_250.00,
-            'tax_ids': self.dk_local_purchase_tax_goods.ids,
-        },))
+                                                            'name': 'Fine toy',
+                                                            'quantity': 1,
+                                                            'price_unit': 5_000.00,
+                                                            'price_subtotal': 5_000.00,
+                                                            'price_total': 6_250.00,
+                                                            'tax_ids': self.dk_local_purchase_tax_goods.ids,
+                                                        },))
 
     @freeze_time('2017-01-01')
     def test_oioubl_import_exemple_file_2(self):
         file_name = 'external/ADVORD_02_02_00_Invoice_v2p1.xml'
         bill = self.import_bill_xml_file_in_purchase_journal(file_name)
         self.assertRecordValues(bill, ({
-            'ref': 'A00095680',
-            'invoice_date': fields.Date.from_string('2006-04-10'),
-            'amount_total': 5_000.00,
-        },))
+                                           'ref': 'A00095680',
+                                           'invoice_date': fields.Date.from_string('2006-04-10'),
+                                           'amount_total': 5_000.00,
+                                       },))
         self.assertRecordValues(bill.invoice_line_ids, ({
-            'name': 'Superble',
-            'quantity': 800,
-            'price_unit': 5.00,
-            'price_subtotal': 4_000.00,
-            'price_total': 5_000.00,
-            'tax_ids': self.dk_local_purchase_tax_goods.ids,
-        },))
+                                                            'name': 'Superble',
+                                                            'quantity': 800,
+                                                            'price_unit': 5.00,
+                                                            'price_subtotal': 4_000.00,
+                                                            'price_total': 5_000.00,
+                                                            'tax_ids': self.dk_local_purchase_tax_goods.ids,
+                                                        },))
 
     @freeze_time('2017-01-01')
     def test_oioubl_import_exemple_file_3(self):
         file_name = 'external/ADVORD_03_03_00_Invoice_v2p1.xml'
         bill = self.import_bill_xml_file_in_purchase_journal(file_name)
         self.assertRecordValues(bill, ({
-            'ref': 'A00095678',
-            'invoice_date': fields.Date.from_string('2006-04-10'),
-            'amount_total': 6_250.00,
-        },))
+                                           'ref': 'A00095678',
+                                           'invoice_date': fields.Date.from_string('2006-04-10'),
+                                           'amount_total': 6_250.00,
+                                       },))
         self.assertRecordValues(bill.invoice_line_ids, ({
-            'name': 'Konsulentrapport',
-            'quantity': 1,
-            'price_unit': 5_000.00,
-            'price_subtotal': 5_000.00,
-            'price_total': 6_250.00,
-            'tax_ids': self.dk_local_purchase_tax_goods.ids,
-        },))
+                                                            'name': 'Konsulentrapport',
+                                                            'quantity': 1,
+                                                            'price_unit': 5_000.00,
+                                                            'price_subtotal': 5_000.00,
+                                                            'price_total': 6_250.00,
+                                                            'tax_ids': self.dk_local_purchase_tax_goods.ids,
+                                                        },))
 
     @freeze_time('2017-01-01')
     def test_oioubl_import_exemple_file_4(self):
         file_name = 'external/BASPRO_01_01_00_Invoice_v2p1.xml'
         bill = self.import_bill_xml_file_in_purchase_journal(file_name)
         self.assertRecordValues(bill, ({
-            'ref': 'A00095678',
-            'invoice_date': fields.Date.from_string('2005-11-20'),
-            'amount_total': 6_312.50,
-        },))
+                                           'ref': 'A00095678',
+                                           'invoice_date': fields.Date.from_string('2005-11-20'),
+                                           'amount_total': 6_312.50,
+                                       },))
         self.assertRecordValues(bill.invoice_line_ids, ({
-            'name': 'Hejsetavle',
-            'quantity': 1,
-            'price_unit': 5_000.00,
-            'price_subtotal': 5_000.00,
-            'price_total': 6_250.00,
-            'tax_ids': self.dk_local_purchase_tax_goods.ids,
-        }, {
-            'name': 'Beslag',
-            'quantity': 2,
-            'price_unit': 25.00,
-            'price_subtotal': 50.00,
-            'price_total': 62.50,
-            'tax_ids': self.dk_local_purchase_tax_goods.ids,
-        }))
+                                                            'name': 'Hejsetavle',
+                                                            'quantity': 1,
+                                                            'price_unit': 5_000.00,
+                                                            'price_subtotal': 5_000.00,
+                                                            'price_total': 6_250.00,
+                                                            'tax_ids': self.dk_local_purchase_tax_goods.ids,
+                                                        }, {
+                                                            'name': 'Beslag',
+                                                            'quantity': 2,
+                                                            'price_unit': 25.00,
+                                                            'price_subtotal': 50.00,
+                                                            'price_total': 62.50,
+                                                            'tax_ids': self.dk_local_purchase_tax_goods.ids,
+                                                        }))

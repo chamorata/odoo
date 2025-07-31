@@ -8,9 +8,11 @@ from odoo.osv import expression
 class EventTrack(models.Model):
     _inherit = ['event.track']
 
-    quiz_id = fields.Many2one('event.quiz', string="Quiz", compute='_compute_quiz_id', store=True, groups="event.group_event_user")
+    quiz_id = fields.Many2one('event.quiz', string="Quiz", compute='_compute_quiz_id', store=True,
+                              groups="event.group_event_user")
     quiz_ids = fields.One2many('event.quiz', 'event_track_id', string="Quizzes")
-    quiz_questions_count = fields.Integer(string="# Quiz Questions", compute='_compute_quiz_questions_count', groups="event.group_event_user")
+    quiz_questions_count = fields.Integer(string="# Quiz Questions", compute='_compute_quiz_questions_count',
+                                          groups="event.group_event_user")
     is_quiz_completed = fields.Boolean('Is Quiz Done', compute='_compute_quiz_data')
     quiz_points = fields.Integer('Quiz Points', compute='_compute_quiz_data')
 
@@ -92,7 +94,7 @@ class EventTrack(models.Model):
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
             'res_model': 'event.quiz',
-            'res_id' : self.quiz_id.id,
+            'res_id': self.quiz_id.id,
             'view_id': event_quiz_form.id,
             'context': {
                 'create': False,

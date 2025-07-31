@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
+import json
+from collections import defaultdict
+
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 from odoo.tools.date_utils import get_fiscal_year
 from odoo.tools.misc import format_date
-
-from collections import defaultdict
-import json
 
 
 class ReSequenceWizard(models.TransientModel):
@@ -14,9 +14,12 @@ class ReSequenceWizard(models.TransientModel):
 
     sequence_number_reset = fields.Char(compute='_compute_sequence_number_reset')
     first_date = fields.Date(help="Date (inclusive) from which the numbers are resequenced.")
-    end_date = fields.Date(help="Date (inclusive) to which the numbers are resequenced. If not set, all Journal Entries up to the end of the period are resequenced.")
-    first_name = fields.Char(compute="_compute_first_name", readonly=False, store=True, required=True, string="First New Sequence")
-    ordering = fields.Selection([('keep', 'Keep current order'), ('date', 'Reorder by accounting date')], required=True, default='keep')
+    end_date = fields.Date(
+        help="Date (inclusive) to which the numbers are resequenced. If not set, all Journal Entries up to the end of the period are resequenced.")
+    first_name = fields.Char(compute="_compute_first_name", readonly=False, store=True, required=True,
+                             string="First New Sequence")
+    ordering = fields.Selection([('keep', 'Keep current order'), ('date', 'Reorder by accounting date')], required=True,
+                                default='keep')
     move_ids = fields.Many2many('account.move')
     new_values = fields.Text(compute='_compute_new_values')
     preview_moves = fields.Text(compute='_compute_preview_moves')
@@ -33,17 +36,19 @@ class ReSequenceWizard(models.TransientModel):
             raise UserError(_('You can only resequence items from the same journal'))
         move_types = set(active_move_ids.mapped('move_type'))
         if (
-            active_move_ids.journal_id.refund_sequence
-            and ('in_refund' in move_types or 'out_refund' in move_types)
-            and len(move_types) > 1
+                active_move_ids.journal_id.refund_sequence
+                and ('in_refund' in move_types or 'out_refund' in move_types)
+                and len(move_types) > 1
         ):
-            raise UserError(_('The sequences of this journal are different for Invoices and Refunds but you selected some of both types.'))
+            raise UserError(
+                _('The sequences of this journal are different for Invoices and Refunds but you selected some of both types.'))
         is_payment = set(active_move_ids.mapped(lambda x: bool(x.origin_payment_id)))
         if (
-            active_move_ids.journal_id.payment_sequence
-            and len(is_payment) > 1
+                active_move_ids.journal_id.payment_sequence
+                and len(is_payment) > 1
         ):
-            raise UserError(_('The sequences of this journal are different for Payments and non-Payments but you selected some of both types.'))
+            raise UserError(
+                _('The sequences of this journal are different for Payments and non-Payments but you selected some of both types.'))
         values['move_ids'] = [(6, 0, active_move_ids.ids)]
         return values
 
@@ -69,9 +74,14 @@ class ReSequenceWizard(models.TransientModel):
             previous_line = None
             for i, line in enumerate(new_values):
                 if i < 3 or i == len(new_values) - 1 or line['new_by_name'] != line['new_by_date'] \
-                 or (self.sequence_number_reset == 'year' and line['server-date'][0:4] != previous_line['server-date'][0:4])\
-                 or (self.sequence_number_reset == 'year_range' and line['server-year-start-date'][0:4] != previous_line['server-year-start-date'][0:4])\
-                 or (self.sequence_number_reset == 'month' and line['server-date'][0:7] != previous_line['server-date'][0:7]):
+                        or (self.sequence_number_reset == 'year' and line['server-date'][0:4] != previous_line[
+                                                                                                     'server-date'][
+                                                                                                 0:4]) \
+                        or (self.sequence_number_reset == 'year_range' and line['server-year-start-date'][0:4] !=
+                            previous_line['server-year-start-date'][0:4]) \
+                        or (self.sequence_number_reset == 'month' and line['server-date'][0:7] != previous_line[
+                                                                                                      'server-date'][
+                                                                                                  0:7]):
                     if in_elipsis:
                         changeLines.append({
                             'id': 'other_' + str(line['id']),
@@ -99,9 +109,11 @@ class ReSequenceWizard(models.TransientModel):
         ids to a dictionary containing the name if we execute the action, and information
         relative to the preview widget.
         """
+
         def _get_move_key(move_id):
             company = move_id.company_id
-            date_start, date_end = get_fiscal_year(move_id.date, day=company.fiscalyear_last_day, month=int(company.fiscalyear_last_month))
+            date_start, date_end = get_fiscal_year(move_id.date, day=company.fiscalyear_last_day,
+                                                   month=int(company.fiscalyear_last_month))
             if self.sequence_number_reset == 'year':
                 return move_id.date.year
             elif self.sequence_number_reset == 'year_range':
@@ -124,7 +136,8 @@ class ReSequenceWizard(models.TransientModel):
             new_values = {}
             for j, period_recs in enumerate(moves_by_period.values()):
                 # compute the new values period by period
-                date_start, date_end, forced_year_start, forced_year_end = period_recs[0]._get_sequence_date_range(sequence_number_reset)
+                date_start, date_end, forced_year_start, forced_year_end = period_recs[0]._get_sequence_date_range(
+                    sequence_number_reset)
                 for move in period_recs:
                     new_values[move.id] = {
                         'id': move.id,
@@ -144,7 +157,8 @@ class ReSequenceWizard(models.TransientModel):
                 }) for i in range(len(period_recs))]
 
                 # For all the moves of this period, assign the name by increasing initial name
-                for move, new_name in zip(period_recs.sorted(lambda m: (m.sequence_prefix, m.sequence_number)), new_name_list):
+                for move, new_name in zip(period_recs.sorted(lambda m: (m.sequence_prefix, m.sequence_number)),
+                                          new_name_list):
                     new_values[move.id]['new_by_name'] = new_name
                 # For all the moves of this period, assign the name by increasing date
                 for move, new_name in zip(period_recs.sorted(lambda m: (m.date, m.name or "", m.id)), new_name_list):

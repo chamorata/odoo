@@ -4,9 +4,10 @@
 from contextlib import contextmanager
 from unittest.mock import patch
 
-from odoo import exceptions
-from odoo.addons.iap.tools import iap_tools
 from odoo.addons.iap.models.iap_enrich_api import IapEnrichAPI
+from odoo.addons.iap.tools import iap_tools
+
+from odoo import exceptions
 from odoo.tests import common
 
 

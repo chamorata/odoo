@@ -1,23 +1,16 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import json
 import logging
-import warnings
 
 import werkzeug
-import werkzeug.exceptions
-import werkzeug.utils
-import werkzeug.wrappers
-import werkzeug.wsgi
 
 import odoo
 import odoo.modules.registry
 from odoo import http
-from odoo.modules import get_manifest
 from odoo.http import request
+from odoo.modules import get_manifest
 from odoo.tools.misc import file_path
 from .utils import _local_web_translations
-
 
 _logger = logging.getLogger(__name__)
 
@@ -90,15 +83,18 @@ class WebClient(http.Controller):
 
     @http.route('/web/tests', type='http', auth='user', readonly=True)
     def unit_tests_suite(self, mod=None, **kwargs):
-        return request.render('web.unit_tests_suite', {'session_info': {'view_info': request.env['ir.ui.view'].get_view_info()}})
+        return request.render('web.unit_tests_suite',
+                              {'session_info': {'view_info': request.env['ir.ui.view'].get_view_info()}})
 
     @http.route('/web/tests/legacy', type='http', auth='user', readonly=True)
     def test_suite(self, mod=None, **kwargs):
-        return request.render('web.qunit_suite', {'session_info': {'view_info': request.env['ir.ui.view'].get_view_info()}})
+        return request.render('web.qunit_suite',
+                              {'session_info': {'view_info': request.env['ir.ui.view'].get_view_info()}})
 
     @http.route('/web/tests/legacy/mobile', type='http', auth="none")
     def test_mobile_suite(self, mod=None, **kwargs):
-        return request.render('web.qunit_mobile_suite', {'session_info': {'view_info': request.env['ir.ui.view'].get_view_info()}})
+        return request.render('web.qunit_mobile_suite',
+                              {'session_info': {'view_info': request.env['ir.ui.view'].get_view_info()}})
 
     @http.route('/web/bundle/<string:bundle_name>', auth='public', methods=['GET'], readonly=True)
     def bundle(self, bundle_name, **bundle_params):

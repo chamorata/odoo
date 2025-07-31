@@ -6,8 +6,10 @@ class AccountMoveSend(models.AbstractModel):
 
     @api.model
     def _is_sa_edi_applicable(self, move):
-        zatca_document = move.edi_document_ids.filtered(lambda d: d.edi_format_id.code == 'sa_zatca' and d.state == 'to_send')
-        return move.country_code == 'SA' and move.move_type in ('out_invoice', 'out_refund') and zatca_document and move.state != 'draft'
+        zatca_document = move.edi_document_ids.filtered(
+            lambda d: d.edi_format_id.code == 'sa_zatca' and d.state == 'to_send')
+        return move.country_code == 'SA' and move.move_type in ('out_invoice',
+                                                                'out_refund') and zatca_document and move.state != 'draft'
 
     def _get_all_extra_edis(self) -> dict:
         # EXTENDS 'account'

@@ -1,8 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from ast import literal_eval
+
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
-from ast import literal_eval
 
 
 class IrEmbeddedActions(models.Model):
@@ -12,21 +13,29 @@ class IrEmbeddedActions(models.Model):
 
     name = fields.Char(translate=True)
     sequence = fields.Integer()
-    parent_action_id = fields.Many2one('ir.actions.act_window', required=True, string='Parent Action', ondelete="cascade")
+    parent_action_id = fields.Many2one('ir.actions.act_window', required=True, string='Parent Action',
+                                       ondelete="cascade")
     parent_res_id = fields.Integer(string="Active Parent Id")
     parent_res_model = fields.Char(string='Active Parent Model', required=True)
     # It is required to have either action_id or python_method
     action_id = fields.Many2one('ir.actions.actions', string="Action", ondelete="cascade")
     python_method = fields.Char(help="Python method returning an action")
 
-    user_id = fields.Many2one('res.users', string="User", help="User specific embedded action. If empty, shared embedded action", ondelete="cascade")
+    user_id = fields.Many2one('res.users', string="User",
+                              help="User specific embedded action. If empty, shared embedded action",
+                              ondelete="cascade")
     is_deletable = fields.Boolean(compute="_compute_is_deletable")
-    default_view_mode = fields.Char(string="Default View", help="Default view (if none, default view of the action is taken)")
-    filter_ids = fields.One2many("ir.filters", "embedded_action_id", help="Default filter of the embedded action (if none, no filters)")
-    is_visible = fields.Boolean(string="Embedded visibility", help="Computed field to check if the record should be visible according to the domain", compute="_compute_is_visible")
+    default_view_mode = fields.Char(string="Default View",
+                                    help="Default view (if none, default view of the action is taken)")
+    filter_ids = fields.One2many("ir.filters", "embedded_action_id",
+                                 help="Default filter of the embedded action (if none, no filters)")
+    is_visible = fields.Boolean(string="Embedded visibility",
+                                help="Computed field to check if the record should be visible according to the domain",
+                                compute="_compute_is_visible")
     domain = fields.Char(default="[]", help="Domain applied to the active id of the parent model")
     context = fields.Char(default="{}", help="Context dictionary as Python expression, empty by default (Default: {})")
-    groups_ids = fields.Many2many('res.groups', help='Groups that can execute the embedded action. Leave empty to allow everybody.')
+    groups_ids = fields.Many2many('res.groups',
+                                  help='Groups that can execute the embedded action. Leave empty to allow everybody.')
 
     _sql_constraints = [
         (
@@ -83,9 +92,9 @@ class IrEmbeddedActions(models.Model):
                 if not action_groups or (action_groups & self.env.user.groups_id):
                     domain_model = literal_eval(record.domain or '[]')
                     record.is_visible = (
-                        record.parent_res_id in (False, self.env.context.get('active_id', False))
-                        and record.user_id.id in (False, self.env.uid)
-                        and active_model_record.filtered_domain(domain_model)
+                            record.parent_res_id in (False, self.env.context.get('active_id', False))
+                            and record.user_id.id in (False, self.env.uid)
+                            and active_model_record.filtered_domain(domain_model)
                     )
                 else:
                     record.is_visible = False

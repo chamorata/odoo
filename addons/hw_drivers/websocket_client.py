@@ -3,16 +3,16 @@ import logging
 import pprint
 import time
 import urllib.parse
-import urllib3
-import websocket
-
 from threading import Thread
 
+import urllib3
+import websocket
 from odoo.addons.hw_drivers import main
 from odoo.addons.hw_drivers.tools import helpers
 
 _logger = logging.getLogger(__name__)
 websocket.enableTrace(True, level=logging.getLevelName(_logger.getEffectiveLevel()))
+
 
 def send_to_controller(device_type, params):
     """
@@ -57,7 +57,8 @@ def on_message(ws, messages):
                         start_operation_time = time.perf_counter()
                         _logger.debug("device '%s' action started with: %s", device_identifier, pprint.pformat(payload))
                         main.iot_devices[device_identifier].action(payload)
-                        _logger.info("device '%s' action finished - %.*f", device_identifier, 3, time.perf_counter() - start_operation_time)
+                        _logger.info("device '%s' action finished - %.*f", device_identifier, 3,
+                                     time.perf_counter() - start_operation_time)
             else:
                 # likely intended as IoT share the same channel
                 _logger.debug("message ignored due to different iot mac: %s", iot_mac)
@@ -81,7 +82,8 @@ class WebsocketClient(Thread):
             When the client is setup, this function send a message to subscribe to the iot websocket channel
         """
         ws.send(
-            json.dumps({'event_name': 'subscribe', 'data': {'channels': [self.iot_channel], 'last': 0, 'mac_address': helpers.get_mac_address()}})
+            json.dumps({'event_name': 'subscribe',
+                        'data': {'channels': [self.iot_channel], 'last': 0, 'mac_address': helpers.get_mac_address()}})
         )
 
     def __init__(self, url):
@@ -92,9 +94,9 @@ class WebsocketClient(Thread):
 
     def run(self):
         self.ws = websocket.WebSocketApp(self.url,
-            header={"User-Agent": "OdooIoTBox/1.0"},
-            on_open=self.on_open, on_message=on_message,
-            on_error=on_error, on_close=on_close)
+                                         header={"User-Agent": "OdooIoTBox/1.0"},
+                                         on_open=self.on_open, on_message=on_message,
+                                         on_error=on_error, on_close=on_close)
 
         # The IoT synchronised servers can stop in 2 ways that we need to handle:
         #  A. Gracefully:

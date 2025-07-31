@@ -1,9 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import _, api, fields, models
-
 from odoo.addons.payment import utils as payment_utils
 from odoo.addons.website_sale_collect import const
+
+from odoo import _, api, fields, models
 
 
 class PaymentProvider(models.Model):
@@ -13,7 +13,7 @@ class PaymentProvider(models.Model):
 
     @api.model
     def _get_compatible_providers(
-        self, company_id, *args, sale_order_id=None, website_id=None, report=None, **kwargs
+            self, company_id, *args, sale_order_id=None, website_id=None, report=None, **kwargs
     ):
         """ Override of payment to exclude on-site payment providers if the delivery method is not
         pick up in store.
@@ -38,7 +38,7 @@ class PaymentProvider(models.Model):
         # Show on-site payment providers only if in-store delivery methods exist and the order
         # contains physical products.
         if order.carrier_id.delivery_type != 'in_store' or not any(
-            product.type == 'consu' for product in order.order_line.product_id
+                product.type == 'consu' for product in order.order_line.product_id
         ):
             unfiltered_providers = compatible_providers
             compatible_providers = compatible_providers.filtered(

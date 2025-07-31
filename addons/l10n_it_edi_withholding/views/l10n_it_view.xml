@@ -8,7 +8,7 @@
         <field name="arch" type="xml">
             <xpath expr="//page[@name='advanced_options']" position="inside">
                 <group>
-                    <field name="l10n_it_withholding_type"  readonly="amount &gt;= 0.0"/>
+                    <field name="l10n_it_withholding_type" readonly="amount &gt;= 0.0"/>
                     <field name="l10n_it_withholding_reason" invisible="not l10n_it_withholding_type"/>
                     <field name="l10n_it_pension_fund_type"/>
                 </group>
@@ -26,7 +26,8 @@
                 <field name="l10n_it_amount_vat_signed" string="VAT" sum="Total" optional="hide"/>
                 <field name="l10n_it_amount_pension_fund_signed" string="Pension Fund" sum="Total" optional="hide"/>
                 <field name="l10n_it_amount_withholding_signed" string="Withholding" sum="Total" optional="hide"/>
-                <field name="l10n_it_amount_before_withholding_signed" string="All Taxes Included" sum="Total" optional="hide"/>
+                <field name="l10n_it_amount_before_withholding_signed" string="All Taxes Included" sum="Total"
+                       optional="hide"/>
             </xpath>
         </field>
     </record>

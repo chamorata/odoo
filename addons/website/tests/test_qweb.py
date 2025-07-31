@@ -1,8 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.website.tools import MockRequest
+
 from odoo import http
 from odoo.addons.base.tests.common import TransactionCaseWithUserDemo
-from odoo.addons.website.tools import MockRequest
 from odoo.tests.common import TransactionCase
 
 
@@ -21,7 +22,8 @@ class TestQweb(TransactionCaseWithUserDemo):
                 <img src="http://test.external.img/img.png" loading="lazy"/>
                 <img src="http://test.external.img/img2.png" loading="lazy"/>
             """
-        rendered = self.env['ir.qweb']._render(t.id, {'url': 'http://test.external.img/img2.png'}, website_id=website.id)
+        rendered = self.env['ir.qweb']._render(t.id, {'url': 'http://test.external.img/img2.png'},
+                                               website_id=website.id)
         self.assertEqual(rendered.strip(), result.strip())
 
 
@@ -181,7 +183,7 @@ class TestQwebDataSnippet(TransactionCase):
     def _normalize_xml(self, html):
         return "\n".join(
             line.strip() for line in html.strip().splitlines() if line.strip()
-    )
+        )
 
     def _render_snippet(self, snippet):
         render_template = self.env['ir.ui.view'].create({

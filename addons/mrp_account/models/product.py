@@ -2,7 +2,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import fields, models
-from odoo.osv import expression
 from odoo.tools import float_round, groupby
 
 
@@ -37,7 +36,9 @@ class ProductProduct(models.Model):
         self._set_price_from_bom()
 
     def action_bom_cost(self):
-        boms_to_recompute = self.env['mrp.bom'].search(['|', ('product_id', 'in', self.ids), '&', ('product_id', '=', False), ('product_tmpl_id', 'in', self.mapped('product_tmpl_id').ids)])
+        boms_to_recompute = self.env['mrp.bom'].search(
+            ['|', ('product_id', 'in', self.ids), '&', ('product_id', '=', False),
+             ('product_tmpl_id', 'in', self.mapped('product_tmpl_id').ids)])
         for product in self:
             product._set_price_from_bom(boms_to_recompute)
 
@@ -47,7 +48,8 @@ class ProductProduct(models.Model):
         if bom:
             self.standard_price = self._compute_bom_price(bom, boms_to_recompute=boms_to_recompute)
         else:
-            bom = self.env['mrp.bom'].search([('byproduct_ids.product_id', '=', self.id)], order='sequence, product_id, id', limit=1)
+            bom = self.env['mrp.bom'].search([('byproduct_ids.product_id', '=', self.id)],
+                                             order='sequence, product_id, id', limit=1)
             if bom:
                 price = self._compute_bom_price(bom, boms_to_recompute=boms_to_recompute, byproduct_bom=True)
                 if price:
@@ -63,18 +65,23 @@ class ProductProduct(models.Model):
         value = 0
         dummy, bom_lines = bom.explode(self, 1)
         bom_lines = {line: data for line, data in bom_lines}
-        for bom_line, moves_list in groupby(stock_moves.filtered(lambda sm: sm.state != 'cancel'), lambda sm: sm.bom_line_id):
+        for bom_line, moves_list in groupby(stock_moves.filtered(lambda sm: sm.state != 'cancel'),
+                                            lambda sm: sm.bom_line_id):
             if bom_line not in bom_lines:
                 for move in moves_list:
                     component_quantity = next(
                         (bml.product_qty for bml in move.product_id.bom_line_ids if bml in bom_lines),
                         1
                     )
-                    value += component_quantity * move.product_id._compute_average_price(qty_invoiced * move.product_qty, qty_to_invoice * move.product_qty, move, is_returned=is_returned)
+                    value += component_quantity * move.product_id._compute_average_price(
+                        qty_invoiced * move.product_qty, qty_to_invoice * move.product_qty, move,
+                        is_returned=is_returned)
                 continue
             line_qty = bom_line.product_uom_id._compute_quantity(bom_lines[bom_line]['qty'], bom_line.product_id.uom_id)
             moves = self.env['stock.move'].concat(*moves_list)
-            value += line_qty * bom_line.product_id._compute_average_price(qty_invoiced * line_qty, qty_to_invoice * line_qty, moves, is_returned=is_returned)
+            value += line_qty * bom_line.product_id._compute_average_price(qty_invoiced * line_qty,
+                                                                           qty_to_invoice * line_qty, moves,
+                                                                           is_returned=is_returned)
         return value
 
     def _compute_bom_price(self, bom, boms_to_recompute=False, byproduct_bom=False):
@@ -89,8 +96,8 @@ class ProductProduct(models.Model):
                 continue
 
             duration_expected = (
-                opt.workcenter_id._get_expected_duration(self) +
-                opt.time_cycle * 100 / opt.workcenter_id.time_efficiency)
+                    opt.workcenter_id._get_expected_duration(self) +
+                    opt.time_cycle * 100 / opt.workcenter_id.time_efficiency)
             total += (duration_expected / 60) * opt._total_cost_per_hour()
 
         for line in bom.bom_line_ids:
@@ -102,7 +109,8 @@ class ProductProduct(models.Model):
                 child_total = line.product_id._compute_bom_price(line.child_bom_id, boms_to_recompute=boms_to_recompute)
                 total += line.product_id.uom_id._compute_price(child_total, line.product_uom_id) * line.product_qty
             else:
-                total += line.product_id.uom_id._compute_price(line.product_id.standard_price, line.product_uom_id) * line.product_qty
+                total += line.product_id.uom_id._compute_price(line.product_id.standard_price,
+                                                               line.product_uom_id) * line.product_qty
         if byproduct_bom:
             byproduct_lines = bom.byproduct_ids.filtered(lambda b: b.product_id == self and b.cost_share != 0)
             product_uom_qty = 0

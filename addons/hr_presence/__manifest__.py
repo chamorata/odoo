@@ -26,7 +26,7 @@ Allows to contact directly the employee in case of unjustified absence.
     ],
     'installable': True,
     'license': 'LGPL-3',
-     'assets': {
+    'assets': {
         'web.assets_backend': [
             'hr_presence/static/src/**/*',
         ],

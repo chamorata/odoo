@@ -2,14 +2,15 @@
 
 import warnings
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
 from operator import itemgetter
+
+from dateutil.relativedelta import relativedelta
+from odoo.addons.website.controllers.form import WebsiteForm
 from werkzeug.urls import url_encode
 
 from odoo import http, _
-from odoo.addons.website.controllers.form import WebsiteForm
-from odoo.osv.expression import AND
 from odoo.http import request
+from odoo.osv.expression import AND
 from odoo.tools import email_normalize, escape_psql
 from odoo.tools.misc import groupby
 
@@ -63,7 +64,9 @@ class WebsiteHrRecruitment(WebsiteForm):
             'is_untyped': is_untyped,
         }
         total, details, fuzzy_search_term = request.website._search_with_fuzzy("jobs", search,
-            limit=1000, order="is_published desc, sequence, no_of_recruitment desc", options=options)
+                                                                               limit=1000,
+                                                                               order="is_published desc, sequence, no_of_recruitment desc",
+                                                                               options=options)
         # Browse jobs as superuser, because address is restricted
         jobs = details[0].get('results', Jobs).sudo()
 
@@ -90,8 +93,10 @@ class WebsiteHrRecruitment(WebsiteForm):
                 'is_remote': False,
             })
             cross_country_total, cross_country_details, _ = request.website._search_with_fuzzy("jobs",
-                fuzzy_search_term or search, limit=1000, order="is_published desc, sequence, no_of_recruitment desc",
-                options=cross_country_options)
+                                                                                               fuzzy_search_term or search,
+                                                                                               limit=1000,
+                                                                                               order="is_published desc, sequence, no_of_recruitment desc",
+                                                                                               options=cross_country_options)
             # Browse jobs as superuser, because address is restricted
             cross_country_jobs = cross_country_details[0].get('results', Jobs).sudo()
         else:
@@ -115,8 +120,10 @@ class WebsiteHrRecruitment(WebsiteForm):
                 'is_other_department': False,
             })
             cross_department_total, cross_department_details, _ = request.website._search_with_fuzzy("jobs",
-                fuzzy_search_term or search, limit=1000, order="is_published desc, sequence, no_of_recruitment desc",
-                options=cross_department_options)
+                                                                                                     fuzzy_search_term or search,
+                                                                                                     limit=1000,
+                                                                                                     order="is_published desc, sequence, no_of_recruitment desc",
+                                                                                                     options=cross_department_options)
             cross_department_jobs = cross_department_details[0].get('results', Jobs)
         else:
             cross_department_total = total
@@ -138,8 +145,10 @@ class WebsiteHrRecruitment(WebsiteForm):
                 'is_remote': False,
             })
             cross_office_total, cross_office_details, _ = request.website._search_with_fuzzy("jobs",
-                fuzzy_search_term or search, limit=1000, order="is_published desc, sequence, no_of_recruitment desc",
-                options=cross_office_options)
+                                                                                             fuzzy_search_term or search,
+                                                                                             limit=1000,
+                                                                                             order="is_published desc, sequence, no_of_recruitment desc",
+                                                                                             options=cross_office_options)
             # Browse jobs as superuser, because address is restricted
             cross_office_jobs = cross_office_details[0].get('results', Jobs).sudo()
         else:
@@ -162,8 +171,10 @@ class WebsiteHrRecruitment(WebsiteForm):
                 'is_untyped': False,
             })
             cross_type_total, cross_type_details, _ = request.website._search_with_fuzzy("jobs",
-                fuzzy_search_term or search, limit=1000, order="is_published desc, sequence, no_of_recruitment desc",
-                options=cross_type_options)
+                                                                                         fuzzy_search_term or search,
+                                                                                         limit=1000,
+                                                                                         order="is_published desc, sequence, no_of_recruitment desc",
+                                                                                         options=cross_type_options)
             cross_type_jobs = cross_type_details[0].get('results', Jobs)
         else:
             cross_type_total = total
@@ -305,16 +316,16 @@ class WebsiteHrRecruitment(WebsiteForm):
             [
                 ('job_id.website_id', 'in', [http.request.website.id, False]),
                 '|',
-                    ('application_status', '=', 'ongoing'),
-                    '&',
-                        ('application_status', '=', 'refused'),
-                        ('active', '=', False),
+                ('application_status', '=', 'ongoing'),
+                '&',
+                ('application_status', '=', 'refused'),
+                ('active', '=', False),
             ]
         ]), order='create_date DESC').grouped('application_status')
         refused_applicants = applications_by_status.get('refused', http.request.env['hr.applicant'])
         if any(applicant for applicant in refused_applicants if refused_applicants_condition(applicant)):
             return {
-                'message':  _(
+                'message': _(
                     'We\'ve found a previous closed application in our system within the last 6 months.'
                     ' Please consider before applying in order not to duplicate efforts.'
                 )
@@ -331,7 +342,7 @@ class WebsiteHrRecruitment(WebsiteForm):
                     [value for value in itemgetter('name', 'email', 'phone')(ongoing_application.user_id) if value]
                 ))
             return {
-                'message':  _(
+                'message': _(
                     'An application already exists for %(value)s.'
                     ' Duplicates might be rejected. %(recruiter_contact)s',
                     value=value,
@@ -340,7 +351,7 @@ class WebsiteHrRecruitment(WebsiteForm):
             }
 
         return {
-            'message':  _(
+            'message': _(
                 'We found a recent application with a similar name, email, phone number.'
                 ' You can continue if it\'s not a mistake.'
             )
@@ -355,14 +366,14 @@ class WebsiteHrRecruitment(WebsiteForm):
             partner_email = values.pop('email_from', None)
 
             company_id = (
-                request.env["hr.department"]
-                .sudo()
-                .search([("id", "=", values.get("department_id"))])
-                .company_id.id
-                or request.env["hr.job"]
-                .sudo()
-                .search([("id", "=", values.get("job_id"))])
-                .company_id.id
+                    request.env["hr.department"]
+                    .sudo()
+                    .search([("id", "=", values.get("department_id"))])
+                    .company_id.id
+                    or request.env["hr.job"]
+                    .sudo()
+                    .search([("id", "=", values.get("job_id"))])
+                    .company_id.id
             )
             if partner_phone and partner_email:
                 candidate = request.env['hr.candidate'].sudo().search([

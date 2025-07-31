@@ -2,10 +2,10 @@
 from datetime import datetime
 
 from freezegun import freeze_time
-
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
-from odoo.tools import file_open
+
 from odoo.tests import tagged
+from odoo.tools import file_open
 
 
 @tagged('post_install_l10n', 'post_install', '-at_install')
@@ -48,7 +48,8 @@ class TestSgUBLPint(AccountTestInvoicingCommon):
         cls.startClassPatcher(freeze_time(cls.fakenow))
 
     def test_invoice(self):
-        invoice = self.init_invoice('out_invoice', currency=self.other_currency, products=self.product_a, taxes=self.tax_9)
+        invoice = self.init_invoice('out_invoice', currency=self.other_currency, products=self.product_a,
+                                    taxes=self.tax_9)
         invoice.action_post()
 
         actual_xml, errors = self.env['account.edi.xml.pint_sg']._export_invoice(invoice)

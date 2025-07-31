@@ -50,4 +50,5 @@ class L10nArEarningsScaleLine(models.Model):
     @api.depends('to_amount', 'scale_id.line_ids')
     def _compute_from_amount(self):
         for line in self:
-            line.from_amount = line.scale_id.line_ids.sorted(reverse=True).filtered(lambda l: l.to_amount < line.to_amount)[:1].to_amount
+            line.from_amount = line.scale_id.line_ids.sorted(reverse=True).filtered(
+                lambda l: l.to_amount < line.to_amount)[:1].to_amount

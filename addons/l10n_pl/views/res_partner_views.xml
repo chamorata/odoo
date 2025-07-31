@@ -2,7 +2,7 @@
 <odoo>
     <data>
 
-        <record  model="ir.ui.view" id="res_partner_account_pl_form">
+        <record model="ir.ui.view" id="res_partner_account_pl_form">
             <field name="name">res.partner.account.pl.form</field>
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="account.view_partner_property_form"/>

@@ -1,11 +1,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
+from odoo.addons.sale.controllers.combo_configurator import SaleComboConfiguratorController
+from odoo.addons.website_sale.controllers.main import WebsiteSale
+
 from odoo import _
 from odoo.exceptions import UserError
 from odoo.http import request, route
 from odoo.tools.image import image_data_uri
-
-from odoo.addons.sale.controllers.combo_configurator import SaleComboConfiguratorController
-from odoo.addons.website_sale.controllers.main import WebsiteSale
 
 
 class WebsiteSaleComboConfiguratorController(SaleComboConfiguratorController, WebsiteSale):
@@ -47,7 +47,7 @@ class WebsiteSaleComboConfiguratorController(SaleComboConfiguratorController, We
         website=True,
     )
     def website_sale_combo_configurator_update_cart(
-        self, combo_product_id, quantity, selected_combo_items, **kwargs
+            self, combo_product_id, quantity, selected_combo_items, **kwargs
     ):
         """ Add the provided combo product and selected combo items to the cart.
 
@@ -105,9 +105,9 @@ class WebsiteSaleComboConfiguratorController(SaleComboConfiguratorController, We
         # computed after creating all of its combo item lines.
         combo_product_line = request.env['sale.order.line'].browse(values['line_id'])
         if (
-            combo_product_line
-            and sum(combo_product_line._get_lines_with_price().mapped('price_unit')) == 0
-            and combo_product_line.order_id.website_id.prevent_zero_price_sale
+                combo_product_line
+                and sum(combo_product_line._get_lines_with_price().mapped('price_unit')) == 0
+                and combo_product_line.order_id.website_id.prevent_zero_price_sale
         ):
             raise UserError(_(
                 "The given product does not have a price therefore it cannot be added to cart.",
@@ -119,7 +119,7 @@ class WebsiteSaleComboConfiguratorController(SaleComboConfiguratorController, We
         return values
 
     def _get_combo_item_data(
-        self, combo, combo_item, selected_combo_item, date, currency, pricelist, **kwargs
+            self, combo, combo_item, selected_combo_item, date, currency, pricelist, **kwargs
     ):
         data = super()._get_combo_item_data(
             combo, combo_item, selected_combo_item, date, currency, pricelist, **kwargs
@@ -129,8 +129,8 @@ class WebsiteSaleComboConfiguratorController(SaleComboConfiguratorController, We
         # bypass this access check, we send the raw image URL if the product is inaccessible to the
         # current user.
         if (
-            not combo_item.product_id.sudo(False).has_access('read')
-            and (combo_item_image := combo_item.product_id.image_256)
+                not combo_item.product_id.sudo(False).has_access('read')
+                and (combo_item_image := combo_item.product_id.image_256)
         ):
             data['product']['image_src'] = image_data_uri(combo_item_image)
         return data

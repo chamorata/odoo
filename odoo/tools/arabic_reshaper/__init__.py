@@ -11,7 +11,6 @@
 # configuration) then constant-folding all the configuration items by hand.
 
 import re
-
 from itertools import repeat
 
 from .letters import (UNSHAPED, ISOLATED, TATWEEL, ZWJ, LETTERS_ARABIC, FINAL,
@@ -36,7 +35,6 @@ HARAKAT_RE = re.compile(
     re.UNICODE | re.VERBOSE
 )
 
-
 LIGATURES_RE = re.compile("""
     \u0627\u0644\u0644\u0647 # ARABIC LIGATURE ALLAH
   | \u0644\u0627 # ARABIC LIGATURE LAM WITH ALEF
@@ -48,9 +46,12 @@ LIGATURES_RE = re.compile("""
 GROUP_INDEX_TO_LIGATURE_FORMs = [
     ('\N{ARABIC LIGATURE ALLAH ISOLATED FORM}', '', '', ''),
     ('\N{ARABIC LIGATURE LAM WITH ALEF ISOLATED FORM}', '', '', '\N{ARABIC LIGATURE LAM WITH ALEF FINAL FORM}'),
-    ('\N{ARABIC LIGATURE LAM WITH ALEF WITH HAMZA ABOVE ISOLATED FORM}', '', '', '\N{ARABIC LIGATURE LAM WITH ALEF WITH HAMZA ABOVE FINAL FORM}'),
-    ('\N{ARABIC LIGATURE LAM WITH ALEF WITH HAMZA BELOW ISOLATED FORM}', '', '', '\N{ARABIC LIGATURE LAM WITH ALEF WITH HAMZA BELOW FINAL FORM}'),
-    ('\N{ARABIC LIGATURE LAM WITH ALEF WITH MADDA ABOVE ISOLATED FORM}', '', '', '\N{ARABIC LIGATURE LAM WITH ALEF WITH MADDA ABOVE FINAL FORM}'),
+    ('\N{ARABIC LIGATURE LAM WITH ALEF WITH HAMZA ABOVE ISOLATED FORM}', '', '',
+     '\N{ARABIC LIGATURE LAM WITH ALEF WITH HAMZA ABOVE FINAL FORM}'),
+    ('\N{ARABIC LIGATURE LAM WITH ALEF WITH HAMZA BELOW ISOLATED FORM}', '', '',
+     '\N{ARABIC LIGATURE LAM WITH ALEF WITH HAMZA BELOW FINAL FORM}'),
+    ('\N{ARABIC LIGATURE LAM WITH ALEF WITH MADDA ABOVE ISOLATED FORM}', '', '',
+     '\N{ARABIC LIGATURE LAM WITH ALEF WITH MADDA ABOVE FINAL FORM}'),
 ]
 
 
@@ -74,10 +75,11 @@ def reshape(text):
         else:
             previous_letter = output[-1]
             if (
-                previous_letter[FORM] == NOT_SUPPORTED or
-                not connects_with_letter_before(letter, LETTERS_ARABIC) or
-                not connects_with_letter_after(previous_letter[LETTER], LETTERS_ARABIC) or
-                (previous_letter[FORM] == FINAL and not connects_with_letters_before_and_after(previous_letter[LETTER], LETTERS_ARABIC))
+                    previous_letter[FORM] == NOT_SUPPORTED or
+                    not connects_with_letter_before(letter, LETTERS_ARABIC) or
+                    not connects_with_letter_after(previous_letter[LETTER], LETTERS_ARABIC) or
+                    (previous_letter[FORM] == FINAL and not connects_with_letters_before_and_after(
+                        previous_letter[LETTER], LETTERS_ARABIC))
             ):
                 output.append((letter, ISOLATED))
             elif previous_letter[FORM] == ISOLATED:

@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from datetime import datetime, timedelta
 import logging
+from datetime import datetime, timedelta
+
 import pytz
 
 from odoo import api, fields, models, _
@@ -55,9 +56,11 @@ def _update_nogap(self, number_increment):
     self.flush_recordset(['number_next'])
     number_next = self.number_next
     self._cr.execute("SELECT number_next FROM %s WHERE id=%%s FOR UPDATE NOWAIT" % self._table, [self.id])
-    self._cr.execute("UPDATE %s SET number_next=number_next+%%s WHERE id=%%s " % self._table, (number_increment, self.id))
+    self._cr.execute("UPDATE %s SET number_next=number_next+%%s WHERE id=%%s " % self._table,
+                     (number_increment, self.id))
     self.invalidate_recordset(['number_next'])
     return number_next
+
 
 def _predict_nextval(self, seq_id):
     """Predict next value for PostgreSQL sequence without consuming it"""
@@ -117,10 +120,11 @@ class IrSequence(models.Model):
             return self
         sequence_date = sequence_date or fields.Date.today()
         seq_date = self.env['ir.sequence.date_range'].search(
-            [('sequence_id', '=', self.id), ('date_from', '<=', sequence_date), ('date_to', '>=', sequence_date)], limit=1)
+            [('sequence_id', '=', self.id), ('date_from', '<=', sequence_date), ('date_to', '>=', sequence_date)],
+            limit=1)
         if seq_date:
             return seq_date[0]
-        #no date_range sequence was found, we create a new one
+        # no date_range sequence was found, we create a new one
         return self._create_date_range_seq(sequence_date)
 
     name = fields.Char(required=True)
@@ -128,8 +132,8 @@ class IrSequence(models.Model):
     implementation = fields.Selection([('standard', 'Standard'), ('no_gap', 'No gap')],
                                       string='Implementation', required=True, default='standard',
                                       help="While assigning a sequence number to a record, the 'no gap' sequence implementation ensures that each previous sequence number has been assigned already. "
-                                      "While this sequence implementation will not skip any sequence number upon assignment, there can still be gaps in the sequence if records are deleted. "
-                                      "The 'no gap' implementation is slower than the standard one.")
+                                           "While this sequence implementation will not skip any sequence number upon assignment, there can still be gaps in the sequence if records are deleted. "
+                                           "The 'no gap' implementation is slower than the standard one.")
     active = fields.Boolean(default=True)
     prefix = fields.Char(help="Prefix value of the record for the sequence", trim=False)
     suffix = fields.Char(help="Suffix value of the record for the sequence", trim=False)
@@ -137,7 +141,7 @@ class IrSequence(models.Model):
     number_next_actual = fields.Integer(compute='_get_number_next_actual', inverse='_set_number_next_actual',
                                         string='Actual Next Number',
                                         help="Next number that will be used. This number can be incremented "
-                                        "frequently so the displayed value might already be obsolete")
+                                             "frequently so the displayed value might already be obsolete")
     number_increment = fields.Integer(string='Step', required=True, default=1,
                                       help="The next number of the sequence will be incremented by this number")
     padding = fields.Integer(string='Sequence Size', required=True, default=0,
@@ -240,10 +244,14 @@ class IrSequence(models.Model):
         year = fields.Date.from_string(date).strftime('%Y')
         date_from = '{}-01-01'.format(year)
         date_to = '{}-12-31'.format(year)
-        date_range = self.env['ir.sequence.date_range'].search([('sequence_id', '=', self.id), ('date_from', '>=', date), ('date_from', '<=', date_to)], order='date_from desc', limit=1)
+        date_range = self.env['ir.sequence.date_range'].search(
+            [('sequence_id', '=', self.id), ('date_from', '>=', date), ('date_from', '<=', date_to)],
+            order='date_from desc', limit=1)
         if date_range:
             date_to = date_range.date_from + timedelta(days=-1)
-        date_range = self.env['ir.sequence.date_range'].search([('sequence_id', '=', self.id), ('date_to', '>=', date_from), ('date_to', '<=', date)], order='date_to desc', limit=1)
+        date_range = self.env['ir.sequence.date_range'].search(
+            [('sequence_id', '=', self.id), ('date_to', '>=', date_from), ('date_to', '<=', date)],
+            order='date_to desc', limit=1)
         if date_range:
             date_from = date_range.date_to + timedelta(days=1)
         seq_date_range = self.env['ir.sequence.date_range'].sudo().create({
@@ -259,7 +267,8 @@ class IrSequence(models.Model):
             return self._next_do()
         # date mode
         dt = sequence_date or self._context.get('ir_sequence_date', fields.Date.today())
-        seq_date = self.env['ir.sequence.date_range'].search([('sequence_id', '=', self.id), ('date_from', '<=', dt), ('date_to', '>=', dt)], limit=1)
+        seq_date = self.env['ir.sequence.date_range'].search(
+            [('sequence_id', '=', self.id), ('date_from', '<=', dt), ('date_to', '>=', dt)], limit=1)
         if not seq_date:
             seq_date = self._create_date_range_seq(dt)
         return seq_date.with_context(ir_sequence_date_range=seq_date.date_from)._next()
@@ -278,9 +287,11 @@ class IrSequence(models.Model):
         """
         self.browse().check_access('read')
         company_id = self.env.company.id
-        seq_ids = self.search([('code', '=', sequence_code), ('company_id', 'in', [company_id, False])], order='company_id')
+        seq_ids = self.search([('code', '=', sequence_code), ('company_id', 'in', [company_id, False])],
+                              order='company_id')
         if not seq_ids:
-            _logger.debug("No ir.sequence has been found for code '%s'. Please make sure a sequence is set for current company." % sequence_code)
+            _logger.debug(
+                "No ir.sequence has been found for code '%s'. Please make sure a sequence is set for current company." % sequence_code)
             return False
         seq_id = seq_ids[0]
         return seq_id._next(sequence_date=sequence_date)
@@ -363,7 +374,8 @@ class IrSequenceDateRange(models.Model):
 
     def _alter_sequence(self, number_increment=None, number_next=None):
         for seq in self:
-            _alter_sequence(self._cr, "ir_sequence_%03d_%03d" % (seq.sequence_id.id, seq.id), number_increment=number_increment, number_next=number_next)
+            _alter_sequence(self._cr, "ir_sequence_%03d_%03d" % (seq.sequence_id.id, seq.id),
+                            number_increment=number_increment, number_next=number_next)
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -373,7 +385,8 @@ class IrSequenceDateRange(models.Model):
         for seq in seqs:
             main_seq = seq.sequence_id
             if main_seq.implementation == 'standard':
-                _create_sequence(self._cr, "ir_sequence_%03d_%03d" % (main_seq.id, seq.id), main_seq.number_increment, seq.number_next_actual or 1)
+                _create_sequence(self._cr, "ir_sequence_%03d_%03d" % (main_seq.id, seq.id), main_seq.number_increment,
+                                 seq.number_next_actual or 1)
         return seqs
 
     def unlink(self):

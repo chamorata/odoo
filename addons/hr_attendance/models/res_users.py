@@ -3,6 +3,7 @@
 
 from odoo import models, fields, _
 
+
 class User(models.Model):
     _inherit = ['res.users']
 
@@ -35,6 +36,7 @@ class User(models.Model):
         if officers_to_remove_ids:
             self.env.ref('hr_attendance.group_hr_attendance_officer').users = [(3, user.id) for user in
                                                                                officers_to_remove_ids]
+
     def action_open_last_month_attendances(self):
         self.ensure_one()
         return {

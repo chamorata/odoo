@@ -15,7 +15,8 @@ class UoMCategory(models.Model):
     name = fields.Char('Unit of Measure Category', required=True, translate=True)
 
     uom_ids = fields.One2many('uom.uom', 'category_id')
-    reference_uom_id = fields.Many2one('uom.uom', "Reference UoM", store=False) # Dummy field to keep track of reference uom change
+    reference_uom_id = fields.Many2one('uom.uom', "Reference UoM",
+                                       store=False)  # Dummy field to keep track of reference uom change
 
     @api.onchange('uom_ids')
     def _onchange_uom_ids(self):
@@ -27,9 +28,11 @@ class UoMCategory(models.Model):
             if reference_count == 0 and self._origin.id and self.uom_ids:
                 raise UserError(_('UoM category %s must have at least one reference unit of measure.', self.name))
             if self.reference_uom_id:
-                new_reference = self.uom_ids.filtered(lambda o: o.uom_type == 'reference' and o._origin.id != self.reference_uom_id.id)
+                new_reference = self.uom_ids.filtered(
+                    lambda o: o.uom_type == 'reference' and o._origin.id != self.reference_uom_id.id)
             else:
-                new_reference = self.uom_ids.filtered(lambda o: o.uom_type == 'reference' and o._origin.uom_type != 'reference')
+                new_reference = self.uom_ids.filtered(
+                    lambda o: o.uom_type == 'reference' and o._origin.uom_type != 'reference')
             if new_reference:
                 other_uoms = self.uom_ids.filtered(lambda u: u._origin.id) - new_reference
                 for uom in other_uoms:
@@ -48,7 +51,7 @@ class UoM(models.Model):
 
     def _unprotected_uom_xml_ids(self):
         return [
-            "product_uom_hour", # NOTE: this uom is protected when hr_timesheet is installed.
+            "product_uom_hour",  # NOTE: this uom is protected when hr_timesheet is installed.
             "product_uom_dozen",
         ]
 
@@ -67,7 +70,8 @@ class UoM(models.Model):
         'Rounding Precision', default=0.01, digits=0, required=True,
         help="The computed quantity will be a multiple of this value. "
              "Use 1.0 for a Unit of Measure that cannot be further split, such as a piece.")
-    active = fields.Boolean('Active', default=True, help="Uncheck the active field to disable a unit of measure without deleting it.")
+    active = fields.Boolean('Active', default=True,
+                            help="Uncheck the active field to disable a unit of measure without deleting it.")
     uom_type = fields.Selection([
         ('bigger', 'Bigger than the reference Unit of Measure'),
         ('reference', 'Reference Unit of Measure for this category'),
@@ -79,7 +83,8 @@ class UoM(models.Model):
     _sql_constraints = [
         ('factor_gt_zero', 'CHECK (factor!=0)', 'The conversion ratio for a unit of measure cannot be 0!'),
         ('rounding_gt_zero', 'CHECK (rounding>0)', 'The rounding precision must be strictly positive.'),
-        ('factor_reference_is_one', "CHECK((uom_type = 'reference' AND factor = 1.0) OR (uom_type != 'reference'))", "The reference unit must have a conversion factor equal to 1.")
+        ('factor_reference_is_one', "CHECK((uom_type = 'reference' AND factor = 1.0) OR (uom_type != 'reference'))",
+         "The reference unit must have a conversion factor equal to 1.")
     ]
 
     def _check_category_reference_uniqueness(self):
@@ -99,7 +104,8 @@ class UoM(models.Model):
         for category in self.category_id:
             reference_count = ref_by_category.get(category.id, 0)
             if reference_count > 1:
-                raise ValidationError(_("UoM category %s should only have one reference unit of measure.", category.name))
+                raise ValidationError(
+                    _("UoM category %s should only have one reference unit of measure.", category.name))
             elif reference_count == 0 and uom_by_category.get(category.id, 0) > 0:
                 raise ValidationError(_("UoM category %s should have a reference unit of measure.", category.name))
 
@@ -174,7 +180,7 @@ class UoM(models.Model):
             values['factor'] = factor_inv and (1.0 / factor_inv) or 0.0
 
         res = super(UoM, self).write(values)
-        if ('uom_type' not in values or values['uom_type'] != 'reference') and\
+        if ('uom_type' not in values or values['uom_type'] != 'reference') and \
                 not self.env.context.get('allow_to_change_reference'):
             self._check_category_reference_uniqueness()
         return res

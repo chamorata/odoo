@@ -3,14 +3,15 @@
 
 import logging
 import time
-import pytz
-
 from datetime import datetime
+
+import pytz
 from dateutil.relativedelta import relativedelta
 
 from odoo.tests import TransactionCase, warmup
 
 _logger = logging.getLogger(__name__)
+
 
 class TestResourcePerformance(TransactionCase):
 
@@ -35,10 +36,10 @@ class TestResourcePerformance(TransactionCase):
             calendar._attendance_intervals_batch(start, stop, resources=resources.resource_id)
             _logger.info('Attendance Intervals Batch (100): --- %s seconds ---', time.time() - start_time)
             # Before
-            #INFO master test_performance: Attendance Intervals Batch (100): --- 2.0667169094085693 seconds ---
-            #INFO master test_performance: Attendance Intervals Batch (100): --- 2.0868310928344727 seconds ---
-            #INFO master test_performance: Attendance Intervals Batch (100): --- 1.9209258556365967 seconds ---
-            #INFO master test_performance: Attendance Intervals Batch (100): --- 1.9474620819091797 seconds ---
+            # INFO master test_performance: Attendance Intervals Batch (100): --- 2.0667169094085693 seconds ---
+            # INFO master test_performance: Attendance Intervals Batch (100): --- 2.0868310928344727 seconds ---
+            # INFO master test_performance: Attendance Intervals Batch (100): --- 1.9209258556365967 seconds ---
+            # INFO master test_performance: Attendance Intervals Batch (100): --- 1.9474620819091797 seconds ---
             # After
-            #INFO master test_performance: Attendance Intervals Batch (100): --- 0.4092371463775635 seconds ---
-            #INFO master test_performance: Attendance Intervals Batch (100): --- 0.3598649501800537 seconds ---
+            # INFO master test_performance: Attendance Intervals Batch (100): --- 0.4092371463775635 seconds ---
+            # INFO master test_performance: Attendance Intervals Batch (100): --- 0.3598649501800537 seconds ---

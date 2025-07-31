@@ -1,6 +1,7 @@
-from odoo import _
-from odoo.addons.portal.controllers.portal import CustomerPortal
 from odoo.addons.account.models.company import PEPPOL_LIST
+from odoo.addons.portal.controllers.portal import CustomerPortal
+
+from odoo import _
 from odoo.http import request
 
 
@@ -52,10 +53,12 @@ class PortalAccount(CustomerPortal):
             if request.env['res.country'].browse(int(data.get('country_id'))).code not in PEPPOL_LIST:
                 error['country_id'] = 'error'
                 error_message.append(_('That country is not available for Peppol.'))
-            if endpoint_error_message := request.env['res.partner']._build_error_peppol_endpoint(peppol_eas, peppol_endpoint):
+            if endpoint_error_message := request.env['res.partner']._build_error_peppol_endpoint(peppol_eas,
+                                                                                                 peppol_endpoint):
                 error['invalid_peppol_endpoint'] = 'error'
                 error_message.append(endpoint_error_message)
-            if request.env['res.partner']._get_peppol_verification_state(peppol_endpoint, peppol_eas, edi_format) != 'valid':
+            if request.env['res.partner']._get_peppol_verification_state(peppol_endpoint, peppol_eas,
+                                                                         edi_format) != 'valid':
                 error['invalid_peppol_config'] = 'error'
                 error_message.append(_('If you want to be invoiced by Peppol, your configuration must be valid.'))
 

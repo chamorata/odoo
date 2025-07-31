@@ -1,8 +1,4 @@
-import json
-import base64
 import re
-
-from odoo import _
 
 strftime_to_spreadsheet_time_format_table = {
     "%H": "hh",
@@ -41,6 +37,7 @@ def strftime_format_to_spreadsheet_time_format(strf_format):
     separator = separator.group(1) if separator else ":"
 
     return separator.join(parts) + (" a" if twelve_hour_system else "")
+
 
 def strftime_format_to_spreadsheet_date_format(strf_format):
     """Convert a strftime format to a spreadsheet date format.

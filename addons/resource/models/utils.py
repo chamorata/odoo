@@ -4,6 +4,7 @@
 import math
 from datetime import time
 from itertools import chain
+
 from pytz import utc
 
 from odoo import fields
@@ -52,6 +53,7 @@ def _boundaries(intervals, opening, closing):
             yield (start, opening, recs)
             yield (stop, closing, recs)
 
+
 def filter_domain_leaf(domain, field_check, field_name_mapping=None):
     """
     filter_domain_lead only keep the leaves of a domain that verify a given check. Logical operators that involves
@@ -73,15 +75,15 @@ def filter_domain_leaf(domain, field_check, field_name_mapping=None):
     domain = normalize_domain(domain)
     field_name_mapping = field_name_mapping or {}
 
-    stack = [] # stack of elements (leaf or operator) to conserve (reversing it gives a domain)
-    ignored_elems = [] # history of ignored elements in the domain (not added to the stack)
+    stack = []  # stack of elements (leaf or operator) to conserve (reversing it gives a domain)
+    ignored_elems = []  # history of ignored elements in the domain (not added to the stack)
     # if the top of the stack ignored_elems is:
     # - True: indicates that the last browsed elem has been ignored
     # - False: indicates that the last browsed elem has been added to the stack
     # When an operator is applied to some elements, they are removed from the ignored_elems stack
     # (and replaced by the ignored_elems flag of the operator)
     while domain:
-        next_elem = domain.pop() # Browsing the domain backward simplifies the filtering
+        next_elem = domain.pop()  # Browsing the domain backward simplifies the filtering
         if is_leaf(next_elem):
             field_name, op, value = next_elem
             if field_check(field_name):
@@ -97,7 +99,7 @@ def filter_domain_leaf(domain, field_check, field_name_mapping=None):
                 ignored_elems.append(False)
             else:
                 ignored_elems.append(True)
-        else: # OR/AND operation
+        else:  # OR/AND operation
             ignore_operand1 = ignored_elems.pop()
             ignore_operand2 = ignored_elems.pop()
             if not ignore_operand1 and not ignore_operand2:
@@ -106,14 +108,17 @@ def filter_domain_leaf(domain, field_check, field_name_mapping=None):
             elif ignore_operand1 and ignore_operand2:
                 ignored_elems.append(True)
             else:
-                ignored_elems.append(False) # the AND/OR operation is replaced by one of its operand which cannot be ignored
+                ignored_elems.append(
+                    False)  # the AND/OR operation is replaced by one of its operand which cannot be ignored
     return list(reversed(stack))
+
 
 class Intervals(object):
     """ Collection of ordered disjoint intervals with some associated records.
         Each interval is a triple ``(start, stop, records)``, where ``records``
         is a recordset.
     """
+
     def __init__(self, intervals=()):
         self._items = []
         if intervals:
@@ -164,9 +169,9 @@ class Intervals(object):
         bounds1 = _boundaries(self, 'start', 'stop')
         bounds2 = _boundaries(other, 'switch', 'switch')
 
-        start = None                    # set by start/stop
-        recs1 = None                    # set by start
-        enabled = difference            # changed by switch
+        start = None  # set by start/stop
+        recs1 = None  # set by start
+        enabled = difference  # changed by switch
         for value, flag, recs in sorted(chain(bounds1, bounds2)):
             if flag == 'start':
                 start = value
@@ -184,12 +189,14 @@ class Intervals(object):
 
         return result
 
+
 def sum_intervals(intervals):
     """ Sum the intervals duration (unit : hour)"""
     return sum(
         (stop - start).total_seconds() / 3600
         for start, stop, meta in intervals
     )
+
 
 def timezone_datetime(time):
     if not time.tzinfo:

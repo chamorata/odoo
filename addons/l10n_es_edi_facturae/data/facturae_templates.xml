@@ -100,25 +100,35 @@
                 <TaxTypeCode t-out="tax['tax_record'].l10n_es_edi_facturae_tax_type"/>
                 <TaxRate t-out="tax['TaxRate']"/>
                 <TaxableBase>
-                    <TotalAmount t-out="float_repr(refund_multiplier*tax['TaxableBase']['TotalAmount'], file_currency.decimal_places)"/>
-                    <EquivalentInEuros t-if="need_conversion" t-out="float_repr(refund_multiplier*tax['TaxableBase']['EquivalentInEuros'], eur.decimal_places)"/>
+                    <TotalAmount
+                            t-out="float_repr(refund_multiplier*tax['TaxableBase']['TotalAmount'], file_currency.decimal_places)"/>
+                    <EquivalentInEuros t-if="need_conversion"
+                                       t-out="float_repr(refund_multiplier*tax['TaxableBase']['EquivalentInEuros'], eur.decimal_places)"/>
                 </TaxableBase>
                 <TaxAmount t-if="tax.get('TaxAmount')">
-                    <TotalAmount t-out="float_repr(refund_multiplier*tax['TaxAmount']['TotalAmount'], file_currency.decimal_places)"/>
-                    <EquivalentInEuros t-if="need_conversion" t-out="float_repr(refund_multiplier*tax['TaxAmount']['EquivalentInEuros'], eur.decimal_places)"/>
+                    <TotalAmount
+                            t-out="float_repr(refund_multiplier*tax['TaxAmount']['TotalAmount'], file_currency.decimal_places)"/>
+                    <EquivalentInEuros t-if="need_conversion"
+                                       t-out="float_repr(refund_multiplier*tax['TaxAmount']['EquivalentInEuros'], eur.decimal_places)"/>
                 </TaxAmount>
                 <SpecialTaxableBase t-if="tax.get('SpecialTaxableBase')">
-                    <TotalAmount t-out="float_repr(refund_multiplier*tax['SpecialTaxableBase']['TotalAmount'], file_currency.decimal_places)"/>
-                    <EquivalentInEuros t-if="need_conversion" t-out="float_repr(refund_multiplier*tax['SpecialTaxableBase']['EquivalentInEuros'], eur.decimal_places)"/>
+                    <TotalAmount
+                            t-out="float_repr(refund_multiplier*tax['SpecialTaxableBase']['TotalAmount'], file_currency.decimal_places)"/>
+                    <EquivalentInEuros t-if="need_conversion"
+                                       t-out="float_repr(refund_multiplier*tax['SpecialTaxableBase']['EquivalentInEuros'], eur.decimal_places)"/>
                 </SpecialTaxableBase>
                 <SpecialTaxAmount t-if="tax.get('SpecialTaxAmount')">
-                    <TotalAmount t-out="float_repr(refund_multiplier*tax['SpecialTaxAmount']['TotalAmount'], file_currency.decimal_places)"/>
-                    <EquivalentInEuros t-if="need_conversion" t-out="float_repr(refund_multiplier*tax['SpecialTaxAmount']['EquivalentInEuros'], eur.decimal_places)"/>
+                    <TotalAmount
+                            t-out="float_repr(refund_multiplier*tax['SpecialTaxAmount']['TotalAmount'], file_currency.decimal_places)"/>
+                    <EquivalentInEuros t-if="need_conversion"
+                                       t-out="float_repr(refund_multiplier*tax['SpecialTaxAmount']['EquivalentInEuros'], eur.decimal_places)"/>
                 </SpecialTaxAmount>
                 <EquivalenceSurcharge t-out="tax.get('EquivalenceSurcharge')"/>
                 <EquivalenceSurchargeAmount t-if="tax.get('EquivalenceSurchargeAmount')">
-                    <TotalAmount t-out="float_repr(refund_multiplier*tax['EquivalenceSurchargeAmount']['TotalAmount'], file_currency.decimal_places)"/>
-                    <EquivalentInEuros t-if="need_conversion" t-out="float_repr(refund_multiplier*tax['EquivalenceSurchargeAmount']['EquivalentInEuros'], eur.decimal_places)"/>
+                    <TotalAmount
+                            t-out="float_repr(refund_multiplier*tax['EquivalenceSurchargeAmount']['TotalAmount'], file_currency.decimal_places)"/>
+                    <EquivalentInEuros t-if="need_conversion"
+                                       t-out="float_repr(refund_multiplier*tax['EquivalenceSurchargeAmount']['EquivalentInEuros'], eur.decimal_places)"/>
                 </EquivalenceSurchargeAmount>
             </Tax>
         </template>
@@ -134,14 +144,16 @@
                 <ItemDescription t-out="line['ItemDescription']"/>
                 <Quantity t-out="line['Quantity']"/>
                 <UnitOfMeasure t-out="line.get('UnitOfMeasure')"/>
-                <UnitPriceWithoutTax t-out="float_repr(refund_multiplier*line['UnitPriceWithoutTax'], file_currency.decimal_places)"/>
+                <UnitPriceWithoutTax
+                        t-out="float_repr(refund_multiplier*line['UnitPriceWithoutTax'], file_currency.decimal_places)"/>
                 <TotalCost t-out="float_repr(refund_multiplier*line['TotalCost'], file_currency.decimal_places)"/>
                 <DiscountsAndRebates t-if="line.get('DiscountsAndRebates')">
                     <t t-foreach="line['DiscountsAndRebates']" t-as="discount">
                         <Discount>
                             <DiscountReason t-out="discount['DiscountReason']"/>
                             <DiscountRate t-out="discount.get('DiscountRate')"/>
-                            <DiscountAmount t-out="float_repr(refund_multiplier*discount['DiscountAmount'], file_currency.decimal_places)"/>
+                            <DiscountAmount
+                                    t-out="float_repr(refund_multiplier*discount['DiscountAmount'], file_currency.decimal_places)"/>
                         </Discount>
                     </t>
                 </DiscountsAndRebates>
@@ -150,16 +162,21 @@
                         <Charge>
                             <ChargeReason t-out="charge['ChargeReason']"/>
                             <ChargeRate t-out="charge.get('ChargeRate')"/>
-                            <ChargeAmount t-out="float_repr(refund_multiplier*charge['ChargeAmount'], file_currency.decimal_places)"/>
+                            <ChargeAmount
+                                    t-out="float_repr(refund_multiplier*charge['ChargeAmount'], file_currency.decimal_places)"/>
                         </Charge>
                     </t>
                 </Charges>
                 <GrossAmount t-out="float_repr(refund_multiplier*line['GrossAmount'], file_currency.decimal_places)"/>
                 <TaxesWithheld t-if="line.get('TaxesWithheld')">
-                    <t t-foreach="line['TaxesWithheld']" t-as="tax"><t t-call="l10n_es_edi_facturae.tax_type"/></t>
+                    <t t-foreach="line['TaxesWithheld']" t-as="tax">
+                        <t t-call="l10n_es_edi_facturae.tax_type"/>
+                    </t>
                 </TaxesWithheld>
                 <TaxesOutputs>
-                    <t t-foreach="line['TaxesOutputs']" t-as="tax"><t t-call="l10n_es_edi_facturae.tax_type"/></t>
+                    <t t-foreach="line['TaxesOutputs']" t-as="tax">
+                        <t t-call="l10n_es_edi_facturae.tax_type"/>
+                    </t>
                 </TaxesOutputs>
                 <LineItemPeriod t-if="line.get('LineItemPeriod')">
                     <StartDate t-out="line['LineItemPeriod']['StartDate']"/>
@@ -202,7 +219,8 @@
                     <InvoiceCurrencyCode t-out="invoice['invoice_currency'].name"/>
                     <ExchangeRateDetails t-if="invoice['InvoiceIssueData'].get('ExchangeRateDetails')">
                         <ExchangeRate t-out="invoice['InvoiceIssueData']['ExchangeRate']"/>
-                        <ExchangeRateDate t-out="(invoice['invoice_record'].invoice_date or invoice['invoice_record'].date).isoformat()"/>
+                        <ExchangeRateDate
+                                t-out="(invoice['invoice_record'].invoice_date or invoice['invoice_record'].date).isoformat()"/>
                     </ExchangeRateDetails>
                     <TaxCurrencyCode t-out="invoice['invoice_currency'].name"/>
                     <LanguageName t-out="invoice['InvoiceIssueData']['LanguageName']"/>
@@ -211,19 +229,25 @@
                     <ReceiverContractReference t-out="invoice['InvoiceIssueData']['ReceiverContractReference']"/>
                 </InvoiceIssueData>
                 <TaxesOutputs>
-                    <t t-foreach="invoice['TaxOutputs']" t-as="tax"><t t-call="l10n_es_edi_facturae.tax_type"/></t>
+                    <t t-foreach="invoice['TaxOutputs']" t-as="tax">
+                        <t t-call="l10n_es_edi_facturae.tax_type"/>
+                    </t>
                 </TaxesOutputs>
                 <TaxesWithheld t-if="invoice.get('TaxesWithheld')">
-                    <t t-foreach="invoice['TaxesWithheld']" t-as="tax"><t t-call="l10n_es_edi_facturae.tax_type"/></t>
+                    <t t-foreach="invoice['TaxesWithheld']" t-as="tax">
+                        <t t-call="l10n_es_edi_facturae.tax_type"/>
+                    </t>
                 </TaxesWithheld>
                 <InvoiceTotals>
-                    <TotalGrossAmount t-out="float_repr(refund_multiplier*invoice['TotalGrossAmount'], file_currency.decimal_places)"/>
+                    <TotalGrossAmount
+                            t-out="float_repr(refund_multiplier*invoice['TotalGrossAmount'], file_currency.decimal_places)"/>
                     <GeneralDiscounts t-if="invoice.get('GeneralDiscounts')">
                         <t t-foreach="invoice['GeneralDiscounts']" t-as="discount">
                             <Discount>
                                 <DiscountReason t-out="discount['DiscountReason']"/>
                                 <DiscountRate t-out="discount.get('DiscountRate')"/>
-                                <DiscountAmount t-out="float_repr(refund_multiplier*discount['DiscountAmount'], file_currency.decimal_places)"/>
+                                <DiscountAmount
+                                        t-out="float_repr(refund_multiplier*discount['DiscountAmount'], file_currency.decimal_places)"/>
                             </Discount>
                         </t>
                     </GeneralDiscounts>
@@ -232,37 +256,53 @@
                             <Charge>
                                 <ChargeReason t-out="charge['ChargeReason']"/>
                                 <ChargeRate t-out="charge.get('ChargeRate')"/>
-                                <ChargeAmount t-out="float_repr(refund_multiplier*charge['ChargeAmount'], file_currency.decimal_places)"/>
+                                <ChargeAmount
+                                        t-out="float_repr(refund_multiplier*charge['ChargeAmount'], file_currency.decimal_places)"/>
                             </Charge>
                         </t>
                     </GeneralSurcharges>
-                    <TotalGeneralDiscounts t-if="invoice.get('TotalGeneralDiscounts')" t-out="float_repr(refund_multiplier*invoice['TotalGeneralDiscounts'], file_currency.decimal_places)"/>
-                    <TotalGeneralSurcharges t-if="invoice.get('TotalGeneralSurcharges')" t-out="float_repr(refund_multiplier*invoice['TotalGeneralSurcharges'], file_currency.decimal_places)"/>
-                    <TotalGrossAmountBeforeTaxes t-out="float_repr(refund_multiplier*invoice['TotalGrossAmountBeforeTaxes'], file_currency.decimal_places)"/>
-                    <TotalTaxOutputs t-out="float_repr(refund_multiplier*invoice['TotalTaxOutputs'], file_currency.decimal_places)"/>
-                    <TotalTaxesWithheld t-out="float_repr(refund_multiplier*invoice['TotalTaxesWithheld'], file_currency.decimal_places)"/>
-                    <InvoiceTotal t-out="float_repr(refund_multiplier*invoice['InvoiceTotal'], file_currency.decimal_places)"/>
+                    <TotalGeneralDiscounts t-if="invoice.get('TotalGeneralDiscounts')"
+                                           t-out="float_repr(refund_multiplier*invoice['TotalGeneralDiscounts'], file_currency.decimal_places)"/>
+                    <TotalGeneralSurcharges t-if="invoice.get('TotalGeneralSurcharges')"
+                                            t-out="float_repr(refund_multiplier*invoice['TotalGeneralSurcharges'], file_currency.decimal_places)"/>
+                    <TotalGrossAmountBeforeTaxes
+                            t-out="float_repr(refund_multiplier*invoice['TotalGrossAmountBeforeTaxes'], file_currency.decimal_places)"/>
+                    <TotalTaxOutputs
+                            t-out="float_repr(refund_multiplier*invoice['TotalTaxOutputs'], file_currency.decimal_places)"/>
+                    <TotalTaxesWithheld
+                            t-out="float_repr(refund_multiplier*invoice['TotalTaxesWithheld'], file_currency.decimal_places)"/>
+                    <InvoiceTotal
+                            t-out="float_repr(refund_multiplier*invoice['InvoiceTotal'], file_currency.decimal_places)"/>
                     <PaymentsOnAccount t-if="invoice.get('PaymentsOnAccount')">
                         <t t-foreach="invoice['PaymentsOnAccount']" t-as="payment">
                             <PaymentOnAccount>
                                 <PaymentOnAccountDate t-out="payment['PaymentOnAccountDate']"/>
-                                <PaymentOnAccountAmount t-out="float_repr(refund_multiplier*payment['PaymentOnAccountAmount'], file_currency.decimal_places)"/>
+                                <PaymentOnAccountAmount
+                                        t-out="float_repr(refund_multiplier*payment['PaymentOnAccountAmount'], file_currency.decimal_places)"/>
                             </PaymentOnAccount>
                         </t>
                     </PaymentsOnAccount>
-                    <TotalFinancialExpenses t-if="invoice.get('ReimbursableExpensesAmount')" t-out="float_repr(refund_multiplier*invoice['ReimbursableExpensesAmount'], file_currency.decimal_places)"/>
-                    <TotalOutstandingAmount t-out="float_repr(refund_multiplier*invoice['TotalOutstandingAmount'], file_currency.decimal_places)"/>
-                    <TotalPaymentsOnAccount t-if="invoice.get('TotalPaymentsOnAccount')" t-out="float_repr(refund_multiplier*invoice['TotalPaymentsOnAccount'], file_currency.decimal_places)"/>
+                    <TotalFinancialExpenses t-if="invoice.get('ReimbursableExpensesAmount')"
+                                            t-out="float_repr(refund_multiplier*invoice['ReimbursableExpensesAmount'], file_currency.decimal_places)"/>
+                    <TotalOutstandingAmount
+                            t-out="float_repr(refund_multiplier*invoice['TotalOutstandingAmount'], file_currency.decimal_places)"/>
+                    <TotalPaymentsOnAccount t-if="invoice.get('TotalPaymentsOnAccount')"
+                                            t-out="float_repr(refund_multiplier*invoice['TotalPaymentsOnAccount'], file_currency.decimal_places)"/>
                     <AmountsWithheld t-if="invoice.get('AmountsWithheld')">
                         <WithholdingReason t-out="invoice['AmountsWithheld']['WithholdingReason']"/>
                         <WithholdingRate t-out="invoice['AmountsWithheld'].get('WithholdingRate')"/>
-                        <WithholdingAmount t-out="float_repr(refund_multiplier*invoice['AmountsWithheld']['WithholdingAmount'], file_currency.decimal_places)"/>
+                        <WithholdingAmount
+                                t-out="float_repr(refund_multiplier*invoice['AmountsWithheld']['WithholdingAmount'], file_currency.decimal_places)"/>
                     </AmountsWithheld>
-                    <TotalExecutableAmount t-out="float_repr(refund_multiplier*invoice['TotalExecutableAmount'], file_currency.decimal_places)"/>
-                    <TotalReimbursableExpenses t-if="invoice.get('TotalReimbursableExpenses')" t-out="float_repr(refund_multiplier*invoice['TotalReimbursableExpenses'], file_currency.decimal_places)"/>
+                    <TotalExecutableAmount
+                            t-out="float_repr(refund_multiplier*invoice['TotalExecutableAmount'], file_currency.decimal_places)"/>
+                    <TotalReimbursableExpenses t-if="invoice.get('TotalReimbursableExpenses')"
+                                               t-out="float_repr(refund_multiplier*invoice['TotalReimbursableExpenses'], file_currency.decimal_places)"/>
                 </InvoiceTotals>
                 <Items>
-                    <t t-foreach="invoice['Items']" t-as="line"><t t-call="l10n_es_edi_facturae.invoice_line_type"/></t>
+                    <t t-foreach="invoice['Items']" t-as="line">
+                        <t t-call="l10n_es_edi_facturae.invoice_line_type"/>
+                    </t>
                 </Items>
                 <PaymentDetails t-if="invoice['PaymentDetails']">
                     <Installment t-foreach="invoice['PaymentDetails']" t-as="installment">
@@ -276,7 +316,9 @@
                     </Installment>
                 </PaymentDetails>
                 <LegalLiterals t-if="invoice.get('LegalLiterals')">
-                    <t t-foreach="invoice['LegalLiterals']" t-as="reference"><LegalReference t-out="reference[:250]"/></t>
+                    <t t-foreach="invoice['LegalLiterals']" t-as="reference">
+                        <LegalReference t-out="reference[:250]"/>
+                    </t>
                 </LegalLiterals>
             </Invoice>
         </template>
@@ -292,16 +334,22 @@
                         <BatchIdentifier t-out="BatchIdentifier"/>
                         <InvoicesCount t-out="InvoicesCount"/>
                         <TotalInvoicesAmount>
-                            <TotalAmount t-out="float_repr(refund_multiplier*TotalInvoicesAmount['TotalAmount'], file_currency.decimal_places)"/>
-                            <EquivalentInEuros t-if="conversion_needed" t-out="float_repr(refund_multiplier*TotalInvoicesAmount['EquivalentInEuros'], eur.decimal_places)"/>
+                            <TotalAmount
+                                    t-out="float_repr(refund_multiplier*TotalInvoicesAmount['TotalAmount'], file_currency.decimal_places)"/>
+                            <EquivalentInEuros t-if="conversion_needed"
+                                               t-out="float_repr(refund_multiplier*TotalInvoicesAmount['EquivalentInEuros'], eur.decimal_places)"/>
                         </TotalInvoicesAmount>
                         <TotalOutstandingAmount>
-                            <TotalAmount t-out="float_repr(refund_multiplier*TotalOutstandingAmount['TotalAmount'], file_currency.decimal_places)"/>
-                            <EquivalentInEuros t-if="conversion_needed" t-out="float_repr(refund_multiplier*TotalOutstandingAmount['EquivalentInEuros'], eur.decimal_places)"/>
+                            <TotalAmount
+                                    t-out="float_repr(refund_multiplier*TotalOutstandingAmount['TotalAmount'], file_currency.decimal_places)"/>
+                            <EquivalentInEuros t-if="conversion_needed"
+                                               t-out="float_repr(refund_multiplier*TotalOutstandingAmount['EquivalentInEuros'], eur.decimal_places)"/>
                         </TotalOutstandingAmount>
                         <TotalExecutableAmount>
-                            <TotalAmount t-out="float_repr(refund_multiplier*TotalExecutableAmount['TotalAmount'], file_currency.decimal_places)"/>
-                            <EquivalentInEuros t-if="conversion_needed" t-out="float_repr(refund_multiplier*TotalExecutableAmount['EquivalentInEuros'], eur.decimal_places)"/>
+                            <TotalAmount
+                                    t-out="float_repr(refund_multiplier*TotalExecutableAmount['TotalAmount'], file_currency.decimal_places)"/>
+                            <EquivalentInEuros t-if="conversion_needed"
+                                               t-out="float_repr(refund_multiplier*TotalExecutableAmount['EquivalentInEuros'], eur.decimal_places)"/>
                         </TotalExecutableAmount>
                         <InvoiceCurrencyCode t-out="InvoiceCurrencyCode"/>
                     </Batch>
@@ -310,24 +358,30 @@
                     <SellerParty>
                         <t t-call="l10n_es_edi_facturae.business_type">
                             <t t-set="partner" t-value="self_party if is_outstanding else other_party"/>
-                            <t t-set="partner_country_code" t-value="self_party_country_code if is_outstanding else other_party_country_code"/>
+                            <t t-set="partner_country_code"
+                               t-value="self_party_country_code if is_outstanding else other_party_country_code"/>
                             <t t-set="partner_phone" t-value="False if is_outstanding else other_party_phone"/>
                             <t t-set="partner_name" t-value="self_party_name if is_outstanding else other_party_name"/>
-                            <t t-set="administrative_centers" t-value="self_party_administrative_centers if is_outstanding else other_party_administrative_centers"/>
+                            <t t-set="administrative_centers"
+                               t-value="self_party_administrative_centers if is_outstanding else other_party_administrative_centers"/>
                         </t>
                     </SellerParty>
                     <BuyerParty>
                         <t t-call="l10n_es_edi_facturae.business_type">
                             <t t-set="partner" t-value="other_party if is_outstanding else self_party"/>
-                            <t t-set="partner_country_code" t-value="other_party_country_code if is_outstanding else self_party_country_code"/>
+                            <t t-set="partner_country_code"
+                               t-value="other_party_country_code if is_outstanding else self_party_country_code"/>
                             <t t-set="partner_phone" t-value="other_party_phone if is_outstanding else False"/>
                             <t t-set="partner_name" t-value="other_party_name if is_outstanding else self_party_name"/>
-                            <t t-set="administrative_centers" t-value="other_party_administrative_centers if is_outstanding else self_party_administrative_centers"/>
+                            <t t-set="administrative_centers"
+                               t-value="other_party_administrative_centers if is_outstanding else self_party_administrative_centers"/>
                         </t>
                     </BuyerParty>
                 </Parties>
                 <Invoices>
-                    <t t-foreach="Invoices" t-as="invoice"><t t-call="l10n_es_edi_facturae.invoice_type"/></t>
+                    <t t-foreach="Invoices" t-as="invoice">
+                        <t t-call="l10n_es_edi_facturae.invoice_type"/>
+                    </t>
                 </Invoices>
             </fac:Facturae>
         </template>

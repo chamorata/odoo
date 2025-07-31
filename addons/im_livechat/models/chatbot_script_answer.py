@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, models, fields
-from odoo.osv import expression
+import textwrap
+
 from odoo.addons.mail.tools.discuss import Store
 
-import textwrap
+from odoo import api, models, fields
+from odoo.osv import expression
 
 
 class ChatbotScriptAnswer(models.Model):
@@ -16,8 +17,8 @@ class ChatbotScriptAnswer(models.Model):
     name = fields.Char(string='Answer', required=True, translate=True)
     sequence = fields.Integer(string='Sequence', default=1)
     redirect_link = fields.Char('Redirect Link',
-        help="The visitor will be redirected to this link upon clicking the option "
-             "(note that the script will end if the link is external to the livechat website).")
+                                help="The visitor will be redirected to this link upon clicking the option "
+                                     "(note that the script will end if the link is external to the livechat website).")
     script_step_id = fields.Many2one(
         'chatbot.script.step', string='Script Step', required=True, ondelete='cascade')
     chatbot_script_id = fields.Many2one(related='script_step_id.chatbot_script_id')

@@ -24,7 +24,8 @@ This module allows to manage onboardings and their progress
             ("remove", "onboarding/static/src/scss/onboarding.variables.dark.scss"),
         ],
         "web.dark_mode_variables": [
-            ('before', 'onboarding/static/src/scss/onboarding.variables.scss', 'onboarding/static/src/scss/onboarding.variables.dark.scss'),
+            ('before', 'onboarding/static/src/scss/onboarding.variables.scss',
+             'onboarding/static/src/scss/onboarding.variables.dark.scss'),
         ],
         'web._assets_primary_variables': [
             'onboarding/static/src/scss/onboarding.variables.scss',

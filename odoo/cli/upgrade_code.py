@@ -53,11 +53,14 @@ except ImportError:
     sys.path.insert(0, str(ROOT / 'tools'))
     import release
     from parse_version import parse_version
+
+
     class Command:
         pass
+
+
     config = {'addons_path': ''}
     initialize_sys_path = None
-
 
 UPGRADE = ROOT / 'upgrade_code'
 AVAILABLE_EXT = ('.py', '.js', '.css', '.scss', '.xml', '.csv')
@@ -121,7 +124,8 @@ class FileManager:
             pass
 
 
-def get_upgrade_code_scripts(from_version: tuple[int, ...], to_version: tuple[int, ...]) -> list[tuple[str, ModuleType]]:
+def get_upgrade_code_scripts(from_version: tuple[int, ...], to_version: tuple[int, ...]) -> list[
+    tuple[str, ModuleType]]:
     modules: list[tuple[str, ModuleType]] = []
     for script_path in sorted(UPGRADE.glob('*.py')):
         version = parse_version(script_path.name.partition('-')[0])
@@ -132,12 +136,12 @@ def get_upgrade_code_scripts(from_version: tuple[int, ...], to_version: tuple[in
 
 
 def migrate(
-    addons_path: list[str],
-    glob: str,
-    from_version: tuple[int, ...] | None = None,
-    to_version: tuple[int, ...] | None = None,
-    script: str | None = None,
-    dry_run: bool = False,
+        addons_path: list[str],
+        glob: str,
+        from_version: tuple[int, ...] | None = None,
+        to_version: tuple[int, ...] | None = None,
+        script: str | None = None,
+        dry_run: bool = False,
 ):
     if script:
         script_path = next(UPGRADE.glob(f'*{script.removesuffix(".py")}*.py'), None)

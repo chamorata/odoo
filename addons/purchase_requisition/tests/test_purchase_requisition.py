@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.addons.purchase_requisition.tests.common import TestPurchaseRequisitionCommon
-from odoo import Command, fields
-from odoo.tests import Form
-
 from datetime import timedelta
 
+from odoo.addons.purchase_requisition.tests.common import TestPurchaseRequisitionCommon
+
+from odoo import Command, fields
+from odoo.tests import Form
 from odoo.tests.common import tagged
 
 
@@ -37,8 +37,12 @@ class TestPurchaseRequisition(TestPurchaseRequisitionCommon):
         quantity = 26
 
         # Create a pruchase requisition with type blanket order and two product
-        line1 = (0, 0, {'product_id': self.product_09.id, 'product_qty': quantity, 'product_uom_id': self.product_uom_id.id, 'price_unit': price_product09})
-        line2 = (0, 0, {'product_id': self.product_13.id, 'product_qty': quantity, 'product_uom_id': self.product_uom_id.id, 'price_unit': price_product13})
+        line1 = (0, 0,
+                 {'product_id': self.product_09.id, 'product_qty': quantity, 'product_uom_id': self.product_uom_id.id,
+                  'price_unit': price_product09})
+        line2 = (0, 0,
+                 {'product_id': self.product_13.id, 'product_qty': quantity, 'product_uom_id': self.product_uom_id.id,
+                  'price_unit': price_product13})
 
         requisition_blanket = self.env['purchase.requisition'].create({
             'line_ids': [line1, line2],
@@ -72,8 +76,10 @@ class TestPurchaseRequisition(TestPurchaseRequisitionCommon):
         requisition_blanket.action_confirm()
         requisition_blanket.action_done()
 
-        self.assertFalse(self.env['product.supplierinfo'].search([('id', '=', supplierinfo09.id)]), 'The supplier info should be removed')
-        self.assertFalse(self.env['product.supplierinfo'].search([('id', '=', supplierinfo13.id)]), 'The supplier info should be removed')
+        self.assertFalse(self.env['product.supplierinfo'].search([('id', '=', supplierinfo09.id)]),
+                         'The supplier info should be removed')
+        self.assertFalse(self.env['product.supplierinfo'].search([('id', '=', supplierinfo13.id)]),
+                         'The supplier info should be removed')
 
     def test_03_blanket_order_rfq(self):
         """ Create a blanket order + an RFQ for it """
@@ -89,11 +95,14 @@ class TestPurchaseRequisition(TestPurchaseRequisitionCommon):
         bo.action_confirm()
 
         # lazy reproduction of clicking on "New Quotation" act_window button
-        po_form = Form(self.env['purchase.order'].with_context({"default_requisition_id": bo.id, "default_user_id": False}))
+        po_form = Form(
+            self.env['purchase.order'].with_context({"default_requisition_id": bo.id, "default_user_id": False}))
         po = po_form.save()
 
-        self.assertEqual(po.order_line.price_unit, bo.line_ids.price_unit, 'The blanket order unit price should have been copied to purchase order')
-        self.assertEqual(po.partner_id, bo.vendor_id, 'The blanket order vendor should have been copied to purchase order')
+        self.assertEqual(po.order_line.price_unit, bo.line_ids.price_unit,
+                         'The blanket order unit price should have been copied to purchase order')
+        self.assertEqual(po.partner_id, bo.vendor_id,
+                         'The blanket order vendor should have been copied to purchase order')
 
         po_form = Form(po)
         po_form.order_line.remove(0)
@@ -103,7 +112,8 @@ class TestPurchaseRequisition(TestPurchaseRequisitionCommon):
 
         po = po_form.save()
         po.button_confirm()
-        self.assertEqual(po.order_line.price_unit, bo.line_ids.price_unit, 'The blanket order unit price should still be copied to purchase order')
+        self.assertEqual(po.order_line.price_unit, bo.line_ids.price_unit,
+                         'The blanket order unit price should still be copied to purchase order')
         self.assertEqual(po.state, "purchase")
 
     def test_06_purchase_requisition(self):
@@ -146,7 +156,8 @@ class TestPurchaseRequisition(TestPurchaseRequisitionCommon):
             ('product_id', '=', product.id),
             ('partner_id', '=', vendor.id)
         ]) - supplier_info
-        self.assertEqual(new_si.purchase_requisition_id, requisition_blanket, 'the blanket order is not linked to the supplier info')
+        self.assertEqual(new_si.purchase_requisition_id, requisition_blanket,
+                         'the blanket order is not linked to the supplier info')
 
     def test_07_alternative_purchases_wizards(self):
         """Directly link POs to each other as 'Alternatives': check that wizards and
@@ -176,17 +187,24 @@ class TestPurchaseRequisition(TestPurchaseRequisitionCommon):
         alt_po_wiz.copy_products = True
         alt_po_wiz = alt_po_wiz.save()
         alt_po_wiz.action_create_alternative()
-        self.assertEqual(len(orig_po.alternative_po_ids), 2, "Original PO should be auto-linked to itself and newly created PO")
+        self.assertEqual(len(orig_po.alternative_po_ids), 2,
+                         "Original PO should be auto-linked to itself and newly created PO")
 
         # check alt po was created with correct values
         alt_po_1 = orig_po.alternative_po_ids.filtered(lambda po: po.id != orig_po.id)
         self.assertEqual(len(alt_po_1.order_line), 3)
-        self.assertEqual(orig_po.order_line[0].product_id, alt_po_1.order_line[0].product_id, "Alternative PO should have copied the product to purchase from original PO")
-        self.assertEqual(orig_po.order_line[0].product_qty, alt_po_1.order_line[0].product_qty, "Alternative PO should have copied the qty to purchase from original PO")
-        self.assertEqual(orig_po.order_line[0].product_uom, alt_po_1.order_line[0].product_uom, "Alternative PO should have copied the product unit of measure from original PO")
-        self.assertEqual((orig_po.order_line[1].display_type, orig_po.order_line[1].name), (alt_po_1.order_line[1].display_type, alt_po_1.order_line[1].name))
-        self.assertEqual((orig_po.order_line[2].display_type, orig_po.order_line[2].name), (alt_po_1.order_line[2].display_type, alt_po_1.order_line[2].name))
-        self.assertEqual(len(alt_po_1.alternative_po_ids), 2, "Newly created PO should be auto-linked to itself and original PO")
+        self.assertEqual(orig_po.order_line[0].product_id, alt_po_1.order_line[0].product_id,
+                         "Alternative PO should have copied the product to purchase from original PO")
+        self.assertEqual(orig_po.order_line[0].product_qty, alt_po_1.order_line[0].product_qty,
+                         "Alternative PO should have copied the qty to purchase from original PO")
+        self.assertEqual(orig_po.order_line[0].product_uom, alt_po_1.order_line[0].product_uom,
+                         "Alternative PO should have copied the product unit of measure from original PO")
+        self.assertEqual((orig_po.order_line[1].display_type, orig_po.order_line[1].name),
+                         (alt_po_1.order_line[1].display_type, alt_po_1.order_line[1].name))
+        self.assertEqual((orig_po.order_line[2].display_type, orig_po.order_line[2].name),
+                         (alt_po_1.order_line[2].display_type, alt_po_1.order_line[2].name))
+        self.assertEqual(len(alt_po_1.alternative_po_ids), 2,
+                         "Newly created PO should be auto-linked to itself and original PO")
 
         # check compare POLs correctly calcs best date/price PO lines: orig_po.date_planned = best & alt_po.price = best
         alt_po_1.order_line[0].date_planned += timedelta(days=1)
@@ -198,7 +216,8 @@ class TestPurchaseRequisition(TestPurchaseRequisitionCommon):
         best_unit_price_pol = self.env['purchase.order.line'].browse(best_price_unit_ids)
         self.assertEqual(best_price_pol.order_id.id, alt_po_1.id, "Best price PO line was not correctly calculated")
         self.assertEqual(best_date_pol.order_id.id, orig_po.id, "Best date PO line was not correctly calculated")
-        self.assertEqual(best_unit_price_pol.order_id.id, alt_po_1.id, "Best unit price PO line was not correctly calculated")
+        self.assertEqual(best_unit_price_pol.order_id.id, alt_po_1.id,
+                         "Best unit price PO line was not correctly calculated")
 
         # second flow: create extra alt PO, check that all 3 POs are correctly auto-linked
         action = orig_po.action_create_alternative()
@@ -207,8 +226,10 @@ class TestPurchaseRequisition(TestPurchaseRequisitionCommon):
         alt_po_wiz.copy_products = True
         alt_po_wiz = alt_po_wiz.save()
         alt_po_wiz.action_create_alternative()
-        self.assertEqual(len(orig_po.alternative_po_ids), 3, "Original PO should be auto-linked to newly created alternative PO")
-        self.assertEqual(len(alt_po_1.alternative_po_ids), 3, "Alternative PO should be auto-linked to newly created alternative PO")
+        self.assertEqual(len(orig_po.alternative_po_ids), 3,
+                         "Original PO should be auto-linked to newly created alternative PO")
+        self.assertEqual(len(alt_po_1.alternative_po_ids), 3,
+                         "Alternative PO should be auto-linked to newly created alternative PO")
         alt_po_2 = orig_po.alternative_po_ids.filtered(lambda po: po.id not in [alt_po_1.id, orig_po.id])
         self.assertEqual(len(alt_po_2.alternative_po_ids), 3, "All alternative POs should be auto-linked to each other")
 
@@ -253,12 +274,14 @@ class TestPurchaseRequisition(TestPurchaseRequisitionCommon):
         po_5.alternative_po_ids |= po_1
         groups = self.env['purchase.order.group'].search([('order_ids', 'in', pos.ids)])
         self.assertEqual(len(po_1.alternative_po_ids), 5, "All 5 POs should be linked to each other now")
-        self.assertEqual(len(groups), 1, "There should only be 1 group containing all 5 POs (other group should have auto-deleted")
+        self.assertEqual(len(groups), 1,
+                         "There should only be 1 group containing all 5 POs (other group should have auto-deleted")
 
         # remove all links, make sure group auto-deletes
         (pos - po_5).alternative_po_ids = [Command.clear()]
         groups = self.env['purchase.order.group'].search([('order_ids', 'in', pos.ids)])
-        self.assertEqual(len(po_5.alternative_po_ids), 0, "Last PO should auto unlink from itself since group should have auto-deleted")
+        self.assertEqual(len(po_5.alternative_po_ids), 0,
+                         "Last PO should auto unlink from itself since group should have auto-deleted")
         self.assertEqual(len(groups), 0, "The group should have auto-deleted")
 
     def test_09_alternative_po_line_price_unit(self):
@@ -337,7 +360,8 @@ class TestPurchaseRequisition(TestPurchaseRequisitionCommon):
         })
         requisition_blanket.action_confirm()
         # lazy reproduction of clicking on "New Quotation" act_window button
-        po_form = Form(self.env['purchase.order'].with_context({"default_requisition_id": requisition_blanket.id, "default_user_id": False}))
+        po_form = Form(self.env['purchase.order'].with_context(
+            {"default_requisition_id": requisition_blanket.id, "default_user_id": False}))
         po_1 = po_form.save()
         po_1.button_confirm()
         self.assertTrue(po_1.requisition_id, "The requisition_id should be set in the purchase order")
@@ -448,7 +472,7 @@ class TestPurchaseRequisition(TestPurchaseRequisitionCommon):
                 'price': 6,
                 'min_qty': 1,
             }),
-            ]
+                           ]
         })
         po_form = Form(self.env['purchase.order'])
         po_form.partner_id = vendor_a
@@ -505,18 +529,26 @@ class TestPurchaseRequisition(TestPurchaseRequisitionCommon):
         # update the product_qty to get the Unit price
         purchase_template.line_ids[0].product_qty = 2.0
         purchase_template.line_ids[1].product_qty = 1.0
-        self.assertEqual(purchase_template.line_ids[0].price_unit, self.supplierinfo10.price, 'Unit Price should match supplierinfo price')
-        self.assertEqual(purchase_template.line_ids[1].price_unit, self.product_13.standard_price, 'Unit Price should equal standard_price when no supplierinfo')
+        self.assertEqual(purchase_template.line_ids[0].price_unit, self.supplierinfo10.price,
+                         'Unit Price should match supplierinfo price')
+        self.assertEqual(purchase_template.line_ids[1].price_unit, self.product_13.standard_price,
+                         'Unit Price should equal standard_price when no supplierinfo')
 
         purchase_template.action_confirm()
 
-        po_form = Form(self.env['purchase.order'].with_context({"default_requisition_id": purchase_template.id, "default_user_id": False}))
+        po_form = Form(self.env['purchase.order'].with_context(
+            {"default_requisition_id": purchase_template.id, "default_user_id": False}))
         po = po_form.save()
-        self.assertEqual(po.partner_id, purchase_template.vendor_id, 'The purchase template vendor should have been copied to purchase order')
-        self.assertEqual(po.order_line[0].price_unit, purchase_template.line_ids[0].price_unit, 'The purchase template unit price should have been copied to purchase order')
-        self.assertEqual(po.order_line[0].product_qty, purchase_template.line_ids[0].product_qty, 'The purchase template product quantity should have been copied to purchase order')
-        self.assertEqual(po.order_line[1].price_unit, purchase_template.line_ids[1].price_unit, 'The purchase template unit price should have been copied to purchase order')
-        self.assertEqual(po.order_line[1].product_qty, purchase_template.line_ids[1].product_qty, 'The purchase template product quantity should have been copied to purchase order')
+        self.assertEqual(po.partner_id, purchase_template.vendor_id,
+                         'The purchase template vendor should have been copied to purchase order')
+        self.assertEqual(po.order_line[0].price_unit, purchase_template.line_ids[0].price_unit,
+                         'The purchase template unit price should have been copied to purchase order')
+        self.assertEqual(po.order_line[0].product_qty, purchase_template.line_ids[0].product_qty,
+                         'The purchase template product quantity should have been copied to purchase order')
+        self.assertEqual(po.order_line[1].price_unit, purchase_template.line_ids[1].price_unit,
+                         'The purchase template unit price should have been copied to purchase order')
+        self.assertEqual(po.order_line[1].product_qty, purchase_template.line_ids[1].product_qty,
+                         'The purchase template product quantity should have been copied to purchase order')
 
     def test_purchase_requisition_with_same_product(self):
         """

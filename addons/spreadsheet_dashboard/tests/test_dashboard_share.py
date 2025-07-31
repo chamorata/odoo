@@ -1,7 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from .common import DashboardTestCommon
 from odoo.exceptions import AccessError
+from .common import DashboardTestCommon
 
 EXCEL_FILES = [
     {
@@ -9,6 +9,7 @@ EXCEL_FILES = [
         "path": "[Content_Types].xml",
     }
 ]
+
 
 class DashboardSharing(DashboardTestCommon):
     def test_share_url(self):

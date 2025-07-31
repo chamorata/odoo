@@ -3,9 +3,9 @@
 
 import babel.dates
 import werkzeug
+from odoo.addons.portal.controllers.portal import pager as portal_pager
 
 from odoo import http, fields, tools, models
-from odoo.addons.portal.controllers.portal import pager as portal_pager
 from odoo.exceptions import AccessError
 from odoo.http import request, Response
 from odoo.osv import expression
@@ -213,7 +213,7 @@ class PortalMailGroup(http.Controller):
 
     # csrf is disabled here because it will be called by the MUA with unpredictable session at that time
     @http.route('/group/<int:group_id>/unsubscribe_oneclick', website=True, type='http', auth='public',
-           methods=['POST'], csrf=False)
+                methods=['POST'], csrf=False)
     def group_unsubscribe_oneclick(self, group_id, token, email):
         """ Unsubscribe a given user from a given group. One-click unsubscribe
         allow mail user agent to propose a one click button to the user to

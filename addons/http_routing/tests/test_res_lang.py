@@ -3,6 +3,7 @@
 
 from odoo.tests import Form, TransactionCase, tagged
 
+
 @tagged('-at_install', 'post_install')
 class TestFormCreate(TransactionCase):
 

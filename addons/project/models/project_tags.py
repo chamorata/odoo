@@ -19,8 +19,9 @@ class ProjectTags(models.Model):
 
     name = fields.Char('Name', required=True, translate=True)
     color = fields.Integer(string='Color', default=_get_default_color,
-        help="Transparent tags are not visible in the kanban view of your projects and tasks.")
-    project_ids = fields.Many2many('project.project', 'project_project_project_tags_rel', string='Projects', export_string_translation=False)
+                           help="Transparent tags are not visible in the kanban view of your projects and tasks.")
+    project_ids = fields.Many2many('project.project', 'project_project_project_tags_rel', string='Projects',
+                                   export_string_translation=False)
     task_ids = fields.Many2many('project.task', string='Tasks', export_string_translation=False)
 
     _sql_constraints = [
@@ -43,7 +44,8 @@ class ProjectTags(models.Model):
         if 'project_id' in self.env.context:
             tag_ids = [id_ for id_, _label in self.name_search()]
             domain = expression.AND([domain, [('id', 'in', tag_ids)]])
-            return self.arrange_tag_list_by_id(super().search_read(domain=domain, fields=fields, offset=offset, limit=limit), tag_ids)
+            return self.arrange_tag_list_by_id(
+                super().search_read(domain=domain, fields=fields, offset=offset, limit=limit), tag_ids)
         return super().search_read(domain=domain, fields=fields, offset=offset, limit=limit, order=order)
 
     @api.model
@@ -83,7 +85,8 @@ class ProjectTags(models.Model):
             )""", project_id=self.env.context['project_id'])
             tags += self.search_fetch(expression.AND([[('id', 'in', tag_sql)], domain]), ['display_name'], limit=limit)
         if len(tags) < limit:
-            tags += self.search_fetch(expression.AND([[('id', 'not in', tags.ids)], domain]), ['display_name'], limit=limit - len(tags))
+            tags += self.search_fetch(expression.AND([[('id', 'not in', tags.ids)], domain]), ['display_name'],
+                                      limit=limit - len(tags))
         return [(tag.id, tag.display_name) for tag in tags.sudo()]
 
     @api.model

@@ -1,20 +1,20 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-import odoo
-import sys
-import optparse
 import logging
-
+import optparse
+import sys
 from collections import defaultdict
 
-from . import Command
+import odoo
 from odoo.modules.registry import Registry
 from odoo.tools import SQL
+from . import Command
 
 _logger = logging.getLogger(__name__)
 
 
 class Obfuscate(Command):
     """Obfuscate data in a given odoo database"""
+
     def __init__(self):
         super().__init__()
         self.cr = None
@@ -24,6 +24,7 @@ class Obfuscate(Command):
             if not self.cr:
                 raise Exception("No database connection")
             return func(self, *args, **kwargs)
+
         return check_cr
 
     @_ensure_cr
@@ -42,7 +43,9 @@ class Obfuscate(Command):
     @_ensure_cr
     def set_pwd(self, pwd):
         """Set password to cypher/uncypher datas"""
-        self.cr.execute("INSERT INTO ir_config_parameter (key, value) VALUES ('odoo_cyph_pwd', 'odoo_cyph_'||encode(pgp_sym_encrypt(%s, %s), 'base64')) ON CONFLICT(key) DO NOTHING", [pwd, pwd])
+        self.cr.execute(
+            "INSERT INTO ir_config_parameter (key, value) VALUES ('odoo_cyph_pwd', 'odoo_cyph_'||encode(pgp_sym_encrypt(%s, %s), 'base64')) ON CONFLICT(key) DO NOTHING",
+            [pwd, pwd])
 
     @_ensure_cr
     def check_pwd(self, pwd):
@@ -65,10 +68,14 @@ class Obfuscate(Command):
 
     def cypher_string(self, sql_field: SQL, password):
         # don't double cypher fields
-        return SQL("""CASE WHEN starts_with(%(field_name)s, 'odoo_cyph_') THEN %(field_name)s ELSE 'odoo_cyph_'||encode(pgp_sym_encrypt(%(field_name)s, %(pwd)s), 'base64') END""", field_name=sql_field, pwd=password)
+        return SQL(
+            """CASE WHEN starts_with(%(field_name)s, 'odoo_cyph_') THEN %(field_name)s ELSE 'odoo_cyph_'||encode(pgp_sym_encrypt(%(field_name)s, %(pwd)s), 'base64') END""",
+            field_name=sql_field, pwd=password)
 
     def uncypher_string(self, sql_field: SQL, password):
-        return SQL("""CASE WHEN starts_with(%(field_name)s, 'odoo_cyph_') THEN pgp_sym_decrypt(decode(substring(%(field_name)s, 11)::text, 'base64'), %(pwd)s) ELSE %(field_name)s END""", field_name=sql_field, pwd=password)
+        return SQL(
+            """CASE WHEN starts_with(%(field_name)s, 'odoo_cyph_') THEN pgp_sym_decrypt(decode(substring(%(field_name)s, 11)::text, 'base64'), %(pwd)s) ELSE %(field_name)s END""",
+            field_name=sql_field, pwd=password)
 
     def check_field(self, table, field):
         qry = "SELECT udt_name FROM information_schema.columns WHERE table_name=%s AND column_name=%s"
@@ -103,7 +110,8 @@ class Obfuscate(Command):
                 # Nest the jsonb_set calls to update all values at once
                 # Do not create the key in json if doesn't esist
                 new_field_value = sql_field
-                self.cr.execute(SQL('select distinct jsonb_object_keys(%s) as key from %s', sql_field, SQL.identifier(table)))
+                self.cr.execute(
+                    SQL('select distinct jsonb_object_keys(%s) as key from %s', sql_field, SQL.identifier(table)))
                 keys = [k[0] for k in self.cr.fetchall()]
                 for key in keys:
                     cypher_query = cyph_fct(SQL("%s->>%s", sql_field, key), pwd)
@@ -122,11 +130,13 @@ class Obfuscate(Command):
 
     def confirm_not_secure(self):
         _logger.info("The obfuscate method is not considered as safe to transfer anonymous datas to a third party.")
-        conf_y = input(f"This will alter data in the database {self.dbname} and can lead to a data loss. Would you like to proceed [y/N]? ")
+        conf_y = input(
+            f"This will alter data in the database {self.dbname} and can lead to a data loss. Would you like to proceed [y/N]? ")
         if conf_y.upper() != 'Y':
             self.rollback()
             sys.exit(0)
-        conf_db = input(f"Please type your database name ({self.dbname}) in UPPERCASE to confirm you understand this operation is not considered secure : ")
+        conf_db = input(
+            f"Please type your database name ({self.dbname}) in UPPERCASE to confirm you understand this operation is not considered secure : ")
         if self.dbname.upper() != conf_db:
             self.rollback()
             sys.exit(0)
@@ -136,13 +146,18 @@ class Obfuscate(Command):
         parser = odoo.tools.config.parser
         group = optparse.OptionGroup(parser, "Obfuscate Configuration")
         group.add_option('--pwd', dest="pwd", default=False, help="Cypher password")
-        group.add_option('--fields', dest="fields", default=False, help="List of table.columns to obfuscate/unobfuscate: table1.column1,table2.column1,table2.column2")
-        group.add_option('--exclude', dest="exclude", default=False, help="List of table.columns to exclude from obfuscate/unobfuscate: table1.column1,table2.column1,table2.column2")
-        group.add_option('--file', dest="file", default=False, help="File containing the list of table.columns to obfuscate/unobfuscate")
+        group.add_option('--fields', dest="fields", default=False,
+                         help="List of table.columns to obfuscate/unobfuscate: table1.column1,table2.column1,table2.column2")
+        group.add_option('--exclude', dest="exclude", default=False,
+                         help="List of table.columns to exclude from obfuscate/unobfuscate: table1.column1,table2.column1,table2.column2")
+        group.add_option('--file', dest="file", default=False,
+                         help="File containing the list of table.columns to obfuscate/unobfuscate")
         group.add_option('--unobfuscate', action='store_true', default=False)
-        group.add_option('--allfields', action='store_true', default=False, help="Used in unobfuscate mode, try to unobfuscate all fields. Cannot be used in obfuscate mode. Slower than specifying fields.")
+        group.add_option('--allfields', action='store_true', default=False,
+                         help="Used in unobfuscate mode, try to unobfuscate all fields. Cannot be used in obfuscate mode. Slower than specifying fields.")
         group.add_option('--vacuum', action='store_true', default=False, help="Vacuum database after unobfuscating")
-        group.add_option('--pertablecommit', action='store_true', default=False, help="Commit after each table instead of a big transaction")
+        group.add_option('--pertablecommit', action='store_true', default=False,
+                         help="Commit after each table instead of a big transaction")
         group.add_option(
             '-y', '--yes', dest="yes", action='store_true', default=False,
             help="Don't ask for manual confirmation. Use it carefully as the obfuscate method is not considered as safe to transfer anonymous datas to a third party.")
@@ -166,35 +181,35 @@ class Obfuscate(Command):
                 self.begin()
                 if self.check_pwd(opt.pwd):
                     fields = [
-                            ('mail_tracking_value', 'old_value_char'),
-                            ('mail_tracking_value', 'old_value_text'),
-                            ('mail_tracking_value', 'new_value_char'),
-                            ('mail_tracking_value', 'new_value_text'),
-                            ('res_partner', 'name'),
-                            ('res_partner', 'complete_name'),
-                            ('res_partner', 'email'),
-                            ('res_partner', 'phone'),
-                            ('res_partner', 'mobile'),
-                            ('res_partner', 'street'),
-                            ('res_partner', 'street2'),
-                            ('res_partner', 'city'),
-                            ('res_partner', 'zip'),
-                            ('res_partner', 'vat'),
-                            ('res_partner', 'website'),
-                            ('res_country', 'name'),
-                            ('mail_message', 'subject'),
-                            ('mail_message', 'email_from'),
-                            ('mail_message', 'reply_to'),
-                            ('mail_message', 'body'),
-                            ('crm_lead', 'name'),
-                            ('crm_lead', 'contact_name'),
-                            ('crm_lead', 'partner_name'),
-                            ('crm_lead', 'email_from'),
-                            ('crm_lead', 'phone'),
-                            ('crm_lead', 'mobile'),
-                            ('crm_lead', 'website'),
-                            ('crm_lead', 'description'),
-                        ]
+                        ('mail_tracking_value', 'old_value_char'),
+                        ('mail_tracking_value', 'old_value_text'),
+                        ('mail_tracking_value', 'new_value_char'),
+                        ('mail_tracking_value', 'new_value_text'),
+                        ('res_partner', 'name'),
+                        ('res_partner', 'complete_name'),
+                        ('res_partner', 'email'),
+                        ('res_partner', 'phone'),
+                        ('res_partner', 'mobile'),
+                        ('res_partner', 'street'),
+                        ('res_partner', 'street2'),
+                        ('res_partner', 'city'),
+                        ('res_partner', 'zip'),
+                        ('res_partner', 'vat'),
+                        ('res_partner', 'website'),
+                        ('res_country', 'name'),
+                        ('mail_message', 'subject'),
+                        ('mail_message', 'email_from'),
+                        ('mail_message', 'reply_to'),
+                        ('mail_message', 'body'),
+                        ('crm_lead', 'name'),
+                        ('crm_lead', 'contact_name'),
+                        ('crm_lead', 'partner_name'),
+                        ('crm_lead', 'email_from'),
+                        ('crm_lead', 'phone'),
+                        ('crm_lead', 'mobile'),
+                        ('crm_lead', 'website'),
+                        ('crm_lead', 'description'),
+                    ]
 
                     if opt.fields:
                         if not opt.allfields:
@@ -206,7 +221,8 @@ class Obfuscate(Command):
                             fields += [tuple(l.strip().split('.')) for l in f]
                     if opt.exclude:
                         if not opt.allfields:
-                            fields = [f for f in fields if f not in [tuple(f.split('.')) for f in opt.exclude.split(',')]]
+                            fields = [f for f in fields if
+                                      f not in [tuple(f.split('.')) for f in opt.exclude.split(',')]]
                         else:
                             _logger.error("--allfields option is set, ignoring --exclude option")
 

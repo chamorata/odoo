@@ -1,16 +1,17 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import base64
-import hashlib
-import json
 import binascii
-import time
 import enum
+import hashlib
 import hmac
+import json
+import time
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import ec, utils
+
 
 # ------------------------------------------------------------
 # Errors specific to JWT
@@ -18,6 +19,7 @@ from cryptography.hazmat.primitives.asymmetric import ec, utils
 
 class InvalidVapidError(Exception):
     pass
+
 
 # ------------------------------------------------------------
 # JWT

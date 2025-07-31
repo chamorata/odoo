@@ -44,7 +44,7 @@ class SaleOrder(models.Model):
         pending_coupon_code = request.session.get('pending_coupon_code')
         if pending_coupon_code:
             status = self._try_apply_code(pending_coupon_code)
-            if 'error' not in status: # Returns an array if everything went right
+            if 'error' not in status:  # Returns an array if everything went right
                 request.session.pop('pending_coupon_code')
                 if len(status) == 1:
                     coupon, rewards = next(iter(status.items()))
@@ -75,11 +75,11 @@ class SaleOrder(models.Model):
         claimable_rewards = self._get_claimable_rewards()
         for coupon, rewards in claimable_rewards.items():
             if (
-                len(coupon.program_id.reward_ids) != 1
-                or coupon.program_id.is_nominative
-                or (rewards.reward_type == 'product' and rewards.multi_product)
-                or rewards in self.disabled_auto_rewards
-                or rewards in self.order_line.reward_id
+                    len(coupon.program_id.reward_ids) != 1
+                    or coupon.program_id.is_nominative
+                    or (rewards.reward_type == 'product' and rewards.multi_product)
+                    or rewards in self.disabled_auto_rewards
+                    or rewards in self.order_line.reward_id
             ):
                 continue
 
@@ -217,8 +217,8 @@ class SaleOrder(models.Model):
             ('partner_id', '=', self.partner_id.id),
             ('program_id', 'any', self._get_program_domain()),
             '|',
-                ('program_id.trigger', '=', 'with_code'),
-                '&', ('program_id.trigger', '=', 'auto'), ('program_id.applies_on', '=', 'future'),
+            ('program_id.trigger', '=', 'with_code'),
+            '&', ('program_id.trigger', '=', 'auto'), ('program_id.applies_on', '=', 'future'),
         ])
         total_is_zero = self.currency_id.is_zero(self.amount_total)
         global_discount_reward = self._get_applied_global_discount()
@@ -226,9 +226,9 @@ class SaleOrder(models.Model):
             points = self._get_real_points_for_coupon(coupon)
             for reward in coupon.program_id.reward_ids - self.order_line.reward_id:
                 if (
-                    reward.is_global_discount
-                    and global_discount_reward
-                    and self._best_global_discount_already_applied(global_discount_reward, reward)
+                        reward.is_global_discount
+                        and global_discount_reward
+                        and self._best_global_discount_already_applied(global_discount_reward, reward)
                 ):
                     continue
                 if reward.reward_type == 'discount' and total_is_zero:

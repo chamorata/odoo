@@ -54,15 +54,18 @@
                     <footer invisible="plan_id">
                         <button name="action_schedule_activities" string="Schedule" type="object" class="btn-primary"
                                 invisible="has_error" data-hotkey="q"/>
-                        <button name="action_schedule_activities_done" string="Schedule &amp; Mark as Done" type="object"
+                        <button name="action_schedule_activities_done" string="Schedule &amp; Mark as Done"
+                                type="object"
                                 invisible="has_error or chaining_type == 'trigger'"
-                                class="btn-secondary"  data-hotkey="w"
+                                class="btn-secondary" data-hotkey="w"
                                 context="{'mail_activity_quick_update': True}"/>
-                        <button name="action_schedule_activities_done_and_schedule" string="Done &amp; Schedule Next" type="object"
+                        <button name="action_schedule_activities_done_and_schedule" string="Done &amp; Schedule Next"
+                                type="object"
                                 invisible="has_error or chaining_type == 'trigger'"
                                 class="btn-secondary" data-hotkey="z"
                                 context="{'mail_activity_quick_update': True}"/>
-                        <button name="action_schedule_activities_done_and_schedule" string="Done &amp; Launch Next" type="object"
+                        <button name="action_schedule_activities_done_and_schedule" string="Done &amp; Launch Next"
+                                type="object"
                                 invisible="has_error or chaining_type == 'suggest'"
                                 class="btn-secondary" data-hotkey="z"
                                 context="{'mail_activity_quick_update': True}"/>

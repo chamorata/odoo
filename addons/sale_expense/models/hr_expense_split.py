@@ -14,7 +14,9 @@ class HrExpenseSplit(models.TransientModel):
             result['sale_order_id'] = expense.sale_order_id
         return result
 
-    sale_order_id = fields.Many2one('sale.order', string="Customer to Reinvoice", compute='_compute_sale_order_id', readonly=False, store=True, domain="[('state', '=', 'sale'), ('company_id', '=', company_id)]")
+    sale_order_id = fields.Many2one('sale.order', string="Customer to Reinvoice", compute='_compute_sale_order_id',
+                                    readonly=False, store=True,
+                                    domain="[('state', '=', 'sale'), ('company_id', '=', company_id)]")
     can_be_reinvoiced = fields.Boolean("Can be reinvoiced", compute='_compute_can_be_reinvoiced')
 
     def _get_values(self):

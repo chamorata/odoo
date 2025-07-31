@@ -33,7 +33,7 @@
         </record>
     </data>
 
-	<record id="website_crm_score_cron" model="ir.cron">
+    <record id="website_crm_score_cron" model="ir.cron">
         <field name="name">Predictive Lead Scoring: Recompute Automated Probabilities</field>
         <field name="model_id" ref="model_crm_lead"/>
         <field name="state">code</field>

@@ -2,8 +2,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import binascii
-import contextlib
 import collections
+import contextlib
 import datetime
 import hmac
 import ipaddress
@@ -16,11 +16,11 @@ from collections import defaultdict
 from functools import wraps
 from hashlib import sha256
 from itertools import chain, repeat
-from markupsafe import Markup
 
 import pytz
 from lxml import etree
 from lxml.builder import E
+from markupsafe import Markup
 from passlib.context import CryptContext as _CryptContext
 
 from odoo import api, fields, models, tools, SUPERUSER_ID, _, Command
@@ -32,6 +32,7 @@ from odoo.tools import is_html_empty, partition, frozendict, lazy_property, SQL,
 from odoo.tools.misc import OrderedSet
 
 _logger = logging.getLogger(__name__)
+
 
 class CryptContext:
     def __init__(self, *args, **kwargs):
@@ -84,29 +85,37 @@ USER_PRIVATE_FIELDS = []
 MIN_ROUNDS = 600_000
 concat = chain.from_iterable
 
+
 #
 # Functions for manipulating boolean and selection pseudo-fields
 #
 def name_boolean_group(id):
     return 'in_group_' + str(id)
 
+
 def name_selection_groups(ids):
     return 'sel_groups_' + '_'.join(str(it) for it in sorted(ids))
+
 
 def is_boolean_group(name):
     return name.startswith('in_group_')
 
+
 def is_selection_groups(name):
     return name.startswith('sel_groups_')
+
 
 def is_reified_group(name):
     return is_boolean_group(name) or is_selection_groups(name)
 
+
 def get_boolean_group(name):
     return int(name[9:])
 
+
 def get_selection_groups(name):
     return [int(v) for v in name[11:].split('_')]
+
 
 def parse_m2m(commands):
     "return a list of ids corresponding to a many2many value"
@@ -123,10 +132,15 @@ def parse_m2m(commands):
             ids.append(command)
     return ids
 
+
 def _jsonable(o):
-    try: json.dumps(o)
-    except TypeError: return False
-    else: return True
+    try:
+        json.dumps(o)
+    except TypeError:
+        return False
+    else:
+        return True
+
 
 def check_identity(fn):
     """ Wrapped method should be an *action method* (called from a button
@@ -136,6 +150,7 @@ def check_identity(fn):
 
     Prevents access outside of interactive contexts (aka with a request)
     """
+
     @wraps(fn)
     def wrapped(self, *args, **kwargs):
         if not request:
@@ -147,7 +162,7 @@ def check_identity(fn):
 
         w = self.sudo().env['res.users.identitycheck'].create({
             'request': json.dumps([
-                { # strip non-jsonable keys (e.g. mapped to recordsets)
+                {  # strip non-jsonable keys (e.g. mapped to recordsets)
                     k: v for k, v in self.env.context.items()
                     if _jsonable(v)
                 },
@@ -166,12 +181,14 @@ def check_identity(fn):
             'target': 'new',
             'views': [(False, 'form')],
         }
+
     wrapped.__has_check_identity = True
     return wrapped
 
-#----------------------------------------------------------
+
+# ----------------------------------------------------------
 # Basic res.groups and res.users
-#----------------------------------------------------------
+# ----------------------------------------------------------
 
 class Groups(models.Model):
     _name = "res.groups"
@@ -184,16 +201,17 @@ class Groups(models.Model):
     users = fields.Many2many('res.users', 'res_groups_users_rel', 'gid', 'uid')
     model_access = fields.One2many('ir.model.access', 'group_id', string='Access Controls', copy=True)
     rule_groups = fields.Many2many('ir.rule', 'rule_group_rel',
-        'group_id', 'rule_group_id', string='Rules', domain="[('global', '=', False)]")
+                                   'group_id', 'rule_group_id', string='Rules', domain="[('global', '=', False)]")
     menu_access = fields.Many2many('ir.ui.menu', 'ir_ui_menu_group_rel', 'gid', 'menu_id', string='Access Menu')
     view_access = fields.Many2many('ir.ui.view', 'ir_ui_view_group_rel', 'group_id', 'view_id', string='Views')
     comment = fields.Text(translate=True)
     category_id = fields.Many2one('ir.module.category', string='Application', index=True)
     color = fields.Integer(string='Color Index')
     full_name = fields.Char(compute='_compute_full_name', string='Group Name', search='_search_full_name')
-    share = fields.Boolean(string='Share Group', help="Group created to set access rights for sharing data with some users.")
+    share = fields.Boolean(string='Share Group',
+                           help="Group created to set access rights for sharing data with some users.")
     api_key_duration = fields.Float(string='API Keys maximum duration days',
-        help="Determines the maximum duration of an api key created by a user belonging to this group.")
+                                    help="Determines the maximum duration of an api key created by a user belonging to this group.")
 
     _sql_constraints = [
         ('name_uniq', 'unique (category_id, name)', 'The name of the group must be unique within an application!'),
@@ -254,7 +272,7 @@ class Groups(models.Model):
         if order and order.startswith('full_name'):
             groups = super().search(domain)
             groups = groups.sorted('full_name', reverse=order.endswith('DESC'))
-            groups = groups[offset:offset+limit] if limit else groups[offset:]
+            groups = groups[offset:offset + limit] if limit else groups[offset:]
             return groups._as_query(order)
         return super()._search(domain, offset, limit, order)
 
@@ -301,6 +319,7 @@ class ResUsersLog(models.Model):
     _name = 'res.users.log'
     _order = 'id desc'
     _description = 'Users Log'
+
     # Uses the magical fields `create_uid` and `create_date` for recording logins.
     # See `bus.presence` for more recent activity tracking purposes.
 
@@ -364,40 +383,44 @@ class Users(models.Model):
         return default_user.sudo().groups_id if default_user else []
 
     partner_id = fields.Many2one('res.partner', required=True, ondelete='restrict', auto_join=True, index=True,
-        string='Related Partner', help='Partner-related data of the user')
+                                 string='Related Partner', help='Partner-related data of the user')
     login = fields.Char(required=True, help="Used to log into the system")
     password = fields.Char(
         compute='_compute_password', inverse='_set_password', copy=False,
         help="Keep empty if you don't want the user to be able to connect on the system.")
     new_password = fields.Char(string='Set Password',
-        compute='_compute_password', inverse='_set_new_password',
-        help="Specify a value only when creating a user or if you're "\
-             "changing the user's password, otherwise leave empty. After "\
-             "a change of password, the user has to login again.")
+                               compute='_compute_password', inverse='_set_new_password',
+                               help="Specify a value only when creating a user or if you're " \
+                                    "changing the user's password, otherwise leave empty. After " \
+                                    "a change of password, the user has to login again.")
     signature = fields.Html(string="Email Signature", compute='_compute_signature', readonly=False, store=True)
     active = fields.Boolean(default=True)
     active_partner = fields.Boolean(related='partner_id.active', readonly=True, string="Partner is Active")
     action_id = fields.Many2one('ir.actions.actions', string='Home Action',
-        help="If specified, this action will be opened at log on for this user, in addition to the standard menu.")
-    groups_id = fields.Many2many('res.groups', 'res_groups_users_rel', 'uid', 'gid', string='Groups', default=lambda s: s._default_groups())
+                                help="If specified, this action will be opened at log on for this user, in addition to the standard menu.")
+    groups_id = fields.Many2many('res.groups', 'res_groups_users_rel', 'uid', 'gid', string='Groups',
+                                 default=lambda s: s._default_groups())
     log_ids = fields.One2many('res.users.log', 'create_uid', string='User log entries')
     device_ids = fields.One2many('res.device', 'user_id', string='User devices')
     login_date = fields.Datetime(related='log_ids.create_date', string='Latest authentication', readonly=False)
     share = fields.Boolean(compute='_compute_share', compute_sudo=True, string='Share User', store=True,
-         help="External user with limited access, created only for the purpose of sharing data.")
+                           help="External user with limited access, created only for the purpose of sharing data.")
     companies_count = fields.Integer(compute='_compute_companies_count', string="Number of Companies")
     tz_offset = fields.Char(compute='_compute_tz_offset', string='Timezone offset')
     res_users_settings_ids = fields.One2many('res.users.settings', 'user_id')
     # Provide a target for relateds that is not a x2Many field.
-    res_users_settings_id = fields.Many2one('res.users.settings', string="Settings", compute='_compute_res_users_settings_id', search='_search_res_users_settings_id')
+    res_users_settings_id = fields.Many2one('res.users.settings', string="Settings",
+                                            compute='_compute_res_users_settings_id',
+                                            search='_search_res_users_settings_id')
 
     # Special behavior for this field: res.company.search() will only return the companies
     # available to the current user (should be the user's companies?), when the user_preference
     # context is set.
-    company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.company.id,
-        help='The default company for this user.', context={'user_preference': True})
+    company_id = fields.Many2one('res.company', string='Company', required=True,
+                                 default=lambda self: self.env.company.id,
+                                 help='The default company for this user.', context={'user_preference': True})
     company_ids = fields.Many2many('res.company', 'res_company_users_rel', 'user_id', 'cid',
-        string='Companies', default=lambda self: self.env.company.ids)
+                                   string='Companies', default=lambda self: self.env.company.ids)
 
     # overridden inherited fields to bypass access rights, in case you have
     # access to the user but not its corresponding partner
@@ -484,7 +507,7 @@ class Users(models.Model):
             [self.env.user.id]
         )
         [hashed] = self.env.cr.fetchone()
-        valid, replacement = self._crypt_context()\
+        valid, replacement = self._crypt_context() \
             .verify_and_update(credential['password'], hashed)
         if replacement is not None:
             self._set_encrypted_password(self.env.user.id, replacement)
@@ -518,7 +541,8 @@ class Users(models.Model):
                 # To change their own password, users must use the client-specific change password wizard,
                 # so that the new password is immediately used for further RPC requests, otherwise the user
                 # will face unexpected 'Access Denied' exceptions.
-                raise UserError(_('Please use the change password wizard (in User Preferences or User menu) to change your own password.'))
+                raise UserError(
+                    _('Please use the change password wizard (in User Preferences or User menu) to change your own password.'))
             else:
                 user.password = user.new_password
 
@@ -609,9 +633,9 @@ class Users(models.Model):
                     continue
                 if "active_id" in action.context:
                     raise ValidationError(
-                        _('The action "%s" cannot be set as the home action because it requires a record to be selected beforehand.', action.name)
+                        _('The action "%s" cannot be set as the home action because it requires a record to be selected beforehand.',
+                          action.name)
                     )
-
 
     @api.constrains('groups_id')
     def _check_one_user_type(self):
@@ -670,7 +694,8 @@ class Users(models.Model):
     @api.model
     def check_field_access_rights(self, operation, field_names):
         readable = self.SELF_READABLE_FIELDS
-        if field_names and self == self.env.user and all(key in readable or key.startswith('context_') for key in field_names):
+        if field_names and self == self.env.user and all(
+                key in readable or key.startswith('context_') for key in field_names):
             # safe fields only, so we read as super-user to bypass access rights
             self = self.sudo()
         return super(Users, self).check_field_access_rights(operation, field_names)
@@ -803,21 +828,25 @@ class Users(models.Model):
         portal_user_template = self.env.ref('base.template_portal_user_id', False)
         default_user_template = self.env.ref('base.default_user', False)
         if SUPERUSER_ID in self.ids:
-            raise UserError(_('You can not remove the admin user as it is used internally for resources created by Odoo (updates, module installation, ...)'))
+            raise UserError(
+                _('You can not remove the admin user as it is used internally for resources created by Odoo (updates, module installation, ...)'))
         user_admin = self.env.ref('base.user_admin', raise_if_not_found=False)
         if user_admin and user_admin in self:
-            raise UserError(_('You cannot delete the admin user because it is utilized in various places (such as security configurations,...). Instead, archive it.'))
+            raise UserError(
+                _('You cannot delete the admin user because it is utilized in various places (such as security configurations,...). Instead, archive it.'))
         self.env.registry.clear_cache()
-        if (portal_user_template and portal_user_template in self) or (default_user_template and default_user_template in self):
-            raise UserError(_('Deleting the template users is not allowed. Deleting this profile will compromise critical functionalities.'))
+        if (portal_user_template and portal_user_template in self) or (
+                default_user_template and default_user_template in self):
+            raise UserError(
+                _('Deleting the template users is not allowed. Deleting this profile will compromise critical functionalities.'))
 
     @api.model
     def name_search(self, name='', args=None, operator='ilike', limit=100):
         domain = args or []
         # first search only by login, then the normal search
         if (
-            name and operator not in expression.NEGATIVE_TERM_OPERATORS
-            and (user := self.search_fetch(expression.AND([[('login', '=', name)], domain]), ['display_name']))
+                name and operator not in expression.NEGATIVE_TERM_OPERATORS
+                and (user := self.search_fetch(expression.AND([[('login', '=', name)], domain]), ['display_name']))
         ):
             return [(user.id, user.display_name)]
         return super().name_search(name, domain, operator, limit)
@@ -905,7 +934,7 @@ class Users(models.Model):
     def _update_last_login(self):
         # only create new records to avoid any side-effect on concurrent transactions
         # extra records will be deleted by the periodical garbage collection
-        self.env['res.users.log'].sudo().create({}) # populated by defaults
+        self.env['res.users.log'].sudo().create({})  # populated by defaults
 
     @api.model
     def _get_login_domain(self, login):
@@ -1065,9 +1094,9 @@ class Users(models.Model):
         ip = request.httprequest.environ['REMOTE_ADDR'] if request else 'n/a'
         _logger.info(
             "Password change for %r (#%d) by %r (#%d) from %s",
-             self.login, self.id,
-             self.env.user.login, self.env.user.id,
-             ip
+            self.login, self.id,
+            self.env.user.login, self.env.user.id,
+            ip
         )
 
         self.password = new_passwd
@@ -1255,7 +1284,7 @@ class Users(models.Model):
             'res_model': 'res.groups',
             'type': 'ir.actions.act_window',
             'context': {'create': False, 'delete': False},
-            'domain': [('id','in', self.groups_id.ids)],
+            'domain': [('id', 'in', self.groups_id.ids)],
             'target': 'current',
         }
 
@@ -1368,7 +1397,7 @@ class Users(models.Model):
         reg = self.env.registry
         failures_map = getattr(reg, '_login_failures', None)
         if failures_map is None:
-            failures_map = reg._login_failures = collections.defaultdict(lambda : (0, datetime.datetime.min))
+            failures_map = reg._login_failures = collections.defaultdict(lambda: (0, datetime.datetime.min))
 
         source = request.httprequest.remote_addr
         (failures, previous) = failures_map[source]
@@ -1429,7 +1458,8 @@ class Users(models.Model):
 
     def _register_hook(self):
         if hasattr(self, 'check_credentials'):
-            _logger.warning("The check_credentials method of res.users has been renamed _check_credentials. One of your installed modules defines one, but it will not be called anymore.")
+            _logger.warning(
+                "The check_credentials method of res.users has been renamed _check_credentials. One of your installed modules defines one, but it will not be called anymore.")
 
     def _mfa_type(self):
         """ If an MFA method is enabled, returns its type as a string. """
@@ -1446,6 +1476,7 @@ class Users(models.Model):
         """
         return False
 
+
 #
 # Implied groups
 #
@@ -1458,9 +1489,9 @@ class GroupsImplied(models.Model):
     _inherit = 'res.groups'
 
     implied_ids = fields.Many2many('res.groups', 'res_groups_implied_rel', 'gid', 'hid',
-        string='Inherits', help='Users of this group automatically inherit those groups')
+                                   string='Inherits', help='Users of this group automatically inherit those groups')
     trans_implied_ids = fields.Many2many('res.groups', string='Transitively inherits',
-        compute='_compute_trans_implied', recursive=True)
+                                         compute='_compute_trans_implied', recursive=True)
 
     @api.depends('implied_ids.trans_implied_ids')
     def _compute_trans_implied(self):
@@ -1578,7 +1609,8 @@ class GroupsImplied(models.Model):
         }
 
         # determine exclusive groups (will be disjoint for the set expression)
-        user_types_category_id = self.env['ir.model.data']._xmlid_to_res_id('base.module_category_user_type', raise_if_not_found=False)
+        user_types_category_id = self.env['ir.model.data']._xmlid_to_res_id('base.module_category_user_type',
+                                                                            raise_if_not_found=False)
         if user_types_category_id:
             user_type_ids = self.sudo().search([('category_id', '=', user_types_category_id)]).ids
             for user_type_id in user_type_ids:
@@ -1623,6 +1655,7 @@ class UsersImplied(models.Model):
             vals = {'groups_id': [Command.link(g.id) for g in gs]}
             super(UsersImplied, users).write(vals)
         return res
+
 
 #
 # Virtual checkbox and selection for res.user form view
@@ -1749,7 +1782,8 @@ class GroupsView(models.Model):
                     xml_by_category[category_name].append(E.newline())
                     # add duplicate invisible field so default values are saved on create
                     if attrs.get('groups') == 'base.group_no_one':
-                        xml0.append(E.field(name=field_name, **dict(attrs, invisible="True", groups='!base.group_no_one')))
+                        xml0.append(
+                            E.field(name=field_name, **dict(attrs, invisible="True", groups='!base.group_no_one')))
                         xml0.append(etree.Comment(invisible_information))
 
                 else:
@@ -1770,7 +1804,8 @@ class GroupsView(models.Model):
                         else:
                             dest_group.append(E.field(name=field_name, **attrs))
                         # add duplicate invisible field so default values are saved on create
-                        xml0.append(E.field(name=field_name, **dict(attrs, invisible="True", groups='!base.group_no_one')))
+                        xml0.append(
+                            E.field(name=field_name, **dict(attrs, invisible="True", groups='!base.group_no_one')))
                         xml0.append(etree.Comment(invisible_information))
                         group_count += 1
                     xml4.append(E.group(*left_group))
@@ -1803,7 +1838,8 @@ class GroupsView(models.Model):
                 E.group(*(xml1), groups="base.group_no_one"),
                 E.group(*(xml2), invisible=user_type_invisible),
                 E.group(*(xml3), invisible=user_type_invisible),
-                E.group(*(xml4), invisible=user_type_invisible, groups="base.group_no_one"), name="groups_id", position="replace")
+                E.group(*(xml4), invisible=user_type_invisible, groups="base.group_no_one"), name="groups_id",
+                position="replace")
             xml.addprevious(etree.Comment("GENERATED AUTOMATICALLY BY GROUPS"))
 
         # serialize and update the view
@@ -1829,6 +1865,7 @@ class GroupsView(models.Model):
             order.  If ``kind`` is ``'selection'``, ``groups`` are given in
             reverse implication order.
         """
+
         def linearize(app, gs, category_name):
             # 'User Type' is an exception
             if app.xml_id == 'base.module_category_user_type':
@@ -1862,7 +1899,7 @@ class GroupsView(models.Model):
                 res.append(linearize(app, gs, (100, 'Other')))
 
         if others:
-            res.append((self.env['ir.module.category'], 'boolean', others, (100,'Other')))
+            res.append((self.env['ir.module.category'], 'boolean', others, (100, 'Other')))
         return res
 
 
@@ -1953,11 +1990,13 @@ class UsersView(models.Model):
         current_groups = user.groups_id.filtered('trans_implied_ids')
         current_groups_by_category = defaultdict(lambda: self.env['res.groups'])
         for group in current_groups:
-            current_groups_by_category[group.category_id] |= group.trans_implied_ids.filtered(lambda grp: grp.category_id == group.category_id)
+            current_groups_by_category[group.category_id] |= group.trans_implied_ids.filtered(
+                lambda grp: grp.category_id == group.category_id)
 
         missing_groups = {}
         # We don't want to show warning for "Technical" and "Extra Rights" groups
-        categories_to_ignore = self.env.ref('base.module_category_hidden') + self.env.ref('base.module_category_usability')
+        categories_to_ignore = self.env.ref('base.module_category_hidden') + self.env.ref(
+            'base.module_category_usability')
         for group in current_groups:
             # Get the updated group from current groups
             missing_implied_groups = group.implied_ids - user.groups_id
@@ -2201,9 +2240,10 @@ class CheckIdentity(models.TransientModel):
         assert getattr(method, '__has_check_identity', False)
         return method(*args, **kwargs)
 
-#----------------------------------------------------------
+
+# ----------------------------------------------------------
 # change password wizard
-#----------------------------------------------------------
+# ----------------------------------------------------------
 
 class ChangePasswordWizard(models.TransientModel):
     """ A wizard to manage the change of users' passwords. """
@@ -2245,6 +2285,7 @@ class ChangePasswordUser(models.TransientModel):
         # don't keep temporary passwords in the database longer than necessary
         self.write({'new_passwd': False})
 
+
 class ChangePasswordOwn(models.TransientModel):
     _name = "change.password.own"
     _description = "User, change own password wizard"
@@ -2266,15 +2307,18 @@ class ChangePasswordOwn(models.TransientModel):
         # would be great to update the session id in-place, but it seems dicey
         return {'type': 'ir.actions.client', 'tag': 'reload'}
 
+
 # API keys support
-API_KEY_SIZE = 20 # in bytes
-INDEX_SIZE = 8 # in hex digits, so 4 bytes, or 20% of the key
+API_KEY_SIZE = 20  # in bytes
+INDEX_SIZE = 8  # in hex digits, so 4 bytes, or 20% of the key
 KEY_CRYPT_CONTEXT = CryptContext(
     # default is 29000 rounds which is 25~50ms, which is probably unnecessary
     # given in this case all the keys are completely random data: dictionary
     # attacks on API keys isn't much of a concern
     ['pbkdf2_sha512'], pbkdf2_sha512__rounds=6000,
 )
+
+
 class APIKeysUser(models.Model):
     _inherit = 'res.users'
 
@@ -2335,10 +2379,11 @@ class APIKeysUser(models.Model):
             'views': [(False, 'form')],
         }
 
+
 class APIKeys(models.Model):
     _name = 'res.users.apikeys'
     _description = 'Users API Keys'
-    _auto = False # so we can have a secret column
+    _auto = False  # so we can have a secret column
     _allow_sudo_commands = False
 
     name = fields.Char("Description", required=True, readonly=True)
@@ -2384,7 +2429,7 @@ class APIKeys(models.Model):
         if self.env.is_system() or self.mapped('user_id') == self.env.user:
             ip = request.httprequest.environ['REMOTE_ADDR'] if request else 'n/a'
             _logger.info("API key(s) removed: scope: <%s> for '%s' (#%s) from %s",
-               self.mapped('scope'), self.env.user.login, self.env.uid, ip)
+                         self.mapped('scope'), self.env.user.login, self.env.uid, ip)
             self.sudo().unlink()
             return {'type': 'ir.actions.act_window_close'}
         raise AccessError(_("You can not remove API keys unless they're yours or you are a system user"))
@@ -2403,7 +2448,7 @@ class APIKeys(models.Model):
                     expiration_date >= now() at time zone 'utc'
                 )
         '''.format(self._table),
-        [index, scope])
+                            [index, scope])
         for user_id, current_key in self.env.cr.fetchall():
             if key and KEY_CRYPT_CONTEXT.verify(key, current_key):
                 return user_id
@@ -2440,11 +2485,12 @@ class APIKeys(models.Model):
         VALUES (%s, %s, %s, %s, %s, %s)
         RETURNING id
         """.format(table=self._table),
-        [name, self.env.user.id, scope, expiration_date or None, KEY_CRYPT_CONTEXT.hash(k), k[:INDEX_SIZE]])
+                            [name, self.env.user.id, scope, expiration_date or None, KEY_CRYPT_CONTEXT.hash(k),
+                             k[:INDEX_SIZE]])
 
         ip = request.httprequest.environ['REMOTE_ADDR'] if request else 'n/a'
         _logger.info("%s generated: scope: <%s> for '%s' (#%s) from %s",
-            self._description, scope, self.env.user.login, self.env.uid, ip)
+                     self._description, scope, self.env.user.login, self.env.uid, ip)
 
         return k
 
@@ -2457,6 +2503,7 @@ class APIKeys(models.Model):
                 expiration_date < now() at time zone 'utc'
         """, SQL.identifier(self._table)))
         _logger.info("GC %r delete %d entries", self._name, self.env.cr.rowcount)
+
 
 class APIKeyDescription(models.TransientModel):
     _name = 'res.users.apikeys.description'
@@ -2540,6 +2587,7 @@ class APIKeyDescription(models.TransientModel):
     def check_access_make_key(self):
         if not self.env.user._is_internal():
             raise AccessError(_("Only internal users can create API keys"))
+
 
 class APIKeyShow(models.AbstractModel):
     _name = 'res.users.apikeys.show'

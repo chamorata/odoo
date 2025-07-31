@@ -1,16 +1,15 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import json
-
 from collections import OrderedDict
-from lxml import etree
 from re import search
 
+from lxml import etree
+
 from odoo import Command
-from odoo.tools import mute_logger, config
 from odoo.exceptions import AccessError
 from odoo.tests import HttpCase, tagged
-
+from odoo.tools import mute_logger, config
 from .test_project_sharing import TestProjectSharingCommon
 
 
@@ -83,7 +82,8 @@ class TestProjectSharingPortalAccess(TestProjectSharingCommon):
         }
         with self.get_project_sharing_form_view(self.task_portal, self.user_portal) as form:
             for field in project_task_fields:
-                with self.assertRaises(AssertionError, msg="Field '%s' should be readonly in the project sharing form view "):
+                with self.assertRaises(AssertionError,
+                                       msg="Field '%s' should be readonly in the project sharing form view "):
                     form.__setattr__(field, 'coucou')
 
     def test_read_task_with_portal_user(self):
@@ -119,14 +119,18 @@ class TestProjectSharingPortalAccess(TestProjectSharingCommon):
         self.env["res.config.settings"].create({"auth_signup_uninvited": 'b2b'}).execute()
 
         project_share_wizard_no_user_action = project_share_wizard_no_user.action_share_record()
-        self.assertEqual(project_share_wizard_no_user_action['type'], 'ir.actions.act_window', 'Sharing a project with partner without user should display a confimation dialog')
-        project_share_wizard_confirmation = self.env['project.share.wizard'].browse(project_share_wizard_no_user_action['res_id'])
+        self.assertEqual(project_share_wizard_no_user_action['type'], 'ir.actions.act_window',
+                         'Sharing a project with partner without user should display a confimation dialog')
+        project_share_wizard_confirmation = self.env['project.share.wizard'].browse(
+            project_share_wizard_no_user_action['res_id'])
 
         project_share_wizard_confirmation.action_send_mail()
         mail_partner = self.env['mail.message'].search([('partner_ids', '=', partner_portal_no_user.id)], limit=1)
         self.assertTrue(mail_partner, 'A mail should have been sent to the non portal user')
-        self.assertIn(f'href="http://localhost:{config["http_port"]}/web/signup', str(mail_partner.body), 'The message link should contain the url to register to the portal')
-        self.assertIn('token=', str(mail_partner.body), 'The message link should contain a personalized token to register to the portal')
+        self.assertIn(f'href="http://localhost:{config["http_port"]}/web/signup', str(mail_partner.body),
+                      'The message link should contain the url to register to the portal')
+        self.assertIn('token=', str(mail_partner.body),
+                      'The message link should contain a personalized token to register to the portal')
 
 
 class TestProjectSharingChatterAccess(TestProjectSharingCommon, HttpCase):

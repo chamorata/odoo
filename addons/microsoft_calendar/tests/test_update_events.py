@@ -1,21 +1,23 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime, timedelta
-from dateutil.parser import parse
 import logging
-import pytz
+from datetime import datetime, timedelta
 from unittest.mock import patch, ANY
+
+import pytz
+from dateutil.parser import parse
 from freezegun import freeze_time
-
-from odoo import Command
-
 from odoo.addons.microsoft_calendar.models.microsoft_sync import MicrosoftSync
+from odoo.addons.microsoft_calendar.models.res_users import User
+from odoo.addons.microsoft_calendar.tests.common import TestCommon, mock_get_token, _modified_date_in_the_future, \
+    patch_api
 from odoo.addons.microsoft_calendar.utils.microsoft_calendar import MicrosoftCalendarService
 from odoo.addons.microsoft_calendar.utils.microsoft_event import MicrosoftEvent
-from odoo.addons.microsoft_calendar.models.res_users import User
-from odoo.addons.microsoft_calendar.tests.common import TestCommon, mock_get_token, _modified_date_in_the_future, patch_api
+
+from odoo import Command
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
+
 
 @patch.object(User, '_get_microsoft_calendar_token', mock_get_token)
 class TestUpdateEvents(TestCommon):
@@ -241,7 +243,7 @@ class TestUpdateEvents(TestCommon):
     @patch.object(MicrosoftCalendarService, 'insert')
     @patch.object(MicrosoftCalendarService, 'patch')
     def test_update_name_of_one_and_future_events_of_recurrence_from_odoo(
-        self, mock_patch, mock_insert, mock_delete
+            self, mock_patch, mock_insert, mock_delete
     ):
         """
         Update a Odoo event name and future events from a recurrence from the organizer calendar.
@@ -281,7 +283,7 @@ class TestUpdateEvents(TestCommon):
     @patch.object(MicrosoftCalendarService, 'insert')
     @patch.object(MicrosoftCalendarService, 'patch')
     def test_update_start_of_one_and_future_events_of_recurrence_from_odoo(
-        self, mock_patch, mock_insert, mock_delete
+            self, mock_patch, mock_insert, mock_delete
     ):
         """
         Update a Odoo event start date and future events from a recurrence from the organizer calendar.
@@ -358,7 +360,7 @@ class TestUpdateEvents(TestCommon):
     @patch.object(MicrosoftCalendarService, 'insert')
     @patch.object(MicrosoftCalendarService, 'patch')
     def test_update_start_of_one_and_future_events_of_recurrence_from_odoo_with_overlap(
-        self, mock_patch, mock_insert, mock_delete
+            self, mock_patch, mock_insert, mock_delete
     ):
         """
         Update a Odoo event start date and future events from a recurrence from the organizer calendar,
@@ -431,7 +433,7 @@ class TestUpdateEvents(TestCommon):
     @patch.object(MicrosoftCalendarService, 'insert')
     @patch.object(MicrosoftCalendarService, 'patch')
     def test_update_one_and_future_events_of_recurrence_from_odoo_attendee_calendar(
-        self, mock_patch, mock_insert, mock_delete
+            self, mock_patch, mock_insert, mock_delete
     ):
         """
         Update a Odoo event name and future events from a recurrence from the attendee calendar.
@@ -501,7 +503,7 @@ class TestUpdateEvents(TestCommon):
     @patch.object(MicrosoftCalendarService, 'insert')
     @patch.object(MicrosoftCalendarService, 'patch')
     def test_update_name_of_all_events_of_recurrence_from_odoo(
-        self, mock_patch, mock_insert, mock_delete
+            self, mock_patch, mock_insert, mock_delete
     ):
         """
         Update all events name from a recurrence from the organizer calendar.
@@ -536,7 +538,7 @@ class TestUpdateEvents(TestCommon):
     @patch.object(MicrosoftCalendarService, 'insert')
     @patch.object(MicrosoftCalendarService, 'patch')
     def test_update_start_of_all_events_of_recurrence_from_odoo(
-        self, mock_patch, mock_insert, mock_delete
+            self, mock_patch, mock_insert, mock_delete
     ):
         """
         Update all events start date from a recurrence from the organizer calendar.
@@ -600,7 +602,7 @@ class TestUpdateEvents(TestCommon):
     @patch.object(MicrosoftCalendarService, 'insert')
     @patch.object(MicrosoftCalendarService, 'patch')
     def test_update_all_events_of_recurrence_from_odoo_attendee_calendar(
-        self, mock_patch, mock_insert, mock_delete
+            self, mock_patch, mock_insert, mock_delete
     ):
         """
         Update all events start date from a recurrence from the attendee calendar.
@@ -773,7 +775,7 @@ class TestUpdateEvents(TestCommon):
     @freeze_time('2021-09-22')
     @patch.object(MicrosoftCalendarService, 'get_events')
     def test_update_start_of_one_event_of_recurrence_from_outlook_organizer_calendar_with_overlap(
-        self, mock_get_events
+            self, mock_get_events
     ):
         """
         Update one event start date from a recurrence from Outlook organizer calendar, with event overlap.
@@ -868,7 +870,7 @@ class TestUpdateEvents(TestCommon):
         events = self.recurrent_event_from_outlook_organizer[0:from_event_index]
         events[0]['lastModifiedDateTime'] = _modified_date_in_the_future(self.recurrent_base_event)
         events[0]['recurrence']['range']['endDate'] = (
-            self.recurrence_end_date - timedelta(days=self.recurrent_event_interval * new_recurrence_event_count)
+                self.recurrence_end_date - timedelta(days=self.recurrent_event_interval * new_recurrence_event_count)
         ).strftime("%Y-%m-%d")
 
         # prepare second recurrence data in received Outlook events
@@ -903,18 +905,18 @@ class TestUpdateEvents(TestCommon):
                 self.recurrent_event_from_outlook_organizer[1],
                 start={
                     'dateTime': (
-                        new_rec_first_event_start_date + timedelta(days=i * self.recurrent_event_interval)
+                            new_rec_first_event_start_date + timedelta(days=i * self.recurrent_event_interval)
                     ).strftime("%Y-%m-%dT%H:%M:%S.0000000"),
                     'timeZone': 'UTC'
                 },
                 end={
                     'dateTime': (
-                        new_rec_first_event_end_date + timedelta(days=i * self.recurrent_event_interval)
+                            new_rec_first_event_end_date + timedelta(days=i * self.recurrent_event_interval)
                     ).strftime("%Y-%m-%dT%H:%M:%S.0000000"),
                     'timeZone': 'UTC'
                 },
-                id=f'REC123_new_{i+1}',
-                iCalUId=f'REC456_new_{i+1}',
+                id=f'REC123_new_{i + 1}',
+                iCalUId=f'REC456_new_{i + 1}',
                 seriesMasterId='REC123_new',
             )
             for i in range(0, new_recurrence_event_count)
@@ -947,15 +949,15 @@ class TestUpdateEvents(TestCommon):
             self.assert_odoo_event(e, {
                 "start": new_rec_first_event_start_date + timedelta(days=i * self.recurrent_event_interval),
                 "stop": new_rec_first_event_end_date + timedelta(days=i * self.recurrent_event_interval),
-                "microsoft_id": f'REC123_new_{i+1}',
-                "ms_universal_event_id": f'REC456_new_{i+1}',
+                "microsoft_id": f'REC123_new_{i + 1}',
+                "ms_universal_event_id": f'REC456_new_{i + 1}',
                 "recurrence_id": new_recurrences,
                 "follow_recurrence": True,
             })
 
     @patch.object(MicrosoftCalendarService, 'get_events')
     def test_update_start_of_one_event_and_future_of_recurrence_from_outlook_organizer_calendar_with_overlap(
-        self, mock_get_events
+            self, mock_get_events
     ):
         """
         Update one event start date and future events from a recurrence from Outlook organizer calendar,
@@ -988,7 +990,7 @@ class TestUpdateEvents(TestCommon):
         events = self.recurrent_event_from_outlook_organizer[0:from_event_index]
         events[0]['lastModifiedDateTime'] = _modified_date_in_the_future(self.recurrent_base_event)
         events[0]['recurrence']['range']['endDate'] = (
-            self.recurrence_end_date - timedelta(days=self.recurrent_event_interval * new_recurrence_event_count)
+                self.recurrence_end_date - timedelta(days=self.recurrent_event_interval * new_recurrence_event_count)
         ).strftime("%Y-%m-%d")
 
         # prepare second recurrence data in received Outlook events
@@ -1023,18 +1025,18 @@ class TestUpdateEvents(TestCommon):
                 self.recurrent_event_from_outlook_organizer[1],
                 start={
                     'dateTime': (
-                        new_rec_first_event_start_date + timedelta(days=i * self.recurrent_event_interval)
+                            new_rec_first_event_start_date + timedelta(days=i * self.recurrent_event_interval)
                     ).strftime("%Y-%m-%dT%H:%M:%S.0000000"),
                     'timeZone': 'UTC'
                 },
                 end={
                     'dateTime': (
-                        new_rec_first_event_end_date + timedelta(days=i * self.recurrent_event_interval)
+                            new_rec_first_event_end_date + timedelta(days=i * self.recurrent_event_interval)
                     ).strftime("%Y-%m-%dT%H:%M:%S.0000000"),
                     'timeZone': 'UTC'
                 },
-                id=f'REC123_new_{i+1}',
-                iCalUId=f'REC456_new_{i+1}',
+                id=f'REC123_new_{i + 1}',
+                iCalUId=f'REC456_new_{i + 1}',
                 seriesMasterId='REC123_new',
             )
             for i in range(0, new_recurrence_event_count)
@@ -1067,8 +1069,8 @@ class TestUpdateEvents(TestCommon):
             self.assert_odoo_event(e, {
                 "start": new_rec_first_event_start_date + timedelta(days=i * self.recurrent_event_interval),
                 "stop": new_rec_first_event_end_date + timedelta(days=i * self.recurrent_event_interval),
-                "microsoft_id": f"REC123_new_{i+1}",
-                "ms_universal_event_id": f"REC456_new_{i+1}",
+                "microsoft_id": f"REC123_new_{i + 1}",
+                "ms_universal_event_id": f"REC456_new_{i + 1}",
                 "recurrence_id": new_recurrences,
                 "follow_recurrence": True,
             })
@@ -1129,7 +1131,7 @@ class TestUpdateEvents(TestCommon):
                 range={
                     'startDate': new_start_date.strftime("%Y-%m-%d"),
                     'endDate': (
-                        new_end_date + timedelta(days=self.recurrent_event_interval * nb_of_events)
+                            new_end_date + timedelta(days=self.recurrent_event_interval * nb_of_events)
                     ).strftime("%Y-%m-%d"),
                     'numberOfOccurrences': 0,
                     'recurrenceTimeZone': 'Romance Standard Time',
@@ -1148,13 +1150,13 @@ class TestUpdateEvents(TestCommon):
                 iCalUId=f'REC456_EVENT_{i}',
                 start={
                     'dateTime': (
-                        new_start_date + timedelta(days=(i - 1) * self.recurrent_event_interval)
+                            new_start_date + timedelta(days=(i - 1) * self.recurrent_event_interval)
                     ).strftime("%Y-%m-%dT%H:%M:%S.0000000"),
                     'timeZone': 'UTC',
                 },
                 end={
                     'dateTime': (
-                        new_end_date + timedelta(days=(i - 1) * self.recurrent_event_interval)
+                            new_end_date + timedelta(days=(i - 1) * self.recurrent_event_interval)
                     ).strftime("%Y-%m-%dT%H:%M:%S.0000000"),
                     'timeZone': 'UTC',
                 },
@@ -1344,7 +1346,8 @@ class TestUpdateEvents(TestCommon):
         # Ensure that synchronization is paused, delete wasn't called and record is waiting to be synced again.
         self.assertFalse(self.organizer_user.microsoft_synchronization_stopped)
         self.assertEqual(self.organizer_user._get_microsoft_sync_status(), "sync_paused")
-        self.assertTrue(self.simple_event.need_sync_m, "Sync variable must be true for updating event when sync re-activates")
+        self.assertTrue(self.simple_event.need_sync_m,
+                        "Sync variable must be true for updating event when sync re-activates")
         mock_patch.assert_not_called()
 
     @patch.object(MicrosoftCalendarService, 'get_events')
@@ -1413,7 +1416,7 @@ class TestUpdateEvents(TestCommon):
             'microsoft_id': False,
             'ms_universal_event_id': False,
             'follow_recurrence': False
-            })
+        })
         self.attendee_user.with_user(self.attendee_user).restart_microsoft_synchronization()
         self.organizer_user.with_user(self.organizer_user).restart_microsoft_synchronization()
         self.assertTrue(all(ev.need_sync_m for ev in self.recurrent_events))
@@ -1438,7 +1441,8 @@ class TestUpdateEvents(TestCommon):
         mock_get_events.return_value = (
             MicrosoftEvent([dict(
                 self.simple_event_from_outlook_organizer,
-                lastModifiedDateTime=(self.simple_event.write_date + timedelta(minutes=10)).strftime("%Y-%m-%dT%H:%M:%SZ")
+                lastModifiedDateTime=(self.simple_event.write_date + timedelta(minutes=10)).strftime(
+                    "%Y-%m-%dT%H:%M:%SZ")
             )]), None
         )
         self.organizer_user.with_user(self.organizer_user).sudo()._sync_microsoft_calendar()

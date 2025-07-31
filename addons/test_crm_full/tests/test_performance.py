@@ -2,8 +2,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from freezegun import freeze_time
-
 from odoo.addons.test_crm_full.tests.common import TestCrmFullCommon
+
 from odoo.tests import Form, users, warmup, tagged
 
 
@@ -53,12 +53,12 @@ class TestCrmPerformance(CrmPerformanceCase):
                  'phone': '04550000%02d' % idx,
                  'street': 'Super Street, %092d' % idx,
                  'zip': '1400',
-                } for idx in range(batch_size)
+                 } for idx in range(batch_size)
             ]
             crm_values += [
                 {'partner_id': self.partners[idx].id,
                  'name': 'Test Lead %02d' % idx,
-                } for idx in range(batch_size)
+                 } for idx in range(batch_size)
             ]
             _leads = self.env['crm.lead'].create(crm_values)
 
@@ -118,7 +118,7 @@ class TestCrmPerformance(CrmPerformanceCase):
                  'phone': '0455000000',
                  'street': 'Super Street, 00',
                  'zip': '1400',
-                }
+                 }
             ]
             _lead = self.env['crm.lead'].create(crm_values)
 
@@ -131,6 +131,6 @@ class TestCrmPerformance(CrmPerformanceCase):
             crm_values = [
                 {'partner_id': self.partners[0].id,
                  'name': 'Test Lead',
-                }
+                 }
             ]
             _lead = self.env['crm.lead'].create(crm_values)

@@ -2,8 +2,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import _, api, fields, models
-from odoo.osv import expression
 from odoo.exceptions import UserError
+from odoo.osv import expression
 from odoo.tools.float_utils import float_compare
 
 
@@ -29,7 +29,8 @@ class StockPutawayRule(models.Model):
         if self.env.context.get('active_model') == 'stock.location':
             return self.env.context.get('active_id')
         if not self.env.user.has_group('stock.group_stock_multi_warehouses'):
-            wh = self.env['stock.warehouse'].search(self.env['stock.warehouse']._check_company_domain(self.env.company), limit=1)
+            wh = self.env['stock.warehouse'].search(self.env['stock.warehouse']._check_company_domain(self.env.company),
+                                                    limit=1)
             input_loc, _ = wh._get_input_output_locations(wh.reception_steps, wh.delivery_steps)
             return input_loc
 
@@ -48,7 +49,8 @@ class StockPutawayRule(models.Model):
         domain="[('product_tmpl_id', '=', context.get('active_id', False))] if context.get('active_model') == 'product.template' else [('type', '!=', 'service')]",
         ondelete='cascade')
     category_id = fields.Many2one('product.category', 'Product Category',
-        default=_default_category_id, domain=[('filter_for_stock_putaway_rule', '=', True)], ondelete='cascade')
+                                  default=_default_category_id, domain=[('filter_for_stock_putaway_rule', '=', True)],
+                                  ondelete='cascade')
     location_in_id = fields.Many2one(
         'stock.location', 'When product arrives in', check_company=True,
         domain="[('child_ids', '!=', False)]",
@@ -57,7 +59,8 @@ class StockPutawayRule(models.Model):
         'stock.location', 'Store to sublocation', check_company=True,
         domain="[('id', 'child_of', location_in_id)]",
         required=True, ondelete='cascade')
-    sequence = fields.Integer('Priority', help="Give to the more specialized category, a higher priority to have them in top of the list.")
+    sequence = fields.Integer('Priority',
+                              help="Give to the more specialized category, a higher priority to have them in top of the list.")
     company_id = fields.Many2one(
         'res.company', 'Company', required=True,
         default=lambda s: s.env.company.id, index=True)
@@ -90,7 +93,8 @@ class StockPutawayRule(models.Model):
                 return {
                     'warning': {
                         'title': _("Warning"),
-                        'message': _("Selected storage category does not exist in the 'store to' location or any of its sublocations"),
+                        'message': _(
+                            "Selected storage category does not exist in the 'store to' location or any of its sublocations"),
                     },
                 }
 
@@ -109,7 +113,8 @@ class StockPutawayRule(models.Model):
         if 'company_id' in vals:
             for rule in self:
                 if rule.company_id.id != vals['company_id']:
-                    raise UserError(_("Changing the company of this record is forbidden at this point, you should rather archive it and create a new one."))
+                    raise UserError(
+                        _("Changing the company of this record is forbidden at this point, you should rather archive it and create a new one."))
         return super(StockPutawayRule, self).write(vals)
 
     def _get_last_used_search_domain(self, product):
@@ -158,15 +163,18 @@ class StockPutawayRule(models.Model):
                     return location_out
                 continue
             else:
-                child_locations = child_locations.filtered(lambda loc: loc.storage_category_id == putaway_rule.storage_category_id)
+                child_locations = child_locations.filtered(
+                    lambda loc: loc.storage_category_id == putaway_rule.storage_category_id)
 
             # check if already have the product/package type stored
             for location in child_locations:
                 if location in checked_locations:
                     continue
                 if package_type:
-                    if location.quant_ids.filtered(lambda q: q.package_id and q.package_id.package_type_id == package_type):
-                        if location._check_can_be_used(product, quantity, package=package, location_qty=qty_by_location[location.id]):
+                    if location.quant_ids.filtered(
+                            lambda q: q.package_id and q.package_id.package_type_id == package_type):
+                        if location._check_can_be_used(product, quantity, package=package,
+                                                       location_qty=qty_by_location[location.id]):
                             return location
                         else:
                             checked_locations.add(location)
@@ -177,7 +185,8 @@ class StockPutawayRule(models.Model):
                         checked_locations.add(location)
 
             # check locations with matched storage category
-            for location in child_locations.filtered(lambda l: l.storage_category_id == putaway_rule.storage_category_id):
+            for location in child_locations.filtered(
+                    lambda l: l.storage_category_id == putaway_rule.storage_category_id):
                 if location in checked_locations:
                     continue
                 if location._check_can_be_used(product, quantity, package, qty_by_location[location.id]):

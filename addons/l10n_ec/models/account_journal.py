@@ -31,4 +31,3 @@ class AccountJournal(models.Model):
     def _compute_l10n_ec_require_emission(self):
         for journal in self:
             journal.l10n_ec_require_emission = journal.type == 'sale' and journal.country_code == 'EC' and journal.l10n_latam_use_documents
-

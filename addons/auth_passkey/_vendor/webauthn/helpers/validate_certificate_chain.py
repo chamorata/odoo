@@ -1,17 +1,17 @@
 from typing import List, Optional
 
+from OpenSSL.crypto import X509, X509Store, X509StoreContext, X509StoreContextError
 from cryptography.hazmat.backends import default_backend
 from cryptography.x509 import load_der_x509_certificate
-from OpenSSL.crypto import X509, X509Store, X509StoreContext, X509StoreContextError
 
 from .exceptions import InvalidCertificateChain
 from .pem_cert_bytes_to_open_ssl_x509 import pem_cert_bytes_to_open_ssl_x509
 
 
 def validate_certificate_chain(
-    *,
-    x5c: List[bytes],
-    pem_root_certs_bytes: Optional[List[bytes]] = None,
+        *,
+        x5c: List[bytes],
+        pem_root_certs_bytes: Optional[List[bytes]] = None,
 ) -> bool:
     """Validate that the certificates in x5c chain back to a known root certificate
 

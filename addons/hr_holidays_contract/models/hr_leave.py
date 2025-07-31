@@ -21,12 +21,12 @@ class HrLeave(models.Model):
             if leave.employee_id:
                 contracts = self.env['hr.contract'].search([
                     '|', ('state', 'in', ['open', 'close']),
-                         '&', ('state', '=', 'draft'),
-                              ('kanban_state', '=', 'done'),
+                    '&', ('state', '=', 'draft'),
+                    ('kanban_state', '=', 'done'),
                     ('employee_id', '=', leave.employee_id.id),
                     ('date_start', '<=', leave.request_date_to),
                     '|', ('date_end', '=', False),
-                         ('date_end', '>=', leave.request_date_from),
+                    ('date_end', '>=', leave.request_date_from),
                 ])
                 if contracts:
                     # If there are more than one contract they should all have the
@@ -47,8 +47,8 @@ class HrLeave(models.Model):
             ('employee_id', '=', self.employee_id.id),
             ('date_start', '<=', self.date_to),
             '|',
-                ('date_end', '>=', self.date_from),
-                ('date_end', '=', False),
+            ('date_end', '>=', self.date_from),
+            ('date_end', '=', False),
         ]])
         return self.env['hr.contract'].sudo().search(domain)
 

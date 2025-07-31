@@ -1,9 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import Command
-
 from odoo.addons.mail.tests.common import mail_new_test_user
 from odoo.addons.website.tests.test_performance import UtilPerf
+
+from odoo import Command
 
 
 class TestForumPerformance(UtilPerf):
@@ -25,7 +25,7 @@ class TestForumPerformance(UtilPerf):
                     'name': 'Tag2',
                     'forum_id': cls.forum.id,
                 }
-            )],
+                )],
         })
 
     def test_perf_sql_forum_standard_data(self):
@@ -78,7 +78,7 @@ class TestForumPerformance(UtilPerf):
                         'name': f"Tag -- {i}",
                         'forum_id': self.forum.id,
                     }
-                )],
+                    )],
             } for i in range(100)
         ])
         self.env.flush_all()

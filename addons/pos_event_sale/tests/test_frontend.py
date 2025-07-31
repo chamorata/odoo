@@ -1,7 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo.tests import tagged
 from odoo.addons.pos_event.tests.test_frontend import TestUi
+
 from odoo import fields, Command
+from odoo.tests import tagged
 
 
 @tagged('post_install', '-at_install')
@@ -52,11 +53,11 @@ class TestPoSEventSale(TestUi):
             "session_id": self.main_pos_config.current_session_id.id,
             "sequence_number": 2,
             "payment_ids": [
-                    Command.create({
-                        "amount": 100,
-                        "name": fields.Datetime.now(),
-                        "payment_method_id": self.bank_payment_method.id,
-                    }),
+                Command.create({
+                    "amount": 100,
+                    "name": fields.Datetime.now(),
+                    "payment_method_id": self.bank_payment_method.id,
+                }),
             ],
             "uuid": "12345-123-1234",
             "last_order_preparation_change": "{}",

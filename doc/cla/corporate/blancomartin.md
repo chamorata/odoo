@@ -12,7 +12,7 @@ Daniel Blanco daniel@blancomartin.cl https://github.com/danisan
 
 Corporation name: Blanco Martin & Asociados EIRL
 Corporation address: Av. Apoquindo 6410
-                     Of. 212 Las Condes, (RM)
+Of. 212 Las Condes, (RM)
 Country: Chile
 Point of contact: Daniel Blanco
 Title: Director - Representante Legal

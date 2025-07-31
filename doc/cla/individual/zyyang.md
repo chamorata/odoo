@@ -1,5 +1,3 @@
-
-
 China, 2019-01-21
 
 I hereby agree to the terms of the Odoo Individual Contributor License Agreement v1.0.

@@ -10,7 +10,8 @@ class TestCalendarController(HttpCase):
     def setUp(self):
         super().setUp()
         self.user = new_test_user(self.env, "test_user_1", email="test_user_1@nowhere.com", tz="UTC")
-        self.other_user = new_test_user(self.env, "test_user_2", email="test_user_2@nowhere.com", password="P@ssw0rd!", tz="UTC")
+        self.other_user = new_test_user(self.env, "test_user_2", email="test_user_2@nowhere.com", password="P@ssw0rd!",
+                                        tz="UTC")
         self.partner = self.user.partner_id
         self.event = (
             self.env["calendar.event"]

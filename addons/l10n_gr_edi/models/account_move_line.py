@@ -1,5 +1,3 @@
-from odoo import api, fields, models
-
 from odoo.addons.l10n_gr_edi.models.preferred_classification import (
     CLASSIFICATION_CATEGORY_SELECTION,
     CLASSIFICATION_MAP,
@@ -8,6 +6,8 @@ from odoo.addons.l10n_gr_edi.models.preferred_classification import (
     TAX_EXEMPTION_CATEGORY_SELECTION,
     TYPES_WITH_SEND_EXPENSE,
 )
+
+from odoo import api, fields, models
 from odoo.tools.sql import column_exists, create_column
 
 
@@ -17,7 +17,8 @@ class AccountMoveLine(models.Model):
     l10n_gr_edi_available_cls_category = fields.Char(compute='_compute_l10n_gr_edi_available_cls_category')
     l10n_gr_edi_available_cls_type = fields.Char(compute='_compute_l10n_gr_edi_available_cls_type')
     l10n_gr_edi_available_cls_vat = fields.Char(compute='_compute_l10n_gr_edi_available_cls_type')
-    l10n_gr_edi_need_exemption_category = fields.Boolean(compute='_compute_l10n_gr_edi_need_exemption_category', default=False)
+    l10n_gr_edi_need_exemption_category = fields.Boolean(compute='_compute_l10n_gr_edi_need_exemption_category',
+                                                         default=False)
 
     l10n_gr_edi_detail_type = fields.Selection(
         selection=[('1', '1'), ('2', '2')],
@@ -60,11 +61,11 @@ class AccountMoveLine(models.Model):
         Create all compute-stored fields here to avoid MemoryError when initializing on large databases.
         """
         for column_name, column_type in (
-            ('l10n_gr_edi_detail_type', 'varchar'),
-            ('l10n_gr_edi_cls_category', 'varchar'),
-            ('l10n_gr_edi_cls_type', 'varchar'),
-            ('l10n_gr_edi_cls_vat', 'varchar'),
-            ('l10n_gr_edi_tax_exemption_category', 'varchar'),
+                ('l10n_gr_edi_detail_type', 'varchar'),
+                ('l10n_gr_edi_cls_category', 'varchar'),
+                ('l10n_gr_edi_cls_type', 'varchar'),
+                ('l10n_gr_edi_cls_vat', 'varchar'),
+                ('l10n_gr_edi_tax_exemption_category', 'varchar'),
         ):
             if not column_exists(self.env.cr, 'account_move_line', column_name):
                 create_column(self.env.cr, 'account_move_line', column_name, column_type)
@@ -97,12 +98,13 @@ class AccountMoveLine(models.Model):
                 inv_type = line.move_id.l10n_gr_edi_correlation_id.l10n_gr_edi_inv_type
 
             is_income = (
-                line.move_type in ('out_invoice', 'out_refund')
-                and inv_type not in TYPES_WITH_SEND_EXPENSE
-                and (not line.l10n_gr_edi_detail_type or line.l10n_gr_edi_detail_type == '2')
+                    line.move_type in ('out_invoice', 'out_refund')
+                    and inv_type not in TYPES_WITH_SEND_EXPENSE
+                    and (not line.l10n_gr_edi_detail_type or line.l10n_gr_edi_detail_type == '2')
             )
 
-            line.l10n_gr_edi_available_cls_category = self.env['l10n_gr_edi.preferred_classification']._get_l10n_gr_edi_available_cls_category(
+            line.l10n_gr_edi_available_cls_category = self.env[
+                'l10n_gr_edi.preferred_classification']._get_l10n_gr_edi_available_cls_category(
                 inv_type=inv_type, category_type='1' if is_income else '2')
 
     @api.depends('l10n_gr_edi_cls_category', 'move_id.l10n_gr_edi_correlation_id')
@@ -115,8 +117,10 @@ class AccountMoveLine(models.Model):
                 inv_type = line.move_id.l10n_gr_edi_correlation_id.l10n_gr_edi_inv_type
 
             if cls_category:
-                line.l10n_gr_edi_available_cls_type = self.env['l10n_gr_edi.preferred_classification']._get_l10n_gr_edi_available_cls_type(inv_type, cls_category)
-                line.l10n_gr_edi_available_cls_vat = self.env['l10n_gr_edi.preferred_classification']._get_l10n_gr_edi_available_cls_vat(inv_type, cls_category)
+                line.l10n_gr_edi_available_cls_type = self.env[
+                    'l10n_gr_edi.preferred_classification']._get_l10n_gr_edi_available_cls_type(inv_type, cls_category)
+                line.l10n_gr_edi_available_cls_vat = self.env[
+                    'l10n_gr_edi.preferred_classification']._get_l10n_gr_edi_available_cls_vat(inv_type, cls_category)
             else:
                 line.l10n_gr_edi_available_cls_type = False
                 line.l10n_gr_edi_available_cls_vat = False
@@ -138,10 +142,12 @@ class AccountMoveLine(models.Model):
         preferred_id = self.env['l10n_gr_edi.preferred_classification']
         # Try to get from the move's fiscal position first
         if self.move_id.fiscal_position_id:
-            preferred_id = self.move_id.fiscal_position_id.l10n_gr_edi_preferred_classification_ids.filtered_domain(domain)[:1]
+            preferred_id = self.move_id.fiscal_position_id.l10n_gr_edi_preferred_classification_ids.filtered_domain(
+                domain)[:1]
         # If nothing is found, try to get preferred classification from the line's product
         if not preferred_id and self.product_id:
-            preferred_id = self.product_id.product_tmpl_id.l10n_gr_edi_preferred_classification_ids.filtered_domain(domain)[:1]
+            preferred_id = self.product_id.product_tmpl_id.l10n_gr_edi_preferred_classification_ids.filtered_domain(
+                domain)[:1]
 
         # If by the end nothing is still found, set the default preferred classification as [ 1.1 inv-type | 1.2 category | E3_561_007 type ]
         if not preferred_id:

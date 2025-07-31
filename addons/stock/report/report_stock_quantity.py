@@ -13,7 +13,8 @@ class ReportStockQuantity(models.Model):
         'product.product': ['product_tmpl_id'],
         'product.template': ['type'],
         'stock.location': ['parent_path'],
-        'stock.move': ['company_id', 'date', 'location_dest_id', 'location_final_id', 'location_id', 'product_id', 'product_qty', 'state'],
+        'stock.move': ['company_id', 'date', 'location_dest_id', 'location_final_id', 'location_id', 'product_id',
+                       'product_qty', 'state'],
         'stock.quant': ['company_id', 'location_id', 'product_id', 'quantity'],
         'stock.warehouse': ['view_location_id'],
     }
@@ -171,5 +172,6 @@ FROM (SELECT
 GROUP BY product_id, product_tmpl_id, state, date, company_id, warehouse_id
 );
 """
-        report_period = self.env['ir.config_parameter'].sudo().get_param('stock.report_stock_quantity_period', default='3')
+        report_period = self.env['ir.config_parameter'].sudo().get_param('stock.report_stock_quantity_period',
+                                                                         default='3')
         self.env.cr.execute(query, {'report_period': int(report_period)})

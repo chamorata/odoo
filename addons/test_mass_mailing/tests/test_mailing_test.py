@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import lxml.html
-
 from odoo.addons.test_mass_mailing.tests.common import TestMassMailCommon
-from odoo.fields import Command
+
 from odoo.tests.common import users, tagged
 from odoo.tools import mute_logger
 
@@ -136,8 +135,8 @@ class TestMailingTest(TestMassMailCommon):
         expected_body = 'Hello {{ object.name }}' + f' {expected_test_record.name}'
 
         self.assertSentEmail(self.env.user.partner_id, ['test@test.com'],
-            subject='[TEST] %s' % expected_subject,
-            body_content=expected_body)
+                             subject='[TEST] %s' % expected_subject,
+                             body_content=expected_body)
 
         with self.mock_mail_gateway():
             # send the mailing

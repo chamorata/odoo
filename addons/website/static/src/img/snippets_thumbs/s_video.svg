@@ -12,7 +12,8 @@
                 <path fill="url(#c)" d="M82 0H0v60h82V0Z"/>
             </mask>
             <g mask="url(#d)">
-                <path fill="url(#e)" d="M68.5 82C83.14 82 95 73.05 95 62S83.14 42 68.5 42 42 50.95 42 62s11.86 20 26.5 20Z"/>
+                <path fill="url(#e)"
+                      d="M68.5 82C83.14 82 95 73.05 95 62S83.14 42 68.5 42 42 50.95 42 62s11.86 20 26.5 20Z"/>
             </g>
             <mask id="g" width="82" height="60" x="0" y="0" maskUnits="userSpaceOnUse" style="mask-type:luminance">
                 <path fill="url(#f)" d="M82 0H0v60h82V0Z"/>

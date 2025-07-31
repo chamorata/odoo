@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from markupsafe import Markup
-
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
 from odoo.tests import tagged
 
 
@@ -23,8 +23,10 @@ class TestGccInvoice(AccountTestInvoicingCommon):
             'terms_type': 'plain',
         })
         # Add translation to invoice terms
-        self.env.company.update_field_translations('invoice_terms', {'en_US': {'English Terms': 'English Terms'}, 'ar_001': {'English Terms': 'Arabic Terms'}})
+        self.env.company.update_field_translations('invoice_terms', {'en_US': {'English Terms': 'English Terms'},
+                                                                     'ar_001': {'English Terms': 'Arabic Terms'}})
         invoice = self.init_invoice('out_invoice', products=self.product_a)
 
         self.assertEqual(invoice.narration, Markup('<p>English Terms</p>'), 'Original narration not correct')
-        self.assertEqual(invoice.with_context(lang='ar_001').narration, Markup('<p>Arabic Terms</p>'), 'Translation not loaded succesfully')
+        self.assertEqual(invoice.with_context(lang='ar_001').narration, Markup('<p>Arabic Terms</p>'),
+                         'Translation not loaded succesfully')

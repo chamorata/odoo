@@ -1,6 +1,7 @@
+from odoo.addons.l10n_jo_edi.tests.jo_edi_common import JoEdiCommon
+
 from odoo import Command
 from odoo.tests import tagged
-from odoo.addons.l10n_jo_edi.tests.jo_edi_common import JoEdiCommon
 
 
 @tagged('post_install_l10n', 'post_install', '-at_install')

@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.mail_group.tests.common import TestMailListCommon
+from odoo.addons.mail_group.tests.data import GROUP_TEMPLATE
 from psycopg2 import IntegrityError
 
 from odoo import Command, tools
-from odoo.addons.mail_group.tests.data import GROUP_TEMPLATE
-from odoo.addons.mail_group.tests.common import TestMailListCommon
 from odoo.exceptions import AccessError
 from odoo.tests.common import tagged, users
 from odoo.tools import mute_logger
@@ -114,7 +114,7 @@ class TestMailGroupModeration(TestMailListCommon):
 
         self.test_group.write({
             'moderator_ids': [(4, self.user_admin.id), (3, self.user_employee.id)]
-            })
+        })
         with self.assertRaises(AccessError, msg='Non moderators should not have access to moderation rules'):
             self.env['mail.group.moderation'].with_user(self.user_employee).browse(self.moderation.ids).email
 
@@ -189,15 +189,17 @@ class TestModeration(TestMailListCommon):
             self.assertMailMailWEmails([email], 'outgoing',
                                        content="This should be posted on a mail.group. Or not.",
                                        fields_values={
-                                        'email_from': self.email_from_unknown,
-                                        'subject': 'New email',
+                                           'email_from': self.email_from_unknown,
+                                           'subject': 'New email',
                                        },
                                        mail_message=new_email_message.mail_message_id)
 
         self.assertEqual(new_email_message.moderation_status, 'accepted', 'Should have accepted the message')
-        self.assertEqual(old_email_message.moderation_status, 'pending_moderation', 'Should not have touched other message of the same author')
+        self.assertEqual(old_email_message.moderation_status, 'pending_moderation',
+                         'Should not have touched other message of the same author')
 
-    @mute_logger('odoo.addons.mail.models.mail_thread', 'odoo.addons.mail_group.models.mail_group_message', 'odoo.models.unlink')
+    @mute_logger('odoo.addons.mail.models.mail_thread', 'odoo.addons.mail_group.models.mail_group_message',
+                 'odoo.models.unlink')
     @users('employee')
     def test_moderation_flow_allow(self):
         """ Unknown email sends email on moderated group, test allow """
@@ -233,7 +235,8 @@ class TestModeration(TestMailListCommon):
             new_email_message.action_moderate_allow()
 
         self.assertEqual(new_email_message.moderation_status, 'accepted', 'Should have accepted the message')
-        self.assertEqual(old_email_message.moderation_status, 'accepted', 'Should have accepted the old message of the same author')
+        self.assertEqual(old_email_message.moderation_status, 'accepted',
+                         'Should have accepted the old message of the same author')
 
         # Test that the moderation rule has been created
         new_rule = self.env['mail.group.moderation'].search([
@@ -248,15 +251,15 @@ class TestModeration(TestMailListCommon):
             self.assertMailMailWEmails([email], 'outgoing',
                                        content="This should be posted on a mail.group. Or not.",
                                        fields_values={
-                                        'email_from': self.email_from_unknown,
-                                        'subject': 'New email',
+                                           'email_from': self.email_from_unknown,
+                                           'subject': 'New email',
                                        },
                                        mail_message=new_email_message.mail_message_id)
             self.assertMailMailWEmails([email], 'outgoing',
                                        content="This should be posted on a mail.group. Or not.",
                                        fields_values={
-                                        'email_from': self.email_from_unknown,
-                                        'subject': 'Old email',
+                                           'email_from': self.email_from_unknown,
+                                           'subject': 'Old email',
                                        },
                                        mail_message=old_email_message.mail_message_id)
 
@@ -273,7 +276,8 @@ class TestModeration(TestMailListCommon):
         new_email_message = mail_group.mail_group_message_ids[-1]
 
         self.assertEqual(new_email_message.email_from, tools.formataddr(("Another Name", "bob.email@test.example.com")))
-        self.assertEqual(new_email_message.moderation_status, 'accepted', msg='Should have automatically accepted the email')
+        self.assertEqual(new_email_message.moderation_status, 'accepted',
+                         msg='Should have automatically accepted the email')
         self.assertEqual(new_email_message.subject, 'Another email')
 
         self.assertEqual(
@@ -283,7 +287,8 @@ class TestModeration(TestMailListCommon):
             len(mail_group_2_as2.mail_group_message_ids), group_2_message_count,
             'Should never have created message in the other group')
 
-    @mute_logger('odoo.addons.mail.models.mail_thread', 'odoo.addons.mail_group.models.mail_group_message', 'odoo.models.unlink')
+    @mute_logger('odoo.addons.mail.models.mail_thread', 'odoo.addons.mail_group.models.mail_group_message',
+                 'odoo.models.unlink')
     @users('employee')
     def test_moderation_flow_ban(self):
         """ Unknown email sends email on moderated group, test ban """
@@ -332,12 +337,14 @@ class TestModeration(TestMailListCommon):
         # find messages
         self.assertEqual(len(mail_group.mail_group_message_ids), 6)
         new_email_message = mail_group.mail_group_message_ids[-1]
-        self.assertEqual(new_email_message.moderation_status, 'rejected', 'Should have automatically rejected the email')
+        self.assertEqual(new_email_message.moderation_status, 'rejected',
+                         'Should have automatically rejected the email')
 
         # Check no mail.mail has been sent
         self.assertEqual(len(self._new_mails), 0, 'Should not have send emails')
 
-    @mute_logger('odoo.addons.mail.models.mail_thread', 'odoo.addons.mail_group.models.mail_group_message', 'odoo.models.unlink')
+    @mute_logger('odoo.addons.mail.models.mail_thread', 'odoo.addons.mail_group.models.mail_group_message',
+                 'odoo.models.unlink')
     @users('employee')
     def test_moderation_flow_reject(self):
         """ Unknown email sends email on moderated group, test reject """
@@ -363,14 +370,15 @@ class TestModeration(TestMailListCommon):
             new_email_message.action_moderate_reject_with_comment('Test Rejected', 'Bad email')
 
         self.assertEqual(new_email_message.moderation_status, 'rejected', 'Should have rejected the message')
-        self.assertEqual(old_email_message.moderation_status, 'pending_moderation', 'Should not have rejected old message')
+        self.assertEqual(old_email_message.moderation_status, 'pending_moderation',
+                         'Should not have rejected old message')
 
         self.assertEqual(len(self._new_mails), 1, 'Should have sent the reject email')
         self.assertMailMailWEmails([self.email_from_unknown], 'outgoing',
                                    content="This should be posted on a mail.group. Or not.",
                                    fields_values={
-                                    'email_from': self.user_employee.email_formatted,
-                                    'subject': 'Test Rejected',
+                                       'email_from': self.user_employee.email_formatted,
+                                       'subject': 'Test Rejected',
                                    })
 
     @mute_logger('odoo.addons.mail_group.models.mail_group')
@@ -390,8 +398,8 @@ class TestModeration(TestMailListCommon):
             self.assertMailMailWEmails([email], 'outgoing',
                                        content="Test guidelines group",
                                        fields_values={
-                                        'email_from': self.env.company.email_formatted,
-                                        'subject': 'Guidelines of group %s' % mail_group.name,
+                                           'email_from': self.env.company.email_formatted,
+                                           'subject': 'Guidelines of group %s' % mail_group.name,
                                        })
 
     @mute_logger('odoo.addons.mail_group.models.mail_group')
@@ -410,6 +418,6 @@ class TestModeration(TestMailListCommon):
         self.assertMailMailWEmails(['"New Member" <new.member@test.com>'], 'outgoing',
                                    content="Test guidelines group",
                                    fields_values={
-                                    'email_from': self.env.company.email_formatted,
-                                    'subject': 'Guidelines of group %s' % mail_group.name,
+                                       'email_from': self.env.company.email_formatted,
+                                       'subject': 'Guidelines of group %s' % mail_group.name,
                                    })

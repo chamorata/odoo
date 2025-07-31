@@ -57,7 +57,8 @@ class BillToPO(models.TransientModel):
                 'product_qty': 0.0,
                 'product_uom': aml.product_uom_id.id,
                 'is_downpayment': True,
-                'price_unit': aml.currency_id._convert(aml.price_unit, po_currency, company, date) if aml.currency_id != po_currency else aml.price_unit,
+                'price_unit': aml.currency_id._convert(aml.price_unit, po_currency, company,
+                                                       date) if aml.currency_id != po_currency else aml.price_unit,
                 'taxes_id': aml.tax_ids,
                 'order_id': self.purchase_order_id.id,
             }

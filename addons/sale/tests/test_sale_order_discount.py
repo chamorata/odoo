@@ -1,10 +1,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.sale.tests.common import SaleCommon
+
 from odoo.exceptions import ValidationError
 from odoo.fields import Command
 from odoo.tests import tagged
-
-from odoo.addons.sale.tests.common import SaleCommon
 
 
 @tagged('post_install', '-at_install')
@@ -134,7 +134,7 @@ class TestSaleOrderDiscount(SaleCommon):
         self.assertTrue(
             all(line.discount == 50 for line in self.sale_order.order_line)
         )
-        self.assertAlmostEqual(self.sale_order.amount_untaxed, so_amount*0.5)
+        self.assertAlmostEqual(self.sale_order.amount_untaxed, so_amount * 0.5)
 
         self.wizard.write({'discount_percentage': -0.5})
         self.wizard.action_apply_discount()
@@ -142,7 +142,7 @@ class TestSaleOrderDiscount(SaleCommon):
         self.assertTrue(
             all(line.discount == -50 for line in self.sale_order.order_line)
         )
-        self.assertAlmostEqual(self.sale_order.amount_untaxed, so_amount*1.5)
+        self.assertAlmostEqual(self.sale_order.amount_untaxed, so_amount * 1.5)
 
     def test_sol_discount_removal(self):
         so_amount = self.sale_order.amount_untaxed

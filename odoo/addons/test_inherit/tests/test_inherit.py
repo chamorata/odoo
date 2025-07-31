@@ -4,6 +4,7 @@
 from odoo.addons.base.tests.common import TransactionCaseWithUserDemo
 from odoo.tests import common
 
+
 class test_inherits(common.TransactionCase):
 
     def test_00_inherits(self):

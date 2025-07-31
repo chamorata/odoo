@@ -3,6 +3,7 @@
 
 from odoo.addons.sms.tests.common import SMSCommon
 from odoo.addons.test_mail_sms.tests.common import TestSMSRecipients
+
 from odoo.tests import tagged, users
 
 
@@ -123,8 +124,8 @@ class TestSMSActionsCommon(SMSCommon, TestSMSRecipients):
         # test ilike search
         for source, ilike_expected, notilike_expected in [
             (
-                '0475', test_phone_records[:5] + self.dupes,
-                test_phone_records - test_phone_records[:5] - self.dupes
+                    '0475', test_phone_records[:5] + self.dupes,
+                    test_phone_records - test_phone_records[:5] - self.dupes
             ),
             ('101', test_phone_records[1], test_phone_records - test_phone_records[1]),
             # not ilike is not the inverse with formatting but hey, that's not easy to do

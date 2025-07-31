@@ -2,11 +2,11 @@
 
 from unittest.mock import patch
 
-from odoo import Command
-from odoo.tests import tagged
-
 from odoo.addons.payment.const import REPORT_REASONS_MAPPING
 from odoo.addons.payment.tests.common import PaymentCommon
+
+from odoo import Command
+from odoo.tests import tagged
 
 
 @tagged('-at_install', 'post_install')
@@ -29,8 +29,8 @@ class TestPaymentProvider(PaymentCommon):
         for new_state in ('enabled', 'test'):
             self.provider.state = 'disabled'
             with patch(
-                'odoo.addons.payment.models.payment_provider.PaymentProvider'
-                '._get_default_payment_method_codes', return_value=self.payment_method_code,
+                    'odoo.addons.payment.models.payment_provider.PaymentProvider'
+                    '._get_default_payment_method_codes', return_value=self.payment_method_code,
             ):
                 self.provider.state = new_state
                 self.assertTrue(self.payment_methods.active)
@@ -42,8 +42,8 @@ class TestPaymentProvider(PaymentCommon):
         for old_state in ('enabled', 'test'):
             self.provider.state = old_state
             with patch(
-                'odoo.addons.payment.models.payment_provider.PaymentProvider'
-                '._get_default_payment_method_codes', return_value=self.payment_method_code,
+                    'odoo.addons.payment.models.payment_provider.PaymentProvider'
+                    '._get_default_payment_method_codes', return_value=self.payment_method_code,
             ):
                 self.provider.state = 'disabled'
                 self.assertFalse(self.payment_methods.active)
@@ -209,8 +209,8 @@ class TestPaymentProvider(PaymentCommon):
         the payment context (e.g., when paying for a subscription). """
         self.provider.allow_tokenization = True
         with patch(
-            'odoo.addons.payment.models.payment_provider.PaymentProvider._is_tokenization_required',
-            return_value=True,
+                'odoo.addons.payment.models.payment_provider.PaymentProvider._is_tokenization_required',
+                return_value=True,
         ):
             compatible_providers = self.provider._get_compatible_providers(
                 self.company.id, self.partner.id, self.amount
@@ -222,8 +222,8 @@ class TestPaymentProvider(PaymentCommon):
         is required by the payment context (e.g., when paying for a subscription). """
         self.provider.allow_tokenization = False
         with patch(
-            'odoo.addons.payment.models.payment_provider.PaymentProvider._is_tokenization_required',
-            return_value=True,
+                'odoo.addons.payment.models.payment_provider.PaymentProvider._is_tokenization_required',
+                return_value=True,
         ):
             compatible_providers = self.provider._get_compatible_providers(
                 self.company.id, self.partner.id, self.amount
@@ -320,7 +320,7 @@ class TestPaymentProvider(PaymentCommon):
             invalid_country_provider: {
                 'available': False,
                 'reason': REPORT_REASONS_MAPPING['incompatible_country'],
-             },
+            },
             exceeding_max_provider: {
                 'available': False,
                 'reason': REPORT_REASONS_MAPPING['exceed_max_amount'],
@@ -328,11 +328,11 @@ class TestPaymentProvider(PaymentCommon):
             invalid_currency_provider: {
                 'available': False,
                 'reason': REPORT_REASONS_MAPPING['incompatible_currency'],
-             },
+            },
             no_tokenization_provider: {
                 'available': False,
                 'reason': REPORT_REASONS_MAPPING['tokenization_not_supported'],
-             },
+            },
             no_express_checkout_provider: {
                 'available': False,
                 'reason': REPORT_REASONS_MAPPING['express_checkout_not_supported'],

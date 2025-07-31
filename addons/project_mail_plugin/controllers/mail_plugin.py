@@ -3,9 +3,9 @@
 
 import logging
 
-from odoo.http import request
-
 from odoo.addons.mail_plugin.controllers import mail_plugin
+
+from odoo.http import request
 
 _logger = logging.getLogger(__name__)
 

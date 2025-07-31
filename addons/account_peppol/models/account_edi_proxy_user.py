@@ -3,9 +3,10 @@
 import logging
 from datetime import timedelta
 
-from odoo import _, api, fields, models, modules, tools
 from odoo.addons.account_edi_proxy_client.models.account_edi_proxy_user import AccountEdiProxyError
 from odoo.addons.account_peppol.tools.demo_utils import handle_demo
+
+from odoo import _, api, fields, models, modules, tools
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
@@ -50,9 +51,9 @@ class AccountEdiProxyClientUser(models.Model):
             )
         except AccountEdiProxyError as e:
             if (
-                e.code == 'no_such_user'
-                and not self.active
-                and not self.company_id.account_edi_proxy_client_ids.filtered(lambda u: u.proxy_type == 'peppol')
+                    e.code == 'no_such_user'
+                    and not self.active
+                    and not self.company_id.account_edi_proxy_client_ids.filtered(lambda u: u.proxy_type == 'peppol')
             ):
                 self.company_id.write({
                     'account_peppol_proxy_state': 'not_registered',
@@ -61,7 +62,8 @@ class AccountEdiProxyClientUser(models.Model):
                 # commit the above changes before raising below
                 if not modules.module.current_test:
                     self.env.cr.commit()
-                raise UserError(_('We could not find a user with this information on our server. Please check your information.'))
+                raise UserError(
+                    _('We could not find a user with this information on our server. Please check your information.'))
             raise UserError(e.message)
 
         if 'error' in response:
@@ -77,9 +79,10 @@ class AccountEdiProxyClientUser(models.Model):
     @handle_demo
     def _check_company_on_peppol(self, company, edi_identification):
         if (
-            not company.account_peppol_migration_key
-            and (participant_info := company.partner_id._get_participant_info(edi_identification)) is not None
-            and company.partner_id._check_peppol_participant_exists(participant_info, edi_identification, check_company=True)
+                not company.account_peppol_migration_key
+                and (participant_info := company.partner_id._get_participant_info(edi_identification)) is not None
+                and company.partner_id._check_peppol_participant_exists(participant_info, edi_identification,
+                                                                        check_company=True)
         ):
             error_msg = _(
                 "A participant with these details has already been registered on the network. "
@@ -95,11 +98,13 @@ class AccountEdiProxyClientUser(models.Model):
     # -------------------------------------------------------------------------
 
     def _cron_peppol_get_new_documents(self):
-        edi_users = self.search([('company_id.account_peppol_proxy_state', '=', 'receiver'), ('proxy_type', '=', 'peppol')])
+        edi_users = self.search(
+            [('company_id.account_peppol_proxy_state', '=', 'receiver'), ('proxy_type', '=', 'peppol')])
         edi_users._peppol_get_new_documents()
 
     def _cron_peppol_get_message_status(self):
-        edi_users = self.search([('company_id.account_peppol_proxy_state', 'in', self._get_can_send_domain()), ('proxy_type', '=', 'peppol')])
+        edi_users = self.search([('company_id.account_peppol_proxy_state', 'in', self._get_can_send_domain()),
+                                 ('proxy_type', '=', 'peppol')])
         edi_users._peppol_get_message_status()
 
     def _cron_peppol_get_participant_status(self):
@@ -108,7 +113,8 @@ class AccountEdiProxyClientUser(models.Model):
 
         # throughout the registration process, we need to check the status more frequently
         if self.search_count([('company_id.account_peppol_proxy_state', '=', 'smp_registration')], limit=1):
-            self.env.ref('account_peppol.ir_cron_peppol_get_participant_status')._trigger(at=fields.Datetime.now() + timedelta(hours=1))
+            self.env.ref('account_peppol.ir_cron_peppol_get_participant_status')._trigger(
+                at=fields.Datetime.now() + timedelta(hours=1))
 
     # -------------------------------------------------------------------------
     # BUSINESS ACTIONS
@@ -262,7 +268,9 @@ class AccountEdiProxyClientUser(models.Model):
                         continue
 
                     move.peppol_move_state = 'error'
-                    move._message_log(body=_("Peppol error: %s", content['error'].get('data', {}).get('message') or content['error']['message']))
+                    move._message_log(body=_("Peppol error: %s",
+                                             content['error'].get('data', {}).get('message') or content['error'][
+                                                 'message']))
                     continue
 
                 move.peppol_move_state = content['state']
@@ -342,7 +350,8 @@ class AccountEdiProxyClientUser(models.Model):
 
         if company.account_peppol_proxy_state != 'sender':
             # a participant can only try registering as a receiver if they are currently a sender
-            peppol_state_translated = dict(company._fields['account_peppol_proxy_state'].selection)[company.account_peppol_proxy_state]
+            peppol_state_translated = dict(company._fields['account_peppol_proxy_state'].selection)[
+                company.account_peppol_proxy_state]
             raise UserError(
                 _('Cannot register a user with a %s application', peppol_state_translated))
 
@@ -361,7 +370,8 @@ class AccountEdiProxyClientUser(models.Model):
         company.account_peppol_migration_key = False
         company.account_peppol_proxy_state = 'smp_registration'
 
-        self.env.ref('account_peppol.ir_cron_peppol_get_participant_status')._trigger(at=fields.Datetime.now() + timedelta(hours=1))
+        self.env.ref('account_peppol.ir_cron_peppol_get_participant_status')._trigger(
+            at=fields.Datetime.now() + timedelta(hours=1))
 
     def _peppol_deregister_participant(self):
         self.ensure_one()

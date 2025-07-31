@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
+import math
+
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.addons.account_check_printing.models.account_payment import INV_LINES_PER_STUB
+
+from odoo import Command
 from odoo.tests import tagged
 from odoo.tools.misc import NON_BREAKING_SPACE
-from odoo import Command
-
-import math
 
 
 @tagged('post_install', '-at_install')
@@ -18,7 +19,7 @@ class TestPrintCheck(AccountTestInvoicingCommon):
 
         bank_journal = cls.company_data['default_journal_bank']
 
-        cls.payment_method_line_check = bank_journal.outbound_payment_method_line_ids\
+        cls.payment_method_line_check = bank_journal.outbound_payment_method_line_ids \
             .filtered(lambda l: l.code == 'check_printing')
         cls.payment_method_line_check.payment_account_id = cls.inbound_payment_method_line.payment_account_id
 
@@ -46,7 +47,8 @@ class TestPrintCheck(AccountTestInvoicingCommon):
         in_invoices.action_post()
 
         # Create a single payment.
-        payment = self.env['account.payment.register'].with_context(active_model='account.move', active_ids=in_invoices.ids).create({
+        payment = self.env['account.payment.register'].with_context(active_model='account.move',
+                                                                    active_ids=in_invoices.ids).create({
             'group_payment': True,
             'payment_method_line_id': self.payment_method_line_check.id,
         })._create_payments()
@@ -91,7 +93,8 @@ class TestPrintCheck(AccountTestInvoicingCommon):
         out_refunds.action_post()
 
         # Create a single payment.
-        payment = self.env['account.payment.register'].with_context(active_model='account.move', active_ids=out_refunds.ids).create({
+        payment = self.env['account.payment.register'].with_context(active_model='account.move',
+                                                                    active_ids=out_refunds.ids).create({
             'group_payment': True,
             'payment_method_line_id': self.payment_method_line_check.id,
         })._create_payments()
@@ -128,7 +131,8 @@ class TestPrintCheck(AccountTestInvoicingCommon):
         invoice.action_post()
 
         # Partial payment in foreign currency.
-        payment = self.env['account.payment.register'].with_context(active_model='account.move', active_ids=invoice.ids).create({
+        payment = self.env['account.payment.register'].with_context(active_model='account.move',
+                                                                    active_ids=invoice.ids).create({
             'payment_method_line_id': self.payment_method_line_check.id,
             'currency_id': self.other_currency.id,
             'amount': 150.0,
@@ -170,12 +174,14 @@ class TestPrintCheck(AccountTestInvoicingCommon):
         } for i in range(nb_invoices_to_test)])
         in_invoices.action_post()
 
-        payments = self.env['account.payment.register'].with_context(active_model='account.move', active_ids=in_invoices.ids).create({
+        payments = self.env['account.payment.register'].with_context(active_model='account.move',
+                                                                     active_ids=in_invoices.ids).create({
             'group_payment': False,
             'payment_method_line_id': self.payment_method_line_check.id,
         })._create_payments()
 
-        self.assertEqual(set(payments.mapped('check_number')), {str(x) for x in range(11111, 11111 + nb_invoices_to_test)})
+        self.assertEqual(set(payments.mapped('check_number')),
+                         {str(x) for x in range(11111, 11111 + nb_invoices_to_test)})
 
     def test_check_label(self):
         payment = self.env['account.payment'].create({
@@ -211,7 +217,8 @@ class TestPrintCheck(AccountTestInvoicingCommon):
         payment_2 = self.env['account.payment'].create(vals)
         payment_2.action_post()
         action_window = payment_2.print_checks()
-        self.assertEqual(action_window['context']['default_next_check_number'], '2147483649', "Check number should have been incremented without error.")
+        self.assertEqual(action_window['context']['default_next_check_number'], '2147483649',
+                         "Check number should have been incremented without error.")
 
     def test_print_check_with_branch(self):
         """
@@ -250,7 +257,8 @@ class TestPrintCheck(AccountTestInvoicingCommon):
 
         accounting_installed = self.env['account.move']._get_invoice_in_payment_state() == 'in_payment'
         if not accounting_installed:
-            self.skipTest('Accounting not installed')  # There is an implicit outstanding account in this case, which makes it avoid the error
+            self.skipTest(
+                'Accounting not installed')  # There is an implicit outstanding account in this case, which makes it avoid the error
 
         self.company_data['default_journal_bank'].write({
             'check_manual_sequencing': True,
@@ -269,7 +277,8 @@ class TestPrintCheck(AccountTestInvoicingCommon):
                 'tax_ids': []
             })]
         } for _ in range(nb_invoices_to_test)])
-        payment = self.env['account.payment.register'].with_context(active_model='account.move', active_ids=in_invoices.ids).create({
+        payment = self.env['account.payment.register'].with_context(active_model='account.move',
+                                                                    active_ids=in_invoices.ids).create({
             'group_payment': True,
             'payment_method_line_id': self.payment_method_line_check.id,
         })._create_payments()

@@ -86,7 +86,6 @@ Content-Transfer-Encoding: quoted-printable
 ------=_Part_4200734_24778174.1344608186754--
 """
 
-
 MAIL_TEMPLATE_PLAINTEXT = """Return-Path: <whatever-2a840@postmaster.twitter.com>
 To: {to}
 Received: by mail1.openerp.com (Postfix, from userid 10002)
@@ -491,7 +490,6 @@ n=C3=A4chste Wochenende unterhalten?=
 --00000000000005d9da05fa394cc0--
 """
 
-
 MAIL_SINGLE_BINARY = r"""X-Original-To: raoul@grosbedon.fr
 Delivered-To: raoul@grosbedon.fr
 Received: by mail1.grosbedon.com (Postfix, from userid 10002)
@@ -504,7 +502,6 @@ Message-Id: <6BB1FAB2-2104-438E-9447-07AE2C8C4A92@sexample.com>
 Mime-Version: 1.0 (Mac OS X Mail 7.3 \(1878.6\))
 
 SSBhbSB0aGUgQmF0TWFuCg=="""
-
 
 MAIL_MULTIPART_WEIRD_FILENAME = """X-Original-To: john@doe.com
 Delivered-To: johndoe@example.com
@@ -538,7 +535,6 @@ Content-Disposition: attachment;
 SSBhbSBhIGZpbGUgd2l0aCBhIHZhbGlkIHdpbmRvd3MgZmlsZW5hbWUK
 --------------FACA7766210AAA981EAE01F3--
 """
-
 
 MAIL_MULTIPART_IMAGE = """X-Original-To: raoul@example.com
 Delivered-To: micheline@example.com
@@ -789,7 +785,7 @@ Web: <a class="moz-txt-link-freetext" href="http://www.odoo.com">http://www.odoo
 
 --------------A6B5FD5F68F4D73ECD739009--"""
 
-MAIL_EML_ATTACHMENT_BOUNCE_HEADERS="""\
+MAIL_EML_ATTACHMENT_BOUNCE_HEADERS = """\
 Date: Tue, 24 Dec 2019 11:32:07 +0100 (CET)
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary=16063919151.b32bE0eD.7
@@ -1087,7 +1083,6 @@ o</a>.
 </body></html>
 --------=_MB48E455BD-2850-42EC-B1CA-886CDF48905E--"""
 
-
 MAIL_BOUNCE = """Return-Path: <>
 X-Original-To: {to}
 Delivered-To: {to}
@@ -1205,7 +1200,6 @@ OyI+T2RvbzwvYT4uCjwvcD4KPC9kaXY+CiAgICAgICAg
 
 --92726A5F09.1555335666/mail2.test.ironsky--
 """
-
 
 MAIL_BOUNCE_QP_RFC822_HEADERS = """\
 Received: by mailserver.odoo.com (Postfix)

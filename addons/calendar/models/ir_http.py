@@ -23,7 +23,8 @@ class IrHttp(models.AbstractModel):
             # if valid session but user is not match
             user = request.env['res.users'].sudo().browse(request.session.uid)
             if attendee.partner_id != user.partner_id:
-                error_message = """Invitation cannot be forwarded via email. This event/meeting belongs to %s and you are logged in as %s. Please ask organizer to add you.""" % (attendee.email, user.email)
+                error_message = """Invitation cannot be forwarded via email. This event/meeting belongs to %s and you are logged in as %s. Please ask organizer to add you.""" % (
+                    attendee.email, user.email)
         if error_message:
             raise BadRequest(error_message)
 

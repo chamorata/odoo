@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import logging
+
 import werkzeug
+from markupsafe import Markup
+from odoo.addons.auth_signup.models.res_users import SignupError
+from odoo.addons.base_setup.controllers.main import BaseSetup
+from odoo.addons.web.controllers.home import ensure_db, Home, SIGN_UP_REQUEST_PARAMS, LOGIN_SUCCESSFUL_PARAMS
 from werkzeug.urls import url_encode
 
 from odoo import http, tools, _
-from odoo.addons.auth_signup.models.res_users import SignupError
-from odoo.addons.web.controllers.home import ensure_db, Home, SIGN_UP_REQUEST_PARAMS, LOGIN_SUCCESSFUL_PARAMS
-from odoo.addons.base_setup.controllers.main import BaseSetup
 from odoo.exceptions import UserError
 from odoo.http import request
-from markupsafe import Markup
 
 _logger = logging.getLogger(__name__)
 
@@ -58,7 +59,8 @@ class AuthSignupHome(Home):
                 user_sudo = User.sudo().search(
                     User._get_login_domain(qcontext.get('login')), order=User._get_login_order(), limit=1
                 )
-                template = request.env.ref('auth_signup.mail_template_user_signup_account_created', raise_if_not_found=False)
+                template = request.env.ref('auth_signup.mail_template_user_signup_account_created',
+                                           raise_if_not_found=False)
                 if user_sudo and template:
                     template.sudo().send_mail(user_sudo.id, force_send=True)
                 return self.web_login(*args, **kw)
@@ -72,7 +74,8 @@ class AuthSignupHome(Home):
                     qcontext['error'] = _("Could not create a new account.") + Markup('<br/>') + str(e)
 
         elif 'signup_email' in qcontext:
-            user = request.env['res.users'].sudo().search([('email', '=', qcontext.get('signup_email')), ('state', '!=', 'new')], limit=1)
+            user = request.env['res.users'].sudo().search(
+                [('email', '=', qcontext.get('signup_email')), ('state', '!=', 'new')], limit=1)
             if user:
                 return request.redirect('/web/login?%s' % url_encode({'login': user.login, 'redirect': '/web'}))
 
@@ -112,7 +115,8 @@ class AuthSignupHome(Home):
                 qcontext['error'] = str(e)
 
         elif 'signup_email' in qcontext:
-            user = request.env['res.users'].sudo().search([('email', '=', qcontext.get('signup_email')), ('state', '!=', 'new')], limit=1)
+            user = request.env['res.users'].sudo().search(
+                [('email', '=', qcontext.get('signup_email')), ('state', '!=', 'new')], limit=1)
             if user:
                 return request.redirect('/web/login?%s' % url_encode({'login': user.login, 'redirect': '/web'}))
 
@@ -149,7 +153,7 @@ class AuthSignupHome(Home):
         return qcontext
 
     def _prepare_signup_values(self, qcontext):
-        values = { key: qcontext.get(key) for key in ('login', 'name', 'password') }
+        values = {key: qcontext.get(key) for key in ('login', 'name', 'password')}
         if not values:
             raise UserError(_("The form was not properly filled in."))
         if values.get('password') != qcontext.get('confirm_password'):
@@ -168,9 +172,10 @@ class AuthSignupHome(Home):
 
     def _signup_with_values(self, token, values):
         login, password = request.env['res.users'].sudo().signup(values, token)
-        request.env.cr.commit()     # as authenticate will use its own cursor we need to commit the current transaction
+        request.env.cr.commit()  # as authenticate will use its own cursor we need to commit the current transaction
         credential = {'login': login, 'password': password, 'type': 'password'}
         request.session.authenticate(request.db, credential)
+
 
 class AuthBaseSetup(BaseSetup):
     @http.route()

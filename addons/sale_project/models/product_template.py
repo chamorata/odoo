@@ -39,7 +39,9 @@ class ProductTemplate(models.Model):
     project_template_id = fields.Many2one(
         'project.project', 'Project Template', company_dependent=True, copy=True,
     )
-    service_policy = fields.Selection('_selection_service_policy', string="Service Invoicing Policy", compute_sudo=True, compute='_compute_service_policy', inverse='_inverse_service_policy', tracking=True)
+    service_policy = fields.Selection('_selection_service_policy', string="Service Invoicing Policy", compute_sudo=True,
+                                      compute='_compute_service_policy', inverse='_inverse_service_policy',
+                                      tracking=True)
     service_type = fields.Selection(selection_add=[
         ('milestones', 'Project Milestones'),
     ])
@@ -112,11 +114,17 @@ class ProductTemplate(models.Model):
         """
         for product in self:
             if product.service_tracking == 'no' and (product.project_id or product.project_template_id):
-                raise ValidationError(_('The product %s should not have a project nor a project template since it will not generate project.', product.name))
+                raise ValidationError(
+                    _('The product %s should not have a project nor a project template since it will not generate project.',
+                      product.name))
             elif product.service_tracking == 'task_global_project' and product.project_template_id:
-                raise ValidationError(_('The product %s should not have a project template since it will generate a task in a global project.', product.name))
+                raise ValidationError(
+                    _('The product %s should not have a project template since it will generate a task in a global project.',
+                      product.name))
             elif product.service_tracking in ['task_in_project', 'project_only'] and product.project_id:
-                raise ValidationError(_('The product %s should not have a global project since it will generate a project.', product.name))
+                raise ValidationError(
+                    _('The product %s should not have a global project since it will generate a project.',
+                      product.name))
 
     @api.onchange('service_tracking')
     def _onchange_service_tracking(self):

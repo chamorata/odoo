@@ -3,21 +3,20 @@
 
 import json
 import socket
-
 from datetime import datetime, timedelta
+from types import SimpleNamespace
+from unittest.mock import patch
 
-import odoo
-
-from odoo.tools.misc import mute_logger
+from markupsafe import Markup
 from odoo.addons.mail.tests.common import mail_new_test_user
 from odoo.addons.mail.tools.jwt import InvalidVapidError
 from odoo.addons.mail.tools.web_push import ENCRYPTION_BLOCK_OVERHEAD, ENCRYPTION_HEADER_SIZE
 from odoo.addons.sms.tests.common import SMSCommon
 from odoo.addons.test_mail.data.test_mail_data import MAIL_TEMPLATE
+
+import odoo
 from odoo.tests import tagged
-from markupsafe import Markup
-from unittest.mock import patch
-from types import SimpleNamespace
+from odoo.tools.misc import mute_logger
 
 
 @tagged('post_install', '-at_install', 'mail_push')
@@ -97,9 +96,9 @@ class TestWebPushNotification(SMSCommon):
         group_channel.add_members(guest_ids=[self.guest.id])
 
         for channel, sender, notification_count in zip(
-            (chat_channel + channel_channel + group_channel + group_channel),
-            (self.user_email, self.user_email, self.user_email, self.guest),
-            (1, 0, 1, 2),
+                (chat_channel + channel_channel + group_channel + group_channel),
+                (self.user_email, self.user_email, self.user_email, self.guest),
+                (1, 0, 1, 2),
         ):
             with self.subTest(channel_type=channel.channel_type):
                 if sender == self.guest:
@@ -107,10 +106,10 @@ class TestWebPushNotification(SMSCommon):
                 else:
                     channel_as_sender = channel.with_user(self.user_email)
                 channel_as_sender.message_post(
-                        body='Test Push',
-                        message_type='comment',
-                        subtype_xmlid='mail.mt_comment',
-                    )
+                    body='Test Push',
+                    message_type='comment',
+                    subtype_xmlid='mail.mt_comment',
+                )
                 self.assertEqual(push_to_end_point.call_count, notification_count)
                 if notification_count > 0:
                     payload_value = json.loads(push_to_end_point.call_args.kwargs['payload'])
@@ -132,7 +131,8 @@ class TestWebPushNotification(SMSCommon):
                     self.assertEqual(payload_value['options']['body'], 'Test Push')
                     self.assertEqual(payload_value['options']['data']['res_id'], channel.id)
                     self.assertEqual(payload_value['options']['data']['model'], channel._name)
-                    self.assertEqual(push_to_end_point.call_args.kwargs['device']['endpoint'], 'https://test.odoo.com/webpush/user2')
+                    self.assertEqual(push_to_end_point.call_args.kwargs['device']['endpoint'],
+                                     'https://test.odoo.com/webpush/user2')
                 push_to_end_point.reset_mock()
 
         # Test Direct Message with channel muted -> should skip push notif
@@ -237,7 +237,8 @@ class TestWebPushNotification(SMSCommon):
         )
         push_to_end_point.assert_called_once()
         # all_test_user should be notified
-        self.assertEqual(push_to_end_point.call_args.kwargs["device"]["endpoint"], "https://test.odoo.com/webpush/user20")
+        self.assertEqual(push_to_end_point.call_args.kwargs["device"]["endpoint"],
+                         "https://test.odoo.com/webpush/user20")
         push_to_end_point.reset_mock()
 
         # mention messages in channel
@@ -249,15 +250,18 @@ class TestWebPushNotification(SMSCommon):
         )
         self.assertEqual(push_to_end_point.call_count, 2)
         # all_test_user and mentions_test_user should be notified
-        self.assertEqual(push_to_end_point.call_args_list[0].kwargs["device"]["endpoint"], "https://test.odoo.com/webpush/user20")
-        self.assertEqual(push_to_end_point.call_args_list[1].kwargs["device"]["endpoint"], "https://test.odoo.com/webpush/user21")
+        self.assertEqual(push_to_end_point.call_args_list[0].kwargs["device"]["endpoint"],
+                         "https://test.odoo.com/webpush/user20")
+        self.assertEqual(push_to_end_point.call_args_list[1].kwargs["device"]["endpoint"],
+                         "https://test.odoo.com/webpush/user21")
         push_to_end_point.reset_mock()
 
         # muted channel
         now = datetime.now()
         self.env["discuss.channel.member"].search(
             [
-                ("partner_id", "in", (all_test_user.partner_id + mentions_test_user.partner_id + nothing_test_user.partner_id).ids),
+                ("partner_id", "in",
+                 (all_test_user.partner_id + mentions_test_user.partner_id + nothing_test_user.partner_id).ids),
             ]
         ).write(
             {
@@ -342,7 +346,8 @@ class TestWebPushNotification(SMSCommon):
                     self.assertEqual(payload_value['options']['body'], 'Test Push Notif')
                     self.assertEqual(payload_value['options']['data']['res_id'], self.record_simple.id)
                     self.assertEqual(payload_value['options']['data']['model'], self.record_simple._name)
-                    self.assertEqual(push_to_end_point.call_args.kwargs['device']['endpoint'], 'https://test.odoo.com/webpush/user2')
+                    self.assertEqual(push_to_end_point.call_args.kwargs['device']['endpoint'],
+                                     'https://test.odoo.com/webpush/user2')
                     self.assertIn('vapid_private_key', push_to_end_point.call_args.kwargs)
                     self.assertIn('vapid_public_key', push_to_end_point.call_args.kwargs)
                 else:
@@ -431,7 +436,8 @@ class TestWebPushNotification(SMSCommon):
         self._assert_notification_count_for_cron(0)
         post.assert_called_once()
         # Test that the unreachable device is deleted from the DB
-        notification_count = self.env['mail.push.device'].search_count([('endpoint', '=', 'https://test.odoo.com/webpush/user2')])
+        notification_count = self.env['mail.push.device'].search_count(
+            [('endpoint', '=', 'https://test.odoo.com/webpush/user2')])
         self.assertEqual(notification_count, 0)
 
     @patch.object(odoo.addons.mail.models.mail_thread.Session, 'post',
@@ -514,21 +520,25 @@ class TestWebPushNotification(SMSCommon):
         encryption_overhead = ENCRYPTION_HEADER_SIZE + ENCRYPTION_BLOCK_OVERHEAD
 
         test_cases = [
-            # (description, body)
-            ('empty string', '', 0, 0),
-            ('1-byte ASCII characters (below limit)', 'X' * (body_size_limit - 1), body_size_limit - 1, body_size_limit - 1),
-            ('1-byte ASCII characters (at limit)', 'X' * body_size_limit, body_size_limit, body_size_limit),
-            ('1-byte ASCII characters (past limit)', 'X' * (body_size_limit + 1), body_size_limit, body_size_limit),
-            ('1-byte ASCII characters (way past limit)', 'X' * 5000, body_size_limit, body_size_limit),
-        ] + [  # \u00d8 check that it can be cut anywhere by offsetting the string by 1 byte each time
-            (
-                f'2-bytes UTF-8 characters (near limit + {offset}-byte offset)',
-                ('+' * offset) + ('Ø' * (body_size_limit // 6)),
-                offset + ((body_size_limit - offset) // 6),  # length truncated to nearest full character (\u00f8)
-                offset * 1 + ((body_size_limit - offset) // 6) * 6,
-            )
-            for offset in range(0, 8)
-        ]
+                         # (description, body)
+                         ('empty string', '', 0, 0),
+                         ('1-byte ASCII characters (below limit)', 'X' * (body_size_limit - 1), body_size_limit - 1,
+                          body_size_limit - 1),
+                         ('1-byte ASCII characters (at limit)', 'X' * body_size_limit, body_size_limit,
+                          body_size_limit),
+                         ('1-byte ASCII characters (past limit)', 'X' * (body_size_limit + 1), body_size_limit,
+                          body_size_limit),
+                         ('1-byte ASCII characters (way past limit)', 'X' * 5000, body_size_limit, body_size_limit),
+                     ] + [  # \u00d8 check that it can be cut anywhere by offsetting the string by 1 byte each time
+                         (
+                             f'2-bytes UTF-8 characters (near limit + {offset}-byte offset)',
+                             ('+' * offset) + ('Ø' * (body_size_limit // 6)),
+                             offset + ((body_size_limit - offset) // 6),
+                             # length truncated to nearest full character (\u00f8)
+                             offset * 1 + ((body_size_limit - offset) // 6) * 6,
+                         )
+                         for offset in range(0, 8)
+                     ]
 
         for description, body, expected_body_length, expected_body_size in test_cases:
             with self.subTest(description):
@@ -564,7 +574,8 @@ class TestWebPushNotification(SMSCommon):
         odoo.addons.mail.tools.web_push, '_encrypt_payload',
         wraps=odoo.addons.mail.tools.web_push._encrypt_payload,
     )
-    def test_push_notifications_truncate_payload_mocked_size_limit(self, web_push_encrypt_payload_mock, thread_push_mock, session_post_mock):
+    def test_push_notifications_truncate_payload_mocked_size_limit(self, web_push_encrypt_payload_mock,
+                                                                   thread_push_mock, session_post_mock):
         """Illustrative test for text contents truncation.
 
         We want to ensure we truncate utf-8 values properly based on maximum payload size.
@@ -585,19 +596,21 @@ class TestWebPushNotification(SMSCommon):
         body = "BØDY"
         body_json = json.dumps(body)[1:-1]
         for size_limit, expected_body in [
-            (base_payload_size + len(body_json), "BØDY"),
-            (base_payload_size + len(body_json) - 1, "BØD"),
-            (base_payload_size + len(body_json) - 2, "BØ"),
-        ] + [  # truncating anywhere in \u00d8 (Ø) should truncate to the nearest full character (B)
-            (base_payload_size + len(body_json) - n, "B")
-            for n in range(3, 9)
-        ] + [
-            (base_payload_size + len(body_json) - 9, ""),
-            (base_payload_size + len(body_json) - 10, ""),  # should still work even if it would still be too big after truncate
-        ]:
+                                             (base_payload_size + len(body_json), "BØDY"),
+                                             (base_payload_size + len(body_json) - 1, "BØD"),
+                                             (base_payload_size + len(body_json) - 2, "BØ"),
+                                         ] + [
+                                             # truncating anywhere in \u00d8 (Ø) should truncate to the nearest full character (B)
+                                             (base_payload_size + len(body_json) - n, "B")
+                                             for n in range(3, 9)
+                                         ] + [
+                                             (base_payload_size + len(body_json) - 9, ""),
+                                             (base_payload_size + len(body_json) - 10, ""),
+                                             # should still work even if it would still be too big after truncate
+                                         ]:
             with self.subTest(size_limit=size_limit), patch.object(
-                odoo.addons.mail.models.mail_thread.MailThread, '_truncate_payload_get_max_payload_length',
-                return_value=size_limit,
+                    odoo.addons.mail.models.mail_thread.MailThread, '_truncate_payload_get_max_payload_length',
+                    return_value=size_limit,
             ):
                 self.record_simple.with_user(self.user_email).message_notify(
                     partner_ids=self.user_inbox.partner_id.ids,
@@ -608,8 +621,10 @@ class TestWebPushNotification(SMSCommon):
                 payload_at_push = thread_push_mock.call_args.kwargs['payload']
                 payload_before_encrypt = web_push_encrypt_payload_mock.call_args.args[0]
                 encrypted_payload = session_post_mock.call_args.kwargs['data']
-                self.assertEqual(payload_before_encrypt.decode(), payload_at_push, "Payload should not change between encryption and push call.")
-                self.assertEqual(len(payload_before_encrypt), len(payload_at_push), "Encoded body should be same size as decoded.")
+                self.assertEqual(payload_before_encrypt.decode(), payload_at_push,
+                                 "Payload should not change between encryption and push call.")
+                self.assertEqual(len(payload_before_encrypt), len(payload_at_push),
+                                 "Encoded body should be same size as decoded.")
                 self.assertEqual(
                     len(encrypted_payload), len(payload_before_encrypt) + encryption_overhead,
                     'Final encrypted payload should just be the size of the unencrypted payload + the size of encryption overhead.'

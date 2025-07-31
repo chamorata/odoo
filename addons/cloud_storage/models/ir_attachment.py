@@ -19,7 +19,7 @@ class CloudStorageAttachment(models.Model):
 
     def _to_http_stream(self):
         if (self.type == 'cloud_storage' and
-              self.env['res.config.settings']._get_cloud_storage_configuration()):
+                self.env['res.config.settings']._get_cloud_storage_configuration()):
             self.ensure_one()
             info = self._generate_cloud_storage_download_info()
             stream = Stream(type='url', url=info['url'])

@@ -72,7 +72,8 @@ Customs form No. 1, 9, etc for Vendor Bills""",
         selection=[
             ('in_progress', 'Validation In Progress'),
             ('valid', 'Valid'),
-            ('rejected', 'Rejected'),  # Technically not a state on MyInvois, but having it here helps with managing bills.
+            ('rejected', 'Rejected'),
+            # Technically not a state on MyInvois, but having it here helps with managing bills.
             ('invalid', 'Invalid'),
             ('cancelled', 'Cancelled'),
         ],
@@ -128,13 +129,15 @@ Customs form No. 1, 9, etc for Vendor Bills""",
     def _compute_show_reset_to_draft_button(self):
         # EXTEND 'account'
         super()._compute_show_reset_to_draft_button()
-        self.filtered(lambda m: m.l10n_my_edi_state and m.l10n_my_edi_state not in CANCELLED_STATES).show_reset_to_draft_button = False
+        self.filtered(lambda
+                          m: m.l10n_my_edi_state and m.l10n_my_edi_state not in CANCELLED_STATES).show_reset_to_draft_button = False
 
     @api.depends('company_id', 'invoice_line_ids.tax_ids')
     def _compute_l10n_my_edi_display_tax_exemption_reason(self):
         """ Some users will never use tax-exempt taxes, so it's better to only show the field when necessary. """
         for move in self:
-            should_display = move._l10n_my_edi_uses_edi() and any(tax.l10n_my_tax_type == 'E' for tax in move.invoice_line_ids.tax_ids)
+            should_display = move._l10n_my_edi_uses_edi() and any(
+                tax.l10n_my_tax_type == 'E' for tax in move.invoice_line_ids.tax_ids)
             move.l10n_my_edi_display_tax_exemption_reason = should_display
 
     # -----------------------
@@ -219,7 +222,8 @@ Customs form No. 1, 9, etc for Vendor Bills""",
         elif result.get('status_reason'):
             self._l10n_my_edi_set_status(
                 result['status'],
-                message=_('This invoice has been %(status)s for reason: %(reason)s', status=result['status'], reason=result['status_reason']),
+                message=_('This invoice has been %(status)s for reason: %(reason)s', status=result['status'],
+                          reason=result['status_reason']),
             )
         else:
             self._l10n_my_edi_set_status(result['status'])
@@ -300,15 +304,17 @@ Customs form No. 1, 9, etc for Vendor Bills""",
                     success = document_result['success']
 
                     updated_values = {
-                        'l10n_my_edi_external_uuid': document_result.get('uuid'),  # rejected documents do not have a uuid.
+                        'l10n_my_edi_external_uuid': document_result.get('uuid'),
+                        # rejected documents do not have a uuid.
                         'l10n_my_edi_submission_uid': batch_result['submission_uid'],
                         'l10n_my_edi_state': 'in_progress' if success else 'invalid',
                     }
 
                     if success:
                         # Ids are logged for future references. An invalid invoice may be reset to resend it after correction, which would be a new submission/uuid.
-                        success_messages[move.id] = _('The invoice has been sent to MyInvois with uuid "%(uuid)s" and submission id "%(submission_id)s".\nValidation results will be available shortly.',
-                                                      uuid=document_result['uuid'], submission_id=batch_result['submission_uid'])
+                        success_messages[move.id] = _(
+                            'The invoice has been sent to MyInvois with uuid "%(uuid)s" and submission id "%(submission_id)s".\nValidation results will be available shortly.',
+                            uuid=document_result['uuid'], submission_id=batch_result['submission_uid'])
                     else:
                         # When we raise a "hash_resubmitted" error, we don't resend the same hash/retry at and don't want to rewrite.
                         if 'error_document_hash' in document_result:
@@ -377,7 +383,9 @@ Customs form No. 1, 9, etc for Vendor Bills""",
                     invalid_moves |= move
                     # Most of the time no reason is provided, but this is not useful. So we will fetch the exact errors individually.
                     if status_info.get('reason'):
-                        errors[move] = [_('The MyInvois platform returned an "Invalid" status for this invoice for reason: %(reason)s', reason=status_info['reason'])]
+                        errors[move] = [
+                            _('The MyInvois platform returned an "Invalid" status for this invoice for reason: %(reason)s',
+                              reason=status_info['reason'])]
                     else:
                         result = move._l10n_my_edi_fetch_status()
                         if 'error' in result:
@@ -519,7 +527,8 @@ Customs form No. 1, 9, etc for Vendor Bills""",
             processed_invoices += len(invoices)
             # Commit if we can, in case an issue arises later.
             if self._can_commit():
-                self.env['ir.cron']._notify_progress(done=processed_invoices, remaining=invoice_count - processed_invoices)
+                self.env['ir.cron']._notify_progress(done=processed_invoices,
+                                                     remaining=invoice_count - processed_invoices)
                 self._cr.commit()
 
             time.sleep(0.3)  # There is a limit of how many calls we can do, so we pace ourselves
@@ -646,43 +655,53 @@ Customs form No. 1, 9, etc for Vendor Bills""",
             # These errors should be returned when we send malformed request to the EDI, ... tldr; this should never happen unless we have bugs.
             'internal_server_error': _('Server error; If the problem persists, please contact the Odoo support.'),
             # The proxy user credentials are either incorrect, or Odoo does not have the permission to invoice on their behalf.
-            'invalid_tin': _('Please make sure that your company TIN is correct, and that you gave Odoo sufficient permissions on the MyInvois platform.'),
+            'invalid_tin': _(
+                'Please make sure that your company TIN is correct, and that you gave Odoo sufficient permissions on the MyInvois platform.'),
             # The api rate limit has been reached. If this happens, we need to ask the user to wait. This is also handled proxy side to be safe
-            'rate_limit_exceeded': _('The api request limit has been reached. Please wait until %(limit_reset_datetime)s to try again.',
-                                     limit_reset_datetime=error.get('data')),  # Note, should be UTC. The TZ name is present in the formatted date.
+            'rate_limit_exceeded': _(
+                'The api request limit has been reached. Please wait until %(limit_reset_datetime)s to try again.',
+                limit_reset_datetime=error.get('data')),
+            # Note, should be UTC. The TZ name is present in the formatted date.
             'hash_resubmitted': _('This document has already been submitted and was deemed invalid.\n'
                                   'Please correct the document based on the previous error, or wait before retrying.'),
             # This happens when the MyInvois TIN validator cannot validate the TIN of the user using the provided identification type and number.
-            'document_tin_not_found': _('MyInvois could not match your TIN with the identification information you provided on the company.'),
+            'document_tin_not_found': _(
+                'MyInvois could not match your TIN with the identification information you provided on the company.'),
             # This happens when the TIN of the supplier doesn't match with the TIN registered on the Proxy. Data contains the TIN.
-            'document_tin_mismatch': _("The TIN number of the supplier in the invoices does not match with the one provided at the time of registering for the e-invoice service.\n"
-                                       "If the TIN of the supplier's record changed after that, you will need to archive your EDI Proxy User and re-register.\n"
-                                       "The TIN found in the document is %(tin_number)s",
-                                       tin_number=error.get('data')),
+            'document_tin_mismatch': _(
+                "The TIN number of the supplier in the invoices does not match with the one provided at the time of registering for the e-invoice service.\n"
+                "If the TIN of the supplier's record changed after that, you will need to archive your EDI Proxy User and re-register.\n"
+                "The TIN found in the document is %(tin_number)s",
+                tin_number=error.get('data')),
             # This happens when a batch of invoices contains multiple different identifier for the supplier. Data contains the invoice.
-            'multiple_documents_id': _('Multiple different supplier identification information were found in the invoices.\n'
-                                       'If the company identification information changed, you may need to delete your invoice attachments and regenerate them.'),
+            'multiple_documents_id': _(
+                'Multiple different supplier identification information were found in the invoices.\n'
+                'If the company identification information changed, you may need to delete your invoice attachments and regenerate them.'),
             # Same as the previous error, but with the supplier TIN
             'multiple_documents_tin': _('Multiple different supplier TIN were found in the invoices.\n'
                                         'If the company TIN changed, you may need to delete your invoice attachments and regenerate them.'),
             # You cannot cancel an invoice that has been rejected or that is invalid
             'update_incorrect_state': _('You can only update the status of invoices in the valid state.'),
-            'update_period_over': _('It has been more than 72h since the invoice validation, you can no longer update it.\n'
-                                    'Instead, you should issue or request a debit or credit note.'),
-            'update_active_documents': _('You cannot update this invoice, has it has been referenced by a debit or credit note.\n'
-                                         'If you still want to update it, you must first update the debit/credit note.'),
+            'update_period_over': _(
+                'It has been more than 72h since the invoice validation, you can no longer update it.\n'
+                'Instead, you should issue or request a debit or credit note.'),
+            'update_active_documents': _(
+                'You cannot update this invoice, has it has been referenced by a debit or credit note.\n'
+                'If you still want to update it, you must first update the debit/credit note.'),
             'update_forbidden': _('You do not have the permission to update this invoice.'),
             'document_not_found': _('The document provided in the request does not exist.'),  # Should never happen
             'search_date_invalid': _('The search params are invalid.'),  # Should also never happen
             'submission_too_large': _('The submission is too large, try to send fewer invoices at once.'),
-            'action_forbidden': _('Permission to do this action has not been granted. Please ensure that Odoo has sufficient permissions on the MyInvois platform.'),
+            'action_forbidden': _(
+                'Permission to do this action has not been granted. Please ensure that Odoo has sufficient permissions on the MyInvois platform.'),
         }
 
         if error.get('target'):
             # When validating a part of the invoice, they give random numerical codes with no explanation whatsoever.
             # So instead of trying to guess what they mean, we just give a generic "this is not valid" error and hope for the best.
             # For future bugfixer => To avoid issues as much as possible, please add additional checks in the UBL python file to avoid these.
-            return _('An error occurred while validating the invoice: "%(property_name)s" is invalid.', property_name=error['target'])
+            return _('An error occurred while validating the invoice: "%(property_name)s" is invalid.',
+                     property_name=error['target'])
 
         return error_map.get(error['reference'], _("An unexpected error has occurred."))
 

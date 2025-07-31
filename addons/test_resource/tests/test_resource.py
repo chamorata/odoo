@@ -1,13 +1,14 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import date, datetime
+
 from freezegun import freeze_time
+from odoo.addons.resource.models.utils import Intervals, sum_intervals
+from odoo.addons.test_resource.tests.common import TestResourceCommon
 from pytz import timezone, utc
 
 from odoo import fields
 from odoo.exceptions import ValidationError
-from odoo.addons.resource.models.utils import Intervals, sum_intervals
-from odoo.addons.test_resource.tests.common import TestResourceCommon
 from odoo.tests.common import TransactionCase
 
 
@@ -373,22 +374,37 @@ class TestCalendar(TestResourceCommon):
             'company_id': self.env.company.id,
             'tz': 'UTC',
             'attendance_ids': [(5, 0, 0),
-                (0, 0, {'name': 'Monday Morning', 'dayofweek': '0', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-                (0, 0, {'name': 'Monday Lunch', 'dayofweek': '0', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
-                (0, 0, {'name': 'Monday Afternoon', 'dayofweek': '0', 'hour_from': 13, 'hour_to': 16, 'day_period': 'afternoon'}),
-                (0, 0, {'name': 'Tuesday Morning', 'dayofweek': '1', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-                (0, 0, {'name': 'Tuesday Lunch', 'dayofweek': '1', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
-                (0, 0, {'name': 'Tuesday Afternoon', 'dayofweek': '1', 'hour_from': 13, 'hour_to': 16, 'day_period': 'afternoon'}),
-                (0, 0, {'name': 'Wednesday Morning', 'dayofweek': '2', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-                (0, 0, {'name': 'Wednesday Lunch', 'dayofweek': '2', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
-                (0, 0, {'name': 'Wednesday Afternoon', 'dayofweek': '2', 'hour_from': 13, 'hour_to': 16, 'day_period': 'afternoon'}),
-                (0, 0, {'name': 'Thursday Morning', 'dayofweek': '3', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-                (0, 0, {'name': 'Thursday Lunch', 'dayofweek': '3', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
-                (0, 0, {'name': 'Thursday Afternoon', 'dayofweek': '3', 'hour_from': 13, 'hour_to': 16, 'day_period': 'afternoon'}),
-                (0, 0, {'name': 'Friday Morning', 'dayofweek': '4', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-                (0, 0, {'name': 'Friday Lunch', 'dayofweek': '4', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
-                (0, 0, {'name': 'Friday Afternoon', 'dayofweek': '4', 'hour_from': 13, 'hour_to': 16, 'day_period': 'afternoon'})
-            ],
+                               (0, 0, {'name': 'Monday Morning', 'dayofweek': '0', 'hour_from': 8, 'hour_to': 12,
+                                       'day_period': 'morning'}),
+                               (0, 0, {'name': 'Monday Lunch', 'dayofweek': '0', 'hour_from': 12, 'hour_to': 13,
+                                       'day_period': 'lunch'}),
+                               (0, 0, {'name': 'Monday Afternoon', 'dayofweek': '0', 'hour_from': 13, 'hour_to': 16,
+                                       'day_period': 'afternoon'}),
+                               (0, 0, {'name': 'Tuesday Morning', 'dayofweek': '1', 'hour_from': 8, 'hour_to': 12,
+                                       'day_period': 'morning'}),
+                               (0, 0, {'name': 'Tuesday Lunch', 'dayofweek': '1', 'hour_from': 12, 'hour_to': 13,
+                                       'day_period': 'lunch'}),
+                               (0, 0, {'name': 'Tuesday Afternoon', 'dayofweek': '1', 'hour_from': 13, 'hour_to': 16,
+                                       'day_period': 'afternoon'}),
+                               (0, 0, {'name': 'Wednesday Morning', 'dayofweek': '2', 'hour_from': 8, 'hour_to': 12,
+                                       'day_period': 'morning'}),
+                               (0, 0, {'name': 'Wednesday Lunch', 'dayofweek': '2', 'hour_from': 12, 'hour_to': 13,
+                                       'day_period': 'lunch'}),
+                               (0, 0, {'name': 'Wednesday Afternoon', 'dayofweek': '2', 'hour_from': 13, 'hour_to': 16,
+                                       'day_period': 'afternoon'}),
+                               (0, 0, {'name': 'Thursday Morning', 'dayofweek': '3', 'hour_from': 8, 'hour_to': 12,
+                                       'day_period': 'morning'}),
+                               (0, 0, {'name': 'Thursday Lunch', 'dayofweek': '3', 'hour_from': 12, 'hour_to': 13,
+                                       'day_period': 'lunch'}),
+                               (0, 0, {'name': 'Thursday Afternoon', 'dayofweek': '3', 'hour_from': 13, 'hour_to': 16,
+                                       'day_period': 'afternoon'}),
+                               (0, 0, {'name': 'Friday Morning', 'dayofweek': '4', 'hour_from': 8, 'hour_to': 12,
+                                       'day_period': 'morning'}),
+                               (0, 0, {'name': 'Friday Lunch', 'dayofweek': '4', 'hour_from': 12, 'hour_to': 13,
+                                       'day_period': 'lunch'}),
+                               (0, 0, {'name': 'Friday Afternoon', 'dayofweek': '4', 'hour_from': 13, 'hour_to': 16,
+                                       'day_period': 'afternoon'})
+                               ],
         })
         res = calendar.get_work_hours_count(
             fields.Datetime.from_string('2017-05-03 14:03:00'),  # Wednesday (8:00-12:00, 13:00-16:00)
@@ -419,31 +435,39 @@ class TestCalendar(TestResourceCommon):
             'date_to': datetime_str(2018, 4, 11, 23, 59, 59, tzinfo=self.jean.tz),
         })
 
-        time = self.calendar_jean.plan_hours(2, datetime_tz(2018, 4, 10, 0, 0, 0, tzinfo=self.jean.tz), compute_leaves=False)
+        time = self.calendar_jean.plan_hours(2, datetime_tz(2018, 4, 10, 0, 0, 0, tzinfo=self.jean.tz),
+                                             compute_leaves=False)
         self.assertEqual(time, datetime_tz(2018, 4, 10, 10, 0, 0, tzinfo=self.jean.tz))
 
-        time = self.calendar_jean.plan_hours(20, datetime_tz(2018, 4, 10, 0, 0, 0, tzinfo=self.jean.tz), compute_leaves=False)
+        time = self.calendar_jean.plan_hours(20, datetime_tz(2018, 4, 10, 0, 0, 0, tzinfo=self.jean.tz),
+                                             compute_leaves=False)
         self.assertEqual(time, datetime_tz(2018, 4, 12, 12, 0, 0, tzinfo=self.jean.tz))
 
-        time = self.calendar_jean.plan_hours(5, datetime_tz(2018, 4, 10, 15, 0, 0, tzinfo=self.jean.tz), compute_leaves=True)
+        time = self.calendar_jean.plan_hours(5, datetime_tz(2018, 4, 10, 15, 0, 0, tzinfo=self.jean.tz),
+                                             compute_leaves=True)
         self.assertEqual(time, datetime_tz(2018, 4, 12, 12, 0, 0, tzinfo=self.jean.tz))
 
         # negative planning
-        time = self.calendar_jean.plan_hours(-10, datetime_tz(2018, 4, 10, 0, 0, 0, tzinfo=self.jean.tz), compute_leaves=True)
+        time = self.calendar_jean.plan_hours(-10, datetime_tz(2018, 4, 10, 0, 0, 0, tzinfo=self.jean.tz),
+                                             compute_leaves=True)
         self.assertEqual(time, datetime_tz(2018, 4, 6, 14, 0, 0, tzinfo=self.jean.tz))
 
         # zero planning with holidays
-        time = self.calendar_jean.plan_hours(0, datetime_tz(2018, 4, 11, 0, 0, 0, tzinfo=self.jean.tz), compute_leaves=True)
+        time = self.calendar_jean.plan_hours(0, datetime_tz(2018, 4, 11, 0, 0, 0, tzinfo=self.jean.tz),
+                                             compute_leaves=True)
         self.assertEqual(time, datetime_tz(2018, 4, 12, 8, 0, 0, tzinfo=self.jean.tz))
-        time = self.calendar_jean.plan_hours(0, datetime_tz(2018, 4, 10, 0, 0, 0, tzinfo=self.jean.tz), compute_leaves=False)
+        time = self.calendar_jean.plan_hours(0, datetime_tz(2018, 4, 10, 0, 0, 0, tzinfo=self.jean.tz),
+                                             compute_leaves=False)
         self.assertEqual(time, datetime_tz(2018, 4, 10, 8, 0, 0, tzinfo=self.jean.tz))
 
         # very small planning
-        time = self.calendar_jean.plan_hours(0.0002, datetime_tz(2018, 4, 10, 0, 0, 0, tzinfo=self.jean.tz), compute_leaves=True)
+        time = self.calendar_jean.plan_hours(0.0002, datetime_tz(2018, 4, 10, 0, 0, 0, tzinfo=self.jean.tz),
+                                             compute_leaves=True)
         self.assertEqual(time, datetime_tz(2018, 4, 10, 8, 0, 0, 720000, tzinfo=self.jean.tz))
 
         # huge planning
-        time = self.calendar_jean.plan_hours(3000, datetime_tz(2018, 4, 10, 0, 0, 0, tzinfo=self.jean.tz), compute_leaves=False)
+        time = self.calendar_jean.plan_hours(3000, datetime_tz(2018, 4, 10, 0, 0, 0, tzinfo=self.jean.tz),
+                                             compute_leaves=False)
         self.assertEqual(time, datetime_tz(2019, 9, 16, 16, 0, 0, tzinfo=self.jean.tz))
 
     def test_plan_days(self):
@@ -455,32 +479,39 @@ class TestCalendar(TestResourceCommon):
             'date_to': datetime_str(2018, 4, 11, 23, 59, 59, tzinfo=self.jean.tz),
         })
 
-        time = self.calendar_jean.plan_days(1, datetime_tz(2018, 4, 10, 0, 0, 0, tzinfo=self.jean.tz), compute_leaves=False)
+        time = self.calendar_jean.plan_days(1, datetime_tz(2018, 4, 10, 0, 0, 0, tzinfo=self.jean.tz),
+                                            compute_leaves=False)
         self.assertEqual(time, datetime_tz(2018, 4, 10, 16, 0, 0, tzinfo=self.jean.tz))
 
-        time = self.calendar_jean.plan_days(3, datetime_tz(2018, 4, 10, 0, 0, 0, tzinfo=self.jean.tz), compute_leaves=False)
+        time = self.calendar_jean.plan_days(3, datetime_tz(2018, 4, 10, 0, 0, 0, tzinfo=self.jean.tz),
+                                            compute_leaves=False)
         self.assertEqual(time, datetime_tz(2018, 4, 12, 16, 0, 0, tzinfo=self.jean.tz))
 
-        time = self.calendar_jean.plan_days(4, datetime_tz(2018, 4, 10, 16, 0, 0, tzinfo=self.jean.tz), compute_leaves=True)
+        time = self.calendar_jean.plan_days(4, datetime_tz(2018, 4, 10, 16, 0, 0, tzinfo=self.jean.tz),
+                                            compute_leaves=True)
         self.assertEqual(time, datetime_tz(2018, 4, 17, 16, 0, 0, tzinfo=self.jean.tz))
 
         # negative planning
-        time = self.calendar_jean.plan_days(-10, datetime_tz(2018, 4, 10, 0, 0, 0, tzinfo=self.jean.tz), compute_leaves=True)
+        time = self.calendar_jean.plan_days(-10, datetime_tz(2018, 4, 10, 0, 0, 0, tzinfo=self.jean.tz),
+                                            compute_leaves=True)
         self.assertEqual(time, datetime_tz(2018, 3, 27, 8, 0, 0, tzinfo=self.jean.tz))
 
         # zero planning
-        time = self.calendar_jean.plan_days(0, datetime_tz(2018, 4, 10, 0, 0, 0, tzinfo=self.jean.tz), compute_leaves=True)
+        time = self.calendar_jean.plan_days(0, datetime_tz(2018, 4, 10, 0, 0, 0, tzinfo=self.jean.tz),
+                                            compute_leaves=True)
         self.assertEqual(time, datetime_tz(2018, 4, 10, 0, 0, 0, tzinfo=self.jean.tz))
 
         # very small planning returns False in this case
         # TODO: decide if this behaviour is alright
-        time = self.calendar_jean.plan_days(0.0002, datetime_tz(2018, 4, 10, 0, 0, 0, tzinfo=self.jean.tz), compute_leaves=True)
+        time = self.calendar_jean.plan_days(0.0002, datetime_tz(2018, 4, 10, 0, 0, 0, tzinfo=self.jean.tz),
+                                            compute_leaves=True)
         self.assertEqual(time, False)
 
         # huge planning
         # TODO: Same as above
         # NOTE: Maybe allow to set a max limit to the method
-        time = self.calendar_jean.plan_days(3000, datetime_tz(2018, 4, 10, 0, 0, 0, tzinfo=self.jean.tz), compute_leaves=False)
+        time = self.calendar_jean.plan_days(3000, datetime_tz(2018, 4, 10, 0, 0, 0, tzinfo=self.jean.tz),
+                                            compute_leaves=False)
         self.assertEqual(time, False)
 
     def test_closest_time(self):
@@ -546,7 +577,8 @@ class TestCalendar(TestResourceCommon):
         calendar_dt = self.calendar_john._get_closest_work_time(dt, resource=self.john.resource_id)
         self.assertEqual(calendar_dt, start, "It should have taken john's specific attendances")
 
-        dt = datetime_tz(2020, 4, 4, 1, 0, 0, tzinfo='UTC')  # The next day in UTC, but still the 3rd in john's timezone (America/Los_Angeles)
+        dt = datetime_tz(2020, 4, 4, 1, 0, 0,
+                         tzinfo='UTC')  # The next day in UTC, but still the 3rd in john's timezone (America/Los_Angeles)
         start = datetime_tz(2020, 4, 3, 16, 0, 0, tzinfo=self.john.tz)
         calendar_dt = self.calendar_john._get_closest_work_time(dt, resource=self.john.resource_id)
         self.assertEqual(calendar_dt, start, "It should have found the attendance on the 3rd April")
@@ -604,7 +636,7 @@ class TestResMixin(TestResourceCommon):
             datetime_tz(2020, 4, 3, 9, 0, 0, tzinfo=self.john.tz),
             datetime_tz(2020, 4, 3, 14, 0, 0, tzinfo=self.john.tz),
         )
-        self.assertEqual(result[self.john],(
+        self.assertEqual(result[self.john], (
             datetime_tz(2020, 4, 3, 8, 0, 0, tzinfo=self.john.tz),
             datetime_tz(2020, 4, 3, 13, 0, 0, tzinfo=self.john.tz),
         ))
@@ -613,7 +645,7 @@ class TestResMixin(TestResourceCommon):
             datetime_tz(2020, 4, 3, 13, 1, 0, tzinfo=self.john.tz),
             datetime_tz(2020, 4, 3, 14, 0, 0, tzinfo=self.john.tz),
         )
-        self.assertEqual(result[self.john],(
+        self.assertEqual(result[self.john], (
             datetime_tz(2020, 4, 3, 16, 0, 0, tzinfo=self.john.tz),
             datetime_tz(2020, 4, 3, 23, 0, 0, tzinfo=self.john.tz),
         ))
@@ -716,7 +748,6 @@ class TestResMixin(TestResourceCommon):
             datetime_tz(2018, 4, 6, 16, 0, 0, tzinfo=self.bob.tz),
         )[self.bob.id]
         self.assertEqual(data, {'days': 5, 'hours': 40})
-
 
         # Viewing it as Patel
         # Views from 2018/04/01 20:00:00 to 2018/04/06 12:00:00
@@ -1357,6 +1388,7 @@ class TestTimezones(TestResourceCommon):
         self.assertEqual(interval[0], start_dt, "The start of the interval should be 08:00:00")
         self.assertEqual(interval[1], end_dt, "The end of the interval should be 16:00:00")
 
+
 class TestResource(TestResourceCommon):
 
     def test_calendars_validity_within_period(self):
@@ -1386,7 +1418,8 @@ class TestResource(TestResourceCommon):
         self.assertEqual(1, len(calendars[False]), "False (default) should only have one calendar")
         false_entry = calendars[False]
         false_calendar = next(iter(false_entry))
-        self.assertEqual(self.env.company.resource_calendar_id, false_calendar, "It should be company calendar Calendar")
+        self.assertEqual(self.env.company.resource_calendar_id, false_calendar,
+                         "It should be company calendar Calendar")
         self.assertFalse(false_entry[false_calendar] - interval, "Interval should cover all calendar's validity")
         self.assertFalse(interval - false_entry[false_calendar], "Calendar validity should cover all interval")
 
@@ -1410,7 +1443,8 @@ class TestResource(TestResourceCommon):
         end = utc.localize(datetime(2021, 7, 16, 23, 59, 59))
         work_intervals, _ = self.jean.resource_id._get_valid_work_intervals(start, end)
         sum_work_intervals = sum_intervals(work_intervals[self.jean.resource_id.id])
-        self.assertEqual(58, sum_work_intervals, "Sum of the work intervals for the resource jean should be 40h+18h = 58h")
+        self.assertEqual(58, sum_work_intervals,
+                         "Sum of the work intervals for the resource jean should be 40h+18h = 58h")
 
     def test_get_valid_work_intervals_calendars_only(self):
         calendars = [self.calendar_jean, self.calendar_john, self.calendar_jules, self.calendar_patel]
@@ -1418,13 +1452,17 @@ class TestResource(TestResourceCommon):
         end = utc.localize(datetime(2021, 7, 16, 23, 59, 59))
         _, calendars_intervals = self.env['resource.resource']._get_valid_work_intervals(start, end, calendars)
         sum_work_intervals_jean = sum_intervals(calendars_intervals[self.calendar_jean.id])
-        self.assertEqual(58, sum_work_intervals_jean, "Sum of the work intervals for the calendar of jean should be 40h+18h = 58h")
+        self.assertEqual(58, sum_work_intervals_jean,
+                         "Sum of the work intervals for the calendar of jean should be 40h+18h = 58h")
         sum_work_intervals_john = sum_intervals(calendars_intervals[self.calendar_john.id])
-        self.assertEqual(26 - 1 / 3600, sum_work_intervals_john, "Sum of the work intervals for the calendar of john should be 20h+6h-1s = 25h59m59s")
+        self.assertEqual(26 - 1 / 3600, sum_work_intervals_john,
+                         "Sum of the work intervals for the calendar of john should be 20h+6h-1s = 25h59m59s")
         sum_work_intervals_jules = sum_intervals(calendars_intervals[self.calendar_jules.id])
-        self.assertEqual(31, sum_work_intervals_jules, "Sum of the work intervals for the calendar of jules should be Wodd:15h+Wpair:16h = 31h")
+        self.assertEqual(31, sum_work_intervals_jules,
+                         "Sum of the work intervals for the calendar of jules should be Wodd:15h+Wpair:16h = 31h")
         sum_work_intervals_patel = sum_intervals(calendars_intervals[self.calendar_patel.id])
-        self.assertEqual(49, sum_work_intervals_patel, "Sum of the work intervals for the calendar of patel should be 14+35h = 49h")
+        self.assertEqual(49, sum_work_intervals_patel,
+                         "Sum of the work intervals for the calendar of patel should be 14+35h = 49h")
 
     def test_switch_two_weeks_resource(self):
         """

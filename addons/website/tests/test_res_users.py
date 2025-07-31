@@ -1,15 +1,15 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import Command
+from unittest import TestCase
+
+import psycopg2
 from odoo.addons.website.tools import MockRequest
+
+from odoo import Command
 from odoo.exceptions import ValidationError
 from odoo.service.model import retrying
 from odoo.tests.common import TransactionCase, new_test_user
 from odoo.tools import mute_logger
-
-from unittest import TestCase
-
-import psycopg2
 
 
 class TestWebsiteResUsers(TransactionCase):

@@ -58,11 +58,11 @@ def format_shipping_address(tx_sudo):
         return address_vals
 
     if (
-        partner_shipping.street
-        and partner_shipping.city
-        and (country := partner_shipping.country_id)
-        and (partner_shipping.zip or not country.zip_required)
-        and (partner_shipping.state_id or not country.state_required)
+            partner_shipping.street
+            and partner_shipping.city
+            and (country := partner_shipping.country_id)
+            and (partner_shipping.zip or not country.zip_required)
+            and (partner_shipping.state_id or not country.state_required)
     ):
         address_vals['shipping'] = format_partner_address(partner_shipping)
     return address_vals

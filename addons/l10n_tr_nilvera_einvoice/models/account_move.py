@@ -1,10 +1,11 @@
 import uuid
-from markupsafe import Markup
 from urllib.parse import quote, urlencode, urlparse
+
+from markupsafe import Markup
+from odoo.addons.l10n_tr_nilvera.lib.nilvera_client import _get_nilvera_client
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
-from odoo.addons.l10n_tr_nilvera.lib.nilvera_client import _get_nilvera_client
 
 
 class AccountMove(models.Model):
@@ -86,7 +87,8 @@ class AccountMove(models.Model):
                 self.is_move_sent = True
                 self.l10n_tr_nilvera_send_status = 'sent'
             elif response.status_code in {401, 403}:
-                raise UserError(_("Oops, seems like you're unauthorised to do this. Try another API key with more rights or contact Nilvera."))
+                raise UserError(
+                    _("Oops, seems like you're unauthorised to do this. Try another API key with more rights or contact Nilvera."))
             elif 400 <= response.status_code < 500:
                 error_message, error_codes = self._l10n_tr_nilvera_einvoice_get_error_messages_from_response(response)
 
@@ -141,10 +143,10 @@ class AccountMove(models.Model):
                             body=Markup(
                                 "%s<br/>%s - %s<br/>"
                             ) % (
-                                _("The invoice couldn't be sent to the recipient."),
-                                response['InvoiceStatus'].get('Description'),
-                                response['InvoiceStatus'].get('DetailDescription'),
-                            )
+                                     _("The invoice couldn't be sent to the recipient."),
+                                     response['InvoiceStatus'].get('Description'),
+                                     response['InvoiceStatus'].get('DetailDescription'),
+                                 )
                         )
                 else:
                     invoice.message_post(body=_("The invoice status couldn't be retrieved from Nilvera."))
@@ -205,7 +207,7 @@ class AccountMove(models.Model):
                 attachment.name = f'{move.ref}.xml'
 
             move._message_log(body=_("Nilvera document has been received successfully"))
-        except Exception:   # noqa: BLE001
+        except Exception:  # noqa: BLE001
             # If the invoice creation fails, create an empty invoice with the attachment. The PDF will be
             # added in a later step as well.
             move = self.env['account.move'].create({

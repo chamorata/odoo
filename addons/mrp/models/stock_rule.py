@@ -3,6 +3,7 @@
 
 from collections import defaultdict
 from datetime import datetime
+
 from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models, SUPERUSER_ID, _
@@ -19,11 +20,15 @@ class StockRule(models.Model):
     def _get_message_dict(self):
         message_dict = super(StockRule, self)._get_message_dict()
         source, destination, direct_destination, operation = self._get_message_values()
-        manufacture_message = _('When products are needed in <b>%s</b>, <br/> a manufacturing order is created to fulfill the need.', destination)
+        manufacture_message = _(
+            'When products are needed in <b>%s</b>, <br/> a manufacturing order is created to fulfill the need.',
+            destination)
         if self.location_src_id:
             manufacture_message += _(' <br/><br/> The components will be taken from <b>%s</b>.', source)
         if direct_destination and not self.location_dest_from_rule:
-            manufacture_message += _(' <br/><br/> The manufactured products will be moved towards <b>%(destination)s</b>, <br/> as specified from <b>%(operation)s</b> destination.', destination=direct_destination, operation=operation)
+            manufacture_message += _(
+                ' <br/><br/> The manufactured products will be moved towards <b>%(destination)s</b>, <br/> as specified from <b>%(operation)s</b> destination.',
+                destination=direct_destination, operation=operation)
         message_dict['manufacture'] = manufacture_message
         return message_dict
 
@@ -37,7 +42,8 @@ class StockRule(models.Model):
         super(StockRule, remaining)._compute_picking_type_code_domain()
 
     def _should_auto_confirm_procurement_mo(self, p):
-        return (not p.orderpoint_id and p.move_raw_ids) or (p.move_dest_ids.procure_method != 'make_to_order' and not p.move_raw_ids and not p.workorder_ids)
+        return (not p.orderpoint_id and p.move_raw_ids) or (
+                    p.move_dest_ids.procure_method != 'make_to_order' and not p.move_raw_ids and not p.workorder_ids)
 
     @api.model
     def _run_manufacture(self, procurements):
@@ -62,20 +68,23 @@ class StockRule(models.Model):
                     current_qty = min(procurement_qty, batch_size)
                     new_productions_values_by_company[procurement.company_id.id]['values'].append({
                         **vals,
-                        'product_qty': procurement.product_uom._compute_quantity(current_qty, bom.product_uom_id) if bom else current_qty,
+                        'product_qty': procurement.product_uom._compute_quantity(current_qty,
+                                                                                 bom.product_uom_id) if bom else current_qty,
                     })
                     new_productions_values_by_company[procurement.company_id.id]['procurements'].append(procurement)
                     procurement_qty -= current_qty
             else:
                 self.env['change.production.qty'].sudo().with_context(skip_activity=True).create({
                     'mo_id': mo.id,
-                    'product_qty': mo.product_id.uom_id._compute_quantity((mo.product_uom_qty + procurement.product_qty), mo.product_uom_id)
+                    'product_qty': mo.product_id.uom_id._compute_quantity(
+                        (mo.product_uom_qty + procurement.product_qty), mo.product_uom_id)
                 }).change_prod_qty()
 
         for company_id in new_productions_values_by_company:
             productions_vals_list = new_productions_values_by_company[company_id]['values']
             # create the MO as SUPERUSER because the current user may not have the rights to do it (mto product launched by a sale for example)
-            productions = self.env['mrp.production'].with_user(SUPERUSER_ID).sudo().with_company(company_id).create(productions_vals_list)
+            productions = self.env['mrp.production'].with_user(SUPERUSER_ID).sudo().with_company(company_id).create(
+                productions_vals_list)
             productions.filtered(self._should_auto_confirm_procurement_mo).action_confirm()
             productions._post_run_manufacture(new_productions_values_by_company[company_id]['procurements'])
         return True
@@ -88,11 +97,12 @@ class StockRule(models.Model):
             warehouse_id = rule.warehouse_id
             if not warehouse_id:
                 warehouse_id = rule.location_dest_id.warehouse_id
-            manu_rule = rule.route_id.rule_ids.filtered(lambda r: r.action == 'manufacture' and r.warehouse_id == warehouse_id)
+            manu_rule = rule.route_id.rule_ids.filtered(
+                lambda r: r.action == 'manufacture' and r.warehouse_id == warehouse_id)
             if warehouse_id.manufacture_steps != 'pbm_sam' or not manu_rule:
                 continue
             if rule.picking_type_id == warehouse_id.sam_type_id or (
-                warehouse_id.sam_loc_id and warehouse_id.sam_loc_id.parent_path in rule.location_src_id.parent_path
+                    warehouse_id.sam_loc_id and warehouse_id.sam_loc_id.parent_path in rule.location_src_id.parent_path
             ):
                 if float_compare(procurement.product_qty, 0, precision_rounding=procurement.product_uom.rounding) < 0:
                     procurement.values['group_id'] = procurement.values['group_id'].stock_move_ids.filtered(
@@ -123,7 +133,8 @@ class StockRule(models.Model):
             return values['bom_id']
         if values.get('orderpoint_id', False) and values['orderpoint_id'].bom_id:
             return values['orderpoint_id'].bom_id
-        return self.env['mrp.bom']._bom_find(product_id, picking_type=self.picking_type_id, bom_type='normal', company_id=company_id.id)[product_id]
+        return self.env['mrp.bom']._bom_find(product_id, picking_type=self.picking_type_id, bom_type='normal',
+                                             company_id=company_id.id)[product_id]
 
     def _make_mo_get_domain(self, procurement, bom):
         gpo = self.group_propagation_option
@@ -150,7 +161,8 @@ class StockRule(models.Model):
             domain += (('procurement_group_id', '=', group.id),)
         return domain
 
-    def _prepare_mo_vals(self, product_id, product_qty, product_uom, location_dest_id, name, origin, company_id, values, bom):
+    def _prepare_mo_vals(self, product_id, product_qty, product_uom, location_dest_id, name, origin, company_id, values,
+                         bom):
         date_planned = self._get_date_planned(bom, values)
         date_deadline = values.get('date_deadline') or date_planned + relativedelta(days=bom.produce_delay)
         mo_values = {
@@ -176,7 +188,8 @@ class StockRule(models.Model):
         }
         # Use the procurement group created in _run_pull mrp override
         # Preserve the origin from the original stock move, if available
-        if location_dest_id.warehouse_id.manufacture_steps == 'pbm_sam' and values.get('move_dest_ids') and values.get('group_id') and values['group_id'].name not in values['move_dest_ids'][0].origin:
+        if location_dest_id.warehouse_id.manufacture_steps == 'pbm_sam' and values.get('move_dest_ids') and values.get(
+                'group_id') and values['group_id'].name not in values['move_dest_ids'][0].origin:
             origin = values['move_dest_ids'][0].origin
             mo_values.update({
                 'name': values['group_id'].name,
@@ -204,7 +217,8 @@ class StockRule(models.Model):
         if not manufacture_rule:
             return delays, delay_description
         manufacture_rule.ensure_one()
-        bom = values.get('bom') or self.env['mrp.bom']._bom_find(product, picking_type=manufacture_rule.picking_type_id, company_id=manufacture_rule.company_id.id)[product]
+        bom = values.get('bom') or self.env['mrp.bom']._bom_find(product, picking_type=manufacture_rule.picking_type_id,
+                                                                 company_id=manufacture_rule.company_id.id)[product]
         manufacture_delay = bom.produce_delay
         delays['total_delay'] += manufacture_delay
         delays['manufacture_delay'] += manufacture_delay
@@ -215,8 +229,10 @@ class StockRule(models.Model):
             warehouse = self.location_dest_id.warehouse_id
             for wh in warehouse:
                 if wh.manufacture_steps != 'mrp_one_step':
-                    wh_manufacture_rules = product._get_rules_from_location(product.property_stock_production, route_ids=wh.pbm_route_id)
-                    extra_delays, extra_delay_description = (wh_manufacture_rules - self).with_context(global_visibility_days=0)._get_lead_days(product, **values)
+                    wh_manufacture_rules = product._get_rules_from_location(product.property_stock_production,
+                                                                            route_ids=wh.pbm_route_id)
+                    extra_delays, extra_delay_description = (wh_manufacture_rules - self).with_context(
+                        global_visibility_days=0)._get_lead_days(product, **values)
                     for key, value in extra_delays.items():
                         delays[key] += value
                     delay_description += extra_delay_description
@@ -254,21 +270,26 @@ class ProcurementGroup(models.Model):
         for procurement in procurements:
             product_by_company[procurement.company_id].add(procurement.product_id.id)
         kits_by_company = {
-            company: self.env['mrp.bom']._bom_find(self.env['product.product'].browse(product_ids), company_id=company.id, bom_type='phantom')
+            company: self.env['mrp.bom']._bom_find(self.env['product.product'].browse(product_ids),
+                                                   company_id=company.id, bom_type='phantom')
             for company, product_ids in product_by_company.items()
         }
         for procurement in procurements:
             bom_kit = kits_by_company[procurement.company_id].get(procurement.product_id)
             if bom_kit:
-                order_qty = procurement.product_uom._compute_quantity(procurement.product_qty, bom_kit.product_uom_id, round=False)
+                order_qty = procurement.product_uom._compute_quantity(procurement.product_qty, bom_kit.product_uom_id,
+                                                                      round=False)
                 qty_to_produce = (order_qty / bom_kit.product_qty)
-                _dummy, bom_sub_lines = bom_kit.explode(procurement.product_id, qty_to_produce, never_attribute_values=procurement.values.get("never_product_template_attribute_value_ids"))
+                _dummy, bom_sub_lines = bom_kit.explode(procurement.product_id, qty_to_produce,
+                                                        never_attribute_values=procurement.values.get(
+                                                            "never_product_template_attribute_value_ids"))
                 for bom_line, bom_line_data in bom_sub_lines:
                     bom_line_uom = bom_line.product_uom_id
                     quant_uom = bom_line.product_id.uom_id
                     # recreate dict of values since each child has its own bom_line_id
                     values = dict(procurement.values, bom_line_id=bom_line.id)
-                    component_qty, procurement_uom = bom_line_uom._adjust_uom_quantities(bom_line_data['qty'], quant_uom)
+                    component_qty, procurement_uom = bom_line_uom._adjust_uom_quantities(bom_line_data['qty'],
+                                                                                         quant_uom)
                     procurements_without_kit.append(self.env['procurement.group'].Procurement(
                         bom_line.product_id, component_qty, procurement_uom,
                         procurement.location_id, procurement.name,

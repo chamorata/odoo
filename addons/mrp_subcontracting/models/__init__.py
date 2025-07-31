@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from . import mrp_bom
+from . import mrp_production
 from . import product
 from . import res_company
 from . import res_partner
@@ -12,4 +13,3 @@ from . import stock_quant
 from . import stock_replenish_mixin
 from . import stock_rule
 from . import stock_warehouse
-from . import mrp_production

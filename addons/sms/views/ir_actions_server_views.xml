@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<odoo><data>
+<odoo>
+    <data>
 
-    <record id="ir_actions_server_view_form"  model="ir.ui.view">
-        <field name="name">ir.actions.server.view.form.inherit.sms</field>
-        <field name="model">ir.actions.server</field>
-        <field name="inherit_id" ref="base.view_server_action_form"/>
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='link_field_id']" position="after">
-                <field name="sms_template_id"
-                    placeholder="Choose a template..."
-                    context="{'default_model': model_name}"
-                    invisible="state != 'sms'"
-                    required="state == 'sms'"/>
-                <label for="sms_method" invisible="state != 'sms'"/>
+        <record id="ir_actions_server_view_form" model="ir.ui.view">
+            <field name="name">ir.actions.server.view.form.inherit.sms</field>
+            <field name="model">ir.actions.server</field>
+            <field name="inherit_id" ref="base.view_server_action_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='link_field_id']" position="after">
+                    <field name="sms_template_id"
+                           placeholder="Choose a template..."
+                           context="{'default_model': model_name}"
+                           invisible="state != 'sms'"
+                           required="state == 'sms'"/>
+                    <label for="sms_method" invisible="state != 'sms'"/>
                     <div class="d-flex flex-column" invisible="state != 'sms'">
                         <field name="sms_method" required="state == 'sms'"/>
                         <div class="text-muted">
@@ -31,8 +32,9 @@
                             </span>
                         </div>
                     </div>
-            </xpath>
-        </field>
-    </record>
+                </xpath>
+            </field>
+        </record>
 
-</data></odoo>
+    </data>
+</odoo>

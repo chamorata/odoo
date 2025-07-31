@@ -10,17 +10,17 @@ from psycopg2 import IntegrityError, OperationalError, errorcodes, errors
 
 import odoo
 from odoo.exceptions import UserError, ValidationError, AccessError
-from odoo.models import BaseModel
 from odoo.http import request
+from odoo.models import BaseModel
 from odoo.modules.registry import Registry
 from odoo.tools import DotDict, lazy
 from odoo.tools.translate import translate_sql_constraint
-
 from . import security
 
 _logger = logging.getLogger(__name__)
 
-PG_CONCURRENCY_ERRORS_TO_RETRY = (errorcodes.LOCK_NOT_AVAILABLE, errorcodes.SERIALIZATION_FAILURE, errorcodes.DEADLOCK_DETECTED)
+PG_CONCURRENCY_ERRORS_TO_RETRY = (errorcodes.LOCK_NOT_AVAILABLE, errorcodes.SERIALIZATION_FAILURE,
+                                  errorcodes.DEADLOCK_DETECTED)
 PG_CONCURRENCY_EXCEPTIONS_TO_RETRY = (errors.LockNotAvailable, errors.SerializationFailure, errors.DeadlockDetected)
 MAX_TRIES_ON_CONCURRENCY_FAILURE = 5
 
@@ -43,6 +43,7 @@ def get_public_method(model, name):
         if name.startswith('_') or getattr(cla_method, '_api_private', False):
             raise AccessError(f"Private methods (such as '{model._name}.{name}') cannot be called remotely.")
     return method
+
 
 def dispatch(method, params):
     db, uid, passwd = params[0], int(params[1]), params[2]
@@ -170,7 +171,8 @@ def retrying(func, env):
                         if hasattr(file, "seekable") and file.seekable():
                             file.seek(0)
                         else:
-                            raise RuntimeError(f"Cannot retry request on input file {filename!r} after serialization failure") from exc
+                            raise RuntimeError(
+                                f"Cannot retry request on input file {filename!r} after serialization failure") from exc
                 if isinstance(exc, IntegrityError):
                     raise _as_validation_error(env, exc) from exc
                 if not isinstance(exc, PG_CONCURRENCY_EXCEPTIONS_TO_RETRY):
@@ -180,7 +182,8 @@ def retrying(func, env):
                     raise
 
                 wait_time = random.uniform(0.0, 2 ** tryno)
-                _logger.info("%s, %s tries left, try again in %.04f sec...", errorcodes.lookup(exc.pgcode), tryleft, wait_time)
+                _logger.info("%s, %s tries left, try again in %.04f sec...", errorcodes.lookup(exc.pgcode), tryleft,
+                             wait_time)
                 time.sleep(wait_time)
         else:
             # handled in the "if not tryleft" case

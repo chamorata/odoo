@@ -11,12 +11,12 @@
                     <div>
                         <span class="btn pe-none px-1 fw-normal">or</span>
                         <a class="btn btn-link px-0 fw-normal"
-                            href="#"
-                            type="object"
-                            name="action_create_vendor_bill"
-                            journal_type="purchase"
-                            groups="account.group_account_invoice"
-                            t-on-click="() => this.handleButtonClick('action_create_vendor_bill')"
+                           href="#"
+                           type="object"
+                           name="action_create_vendor_bill"
+                           journal_type="purchase"
+                           groups="account.group_account_invoice"
+                           t-on-click="() => this.handleButtonClick('action_create_vendor_bill')"
                         >
                             try our sample
                         </a>
@@ -45,10 +45,10 @@
                         <div>
                             <span class="btn pe-none px-1 fw-normal">or</span>
                             <a href="#"
-                                type="object"
-                                class="btn btn-link px-0 fw-normal"
-                                t-on-click="() => this.handleButtonClick('action_create_new')"
-                                groups="account.group_account_invoice"
+                               type="object"
+                               class="btn btn-link px-0 fw-normal"
+                               t-on-click="() => this.handleButtonClick('action_create_new')"
+                               groups="account.group_account_invoice"
                             >
                                 Create manually
                             </a>
@@ -58,16 +58,16 @@
                 <div t-else="">
                     <div class="text-center">
                         <img class="img-fluid"
-                            src="/web/static/img/bill.svg"
-                            alt="Create bill manually"/>
+                             src="/web/static/img/bill.svg"
+                             alt="Create bill manually"/>
                     </div>
                     <div class="text-center mt-2">
                         <div class="">
                             <a href="#"
-                                type="object"
-                                class="o_invoice_new"
-                                t-on-click="() => this.handleButtonClick('action_create_new')"
-                                groups="account.group_account_invoice"
+                               type="object"
+                               class="o_invoice_new"
+                               t-on-click="() => this.handleButtonClick('action_create_new')"
+                               groups="account.group_account_invoice"
                             >
                                 Create a bill manually
                             </a>

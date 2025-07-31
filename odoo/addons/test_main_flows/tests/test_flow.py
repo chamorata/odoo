@@ -1,10 +1,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo import Command
-from odoo.addons.account.tests.common import AccountTestMockOnlineSyncCommon
-from odoo.tools import mute_logger
-
 import logging
+
+from odoo.addons.account.tests.common import AccountTestMockOnlineSyncCommon
+
 import odoo.tests
+from odoo import Command
+from odoo.tools import mute_logger
 
 _logger = logging.getLogger(__name__)
 
@@ -55,7 +56,8 @@ class BaseTestUi(AccountTestMockOnlineSyncCommon):
         IrDefault.set('res.partner', 'property_account_receivable_id', a_recv.id, company_id=self.env.company.id)
         IrDefault.set('res.partner', 'property_account_payable_id', a_pay.id, company_id=self.env.company.id)
         IrDefault.set('res.partner', 'property_account_position_id', False, company_id=self.env.company.id)
-        IrDefault.set('product.category', 'property_account_expense_categ_id', a_expense.id, company_id=self.env.company.id)
+        IrDefault.set('product.category', 'property_account_expense_categ_id', a_expense.id,
+                      company_id=self.env.company.id)
         IrDefault.set('product.category', 'property_account_income_categ_id', a_sale.id, company_id=self.env.company.id)
 
         self.expenses_journal = self.env['account.journal'].create({
@@ -99,7 +101,7 @@ class TestUi(BaseTestUi):
 
     def test_company_switch_access_error(self):
         company1 = self.env.company
-        company2 = self.env["res.company"].create({"name":"second company"})
+        company2 = self.env["res.company"].create({"name": "second company"})
         self.env["res.users"].browse(2).write({
             "company_ids": [Command.clear(), Command.link(company1.id), Command.link(company2.id)]
         })
@@ -125,7 +127,8 @@ class TestUi(BaseTestUi):
         })
 
         with mute_logger("odoo.http"):
-            self.start_tour(f"/odoo/action-{act_window.id}", "test_company_switch_access_error", login="admin", cookies={"cids": f"{company1.id}-{company2.id}"})
+            self.start_tour(f"/odoo/action-{act_window.id}", "test_company_switch_access_error", login="admin",
+                            cookies={"cids": f"{company1.id}-{company2.id}"})
 
     def test_company_access_error_redirect(self):
         company1 = self.env.company
@@ -155,7 +158,8 @@ class TestUi(BaseTestUi):
         })
 
         with mute_logger("odoo.http"):
-            self.start_tour(f"/odoo/action-{act_window.id}/{record_p2.id}", "test_company_access_error_redirect", login="admin", cookies={"cids": f"{company1.id}"})
+            self.start_tour(f"/odoo/action-{act_window.id}/{record_p2.id}", "test_company_access_error_redirect",
+                            login="admin", cookies={"cids": f"{company1.id}"})
 
     def test_company_switch_access_error_debug(self):
         # This test is identical to test_company_switch_access_error, but with debug mode enabled
@@ -187,12 +191,12 @@ class TestUi(BaseTestUi):
 
         current_companies = "%s-%s" % (company1.id, company2.id)
         with mute_logger("odoo.http"):
-            self.start_tour(f"/odoo/action-{act_window.id}?debug=assets&cids={current_companies}", "test_company_switch_access_error", login="admin")
+            self.start_tour(f"/odoo/action-{act_window.id}?debug=assets&cids={current_companies}",
+                            "test_company_switch_access_error", login="admin")
 
 
 @odoo.tests.tagged('post_install', '-at_install', 'is_tour')
 class TestUiMobile(BaseTestUi):
-
     browser_size = '375x667'
     touch_enabled = True
 

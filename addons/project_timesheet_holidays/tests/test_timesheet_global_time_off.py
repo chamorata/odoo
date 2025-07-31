@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from collections import defaultdict
 from datetime import datetime, timedelta
+
 from freezegun import freeze_time
 
 from odoo import Command
-from odoo.tests import common
 from odoo.exceptions import UserError
+from odoo.tests import common
+
 
 class TestTimesheetGlobalTimeOff(common.TransactionCase):
 
@@ -21,18 +22,26 @@ class TestTimesheetGlobalTimeOff(common.TransactionCase):
         })
 
         attendance_ids = [
-            (0, 0, {'name': 'Monday Morning', 'dayofweek': '0', 'hour_from': 9, 'hour_to': 12, 'day_period': 'morning'}),
+            (0, 0,
+             {'name': 'Monday Morning', 'dayofweek': '0', 'hour_from': 9, 'hour_to': 12, 'day_period': 'morning'}),
             (0, 0, {'name': 'Monday Lunch', 'dayofweek': '0', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
-            (0, 0, {'name': 'Monday Afternoon', 'dayofweek': '0', 'hour_from': 13, 'hour_to': 16, 'day_period': 'afternoon'}),
-            (0, 0, {'name': 'Tuesday Morning', 'dayofweek': '1', 'hour_from': 9, 'hour_to': 12, 'day_period': 'morning'}),
+            (0, 0,
+             {'name': 'Monday Afternoon', 'dayofweek': '0', 'hour_from': 13, 'hour_to': 16, 'day_period': 'afternoon'}),
+            (0, 0,
+             {'name': 'Tuesday Morning', 'dayofweek': '1', 'hour_from': 9, 'hour_to': 12, 'day_period': 'morning'}),
             (0, 0, {'name': 'Tuesday Lunch', 'dayofweek': '1', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
-            (0, 0, {'name': 'Tuesday Afternoon', 'dayofweek': '1', 'hour_from': 13, 'hour_to': 16, 'day_period': 'afternoon'}),
-            (0, 0, {'name': 'Thursday Morning', 'dayofweek': '3', 'hour_from': 9, 'hour_to': 12, 'day_period': 'morning'}),
+            (0, 0, {'name': 'Tuesday Afternoon', 'dayofweek': '1', 'hour_from': 13, 'hour_to': 16,
+                    'day_period': 'afternoon'}),
+            (0, 0,
+             {'name': 'Thursday Morning', 'dayofweek': '3', 'hour_from': 9, 'hour_to': 12, 'day_period': 'morning'}),
             (0, 0, {'name': 'Thursday Lunch', 'dayofweek': '3', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
-            (0, 0, {'name': 'Thursday Afternoon', 'dayofweek': '3', 'hour_from': 13, 'hour_to': 16, 'day_period': 'afternoon'}),
-            (0, 0, {'name': 'Friday Morning', 'dayofweek': '4', 'hour_from': 9, 'hour_to': 12, 'day_period': 'morning'}),
+            (0, 0, {'name': 'Thursday Afternoon', 'dayofweek': '3', 'hour_from': 13, 'hour_to': 16,
+                    'day_period': 'afternoon'}),
+            (0, 0,
+             {'name': 'Friday Morning', 'dayofweek': '4', 'hour_from': 9, 'hour_to': 12, 'day_period': 'morning'}),
             (0, 0, {'name': 'Friday Lunch', 'dayofweek': '4', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
-            (0, 0, {'name': 'Friday Afternoon', 'dayofweek': '4', 'hour_from': 13, 'hour_to': 16, 'day_period': 'afternoon'})
+            (0, 0,
+             {'name': 'Friday Afternoon', 'dayofweek': '4', 'hour_from': 13, 'hour_to': 16, 'day_period': 'afternoon'})
         ]
 
         self.part_time_calendar, self.part_time_calendar2 = self.env['resource.calendar'].create([
@@ -48,24 +57,24 @@ class TestTimesheetGlobalTimeOff(common.TransactionCase):
                 'attendance_ids': attendance_ids,
             }
         ])
-        self.full_time_employee, self.full_time_employee_2,\
-        self.part_time_employee, self.part_time_employee2 = self.env['hr.employee'].create([{
-                'name': 'John Doe',
-                'company_id': self.test_company.id,
-                'resource_calendar_id': self.test_company.resource_calendar_id.id,
-            }, {
-                'name': 'John Smith',
-                'company_id': self.test_company.id,
-                'resource_calendar_id': self.test_company.resource_calendar_id.id,
-            }, {
-                'name': 'Jane Doe',
-                'company_id': self.test_company.id,
-                'resource_calendar_id': self.part_time_calendar.id,
-            }, {
-                'name': 'Jon Show',
-                'company_id': self.test_company.id,
-                'resource_calendar_id': self.part_time_calendar2.id,
-            },
+        self.full_time_employee, self.full_time_employee_2, \
+            self.part_time_employee, self.part_time_employee2 = self.env['hr.employee'].create([{
+            'name': 'John Doe',
+            'company_id': self.test_company.id,
+            'resource_calendar_id': self.test_company.resource_calendar_id.id,
+        }, {
+            'name': 'John Smith',
+            'company_id': self.test_company.id,
+            'resource_calendar_id': self.test_company.resource_calendar_id.id,
+        }, {
+            'name': 'Jane Doe',
+            'company_id': self.test_company.id,
+            'resource_calendar_id': self.part_time_calendar.id,
+        }, {
+            'name': 'Jon Show',
+            'company_id': self.test_company.id,
+            'resource_calendar_id': self.part_time_calendar2.id,
+        },
         ])
 
         # Create a 2nd company
@@ -74,7 +83,8 @@ class TestTimesheetGlobalTimeOff(common.TransactionCase):
         })
 
     def _get_timesheets_by_employee(self, leave_task):
-        timesheets_by_read_dict = self.env['account.analytic.line']._read_group([('task_id', '=', leave_task.id)], ['employee_id'], ['__count'])
+        timesheets_by_read_dict = self.env['account.analytic.line']._read_group([('task_id', '=', leave_task.id)],
+                                                                                ['employee_id'], ['__count'])
         return {
             timesheet.id: count
             for timesheet, count in timesheets_by_read_dict
@@ -146,17 +156,20 @@ class TestTimesheetGlobalTimeOff(common.TransactionCase):
         })
 
         # 7 Timesheets should have been created for full_time_employee
-        timesheets_full_time_employee = self.env['account.analytic.line'].search([('employee_id', '=', self.full_time_employee.id)])
+        timesheets_full_time_employee = self.env['account.analytic.line'].search(
+            [('employee_id', '=', self.full_time_employee.id)])
         self.assertEqual(len(timesheets_full_time_employee), 7)
 
         # All timesheets should have been deleted for full_time_employee when he is archived
         self.full_time_employee.active = False
-        timesheets_full_time_employee = self.env['account.analytic.line'].search([('employee_id', '=', self.full_time_employee.id)])
+        timesheets_full_time_employee = self.env['account.analytic.line'].search(
+            [('employee_id', '=', self.full_time_employee.id)])
         self.assertEqual(len(timesheets_full_time_employee), 0)
 
         # 7 Timesheets should have been created for full_time_employee when he is unarchived
         self.full_time_employee.active = True
-        timesheets_full_time_employee = self.env['account.analytic.line'].search([('employee_id', '=', self.full_time_employee.id)])
+        timesheets_full_time_employee = self.env['account.analytic.line'].search(
+            [('employee_id', '=', self.full_time_employee.id)])
         self.assertEqual(len(timesheets_full_time_employee), 7)
 
     # This tests that no timesheet are created for days when the employee is not supposed to work
@@ -246,7 +259,6 @@ class TestTimesheetGlobalTimeOff(common.TransactionCase):
         # So it should add to 2(full time employees)*5(leave days)*8(hours per day) + 2(part time employees)*4(leave days)*6(hours per day).
         self.assertEqual(leave_task.effective_hours, 128)
 
-
         # Now we set the calendar_id. The timesheets should be deleted from other calendars.
         global_time_off.calendar_id = self.test_company.resource_calendar_id.id
         timesheets_by_employee = self._get_timesheets_by_employee(leave_task)
@@ -312,28 +324,48 @@ class TestTimesheetGlobalTimeOff(common.TransactionCase):
             is modified for public holidays after today's date.
         """
         attendance_ids_40h = [
-            Command.create({'name': 'Monday Morning', 'dayofweek': '0', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-            Command.create({'name': 'Monday Afternoon', 'dayofweek': '0', 'hour_from': 13, 'hour_to': 17, 'day_period': 'afternoon'}),
-            Command.create({'name': 'Tuesday Morning', 'dayofweek': '1', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-            Command.create({'name': 'Tuesday Afternoon', 'dayofweek': '1', 'hour_from': 13, 'hour_to': 17, 'day_period': 'afternoon'}),
-            Command.create({'name': 'Wednesday Morning', 'dayofweek': '2', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-            Command.create({'name': 'Wednesday Afternoon', 'dayofweek': '2', 'hour_from': 13, 'hour_to': 17, 'day_period': 'afternoon'}),
-            Command.create({'name': 'Thursday Morning', 'dayofweek': '3', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-            Command.create({'name': 'Thursday Afternoon', 'dayofweek': '3', 'hour_from': 13, 'hour_to': 17, 'day_period': 'afternoon'}),
-            Command.create({'name': 'Friday Morning', 'dayofweek': '4', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-            Command.create({'name': 'Friday Afternoon', 'dayofweek': '4', 'hour_from': 13, 'hour_to': 17, 'day_period': 'afternoon'})
+            Command.create(
+                {'name': 'Monday Morning', 'dayofweek': '0', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
+            Command.create({'name': 'Monday Afternoon', 'dayofweek': '0', 'hour_from': 13, 'hour_to': 17,
+                            'day_period': 'afternoon'}),
+            Command.create(
+                {'name': 'Tuesday Morning', 'dayofweek': '1', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
+            Command.create({'name': 'Tuesday Afternoon', 'dayofweek': '1', 'hour_from': 13, 'hour_to': 17,
+                            'day_period': 'afternoon'}),
+            Command.create({'name': 'Wednesday Morning', 'dayofweek': '2', 'hour_from': 8, 'hour_to': 12,
+                            'day_period': 'morning'}),
+            Command.create({'name': 'Wednesday Afternoon', 'dayofweek': '2', 'hour_from': 13, 'hour_to': 17,
+                            'day_period': 'afternoon'}),
+            Command.create(
+                {'name': 'Thursday Morning', 'dayofweek': '3', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
+            Command.create({'name': 'Thursday Afternoon', 'dayofweek': '3', 'hour_from': 13, 'hour_to': 17,
+                            'day_period': 'afternoon'}),
+            Command.create(
+                {'name': 'Friday Morning', 'dayofweek': '4', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
+            Command.create({'name': 'Friday Afternoon', 'dayofweek': '4', 'hour_from': 13, 'hour_to': 17,
+                            'day_period': 'afternoon'})
         ]
         attendance_ids_35h = [
-            Command.create({'name': 'Monday Morning', 'dayofweek': '0', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-            Command.create({'name': 'Monday Afternoon', 'dayofweek': '0', 'hour_from': 13, 'hour_to': 16, 'day_period': 'afternoon'}),
-            Command.create({'name': 'Tuesday Morning', 'dayofweek': '1', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-            Command.create({'name': 'Tuesday Afternoon', 'dayofweek': '1', 'hour_from': 13, 'hour_to': 16, 'day_period': 'afternoon'}),
-            Command.create({'name': 'Wednesday Morning', 'dayofweek': '2', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-            Command.create({'name': 'Wednesday Afternoon', 'dayofweek': '2', 'hour_from': 13, 'hour_to': 16, 'day_period': 'afternoon'}),
-            Command.create({'name': 'Thursday Morning', 'dayofweek': '3', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-            Command.create({'name': 'Thursday Afternoon', 'dayofweek': '3', 'hour_from': 13, 'hour_to': 16, 'day_period': 'afternoon'}),
-            Command.create({'name': 'Friday Morning', 'dayofweek': '4', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-            Command.create({'name': 'Friday Afternoon', 'dayofweek': '4', 'hour_from': 13, 'hour_to': 16, 'day_period': 'afternoon'})
+            Command.create(
+                {'name': 'Monday Morning', 'dayofweek': '0', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
+            Command.create({'name': 'Monday Afternoon', 'dayofweek': '0', 'hour_from': 13, 'hour_to': 16,
+                            'day_period': 'afternoon'}),
+            Command.create(
+                {'name': 'Tuesday Morning', 'dayofweek': '1', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
+            Command.create({'name': 'Tuesday Afternoon', 'dayofweek': '1', 'hour_from': 13, 'hour_to': 16,
+                            'day_period': 'afternoon'}),
+            Command.create({'name': 'Wednesday Morning', 'dayofweek': '2', 'hour_from': 8, 'hour_to': 12,
+                            'day_period': 'morning'}),
+            Command.create({'name': 'Wednesday Afternoon', 'dayofweek': '2', 'hour_from': 13, 'hour_to': 16,
+                            'day_period': 'afternoon'}),
+            Command.create(
+                {'name': 'Thursday Morning', 'dayofweek': '3', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
+            Command.create({'name': 'Thursday Afternoon', 'dayofweek': '3', 'hour_from': 13, 'hour_to': 16,
+                            'day_period': 'afternoon'}),
+            Command.create(
+                {'name': 'Friday Morning', 'dayofweek': '4', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
+            Command.create({'name': 'Friday Afternoon', 'dayofweek': '4', 'hour_from': 13, 'hour_to': 16,
+                            'day_period': 'afternoon'})
         ]
         calendar_40h, calendar_35h = self.env['resource.calendar'].create([
             {
@@ -378,7 +410,8 @@ class TestTimesheetGlobalTimeOff(common.TransactionCase):
 
         with freeze_time('2023-08-10'):
             self.full_time_employee.resource_calendar_id = calendar_40h.id
-        timesheets_employee_40h = self.env['account.analytic.line'].search([('employee_id', '=', self.full_time_employee.id)])
+        timesheets_employee_40h = self.env['account.analytic.line'].search(
+            [('employee_id', '=', self.full_time_employee.id)])
         global_leaves_ids_40h = timesheets_employee_40h.global_leave_id
         self.assertEqual(len(global_leaves_ids_40h), 2)
         self.assertIn(gto_09_04, global_leaves_ids_40h)
@@ -386,7 +419,8 @@ class TestTimesheetGlobalTimeOff(common.TransactionCase):
 
         with freeze_time('2023-10-10'):
             self.full_time_employee.resource_calendar_id = calendar_35h.id
-        timesheets_employee_35h = self.env['account.analytic.line'].search([('employee_id', '=', self.full_time_employee.id)])
+        timesheets_employee_35h = self.env['account.analytic.line'].search(
+            [('employee_id', '=', self.full_time_employee.id)])
         global_leaves_ids_35h = timesheets_employee_35h.global_leave_id
         self.assertEqual(len(global_leaves_ids_35h), 2)
         self.assertIn(gto_09_04, global_leaves_ids_35h)
@@ -416,8 +450,9 @@ class TestTimesheetGlobalTimeOff(common.TransactionCase):
         # employee leave dates: from monday to friday
         today = datetime.today()
         next_monday = today.date() + timedelta(days=-today.weekday(), weeks=1)
-        hr_leave_start_datetime = datetime(next_monday.year, next_monday.month, next_monday.day, 8, 0, 0) # monday next week
-        hr_leave_end_datetime = hr_leave_start_datetime + timedelta(days=4, hours=9) # friday next week
+        hr_leave_start_datetime = datetime(next_monday.year, next_monday.month, next_monday.day, 8, 0,
+                                           0)  # monday next week
+        hr_leave_end_datetime = hr_leave_start_datetime + timedelta(days=4, hours=9)  # friday next week
 
         self.env.company = self.test_company
 
@@ -456,7 +491,7 @@ class TestTimesheetGlobalTimeOff(common.TransactionCase):
         })
         gto_without_calendar = self.env['resource.calendar.leaves'].create({
             'name': 'Public Holiday without calendar',
-            'date_from': global_leave_start_datetime + timedelta(days=1), # still within the hr.leave being refused
+            'date_from': global_leave_start_datetime + timedelta(days=1),  # still within the hr.leave being refused
             'date_to': global_leave_end_datetime + timedelta(days=1),
         })
 
@@ -495,7 +530,7 @@ class TestTimesheetGlobalTimeOff(common.TransactionCase):
         })
         gto_without_calendar = self.env['resource.calendar.leaves'].create({
             'name': 'Public Holiday without calendar',
-            'date_from': global_leave_start_datetime + timedelta(days=1), # still within the hr.leave being cancelled
+            'date_from': global_leave_start_datetime + timedelta(days=1),  # still within the hr.leave being cancelled
             'date_to': global_leave_end_datetime + timedelta(days=1),
         })
 

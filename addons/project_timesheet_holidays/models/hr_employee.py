@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, fields, models
 from collections import defaultdict
+
+from odoo import api, fields, models
 
 
 class Employee(models.Model):
@@ -40,7 +41,8 @@ class Employee(models.Model):
         return result
 
     def _delete_future_public_holidays_timesheets(self):
-        future_timesheets = self.env['account.analytic.line'].sudo().search([('global_leave_id', '!=', False), ('date', '>=', fields.date.today()), ('employee_id', 'in', self.ids)])
+        future_timesheets = self.env['account.analytic.line'].sudo().search(
+            [('global_leave_id', '!=', False), ('date', '>=', fields.date.today()), ('employee_id', 'in', self.ids)])
         future_timesheets.write({'global_leave_id': False})
         future_timesheets.unlink()
 
@@ -57,10 +59,12 @@ class Employee(models.Model):
             if not employee.active:
                 continue
             # First we look for the global time off that are already planned after today
-            global_leaves = employee.resource_calendar_id.global_leave_ids.filtered(lambda l: l.date_from >= today) + global_leaves_wo_calendar[employee.company_id]
+            global_leaves = employee.resource_calendar_id.global_leave_ids.filtered(lambda l: l.date_from >= today) + \
+                            global_leaves_wo_calendar[employee.company_id]
             work_hours_data = global_leaves._work_time_per_day()
             for global_time_off in global_leaves:
-                for index, (day_date, work_hours_count) in enumerate(work_hours_data[employee.resource_calendar_id.id][global_time_off.id]):
+                for index, (day_date, work_hours_count) in enumerate(
+                        work_hours_data[employee.resource_calendar_id.id][global_time_off.id]):
                     lines_vals.append(
                         global_time_off._timesheet_prepare_line_values(
                             index,

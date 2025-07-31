@@ -13,9 +13,9 @@ class TestReadGroupOverride(TransactionCase):
         BaseModel = models.BaseModel
         for Model in self.env.registry.values():
             if not Model._abstract and Model._auto and (
-                Model._order_field_to_sql is not BaseModel._order_field_to_sql
-                or Model._order_to_sql is not BaseModel._order_to_sql
-                or Model._read_group_orderby is not BaseModel._read_group_orderby
+                    Model._order_field_to_sql is not BaseModel._order_field_to_sql
+                    or Model._order_to_sql is not BaseModel._order_to_sql
+                    or Model._read_group_orderby is not BaseModel._read_group_orderby
             ):
                 # methods for customized order are overridden by Model
                 # change comodel_name of a many2one field as a hack for the test

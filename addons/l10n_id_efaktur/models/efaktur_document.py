@@ -4,11 +4,16 @@ from odoo import api, fields, models, _
 from odoo.exceptions import UserError, RedirectWarning
 from odoo.tools import float_repr, float_round
 
-FK_HEAD_LIST = ['FK', 'KD_JENIS_TRANSAKSI', 'FG_PENGGANTI', 'NOMOR_FAKTUR', 'MASA_PAJAK', 'TAHUN_PAJAK', 'TANGGAL_FAKTUR', 'NPWP', 'NAMA', 'ALAMAT_LENGKAP', 'JUMLAH_DPP', 'JUMLAH_PPN', 'JUMLAH_PPNBM', 'ID_KETERANGAN_TAMBAHAN', 'FG_UANG_MUKA', 'UANG_MUKA_DPP', 'UANG_MUKA_PPN', 'UANG_MUKA_PPNBM', 'REFERENSI', 'KODE_DOKUMEN_PENDUKUNG']
+FK_HEAD_LIST = ['FK', 'KD_JENIS_TRANSAKSI', 'FG_PENGGANTI', 'NOMOR_FAKTUR', 'MASA_PAJAK', 'TAHUN_PAJAK',
+                'TANGGAL_FAKTUR', 'NPWP', 'NAMA', 'ALAMAT_LENGKAP', 'JUMLAH_DPP', 'JUMLAH_PPN', 'JUMLAH_PPNBM',
+                'ID_KETERANGAN_TAMBAHAN', 'FG_UANG_MUKA', 'UANG_MUKA_DPP', 'UANG_MUKA_PPN', 'UANG_MUKA_PPNBM',
+                'REFERENSI', 'KODE_DOKUMEN_PENDUKUNG']
 
-LT_HEAD_LIST = ['LT', 'NPWP', 'NAMA', 'JALAN', 'BLOK', 'NOMOR', 'RT', 'RW', 'KECAMATAN', 'KELURAHAN', 'KABUPATEN', 'PROPINSI', 'KODE_POS', 'NOMOR_TELEPON']
+LT_HEAD_LIST = ['LT', 'NPWP', 'NAMA', 'JALAN', 'BLOK', 'NOMOR', 'RT', 'RW', 'KECAMATAN', 'KELURAHAN', 'KABUPATEN',
+                'PROPINSI', 'KODE_POS', 'NOMOR_TELEPON']
 
-OF_HEAD_LIST = ['OF', 'KODE_OBJEK', 'NAMA', 'HARGA_SATUAN', 'JUMLAH_BARANG', 'HARGA_TOTAL', 'DISKON', 'DPP', 'PPN', 'TARIF_PPNBM', 'PPNBM']
+OF_HEAD_LIST = ['OF', 'KODE_OBJEK', 'NAMA', 'HARGA_SATUAN', 'JUMLAH_BARANG', 'HARGA_TOTAL', 'DISKON', 'DPP', 'PPN',
+                'TARIF_PPNBM', 'PPNBM']
 
 
 def _csv_row(data, delimiter=',', quote='"'):
@@ -143,17 +148,21 @@ class EfakturDocument(models.Model):
             eTax['TANGGAL_FAKTUR'] = move.invoice_date.strftime("%-d/%-m/%Y")
             eTax['NPWP'] = invoice_npwp
             eTax['NAMA'] = etax_name
-            eTax['ALAMAT_LENGKAP'] = move.partner_id._display_address(without_company=True).replace('\n', ' ').replace('  ', ' ').strip()
+            eTax['ALAMAT_LENGKAP'] = move.partner_id._display_address(without_company=True).replace('\n', ' ').replace(
+                '  ', ' ').strip()
             eTax['JUMLAH_DPP'] = int(float_round(move.amount_untaxed, 0))  # currency rounded to the unit
-            eTax['JUMLAH_PPN'] = int(float_round(move.amount_tax, 0, rounding_method="DOWN"))  # tax amount ALWAYS rounded down
+            eTax['JUMLAH_PPN'] = int(
+                float_round(move.amount_tax, 0, rounding_method="DOWN"))  # tax amount ALWAYS rounded down
             eTax['ID_KETERANGAN_TAMBAHAN'] = '1' if move.l10n_id_kode_transaksi == '07' else ''
             eTax['REFERENSI'] = number_ref
             eTax['KODE_DOKUMEN_PENDUKUNG'] = '0'
 
-            lines = move.line_ids.filtered(lambda x: x.move_id._is_downpayment() and x.price_unit < 0 and x.display_type == 'product')
+            lines = move.line_ids.filtered(
+                lambda x: x.move_id._is_downpayment() and x.price_unit < 0 and x.display_type == 'product')
             eTax['FG_UANG_MUKA'] = 0
             eTax['UANG_MUKA_DPP'] = float_repr(abs(sum(lines.mapped(lambda l: float_round(l.price_subtotal, 0)))), 0)
-            eTax['UANG_MUKA_PPN'] = float_repr(abs(sum(lines.mapped(lambda l: float_round(l.price_total - l.price_subtotal, 0)))), 0)
+            eTax['UANG_MUKA_PPN'] = float_repr(
+                abs(sum(lines.mapped(lambda l: float_round(l.price_total - l.price_subtotal, 0)))), 0)
 
             fk_values_list = ['FK'] + [eTax[f] for f in FK_HEAD_LIST[1:]]
 

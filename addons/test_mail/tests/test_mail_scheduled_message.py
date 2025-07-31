@@ -1,14 +1,16 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.addons.base.tests.test_ir_cron import CronMixinCase
+from unittest.mock import patch
+
 from odoo.addons.mail.tests.common import MailCommon
 from odoo.addons.test_mail.models.mail_test_lead import MailTestTLead
 from odoo.addons.test_mail.tests.common import TestRecipients
+
+from odoo.addons.base.tests.test_ir_cron import CronMixinCase
 from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.fields import Datetime as FieldDatetime
 from odoo.tests import tagged, users
 from odoo.tools import mute_logger
-from unittest.mock import patch
 
 
 @tagged('mail_scheduled_message')
@@ -84,7 +86,8 @@ class TestScheduledMessageAccess(TestScheduledMessage):
         # read a message scheduled by another user on a record the user can post to
         self.visible_scheduled_message.read()
         # search a message scheduled by another user on a record the user can post to
-        self.assertEqual(self.env['mail.scheduled.message'].search([['id', '=', self.visible_scheduled_message.id]]), self.visible_scheduled_message)
+        self.assertEqual(self.env['mail.scheduled.message'].search([['id', '=', self.visible_scheduled_message.id]]),
+                         self.visible_scheduled_message)
         # write on a message scheduled by another user on a record the user can post to
         with self.assertRaises(AccessError):
             self.visible_scheduled_message.write({'body': 'boum'})
@@ -101,7 +104,8 @@ class TestScheduledMessageAccess(TestScheduledMessage):
         # read own scheduled message
         scheduled_message.read()
         # search own scheduled message
-        self.assertEqual(self.env['mail.scheduled.message'].search([['id', '=', scheduled_message.id]]), scheduled_message)
+        self.assertEqual(self.env['mail.scheduled.message'].search([['id', '=', scheduled_message.id]]),
+                         scheduled_message)
         # write on own scheduled message
         scheduled_message.write({'body': 'Hello!'})
         # unlink own scheduled message
@@ -137,8 +141,8 @@ class TestScheduledMessageBusiness(TestScheduledMessage, CronMixinCase):
         schedule_cron_id = self.env.ref('mail.ir_cron_post_scheduled_message').id
         test_lead = self.env["mail.test.lead"].create({})
         with self.mock_mail_gateway(), \
-            self.mock_mail_app(), \
-            self.capture_triggers(schedule_cron_id) as capt:
+                self.mock_mail_app(), \
+                self.capture_triggers(schedule_cron_id) as capt:
             scheduled_message_id = self.schedule_message(
                 self.test_record,
                 scheduled_date='2022-12-24 14:00:00',
@@ -163,9 +167,9 @@ class TestScheduledMessageBusiness(TestScheduledMessage, CronMixinCase):
             def _message_post_after_hook(self, message, values):
                 raise Exception("Boum!")
 
-            with self.mock_datetime_and_now('2022-12-24 14:00:00'),\
-                patch.object(MailTestTLead, '_message_post_after_hook', _message_post_after_hook),\
-                mute_logger('odoo.addons.mail.models.mail_scheduled_message'):
+            with self.mock_datetime_and_now('2022-12-24 14:00:00'), \
+                    patch.object(MailTestTLead, '_message_post_after_hook', _message_post_after_hook), \
+                    mute_logger('odoo.addons.mail.models.mail_scheduled_message'):
                 self.env['mail.scheduled.message'].with_user(self.user_root)._post_messages_cron()
             # one scheduled message failed, only one mail should be sent
             self.assertEqual(len(self._new_mails), 1)
@@ -174,7 +178,7 @@ class TestScheduledMessageBusiness(TestScheduledMessage, CronMixinCase):
                 self._new_msgs.filtered(lambda m: not m.model),
                 [{
                     'content': f"<p>The message scheduled on {test_lead._name}({test_lead.id}) with"
-                    " the following content could not be sent:<br>-----<br></p><p>fail</p><br>-----<br>",
+                               " the following content could not be sent:<br>-----<br></p><p>fail</p><br>-----<br>",
                     'message_type': 'user_notification',
                     'subtype': 'mail.mt_note',
                     'message_values': {
@@ -206,4 +210,5 @@ class TestScheduledMessageBusiness(TestScheduledMessage, CronMixinCase):
             )
             self.assertEqual(self._new_mails[0].state, 'sent')
             # scheduled messages shouldn't exist anymore
-            self.assertFalse(self.env['mail.scheduled.message'].search([['id', 'in', [scheduled_message_id, failing_schedueld_message_id]]]))
+            self.assertFalse(self.env['mail.scheduled.message'].search(
+                [['id', 'in', [scheduled_message_id, failing_schedueld_message_id]]]))

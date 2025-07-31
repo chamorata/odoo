@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
+import logging
+
 from odoo import models
 
-import logging
 _logger = logging.getLogger(__name__)
 
 
 class AuthTotpDevice(models.Model):
-
     # init is overriden in res.users.apikeys to create a secret column 'key'
     # use a different model to benefit from the secured methods while not mixing
     # two different concepts

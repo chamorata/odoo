@@ -3,18 +3,16 @@
 import urllib.parse
 
 import werkzeug
+from odoo.addons.payment import utils as payment_utils
+from odoo.addons.payment.controllers.post_processing import PaymentPostProcessing
+from odoo.addons.portal.controllers import portal
 
 from odoo import _, http
 from odoo.exceptions import AccessError, ValidationError
 from odoo.http import request
 
-from odoo.addons.payment import utils as payment_utils
-from odoo.addons.payment.controllers.post_processing import PaymentPostProcessing
-from odoo.addons.portal.controllers import portal
-
 
 class PaymentPortal(portal.CustomerPortal):
-
     """ This controller contains the foundations for online payments through the portal.
 
     It allows to complete a full payment flow without the need of going through a document-based
@@ -38,8 +36,8 @@ class PaymentPortal(portal.CustomerPortal):
         '/payment/pay', type='http', methods=['GET'], auth='public', website=True, sitemap=False,
     )
     def payment_pay(
-        self, reference=None, amount=None, currency_id=None, partner_id=None, company_id=None,
-        access_token=None, **kwargs
+            self, reference=None, amount=None, currency_id=None, partner_id=None, company_id=None,
+            access_token=None, **kwargs
     ):
         """ Display the payment form with optional filtering of payment options.
 
@@ -283,9 +281,9 @@ class PaymentPortal(portal.CustomerPortal):
         return tx_sudo._get_processing_values()
 
     def _create_transaction(
-        self, provider_id, payment_method_id, token_id, amount, currency_id, partner_id, flow,
-        tokenization_requested, landing_route, reference_prefix=None, is_validation=False,
-        custom_create_values=None, **kwargs
+            self, provider_id, payment_method_id, token_id, amount, currency_id, partner_id, flow,
+            tokenization_requested, landing_route, reference_prefix=None, is_validation=False,
+            custom_create_values=None, **kwargs
     ):
         """ Create a draft transaction based on the payment context and return it.
 
@@ -412,7 +410,7 @@ class PaymentPortal(portal.CustomerPortal):
 
             # Raise an HTTP 404 if the access token is invalid
             if not payment_utils.check_access_token(
-                access_token, tx_sudo.partner_id.id, tx_sudo.amount, tx_sudo.currency_id.id
+                    access_token, tx_sudo.partner_id.id, tx_sudo.amount, tx_sudo.currency_id.id
             ):
                 raise werkzeug.exceptions.NotFound()  # Don't leak information about ids.
 

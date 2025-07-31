@@ -1,9 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.sale_loyalty.tests.common import TestSaleCouponCommon
+
 from odoo.fields import Command
 from odoo.tests import tagged
-
-from odoo.addons.sale_loyalty.tests.common import TestSaleCouponCommon
 
 
 @tagged('-at_install', 'post_install')
@@ -110,7 +110,7 @@ class TestPayWithGiftCard(TestSaleCouponCommon):
         self._apply_promo_code(order, "test_10pc")
         # real flows also have to update the programs and rewards
         order._update_programs_and_rewards()
-        self.assertEqual(order.amount_total, 40) # 100 - 10% - 50
+        self.assertEqual(order.amount_total, 40)  # 100 - 10% - 50
 
     def test_paying_with_gift_card_blocking_discount(self):
         # Test that a payment program making the order total 0 still allows the user to claim discounts
@@ -151,7 +151,7 @@ class TestPayWithGiftCard(TestSaleCouponCommon):
         self._apply_promo_code(order, "test_10pc")
         # real flows also have to update the programs and rewards
         order._update_programs_and_rewards()
-        self.assertEqual(order.amount_total, 0) # 100 - 10% - 90
+        self.assertEqual(order.amount_total, 0)  # 100 - 10% - 90
 
     def test_gift_card_product_has_no_taxes_on_creation(self):
         gift_card_program = self.env['loyalty.program'].create({

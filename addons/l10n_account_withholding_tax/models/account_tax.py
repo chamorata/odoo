@@ -44,7 +44,8 @@ class AccountTax(models.Model):
         """ The computation of withholding taxes needs to be limited in computation types to ensure that it works as expected. """
         for tax in self:
             if tax.is_withholding_tax_on_payment and tax.amount_type in ['group', 'division']:
-                raise UserError(tax.env._("Withholding On Payment taxes cannot use the 'Group of Taxes' or the 'Percentage Tax Included' computations."))
+                raise UserError(tax.env._(
+                    "Withholding On Payment taxes cannot use the 'Group of Taxes' or the 'Percentage Tax Included' computations."))
 
     # -----------------------
     # CRUD, inherited methods

@@ -1,15 +1,18 @@
-from odoo.exceptions import UserError
 from odoo import fields, models, api, _
-
+from odoo.exceptions import UserError
 from .razorpay_pos_request import RazorpayPosRequest
+
 
 class PosPaymentMethod(models.Model):
     _inherit = 'pos.payment.method'
 
     razorpay_tid = fields.Char(string='Razorpay Device Serial No', help='Device Serial No \n ex: 7000012300')
-    razorpay_allowed_payment_modes = fields.Selection(selection=[('all', 'All'), ('card', 'Card'), ('upi', 'UPI'), ('bharatqr', 'BHARATQR')], default='all', help='Choose allow payment mode: \n All/Card/UPI or QR')
+    razorpay_allowed_payment_modes = fields.Selection(
+        selection=[('all', 'All'), ('card', 'Card'), ('upi', 'UPI'), ('bharatqr', 'BHARATQR')], default='all',
+        help='Choose allow payment mode: \n All/Card/UPI or QR')
     razorpay_username = fields.Char(string='Razorpay Username', help='Username(Device Login) \n ex: 1234500121')
-    razorpay_api_key = fields.Char(string='Razorpay API Key', help='Used when connecting to Razorpay: https://razorpay.com/docs/payments/dashboard/account-settings/api-keys/')
+    razorpay_api_key = fields.Char(string='Razorpay API Key',
+                                   help='Used when connecting to Razorpay: https://razorpay.com/docs/payments/dashboard/account-settings/api-keys/')
     razorpay_test_mode = fields.Boolean(string='Razorpay Test Mode', default=False, help='Turn it on when in Test Mode')
 
     def _get_payment_terminal_selection(self):
@@ -77,5 +80,6 @@ class PosPaymentMethod(models.Model):
 
     @api.constrains('use_payment_terminal')
     def _check_razorpay_terminal(self):
-        if any(record.use_payment_terminal == 'razorpay' and record.company_id.currency_id.name != 'INR' for record in self):
+        if any(record.use_payment_terminal == 'razorpay' and record.company_id.currency_id.name != 'INR' for record in
+               self):
             raise UserError(_('This Payment Terminal is only valid for INR Currency'))

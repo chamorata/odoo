@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 {
-    'name' : 'Fleet',
-    'version' : '0.1',
+    'name': 'Fleet',
+    'version': '0.1',
     'sequence': 185,
     'category': 'Human Resources/Fleet',
-    'website' : 'https://www.odoo.com/app/fleet',
-    'summary' : 'Manage your fleet and track car costs',
-    'description' : """
+    'website': 'https://www.odoo.com/app/fleet',
+    'summary': 'Manage your fleet and track car costs',
+    'description': """
 Vehicle, leasing, insurances, cost
 ==================================
 With this module, Odoo helps you managing all your vehicles, the

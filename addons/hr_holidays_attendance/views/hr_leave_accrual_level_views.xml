@@ -9,10 +9,10 @@
                 <div class="o_row" invisible="accrued_gain_time == 'start'">
                     <label for="frequency_hourly_source" string="Source"/>
                     <field
-                        name="frequency_hourly_source"
-                        required="frequency == 'hourly'"
-                        widget="radio"
-                        options="{'horizontal': true}"/>
+                            name="frequency_hourly_source"
+                            required="frequency == 'hourly'"
+                            widget="radio"
+                            options="{'horizontal': true}"/>
                 </div>
             </div>
         </field>

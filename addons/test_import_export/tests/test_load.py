@@ -237,7 +237,7 @@ class test_integer_field(ImporterCase):
             [
                 ['1'],
                 ['42'],
-                [str(2**31 - 1)],
+                [str(2 ** 31 - 1)],
                 ['12345678'],
             ],
         )
@@ -248,7 +248,7 @@ class test_integer_field(ImporterCase):
             [
                 1,
                 42,
-                2**31 - 1,
+                2 ** 31 - 1,
                 12345678,
             ],
             values(self.read()),
@@ -260,8 +260,8 @@ class test_integer_field(ImporterCase):
             [
                 ['-1'],
                 ['-42'],
-                [str(-(2**31 - 1))],
-                [str(-(2**31))],
+                [str(-(2 ** 31 - 1))],
+                [str(-(2 ** 31))],
                 ['-12345678'],
             ],
         )
@@ -271,8 +271,8 @@ class test_integer_field(ImporterCase):
             [
                 -1,
                 -42,
-                -(2**31 - 1),
-                -(2**31),
+                -(2 ** 31 - 1),
+                -(2 ** 31),
                 -12345678,
             ],
             values(self.read()),
@@ -280,7 +280,7 @@ class test_integer_field(ImporterCase):
 
     @mute_logger('odoo.sql_db', 'odoo.models')
     def test_out_of_range(self):
-        result = self.import_(['value'], [[str(2**31)]])
+        result = self.import_(['value'], [[str(2 ** 31)]])
         self.assertIs(result['ids'], False)
         self.assertEqual(
             result['messages'],
@@ -294,7 +294,7 @@ class test_integer_field(ImporterCase):
             ],
         )
 
-        result = self.import_(['value'], [[str(-(2**32))]])
+        result = self.import_(['value'], [[str(-(2 ** 32))]])
         self.assertIs(result['ids'], False)
         self.assertEqual(
             result['messages'],
@@ -355,9 +355,9 @@ class test_float_field(ImporterCase):
             [
                 ['1'],
                 ['42'],
-                [str(2**31 - 1)],
+                [str(2 ** 31 - 1)],
                 ['12345678'],
-                [str(2**33)],
+                [str(2 ** 33)],
                 ['0.000001'],
             ],
         )
@@ -368,9 +368,9 @@ class test_float_field(ImporterCase):
             [
                 1,
                 42,
-                2**31 - 1,
+                2 ** 31 - 1,
                 12345678,
-                2.0**33,
+                2.0 ** 33,
                 0.000001,
             ],
             values(self.read()),
@@ -382,10 +382,10 @@ class test_float_field(ImporterCase):
             [
                 ['-1'],
                 ['-42'],
-                [str(-(2**31) + 1)],
-                [str(-(2**31))],
+                [str(-(2 ** 31) + 1)],
+                [str(-(2 ** 31))],
                 ['-12345678'],
-                [str(-(2**33))],
+                [str(-(2 ** 33))],
                 ['-0.000001'],
             ],
         )
@@ -395,10 +395,10 @@ class test_float_field(ImporterCase):
             [
                 -1,
                 -42,
-                -(2**31 - 1),
-                -(2**31),
+                -(2 ** 31 - 1),
+                -(2 ** 31),
                 -12345678,
-                -(2.0**33),
+                -(2.0 ** 33),
                 -0.000001,
             ],
             values(self.read()),
@@ -407,7 +407,8 @@ class test_float_field(ImporterCase):
     def test_nonsense(self):
         result = self.import_(['value'], [['foobar']])
         self.assertIs(result['ids'], False)
-        self.assertEqual(result['messages'], [message("'foobar' does not seem to be a number for field 'Value'", field_name='Value')])
+        self.assertEqual(result['messages'],
+                         [message("'foobar' does not seem to be a number for field 'Value'", field_name='Value')])
 
 
 class test_string_field(ImporterCase):
@@ -570,11 +571,15 @@ class test_selection(ImporterCase):
     def test_invalid(self):
         result = self.import_(['value'], [['Baz']])
         self.assertIs(result['ids'], False)
-        self.assertEqual(result['messages'], [message("Value 'Baz' not found in selection field 'Value'", moreinfo="Foo Bar Qux 4".split(), field_name='Value', field_path=['value'])])
+        self.assertEqual(result['messages'],
+                         [message("Value 'Baz' not found in selection field 'Value'", moreinfo="Foo Bar Qux 4".split(),
+                                  field_name='Value', field_path=['value'])])
 
         result = self.import_(['value'], [['42']])
         self.assertIs(result['ids'], False)
-        self.assertEqual(result['messages'], [message("Value '42' not found in selection field 'Value'", moreinfo="Foo Bar Qux 4".split(), field_name='Value', field_path=['value'])])
+        self.assertEqual(result['messages'],
+                         [message("Value '42' not found in selection field 'Value'", moreinfo="Foo Bar Qux 4".split(),
+                                  field_name='Value', field_path=['value'])])
 
 
 class test_selection_with_default(ImporterCase):
@@ -682,7 +687,8 @@ class test_m2o(ImporterCase):
         self.assertFalse(result['messages'])
         self.assertEqual(len(result['ids']), 3)
         # correct ids assigned to corresponding records
-        self.assertEqual([(record1.id, record1.display_name), (record1.id, record1.display_name), (record2.id, record2.display_name)], values(self.read()))
+        self.assertEqual([(record1.id, record1.display_name), (record1.id, record1.display_name),
+                          (record2.id, record2.display_name)], values(self.read()))
 
     def test_by_xid(self):
         record = self.env['export.integer'].create({'value': 42})
@@ -709,7 +715,9 @@ class test_m2o(ImporterCase):
         self.assertEqual(record1.display_name, record2.display_name)
 
         result = self.import_(['value'], [[record2.display_name]])
-        self.assertEqual(result['messages'], [message('Found multiple matches for value "export.integer:42" in field "Value" (2 matches)', type_='warning')])
+        self.assertEqual(result['messages'],
+                         [message('Found multiple matches for value "export.integer:42" in field "Value" (2 matches)',
+                                  type_='warning')])
         self.assertEqual(len(result['ids']), 1)
         self.assertEqual(
             [
@@ -775,7 +783,8 @@ class test_m2o(ImporterCase):
         import m2o subfields (at all)...
         """
         result = self.import_(['value/value'], [['42']])
-        self.assertEqual(result['messages'], [message("Can not create Many-To-One records indirectly, import the field separately")])
+        self.assertEqual(result['messages'],
+                         [message("Can not create Many-To-One records indirectly, import the field separately")])
         self.assertIs(result['ids'], False)
 
     def test_fail_noids(self):
@@ -829,7 +838,8 @@ class test_m2o(ImporterCase):
 
     def test_fail_multiple(self):
         result = self.import_(['value', 'value/id'], [['somename', 'somexid']])
-        self.assertEqual(result['messages'], [message("Ambiguous specification for field 'Value', only provide one of name, external id or database id")])
+        self.assertEqual(result['messages'], [message(
+            "Ambiguous specification for field 'Value', only provide one of name, external id or database id")])
         self.assertIs(result['ids'], False)
 
     def test_fail_id(self):
@@ -1432,7 +1442,9 @@ class test_date(ImporterCase):
     def test_invalid(self):
         result = self.import_(['value'], [['not really a date']])
         self.assertEqual(
-            result['messages'], [message("'not really a date' does not seem to be a valid date for field 'Value'", moreinfo="Use the format '2012-12-31'", field_name='Value', field_path=['value'])]
+            result['messages'], [message("'not really a date' does not seem to be a valid date for field 'Value'",
+                                         moreinfo="Use the format '2012-12-31'", field_name='Value',
+                                         field_path=['value'])]
         )
         self.assertIs(result['ids'], False)
 
@@ -1452,7 +1464,8 @@ class test_datetime(ImporterCase):
         result = self.import_(['value'], [['not really a datetime']])
         self.assertEqual(
             result['messages'],
-            [message("'not really a datetime' does not seem to be a valid datetime for field 'Value'", moreinfo="Use the format '2012-12-31 23:59:59'", field_name='Value', field_path=['value'])],
+            [message("'not really a datetime' does not seem to be a valid datetime for field 'Value'",
+                     moreinfo="Use the format '2012-12-31 23:59:59'", field_name='Value', field_path=['value'])],
         )
         self.assertIs(result['ids'], False)
 
@@ -1467,12 +1480,16 @@ class test_datetime(ImporterCase):
         # UTC+1400
         result = self.import_(['value'], [['2012-02-03 11:11:11']], {'tz': 'Pacific/Kiritimati'})
         self.assertFalse(result['messages'])
-        self.assertEqual([fields.Datetime.to_string(value['value']) for value in self.read(domain=[('id', 'in', result['ids'])])], ['2012-02-02 21:11:11'])
+        self.assertEqual(
+            [fields.Datetime.to_string(value['value']) for value in self.read(domain=[('id', 'in', result['ids'])])],
+            ['2012-02-02 21:11:11'])
 
         # UTC-0930
         result = self.import_(['value'], [['2012-02-03 11:11:11']], {'tz': 'Pacific/Marquesas'})
         self.assertFalse(result['messages'])
-        self.assertEqual([fields.Datetime.to_string(value['value']) for value in self.read(domain=[('id', 'in', result['ids'])])], ['2012-02-03 20:41:11'])
+        self.assertEqual(
+            [fields.Datetime.to_string(value['value']) for value in self.read(domain=[('id', 'in', result['ids'])])],
+            ['2012-02-03 20:41:11'])
 
     def test_usertz(self):
         """If the context does not hold a timezone, the importing user's tz
@@ -1483,7 +1500,9 @@ class test_datetime(ImporterCase):
 
         result = self.import_(['value'], [['2012-02-03 11:11:11']])
         self.assertFalse(result['messages'])
-        self.assertEqual([fields.Datetime.to_string(value['value']) for value in self.read(domain=[('id', 'in', result['ids'])])], ['2012-02-03 01:11:11'])
+        self.assertEqual(
+            [fields.Datetime.to_string(value['value']) for value in self.read(domain=[('id', 'in', result['ids'])])],
+            ['2012-02-03 01:11:11'])
 
     def test_notz(self):
         """If there is no tz either in the context or on the user, falls back
@@ -1493,7 +1512,9 @@ class test_datetime(ImporterCase):
 
         result = self.import_(['value'], [['2012-02-03 11:11:11']])
         self.assertFalse(result['messages'])
-        self.assertEqual([fields.Datetime.to_string(value['value']) for value in self.read(domain=[('id', 'in', result['ids'])])], ['2012-02-03 11:11:11'])
+        self.assertEqual(
+            [fields.Datetime.to_string(value['value']) for value in self.read(domain=[('id', 'in', result['ids'])])],
+            ['2012-02-03 11:11:11'])
 
 
 class test_unique(ImporterCase):
@@ -1515,8 +1536,12 @@ class test_unique(ImporterCase):
         self.assertEqual(
             result['messages'],
             [
-                dict(message="The value for the field 'value' already exists (this is probably 'Value' in the current model).", type='error', rows={'from': 1, 'to': 1}, record=1, field='value'),
-                dict(message="The value for the field 'value' already exists (this is probably 'Value' in the current model).", type='error', rows={'from': 4, 'to': 4}, record=4, field='value'),
+                dict(
+                    message="The value for the field 'value' already exists (this is probably 'Value' in the current model).",
+                    type='error', rows={'from': 1, 'to': 1}, record=1, field='value'),
+                dict(
+                    message="The value for the field 'value' already exists (this is probably 'Value' in the current model).",
+                    type='error', rows={'from': 4, 'to': 4}, record=4, field='value'),
             ],
         )
 

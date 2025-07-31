@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 
 from odoo.addons.auth_totp.controllers.home import TRUSTED_DEVICE_AGE
 from odoo.addons.mail.tests.common import MailCommon
+
 from odoo.tests import tagged, users
 
 

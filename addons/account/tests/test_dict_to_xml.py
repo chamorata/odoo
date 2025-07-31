@@ -1,7 +1,7 @@
 from lxml import etree
+from odoo.addons.account.tools import dict_to_xml
 
 from odoo.tests import TransactionCase, tagged
-from odoo.addons.account.tools import dict_to_xml
 
 
 @tagged('post_install', '-at_install')

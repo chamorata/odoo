@@ -3,6 +3,7 @@
 from unittest.mock import Mock, patch
 
 from odoo.addons.mail.tests.common import MailCommon, mail_new_test_user
+
 from odoo.tests import tagged, users
 from odoo.tests.common import warmup
 
@@ -16,6 +17,7 @@ class TestMenuRootLookupByModel(MailCommon):
     the record when redirecting to the record from the link. That's what is tested
     here. For more details see IrUiMenu._get_best_backend_root_menu_id_for_model.
     """
+
     @classmethod
     def setUpClass(cls):
         """ Setup data for the tests, especially this menu hierarchy:
@@ -152,7 +154,7 @@ class TestMenuRootLookupByModel(MailCommon):
             self.assertEqual(Menu._get_best_backend_root_menu_id_for_model('res.company'), None)
         with (self.patch_get_backend_root_menu_ids(
                 self.env['res.partner'], [self.menu_root_sales.id, self.menu_root_contact.id]),
-              self.assertQueryCount(user_portal=1, user_public=1)):
+            self.assertQueryCount(user_portal=1, user_public=1)):
             self.assertEqual(Menu._get_best_backend_root_menu_id_for_model('res.partner'), None)
 
     @warmup

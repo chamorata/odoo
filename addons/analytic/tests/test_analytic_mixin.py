@@ -11,11 +11,16 @@ class TestAnalyticMixin(TransactionCase):
         cls.analytic_plan = cls.env['account.analytic.plan'].create({'name': 'Plan'})
 
         cls.sales_aa = cls.env['account.analytic.account'].create({'name': 'Sales', 'plan_id': cls.analytic_plan.id})
-        cls.administrative_aa = cls.env['account.analytic.account'].create({'name': 'Administrative', 'plan_id': cls.analytic_plan.id})
-        cls.rd_aa = cls.env['account.analytic.account'].create({'name': 'Research & Development', 'plan_id': cls.analytic_plan.id})
-        cls.commercial_aa = cls.env['account.analytic.account'].create({'name': 'Commercial', 'plan_id': cls.analytic_plan.id})
-        cls.marketing_aa = cls.env['account.analytic.account'].create({'name': 'Marketing', 'plan_id': cls.analytic_plan.id})
-        cls.com_marketing_aa = cls.env['account.analytic.account'].create({'name': 'Commercial & Marketing', 'plan_id': cls.analytic_plan.id})
+        cls.administrative_aa = cls.env['account.analytic.account'].create(
+            {'name': 'Administrative', 'plan_id': cls.analytic_plan.id})
+        cls.rd_aa = cls.env['account.analytic.account'].create(
+            {'name': 'Research & Development', 'plan_id': cls.analytic_plan.id})
+        cls.commercial_aa = cls.env['account.analytic.account'].create(
+            {'name': 'Commercial', 'plan_id': cls.analytic_plan.id})
+        cls.marketing_aa = cls.env['account.analytic.account'].create(
+            {'name': 'Marketing', 'plan_id': cls.analytic_plan.id})
+        cls.com_marketing_aa = cls.env['account.analytic.account'].create(
+            {'name': 'Commercial & Marketing', 'plan_id': cls.analytic_plan.id})
 
     def test_filtered_domain(self):
         """
@@ -63,12 +68,15 @@ class TestAnalyticMixin(TransactionCase):
         self.assertEqual(filter_domain('ilike', 'Commercial'), self.adm_commercial_ad | self.adm_com_marketing_ad)
         self.assertEqual(filter_domain('ilike', ''), adm_ids - self.adm_without_ad - self.adm_without_ad_1)
 
-        self.assertEqual(filter_domain('not ilike', 'Commercial'), adm_ids - self.adm_com_marketing_ad - self.adm_commercial_ad)
-        self.assertEqual(filter_domain('not ilike', ''), self.adm_without_ad + self.adm_without_ad_1)  # Should returns an AML without analytic_distribution
+        self.assertEqual(filter_domain('not ilike', 'Commercial'),
+                         adm_ids - self.adm_com_marketing_ad - self.adm_commercial_ad)
+        self.assertEqual(filter_domain('not ilike', ''),
+                         self.adm_without_ad + self.adm_without_ad_1)  # Should returns an AML without analytic_distribution
 
         self.assertEqual(filter_domain('!=', 'Commercial & Marketing'), adm_ids - self.adm_com_marketing_ad)
         self.assertEqual(filter_domain('!=', ''), adm_ids)  # Should returns an every ADM
         self.assertEqual(filter_domain('!=', self.commercial_aa.id), adm_ids - self.adm_commercial_ad)
 
         self.assertEqual(filter_domain('in', [self.commercial_aa.id]), self.adm_commercial_ad)
-        self.assertEqual(filter_domain('in', (self.sales_aa + self.rd_aa).ids), self.adm_sales_admin_ad + self.adm_rd_ad)
+        self.assertEqual(filter_domain('in', (self.sales_aa + self.rd_aa).ids),
+                         self.adm_sales_admin_ad + self.adm_rd_ad)

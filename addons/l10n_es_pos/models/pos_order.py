@@ -1,10 +1,12 @@
 from odoo import api, fields, models
 
+
 class PosOrder(models.Model):
     _inherit = "pos.order"
 
     is_l10n_es_simplified_invoice = fields.Boolean("Simplified invoice")
-    l10n_es_simplified_invoice_number = fields.Char("Simplified invoice number", compute="_compute_l10n_es_simplified_invoice_number")
+    l10n_es_simplified_invoice_number = fields.Char("Simplified invoice number",
+                                                    compute="_compute_l10n_es_simplified_invoice_number")
 
     @api.depends("account_move")
     def _compute_l10n_es_simplified_invoice_number(self):

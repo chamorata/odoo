@@ -1,9 +1,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.stock_account.tests.test_anglo_saxon_valuation_reconciliation_common import \
+    ValuationReconciliationTestCommon
+
 from odoo import Command, fields
-from odoo.tests import Form, tagged
-from odoo.addons.stock_account.tests.test_anglo_saxon_valuation_reconciliation_common import ValuationReconciliationTestCommon
 from odoo.exceptions import UserError
+from odoo.tests import Form, tagged
 
 
 @tagged('post_install', '-at_install')
@@ -499,7 +501,8 @@ class TestAngloSaxonValuation(ValuationReconciliationTestCommon):
         product.standard_price = 40
 
         stock_return_picking_form = Form(self.env['stock.return.picking']
-            .with_context(active_ids=pick.ids, active_id=pick.sorted().ids[0], active_model='stock.picking'))
+                                         .with_context(active_ids=pick.ids, active_id=pick.sorted().ids[0],
+                                                       active_model='stock.picking'))
         return_wiz = stock_return_picking_form.save()
         return_wiz.product_return_moves.quantity = 1
         return_wiz.product_return_moves.to_refund = False
@@ -631,8 +634,11 @@ class TestAngloSaxonValuation(ValuationReconciliationTestCommon):
         self.product.invoice_policy = 'delivery'
         self.product.standard_price = 10
 
-        self.env['stock.quant']._update_available_quantity(self.product, self.company_data['default_warehouse'].lot_stock_id, 1, owner_id=self.partner_b)
-        self.env['stock.quant']._update_available_quantity(self.product, self.company_data['default_warehouse'].lot_stock_id, 1)
+        self.env['stock.quant']._update_available_quantity(self.product,
+                                                           self.company_data['default_warehouse'].lot_stock_id, 1,
+                                                           owner_id=self.partner_b)
+        self.env['stock.quant']._update_available_quantity(self.product,
+                                                           self.company_data['default_warehouse'].lot_stock_id, 1)
 
         # Create and confirm a sale order for 2@12
         sale_order = self._so_and_confirm_two_units()
@@ -653,15 +659,15 @@ class TestAngloSaxonValuation(ValuationReconciliationTestCommon):
         # COGS should ignore the owned product
         self.assertRecordValues(invoice01.line_ids, [
             # pylint: disable=bad-whitespace
-            {'account_id': self.company_data['default_account_revenue'].id,     'debit': 0,     'credit': 12},
-            {'account_id': self.company_data['default_account_receivable'].id,  'debit': 12,    'credit': 0},
-            {'account_id': self.company_data['default_account_stock_out'].id,   'debit': 0,     'credit': 10},
-            {'account_id': self.company_data['default_account_expense'].id,     'debit': 10,    'credit': 0},
+            {'account_id': self.company_data['default_account_revenue'].id, 'debit': 0, 'credit': 12},
+            {'account_id': self.company_data['default_account_receivable'].id, 'debit': 12, 'credit': 0},
+            {'account_id': self.company_data['default_account_stock_out'].id, 'debit': 0, 'credit': 10},
+            {'account_id': self.company_data['default_account_expense'].id, 'debit': 10, 'credit': 0},
         ])
         self.assertRecordValues(invoice02.line_ids, [
             # pylint: disable=bad-whitespace
-            {'account_id': self.company_data['default_account_revenue'].id,     'debit': 0,     'credit': 12},
-            {'account_id': self.company_data['default_account_receivable'].id,  'debit': 12,    'credit': 0},
+            {'account_id': self.company_data['default_account_revenue'].id, 'debit': 0, 'credit': 12},
+            {'account_id': self.company_data['default_account_receivable'].id, 'debit': 12, 'credit': 0},
         ])
 
     def test_avco_fully_owned_and_delivered_invoice_post_delivery(self):
@@ -673,7 +679,9 @@ class TestAngloSaxonValuation(ValuationReconciliationTestCommon):
         self.product.invoice_policy = 'delivery'
         self.product.standard_price = 10
 
-        self.env['stock.quant']._update_available_quantity(self.product, self.company_data['default_warehouse'].lot_stock_id, 2, owner_id=self.partner_b)
+        self.env['stock.quant']._update_available_quantity(self.product,
+                                                           self.company_data['default_warehouse'].lot_stock_id, 2,
+                                                           owner_id=self.partner_b)
 
         sale_order = self._so_and_confirm_two_units()
         sale_order.picking_ids.move_line_ids.write({'quantity': 2, 'picked': True})
@@ -686,8 +694,8 @@ class TestAngloSaxonValuation(ValuationReconciliationTestCommon):
         amls = invoice.line_ids
         self.assertRecordValues(amls, [
             # pylint: disable=bad-whitespace
-            {'account_id': self.company_data['default_account_revenue'].id,     'debit': 0,     'credit': 24},
-            {'account_id': self.company_data['default_account_receivable'].id,  'debit': 24,    'credit': 0},
+            {'account_id': self.company_data['default_account_revenue'].id, 'debit': 0, 'credit': 24},
+            {'account_id': self.company_data['default_account_receivable'].id, 'debit': 24, 'credit': 0},
         ])
 
     # -------------------------------------------------------------------------
@@ -947,7 +955,8 @@ class TestAngloSaxonValuation(ValuationReconciliationTestCommon):
         in_move_2._action_confirm()
         in_move_2.write({'quantity': 2, 'picked': True})
         in_move_2._action_done()
-        self.assertEqual(self.product.stock_valuation_layer_ids[-1].value, -4)  # we sent two at 10 but they should have been sent at 12
+        self.assertEqual(self.product.stock_valuation_layer_ids[-1].value,
+                         -4)  # we sent two at 10 but they should have been sent at 12
         self.assertEqual(self.product.stock_valuation_layer_ids[-1].quantity, 0)
         self.assertEqual(sale_order.order_line.move_ids.stock_valuation_layer_ids[-1].quantity, 0)
 
@@ -1107,9 +1116,12 @@ class TestAngloSaxonValuation(ValuationReconciliationTestCommon):
         in_move_2._action_done()
 
         # check the last anglo saxon move line
-        revalued_anglo_expense_amls = sale_order.picking_ids.move_ids.stock_valuation_layer_ids[-1].stock_move_id.account_move_ids[-1].line_ids
-        revalued_cogs_aml = revalued_anglo_expense_amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_expense'])
-        self.assertEqual(revalued_cogs_aml.debit, 4, 'Price difference should have correctly reflected in expense account.')
+        revalued_anglo_expense_amls = \
+        sale_order.picking_ids.move_ids.stock_valuation_layer_ids[-1].stock_move_id.account_move_ids[-1].line_ids
+        revalued_cogs_aml = revalued_anglo_expense_amls.filtered(
+            lambda aml: aml.account_id == self.company_data['default_account_expense'])
+        self.assertEqual(revalued_cogs_aml.debit, 4,
+                         'Price difference should have correctly reflected in expense account.')
 
     def test_fifo_delivered_invoice_post_delivery_with_return(self):
         """Receive 2@10. SO1 2@12. Return 1 from SO1. SO2 1@12. Receive 1@20.
@@ -1208,7 +1220,8 @@ class TestAngloSaxonValuation(ValuationReconciliationTestCommon):
         cogs_aml_1 = amls_1.filtered(lambda aml: aml.account_id == self.company_data['default_account_expense'])
         self.assertEqual(cogs_aml_1.debit, 30)
         self.assertEqual(cogs_aml_1.credit, 0)
-        receivable_aml_1 = amls_1.filtered(lambda aml: aml.account_id == self.company_data['default_account_receivable'])
+        receivable_aml_1 = amls_1.filtered(
+            lambda aml: aml.account_id == self.company_data['default_account_receivable'])
         self.assertEqual(receivable_aml_1.debit, 24)
         self.assertEqual(receivable_aml_1.credit, 0)
         income_aml_1 = amls_1.filtered(lambda aml: aml.account_id == self.company_data['default_account_revenue'])
@@ -1223,7 +1236,8 @@ class TestAngloSaxonValuation(ValuationReconciliationTestCommon):
         cogs_aml_2 = amls_2.filtered(lambda aml: aml.account_id == self.company_data['default_account_expense'])
         self.assertEqual(cogs_aml_2.debit, 10)
         self.assertEqual(cogs_aml_2.credit, 0)
-        receivable_aml_2 = amls_2.filtered(lambda aml: aml.account_id == self.company_data['default_account_receivable'])
+        receivable_aml_2 = amls_2.filtered(
+            lambda aml: aml.account_id == self.company_data['default_account_receivable'])
         self.assertEqual(receivable_aml_2.debit, 12)
         self.assertEqual(receivable_aml_2.credit, 0)
         income_aml_2 = amls_2.filtered(lambda aml: aml.account_id == self.company_data['default_account_revenue'])
@@ -1518,7 +1532,8 @@ class TestAngloSaxonValuation(ValuationReconciliationTestCommon):
 
         # Create a new invoice for the returned product
         ctx = {'active_model': 'sale.order', 'active_ids': so.ids}
-        create_invoice_wizard = self.env['sale.advance.payment.inv'].with_context(ctx).create({'advance_payment_method': 'delivered'})
+        create_invoice_wizard = self.env['sale.advance.payment.inv'].with_context(ctx).create(
+            {'advance_payment_method': 'delivered'})
         create_invoice_wizard.create_invoices()
         reverse_invoice = so.invoice_ids[-1]
         with Form(reverse_invoice) as reverse_invoice_form:
@@ -1592,7 +1607,8 @@ class TestAngloSaxonValuation(ValuationReconciliationTestCommon):
             inv.button_draft()
             inv.action_post()
             cogs = invoices.line_ids.filtered(lambda l: l.account_id == out_account)
-            self.assertEqual(cogs.mapped('credit'), svl_values, 'Incorrect values while posting again invoice %s' % (i + 1))
+            self.assertEqual(cogs.mapped('credit'), svl_values,
+                             'Incorrect values while posting again invoice %s' % (i + 1))
 
         # Reset and repost all invoices (we only check the total value as the
         # distribution changes but does not really matter)
@@ -1666,7 +1682,8 @@ class TestAngloSaxonValuation(ValuationReconciliationTestCommon):
         self.env.invalidate_all()
         invoice01.with_user(accountman.id).action_post()
 
-        move_reversal = self.env['account.move.reversal'].with_context(active_model="account.move", active_ids=invoice01.ids).create({
+        move_reversal = self.env['account.move.reversal'].with_context(active_model="account.move",
+                                                                       active_ids=invoice01.ids).create({
             'journal_id': invoice01.journal_id.id,
         })
         reversal = move_reversal.modify_moves()
@@ -1750,7 +1767,8 @@ class TestAngloSaxonValuation(ValuationReconciliationTestCommon):
         so.picking_ids.move_ids.picked = True
         Form.from_action(self.env, so.picking_ids.button_validate()).save().process()
 
-        invoice_wizard = self.env['sale.advance.payment.inv'].with_context(active_ids=so.ids, open_invoices=True).create({})
+        invoice_wizard = self.env['sale.advance.payment.inv'].with_context(active_ids=so.ids,
+                                                                           open_invoices=True).create({})
         invoice_wizard.create_invoices()
         credit_note = so.invoice_ids.filtered(lambda i: i.state != 'posted')
         self.assertEqual(len(credit_note), 1)
@@ -1764,7 +1782,8 @@ class TestAngloSaxonValuation(ValuationReconciliationTestCommon):
         backorder.move_ids.picked = True
         backorder.button_validate()
 
-        invoice_wizard = self.env['sale.advance.payment.inv'].with_context(active_ids=so.ids, open_invoices=True).create({})
+        invoice_wizard = self.env['sale.advance.payment.inv'].with_context(active_ids=so.ids,
+                                                                           open_invoices=True).create({})
         invoice_wizard.create_invoices()
 
         invoice = so.invoice_ids.filtered(lambda i: i.state != 'posted')

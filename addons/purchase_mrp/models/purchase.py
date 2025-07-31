@@ -22,7 +22,8 @@ class PurchaseOrder(models.Model):
 
     def _get_mrp_productions(self, **kwargs):
         linked_mo = self.order_line.move_dest_ids.group_id.mrp_production_ids \
-                  | self.env['stock.move'].browse(self.order_line.move_ids._rollup_move_dests()).group_id.mrp_production_ids
+                    | self.env['stock.move'].browse(
+            self.order_line.move_ids._rollup_move_dests()).group_id.mrp_production_ids
         group_mo = self.order_line.group_id.mrp_production_ids
 
         return linked_mo | group_mo
@@ -53,12 +54,14 @@ class PurchaseOrderLine(models.Model):
 
     def _compute_qty_received(self):
         kit_lines = self.env['purchase.order.line']
-        lines_stock = self.filtered(lambda l: l.qty_received_method == 'stock_moves' and l.move_ids and l.state != 'cancel')
+        lines_stock = self.filtered(
+            lambda l: l.qty_received_method == 'stock_moves' and l.move_ids and l.state != 'cancel')
         product_by_company = defaultdict(OrderedSet)
         for line in lines_stock:
             product_by_company[line.company_id].add(line.product_id.id)
         kits_by_company = {
-            company: self.env['mrp.bom']._bom_find(self.env['product.product'].browse(product_ids), company_id=company.id, bom_type='phantom')
+            company: self.env['mrp.bom']._bom_find(self.env['product.product'].browse(product_ids),
+                                                   company_id=company.id, bom_type='phantom')
             for company, product_ids in product_by_company.items()
         }
         for line in lines_stock:
@@ -68,10 +71,10 @@ class PurchaseOrderLine(models.Model):
                 order_qty = line.product_uom._compute_quantity(line.product_uom_qty, kit_bom.product_uom_id)
                 filters = {
                     'incoming_moves': lambda m:
-                        m._is_incoming() and
-                        (not m.origin_returned_move_id or (m.origin_returned_move_id and m.to_refund)),
+                    m._is_incoming() and
+                    (not m.origin_returned_move_id or (m.origin_returned_move_id and m.to_refund)),
                     'outgoing_moves': lambda m:
-                        m._is_outgoing() and m.to_refund,
+                    m._is_outgoing() and m.to_refund,
                 }
                 line.qty_received = moves._compute_kit_quantities(line.product_id, order_qty, kit_bom, filters)
                 kit_lines += line

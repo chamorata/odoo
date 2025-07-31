@@ -16,7 +16,9 @@
                 <span invisible="not auto_batch"/>
                 <div class="o_row" name="batch_max_weight" invisible="not auto_batch">
                     <field name="batch_max_weight" class="oe_inline"/>
-                    <span><field name="weight_uom_name"/></span>
+                    <span>
+                        <field name="weight_uom_name"/>
+                    </span>
                 </div>
             </field>
         </field>

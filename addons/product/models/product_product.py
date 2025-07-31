@@ -2,7 +2,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import re
-from operator import itemgetter
 
 from odoo import api, fields, models, tools, _
 from odoo.exceptions import ValidationError
@@ -44,9 +43,13 @@ class ProductProduct(models.Model):
     barcode = fields.Char(
         'Barcode', copy=False, index='btree_not_null',
         help="International Article Number used for product identification.")
-    product_template_attribute_value_ids = fields.Many2many('product.template.attribute.value', relation='product_variant_combination', string="Attribute Values", ondelete='restrict')
-    product_template_variant_value_ids = fields.Many2many('product.template.attribute.value', relation='product_variant_combination',
-                                                          domain=[('attribute_line_id.value_count', '>', 1)], string="Variant Values", ondelete='restrict')
+    product_template_attribute_value_ids = fields.Many2many('product.template.attribute.value',
+                                                            relation='product_variant_combination',
+                                                            string="Attribute Values", ondelete='restrict')
+    product_template_variant_value_ids = fields.Many2many('product.template.attribute.value',
+                                                          relation='product_variant_combination',
+                                                          domain=[('attribute_line_id.value_count', '>', 1)],
+                                                          string="Variant Values", ondelete='restrict')
     combination_indices = fields.Char(compute='_compute_combination_indices', store=True, index=True)
     is_product_variant = fields.Boolean(compute='_compute_is_product_variant')
 
@@ -80,7 +83,8 @@ class ProductProduct(models.Model):
         relation='product_tag_product_product_rel',
         domain="[('id', 'not in', product_tag_ids)]",
     )
-    all_product_tag_ids = fields.Many2many('product.tag', compute='_compute_all_product_tag_ids', search='_search_all_product_tag_ids')
+    all_product_tag_ids = fields.Many2many('product.tag', compute='_compute_all_product_tag_ids',
+                                           search='_search_all_product_tag_ids')
 
     # all image fields are base64 encoded and PIL-supported
 
@@ -88,11 +92,16 @@ class ProductProduct(models.Model):
     image_variant_1920 = fields.Image("Variant Image", max_width=1920, max_height=1920)
 
     # resized fields stored (as attachment) for performance
-    image_variant_1024 = fields.Image("Variant Image 1024", related="image_variant_1920", max_width=1024, max_height=1024, store=True)
-    image_variant_512 = fields.Image("Variant Image 512", related="image_variant_1920", max_width=512, max_height=512, store=True)
-    image_variant_256 = fields.Image("Variant Image 256", related="image_variant_1920", max_width=256, max_height=256, store=True)
-    image_variant_128 = fields.Image("Variant Image 128", related="image_variant_1920", max_width=128, max_height=128, store=True)
-    can_image_variant_1024_be_zoomed = fields.Boolean("Can Variant Image 1024 be zoomed", compute='_compute_can_image_variant_1024_be_zoomed', store=True)
+    image_variant_1024 = fields.Image("Variant Image 1024", related="image_variant_1920", max_width=1024,
+                                      max_height=1024, store=True)
+    image_variant_512 = fields.Image("Variant Image 512", related="image_variant_1920", max_width=512, max_height=512,
+                                     store=True)
+    image_variant_256 = fields.Image("Variant Image 256", related="image_variant_1920", max_width=256, max_height=256,
+                                     store=True)
+    image_variant_128 = fields.Image("Variant Image 128", related="image_variant_1920", max_width=128, max_height=128,
+                                     store=True)
+    can_image_variant_1024_be_zoomed = fields.Boolean("Can Variant Image 1024 be zoomed",
+                                                      compute='_compute_can_image_variant_1024_be_zoomed', store=True)
 
     # Computed fields that are used to create a fallback to the template if
     # necessary, it's recommended to display those fields to the user.
@@ -107,22 +116,23 @@ class ProductProduct(models.Model):
     @api.depends('image_variant_1920', 'image_variant_1024')
     def _compute_can_image_variant_1024_be_zoomed(self):
         for record in self:
-            record.can_image_variant_1024_be_zoomed = record.image_variant_1920 and is_image_size_above(record.image_variant_1920, record.image_variant_1024)
+            record.can_image_variant_1024_be_zoomed = record.image_variant_1920 and is_image_size_above(
+                record.image_variant_1920, record.image_variant_1024)
 
     def _set_template_field(self, template_field, variant_field):
         for record in self:
             if (
-                # We are trying to remove a field from the variant even though it is already
-                # not set on the variant, remove it from the template instead.
-                (not record[template_field] and not record[variant_field])
-                # We are trying to add a field to the variant, but the template field is
-                # not set, write on the template instead.
-                or (record[template_field] and not record.product_tmpl_id[template_field])
-                # There is only one variant, always write on the template.
-                or self.search_count([
-                    ('product_tmpl_id', '=', record.product_tmpl_id.id),
-                    ('active', '=', True),
-                ]) <= 1
+                    # We are trying to remove a field from the variant even though it is already
+                    # not set on the variant, remove it from the template instead.
+                    (not record[template_field] and not record[variant_field])
+                    # We are trying to add a field to the variant, but the template field is
+                    # not set, write on the template instead.
+                    or (record[template_field] and not record.product_tmpl_id[template_field])
+                    # There is only one variant, always write on the template.
+                    or self.search_count([
+                ('product_tmpl_id', '=', record.product_tmpl_id.id),
+                ('active', '=', True),
+            ]) <= 1
             ):
                 record[variant_field] = False
                 record.product_tmpl_id[template_field] = record[template_field]
@@ -196,7 +206,8 @@ class ProductProduct(models.Model):
 
         There could be no variant for a combination if using dynamic attributes.
         """
-        self.env.cr.execute("CREATE UNIQUE INDEX IF NOT EXISTS product_product_combination_unique ON %s (product_tmpl_id, combination_indices) WHERE active is true"
+        self.env.cr.execute(
+            "CREATE UNIQUE INDEX IF NOT EXISTS product_product_combination_unique ON %s (product_tmpl_id, combination_indices) WHERE active is true"
             % self._table)
 
     def _get_barcodes_by_company(self):
@@ -218,7 +229,8 @@ class ProductProduct(models.Model):
         duplicates_as_str = "\n".join(
             _(
                 "- Barcode \"%(barcode)s\" already assigned to product(s): %(product_list)s",
-                barcode=record['barcode'], product_list=format_list(self.env, [p.display_name for p in self.search([('id', 'in', record['id'])])]),
+                barcode=record['barcode'],
+                product_list=format_list(self.env, [p.display_name for p in self.search([('id', 'in', record['id'])])]),
             )
             for record in products_by_barcode if len(record['id']) > 1
         )
@@ -262,7 +274,8 @@ class ProductProduct(models.Model):
     def _set_product_lst_price(self):
         for product in self:
             if self._context.get('uom'):
-                value = self.env['uom.uom'].browse(self._context['uom'])._compute_price(product.lst_price, product.uom_id)
+                value = self.env['uom.uom'].browse(self._context['uom'])._compute_price(product.lst_price,
+                                                                                        product.uom_id)
             else:
                 value = product.lst_price
             value -= product.price_extra
@@ -319,8 +332,8 @@ class ProductProduct(models.Model):
             domain = [
                 ('pricelist_id.active', '=', True),
                 '|',
-                    '&', ('product_tmpl_id', '=', product.product_tmpl_id.id), ('applied_on', '=', '1_product'),
-                    '&', ('product_id', '=', product.id), ('applied_on', '=', '0_product_variant'),
+                '&', ('product_tmpl_id', '=', product.product_tmpl_id.id), ('applied_on', '=', '1_product'),
+                '&', ('product_id', '=', product.id), ('applied_on', '=', '0_product_variant'),
                 ('compute_price', '=', 'fixed'),
             ]
             product.pricelist_item_count = self.env['product.pricelist.item'].search_count(domain)
@@ -336,7 +349,7 @@ class ProductProduct(models.Model):
     def _compute_all_product_tag_ids(self):
         for product in self:
             product.all_product_tag_ids = (
-                product.product_tag_ids | product.additional_product_tag_ids
+                    product.product_tag_ids | product.additional_product_tag_ids
             ).sorted('sequence')
 
     def _search_all_product_tag_ids(self, operator, operand):
@@ -537,8 +550,8 @@ class ProductProduct(models.Model):
                 temp = []
                 for s in sellers:
                     seller_variant = s.product_name and (
-                        variant and "%s (%s)" % (s.product_name, variant) or s.product_name
-                        ) or False
+                            variant and "%s (%s)" % (s.product_name, variant) or s.product_name
+                    ) or False
                     temp.append(get_display_name(seller_variant or name, s.product_code or product.default_code))
 
                 # => Feature drop here, one record can only have one display_name now, instead separate with `,`
@@ -580,19 +593,25 @@ class ProductProduct(models.Model):
         products = self.browse()
         domain = args or []
         if operator in positive_operators:
-            products = self.search_fetch(expression.AND([domain, [('default_code', '=', name)]]), ['display_name'], limit=limit) \
-                or self.search_fetch(expression.AND([domain, [('barcode', '=', name)]]), ['display_name'], limit=limit)
+            products = self.search_fetch(expression.AND([domain, [('default_code', '=', name)]]), ['display_name'],
+                                         limit=limit) \
+                       or self.search_fetch(expression.AND([domain, [('barcode', '=', name)]]), ['display_name'],
+                                            limit=limit)
         if not products:
             if is_positive:
                 # Do not merge the 2 next lines into one single search, SQL search performance would be abysmal
                 # on a database with thousands of matching products, due to the huge merge+unique needed for the
                 # OR operator (and given the fact that the 'name' lookup results come from the ir.translation table
                 # Performing a quick memory merge of ids in Python will give much better performance
-                products = self.search_fetch(expression.AND([domain, [('default_code', operator, name)]]), ['display_name'], limit=limit)
+                products = self.search_fetch(expression.AND([domain, [('default_code', operator, name)]]),
+                                             ['display_name'], limit=limit)
                 limit_rest = limit and limit - len(products)
                 if limit_rest is None or limit_rest > 0:
-                    products_query = self._search(expression.AND([domain, [('default_code', operator, name)]]), limit=limit)
-                    products |= self.search_fetch(expression.AND([domain, [('id', 'not in', products_query)], [('name', operator, name)]]), ['display_name'], limit=limit_rest)
+                    products_query = self._search(expression.AND([domain, [('default_code', operator, name)]]),
+                                                  limit=limit)
+                    products |= self.search_fetch(
+                        expression.AND([domain, [('id', 'not in', products_query)], [('name', operator, name)]]),
+                        ['display_name'], limit=limit_rest)
             else:
                 domain_neg = [
                     ('name', operator, name),
@@ -623,7 +642,7 @@ class ProductProduct(models.Model):
             )
         return super().view_header_get(view_id, view_type)
 
-    #=== ACTION METHODS ===#
+    # === ACTION METHODS ===#
 
     def action_open_label_layout(self):
         action = self.env['ir.actions.act_window']._for_xml_id('product.action_open_label_layout')
@@ -633,10 +652,10 @@ class ProductProduct(models.Model):
     def open_pricelist_rules(self):
         self.ensure_one()
         domain = ['|',
-            '&', ('product_tmpl_id', '=', self.product_tmpl_id.id), ('applied_on', '=', '1_product'),
-            '&', ('product_id', '=', self.id), ('applied_on', '=', '0_product_variant'),
-            ('compute_price', '=', 'fixed'),
-        ]
+                  '&', ('product_tmpl_id', '=', self.product_tmpl_id.id), ('applied_on', '=', '1_product'),
+                  '&', ('product_id', '=', self.id), ('applied_on', '=', '0_product_variant'),
+                  ('compute_price', '=', 'fixed'),
+                  ]
         return {
             'name': _('Price Rules'),
             'view_mode': 'list,form',
@@ -672,7 +691,7 @@ class ProductProduct(models.Model):
         })
         return res
 
-    #=== BUSINESS METHODS ===#
+    # === BUSINESS METHODS ===#
 
     def _prepare_sellers(self, params=False):
         sellers = self.seller_ids._get_filtered_supplier(self.env.company, self, params)
@@ -698,14 +717,16 @@ class ProductProduct(models.Model):
                 continue
             if partner_id and seller.partner_id not in [partner_id, partner_id.parent_id]:
                 continue
-            if quantity is not None and float_compare(quantity_uom_seller, seller.min_qty, precision_digits=precision) == -1:
+            if quantity is not None and float_compare(quantity_uom_seller, seller.min_qty,
+                                                      precision_digits=precision) == -1:
                 continue
             if seller.product_id and seller.product_id != self:
                 continue
             sellers |= seller
         return sellers
 
-    def _select_seller(self, partner_id=False, quantity=0.0, date=None, uom_id=False, ordered_by='price_discounted', params=False):
+    def _select_seller(self, partner_id=False, quantity=0.0, date=None, uom_id=False, ordered_by='price_discounted',
+                       params=False):
         # Always sort by discounted price but another field can take the primacy through the `ordered_by` param.
         sort_key = ('price_discounted', 'sequence', 'id')
         if ordered_by != 'price_discounted':
@@ -722,7 +743,9 @@ class ProductProduct(models.Model):
                 ),
             }
             return [vals.get(key, record[key]) for key in sort_key]
-        sellers = self._get_filtered_sellers(partner_id=partner_id, quantity=quantity, date=date, uom_id=uom_id, params=params)
+
+        sellers = self._get_filtered_sellers(partner_id=partner_id, quantity=quantity, date=date, uom_id=uom_id,
+                                             params=params)
         res = self.env['product.supplierinfo']
         for seller in sellers:
             if not res or res.partner_id == seller.partner_id:
@@ -746,9 +769,9 @@ class ProductProduct(models.Model):
         return sum(
             ptav.price_extra for ptav in combination.filtered(
                 lambda ptav:
-                    ptav.price_extra
-                    and ptav.product_tmpl_id == self.product_tmpl_id
-                    and ptav not in self.product_template_attribute_value_ids
+                ptav.price_extra
+                and ptav.product_tmpl_id == self.product_tmpl_id
+                and ptav not in self.product_template_attribute_value_ids
             )
         )
 
@@ -821,7 +844,9 @@ class ProductProduct(models.Model):
         :rtype: bool
         """
         self.ensure_one()
-        return self.product_tmpl_id._is_combination_possible(self.product_template_attribute_value_ids, parent_combination=parent_combination, ignore_no_variant=True)
+        return self.product_tmpl_id._is_combination_possible(self.product_template_attribute_value_ids,
+                                                             parent_combination=parent_combination,
+                                                             ignore_no_variant=True)
 
     def toggle_active(self):
         """ Archiving related product.template if there is not any more active product.product
@@ -829,10 +854,12 @@ class ProductProduct(models.Model):
         result = super().toggle_active()
         # We deactivate product templates which are active with no active variants.
         tmpl_to_deactivate = self.filtered(lambda product: (product.product_tmpl_id.active
-                                                            and not product.product_tmpl_id.product_variant_ids)).mapped('product_tmpl_id')
+                                                            and not product.product_tmpl_id.product_variant_ids)).mapped(
+            'product_tmpl_id')
         # We activate product templates which are inactive with active variants.
         tmpl_to_activate = self.filtered(lambda product: (not product.product_tmpl_id.active
-                                                          and product.product_tmpl_id.product_variant_ids)).mapped('product_tmpl_id')
+                                                          and product.product_tmpl_id.product_variant_ids)).mapped(
+            'product_tmpl_id')
         (tmpl_to_deactivate + tmpl_to_activate).toggle_active()
         return result
 

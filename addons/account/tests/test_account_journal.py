@@ -3,12 +3,13 @@
 from ast import literal_eval
 from unittest.mock import patch
 
-from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.addons.account.models.account_payment_method import AccountPaymentMethod
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.addons.mail.tests.common import MailCommon
-from odoo.tests import Form, tagged
-from odoo.exceptions import UserError, ValidationError
+
 from odoo import Command
+from odoo.exceptions import UserError, ValidationError
+from odoo.tests import Form, tagged
 
 
 @tagged('post_install', '-at_install')
@@ -91,7 +92,8 @@ class TestAccountJournal(AccountTestInvoicingCommon):
 
         # There is already an other line using the 'default_account_expense' account.
         with self.assertRaises(ValidationError), self.cr.savepoint():
-            self.company_data['default_journal_misc'].account_control_ids |= self.company_data['default_account_revenue']
+            self.company_data['default_journal_misc'].account_control_ids |= self.company_data[
+                'default_account_revenue']
 
         # Assigning both should be allowed
         self.company_data['default_journal_misc'].account_control_ids = \
@@ -162,28 +164,28 @@ class TestAccountJournal(AccountTestInvoicingCommon):
             'code': 'A',
         })
         check_method = self.env['account.payment.method'].sudo().create({
-                'name': 'Test',
-                'code': 'check_printing_expense_test',
-                'payment_type': 'outbound',
+            'name': 'Test',
+            'code': 'check_printing_expense_test',
+            'payment_type': 'outbound',
         })
         self.env['account.payment.method.line'].create({
             'name': 'Check',
             'payment_method_id': check_method.id,
             'journal_id': journal.id
-            })
+        })
         journal.action_archive()
         self.assertFalse(journal.active)
 
     def test_archive_multiple_journals(self):
         journals = self.env['account.journal'].create([{
-                'name': 'Test Journal 1',
-                'type': 'sale',
-                'code': 'A1'
-            }, {
-                'name': 'Test Journal 2',
-                'type': 'sale',
-                'code': 'A2'
-            }])
+            'name': 'Test Journal 1',
+            'type': 'sale',
+            'code': 'A1'
+        }, {
+            'name': 'Test Journal 2',
+            'type': 'sale',
+            'code': 'A2'
+        }])
 
         # Archive the Journals
         journals.action_archive()
@@ -216,26 +218,26 @@ class TestAccountJournalAlias(AccountTestInvoicingCommon, MailCommon):
         company2.name = 'ぁ'
 
         for (aname, jname, jcode, jtype, jcompany), expected_alias_name in zip(
-            [
-                ('youpie', 'Journal Name', 'NEW1', 'purchase', company1),
-                (False, 'Journal Other Name', 'NEW2', 'purchase', company1),
-                (False, 'ぁ', 'NEW3', 'purchase', company1),
-                (False, 'ぁ', 'ぁ', 'purchase', company1),
-                ('youpie', 'Journal Name', 'NEW1', 'purchase', company2),
-                (False, 'Journal Other Name', 'NEW2', 'purchase', company2),
-                (False, 'ぁ', 'NEW3', 'purchase', company2),
-                (False, 'ぁ', 'ぁ', 'purchase', company2),
-            ],
-            [
-                f'youpie-{company1.name}',
-                f'journal-other-name-{company1.name}',
-                f'new3-{company1.name}',
-                f'purchase-{company1.name}',
-                f'youpie-{company2.id}',
-                f'journal-other-name-{company2.id}',
-                f'new3-{company2.id}',
-                f'purchase-{company2.id}',
-            ]
+                [
+                    ('youpie', 'Journal Name', 'NEW1', 'purchase', company1),
+                    (False, 'Journal Other Name', 'NEW2', 'purchase', company1),
+                    (False, 'ぁ', 'NEW3', 'purchase', company1),
+                    (False, 'ぁ', 'ぁ', 'purchase', company1),
+                    ('youpie', 'Journal Name', 'NEW1', 'purchase', company2),
+                    (False, 'Journal Other Name', 'NEW2', 'purchase', company2),
+                    (False, 'ぁ', 'NEW3', 'purchase', company2),
+                    (False, 'ぁ', 'ぁ', 'purchase', company2),
+                ],
+                [
+                    f'youpie-{company1.name}',
+                    f'journal-other-name-{company1.name}',
+                    f'new3-{company1.name}',
+                    f'purchase-{company1.name}',
+                    f'youpie-{company2.id}',
+                    f'journal-other-name-{company2.id}',
+                    f'new3-{company2.id}',
+                    f'purchase-{company2.id}',
+                ]
         ):
             with self.subTest(aname=aname, jname=jname, jcode=jcode, jtype=jtype, jcompany=jcompany):
                 new_journal = self.env['account.journal'].create({

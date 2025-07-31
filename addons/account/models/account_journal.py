@@ -1,12 +1,12 @@
-from ast import literal_eval
-
-from odoo import api, Command, fields, models, _
-from odoo.exceptions import UserError, ValidationError
-from odoo.addons.base.models.res_bank import sanitize_account_number
-from odoo.tools import groupby
-from collections import defaultdict
 import logging
 import re
+from ast import literal_eval
+from collections import defaultdict
+
+from odoo import api, Command, fields, models, _
+from odoo.addons.base.models.res_bank import sanitize_account_number
+from odoo.exceptions import UserError, ValidationError
+from odoo.tools import groupby
 
 _logger = logging.getLogger(__name__)
 
@@ -30,6 +30,7 @@ class AccountJournalGroup(models.Model):
         ('uniq_name', 'unique(company_id, name)', 'A Ledger group name must be unique per company.'),
     ]
 
+
 class AccountJournal(models.Model):
     _name = "account.journal"
     _description = "Journal"
@@ -38,7 +39,7 @@ class AccountJournal(models.Model):
                 'mail.alias.mixin.optional',
                 'mail.thread',
                 'mail.activity.mixin',
-               ]
+                ]
     _check_company_auto = True
     _check_company_domain = models.check_company_domain_parent_of
     _rec_names_search = ['name', 'code']
@@ -91,13 +92,13 @@ class AccountJournal(models.Model):
     )
     active = fields.Boolean(default=True, help="Set active to false to hide the Journal without removing it.")
     type = fields.Selection([
-            ('sale', 'Sales'),
-            ('purchase', 'Purchase'),
-            ('cash', 'Cash'),
-            ('bank', 'Bank'),
-            ('credit', 'Credit Card'),
-            ('general', 'Miscellaneous'),
-        ], required=True,
+        ('sale', 'Sales'),
+        ('purchase', 'Purchase'),
+        ('cash', 'Cash'),
+        ('bank', 'Bank'),
+        ('credit', 'Credit Card'),
+        ('general', 'Miscellaneous'),
+    ], required=True,
         help="""
         Select 'Sale' for customer invoices journals.
         Select 'Purchase' for vendor bills journals.
@@ -105,9 +106,10 @@ class AccountJournal(models.Model):
         Select 'General' for miscellaneous operations journals.
         """)
     autocheck_on_post = fields.Boolean(string="Auto-Check on Post", default=True)
-    account_control_ids = fields.Many2many('account.account', 'journal_account_control_rel', 'journal_id', 'account_id', string='Allowed accounts',
-        check_company=True,
-        domain="[('deprecated', '=', False), ('account_type', '!=', 'off_balance')]")
+    account_control_ids = fields.Many2many('account.account', 'journal_account_control_rel', 'journal_id', 'account_id',
+                                           string='Allowed accounts',
+                                           check_company=True,
+                                           domain="[('deprecated', '=', False), ('account_type', '!=', 'off_balance')]")
     default_account_type = fields.Char(string='Default Account Type', compute="_compute_default_account_type")
     default_account_id = fields.Many2one(
         comodel_name='account.account', check_company=True, copy=False, ondelete='restrict',
@@ -121,16 +123,23 @@ class AccountJournal(models.Model):
         domain="[('deprecated', '=', False), ('account_type', '=', 'asset_current')]",
     )
     restrict_mode_hash_table = fields.Boolean(string="Secure Posted Entries with Hash",
-        help="If ticked, when an entry is posted, we retroactively hash all moves in the sequence from the entry back to the last hashed entry. The hash can also be performed on demand by the Secure Entries wizard.")
+                                              help="If ticked, when an entry is posted, we retroactively hash all moves in the sequence from the entry back to the last hashed entry. The hash can also be performed on demand by the Secure Entries wizard.")
     sequence = fields.Integer(help='Used to order Journals in the dashboard view', default=10)
 
-    invoice_reference_type = fields.Selection(string='Communication Type', required=True, selection=[('none', 'Open'), ('partner', 'Based on Customer'), ('invoice', 'Based on Invoice')], default='invoice', help='You can set here the default communication that will appear on customer invoices, once validated, to help the customer to refer to that particular invoice when making the payment.')
-    invoice_reference_model = fields.Selection(string='Communication Standard', required=True, selection=[('odoo', 'Odoo'), ('euro', 'European')], default=_default_invoice_reference_model, help="You can choose different models for each type of reference. The default one is the Odoo reference.")
+    invoice_reference_type = fields.Selection(string='Communication Type', required=True,
+                                              selection=[('none', 'Open'), ('partner', 'Based on Customer'),
+                                                         ('invoice', 'Based on Invoice')], default='invoice',
+                                              help='You can set here the default communication that will appear on customer invoices, once validated, to help the customer to refer to that particular invoice when making the payment.')
+    invoice_reference_model = fields.Selection(string='Communication Standard', required=True,
+                                               selection=[('odoo', 'Odoo'), ('euro', 'European')],
+                                               default=_default_invoice_reference_model,
+                                               help="You can choose different models for each type of reference. The default one is the Odoo reference.")
 
-    #groups_id = fields.Many2many('res.groups', 'account_journal_group_rel', 'journal_id', 'group_id', string='Groups')
+    # groups_id = fields.Many2many('res.groups', 'account_journal_group_rel', 'journal_id', 'group_id', string='Groups')
     currency_id = fields.Many2one('res.currency', help='The currency used to enter statement', string="Currency")
-    company_id = fields.Many2one('res.company', string='Company', required=True, readonly=True, index=True, default=lambda self: self.env.company,
-        help="Company related to this journal")
+    company_id = fields.Many2one('res.company', string='Company', required=True, readonly=True, index=True,
+                                 default=lambda self: self.env.company,
+                                 help="Company related to this journal")
     country_code = fields.Char(related='company_id.account_fiscal_country_id.code', readonly=True)
 
     refund_sequence = fields.Boolean(
@@ -144,11 +153,12 @@ class AccountJournal(models.Model):
         compute='_compute_payment_sequence', readonly=False, store=True, precompute=True,
         help="Check this box if you don't want to share the same sequence on payments and bank transactions posted on this journal",
     )
-    sequence_override_regex = fields.Text(help="Technical field used to enforce complex sequence composition that the system would normally misunderstand.\n"\
-                                          "This is a regex that can include all the following capture groups: prefix1, year, prefix2, month, prefix3, seq, suffix.\n"\
-                                          "The prefix* groups are the separators between the year, month and the actual increasing sequence number (seq).\n"\
-
-                                          r"e.g: ^(?P<prefix1>.*?)(?P<year>\d{4})(?P<prefix2>\D*?)(?P<month>\d{2})(?P<prefix3>\D+?)(?P<seq>\d+)(?P<suffix>\D*?)$")
+    sequence_override_regex = fields.Text(
+        help="Technical field used to enforce complex sequence composition that the system would normally misunderstand.\n" \
+             "This is a regex that can include all the following capture groups: prefix1, year, prefix2, month, prefix3, seq, suffix.\n" \
+             "The prefix* groups are the separators between the year, month and the actual increasing sequence number (seq).\n" \
+ \
+             r"e.g: ^(?P<prefix1>.*?)(?P<year>\d{4})(?P<prefix2>\D*?)(?P<month>\d{2})(?P<prefix3>\D+?)(?P<seq>\d+)(?P<suffix>\D*?)$")
 
     inbound_payment_method_line_ids = fields.One2many(
         comodel_name='account.payment.method.line',
@@ -161,9 +171,9 @@ class AccountJournal(models.Model):
         copy=False,
         check_company=True,
         help="Manual: Get paid by any method outside of Odoo.\n"
-        "Payment Providers: Each payment provider has its own Payment Method. Request a transaction on/to a card thanks to a payment token saved by the partner when buying or subscribing online.\n"
-        "Batch Deposit: Collect several customer checks at once generating and submitting a batch deposit to your bank. Module account_batch_payment is necessary.\n"
-        "SEPA Direct Debit: Get paid in the SEPA zone thanks to a mandate your partner will have granted to you. Module account_sepa is necessary.\n"
+             "Payment Providers: Each payment provider has its own Payment Method. Request a transaction on/to a card thanks to a payment token saved by the partner when buying or subscribing online.\n"
+             "Batch Deposit: Collect several customer checks at once generating and submitting a batch deposit to your bank. Module account_batch_payment is necessary.\n"
+             "SEPA Direct Debit: Get paid in the SEPA zone thanks to a mandate your partner will have granted to you. Module account_sepa is necessary.\n"
     )
     outbound_payment_method_line_ids = fields.One2many(
         comodel_name='account.payment.method.line',
@@ -176,8 +186,8 @@ class AccountJournal(models.Model):
         copy=False,
         check_company=True,
         help="Manual: Pay by any method outside of Odoo.\n"
-        "Check: Pay bills by check and print it from Odoo.\n"
-        "SEPA Credit Transfer: Pay in the SEPA zone by submitting a SEPA Credit Transfer file to your bank. Module account_sepa is necessary.\n"
+             "Check: Pay bills by check and print it from Odoo.\n"
+             "SEPA Credit Transfer: Pay in the SEPA zone by submitting a SEPA Credit Transfer file to your bank. Module account_sepa is necessary.\n"
     )
     profit_account_id = fields.Many2one(
         comodel_name='account.account', check_company=True,
@@ -193,13 +203,16 @@ class AccountJournal(models.Model):
                 ('account_type', '=', 'expense')]")
 
     # Bank journals fields
-    company_partner_id = fields.Many2one('res.partner', related='company_id.partner_id', string='Account Holder', readonly=True, store=False)
+    company_partner_id = fields.Many2one('res.partner', related='company_id.partner_id', string='Account Holder',
+                                         readonly=True, store=False)
     bank_account_id = fields.Many2one('res.partner.bank',
-        string="Bank Account",
-        ondelete='restrict', copy=False,
-        check_company=True,
-        domain="[('partner_id','=', company_partner_id)]")
-    bank_statements_source = fields.Selection(selection=_get_bank_statements_available_sources, string='Bank Feeds', default='undefined', help="Defines how the bank statements will be registered")
+                                      string="Bank Account",
+                                      ondelete='restrict', copy=False,
+                                      check_company=True,
+                                      domain="[('partner_id','=', company_partner_id)]")
+    bank_statements_source = fields.Selection(selection=_get_bank_statements_available_sources, string='Bank Feeds',
+                                              default='undefined',
+                                              help="Defines how the bank statements will be registered")
     bank_acc_number = fields.Char(related='bank_account_id.acc_number', readonly=False)
     bank_id = fields.Many2one('res.bank', related='bank_account_id.bank_id', readonly=False)
 
@@ -209,8 +222,8 @@ class AccountJournal(models.Model):
                                     "Only PDF and XML files will be interpreted by Odoo")
 
     journal_group_ids = fields.Many2many('account.journal.group',
-        check_company=True,
-        string="Ledger Group")
+                                         check_company=True,
+                                         string="Ledger Group")
 
     available_payment_method_ids = fields.Many2many(
         comodel_name='account.payment.method',
@@ -247,7 +260,8 @@ class AccountJournal(models.Model):
         method_information = self.env['account.payment.method']._get_payment_method_information()
         unique_electronic_ids = set()
         electronic_names = set()
-        pay_methods = self.env['account.payment.method'].sudo().search([('code', 'in', list(method_information.keys()))])
+        pay_methods = self.env['account.payment.method'].sudo().search(
+            [('code', 'in', list(method_information.keys()))])
         manage_providers = 'payment_provider_id' in self.env['account.payment.method.line']._fields
 
         # Split the payment method information per id.
@@ -273,7 +287,8 @@ class AccountJournal(models.Model):
                 ('code', 'in', tuple(electronic_names)),
             ])
             for provider in providers:
-                providers_per_code.setdefault(provider.company_id.id, {}).setdefault(provider._get_code(), set()).add(provider.id)
+                providers_per_code.setdefault(provider.company_id.id, {}).setdefault(provider._get_code(), set()).add(
+                    provider.id)
 
         # Collect the existing unique/electronic payment method lines.
         if unique_electronic_ids:
@@ -342,7 +357,8 @@ class AccountJournal(models.Model):
                 for line in lines:
                     if line.payment_method_id.id in method_information_mapping:
                         protected_payment_method_ids.add(line.payment_method_id.id)
-                        if manage_providers and method_information_mapping.get(line.payment_method_id.id, {}).get('mode') == 'electronic':
+                        if manage_providers and method_information_mapping.get(line.payment_method_id.id, {}).get(
+                                'mode') == 'electronic':
                             protected_provider_ids.add(line.payment_provider_id.id)
 
             for pay_method in pay_methods:
@@ -354,13 +370,15 @@ class AccountJournal(models.Model):
 
                 if values['mode'] == 'unique':
                     # 'unique' are linked to a single journal per company.
-                    already_linked_journal_ids = set(values['company_journals'].get(company.id, [])) - {journal._origin.id}
+                    already_linked_journal_ids = set(values['company_journals'].get(company.id, [])) - {
+                        journal._origin.id}
                     if not already_linked_journal_ids and pay_method.id not in protected_payment_method_ids:
                         commands.append(Command.link(pay_method.id))
                 elif manage_providers and values['mode'] == 'electronic':
                     # 'electronic' are linked to a single journal per company per provider.
                     for provider_id in providers_per_code.get(company.id, {}).get(pay_method.code, set()):
-                        already_linked_journal_ids = set(values['company_journals'].get(company.id, {}).get(provider_id, [])) - {journal._origin.id}
+                        already_linked_journal_ids = set(
+                            values['company_journals'].get(company.id, {}).get(provider_id, [])) - {journal._origin.id}
                         if not already_linked_journal_ids and provider_id not in protected_provider_ids:
                             commands.append(Command.link(pay_method.id))
                 elif values['mode'] == 'multi':
@@ -413,7 +431,8 @@ class AccountJournal(models.Model):
         These will be then used to display or not payment method specific fields in the view.
         """
         for journal in self:
-            codes = [line.code for line in journal.inbound_payment_method_line_ids + journal.outbound_payment_method_line_ids if line.code]
+            codes = [line.code for line in
+                     journal.inbound_payment_method_line_ids + journal.outbound_payment_method_line_ids if line.code]
             journal.selected_payment_method_codes = ',' + ','.join(codes) + ','
 
     @api.depends('company_id', 'type')
@@ -437,13 +456,12 @@ class AccountJournal(models.Model):
             temp_move = self.env['account.move'].new({'journal_id': journal.id})
             journal.accounting_date = temp_move._get_accounting_date(move_date, has_tax)
 
-
     @api.onchange('type')
     def _onchange_type_for_alias(self):
         self.filtered(lambda journal: journal.type not in {'sale', 'purchase'}).alias_name = False
         for journal in self.filtered(lambda journal: (
-            not journal.alias_name and journal.type in {'sale', 'purchase'})
-        ):
+                not journal.alias_name and journal.type in {'sale', 'purchase'})
+                                     ):
             journal.alias_name = self._alias_prepare_alias_name(
                 False, journal.name, journal.code, journal.type, journal.company_id)
 
@@ -460,18 +478,21 @@ class AccountJournal(models.Model):
             AND aml.display_type NOT IN ('line_section', 'line_note')
         """, [tuple(self.ids)])
         if self._cr.fetchone():
-            raise ValidationError(_('Some journal items already exist in this journal but with other accounts than the allowed ones.'))
+            raise ValidationError(
+                _('Some journal items already exist in this journal but with other accounts than the allowed ones.'))
 
     @api.constrains('type', 'bank_account_id')
     def _check_bank_account(self):
         for journal in self:
             if journal.type == 'bank' and journal.bank_account_id:
                 if journal.bank_account_id.company_id and journal.bank_account_id.company_id != journal.company_id:
-                    raise ValidationError(_('The bank account of a bank journal must belong to the same company (%s).', journal.company_id.name))
+                    raise ValidationError(_('The bank account of a bank journal must belong to the same company (%s).',
+                                            journal.company_id.name))
                 # A bank account can belong to a customer/supplier, in which case their partner_id is the customer/supplier.
                 # Or they are part of a bank journal and their partner_id must be the company's partner_id.
                 if journal.bank_account_id.partner_id != journal.company_id.partner_id:
-                    raise ValidationError(_('The holder of a journal\'s bank account must be the company (%s).', journal.company_id.name))
+                    raise ValidationError(
+                        _('The holder of a journal\'s bank account must be the company (%s).', journal.company_id.name))
 
     @api.constrains('company_id')
     def _check_company_consistency(self):
@@ -480,13 +501,16 @@ class AccountJournal(models.Model):
                 ('journal_id', 'in', [journal.id for journal in journals]),
                 '!', ('company_id', 'child_of', company.id)
             ], limit=1):
-                raise UserError(_("You can't change the company of your journal since there are some journal entries linked to it."))
+                raise UserError(
+                    _("You can't change the company of your journal since there are some journal entries linked to it."))
 
     @api.constrains('type', 'default_account_id')
     def _check_type_default_account_id_type(self):
         for journal in self:
-            if journal.type in ('sale', 'purchase') and journal.default_account_id.account_type in ('asset_receivable', 'liability_payable'):
-                raise ValidationError(_("The type of the journal's default credit/debit account shouldn't be 'receivable' or 'payable'."))
+            if journal.type in ('sale', 'purchase') and journal.default_account_id.account_type in ('asset_receivable',
+                                                                                                    'liability_payable'):
+                raise ValidationError(
+                    _("The type of the journal's default credit/debit account shouldn't be 'receivable' or 'payable'."))
 
     @api.constrains('inbound_payment_method_line_ids', 'outbound_payment_method_line_ids')
     def _check_payment_method_line_ids_multiplicity(self):
@@ -512,7 +536,8 @@ class AccountJournal(models.Model):
                 # Ensure you don't have the same payment_method/name combination twice on the same journal.
                 counter = {}
                 for line in lines:
-                    if method_information_mapping.get(line.payment_method_id.id, {}).get('mode') not in ('electronic', 'unique'):
+                    if method_information_mapping.get(line.payment_method_id.id, {}).get('mode') not in ('electronic',
+                                                                                                         'unique'):
                         continue
 
                     key = line.payment_method_id.id, line.name
@@ -529,7 +554,8 @@ class AccountJournal(models.Model):
                 for line in lines:
                     if line.payment_method_id.id in method_information_mapping:
                         protected_payment_method_ids.add(line.payment_method_id.id)
-                        if manage_providers and method_information_mapping[line.payment_method_id.id]['mode'] == 'electronic':
+                        if manage_providers and method_information_mapping[line.payment_method_id.id][
+                            'mode'] == 'electronic':
                             protected_provider_ids.add(line.payment_provider_id.id)
 
             for pay_method in pay_methods:
@@ -627,7 +653,7 @@ class AccountJournal(models.Model):
         if vals.get('alias_name') and 'type' not in vals:
             # will raise if writing name on more than 1 record, using self[0] is safe
             if (not self.env['mail.alias']._is_encodable(vals['alias_name']) or
-                not self.env['mail.alias']._sanitize_alias_name(vals['alias_name'])):
+                    not self.env['mail.alias']._sanitize_alias_name(vals['alias_name'])):
                 vals['alias_name'] = self._alias_prepare_alias_name(
                     False, vals.get('name', self.name), vals.get('code', self.code), self[0].type, self[0].company_id)
 
@@ -647,7 +673,8 @@ class AccountJournal(models.Model):
                 if vals.get('bank_account_id'):
                     bank_account = self.env['res.partner.bank'].browse(vals['bank_account_id'])
                     if bank_account.partner_id != company.partner_id:
-                        raise UserError(_("The partners of the journal's company and the related bank account mismatch."))
+                        raise UserError(
+                            _("The partners of the journal's company and the related bank account mismatch."))
             if 'restrict_mode_hash_table' in vals and not vals.get('restrict_mode_hash_table'):
                 domain = self.env['account.move']._get_move_hash_domain(
                     common_domain=[('journal_id', '=', journal.id), ('inalterable_hash', '!=', False)]
@@ -655,7 +682,9 @@ class AccountJournal(models.Model):
                 journal_entry = self.env['account.move'].sudo().search_count(domain, limit=1)
                 if journal_entry:
                     field_string = self._fields['restrict_mode_hash_table'].get_description(self.env)['string']
-                    raise UserError(_("You cannot modify the field %s of a journal that already has accounting entries.", field_string))
+                    raise UserError(
+                        _("You cannot modify the field %s of a journal that already has accounting entries.",
+                          field_string))
         result = super(AccountJournal, self).write(vals)
 
         # Ensure alias coherency when changing type
@@ -684,7 +713,8 @@ class AccountJournal(models.Model):
         values = super()._alias_get_creation_values()
         values['alias_model_id'] = self.env['ir.model']._get_id('account.move')
         if self.id:
-            values['alias_name'] = self._alias_prepare_alias_name(self.alias_name, self.name, self.code, self.type, self.company_id)
+            values['alias_name'] = self._alias_prepare_alias_name(self.alias_name, self.name, self.code, self.type,
+                                                                  self.company_id)
             values['alias_defaults'] = defaults = literal_eval(self.alias_defaults or "{}")
             defaults['company_id'] = self.company_id.id
             defaults['move_type'] = {
@@ -709,7 +739,8 @@ class AccountJournal(models.Model):
             ), False
         )
         if company != self.env.ref('base.main_company'):
-            company_identifier = self.env['mail.alias']._sanitize_alias_name(company.name) if self.env['mail.alias']._is_encodable(company.name) else company.id
+            company_identifier = self.env['mail.alias']._sanitize_alias_name(company.name) if self.env[
+                'mail.alias']._is_encodable(company.name) else company.id
             if f'-{company_identifier}' not in alias_name:
                 alias_name = f"{alias_name}-{company_identifier}"
         return self.env['mail.alias']._sanitize_alias_name(alias_name)
@@ -746,7 +777,8 @@ class AccountJournal(models.Model):
         for num in range(1, 100):
             # journal_code has a maximal size of 5, hence we can enforce the boundary num < 100
             journal_code = journal_code_base + str(num)
-            if journal_code not in existing_codes and (protected_codes and journal_code not in protected_codes or not protected_codes):
+            if journal_code not in existing_codes and (
+                    protected_codes and journal_code not in protected_codes or not protected_codes):
                 return journal_code
 
     @api.model
@@ -840,9 +872,9 @@ class AccountJournal(models.Model):
         if journal_type == 'credit':
             if not vals.get('default_account_id'):
                 default_account_id = self.env['account.account'].with_company(company).search([
-                        *self.env['account.account']._check_company_domain(company),
-                        ('account_type', '=', 'liability_credit_card'),
-                    ],
+                    *self.env['account.account']._check_company_domain(company),
+                    ('account_type', '=', 'liability_credit_card'),
+                ],
                     limit=1,
                 ).id
                 if not default_account_id:
@@ -851,23 +883,27 @@ class AccountJournal(models.Model):
 
         if is_import and not vals.get('code'):
             code = vals['name'][:5]
-            vals['code'] = code if not protected_codes or code not in protected_codes else self.get_next_bank_cash_default_code(journal_type, company, protected_codes)
+            vals[
+                'code'] = code if not protected_codes or code not in protected_codes else self.get_next_bank_cash_default_code(
+                journal_type, company, protected_codes)
             if not vals['code']:
-                raise UserError(_("Cannot generate an unused journal code. Please change the name for journal %s.", vals['name']))
+                raise UserError(
+                    _("Cannot generate an unused journal code. Please change the name for journal %s.", vals['name']))
 
         # === Fill missing alias name for sale / purchase, to force alias creation ===
         if journal_type in {'sale', 'purchase'}:
             if 'alias_name' not in vals:
                 vals['alias_name'] = self._alias_prepare_alias_name(
-                False, vals.get('name'), vals.get('code'), journal_type, company
-            )
+                    False, vals.get('name'), vals.get('code'), journal_type, company
+                )
             vals['alias_name'] = self._ensure_unique_alias(vals, company)
 
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
             # have to keep track of new journal codes when importing
-            codes = [vals['code'] for vals in vals_list if 'code' in vals] if 'import_file' in self.env.context else False
+            codes = [vals['code'] for vals in vals_list if
+                     'code' in vals] if 'import_file' in self.env.context else False
             self._fill_missing_values(vals, protected_codes=codes)
 
         journals = super(AccountJournal, self.with_context(mail_create_nolog=True)).create(vals_list)
@@ -910,7 +946,8 @@ class AccountJournal(models.Model):
         visible on dashboard if no bank statement source has been defined yet
         """
         # We simply call the setup bar function.
-        return self.env['res.company'].with_context(default_linked_journal_id=self.id).setting_init_bank_account_action()
+        return self.env['res.company'].with_context(
+            default_linked_journal_id=self.id).setting_init_bank_account_action()
 
     def _create_document_from_attachment(self, attachment_ids):
         """ Create the invoices from files."""
@@ -934,7 +971,8 @@ class AccountJournal(models.Model):
             raise UserError(_("No attachment was provided"))
 
         if not self:
-            raise UserError(self.env['account.journal']._build_no_journal_error_msg(self.env.company.display_name, [journal_type]))
+            raise UserError(
+                self.env['account.journal']._build_no_journal_error_msg(self.env.company.display_name, [journal_type]))
 
         # As we are coming from the journal, we assume that each attachments
         # will create an invoice with a tentative to enhance with EDI / OCR..
@@ -1002,10 +1040,10 @@ class AccountJournal(models.Model):
         self.ensure_one()
         nb_lines, balance, amount_currency = self.env['account.move.line']._read_group(
             domain=([
-                ('account_id', 'in', tuple(self.default_account_id.ids)),
-                ('display_type', 'not in', ('line_section', 'line_note')),
-                ('parent_state', '!=', 'cancel'),
-            ] + (domain or [])),
+                        ('account_id', 'in', tuple(self.default_account_id.ids)),
+                        ('display_type', 'not in', ('line_section', 'line_note')),
+                        ('parent_state', '!=', 'cancel'),
+                    ] + (domain or [])),
             aggregates=('__count', 'balance:sum', 'amount_currency:sum'),
         )[0]
 

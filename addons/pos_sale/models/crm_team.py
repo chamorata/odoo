@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, fields, models, _
-from odoo.exceptions import UserError, ValidationError
-from datetime import datetime
-import pytz
+from odoo import fields, models
 
 
 class CrmTeam(models.Model):
@@ -16,7 +13,8 @@ class CrmTeam(models.Model):
 
     def _compute_pos_sessions_open_count(self):
         for team in self:
-            team.pos_sessions_open_count = self.env['pos.session'].search_count([('config_id.crm_team_id', '=', team.id), ('state', '=', 'opened')])
+            team.pos_sessions_open_count = self.env['pos.session'].search_count(
+                [('config_id.crm_team_id', '=', team.id), ('state', '=', 'opened')])
 
     def _compute_pos_order_amount_total(self):
         data = self.env['report.pos.order']._read_group([

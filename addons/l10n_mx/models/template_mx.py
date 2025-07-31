@@ -1,6 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo import models, _
 from odoo.addons.account.models.chart_template import template
+
+from odoo import models, _
 
 
 class AccountChartTemplate(models.AbstractModel):
@@ -56,7 +57,8 @@ class AccountChartTemplate(models.AbstractModel):
         }
 
     def _get_accounts_data_values(self, company, template_data, bank_prefix='', code_digits=0):
-        accounts_data = super()._get_accounts_data_values(company, template_data, bank_prefix=bank_prefix, code_digits=code_digits)
+        accounts_data = super()._get_accounts_data_values(company, template_data, bank_prefix=bank_prefix,
+                                                          code_digits=code_digits)
         if company.account_fiscal_country_id.code == 'MX':
             accounts_data.update({
                 'default_cash_difference_income_account_id': {

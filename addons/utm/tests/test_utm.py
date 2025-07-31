@@ -3,6 +3,7 @@
 
 from odoo.addons.utm.models.utm_mixin import UtmMixin
 from odoo.addons.utm.tests.common import TestUTMCommon
+
 from odoo.tests import tagged
 
 
@@ -106,7 +107,8 @@ class TestUtm(TestUTMCommon):
                 },
             ])
 
-            self.assertEqual(utm_0.name, 'UTM new', msg='The first "UTM dup" should be left unchanged since it is unique')
+            self.assertEqual(utm_0.name, 'UTM new',
+                             msg='The first "UTM dup" should be left unchanged since it is unique')
             self.assertEqual(utm_1.name, 'UTM 1', msg='This name is already unique')
             self.assertEqual(utm_2.name, 'UTM 2', msg='This name is already unique')
             self.assertEqual(utm_3.name, 'UTM new [2]', msg='Must add a counter as suffix to ensure uniqueness')

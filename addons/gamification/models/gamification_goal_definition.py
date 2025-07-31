@@ -19,7 +19,8 @@ class GoalDefinition(models.Model):
 
     name = fields.Char("Goal Definition", required=True, translate=True)
     description = fields.Text("Goal Description")
-    monetary = fields.Boolean("Monetary Value", default=False, help="The target and current value are defined in the company currency.")
+    monetary = fields.Boolean("Monetary Value", default=False,
+                              help="The target and current value are defined in the company currency.")
     suffix = fields.Char("Suffix", help="The unit of the target and current values", translate=True)
     full_suffix = fields.Char("Full Suffix", compute='_compute_full_suffix', help="The currency and suffix field")
     computation_mode = fields.Selection([
@@ -28,7 +29,7 @@ class GoalDefinition(models.Model):
         ('sum', "Automatic: sum on a field"),
         ('python', "Automatic: execute a specific Python code"),
     ], default='manually', string="Computation Mode", required=True,
-       help="Define how the goals will be computed. The result of the operation will be stored in the field 'Current'.")
+        help="Define how the goals will be computed. The result of the operation will be stored in the field 'Current'.")
     display_mode = fields.Selection([
         ('progress', "Progressive (using numerical values)"),
         ('boolean', "Exclusive (done or not-done)"),
@@ -51,16 +52,21 @@ class GoalDefinition(models.Model):
              " user if not in batch mode.")
 
     batch_mode = fields.Boolean("Batch Mode", help="Evaluate the expression in batch instead of once for each user")
-    batch_distinctive_field = fields.Many2one('ir.model.fields', string="Distinctive field for batch user", help="In batch mode, this indicates which field distinguishes one user from the other, e.g. user_id, partner_id...")
-    batch_user_expression = fields.Char("Evaluated expression for batch mode", help="The value to compare with the distinctive field. The expression can contain reference to 'user' which is a browse record of the current user, e.g. user.id, user.partner_id.id...")
-    compute_code = fields.Text("Python Code", help="Python code to be executed for each user. 'result' should contains the new current value. Evaluated user can be access through object.user_id.")
+    batch_distinctive_field = fields.Many2one('ir.model.fields', string="Distinctive field for batch user",
+                                              help="In batch mode, this indicates which field distinguishes one user from the other, e.g. user_id, partner_id...")
+    batch_user_expression = fields.Char("Evaluated expression for batch mode",
+                                        help="The value to compare with the distinctive field. The expression can contain reference to 'user' which is a browse record of the current user, e.g. user.id, user.partner_id.id...")
+    compute_code = fields.Text("Python Code",
+                               help="Python code to be executed for each user. 'result' should contains the new current value. Evaluated user can be access through object.user_id.")
     condition = fields.Selection([
         ('higher', "The higher the better"),
         ('lower', "The lower the better")
     ], default='higher', required=True, string="Goal Performance",
-       help="A goal is considered as completed when the current value is compared to the value to reach")
-    action_id = fields.Many2one('ir.actions.act_window', string="Action", help="The action that will be called to update the goal value.")
-    res_id_field = fields.Char("ID Field of user", help="The field name on the user profile (res.users) containing the value for res_id for action.")
+        help="A goal is considered as completed when the current value is compared to the value to reach")
+    action_id = fields.Many2one('ir.actions.act_window', string="Action",
+                                help="The action that will be called to update the goal value.")
+    res_id_field = fields.Char("ID Field of user",
+                               help="The field name on the user profile (res.users) containing the value for res_id for action.")
 
     @api.depends('suffix', 'monetary')  # also depends of user...
     def _compute_full_suffix(self):

@@ -2,10 +2,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from collections import defaultdict
+
 import pytz
+from odoo.addons.resource.models.utils import datetime_to_string
 
 from odoo import models
-from odoo.addons.resource.models.utils import datetime_to_string
 
 
 class HrContract(models.Model):
@@ -16,7 +17,8 @@ class HrContract(models.Model):
         # Work entries by default are not generated on days the employee does not work
         # So we have to fill the gaps with work entries for those periods
         result = super()._get_contract_work_entries_values(date_start, date_stop)
-        fr_contracts = self.filtered(lambda c: c.company_id.country_id.code == 'FR' and c.resource_calendar_id != c.company_id.resource_calendar_id)
+        fr_contracts = self.filtered(lambda
+                                         c: c.company_id.country_id.code == 'FR' and c.resource_calendar_id != c.company_id.resource_calendar_id)
         if not fr_contracts:
             return result
         start_dt = pytz.utc.localize(date_start) if not date_start.tzinfo else date_start
@@ -56,7 +58,8 @@ class HrContract(models.Model):
                     employee_dates.add(vals['date_stop'].date())
                 leave_work_entry_type = leave.holiday_status_id.work_entry_type_id
                 result += [{
-                    'name': '%s%s' % (leave_work_entry_type.name + ': ' if leave_work_entry_type else "", employee.name),
+                    'name': '%s%s' % (leave_work_entry_type.name + ': ' if leave_work_entry_type else "",
+                                      employee.name),
                     'date_start': interval[0].astimezone(pytz.utc).replace(tzinfo=None),
                     'date_stop': interval[1].astimezone(pytz.utc).replace(tzinfo=None),
                     'work_entry_type_id': leave_work_entry_type.id,

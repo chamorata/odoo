@@ -2,35 +2,43 @@
 <odoo>
 
     <record id="timesheet_view_search" model="ir.ui.view">
-            <field name="name">account.analytic.line.search</field>
-            <field name="model">account.analytic.line</field>
-            <field name="inherit_id" ref="hr_timesheet.hr_timesheet_line_search"/>
-            <field name="arch" type="xml">
-                <xpath expr="//field[@name='task_id']" position="after">
-                    <field name="order_id" string="Sales Order" filter_domain="['|', ('so_line', 'ilike', self), ('order_id', 'ilike', self)]"/>
-                </xpath>
-                <xpath expr="//filter[@name='month']" position="before">
-                    <filter name="billable_fixed" string="Billed at a Fixed Price" domain="[('timesheet_invoice_type', '=', 'billable_fixed')]"
+        <field name="name">account.analytic.line.search</field>
+        <field name="model">account.analytic.line</field>
+        <field name="inherit_id" ref="hr_timesheet.hr_timesheet_line_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='task_id']" position="after">
+                <field name="order_id" string="Sales Order"
+                       filter_domain="['|', ('so_line', 'ilike', self), ('order_id', 'ilike', self)]"/>
+            </xpath>
+            <xpath expr="//filter[@name='month']" position="before">
+                <filter name="billable_fixed" string="Billed at a Fixed Price"
+                        domain="[('timesheet_invoice_type', '=', 'billable_fixed')]"
                         groups="sales_team.group_sale_salesman"/>
-                    <filter name="billable_time" string="Billed on Timesheets" domain="[('timesheet_invoice_type', '=', 'billable_time')]"
+                <filter name="billable_time" string="Billed on Timesheets"
+                        domain="[('timesheet_invoice_type', '=', 'billable_time')]"
                         groups="sales_team.group_sale_salesman"/>
-                    <filter name="billable_milestones" string="Billed on Milestones" domain="[('timesheet_invoice_type', '=', 'billable_milestones')]"
+                <filter name="billable_milestones" string="Billed on Milestones"
+                        domain="[('timesheet_invoice_type', '=', 'billable_milestones')]"
                         groups="sales_team.group_sale_salesman"/>
-                    <filter name="billable_manual" string="Billed Manually" domain="[('timesheet_invoice_type', '=', 'billable_manual')]"
+                <filter name="billable_manual" string="Billed Manually"
+                        domain="[('timesheet_invoice_type', '=', 'billable_manual')]"
                         groups="sales_team.group_sale_salesman"/>
-                    <filter name="non_billable" string="Non-Billable" domain="[('timesheet_invoice_type', '=', 'non_billable')]"
+                <filter name="non_billable" string="Non-Billable"
+                        domain="[('timesheet_invoice_type', '=', 'non_billable')]"
                         groups="sales_team.group_sale_salesman"/>
-                    <separator/>
-                </xpath>
-                <xpath expr="//filter[@name='groupby_employee']" position="after">
-                    <filter string="Sales Order Item" name="groupby_sale_order_item" domain="[]" context="{'group_by': 'so_line'}"
+                <separator/>
+            </xpath>
+            <xpath expr="//filter[@name='groupby_employee']" position="after">
+                <filter string="Sales Order Item" name="groupby_sale_order_item" domain="[]"
+                        context="{'group_by': 'so_line'}"
                         groups="sales_team.group_sale_salesman"/>
-                    <filter string="Invoice" name="groupby_invoice" domain="[]" context="{'group_by': 'timesheet_invoice_id'}"
+                <filter string="Invoice" name="groupby_invoice" domain="[]"
+                        context="{'group_by': 'timesheet_invoice_id'}"
                         groups="sales_team.group_sale_salesman"/>
-                    <filter string="Billing Type" name="groupby_timesheet_invoice_type" domain="[]"
+                <filter string="Billing Type" name="groupby_timesheet_invoice_type" domain="[]"
                         context="{'group_by': 'timesheet_invoice_type'}" groups="sales_team.group_sale_salesman"/>
-                </xpath>
-            </field>
+            </xpath>
+        </field>
     </record>
 
     <record id="hr_timesheet_line_tree_inherit" model="ir.ui.view">
@@ -42,7 +50,11 @@
                 <field name="commercial_partner_id" column_invisible="True" groups="sales_team.group_sale_salesman"/>
                 <field name="is_so_line_edited" column_invisible="True" groups="sales_team.group_sale_salesman"/>
                 <field name="allow_billable" column_invisible="True" groups="sales_team.group_sale_salesman"/>
-                <field name="so_line" widget="so_line_field" optional="show" options="{'no_create': True, 'no_open': True}" context="{'create': False, 'edit': False, 'delete': False}" invisible="not allow_billable" readonly="readonly_timesheet" placeholder="Non-billable" groups="sales_team.group_sale_salesman"/>
+                <field name="so_line" widget="so_line_field" optional="show"
+                       options="{'no_create': True, 'no_open': True}"
+                       context="{'create': False, 'edit': False, 'delete': False}" invisible="not allow_billable"
+                       readonly="readonly_timesheet" placeholder="Non-billable"
+                       groups="sales_team.group_sale_salesman"/>
             </xpath>
         </field>
     </record>
@@ -59,11 +71,13 @@
                 <field name="sale_order_state" invisible="1"/>
                 <label for="so_line" invisible="not allow_billable" groups="sales_team.group_sale_salesman"/>
                 <div class="o_row" invisible="not allow_billable" groups="sales_team.group_sale_salesman">
-                    <field name="so_line" widget="so_line_field" options='{"no_create": True}' context="{'create': False, 'edit': False, 'delete': False, 'with_price_unit': True}" readonly="readonly_timesheet" placeholder="Non-billable"/>
+                    <field name="so_line" widget="so_line_field" options='{"no_create": True}'
+                           context="{'create': False, 'edit': False, 'delete': False, 'with_price_unit': True}"
+                           readonly="readonly_timesheet" placeholder="Non-billable"/>
                     <span
-                        class="fa fa-exclamation-triangle text-warning"
-                        title="The sales order associated with this timesheet entry has been cancelled."
-                        invisible="sale_order_state != 'cancel'"
+                            class="fa fa-exclamation-triangle text-warning"
+                            title="The sales order associated with this timesheet entry has been cancelled."
+                            invisible="sale_order_state != 'cancel'"
                     />
                 </div>
             </xpath>
@@ -72,12 +86,14 @@
                     <field name="order_id" invisible="1"/>
                     <field name="timesheet_invoice_id" invisible="1"/>
                     <div class="oe_button_box" name="button_box">
-                        <button name="action_sale_order_from_timesheet" type="object" class="oe_stat_button" icon="fa-dollar" invisible="not order_id">
+                        <button name="action_sale_order_from_timesheet" type="object" class="oe_stat_button"
+                                icon="fa-dollar" invisible="not order_id">
                             <div class="o_stat_info">
                                 <span class="o_stat_text">Sales Order</span>
                             </div>
                         </button>
-                        <button name="action_invoice_from_timesheet" type="object" class="oe_stat_button" icon="fa-pencil-square-o" invisible="not timesheet_invoice_id">
+                        <button name="action_invoice_from_timesheet" type="object" class="oe_stat_button"
+                                icon="fa-pencil-square-o" invisible="not timesheet_invoice_id">
                             <div class="o_stat_info">
                                 <span class="o_stat_text">Invoice</span>
                             </div>
@@ -106,7 +122,7 @@
         <field name="model">account.analytic.line</field>
         <field name="arch" type="xml">
             <graph string="Timesheet" sample="1" js_class="hr_timesheet_graphview">
-                <field name="date" interval="month" />
+                <field name="date" interval="month"/>
                 <field name="employee_id"/>
                 <field name="amount" type="measure" string="Timesheet Costs"/>
                 <field name="unit_amount" string="Time Spent" type="measure" widget="timesheet_uom"/>
@@ -147,7 +163,8 @@
         <field name="search_view_id" ref="hr_timesheet.hr_timesheet_line_search"/>
         <field name="context">{
             "is_timesheet": 1,
-        }</field>
+            }
+        </field>
         <field name="domain">[('project_id', '!=', False)]</field>
     </record>
 
@@ -177,7 +194,8 @@
             'default_so_line': active_id,
             'default_is_so_line_edited': True,
             "is_timesheet": 1,
-        }</field>
+            }
+        </field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 No activities found. Let's start a new one!
@@ -233,7 +251,8 @@
         <field name="domain">[('project_id', '!=', False)]</field>
         <field name="context">{
             "is_timesheet": 1,
-        }</field>
+            }
+        </field>
         <field name="search_view_id" ref="hr_timesheet.hr_timesheet_line_search"/>
     </record>
 
@@ -244,7 +263,8 @@
         <field name="domain">[('project_id', '!=', False)]</field>
         <field name="context">{
             "is_timesheet": 1,
-        }</field>
+            }
+        </field>
         <field name="search_view_id" ref="hr_timesheet.hr_timesheet_line_search"/>
     </record>
 

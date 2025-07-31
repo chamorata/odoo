@@ -1,21 +1,21 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import os
 import datetime
 import json
+import os
+from tempfile import TemporaryDirectory
+from unittest.mock import patch
+from urllib.parse import urlencode
+
 import pytz
 from freezegun import freeze_time
-from urllib.parse import urlencode
-from unittest.mock import patch
-from tempfile import TemporaryDirectory
 
 import odoo
 from odoo.addons.base.tests.common import HttpCaseWithUserDemo
 from odoo.http import SESSION_LIFETIME
-from odoo.tools import config, lazy_property, mute_logger
 from odoo.tests import get_db_name, tagged
+from odoo.tools import config, lazy_property, mute_logger
 from .test_common import TestHttpBase
-
 
 GEOIP_ODOO_FARM_2 = {
     'city': 'Ramillies',
@@ -238,9 +238,9 @@ class TestHttpSession(TestHttpBase):
             self.url_open(f'/web/session/logout?{qs}').raise_for_status()
         self.assertEqual(len(capture.output), 1)
         self.assertRegex(capture.output[0],
-            r"^WARNING:odoo.http:<function odoo\.addons\.\w+\.controllers\.\w+\.logout> "
-            r"called ignoring args {('session_id', 'debug'|'debug', 'session_id')}$"
-        )
+                         r"^WARNING:odoo.http:<function odoo\.addons\.\w+\.controllers\.\w+\.logout> "
+                         r"called ignoring args {('session_id', 'debug'|'debug', 'session_id')}$"
+                         )
         self.assertEqual(admin_session.debug, '1')
 
 
@@ -257,11 +257,13 @@ class TestSessionStore(HttpCaseWithUserDemo):
 
     @mute_logger('odoo.http')
     def test01_session_nan(self):
-        self.env['ir.config_parameter'].set_param('sessions.max_inactivity_seconds', 'adminCantSetupThisValueLikeANormalPerson')
+        self.env['ir.config_parameter'].set_param('sessions.max_inactivity_seconds',
+                                                  'adminCantSetupThisValueLikeANormalPerson')
 
         with self.assertLogs('odoo.http', level='WARNING') as logs:
             self.assertEqual(odoo.http.get_session_max_inactivity(self.env), SESSION_LIFETIME)
-            self.assertEqual(logs.output[0], "WARNING:odoo.http:Invalid value for 'sessions.max_inactivity_seconds', using default value.")
+            self.assertEqual(logs.output[0],
+                             "WARNING:odoo.http:Invalid value for 'sessions.max_inactivity_seconds', using default value.")
 
     @mute_logger('odoo.http')
     def test02_session_lifetime_1week(self):

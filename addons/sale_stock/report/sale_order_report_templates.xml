@@ -5,7 +5,8 @@
             <div class="col" t-if="doc.incoterm">
                 <strong>Incoterm</strong>
                 <div t-if="doc.incoterm_location">
-                    <span t-field="doc.incoterm.code"/> <br/>
+                    <span t-field="doc.incoterm.code"/>
+                    <br/>
                     <span t-field="doc.incoterm_location"/>
                 </div>
                 <div t-else="" t-field="doc.incoterm.code"/>

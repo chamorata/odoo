@@ -43,7 +43,7 @@ class SaleOrderTemplateOption(models.Model):
         digits='Product Unit of Measure',
         default=1)
 
-    #=== COMPUTE METHODS ===#
+    # === COMPUTE METHODS ===#
 
     @api.depends('product_id')
     def _compute_name(self):
@@ -57,7 +57,7 @@ class SaleOrderTemplateOption(models.Model):
         for option in self:
             option.uom_id = option.product_id.uom_id
 
-    #=== BUSINESS METHODS ===#
+    # === BUSINESS METHODS ===#
 
     @api.model
     def _product_id_domain(self):

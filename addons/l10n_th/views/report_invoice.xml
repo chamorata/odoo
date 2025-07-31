@@ -13,7 +13,9 @@
         </xpath>
         <xpath expr="//t[@t-set='layout_document_title']/span[contains(@t-if, 'posted')]" position="replace">
             <t t-if="o.move_type == 'out_invoice' and o.state == 'posted'">
-                <span t-if="o.company_id.account_fiscal_country_id.code == 'TH' and not commercial_invoice">Tax Invoice</span>
+                <span t-if="o.company_id.account_fiscal_country_id.code == 'TH' and not commercial_invoice">Tax
+                    Invoice
+                </span>
                 <span t-else="">Invoice</span>
             </t>
         </xpath>

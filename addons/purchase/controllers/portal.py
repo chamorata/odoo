@@ -5,13 +5,14 @@ import base64
 from collections import OrderedDict
 from datetime import datetime
 
+from odoo.addons.portal.controllers import portal
+from odoo.addons.portal.controllers.portal import pager as portal_pager
+
 from odoo import http
 from odoo.exceptions import AccessError, MissingError
 from odoo.http import request, Response
 from odoo.tools import image_process
 from odoo.tools.translate import _
-from odoo.addons.portal.controllers import portal
-from odoo.addons.portal.controllers.portal import pager as portal_pager
 
 
 class CustomerPortal(portal.CustomerPortal):
@@ -36,7 +37,8 @@ class CustomerPortal(portal.CustomerPortal):
             'amount_total': {'label': _('Total'), 'order': 'amount_total desc, id desc'},
         }
 
-    def _render_portal(self, template, page, date_begin, date_end, sortby, filterby, domain, searchbar_filters, default_filter, url, history, page_name, key):
+    def _render_portal(self, template, page, date_begin, date_end, sortby, filterby, domain, searchbar_filters,
+                       default_filter, url, history, page_name, key):
         values = self._prepare_portal_layout_values()
         PurchaseOrder = request.env['purchase.order']
 
@@ -110,7 +112,8 @@ class CustomerPortal(portal.CustomerPortal):
         return self._get_page_view_values(order, access_token, values, history, False, **kwargs)
 
     @http.route(['/my/rfq', '/my/rfq/page/<int:page>'], type='http', auth="user", website=True)
-    def portal_my_requests_for_quotation(self, page=1, date_begin=None, date_end=None, sortby=None, filterby=None, **kw):
+    def portal_my_requests_for_quotation(self, page=1, date_begin=None, date_end=None, sortby=None, filterby=None,
+                                         **kw):
         return self._render_portal(
             "purchase.portal_my_purchase_rfqs",
             page, date_begin, date_end, sortby, filterby,
@@ -151,7 +154,8 @@ class CustomerPortal(portal.CustomerPortal):
 
         report_type = kw.get('report_type')
         if report_type in ('html', 'pdf', 'text'):
-            return self._show_report(model=order_sudo, report_type=report_type, report_ref='purchase.action_report_purchase_order', download=kw.get('download'))
+            return self._show_report(model=order_sudo, report_type=report_type,
+                                     report_ref='purchase.action_report_purchase_order', download=kw.get('download'))
 
         confirm_type = kw.get('confirm')
         if confirm_type == 'reminder':

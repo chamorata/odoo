@@ -18,7 +18,8 @@ class ResConfigSettings(models.TransientModel):
     attendance_kiosk_url = fields.Char(related='company_id.attendance_kiosk_url')
     attendance_kiosk_use_pin = fields.Boolean(related='company_id.attendance_kiosk_use_pin', readonly=False)
     attendance_from_systray = fields.Boolean(related="company_id.attendance_from_systray", readonly=False)
-    attendance_overtime_validation = fields.Selection(related="company_id.attendance_overtime_validation", readonly=False)
+    attendance_overtime_validation = fields.Selection(related="company_id.attendance_overtime_validation",
+                                                      readonly=False)
     auto_check_out = fields.Boolean(related="company_id.auto_check_out", readonly=False)
     auto_check_out_tolerance = fields.Float(related="company_id.auto_check_out_tolerance", readonly=False)
     absence_management = fields.Boolean(related="company_id.absence_management", readonly=False)

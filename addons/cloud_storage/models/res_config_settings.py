@@ -3,7 +3,6 @@
 from odoo import models, fields, _
 from odoo.exceptions import UserError
 
-
 DEFAULT_CLOUD_STORAGE_MIN_FILE_SIZE = 20_000_000
 
 

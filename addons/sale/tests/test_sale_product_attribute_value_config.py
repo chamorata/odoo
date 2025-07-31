@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import fields
-
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.addons.product.tests.test_product_attribute_value_config import TestProductAttributeValueCommon
+
+from odoo import fields
 from odoo.tests import tagged
 
 
@@ -82,6 +82,7 @@ class TestSaleProductAttributeValueConfig(TestProductAttributeValueCommon):
         This is a necessary condition for `_create_variant_ids` to archive
         instead of delete the variants.
         """
+
         def do_test(self):
             computer_ssd_256 = self._get_product_template_attribute_value(self.ssd_256)
             computer_ram_8 = self._get_product_template_attribute_value(self.ram_8)

@@ -2,31 +2,35 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import re
+
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError, RedirectWarning
-from odoo.tools import float_round, float_repr
 
 
 class AccountMove(models.Model):
     _inherit = "account.move"
 
     l10n_id_tax_number = fields.Char(string="Tax Number", copy=False)
-    l10n_id_replace_invoice_id = fields.Many2one('account.move', string="Replace Invoice", domain="['|', '&', '&', ('state', '=', 'posted'), ('partner_id', '=', partner_id), ('reversal_move_ids', '!=', False), ('state', '=', 'cancel')]", copy=False, index='btree_not_null')
-    l10n_id_efaktur_document = fields.Many2one('l10n_id_efaktur.document', readonly=True, copy=False, string="e-Faktur Document")
+    l10n_id_replace_invoice_id = fields.Many2one('account.move', string="Replace Invoice",
+                                                 domain="['|', '&', '&', ('state', '=', 'posted'), ('partner_id', '=', partner_id), ('reversal_move_ids', '!=', False), ('state', '=', 'cancel')]",
+                                                 copy=False, index='btree_not_null')
+    l10n_id_efaktur_document = fields.Many2one('l10n_id_efaktur.document', readonly=True, copy=False,
+                                               string="e-Faktur Document")
     l10n_id_kode_transaksi = fields.Selection([
-            ('01', '01 To the Parties that is not VAT Collector (Regular Customers)'),
-            ('02', '02 To the Treasurer'),
-            ('03', '03 To other VAT Collectors other than the Treasurer'),
-            ('04', '04 Other Value of VAT Imposition Base'),
-            ('05', '05 Specified Amount (Article 9A Paragraph (1) VAT Law)'),
-            ('06', '06 to individuals holding foreign passports'),
-            ('07', '07 Deliveries that the VAT is not Collected'),
-            ('08', '08 Deliveries that the VAT is Exempted'),
-            ('09', '09 Deliveries of Assets (Article 16D of VAT Law)'),
-        ], string='Kode Transaksi', help='Dua digit pertama nomor pajak',
+        ('01', '01 To the Parties that is not VAT Collector (Regular Customers)'),
+        ('02', '02 To the Treasurer'),
+        ('03', '03 To other VAT Collectors other than the Treasurer'),
+        ('04', '04 Other Value of VAT Imposition Base'),
+        ('05', '05 Specified Amount (Article 9A Paragraph (1) VAT Law)'),
+        ('06', '06 to individuals holding foreign passports'),
+        ('07', '07 Deliveries that the VAT is not Collected'),
+        ('08', '08 Deliveries that the VAT is Exempted'),
+        ('09', '09 Deliveries of Assets (Article 16D of VAT Law)'),
+    ], string='Kode Transaksi', help='Dua digit pertama nomor pajak',
         readonly=False, copy=False,
         compute="_compute_kode_transaksi", store=True)
-    l10n_id_efaktur_range = fields.Many2one("l10n_id_efaktur.efaktur.range", string="E-faktur Range", copy=False, domain="[('company_id', '=', company_id), ('available', '>', 0)]")
+    l10n_id_efaktur_range = fields.Many2one("l10n_id_efaktur.efaktur.range", string="E-faktur Range", copy=False,
+                                            domain="[('company_id', '=', company_id), ('available', '>', 0)]")
     l10n_id_need_kode_transaksi = fields.Boolean(compute='_compute_need_kode_transaksi')
     l10n_id_available_range_count = fields.Integer(compute="_compute_available_range_count", compute_sudo=True)
     l10n_id_show_kode_transaksi = fields.Boolean(compute='_compute_show_kode_transaksi')
@@ -67,20 +71,20 @@ class AccountMove(models.Model):
         for move in self:
             # If there are no taxes at all on every line (0% taxes counts as having a tax) then we don't need a kode transaksi
             move.l10n_id_need_kode_transaksi = (
-                move.commercial_partner_id.l10n_id_pkp
-                and not move.l10n_id_tax_number
-                and move.move_type == 'out_invoice'
-                and move.country_code == 'ID'
-                and move.invoice_line_ids.tax_ids
+                    move.commercial_partner_id.l10n_id_pkp
+                    and not move.l10n_id_tax_number
+                    and move.move_type == 'out_invoice'
+                    and move.country_code == 'ID'
+                    and move.invoice_line_ids.tax_ids
             )
 
     @api.depends('commercial_partner_id')
     def _compute_show_kode_transaksi(self):
         for move in self:
             move.l10n_id_show_kode_transaksi = (
-                move.commercial_partner_id.l10n_id_pkp
-                and move.move_type == 'out_invoice'
-                and move.country_code == 'ID'
+                    move.commercial_partner_id.l10n_id_pkp
+                    and move.move_type == 'out_invoice'
+                    and move.country_code == 'ID'
             )
 
     @api.constrains('l10n_id_kode_transaksi', 'line_ids', 'partner_id')
@@ -88,8 +92,10 @@ class AccountMove(models.Model):
         ppn_tag = self.env.ref('l10n_id.ppn_tag')
         for move in self.filtered(lambda m: m.l10n_id_need_kode_transaksi and m.l10n_id_kode_transaksi != '08'):
             if any(ppn_tag.id in line.tax_tag_ids.ids for line in move.line_ids if line.display_type == 'product') \
-                    and any(ppn_tag.id not in line.tax_tag_ids.ids for line in move.line_ids if line.display_type == 'product'):
-                raise UserError(_('Cannot mix VAT subject and Non-VAT subject items in the same invoice with this kode transaksi.'))
+                    and any(
+                ppn_tag.id not in line.tax_tag_ids.ids for line in move.line_ids if line.display_type == 'product'):
+                raise UserError(
+                    _('Cannot mix VAT subject and Non-VAT subject items in the same invoice with this kode transaksi.'))
         for move in self.filtered(lambda m: m.l10n_id_need_kode_transaksi and m.l10n_id_kode_transaksi == '08'):
             if any(ppn_tag.id in line.tax_tag_ids.ids for line in move.line_ids if line.display_type == 'product'):
                 raise UserError('Kode transaksi 08 is only for non VAT subject items.')
@@ -117,15 +123,18 @@ class AccountMove(models.Model):
                     raise ValidationError(_('You need to put a Kode Transaksi for this partner.'))
                 if move.l10n_id_replace_invoice_id.l10n_id_tax_number:
                     if not move.l10n_id_replace_invoice_id.l10n_id_efaktur_document:
-                        raise ValidationError(_('Replacement invoice only for invoices on which the e-Faktur is generated. '))
+                        raise ValidationError(
+                            _('Replacement invoice only for invoices on which the e-Faktur is generated. '))
                     rep_efaktur_str = move.l10n_id_replace_invoice_id.l10n_id_tax_number
                     move.l10n_id_tax_number = '%s1%s' % (move.l10n_id_kode_transaksi, rep_efaktur_str[3:])
                 else:
                     # Auto-select the smallest range available
                     if not move.l10n_id_efaktur_range:
-                        move.l10n_id_efaktur_range = self.env['l10n_id_efaktur.efaktur.range'].search([('company_id', '=', move.company_id.id), ('available', '>', 0)], order="min ASC", limit=1)
+                        move.l10n_id_efaktur_range = self.env['l10n_id_efaktur.efaktur.range'].search(
+                            [('company_id', '=', move.company_id.id), ('available', '>', 0)], order="min ASC", limit=1)
                         if not move.l10n_id_efaktur_range:
-                            raise ValidationError(_('There is no Efaktur range available. Please configure the range you get from the government in the e-Faktur Ranges menu. '))
+                            raise ValidationError(
+                                _('There is no Efaktur range available. Please configure the range you get from the government in the e-Faktur Ranges menu. '))
                     efaktur_num = move.l10n_id_efaktur_range.pop_number()
                     move.l10n_id_tax_number = '%s0%013d' % (str(move.l10n_id_kode_transaksi), efaktur_num)
         return super()._post(soft)
@@ -159,12 +168,15 @@ class AccountMove(models.Model):
             if not record.line_ids.tax_ids:
                 raise ValidationError(_('E-faktur is not available for invoices without any taxes.'))
             if not record.l10n_id_tax_number:
-                raise ValidationError(_("Please reset %(move_number)s to draft and post it again to generate the eTax number", move_number=record.name))
+                raise ValidationError(
+                    _("Please reset %(move_number)s to draft and post it again to generate the eTax number",
+                      move_number=record.name))
 
         # Should prevent users from generating e-Faktur document on invoices across multi-company.
         # Allowing it will cause issues on the invoice/eFaktur document record rule
         if len(self.company_id) > 1:
-            raise UserError(_("You are not allowed to generate e-Faktur document from invoices coming from different companies"))
+            raise UserError(
+                _("You are not allowed to generate e-Faktur document from invoices coming from different companies"))
 
         # All invoices in self have no documents; we can create a new one for them.
         # Or all invoices in self have a document, but it's the same one. Special use case but we allow downloading it.
@@ -176,7 +188,8 @@ class AccountMove(models.Model):
             self.l10n_id_efaktur_document.action_regenerate()
         # If there is more than one document, or all invoices for a document were not selected, the resulting file could cause mistakes;
         # They could get a file with additional invoices for example. In this case, we redirect them to the document view to make it clearer.
-        elif len(self.l10n_id_efaktur_document) > 1 or set(self.l10n_id_efaktur_document.invoice_ids.ids) != set(self.ids):
+        elif len(self.l10n_id_efaktur_document) > 1 or set(self.l10n_id_efaktur_document.invoice_ids.ids) != set(
+                self.ids):
             action_error = {
                 'name': _('Document Mismatch'),
                 'view_mode': 'list',
@@ -212,7 +225,8 @@ class AccountMove(models.Model):
             if empty_documents:
                 empty_documents.active = False
 
-            body = _("This invoice has been unlinked from the e-faktur document %(document_link)s following the reset to draft.",
-                     document_link=invoices_document._get_html_link(title=f"{invoices_document.id}"))
+            body = _(
+                "This invoice has been unlinked from the e-faktur document %(document_link)s following the reset to draft.",
+                document_link=invoices_document._get_html_link(title=f"{invoices_document.id}"))
             invoices_with_document._message_log_batch(bodies={inv.id: body for inv in invoices_with_document})
         return super().button_draft()

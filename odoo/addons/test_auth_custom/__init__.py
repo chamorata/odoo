@@ -10,6 +10,7 @@ class IrHttp(models.AbstractModel):
     def _auth_method_thing(cls):
         raise AccessDenied()
 
+
 class TestController(Controller):
     # for HTTP endpoints, must allow OPTIONS or werkzeug won't match the route
     # when dispatching the CORS preflight

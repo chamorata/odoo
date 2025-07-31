@@ -2,10 +2,10 @@
 
 import datetime
 
+from pytz import timezone, UTC
+
 from odoo import api, fields, models, modules, _
 from odoo.exceptions import AccessError
-
-from pytz import timezone, UTC
 
 
 class Users(models.Model):
@@ -70,7 +70,8 @@ class Users(models.Model):
         privacy_update = 'calendar_default_privacy' in vals
         default_user = self.env.ref('base.default_user', raise_if_not_found=False)
         if default_user and privacy_update and any(user not in [default_user, self.env.user] for user in self):
-            raise AccessError(_("You are not allowed to change the calendar default privacy of another user due to privacy constraints."))
+            raise AccessError(
+                _("You are not allowed to change the calendar default privacy of another user due to privacy constraints."))
         res = super().write(vals)
         return res
 
@@ -148,13 +149,13 @@ class Users(models.Model):
 
         return ['&', '|',
                 '&',
-                    '|',
-                        ['start', '>=', fields.Datetime.to_string(start_dt_utc)],
-                        ['stop', '>=', fields.Datetime.to_string(start_dt_utc)],
-                    ['start', '<=', fields.Datetime.to_string(stop_dt_utc)],
+                '|',
+                ['start', '>=', fields.Datetime.to_string(start_dt_utc)],
+                ['stop', '>=', fields.Datetime.to_string(start_dt_utc)],
+                ['start', '<=', fields.Datetime.to_string(stop_dt_utc)],
                 '&',
-                    ['allday', '=', True],
-                    ['start_date', '=', fields.Date.to_string(start_date)],
+                ['allday', '=', True],
+                ['start_date', '=', fields.Date.to_string(start_date)],
                 ('attendee_ids', 'in', current_user_non_declined_attendee_ids)]
 
     @api.model

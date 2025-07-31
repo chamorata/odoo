@@ -9,7 +9,7 @@ class WebsiteMenu(models.Model):
 
     def unlink(self):
         """ Override to synchronize event configuration fields with menu deletion.
-        This should be cleaned in upcoming versions. """    
+        This should be cleaned in upcoming versions. """
         event_updates = {}
         website_event_menus = self.env['website.event.menu'].search([('menu_id', 'in', self.ids)])
         for event_menu in website_event_menus:

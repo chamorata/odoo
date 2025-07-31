@@ -1,8 +1,9 @@
 import time
 from datetime import timedelta
 
-from odoo import api, fields, models, _
 from odoo.addons.l10n_hu_edi.models.l10n_hu_edi_connection import L10nHuEdiConnection
+
+from odoo import api, fields, models, _
 
 
 class AccountMoveSend(models.AbstractModel):
@@ -29,7 +30,8 @@ class AccountMoveSend(models.AbstractModel):
         enabled_moves = moves.filtered(lambda m: 'upload' in m._l10n_hu_edi_get_valid_actions())._origin
         if hu_moves - enabled_moves:
             alerts['l10n_hu_edi_checkbox_not_ticked'] = {
-                'message': _("Invoices issued in Hungary must, with few exceptions, be reported to the NAV's Online-Invoice system.")
+                'message': _(
+                    "Invoices issued in Hungary must, with few exceptions, be reported to the NAV's Online-Invoice system.")
             }
         else:
             alerts.update(enabled_moves._l10n_hu_edi_check_invoices())
@@ -86,7 +88,8 @@ class AccountMoveSend(models.AbstractModel):
                 time.sleep(2)
 
             # STEP 2: Query status
-            invoices_hu.filtered(lambda m: 'query_status' in m._l10n_hu_edi_get_valid_actions())._l10n_hu_edi_query_status(connection)
+            invoices_hu.filtered(
+                lambda m: 'query_status' in m._l10n_hu_edi_get_valid_actions())._l10n_hu_edi_query_status(connection)
 
         # STEP 3: Schedule update status of pending invoices in 10 minutes.
         if any(m.l10n_hu_edi_state not in [False, 'confirmed', 'confirmed_warning', 'rejected'] for m in invoices_hu):

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import models
 from odoo.tests.common import TransactionCase
 
 
@@ -27,15 +26,21 @@ class TestStreetFields(TransactionCase):
         for street, name, number, number2 in values:
             # test street -> street values (compute)
             partner.street = street
-            self.assertEqual(partner.street_name, name, 'Wrongly formatted street name: expected %s, received %s' % (name, partner.street_name))
-            self.assertEqual(partner.street_number, number, 'Wrongly formatted street number: expected %s, received %s' % (number, partner.street_number))
-            self.assertEqual(partner.street_number2, number2, 'Wrongly formatted street number2: expected %s, received %s' % (number2, partner.street_number2))
+            self.assertEqual(partner.street_name, name,
+                             'Wrongly formatted street name: expected %s, received %s' % (name, partner.street_name))
+            self.assertEqual(partner.street_number, number,
+                             'Wrongly formatted street number: expected %s, received %s' % (number,
+                                                                                            partner.street_number))
+            self.assertEqual(partner.street_number2, number2,
+                             'Wrongly formatted street number2: expected %s, received %s' % (number2,
+                                                                                             partner.street_number2))
 
         for street, name, number, number2 in values:
             partner.street_number2 = number2
             partner.street_number = number
             partner.street_name = name
-            self.assertEqual(partner.street, street.strip(), 'Wrongly formatted street: expected %s, received %s' % (street, partner.street))
+            self.assertEqual(partner.street, street.strip(),
+                             'Wrongly formatted street: expected %s, received %s' % (street, partner.street))
 
     def test_child_sync(self):
         """ Test that city_id is propagated to (contact-type) children contacts. """

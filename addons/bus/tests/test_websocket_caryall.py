@@ -5,10 +5,11 @@ import json
 import os
 from collections import defaultdict
 from datetime import timedelta
-from freezegun import freeze_time
 from threading import Event
 from unittest.mock import patch
 from weakref import WeakSet
+
+from freezegun import freeze_time
 
 from odoo import http
 from odoo.api import Environment
@@ -27,6 +28,7 @@ from ..websocket import (
     Websocket,
     WebsocketConnectionHandler,
 )
+
 
 @common.tagged('post_install', '-at_install')
 class TestWebsocketCaryall(WebsocketCase):
@@ -260,7 +262,7 @@ class TestWebsocketCaryall(WebsocketCase):
             serve_forever_called_event.set()
 
         with patch.object(
-            WebsocketConnectionHandler, '_serve_forever', side_effect=serve_forever
+                WebsocketConnectionHandler, '_serve_forever', side_effect=serve_forever
         ) as mock, mute_logger('odoo.addons.bus.websocket'):
             ws = self.websocket_connect(
                 cookie=f'session_id={user_session.sid};',
@@ -283,7 +285,7 @@ class TestWebsocketCaryall(WebsocketCase):
     def test_disconnect_when_version_outdated(self):
         # Outdated version, connection should be closed immediately
         with patch.object(WebsocketConnectionHandler, "_VERSION", "17.0-1"), patch.object(
-            self, "_WEBSOCKET_URL", f"{self._BASE_WEBSOCKET_URL}?version=17.0-0"
+                self, "_WEBSOCKET_URL", f"{self._BASE_WEBSOCKET_URL}?version=17.0-0"
         ):
             websocket = self.websocket_connect(
                 ping_after_connect=False, header={"User-Agent": "Chrome/126.0.0.0"}
@@ -292,7 +294,7 @@ class TestWebsocketCaryall(WebsocketCase):
 
         # Version not passed, User-Agent present, should be considered as outdated
         with patch.object(WebsocketConnectionHandler, "_VERSION", "17.0-1"), patch.object(
-            self, "_WEBSOCKET_URL", self._BASE_WEBSOCKET_URL
+                self, "_WEBSOCKET_URL", self._BASE_WEBSOCKET_URL
         ):
             websocket = self.websocket_connect(
                 ping_after_connect=False, header={"User-Agent": "Chrome/126.0.0.0"}
@@ -301,7 +303,7 @@ class TestWebsocketCaryall(WebsocketCase):
         # Version not passed, User-Agent not present, should not be considered
         # as outdated
         with patch.object(WebsocketConnectionHandler, "_VERSION", "17.0-1"), patch.object(
-            self, "_WEBSOCKET_URL", self._BASE_WEBSOCKET_URL
+                self, "_WEBSOCKET_URL", self._BASE_WEBSOCKET_URL
         ):
             websocket = self.websocket_connect()
             websocket.ping()

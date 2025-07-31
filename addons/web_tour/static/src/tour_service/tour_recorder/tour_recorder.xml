@@ -4,7 +4,8 @@
     <div class="d-flex position-fixed bottom-0 start-0 bg-primary o_tour_recorder">
         <div t-ref="tour_recorder" class="d-flex">
             <button class="o_button_record btn btn-primary rounded-0" t-on-click.prevent.stop="toggleRecording">
-                <span class="px-2 me-1 rounded-circle" t-att-class="state.recording ? 'bg-danger': 'bg-secondary'" role="status" aria-hidden="true"></span>
+                <span class="px-2 me-1 rounded-circle" t-att-class="state.recording ? 'bg-danger': 'bg-secondary'"
+                      role="status" aria-hidden="true"></span>
                 Record
                 <span class="fst-italic fw-lighter" t-if="state.editedElement"> (recording keyboard)</span>
             </button>
@@ -29,7 +30,8 @@
                                         <td><t t-esc="step_index + 1"/>.</td>
                                         <td class="o_tour_step_trigger">
                                             <t t-esc="step.trigger"/>
-                                            <span t-if="step.run and step.run != 'click'" class="fst-italic fw-lighter"><br/>(run: <t t-esc="step.run"/>) </span>
+                                            <span t-if="step.run and step.run != 'click'" class="fst-italic fw-lighter"><br/>
+                                                (run:<t t-esc="step.run"/>) </span>
                                         </td>
                                         <td><button class="o_button_delete_step btn btn-link text-danger fa fa-trash mx-1" t-on-click.prevent.stop="() => state.steps.splice(step_index, 1)"/></td>
                                     </tr>
@@ -46,17 +48,22 @@
                 <t t-set-slot="content">
                     <div class="o_tour_recorder p-1" style="min-width: 30vw;">
                         <form class="p-1" t-on-submit.prevent="saveTour">
-                            <label for="name" class="o_form_label my-1">Name:</label><br/>
-                            <input t-att-value="state.tourName" t-on-change="(ev) => state.tourName = ev.target.value" class="o_input" placeholder="name_of_the_tour" type="text" name="name"/>
-                            <label for="url" class="o_form_label my-1">Url:</label><br/>
-                            <input t-att-value="state.url" t-on-change="(ev) => state.url = ev.target.value" class="o_input" type="text" name="url"/>
+                            <label for="name" class="o_form_label my-1">Name:</label>
+                            <br/>
+                            <input t-att-value="state.tourName" t-on-change="(ev) => state.tourName = ev.target.value"
+                                   class="o_input" placeholder="name_of_the_tour" type="text" name="name"/>
+                            <label for="url" class="o_form_label my-1">Url:</label>
+                            <br/>
+                            <input t-att-value="state.url" t-on-change="(ev) => state.url = ev.target.value"
+                                   class="o_input" type="text" name="url"/>
                             <button class="o_button_save_confirm btn btn-primary mt-3">Save</button>
                         </form>
                     </div>
                 </t>
             </Dropdown>
             <button t-if="state.steps.length" class="btn btn-primary px-1" t-on-click="resetTourRecorderState"><i class="fa fa-undo"></i></button>
-            <button class="btn btn-primary position-absolute bottom-0 start-100 rounded-0 border-1 o_tour_recorder_close_button" t-on-click.prevent.stop="() => props.onClose()"><i class="fa fa-close"></i></button>
+            <button class="btn btn-primary position-absolute bottom-0 start-100 rounded-0 border-1 o_tour_recorder_close_button"
+                    t-on-click.prevent.stop="() => props.onClose()"><i class="fa fa-close"></i></button>
         </div>
     </div>
 </t>

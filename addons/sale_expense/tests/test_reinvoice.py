@@ -1,8 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import Command
 from odoo.addons.hr_expense.tests.common import TestExpenseCommon
 from odoo.addons.sale.tests.common import TestSaleCommon
+
+from odoo import Command
 from odoo.tests import tagged
 
 
@@ -62,22 +63,23 @@ class TestReInvoice(TestExpenseCommon, TestSaleCommon):
                 'supplier_taxes_id': [Command.set([new_purchase_tax.id])],
                 'can_be_expensed': True,
             }),
-            'service_delivery_sales_price': cls.env['product.product'].with_company(cls.company_data['company']).create({
-                'name': 'service_order_sales_price',
-                'categ_id': cls.company_data['product_category'].id,
-                'standard_price': 0.,
-                'list_price': 280.39,
-                'type': 'service',
-                'weight': 0.01,
-                'uom_id': cls.env.ref('uom.product_uom_unit').id,
-                'uom_po_id': cls.env.ref('uom.product_uom_unit').id,
-                'default_code': 'FURN_99992',
-                'invoice_policy': 'delivery',
-                'expense_policy': 'sales_price',
-                'taxes_id': [Command.set([new_sale_tax.id])],
-                'supplier_taxes_id': [Command.set([new_purchase_tax.id])],
-                'can_be_expensed': True,
-            }),
+            'service_delivery_sales_price': cls.env['product.product'].with_company(cls.company_data['company']).create(
+                {
+                    'name': 'service_order_sales_price',
+                    'categ_id': cls.company_data['product_category'].id,
+                    'standard_price': 0.,
+                    'list_price': 280.39,
+                    'type': 'service',
+                    'weight': 0.01,
+                    'uom_id': cls.env.ref('uom.product_uom_unit').id,
+                    'uom_po_id': cls.env.ref('uom.product_uom_unit').id,
+                    'default_code': 'FURN_99992',
+                    'invoice_policy': 'delivery',
+                    'expense_policy': 'sales_price',
+                    'taxes_id': [Command.set([new_sale_tax.id])],
+                    'supplier_taxes_id': [Command.set([new_purchase_tax.id])],
+                    'can_be_expensed': True,
+                }),
             'service_delivery_cost_price': cls.env['product.product'].with_company(cls.company_data['company']).create({
                 'name': 'service_delivery_cost_price',
                 'categ_id': cls.company_data['product_category'].id,
@@ -204,14 +206,21 @@ class TestReInvoice(TestExpenseCommon, TestSaleCommon):
 
         self.assertRecordValues(self.expense_sale_order.order_line, [
             # [0] Line not created from a re-invoiced, should never be changed
-            {'qty_delivered': 0.0, 'product_uom_qty': 3.0, 'is_expense': False, 'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 3.0, 'is_expense': False,
+             'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
             # [1-6] SHEET 1 Lines: created with the correct quantities and linked to the expense
-            {'qty_delivered': 6.0, 'product_uom_qty': 6.0, 'is_expense':  True, 'name': 'expense_employee: expense_6 invoicing=order, expense=cost'},  # noqa: E272
-            {'qty_delivered': 5.0, 'product_uom_qty': 5.0, 'is_expense':  True, 'name': 'expense_employee: expense_5 invoicing=delivery, expense=cost'},  # noqa: E272
-            {'qty_delivered': 1.0, 'product_uom_qty': 1.0, 'is_expense':  True, 'name': 'expense_employee: expense_4 invoicing=delivery, expense=sales_price'},  # noqa: E272
-            {'qty_delivered': 1.0, 'product_uom_qty': 1.0, 'is_expense':  True, 'name': 'expense_employee: expense_3 invoicing=delivery, expense=sales_price'},  # noqa: E272
-            {'qty_delivered': 1.0, 'product_uom_qty': 1.0, 'is_expense':  True, 'name': 'expense_employee: expense_2 invoicing=order, expense=sales_price'},  # noqa: E272
-            {'qty_delivered': 1.0, 'product_uom_qty': 1.0, 'is_expense':  True, 'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},  # noqa: E272
+            {'qty_delivered': 6.0, 'product_uom_qty': 6.0, 'is_expense': True,
+             'name': 'expense_employee: expense_6 invoicing=order, expense=cost'},  # noqa: E272
+            {'qty_delivered': 5.0, 'product_uom_qty': 5.0, 'is_expense': True,
+             'name': 'expense_employee: expense_5 invoicing=delivery, expense=cost'},  # noqa: E272
+            {'qty_delivered': 1.0, 'product_uom_qty': 1.0, 'is_expense': True,
+             'name': 'expense_employee: expense_4 invoicing=delivery, expense=sales_price'},  # noqa: E272
+            {'qty_delivered': 1.0, 'product_uom_qty': 1.0, 'is_expense': True,
+             'name': 'expense_employee: expense_3 invoicing=delivery, expense=sales_price'},  # noqa: E272
+            {'qty_delivered': 1.0, 'product_uom_qty': 1.0, 'is_expense': True,
+             'name': 'expense_employee: expense_2 invoicing=order, expense=sales_price'},  # noqa: E272
+            {'qty_delivered': 1.0, 'product_uom_qty': 1.0, 'is_expense': True,
+             'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},  # noqa: E272
         ])
 
     def test_expenses_reinvoice_case_2_reset_sheet_to_draft(self):
@@ -227,14 +236,21 @@ class TestReInvoice(TestExpenseCommon, TestSaleCommon):
 
         self.assertRecordValues(self.expense_sale_order.order_line, [
             # [0] Line not created from a re-invoiced, should never be changed
-            {'qty_delivered': 0.0, 'product_uom_qty': 3.0, 'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 3.0,
+             'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
             # [1-6] SHEET Lines: quantities are reset to 0 and expenses are unlinked
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_6 invoicing=order, expense=cost'},
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_5 invoicing=delivery, expense=cost'},
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_4 invoicing=delivery, expense=sales_price'},
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_3 invoicing=delivery, expense=sales_price'},
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_2 invoicing=order, expense=sales_price'},
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_6 invoicing=order, expense=cost'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_5 invoicing=delivery, expense=cost'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_4 invoicing=delivery, expense=sales_price'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_3 invoicing=delivery, expense=sales_price'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_2 invoicing=order, expense=sales_price'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
         ])
 
     def test_expenses_reinvoice_case_3_recreate_move_after_reset(self):
@@ -255,21 +271,34 @@ class TestReInvoice(TestExpenseCommon, TestSaleCommon):
 
         self.assertRecordValues(self.expense_sale_order.order_line, [
             # [0] Line not created from a re-invoiced, should never be changed
-            {'qty_delivered': 0.0, 'product_uom_qty': 3.0, 'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 3.0,
+             'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
             # [1-6] SHEET CASE 2 Lines: no change
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_6 invoicing=order, expense=cost'},
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_5 invoicing=delivery, expense=cost'},
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_4 invoicing=delivery, expense=sales_price'},
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_3 invoicing=delivery, expense=sales_price'},
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_2 invoicing=order, expense=sales_price'},
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_6 invoicing=order, expense=cost'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_5 invoicing=delivery, expense=cost'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_4 invoicing=delivery, expense=sales_price'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_3 invoicing=delivery, expense=sales_price'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_2 invoicing=order, expense=sales_price'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
             # [7-12] SHEET CASE 3 Lines: created with the correct quantities and linked to the expense
-            {'qty_delivered': 6.0, 'product_uom_qty': 6.0, 'name': 'expense_employee: expense_6 invoicing=order, expense=cost'},
-            {'qty_delivered': 5.0, 'product_uom_qty': 5.0, 'name': 'expense_employee: expense_5 invoicing=delivery, expense=cost'},
-            {'qty_delivered': 1.0, 'product_uom_qty': 1.0, 'name': 'expense_employee: expense_4 invoicing=delivery, expense=sales_price'},
-            {'qty_delivered': 1.0, 'product_uom_qty': 1.0, 'name': 'expense_employee: expense_3 invoicing=delivery, expense=sales_price'},
-            {'qty_delivered': 1.0, 'product_uom_qty': 1.0, 'name': 'expense_employee: expense_2 invoicing=order, expense=sales_price'},
-            {'qty_delivered': 1.0, 'product_uom_qty': 1.0, 'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
+            {'qty_delivered': 6.0, 'product_uom_qty': 6.0,
+             'name': 'expense_employee: expense_6 invoicing=order, expense=cost'},
+            {'qty_delivered': 5.0, 'product_uom_qty': 5.0,
+             'name': 'expense_employee: expense_5 invoicing=delivery, expense=cost'},
+            {'qty_delivered': 1.0, 'product_uom_qty': 1.0,
+             'name': 'expense_employee: expense_4 invoicing=delivery, expense=sales_price'},
+            {'qty_delivered': 1.0, 'product_uom_qty': 1.0,
+             'name': 'expense_employee: expense_3 invoicing=delivery, expense=sales_price'},
+            {'qty_delivered': 1.0, 'product_uom_qty': 1.0,
+             'name': 'expense_employee: expense_2 invoicing=order, expense=sales_price'},
+            {'qty_delivered': 1.0, 'product_uom_qty': 1.0,
+             'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
         ])
 
     def test_expenses_reinvoice_case_4_reset_sheet_move_to_draft(self):
@@ -285,14 +314,21 @@ class TestReInvoice(TestExpenseCommon, TestSaleCommon):
 
         self.assertRecordValues(self.expense_sale_order.order_line, [
             # [0] Line not created from a re-invoiced, should never be changed
-            {'qty_delivered': 0.0, 'product_uom_qty': 3.0, 'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 3.0,
+             'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
             # [1-6] SHEET Lines: quantities are reset to 0 and expenses are unlinked
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_6 invoicing=order, expense=cost'},
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_5 invoicing=delivery, expense=cost'},
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_4 invoicing=delivery, expense=sales_price'},
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_3 invoicing=delivery, expense=sales_price'},
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_2 invoicing=order, expense=sales_price'},
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_6 invoicing=order, expense=cost'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_5 invoicing=delivery, expense=cost'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_4 invoicing=delivery, expense=sales_price'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_3 invoicing=delivery, expense=sales_price'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_2 invoicing=order, expense=sales_price'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
         ])
 
     def test_expenses_reinvoice_case_5_repost_sheet_move_after_reset_to_draft(self):
@@ -311,21 +347,34 @@ class TestReInvoice(TestExpenseCommon, TestSaleCommon):
 
         self.assertRecordValues(self.expense_sale_order.order_line, [
             # [0] Line not created from a re-invoiced, should never be changed
-            {'qty_delivered': 0.0, 'product_uom_qty': 3.0, 'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 3.0,
+             'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
             # [1-6] SHEET CASE 4 Lines: no change
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_6 invoicing=order, expense=cost'},
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_5 invoicing=delivery, expense=cost'},
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_4 invoicing=delivery, expense=sales_price'},
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_3 invoicing=delivery, expense=sales_price'},
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_2 invoicing=order, expense=sales_price'},
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_6 invoicing=order, expense=cost'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_5 invoicing=delivery, expense=cost'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_4 invoicing=delivery, expense=sales_price'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_3 invoicing=delivery, expense=sales_price'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_2 invoicing=order, expense=sales_price'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
             # [7-12] SHEET CASE 5 Lines: created with the correct quantities and linked to the expense
-            {'qty_delivered': 6.0, 'product_uom_qty': 6.0, 'name': 'expense_employee: expense_6 invoicing=order, expense=cost'},
-            {'qty_delivered': 5.0, 'product_uom_qty': 5.0, 'name': 'expense_employee: expense_5 invoicing=delivery, expense=cost'},
-            {'qty_delivered': 1.0, 'product_uom_qty': 1.0, 'name': 'expense_employee: expense_4 invoicing=delivery, expense=sales_price'},
-            {'qty_delivered': 1.0, 'product_uom_qty': 1.0, 'name': 'expense_employee: expense_3 invoicing=delivery, expense=sales_price'},
-            {'qty_delivered': 1.0, 'product_uom_qty': 1.0, 'name': 'expense_employee: expense_2 invoicing=order, expense=sales_price'},
-            {'qty_delivered': 1.0, 'product_uom_qty': 1.0, 'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
+            {'qty_delivered': 6.0, 'product_uom_qty': 6.0,
+             'name': 'expense_employee: expense_6 invoicing=order, expense=cost'},
+            {'qty_delivered': 5.0, 'product_uom_qty': 5.0,
+             'name': 'expense_employee: expense_5 invoicing=delivery, expense=cost'},
+            {'qty_delivered': 1.0, 'product_uom_qty': 1.0,
+             'name': 'expense_employee: expense_4 invoicing=delivery, expense=sales_price'},
+            {'qty_delivered': 1.0, 'product_uom_qty': 1.0,
+             'name': 'expense_employee: expense_3 invoicing=delivery, expense=sales_price'},
+            {'qty_delivered': 1.0, 'product_uom_qty': 1.0,
+             'name': 'expense_employee: expense_2 invoicing=order, expense=sales_price'},
+            {'qty_delivered': 1.0, 'product_uom_qty': 1.0,
+             'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
         ])
 
     def test_expenses_reinvoice_case_6_reverse_expense_move(self):
@@ -341,14 +390,21 @@ class TestReInvoice(TestExpenseCommon, TestSaleCommon):
 
         self.assertRecordValues(self.expense_sale_order.order_line, [
             # [0] Line not created from a re-invoiced, should never be changed
-            {'qty_delivered': 0.0, 'product_uom_qty': 3.0, 'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 3.0,
+             'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
             # [1-6] SHEET Lines: quantities are reset to 0 and expenses are unlinked
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_6 invoicing=order, expense=cost'},
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_5 invoicing=delivery, expense=cost'},
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_4 invoicing=delivery, expense=sales_price'},
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_3 invoicing=delivery, expense=sales_price'},
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_2 invoicing=order, expense=sales_price'},
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_6 invoicing=order, expense=cost'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_5 invoicing=delivery, expense=cost'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_4 invoicing=delivery, expense=sales_price'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_3 invoicing=delivery, expense=sales_price'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_2 invoicing=order, expense=sales_price'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
         ])
 
     def test_expenses_reinvoice_case_7_ensure_one2one_relationship(self):
@@ -357,14 +413,16 @@ class TestReInvoice(TestExpenseCommon, TestSaleCommon):
         """
         original_expenses = self.sale_expenses
         self.sale_expense_sheet.write({
-            'expense_line_ids': [Command.link(expense.copy().id) for expense in original_expenses],  # Duplicates of the expenses IN the reset sheet
+            'expense_line_ids': [Command.link(expense.copy().id) for expense in original_expenses],
+            # Duplicates of the expenses IN the reset sheet
             'accounting_date': '2017-01-01',  # To avoid "duplicate vendor reference raised" in the move
         })
         self.sale_expense_sheet.action_submit_sheet()
         self.sale_expense_sheet._do_approve()
         self.sale_expense_sheet.action_sheet_move_post()
         sheet_2 = self.sale_expense_sheet.copy({
-            'expense_line_ids': [Command.set([expense.copy().id for expense in original_expenses])],  # Duplicates of the expenses OUTSIDE the reset sheet
+            'expense_line_ids': [Command.set([expense.copy().id for expense in original_expenses])],
+            # Duplicates of the expenses OUTSIDE the reset sheet
             'accounting_date': '2017-01-02',
         })
         sheet_2.action_submit_sheet()
@@ -372,54 +430,92 @@ class TestReInvoice(TestExpenseCommon, TestSaleCommon):
         sheet_2.action_sheet_move_post()
         self.assertRecordValues(self.expense_sale_order.order_line, [
             # [0] Line not created from a re-invoiced, should never be changed
-            {'qty_delivered': 0.0, 'product_uom_qty': 3.0, 'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 3.0,
+             'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
             # [1-12] SHEET 1 Lines: Created with the correct quantities
-            {'qty_delivered': 6.0, 'product_uom_qty': 6.0, 'name': 'expense_employee: expense_6 invoicing=order, expense=cost'},
-            {'qty_delivered': 5.0, 'product_uom_qty': 5.0, 'name': 'expense_employee: expense_5 invoicing=delivery, expense=cost'},
-            {'qty_delivered': 1.0, 'product_uom_qty': 1.0, 'name': 'expense_employee: expense_4 invoicing=delivery, expense=sales_price'},
-            {'qty_delivered': 1.0, 'product_uom_qty': 1.0, 'name': 'expense_employee: expense_3 invoicing=delivery, expense=sales_price'},
-            {'qty_delivered': 1.0, 'product_uom_qty': 1.0, 'name': 'expense_employee: expense_2 invoicing=order, expense=sales_price'},
-            {'qty_delivered': 1.0, 'product_uom_qty': 1.0, 'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
-            {'qty_delivered': 6.0, 'product_uom_qty': 6.0, 'name': 'expense_employee: expense_6 invoicing=order, expense=cost'},
-            {'qty_delivered': 5.0, 'product_uom_qty': 5.0, 'name': 'expense_employee: expense_5 invoicing=delivery, expense=cost'},
-            {'qty_delivered': 1.0, 'product_uom_qty': 1.0, 'name': 'expense_employee: expense_4 invoicing=delivery, expense=sales_price'},
-            {'qty_delivered': 1.0, 'product_uom_qty': 1.0, 'name': 'expense_employee: expense_3 invoicing=delivery, expense=sales_price'},
-            {'qty_delivered': 1.0, 'product_uom_qty': 1.0, 'name': 'expense_employee: expense_2 invoicing=order, expense=sales_price'},
-            {'qty_delivered': 1.0, 'product_uom_qty': 1.0, 'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
+            {'qty_delivered': 6.0, 'product_uom_qty': 6.0,
+             'name': 'expense_employee: expense_6 invoicing=order, expense=cost'},
+            {'qty_delivered': 5.0, 'product_uom_qty': 5.0,
+             'name': 'expense_employee: expense_5 invoicing=delivery, expense=cost'},
+            {'qty_delivered': 1.0, 'product_uom_qty': 1.0,
+             'name': 'expense_employee: expense_4 invoicing=delivery, expense=sales_price'},
+            {'qty_delivered': 1.0, 'product_uom_qty': 1.0,
+             'name': 'expense_employee: expense_3 invoicing=delivery, expense=sales_price'},
+            {'qty_delivered': 1.0, 'product_uom_qty': 1.0,
+             'name': 'expense_employee: expense_2 invoicing=order, expense=sales_price'},
+            {'qty_delivered': 1.0, 'product_uom_qty': 1.0,
+             'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
+            {'qty_delivered': 6.0, 'product_uom_qty': 6.0,
+             'name': 'expense_employee: expense_6 invoicing=order, expense=cost'},
+            {'qty_delivered': 5.0, 'product_uom_qty': 5.0,
+             'name': 'expense_employee: expense_5 invoicing=delivery, expense=cost'},
+            {'qty_delivered': 1.0, 'product_uom_qty': 1.0,
+             'name': 'expense_employee: expense_4 invoicing=delivery, expense=sales_price'},
+            {'qty_delivered': 1.0, 'product_uom_qty': 1.0,
+             'name': 'expense_employee: expense_3 invoicing=delivery, expense=sales_price'},
+            {'qty_delivered': 1.0, 'product_uom_qty': 1.0,
+             'name': 'expense_employee: expense_2 invoicing=order, expense=sales_price'},
+            {'qty_delivered': 1.0, 'product_uom_qty': 1.0,
+             'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
             # [13-18] SHEET 2 Lines: Created with the correct quantities
-            {'qty_delivered': 6.0, 'product_uom_qty': 6.0, 'name': 'expense_employee: expense_6 invoicing=order, expense=cost'},
-            {'qty_delivered': 5.0, 'product_uom_qty': 5.0, 'name': 'expense_employee: expense_5 invoicing=delivery, expense=cost'},
-            {'qty_delivered': 1.0, 'product_uom_qty': 1.0, 'name': 'expense_employee: expense_4 invoicing=delivery, expense=sales_price'},
-            {'qty_delivered': 1.0, 'product_uom_qty': 1.0, 'name': 'expense_employee: expense_3 invoicing=delivery, expense=sales_price'},
-            {'qty_delivered': 1.0, 'product_uom_qty': 1.0, 'name': 'expense_employee: expense_2 invoicing=order, expense=sales_price'},
-            {'qty_delivered': 1.0, 'product_uom_qty': 1.0, 'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
+            {'qty_delivered': 6.0, 'product_uom_qty': 6.0,
+             'name': 'expense_employee: expense_6 invoicing=order, expense=cost'},
+            {'qty_delivered': 5.0, 'product_uom_qty': 5.0,
+             'name': 'expense_employee: expense_5 invoicing=delivery, expense=cost'},
+            {'qty_delivered': 1.0, 'product_uom_qty': 1.0,
+             'name': 'expense_employee: expense_4 invoicing=delivery, expense=sales_price'},
+            {'qty_delivered': 1.0, 'product_uom_qty': 1.0,
+             'name': 'expense_employee: expense_3 invoicing=delivery, expense=sales_price'},
+            {'qty_delivered': 1.0, 'product_uom_qty': 1.0,
+             'name': 'expense_employee: expense_2 invoicing=order, expense=sales_price'},
+            {'qty_delivered': 1.0, 'product_uom_qty': 1.0,
+             'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
         ])
 
         self.sale_expense_sheet.account_move_ids.button_draft()
 
         self.assertRecordValues(self.expense_sale_order.order_line, [
             # [0] Line not created from a re-invoiced, should never be changed
-            {'qty_delivered': 0.0, 'product_uom_qty': 3.0, 'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 3.0,
+             'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
             # [1-12] SHEET 1 Lines: quantities are reset to 0 and expenses are unlinked (because they are the oldest)
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_6 invoicing=order, expense=cost'},
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_5 invoicing=delivery, expense=cost'},
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_4 invoicing=delivery, expense=sales_price'},
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_3 invoicing=delivery, expense=sales_price'},
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_2 invoicing=order, expense=sales_price'},
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_6 invoicing=order, expense=cost'},
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_5 invoicing=delivery, expense=cost'},
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_4 invoicing=delivery, expense=sales_price'},
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_3 invoicing=delivery, expense=sales_price'},
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_2 invoicing=order, expense=sales_price'},
-            {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_6 invoicing=order, expense=cost'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_5 invoicing=delivery, expense=cost'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_4 invoicing=delivery, expense=sales_price'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_3 invoicing=delivery, expense=sales_price'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_2 invoicing=order, expense=sales_price'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_6 invoicing=order, expense=cost'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_5 invoicing=delivery, expense=cost'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_4 invoicing=delivery, expense=sales_price'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_3 invoicing=delivery, expense=sales_price'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_2 invoicing=order, expense=sales_price'},
+            {'qty_delivered': 0.0, 'product_uom_qty': 0.0,
+             'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
             # [13-18] SHEET 2 Lines: Not caught by the reset
-            {'qty_delivered': 6.0, 'product_uom_qty': 6.0, 'name': 'expense_employee: expense_6 invoicing=order, expense=cost'},
-            {'qty_delivered': 5.0, 'product_uom_qty': 5.0, 'name': 'expense_employee: expense_5 invoicing=delivery, expense=cost'},
-            {'qty_delivered': 1.0, 'product_uom_qty': 1.0, 'name': 'expense_employee: expense_4 invoicing=delivery, expense=sales_price'},
-            {'qty_delivered': 1.0, 'product_uom_qty': 1.0, 'name': 'expense_employee: expense_3 invoicing=delivery, expense=sales_price'},
-            {'qty_delivered': 1.0, 'product_uom_qty': 1.0, 'name': 'expense_employee: expense_2 invoicing=order, expense=sales_price'},
-            {'qty_delivered': 1.0, 'product_uom_qty': 1.0, 'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
+            {'qty_delivered': 6.0, 'product_uom_qty': 6.0,
+             'name': 'expense_employee: expense_6 invoicing=order, expense=cost'},
+            {'qty_delivered': 5.0, 'product_uom_qty': 5.0,
+             'name': 'expense_employee: expense_5 invoicing=delivery, expense=cost'},
+            {'qty_delivered': 1.0, 'product_uom_qty': 1.0,
+             'name': 'expense_employee: expense_4 invoicing=delivery, expense=sales_price'},
+            {'qty_delivered': 1.0, 'product_uom_qty': 1.0,
+             'name': 'expense_employee: expense_3 invoicing=delivery, expense=sales_price'},
+            {'qty_delivered': 1.0, 'product_uom_qty': 1.0,
+             'name': 'expense_employee: expense_2 invoicing=order, expense=sales_price'},
+            {'qty_delivered': 1.0, 'product_uom_qty': 1.0,
+             'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
         ])
 
     def test_expenses_reinvoice_analytic_distribution(self):

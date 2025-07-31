@@ -17,8 +17,8 @@
                     <div class="o_field_widget o_stat_info">
                         <span class="o_stat_value">
                             <field string="Sales" name="sale_price_subtotal"
-                                widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                            </span>
+                                   widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                        </span>
                         <span class="o_stat_text">Sales</span>
                     </div>
                 </button>

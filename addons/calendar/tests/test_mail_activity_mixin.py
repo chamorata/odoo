@@ -2,13 +2,13 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import datetime, time
-from dateutil.relativedelta import relativedelta
 
 import pytz
+from dateutil.relativedelta import relativedelta
+from odoo.addons.mail.tests.common import MailCommon
 
 from odoo import Command
 from odoo import tests
-from odoo.addons.mail.tests.common import MailCommon
 
 
 @tests.tagged('mail_activity_mixin')
@@ -36,6 +36,7 @@ class TestMailActivityMixin(MailCommon):
     def test_activity_calendar_event_id(self):
         """Test the computed field "activity_calendar_event_id" which is the event of the
         next activity. It must evaluate to False if the next activity is not related to an event"""
+
         def create_event(name, event_date):
             return self.env['calendar.event'].create({
                 'name': name,
@@ -74,7 +75,8 @@ class TestMailActivityMixin(MailCommon):
 
             act1.calendar_event_id = ev1
 
-            self.assertEqual(test_record.activity_calendar_event_id.name, ev1.name, "This should be the calendar event of the next activity")
+            self.assertEqual(test_record.activity_calendar_event_id.name, ev1.name,
+                             "This should be the calendar event of the next activity")
 
             act1._action_done(feedback="Mark activity as done with text")
 

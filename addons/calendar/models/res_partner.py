@@ -36,9 +36,9 @@ class Partner(models.Model):
                  WHERE res_partner_id IN %s AND calendar_event_id IN %s
               GROUP BY res_partner_id, calendar_event_id
                 """,
-                all_partners._ids,
-                query.subselect(),
-            ))
+                                                      all_partners._ids,
+                                                      query.subselect(),
+                                                      ))
 
             # Create a dict {partner_id: event_ids} and fill with events linked to the partner
             meetings = {}

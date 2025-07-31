@@ -11,12 +11,12 @@ class SaleOrderTemplateLine(models.Model):
 
     _sql_constraints = [
         ('accountable_product_id_required',
-            "CHECK(display_type IS NOT NULL OR (product_id IS NOT NULL AND product_uom_id IS NOT NULL))",
-            "Missing required product and UoM on accountable sale quote line."),
+         "CHECK(display_type IS NOT NULL OR (product_id IS NOT NULL AND product_uom_id IS NOT NULL))",
+         "Missing required product and UoM on accountable sale quote line."),
 
         ('non_accountable_fields_null',
-            "CHECK(display_type IS NULL OR (product_id IS NULL AND product_uom_qty = 0 AND product_uom_id IS NULL))",
-            "Forbidden product, quantity and UoM on non-accountable sale quote line"),
+         "CHECK(display_type IS NULL OR (product_id IS NULL AND product_uom_qty = 0 AND product_uom_id IS NULL))",
+         "Forbidden product, quantity and UoM on non-accountable sale quote line"),
     ]
 
     sale_order_template_id = fields.Many2one(
@@ -59,14 +59,14 @@ class SaleOrderTemplateLine(models.Model):
         ('line_section', "Section"),
         ('line_note', "Note")], default=False)
 
-    #=== COMPUTE METHODS ===#
+    # === COMPUTE METHODS ===#
 
     @api.depends('product_id')
     def _compute_product_uom_id(self):
         for option in self:
             option.product_uom_id = option.product_id.uom_id
 
-    #=== CRUD METHODS ===#
+    # === CRUD METHODS ===#
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -77,10 +77,11 @@ class SaleOrderTemplateLine(models.Model):
 
     def write(self, values):
         if 'display_type' in values and self.filtered(lambda line: line.display_type != values.get('display_type')):
-            raise UserError(_("You cannot change the type of a sale quote line. Instead you should delete the current line and create a new line of the proper type."))
+            raise UserError(
+                _("You cannot change the type of a sale quote line. Instead you should delete the current line and create a new line of the proper type."))
         return super().write(values)
 
-    #=== BUSINESS METHODS ===#
+    # === BUSINESS METHODS ===#
 
     @api.model
     def _product_id_domain(self):

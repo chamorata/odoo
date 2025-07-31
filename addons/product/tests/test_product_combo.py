@@ -1,12 +1,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from freezegun import freeze_time
+from odoo.addons.product.tests.common import ProductCommon
 
 from odoo.exceptions import UserError, ValidationError
 from odoo.fields import Command
 from odoo.tools import mute_logger
-
-from odoo.addons.product.tests.common import ProductCommon
 
 
 class TestProductCombo(ProductCommon):

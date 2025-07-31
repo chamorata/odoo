@@ -1,12 +1,7 @@
 # -*- coding: utf-8 -*-
-from unittest.mock import patch, ANY, call
 from datetime import timedelta
+from unittest.mock import patch, ANY, call
 
-from odoo import fields
-
-from odoo.exceptions import UserError
-from odoo.addons.microsoft_calendar.utils.microsoft_calendar import MicrosoftCalendarService
-from odoo.addons.microsoft_calendar.utils.microsoft_event import MicrosoftEvent
 from odoo.addons.microsoft_calendar.models.res_users import User
 from odoo.addons.microsoft_calendar.tests.common import (
     TestCommon,
@@ -14,6 +9,12 @@ from odoo.addons.microsoft_calendar.tests.common import (
     _modified_date_in_the_future,
     patch_api
 )
+from odoo.addons.microsoft_calendar.utils.microsoft_calendar import MicrosoftCalendarService
+from odoo.addons.microsoft_calendar.utils.microsoft_event import MicrosoftEvent
+
+from odoo import fields
+from odoo.exceptions import UserError
+
 
 @patch.object(User, '_get_microsoft_calendar_token', mock_get_token)
 class TestDeleteEvents(TestCommon):
@@ -193,7 +194,8 @@ class TestDeleteEvents(TestCommon):
                 lastModifiedDateTime=_modified_date_in_the_future(self.recurrence)
             )
             for i, event in enumerate(self.recurrent_event_from_outlook_organizer)
-            if i != (idx + 1)  # + 1 because recurrent_event_from_outlook_organizer contains the recurrence itself as first item
+            if i != (idx + 1)
+            # + 1 because recurrent_event_from_outlook_organizer contains the recurrence itself as first item
         ]
         event_to_remove = self.recurrent_events[idx]
         mock_get_events.return_value = (MicrosoftEvent(rec_values), None)
@@ -268,7 +270,8 @@ class TestDeleteEvents(TestCommon):
         )
 
         # act
-        self.organizer_user.with_context(dont_notify=True).with_user(self.organizer_user).sudo()._sync_microsoft_calendar()
+        self.organizer_user.with_context(dont_notify=True).with_user(
+            self.organizer_user).sudo()._sync_microsoft_calendar()
 
         # assert
         self.assertFalse(self.recurrence.exists())
@@ -322,7 +325,8 @@ class TestDeleteEvents(TestCommon):
         # Ensure that synchronization is paused, delete wasn't called and record doesn't exist anymore.
         self.assertFalse(self.organizer_user.microsoft_synchronization_stopped)
         self.assertEqual(self.organizer_user._get_microsoft_sync_status(), "sync_paused")
-        self.assertFalse(self.simple_event.exists(), "Event must be deleted from Odoo even though sync configuration is off")
+        self.assertFalse(self.simple_event.exists(),
+                         "Event must be deleted from Odoo even though sync configuration is off")
         mock_delete.assert_not_called()
 
     @patch.object(MicrosoftCalendarService, 'delete')
@@ -349,10 +353,12 @@ class TestDeleteEvents(TestCommon):
 
         # Allow recurrence unlinking when update comes from Microsoft (dont_notify=True).
         self.recurrent_events[2:].with_context(dont_notify=True).unlink()
-        self.assertTrue(all(not event.exists() for event in self.recurrent_events[2:]), "Recurrent event must be deleted after unlink from Microsoft.")
+        self.assertTrue(all(not event.exists() for event in self.recurrent_events[2:]),
+                        "Recurrent event must be deleted after unlink from Microsoft.")
 
         # Allow unlinking recurrence when sync is off for the current user.
         self.organizer_user.microsoft_synchronization_stopped = True
         self.assertFalse(self.env['calendar.event'].with_user(self.organizer_user)._check_microsoft_sync_status())
         self.recurrent_events[1].with_user(self.organizer_user).unlink()
-        self.assertFalse(self.recurrent_events[1].exists(), "Recurrent event must be deleted after unlink with sync off.")
+        self.assertFalse(self.recurrent_events[1].exists(),
+                         "Recurrent event must be deleted after unlink with sync off.")

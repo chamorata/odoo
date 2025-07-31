@@ -49,8 +49,8 @@ class IrMailServer(models.Model):
 
             if not server.smtp_user:
                 raise UserError(_(
-                            'Please fill the "Username" field with your Outlook/Office365 username (your email address). '
-                            'This should be the same account as the one used for the Outlook OAuthentication Token.'))
+                    'Please fill the "Username" field with your Outlook/Office365 username (your email address). '
+                    'This should be the same account as the one used for the Outlook OAuthentication Token.'))
 
     @api.onchange('smtp_encryption')
     def _onchange_encryption(self):

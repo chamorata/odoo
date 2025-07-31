@@ -5,7 +5,8 @@ import logging
 import threading
 
 from odoo.addons.iap.tools import iap_tools
-from odoo import api, fields, models, _
+
+from odoo import api, fields, models
 from odoo.tools.mail import email_domain_extract, url_domain_extract
 
 _logger = logging.getLogger(__name__)
@@ -17,7 +18,7 @@ class ResCompany(models.Model):
     _name = 'res.company'
     _inherit = 'res.company'
 
-    partner_gid = fields.Integer('Company database ID', related="partner_id.partner_gid",store=True)
+    partner_gid = fields.Integer('Company database ID', related="partner_id.partner_gid", store=True)
     iap_enrich_auto_done = fields.Boolean('Enrich Done')
 
     @api.model_create_multi
@@ -63,7 +64,8 @@ class ResCompany(models.Model):
             return
 
         company_data = {field: value for field, value in company_data.items()
-                        if field in self.partner_id._fields and value and (field == 'image_1920' or not self.partner_id[field])}
+                        if field in self.partner_id._fields and value and (
+                                    field == 'image_1920' or not self.partner_id[field])}
 
         # for company: from state_id / country_id display_name like to IDs
         company_data.update(self._enrich_extract_m2o_id(company_data, ['state_id', 'country_id']))

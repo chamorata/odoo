@@ -1,7 +1,9 @@
 # coding: utf-8
-from odoo.addons.website_sale.controllers.main import WebsiteSale
 from odoo.addons.website.tools import MockRequest
+from odoo.addons.website_sale.controllers.main import WebsiteSale
+
 from odoo.tests import TransactionCase, tagged
+
 
 @tagged('post_install', '-at_install')
 class WebsiteSaleVisitorTests(TransactionCase):
@@ -36,7 +38,8 @@ class WebsiteSaleVisitorTests(TransactionCase):
         new_visitors = self.env['website.visitor'].search([('id', 'not in', existing_visitors.ids)])
         new_tracks = self.env['website.track'].search([('id', 'not in', existing_tracks.ids)])
         self.assertEqual(len(new_visitors), 1, "No visitor should be created after visiting another tracked product")
-        self.assertEqual(len(new_tracks), 1, "No track should be created after visiting the same tracked product before 30 min")
+        self.assertEqual(len(new_tracks), 1,
+                         "No track should be created after visiting the same tracked product before 30 min")
 
         product = self.env['product.product'].create({
             'name': 'Large Cabinet',

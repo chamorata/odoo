@@ -19,4 +19,5 @@ class ResConfigSettings(models.TransientModel):
             product_domain = [('type', '=', 'service'), ('service_type', '=', 'milestones')]
             products = self.env['product.product'].search(product_domain)
             products.service_policy = 'delivered_manual'
-            self.env['sale.order.line'].sudo().search([('product_id', 'in', products.ids)]).qty_delivered_method = 'manual'
+            self.env['sale.order.line'].sudo().search(
+                [('product_id', 'in', products.ids)]).qty_delivered_method = 'manual'

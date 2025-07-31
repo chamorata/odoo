@@ -8,9 +8,9 @@
             <field name="arch" type="xml">
                 <xpath expr="//block[@id='l10n_jo_co_settings']" position="inside">
                     <setting
-                        id="l10n_jo_edi_demo_mode"
-                        help="Activate this mode to test the electronic invoicing flows with internal validations only"
-                        groups="base.group_no_one">
+                            id="l10n_jo_edi_demo_mode"
+                            help="Activate this mode to test the electronic invoicing flows with internal validations only"
+                            groups="base.group_no_one">
                         <field string="Demo Mode" name="l10n_jo_edi_demo_mode"/>
                     </setting>
                 </xpath>

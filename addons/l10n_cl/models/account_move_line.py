@@ -5,7 +5,6 @@ from odoo.tools.float_utils import float_repr
 
 
 class AccountMoveLine(models.Model):
-
     _inherit = 'account.move.line'
 
     def _l10n_cl_prices_and_taxes(self):
@@ -16,7 +15,8 @@ class AccountMoveLine(models.Model):
         """
         self.ensure_one()
         invoice = self.move_id
-        included_taxes = self.tax_ids.filtered(lambda x: x.l10n_cl_sii_code == 14) if self.move_id._l10n_cl_include_sii() else self.tax_ids
+        included_taxes = self.tax_ids.filtered(
+            lambda x: x.l10n_cl_sii_code == 14) if self.move_id._l10n_cl_include_sii() else self.tax_ids
         if not included_taxes:
             price_unit = self.tax_ids.compute_all(
                 self.price_unit,
@@ -127,6 +127,7 @@ class AccountMoveLine(models.Model):
             self.name,
             values['second_currency']['currency_name'],
             float_repr(values['second_currency']['price'], values['second_currency']['round_currency']),
-            self.move_id._float_repr_float_round(values['second_currency']['conversion_rate'], values['second_currency']['round_currency']),
+            self.move_id._float_repr_float_round(values['second_currency']['conversion_rate'],
+                                                 values['second_currency']['round_currency']),
         ) if values.get('second_currency') and not self.l10n_latam_document_type_id._is_doc_type_export() else self.name
         return values

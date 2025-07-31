@@ -7,8 +7,8 @@ import re
 import sys
 from pathlib import Path
 
-from . import Command
 from odoo.modules.module import MANIFEST_NAMES
+from . import Command
 
 
 class TSConfig(Command):

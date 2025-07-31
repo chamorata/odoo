@@ -34,6 +34,8 @@ class StockMove(models.Model):
         # People without purchase rights should be able to do this operation
         requisition_lines_sudo = self.sudo().requisition_line_ids
         if requisition_lines_sudo:
-            return [(requisition_line.requisition_id, requisition_line.requisition_id.user_id, visited) for requisition_line in requisition_lines_sudo if requisition_line.requisition_id.state not in ('done', 'cancel')]
+            return [(requisition_line.requisition_id, requisition_line.requisition_id.user_id, visited) for
+                    requisition_line in requisition_lines_sudo if
+                    requisition_line.requisition_id.state not in ('done', 'cancel')]
         else:
             return super(StockMove, self)._get_upstream_documents_and_responsibles(visited)

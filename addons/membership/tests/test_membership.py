@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
 import datetime
-from dateutil.relativedelta import relativedelta
 from unittest.mock import patch
 
-import time
+from dateutil.relativedelta import relativedelta
 from odoo.addons.membership.tests.common import TestMembershipCommon
-from odoo.tests import tagged
+
 from odoo import fields
+from odoo.tests import tagged
 
 
 @tagged('post_install', '-at_install')
@@ -62,7 +62,8 @@ class TestMembership(TestMembershipCommon):
 
         # payment process
         payment = self.env['account.payment'].create({
-            'destination_account_id': invoice.line_ids.account_id.filtered(lambda account: account.account_type == 'asset_receivable').id,
+            'destination_account_id': invoice.line_ids.account_id.filtered(
+                lambda account: account.account_type == 'asset_receivable').id,
             'payment_method_line_id': self.inbound_payment_method_line.id,
             'payment_type': 'inbound',
             'partner_type': 'customer',
@@ -120,12 +121,12 @@ class TestMembership(TestMembershipCommon):
             'membership: after opening the invoice, customer should be in invoiced status')
 
         # the invoice is paid -> customer goes to paid status
-        payment = self.env['account.payment.register']\
-            .with_context(active_model='account.move', active_ids=invoice.ids)\
+        payment = self.env['account.payment.register'] \
+            .with_context(active_model='account.move', active_ids=invoice.ids) \
             .create({
-                'amount': 86.25,
-                'payment_method_line_id': self.inbound_payment_method_line.id,
-            })\
+            'amount': 86.25,
+            'payment_method_line_id': self.inbound_payment_method_line.id,
+        }) \
             ._create_payments()
 
         self.assertEqual(

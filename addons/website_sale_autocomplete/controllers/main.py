@@ -1,14 +1,14 @@
 # -*- encoding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
+import logging
+
 import requests
 
 from odoo import http
 from odoo.http import request
 from odoo.tools import html2plaintext
 
-import logging
 _logger = logging.getLogger(__name__)
-
 
 FIELDS_MAPPING = {
     'country': ['country'],
@@ -66,7 +66,8 @@ class AutoCompleteController(http.Controller):
         guessed_house_number = guessed_house_number.split(',')[0].strip()
         return guessed_house_number
 
-    def _perform_place_search(self, partial_address, api_key=None, session_id=None, language_code=None, country_code=None):
+    def _perform_place_search(self, partial_address, api_key=None, session_id=None, language_code=None,
+                              country_code=None):
         if len(partial_address) <= 5:
             return {
                 'results': [],
@@ -110,7 +111,8 @@ class AutoCompleteController(http.Controller):
             'session_id': session_id
         }
 
-    def _perform_complete_place_search(self, address, api_key=None, google_place_id=None, language_code=None, session_id=None):
+    def _perform_complete_place_search(self, address, api_key=None, google_place_id=None, language_code=None,
+                                       session_id=None):
         params = {
             'key': api_key,
             'place_id': google_place_id,
@@ -148,7 +150,8 @@ class AutoCompleteController(http.Controller):
 
         if 'number' not in standard_address:
             standard_address['number'] = self._guess_number_from_input(address, standard_address)
-            standard_address['formatted_street_number'] = f'{standard_address["number"]} {standard_address.get("street", "")}'
+            standard_address[
+                'formatted_street_number'] = f'{standard_address["number"]} {standard_address.get("street", "")}'
         else:
             formatted_from_html = html2plaintext(html_address.split(',')[0])
             formatted_manually = f'{standard_address["number"]} {standard_address.get("street", "")}'

@@ -9,9 +9,12 @@
         <field name="groups_id" eval="[(4, ref('sales_team.group_sale_salesman'))]"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-            Create a new quotation, the first step of a new sale!
-            </p><p>
-            Once the quotation is confirmed by the customer, it becomes a sales order.<br/> You will be able to create an invoice and collect the payment.
+                Create a new quotation, the first step of a new sale!
+            </p>
+            <p>
+                Once the quotation is confirmed by the customer, it becomes a sales order.
+                <br/>
+                You will be able to create an invoice and collect the payment.
             </p>
         </field>
     </record>
@@ -24,11 +27,11 @@
         <field name="arch" type="xml">
             <xpath expr="//footer/div" position="inside">
                 <a t-if="record.sale_order_count?.value"
-                    class="btn btn-sm btn-link smaller"
-                    groups="sales_team.group_sale_salesman"
-                    name="action_view_sale_order"
-                    role="button"
-                    type="object">
+                   class="btn btn-sm btn-link smaller"
+                   groups="sales_team.group_sale_salesman"
+                   name="action_view_sale_order"
+                   role="button"
+                   type="object">
                     <i class="fa fa-usd me-1" role="img" aria-label="Sale orders" title="Sales orders"/>
                     <field name="sale_order_count"/>
                 </a>
@@ -39,13 +42,13 @@
     <record id="res_partner_view_buttons" model="ir.ui.view">
         <field name="name">res.partner.view.buttons</field>
         <field name="model">res.partner</field>
-        <field name="inherit_id" ref="base.view_partner_form" />
+        <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="priority" eval="3"/>
         <field name="arch" type="xml">
             <div name="button_box" position="inside">
                 <button class="oe_stat_button" type="object" name="action_view_sale_order"
-                    groups="sales_team.group_sale_salesman"
-                    icon="fa-usd">
+                        groups="sales_team.group_sale_salesman"
+                        icon="fa-usd">
                     <field string="Sales" name="sale_order_count" widget="statinfo"/>
                 </button>
             </div>
@@ -54,9 +57,10 @@
                     <group groups="sale.group_warning_sale" col="2">
                         <separator string="Warning on the Sales Order" colspan="2"/>
                         <field name="sale_warn" nolabel="1" colspan="2" required="1"/>
-                        <field name="sale_warn_msg" nolabel="1" string="Message" placeholder="Type a message..." colspan="2"
-                                invisible="sale_warn in (False, 'no-message')"
-                                required="sale_warn and sale_warn != 'no-message'"/>
+                        <field name="sale_warn_msg" nolabel="1" string="Message" placeholder="Type a message..."
+                               colspan="2"
+                               invisible="sale_warn in (False, 'no-message')"
+                               required="sale_warn and sale_warn != 'no-message'"/>
                     </group>
                 </group>
             </xpath>

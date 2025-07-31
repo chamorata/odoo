@@ -262,9 +262,9 @@ class ProductTemplateAttributeLine(models.Model):
     def _is_configurable(self):
         self.ensure_one()
         return (
-            len(self.value_ids) >= 2
-            or self.attribute_id.display_type == 'multi'
-            or self.value_ids.is_custom
+                len(self.value_ids) >= 2
+                or self.attribute_id.display_type == 'multi'
+                or self.value_ids.is_custom
         )
 
     def action_open_attribute_values(self):

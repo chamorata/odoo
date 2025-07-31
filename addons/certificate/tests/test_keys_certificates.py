@@ -1,9 +1,9 @@
 import base64
+from datetime import datetime, timedelta, timezone
 
 from cryptography import x509
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import ec, rsa
-from datetime import datetime, timedelta, timezone
 
 from odoo.exceptions import UserError
 from odoo.tests import TransactionCase, tagged
@@ -87,7 +87,8 @@ class TestKeysCertificates(TransactionCase):
             'content': base64.b64encode(content),
             'password': wrong_password,
         })
-        self.assertEqual(key.loading_error, 'This key could not be loaded. Either its content or its password is erroneous.')
+        self.assertEqual(key.loading_error,
+                         'This key could not be loaded. Either its content or its password is erroneous.')
         key.write({
             'password': correct_password,
         })

@@ -27,13 +27,15 @@
     </template>
 
     <template id="token_exchange_request">
-        <TokenExchangeRequest xmlns:common="http://schemas.nav.gov.hu/NTCA/1.0/common" xmlns="http://schemas.nav.gov.hu/OSA/3.0/api">
+        <TokenExchangeRequest xmlns:common="http://schemas.nav.gov.hu/NTCA/1.0/common"
+                              xmlns="http://schemas.nav.gov.hu/OSA/3.0/api">
             <t t-call="l10n_hu_edi.request_header"/>
         </TokenExchangeRequest>
     </template>
 
     <template id="manage_invoice_request">
-        <ManageInvoiceRequest xmlns:common="http://schemas.nav.gov.hu/NTCA/1.0/common" xmlns="http://schemas.nav.gov.hu/OSA/3.0/api">
+        <ManageInvoiceRequest xmlns:common="http://schemas.nav.gov.hu/NTCA/1.0/common"
+                              xmlns="http://schemas.nav.gov.hu/OSA/3.0/api">
             <t t-call="l10n_hu_edi.request_header"/>
             <exchangeToken t-out="exchangeToken"/>
             <invoiceOperations>
@@ -48,7 +50,8 @@
     </template>
 
     <template id="query_transaction_status_request">
-        <QueryTransactionStatusRequest xmlns:common="http://schemas.nav.gov.hu/NTCA/1.0/common" xmlns="http://schemas.nav.gov.hu/OSA/3.0/api">
+        <QueryTransactionStatusRequest xmlns:common="http://schemas.nav.gov.hu/NTCA/1.0/common"
+                                       xmlns="http://schemas.nav.gov.hu/OSA/3.0/api">
             <t t-call="l10n_hu_edi.request_header"/>
             <transactionId t-out="transactionId"/>
             <returnOriginalRequest t-out="format_bool(returnOriginalRequest)"/>
@@ -56,7 +59,8 @@
     </template>
 
     <template id="query_transaction_list_request">
-        <QueryTransactionListRequest xmlns:common="http://schemas.nav.gov.hu/NTCA/1.0/common" xmlns="http://schemas.nav.gov.hu/OSA/3.0/api">
+        <QueryTransactionListRequest xmlns:common="http://schemas.nav.gov.hu/NTCA/1.0/common"
+                                     xmlns="http://schemas.nav.gov.hu/OSA/3.0/api">
             <t t-call="l10n_hu_edi.request_header"/>
             <page t-out="page"/>
             <insDate>
@@ -67,7 +71,8 @@
     </template>
 
     <template id="manage_annulment_request">
-        <ManageAnnulmentRequest xmlns:common="http://schemas.nav.gov.hu/NTCA/1.0/common" xmlns="http://schemas.nav.gov.hu/OSA/3.0/api">
+        <ManageAnnulmentRequest xmlns:common="http://schemas.nav.gov.hu/NTCA/1.0/common"
+                                xmlns="http://schemas.nav.gov.hu/OSA/3.0/api">
             <t t-call="l10n_hu_edi.request_header"/>
             <exchangeToken t-out="exchangeToken"/>
             <annulmentOperations>
@@ -84,9 +89,9 @@
         <InvoiceAnnulment
                 xmlns="http://schemas.nav.gov.hu/OSA/3.0/annul"
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                xsi:schemaLocation="http://schemas.nav.gov.hu/OSA/3.0/data invoiceAnnulment.xsd"
+                xsi:schemaLocation=""
                 xmlns:common="http://schemas.nav.gov.hu/NTCA/1.0/common"
-                xmlns:base="http://schemas.nav.gov.hu/OSA/3.0/base">
+        >
             <annulmentReference t-out="annulmentReference"/>
             <annulmentTimestamp t-out="annulmentTimestamp"/>
             <annulmentCode t-out="annulmentCode"/>

@@ -18,7 +18,8 @@
                         help="Worked hours this month">
                     <div class="o_field_widget o_stat_info">
                         <span class="o_stat_value">
-                            <field name="hours_last_month_display" widget="float_time"/> Hours
+                            <field name="hours_last_month_display" widget="float_time"/>
+                            Hours
                         </span>
                         <span class="o_stat_text">
                             This Month
@@ -66,7 +67,8 @@
                         help="Worked hours this month">
                     <div class="o_field_widget o_stat_info">
                         <span class="o_stat_value">
-                            <field name="hours_last_month_display" widget="float_time"/> Hours
+                            <field name="hours_last_month_display" widget="float_time"/>
+                            Hours
                         </span>
                         <span class="o_stat_text">
                             This Month
@@ -119,7 +121,8 @@
                         <main class="w-100 ms-2">
                             <div>
                                 <div class="float-end" t-if="record.attendance_state.raw_value == 'checked_in'">
-                                    <span class="fa fa-circle text-success me-1" role="img" aria-label="Available" title="Available"></span>
+                                    <span class="fa fa-circle text-success me-1" role="img" aria-label="Available"
+                                          title="Available"></span>
                                 </div>
                                 <div class="float-end" t-if="record.attendance_state.raw_value == 'checked_out'">
                                     <span class="fa fa-circle text-warning me-1"
@@ -146,7 +149,8 @@
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create a new employee
-            </p><p>
+            </p>
+            <p>
                 Add a few employees to be able to select an employee here and perform his check in / check out.
                 To create employees go to the Employees menu.
             </p>

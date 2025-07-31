@@ -7,19 +7,19 @@ import hashlib
 import logging
 import mimetypes
 import os
-import psycopg2
 import re
 import uuid
-import werkzeug
-
 from collections import defaultdict
+
+import psycopg2
+import werkzeug
 
 from odoo import api, fields, models, SUPERUSER_ID, tools, _
 from odoo.exceptions import AccessError, ValidationError, UserError
 from odoo.http import Stream, root, request
+from odoo.osv import expression
 from odoo.tools import config, human_size, image, str2bool, consteq
 from odoo.tools.mimetypes import guess_mimetype, fix_filename_extension
-from odoo.osv import expression
 
 _logger = logging.getLogger(__name__)
 
@@ -362,12 +362,12 @@ class IrAttachment(models.Model):
 
     def _check_contents(self, values):
         mimetype = values['mimetype'] = self._compute_mimetype(values)
-        xml_like = 'ht' in mimetype or ( # hta, html, xhtml, etc.
-                'xml' in mimetype and    # other xml (svg, text/xml, etc)
+        xml_like = 'ht' in mimetype or (  # hta, html, xhtml, etc.
+                'xml' in mimetype and  # other xml (svg, text/xml, etc)
                 not mimetype.startswith('application/vnd.openxmlformats'))  # exception for Office formats
         force_text = xml_like and (
-            self.env.context.get('attachments_mime_plainxml')
-            or not self.env['ir.ui.view'].sudo(False).has_access('write')
+                self.env.context.get('attachments_mime_plainxml')
+                or not self.env['ir.ui.view'].sudo(False).has_access('write')
         )
         if force_text:
             values['mimetype'] = 'text/plain'
@@ -385,7 +385,7 @@ class IrAttachment(models.Model):
         index_content = False
         if file_type:
             index_content = file_type.split('/')[0]
-            if index_content == 'text': # compute index_content only for text type
+            if index_content == 'text':  # compute index_content only for text type
                 words = re.findall(b"[\x20-\x7E]{4,}", bin_data)
                 index_content = b"\n".join(words).decode('ascii')
         return index_content
@@ -455,11 +455,13 @@ class IrAttachment(models.Model):
         if not (self.env.is_admin() or self.env.user._is_internal()):
             raise AccessError(_("Sorry, you are not allowed to access this document."))
         # collect the records to check (by model)
-        model_ids = defaultdict(set)            # {model_name: set(ids)}
+        model_ids = defaultdict(set)  # {model_name: set(ids)}
         if self:
             # DLE P173: `test_01_portal_attachment`
             self.env['ir.attachment'].flush_model(['res_model', 'res_id', 'create_uid', 'public', 'res_field'])
-            self._cr.execute('SELECT res_model, res_id, create_uid, public, res_field FROM ir_attachment WHERE id IN %s', [tuple(self.ids)])
+            self._cr.execute(
+                'SELECT res_model, res_id, create_uid, public, res_field FROM ir_attachment WHERE id IN %s',
+                [tuple(self.ids)])
             for res_model, res_id, create_uid, public, res_field in self._cr.fetchall():
                 if public and mode == 'read':
                     continue
@@ -521,7 +523,8 @@ class IrAttachment(models.Model):
         # add res_field=False in domain if not present; the arg[0] trick below
         # works for domain items and '&'/'|'/'!' operators too
         disable_binary_fields_attachments = False
-        if not self.env.context.get('skip_res_field_check') and not any(arg[0] in ('id', 'res_field') for arg in domain):
+        if not self.env.context.get('skip_res_field_check') and not any(
+                arg[0] in ('id', 'res_field') for arg in domain):
             disable_binary_fields_attachments = True
             domain = [('res_field', '=', False)] + domain
 
@@ -542,7 +545,7 @@ class IrAttachment(models.Model):
         # determine permissions based on linked records
         all_ids = []
         allowed_ids = set()
-        model_attachments = defaultdict(lambda: defaultdict(set))   # {res_model: {res_id: set(ids)}}
+        model_attachments = defaultdict(lambda: defaultdict(set))  # {res_model: {res_id: set(ids)}}
         for id_, res_model, res_id, res_field, public, create_uid in rows:
             all_ids.append(id_)
             if public:
@@ -657,7 +660,7 @@ class IrAttachment(models.Model):
         # don't use possible contextual recordset for check, see commit for details
         Attachments = self.browse()
         for res_model, res_id in record_tuple_set:
-            Attachments.check('create', values={'res_model':res_model, 'res_id':res_id})
+            Attachments.check('create', values={'res_model': res_model, 'res_id': res_id})
         return super().create(vals_list)
 
     def _post_add_create(self, **kwargs):

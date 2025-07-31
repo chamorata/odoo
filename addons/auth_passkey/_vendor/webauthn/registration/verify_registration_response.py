@@ -2,6 +2,13 @@ import hashlib
 from dataclasses import dataclass, asdict
 from typing import List, Mapping, Optional, Union
 
+from .formats.android_key import verify_android_key
+from .formats.android_safetynet import verify_android_safetynet
+from .formats.apple import verify_apple
+from .formats.fido_u2f import verify_fido_u2f
+from .formats.packed import verify_packed
+from .formats.tpm import verify_tpm
+from .generate_registration_options import default_supported_pub_key_algs
 from ...webauthn.helpers import (
     aaguid_to_string,
     bytes_to_base64url,
@@ -22,13 +29,6 @@ from ...webauthn.helpers.structs import (
     RegistrationCredential,
     TokenBindingStatus,
 )
-from .formats.android_key import verify_android_key
-from .formats.android_safetynet import verify_android_safetynet
-from .formats.apple import verify_apple
-from .formats.fido_u2f import verify_fido_u2f
-from .formats.packed import verify_packed
-from .formats.tpm import verify_tpm
-from .generate_registration_options import default_supported_pub_key_algs
 
 
 @dataclass
@@ -65,14 +65,14 @@ expected_token_binding_statuses = [
 
 
 def verify_registration_response(
-    *,
-    credential: Union[str, dict, RegistrationCredential],
-    expected_challenge: bytes,
-    expected_rp_id: str,
-    expected_origin: Union[str, List[str]],
-    require_user_verification: bool = False,
-    supported_pub_key_algs: List[COSEAlgorithmIdentifier] = default_supported_pub_key_algs,
-    pem_root_certs_bytes_by_fmt: Optional[Mapping[AttestationFormat, List[bytes]]] = None,
+        *,
+        credential: Union[str, dict, RegistrationCredential],
+        expected_challenge: bytes,
+        expected_rp_id: str,
+        expected_origin: Union[str, List[str]],
+        require_user_verification: bool = False,
+        supported_pub_key_algs: List[COSEAlgorithmIdentifier] = default_supported_pub_key_algs,
+        pem_root_certs_bytes_by_fmt: Optional[Mapping[AttestationFormat, List[bytes]]] = None,
 ) -> VerifiedRegistration:
     """Verify an authenticator's response to navigator.credentials.create()
 

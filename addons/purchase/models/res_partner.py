@@ -1,6 +1,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, fields, models, _
+from odoo import api, fields, models
 from odoo.addons.base.models.res_partner import WARNING_MESSAGE, WARNING_HELP
 
 
@@ -46,7 +46,7 @@ class res_partner(models.Model):
     purchase_warn_msg = fields.Text('Message for Purchase Order')
 
     receipt_reminder_email = fields.Boolean('Receipt Reminder', company_dependent=True,
-        help="Automatically send a confirmation email to the vendor X days before the expected receipt date, asking him to confirm the exact date.")
+                                            help="Automatically send a confirmation email to the vendor X days before the expected receipt date, asking him to confirm the exact date.")
     reminder_date_before_receipt = fields.Integer('Days Before Receipt', company_dependent=True,
-        help="Number of days to send reminder email before the promised receipt date")
+                                                  help="Number of days to send reminder email before the promised receipt date")
     buyer_id = fields.Many2one('res.users', string='Buyer')

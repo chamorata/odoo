@@ -2,9 +2,10 @@
 
 from collections import defaultdict
 
+from odoo.addons.mail.tools.discuss import Store
+
 from odoo import _, api, Command, fields, models, modules, tools
 from odoo.tools import email_normalize
-from odoo.addons.mail.tools.discuss import Store
 
 
 class Users(models.Model):
@@ -89,7 +90,8 @@ class Users(models.Model):
         return users
 
     def write(self, vals):
-        log_portal_access = 'groups_id' in vals and not self._context.get('mail_create_nolog') and not self._context.get('mail_notrack')
+        log_portal_access = 'groups_id' in vals and not self._context.get(
+            'mail_create_nolog') and not self._context.get('mail_notrack')
         user_portal_access_dict = {
             user.id: user._is_portal()
             for user in self
@@ -103,7 +105,8 @@ class Users(models.Model):
                 if email_normalize(user.email) != email_normalize(vals['email'])
             }
         if 'notification_type' in vals:
-            user_notification_type_modified = self.filtered(lambda user: user.notification_type != vals['notification_type'])
+            user_notification_type_modified = self.filtered(
+                lambda user: user.notification_type != vals['notification_type'])
 
         write_res = super(Users, self).write(vals)
 
@@ -193,9 +196,9 @@ class Users(models.Model):
                 'body_html': body_html,
                 'author_id': self.env.user.partner_id.id,
                 'email_from': (
-                    user.company_id.partner_id.email_formatted or
-                    self.env.user.email_formatted or
-                    self.env.ref('base.user_root').email_formatted
+                        user.company_id.partner_id.email_formatted or
+                        self.env.user.email_formatted or
+                        self.env.ref('base.user_root').email_formatted
                 ),
                 'email_to': kwargs.get('force_email') or user.email_formatted,
                 'subject': subject,

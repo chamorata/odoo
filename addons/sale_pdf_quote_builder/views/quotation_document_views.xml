@@ -16,47 +16,48 @@
                             <label for="datas"/>
                             <div class="o_row">
                                 <field
-                                    name="datas"
-                                    filename="name"
-                                    options="{'accepted_file_extensions': '.pdf'}"
-                                    class="oe_inline"
+                                        name="datas"
+                                        filename="name"
+                                        options="{'accepted_file_extensions': '.pdf'}"
+                                        class="oe_inline"
                                 />
                                 <button
-                                    name="action_open_pdf_form_fields"
-                                    type="object"
-                                    string="Configure dynamic fields"
-                                    help="Mark fields as safe to fill in the quote."
-                                    class="btn btn-link"
-                                    icon="fa-pencil"
-                                    colspan="2"
-                                    groups="base.group_system,base.group_no_one"
+                                        name="action_open_pdf_form_fields"
+                                        type="object"
+                                        string="Configure dynamic fields"
+                                        help="Mark fields as safe to fill in the quote."
+                                        class="btn btn-link"
+                                        icon="fa-pencil"
+                                        colspan="2"
+                                        groups="base.group_system,base.group_no_one"
                                 />
                             </div>
                             <field
-                                name="quotation_template_ids"
-                                options="{'no_create': True}"
-                                widget="many2many_tags"
+                                    name="quotation_template_ids"
+                                    options="{'no_create': True}"
+                                    widget="many2many_tags"
                             />
                         </group>
                     </group>
                     <group string="Attached To" groups="base.group_multi_company,base.group_no_one">
                         <field
-                            name="company_id"
-                            placeholder="Visible to all"
-                            groups="base.group_multi_company"
-                            options="{'no_create': True}"
-                            class="oe_inline"
+                                name="company_id"
+                                placeholder="Visible to all"
+                                groups="base.group_multi_company"
+                                options="{'no_create': True}"
+                                class="oe_inline"
                         />
                         <field
-                            name="form_field_ids"
-                            groups="base.group_no_one"
-                            widget="many2many_tags"
+                                name="form_field_ids"
+                                groups="base.group_no_one"
+                                widget="many2many_tags"
                         />
                     </group>
                     <group string="History" groups="base.group_no_one" invisible="not create_date">
                         <label for="create_uid" string="Creation"/>
                         <div name="creation_div">
-                            <field name="create_uid" readonly="1" class="oe_inline"/> on
+                            <field name="create_uid" readonly="1" class="oe_inline"/>
+                            on
                             <field name="create_date" readonly="1" class="oe_inline"/>
                         </div>
                     </group>
@@ -81,15 +82,17 @@
                         <a t-if="widget.editable" type="open" class="dropdown-item">Edit</a>
                         <a t-if="widget.deletable" type="delete" class="dropdown-item">Delete</a>
                         <a
-                            t-attf-href="/web/content/#{record.ir_attachment_id.raw_value}?download=true"
-                            download=""
-                            class="dropdown-item"
-                        >Download</a>
+                                t-attf-href="/web/content/#{record.ir_attachment_id.raw_value}?download=true"
+                                download=""
+                                class="dropdown-item"
+                        >Download
+                        </a>
                     </t>
                     <t t-name="card" class="o_kanban_attachment flex-row">
                         <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
                         <aside>
-                            <div class="o_image o_kanban_previewer w-100 h-100" t-att-data-mimetype="record.mimetype.value"/>
+                            <div class="o_image o_kanban_previewer w-100 h-100"
+                                 t-att-data-mimetype="record.mimetype.value"/>
                         </aside>
                         <main class="ms-2">
                             <field name="name" class="fw-bolder text-truncate"/>
@@ -130,14 +133,14 @@
                 <separator/>
                 <group string="Group By">
                     <filter
-                        string="Document type"
-                        name="doc_type"
-                        context="{'group_by': 'document_type'}"
+                            string="Document type"
+                            name="doc_type"
+                            context="{'group_by': 'document_type'}"
                     />
                     <filter
-                        string="Quotation Template"
-                        name="quotation_template"
-                        context="{'group_by': 'quotation_template_ids'}"
+                            string="Quotation Template"
+                            name="quotation_template"
+                            context="{'group_by': 'quotation_template_ids'}"
                     />
                     <filter name="all" string="All"/>
                     <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>

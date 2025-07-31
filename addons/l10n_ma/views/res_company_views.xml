@@ -9,8 +9,8 @@
                 <attribute name="nolabel">1</attribute>
             </xpath>
             <field name="company_registry" position="before">
-                <label for="company_registry" invisible="country_code == 'MA'" />
-                <label for="company_registry" string="ICE" invisible="country_code != 'MA'" />
+                <label for="company_registry" invisible="country_code == 'MA'"/>
+                <label for="company_registry" string="ICE" invisible="country_code != 'MA'"/>
             </field>
         </field>
     </record>

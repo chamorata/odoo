@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import re
 import logging
-from odoo import api, fields, models, tools
-from odoo.osv import expression
-from odoo.exceptions import UserError
-from psycopg2 import IntegrityError
-from odoo.tools.translate import _
-_logger = logging.getLogger(__name__)
+import re
 
+from odoo import api, fields, models, tools
+from odoo.exceptions import UserError
+from odoo.osv import expression
+from odoo.tools.translate import _
+
+_logger = logging.getLogger(__name__)
 
 FLAG_MAPPING = {
     "GF": "fr",
@@ -24,8 +24,8 @@ FLAG_MAPPING = {
 }
 
 NO_FLAG_COUNTRIES = [
-    "AQ", #Antarctica
-    "SJ", #Svalbard + Jan Mayen : separate jurisdictions : no dedicated flag
+    "AQ",  # Antarctica
+    "SJ",  # Svalbard + Jan Mayen : separate jurisdictions : no dedicated flag
 ]
 
 
@@ -42,14 +42,14 @@ class Country(models.Model):
         required=True,
         help='The ISO country code in two chars. \nYou can use this field for quick search.')
     address_format = fields.Text(string="Layout in Reports",
-        help="Display format to use for addresses belonging to this country.\n\n"
-             "You can use python-style string pattern with all the fields of the address "
-             "(for example, use '%(street)s' to display the field 'street') plus"
-             "\n%(state_name)s: the name of the state"
-             "\n%(state_code)s: the code of the state"
-             "\n%(country_name)s: the name of the country"
-             "\n%(country_code)s: the code of the country",
-        default='%(street)s\n%(street2)s\n%(city)s %(state_code)s %(zip)s\n%(country_name)s')
+                                 help="Display format to use for addresses belonging to this country.\n\n"
+                                      "You can use python-style string pattern with all the fields of the address "
+                                      "(for example, use '%(street)s' to display the field 'street') plus"
+                                      "\n%(state_name)s: the name of the state"
+                                      "\n%(state_code)s: the code of the state"
+                                      "\n%(country_name)s: the name of the country"
+                                      "\n%(country_code)s: the code of the country",
+                                 default='%(street)s\n%(street2)s\n%(city)s %(state_code)s %(zip)s\n%(country_name)s')
     address_view_id = fields.Many2one(
         comodel_name='ir.ui.view', string="Input View",
         domain=[('model', '=', 'res.partner'), ('type', '=', 'form')],
@@ -64,23 +64,24 @@ class Country(models.Model):
     )
     phone_code = fields.Integer(string='Country Calling Code')
     country_group_ids = fields.Many2many('res.country.group', 'res_country_res_country_group_rel',
-                         'res_country_id', 'res_country_group_id', string='Country Groups')
+                                         'res_country_id', 'res_country_group_id', string='Country Groups')
     state_ids = fields.One2many('res.country.state', 'country_id', string='States')
     name_position = fields.Selection([
-            ('before', 'Before Address'),
-            ('after', 'After Address'),
-        ], string="Customer Name Position", default="before",
+        ('before', 'Before Address'),
+        ('after', 'After Address'),
+    ], string="Customer Name Position", default="before",
         help="Determines where the customer/company name should be placed, i.e. after or before the address.")
-    vat_label = fields.Char(string='Vat Label', translate=True, prefetch=True, help="Use this field if you want to change vat label.")
+    vat_label = fields.Char(string='Vat Label', translate=True, prefetch=True,
+                            help="Use this field if you want to change vat label.")
 
     state_required = fields.Boolean(default=False)
     zip_required = fields.Boolean(default=True)
 
     _sql_constraints = [
         ('name_uniq', 'unique (name)',
-            'The name of the country must be unique!'),
+         'The name of the country must be unique!'),
         ('code_uniq', 'unique (code)',
-            'The code of the country must be unique!')
+         'The code of the country must be unique!')
     ]
 
     @api.model
@@ -89,7 +90,8 @@ class Country(models.Model):
         domain = args or []
         # first search by code
         if operator not in expression.NEGATIVE_TERM_OPERATORS and name and len(name) == 2:
-            countries = self.search_fetch(expression.AND([domain, [('code', operator, name)]]), ['display_name'], limit=limit)
+            countries = self.search_fetch(expression.AND([domain, [('code', operator, name)]]), ['display_name'],
+                                          limit=limit)
             result.extend((country.id, country.display_name) for country in countries.sudo())
             domain = expression.AND([domain, [('id', 'not in', countries.ids)]])
             if limit is not None:
@@ -144,11 +146,14 @@ class Country(models.Model):
     def _check_address_format(self):
         for record in self:
             if record.address_format:
-                address_fields = self.env['res.partner']._formatting_address_fields() + ['state_code', 'state_name', 'country_code', 'country_name', 'company_name']
+                address_fields = self.env['res.partner']._formatting_address_fields() + ['state_code', 'state_name',
+                                                                                         'country_code', 'country_name',
+                                                                                         'company_name']
                 try:
                     record.address_format % {i: 1 for i in address_fields}
                 except (ValueError, KeyError):
                     raise UserError(_('The layout contains an invalid format key'))
+
 
 class CountryGroup(models.Model):
     _description = "Country Group"
@@ -167,7 +172,7 @@ class CountryState(models.Model):
 
     country_id = fields.Many2one('res.country', string='Country', required=True)
     name = fields.Char(string='State Name', required=True,
-               help='Administrative divisions of a country. E.g. Fed. State, Departement, Canton')
+                       help='Administrative divisions of a country. E.g. Fed. State, Departement, Canton')
     code = fields.Char(string='State Code', help='The state code.', required=True)
 
     _sql_constraints = [
@@ -180,7 +185,8 @@ class CountryState(models.Model):
         domain = args or []
         # first search by code (with =ilike)
         if operator not in expression.NEGATIVE_TERM_OPERATORS and name:
-            states = self.search_fetch(expression.AND([domain, [('code', '=like', name)]]), ['display_name'], limit=limit)
+            states = self.search_fetch(expression.AND([domain, [('code', '=like', name)]]), ['display_name'],
+                                       limit=limit)
             result.extend((state.id, state.display_name) for state in states.sudo())
             domain = expression.AND([domain, [('id', 'not in', states.ids)]])
             if limit is not None:

@@ -3,11 +3,10 @@
 
 import datetime
 import re
-
 from collections import Counter
-from contextlib import contextmanager
 
 from odoo.addons.mail.tests.common import mail_new_test_user
+
 from odoo.tests import common
 
 
@@ -198,7 +197,8 @@ class SurveyCase(common.TransactionCase):
 
     def _answer_question(self, question, answer, answer_token, csrf_token, button_submit='next'):
         # Employee submits the question answer
-        post_data = self._format_submission_data(question, answer, {'csrf_token': csrf_token, 'token': answer_token, 'button_submit': button_submit})
+        post_data = self._format_submission_data(question, answer, {'csrf_token': csrf_token, 'token': answer_token,
+                                                                    'button_submit': button_submit})
         response = self._access_submit(question.survey_id, answer_token, post_data)
         self.assertResponse(response, 200)
 
@@ -235,8 +235,8 @@ class SurveyCase(common.TransactionCase):
         statistics = question._prepare_statistics(survey_user.user_input_line_ids)
         question_data = next(
             (question_data
-            for question_data in statistics
-            if question_data.get('question') == question),
+             for question_data in statistics
+             if question_data.get('question') == question),
             False
         )
         self.assertTrue(bool(question_data))
@@ -384,25 +384,26 @@ class TestSurveyResultsCommon(SurveyCase):
         cls.question_sc = cls._add_question(
             cls, None, 'Are you a cat or a dog person', 'simple_choice', survey_id=cls.survey.id,
             sequence='3', labels=[{'value': 'Cat'},
-                                    {'value': 'Dog'}])
+                                  {'value': 'Dog'}])
         cls.question_mc = cls._add_question(
             cls, None, 'What do you like most in our tarte al djotte', 'multiple_choice', survey_id=cls.survey.id,
             sequence='4', labels=[{'value': 'The gras'},
-                                    {'value': 'The bette'},
-                                    {'value': 'The tout'},
-                                    {'value': 'The regime is fucked up'}])
+                                  {'value': 'The bette'},
+                                  {'value': 'The tout'},
+                                  {'value': 'The regime is fucked up'}])
         cls.question_mx1 = cls._add_question(
             cls, None, 'When do you harvest those fruits', 'matrix', survey_id=cls.survey.id, sequence='5',
             labels=[{'value': 'Spring'}, {'value': 'Summer'}],
             labels_2=[{'value': 'Apples'},
-                        {'value': 'Strawberries'}])
+                      {'value': 'Strawberries'}])
         cls.question_mx2 = cls._add_question(
             cls, None, 'How often should you water those plants', 'matrix', survey_id=cls.survey.id, sequence='6',
             labels=[{'value': 'Once a month'}, {'value': 'Once a week'}],
             labels_2=[{'value': 'Cactus'},
-                        {'value': 'Ficus'}])
+                      {'value': 'Ficus'}])
         cls.question_scale = cls._add_question(
-            cls, None, 'How would you rate your experience on our website ?', 'scale', survey_id=cls.survey.id, sequence='7',
+            cls, None, 'How would you rate your experience on our website ?', 'scale', survey_id=cls.survey.id,
+            sequence='7',
         )
 
         # Question answers ids
@@ -419,10 +420,14 @@ class TestSurveyResultsCommon(SurveyCase):
         cls.answer_24 = cls._add_answer_line(cls, cls.question_numerical_box, cls.user_input_1, 24)
         cls.answer_cat = cls._add_answer_line(cls, cls.question_sc, cls.user_input_1, cls.cat_id)
         cls._add_answer_line(cls, cls.question_mc, cls.user_input_1, cls.gras_id)
-        cls._add_answer_line(cls, cls.question_mx1, cls.user_input_1, cls.summer_id, **{'answer_value_row': cls.apples_row_id})
-        cls._add_answer_line(cls, cls.question_mx1, cls.user_input_1, cls.spring_id, **{'answer_value_row': cls.strawberries_row_id})
-        cls._add_answer_line(cls, cls.question_mx2, cls.user_input_1, cls.once_a_month_id, **{'answer_value_row': cls.cactus_row_id})
-        cls._add_answer_line(cls, cls.question_mx2, cls.user_input_1, cls.once_a_week_id, **{'answer_value_row': cls.ficus_row_id})
+        cls._add_answer_line(cls, cls.question_mx1, cls.user_input_1, cls.summer_id,
+                             **{'answer_value_row': cls.apples_row_id})
+        cls._add_answer_line(cls, cls.question_mx1, cls.user_input_1, cls.spring_id,
+                             **{'answer_value_row': cls.strawberries_row_id})
+        cls._add_answer_line(cls, cls.question_mx2, cls.user_input_1, cls.once_a_month_id,
+                             **{'answer_value_row': cls.cactus_row_id})
+        cls._add_answer_line(cls, cls.question_mx2, cls.user_input_1, cls.once_a_week_id,
+                             **{'answer_value_row': cls.ficus_row_id})
         cls._add_answer_line(cls, cls.question_scale, cls.user_input_1, '5')
         cls.user_input_1.state = 'done'
 
@@ -432,9 +437,13 @@ class TestSurveyResultsCommon(SurveyCase):
         cls.answer_dog = cls._add_answer_line(cls, cls.question_sc, cls.user_input_2, cls.dog_id)
         cls._add_answer_line(cls, cls.question_mc, cls.user_input_2, cls.gras_id)
         cls._add_answer_line(cls, cls.question_mc, cls.user_input_2, cls.bette_id)
-        cls._add_answer_line(cls, cls.question_mx1, cls.user_input_2, cls.spring_id, **{'answer_value_row': cls.apples_row_id})
-        cls._add_answer_line(cls, cls.question_mx1, cls.user_input_2, cls.spring_id, **{'answer_value_row': cls.strawberries_row_id})
-        cls._add_answer_line(cls, cls.question_mx2, cls.user_input_2, cls.once_a_month_id, **{'answer_value_row': cls.cactus_row_id})
-        cls._add_answer_line(cls, cls.question_mx2, cls.user_input_2, cls.once_a_month_id, **{'answer_value_row': cls.ficus_row_id})
+        cls._add_answer_line(cls, cls.question_mx1, cls.user_input_2, cls.spring_id,
+                             **{'answer_value_row': cls.apples_row_id})
+        cls._add_answer_line(cls, cls.question_mx1, cls.user_input_2, cls.spring_id,
+                             **{'answer_value_row': cls.strawberries_row_id})
+        cls._add_answer_line(cls, cls.question_mx2, cls.user_input_2, cls.once_a_month_id,
+                             **{'answer_value_row': cls.cactus_row_id})
+        cls._add_answer_line(cls, cls.question_mx2, cls.user_input_2, cls.once_a_month_id,
+                             **{'answer_value_row': cls.ficus_row_id})
         cls.scale_answer_line_2 = cls._add_answer_line(cls, cls.question_scale, cls.user_input_1, '7')
         cls.user_input_2.state = 'done'

@@ -5,7 +5,6 @@ import imaplib
 import logging
 import poplib
 import socket
-
 from imaplib import IMAP4, IMAP4_SSL
 from poplib import POP3, POP3_SSL
 from socket import gaierror, timeout
@@ -13,7 +12,6 @@ from ssl import SSLError
 
 from odoo import api, fields, models, tools, _
 from odoo.exceptions import UserError, ValidationError
-
 
 _logger = logging.getLogger(__name__)
 MAX_POP_MESSAGES = 50
@@ -25,7 +23,8 @@ poplib._MAXLINE = 65536
 # Add timeout to IMAP connections
 # HACK https://bugs.python.org/issue38615
 # TODO: clean in Python 3.9
-IMAP4._create_socket = lambda self, timeout=MAIL_TIMEOUT: socket.create_connection((self.host or None, self.port), timeout)
+IMAP4._create_socket = lambda self, timeout=MAIL_TIMEOUT: socket.create_connection((self.host or None, self.port),
+                                                                                   timeout)
 
 
 def make_wrap_property(name):
@@ -37,12 +36,14 @@ def make_wrap_property(name):
 
 class IMAP4Connection:
     """Wrapper around IMAP4 and IMAP4_SSL"""
+
     def __init__(self, server, port, is_ssl):
         self.__obj__ = IMAP4_SSL(server, port) if is_ssl else IMAP4(server, port)
 
 
 class POP3Connection:
     """Wrapper around POP3 and POP3_SSL"""
+
     def __init__(self, server, port, is_ssl, timeout=MAIL_TIMEOUT):
         self.__obj__ = POP3_SSL(server, port, timeout=timeout) if is_ssl else POP3(server, port, timeout=timeout)
 
@@ -81,19 +82,24 @@ class FetchmailServer(models.Model):
         ('local', 'Local Server'),
     ], string='Server Type', index=True, required=True, default='imap')
     server_type_info = fields.Text('Server Type Info', compute='_compute_server_type_info')
-    is_ssl = fields.Boolean('SSL/TLS', help="Connections are encrypted with SSL/TLS through a dedicated port (default: IMAPS=993, POP3S=995)")
+    is_ssl = fields.Boolean('SSL/TLS',
+                            help="Connections are encrypted with SSL/TLS through a dedicated port (default: IMAPS=993, POP3S=995)")
     attach = fields.Boolean('Keep Attachments', help="Whether attachments should be downloaded. "
-                                                     "If not enabled, incoming emails will be stripped of any attachments before being processed", default=True)
-    original = fields.Boolean('Keep Original', help="Whether a full original copy of each email should be kept for reference "
-                                                    "and attached to each processed message. This will usually double the size of your message database.")
+                                                     "If not enabled, incoming emails will be stripped of any attachments before being processed",
+                            default=True)
+    original = fields.Boolean('Keep Original',
+                              help="Whether a full original copy of each email should be kept for reference "
+                                   "and attached to each processed message. This will usually double the size of your message database.")
     date = fields.Datetime(string='Last Fetch Date', readonly=True)
     user = fields.Char(string='Username', readonly=False)
     password = fields.Char()
-    object_id = fields.Many2one('ir.model', string="Create a New Record", help="Process each incoming mail as part of a conversation "
-                                                                                "corresponding to this document type. This will create "
-                                                                                "new documents for new conversations, or attach follow-up "
-                                                                                "emails to the existing conversations (documents).")
-    priority = fields.Integer(string='Server Priority', readonly=False, help="Defines the order of processing, lower values mean higher priority", default=5)
+    object_id = fields.Many2one('ir.model', string="Create a New Record",
+                                help="Process each incoming mail as part of a conversation "
+                                     "corresponding to this document type. This will create "
+                                     "new documents for new conversations, or attach follow-up "
+                                     "emails to the existing conversations (documents).")
+    priority = fields.Integer(string='Server Priority', readonly=False,
+                              help="Defines the order of processing, lower values mean higher priority", default=5)
     message_ids = fields.One2many('mail.mail', 'fetchmail_server_id', string='Messages', readonly=True)
     configuration = fields.Text('Configuration', readonly=True)
     script = fields.Char(readonly=True, default='/mail/static/scripts/odoo-mailgate.py')
@@ -161,8 +167,8 @@ odoo_mailgate: "|/path/to/odoo-mailgate.py --host=localhost -u %(uid)d -p PASSWO
             self._imap_login(connection)
         elif connection_type == 'pop':
             connection = POP3Connection(self.server, int(self.port), self.is_ssl)
-            #TODO: use this to remove only unread messages
-            #connection.user("recent:"+server.user)
+            # TODO: use this to remove only unread messages
+            # connection.user("recent:"+server.user)
             connection.user(self.user)
             connection.pass_(self.password)
         return connection
@@ -186,11 +192,13 @@ odoo_mailgate: "|/path/to/odoo-mailgate.py --host=localhost -u %(uid)d -p PASSWO
             except UnicodeError as e:
                 raise UserError(_("Invalid server name!\n %s", tools.exception_to_unicode(e)))
             except (gaierror, timeout, IMAP4.abort) as e:
-                raise UserError(_("No response received. Check server information.\n %s", tools.exception_to_unicode(e)))
+                raise UserError(
+                    _("No response received. Check server information.\n %s", tools.exception_to_unicode(e)))
             except (IMAP4.error, poplib.error_proto) as err:
                 raise UserError(_("Server replied with following exception:\n %s", tools.exception_to_unicode(err)))
             except SSLError as e:
-                raise UserError(_("An SSL exception occurred. Check SSL/TLS configuration on server port.\n %s", tools.exception_to_unicode(e)))
+                raise UserError(_("An SSL exception occurred. Check SSL/TLS configuration on server port.\n %s",
+                                  tools.exception_to_unicode(e)))
             except (OSError, Exception) as err:
                 _logger.info("Failed to connect to %s server %s.", server.server_type, server.name, exc_info=True)
                 raise UserError(_("Connection test failed: %s", tools.exception_to_unicode(err)))
@@ -235,26 +243,34 @@ odoo_mailgate: "|/path/to/odoo-mailgate.py --host=localhost -u %(uid)d -p PASSWO
                         result, data = imap_server.fetch(num, '(RFC822)')
                         imap_server.store(num, '-FLAGS', '\\Seen')
                         try:
-                            res_id = MailThread.with_context(**additionnal_context).message_process(server.object_id.model, data[0][1], save_original=server.original, strip_attachments=(not server.attach))
+                            res_id = MailThread.with_context(**additionnal_context).message_process(
+                                server.object_id.model, data[0][1], save_original=server.original,
+                                strip_attachments=(not server.attach))
                         except Exception:
-                            _logger.info('Failed to process mail from %s server %s.', server.server_type, server.name, exc_info=True)
+                            _logger.info('Failed to process mail from %s server %s.', server.server_type, server.name,
+                                         exc_info=True)
                             failed += 1
                         imap_server.store(num, '+FLAGS', '\\Seen')
                         self._cr.commit()
                         count += 1
-                    _logger.info("Fetched %d email(s) on %s server %s; %d succeeded, %d failed.", count, server.server_type, server.name, (count - failed), failed)
+                    _logger.info("Fetched %d email(s) on %s server %s; %d succeeded, %d failed.", count,
+                                 server.server_type, server.name, (count - failed), failed)
                 except Exception as e:
                     if raise_exception:
-                        raise ValidationError(_("Couldn't get your emails. Check out the error message below for more info:\n%s", e)) from e
+                        raise ValidationError(
+                            _("Couldn't get your emails. Check out the error message below for more info:\n%s",
+                              e)) from e
                     else:
-                        _logger.info("General failure when trying to fetch mail from %s server %s.", server.server_type, server.name, exc_info=True)
+                        _logger.info("General failure when trying to fetch mail from %s server %s.", server.server_type,
+                                     server.name, exc_info=True)
                 finally:
                     if imap_server:
                         try:
                             imap_server.close()
                             imap_server.logout()
                         except (OSError, IMAP4.abort):
-                            _logger.warning('Failed to properly finish imap connection: %s.', server.name, exc_info=True)
+                            _logger.warning('Failed to properly finish imap connection: %s.', server.name,
+                                            exc_info=True)
             elif connection_type == 'pop':
                 try:
                     while True:
@@ -268,23 +284,30 @@ odoo_mailgate: "|/path/to/odoo-mailgate.py --host=localhost -u %(uid)d -p PASSWO
                             message = (b'\n').join(messages)
                             res_id = None
                             try:
-                                res_id = MailThread.with_context(**additionnal_context).message_process(server.object_id.model, message, save_original=server.original, strip_attachments=(not server.attach))
+                                res_id = MailThread.with_context(**additionnal_context).message_process(
+                                    server.object_id.model, message, save_original=server.original,
+                                    strip_attachments=(not server.attach))
                                 pop_server.dele(num)
                             except Exception:
-                                _logger.info('Failed to process mail from %s server %s.', server.server_type, server.name, exc_info=True)
+                                _logger.info('Failed to process mail from %s server %s.', server.server_type,
+                                             server.name, exc_info=True)
                                 failed += 1
                                 failed_in_loop += 1
                             self.env.cr.commit()
-                        _logger.info("Fetched %d email(s) on %s server %s; %d succeeded, %d failed.", num, server.server_type, server.name, (num - failed_in_loop), failed_in_loop)
+                        _logger.info("Fetched %d email(s) on %s server %s; %d succeeded, %d failed.", num,
+                                     server.server_type, server.name, (num - failed_in_loop), failed_in_loop)
                         # Stop if (1) no more message left or (2) all messages have failed
                         if num_messages < MAX_POP_MESSAGES or failed_in_loop == num:
                             break
                         pop_server.quit()
                 except Exception as e:
                     if raise_exception:
-                        raise ValidationError(_("Couldn't get your emails. Check out the error message below for more info:\n%s", e)) from e
+                        raise ValidationError(
+                            _("Couldn't get your emails. Check out the error message below for more info:\n%s",
+                              e)) from e
                     else:
-                        _logger.info("General failure when trying to fetch mail from %s server %s.", server.server_type, server.name, exc_info=True)
+                        _logger.info("General failure when trying to fetch mail from %s server %s.", server.server_type,
+                                     server.name, exc_info=True)
                 finally:
                     if pop_server:
                         try:

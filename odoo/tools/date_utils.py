@@ -8,8 +8,6 @@ import babel
 import pytz
 from dateutil.relativedelta import relativedelta, weekdays
 
-from .func import lazy
-
 D = TypeVar('D', date, datetime)
 
 __all__ = [
@@ -20,6 +18,7 @@ __all__ = [
     'get_quarter_number',
     'get_timedelta',
 ]
+
 
 def date_type(value: D) -> Type[D]:
     ''' Return either the datetime.datetime class or datetime.date type whether `value` is a datetime or a date.
@@ -163,7 +162,7 @@ def end_of(value: D, granularity: Granularity) -> D:
     elif granularity == 'week':
         # `calendar.weekday` uses ISO8601 for start of week reference, this means that
         # by default MONDAY is the first day of the week and SUNDAY is the last.
-        result = value + relativedelta(days=6-calendar.weekday(value.year, value.month, value.day))
+        result = value + relativedelta(days=6 - calendar.weekday(value.year, value.month, value.day))
     elif granularity == "day":
         result = value
     elif granularity == "hour" and is_datetime:
@@ -278,14 +277,14 @@ def weeknumber(locale: babel.Locale, date: date) -> Tuple[int, int]:
     # reference date is after that then it must be in the first week of the next
     # year, remove this if we decide to implement split weeks instead
     fdny = date.replace(year=date.year + 1, month=1, day=1) \
-       - relativedelta(weekday=weekdays[locale.first_week_day](-1))
+           - relativedelta(weekday=weekdays[locale.first_week_day](-1))
     if date >= fdny:
         return date.year + 1, 1
 
     # otherwise get the number of periods of 7 days between the first day of the
     # first week and the reference
     fdow = date.replace(month=1, day=1) \
-       - relativedelta(weekday=weekdays[locale.first_week_day](-1))
+           - relativedelta(weekday=weekdays[locale.first_week_day](-1))
     doy = (date - fdow).days
 
     return date.year, (doy // 7 + 1)

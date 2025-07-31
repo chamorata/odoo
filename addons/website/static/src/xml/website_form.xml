@@ -4,7 +4,8 @@
     <!-- Success status -->
     <t t-name="website.s_website_form_status_success">
         <span id="s_website_form_result" class="me-2 small text-success">
-            <i class="fa fa-paper-plane me-1" role="img" aria-hidden="true" title="Success"/>The form has been sent successfully.
+            <i class="fa fa-paper-plane me-1" role="img" aria-hidden="true" title="Success"/>The form has been sent
+            successfully.
         </span>
     </t>
 

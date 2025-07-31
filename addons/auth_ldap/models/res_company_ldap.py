@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import ldap
 import logging
+
+import ldap
 from ldap.filter import filter_format
 
 from odoo import _, fields, models, tools
@@ -40,10 +41,10 @@ class CompanyLDAP(models.Model):
     ldap_server = fields.Char(string='LDAP Server address', required=True, default='127.0.0.1')
     ldap_server_port = fields.Integer(string='LDAP Server port', required=True, default=389)
     ldap_binddn = fields.Char('LDAP binddn',
-        help="The user account on the LDAP server that is used to query the directory. "
-             "Leave empty to connect anonymously.")
+                              help="The user account on the LDAP server that is used to query the directory. "
+                                   "Leave empty to connect anonymously.")
     ldap_password = fields.Char(string='LDAP password',
-        help="The password of the user account on the LDAP server that is used to query the directory.")
+                                help="The password of the user account on the LDAP server that is used to query the directory.")
     ldap_filter = fields.Char(string='LDAP filter', required=True, help="""\
     Filter used to look up user accounts in the LDAP database. It is an\
     arbitrary LDAP filter in string representation. Any `%s` placeholder\
@@ -61,15 +62,16 @@ class CompanyLDAP(models.Model):
 
         (|(mail=%s)(uid=%s))
     """)
-    ldap_base = fields.Char(string='LDAP base', required=True, help="DN of the user search scope: all descendants of this base will be searched for users.")
+    ldap_base = fields.Char(string='LDAP base', required=True,
+                            help="DN of the user search scope: all descendants of this base will be searched for users.")
     user = fields.Many2one('res.users', string='Template User',
-        help="User to copy when creating new users")
+                           help="User to copy when creating new users")
     create_user = fields.Boolean(default=True,
-        help="Automatically create local user accounts for new users authenticating via LDAP")
+                                 help="Automatically create local user accounts for new users authenticating via LDAP")
     ldap_tls = fields.Boolean(string='Use TLS',
-        help="Request secure TLS/SSL encryption when connecting to the LDAP server. "
-             "This option requires a server with STARTTLS enabled, "
-             "otherwise all authentication attempts will fail.")
+                              help="Request secure TLS/SSL encryption when connecting to the LDAP server. "
+                                   "This option requires a server with STARTTLS enabled, "
+                                   "otherwise all authentication attempts will fail.")
 
     def _get_ldap_dicts(self):
         """

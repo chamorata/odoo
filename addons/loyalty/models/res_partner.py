@@ -2,6 +2,7 @@
 
 from odoo import fields, models
 
+
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
@@ -19,8 +20,8 @@ class ResPartner(models.Model):
                 ('points', '>', '0'),
                 ('program_id.active', '=', True),
                 '|',
-                    ('expiration_date', '>=', fields.Date().context_today(self)),
-                    ('expiration_date', '=', False),
+                ('expiration_date', '>=', fields.Date().context_today(self)),
+                ('expiration_date', '=', False),
             ],
             groupby=['partner_id'],
             aggregates=['__count'],
@@ -36,5 +37,5 @@ class ResPartner(models.Model):
         action = self.env['ir.actions.act_window']._for_xml_id('loyalty.loyalty_card_action')
         all_child = self.with_context(active_test=False).search([('id', 'child_of', self.ids)])
         action['domain'] = [('partner_id', 'in', all_child.ids)]
-        action['context'] = {'search_default_active' : True, 'create': False}
+        action['context'] = {'search_default_active': True, 'create': False}
         return action

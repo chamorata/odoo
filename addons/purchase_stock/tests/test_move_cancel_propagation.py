@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo.tests import tagged
 from .common import PurchaseTestCommon
 
 
@@ -90,10 +89,10 @@ class TestMoveCancelPropagation(PurchaseTestCommon):
 
         # Check status of Purchase Order
         self.assertEqual(purchase_order.state, 'draft', "Purchase order should be in 'draft' state.")
-        purchase_order .button_confirm()
+        purchase_order.button_confirm()
         picking_in = purchase_order.picking_ids.filtered(lambda r: r.picking_type_id == self.warehouse.in_type_id)
         # Cancel Purchase order.
-        purchase_order .button_cancel()
+        purchase_order.button_cancel()
 
         # Check the status of picking after canceling po.
         self.assertEqual(picking_in.state, 'cancel')
@@ -246,7 +245,8 @@ class TestMoveCancelPropagation(PurchaseTestCommon):
         product_car = self.env['product.product'].create({
             'name': 'Car',
             'is_storable': True,
-            'route_ids': [(4, self.ref('stock.route_warehouse0_mto')), (4, self.ref('purchase_stock.route_warehouse0_buy'))],
+            'route_ids': [(4, self.ref('stock.route_warehouse0_mto')),
+                          (4, self.ref('purchase_stock.route_warehouse0_buy'))],
             'seller_ids': [(6, 0, [seller.id])],
             'categ_id': self.env.ref('product.product_category_all').id,
         })

@@ -34,7 +34,8 @@ class AccountMove(models.Model):
         help="Total withholding amount for the move",
     )
     l10n_in_tcs_tds_warning = fields.Char('TDC/TCS Warning', compute="_compute_l10n_in_tcs_tds_warning")
-    l10n_in_display_higher_tcs_button = fields.Boolean(string="Display higher TCS button", compute="_compute_l10n_in_display_higher_tcs_button")
+    l10n_in_display_higher_tcs_button = fields.Boolean(string="Display higher TCS button",
+                                                       compute="_compute_l10n_in_display_higher_tcs_button")
 
     # === Compute Methods ===
     @api.depends('line_ids', 'l10n_in_is_withholding')
@@ -58,8 +59,9 @@ class AccountMove(models.Model):
             for line in self.invoice_line_ids:
                 for tax in line.tax_ids:
                     if (
-                        tax.l10n_in_section_id.tax_source_type == 'tcs'
-                        and tax.amount != max(tax.l10n_in_section_id.l10n_in_section_tax_ids, key=lambda t: abs(t.amount)).amount
+                            tax.l10n_in_section_id.tax_source_type == 'tcs'
+                            and tax.amount != max(tax.l10n_in_section_id.l10n_in_section_tax_ids,
+                                                  key=lambda t: abs(t.amount)).amount
                     ):
                         lines |= line._origin
             return lines
@@ -72,14 +74,14 @@ class AccountMove(models.Model):
             lines = move._get_l10n_in_invalid_tax_lines()
             if lines:
                 warnings['lower_tcs_tax'] = {
-                        'message': _("As the Partner's PAN missing/invalid apply TCS at the higher rate."),
-                        'action_text': _("View Journal Items(s)"),
-                        'action': lines._get_records_action(
-                            name=_("Journal Items(s)"),
-                            target='current',
-                            views=[(self.env.ref("l10n_in_withholding.view_move_line_tree_l10n_in").id, "list")],
-                            domain=[('id', 'in', lines.ids)]
-                        )
+                    'message': _("As the Partner's PAN missing/invalid apply TCS at the higher rate."),
+                    'action_text': _("View Journal Items(s)"),
+                    'action': lines._get_records_action(
+                        name=_("Journal Items(s)"),
+                        target='current',
+                        views=[(self.env.ref("l10n_in_withholding.view_move_line_tree_l10n_in").id, "list")],
+                        domain=[('id', 'in', lines.ids)]
+                    )
                 }
                 move.l10n_in_warning = warnings
 
@@ -104,8 +106,8 @@ class AccountMove(models.Model):
     def _compute_l10n_in_display_higher_tcs_button(self):
         for move in self:
             move.l10n_in_display_higher_tcs_button = (
-                move.l10n_in_warning
-                and move.l10n_in_warning.get('lower_tcs_tax')
+                    move.l10n_in_warning
+                    and move.l10n_in_warning.get('lower_tcs_tax')
             )
 
     def action_l10n_in_withholding_entries(self):
@@ -122,7 +124,8 @@ class AccountMove(models.Model):
         self.ensure_one()
         month_start_date, month_end_date = get_month(self.date)
         company_fiscalyear_dates = self.company_id.compute_fiscalyear_dates(self.date)
-        fiscalyear_start_date, fiscalyear_end_date = company_fiscalyear_dates['date_from'], company_fiscalyear_dates['date_to']
+        fiscalyear_start_date, fiscalyear_end_date = company_fiscalyear_dates['date_from'], company_fiscalyear_dates[
+            'date_to']
         default_domain = [
             ('account_id.l10n_in_tds_tcs_section_id', '=', section_alert.id),
             ('move_id.move_type', '!=', 'entry'),
@@ -161,10 +164,11 @@ class AccountMove(models.Model):
                 return self.journal_id.type == 'sale'
             case 'tds':
                 return (
-                    self.journal_id.type == 'purchase'
-                    and section_id not in self.l10n_in_withhold_move_ids.filtered(lambda m:
-                        m.state == 'posted'
-                    ).mapped('line_ids.tax_ids.l10n_in_section_id')
+                        self.journal_id.type == 'purchase'
+                        and section_id not in self.l10n_in_withhold_move_ids.filtered(lambda m:
+                                                                                      m.state == 'posted'
+                                                                                      ).mapped(
+                    'line_ids.tax_ids.l10n_in_section_id')
                 )
             case _:
                 return False
@@ -182,9 +186,10 @@ class AccountMove(models.Model):
 
         def _is_section_applicable(section_alert, threshold_sums, invoice_currency_rate, lines):
             lines_total = sum(
-                    (line.price_total * invoice_currency_rate) if section_alert.consider_amount == 'total_amount' else line.balance
-                    for line in lines
-                )
+                (
+                            line.price_total * invoice_currency_rate) if section_alert.consider_amount == 'total_amount' else line.balance
+                for line in lines
+            )
             if section_alert.is_aggregate_limit:
                 aggregate_period_key = section_alert.consider_amount == 'total_amount' and 'price_total' or 'balance'
                 aggregate_total = threshold_sums.get(section_alert.aggregate_period, {}).get(aggregate_period_key)
@@ -193,8 +198,8 @@ class AccountMove(models.Model):
                 if aggregate_total > section_alert.aggregate_limit:
                     return True
             return (
-                section_alert.is_per_transaction_limit
-                and lines_total > section_alert.per_transaction_limit
+                    section_alert.is_per_transaction_limit
+                    and lines_total > section_alert.per_transaction_limit
             )
 
         for move in self:
@@ -204,18 +209,18 @@ class AccountMove(models.Model):
                 existing_section = (self.l10n_in_withhold_move_ids.line_ids + move.line_ids).tax_ids.l10n_in_section_id
                 for section_alert, lines in _group_by_section_alert(move.invoice_line_ids).items():
                     if (
-                        (section_alert not in existing_section
-                        or [line for line in lines if section_alert not in line.tax_ids.l10n_in_section_id])
-                        and move._l10n_in_is_warning_applicable(section_alert)
-                        and _is_section_applicable(
+                            (section_alert not in existing_section
+                             or [line for line in lines if section_alert not in line.tax_ids.l10n_in_section_id])
+                            and move._l10n_in_is_warning_applicable(section_alert)
+                            and _is_section_applicable(
+                        section_alert,
+                        move._get_sections_aggregate_sum_by_pan(
                             section_alert,
-                            move._get_sections_aggregate_sum_by_pan(
-                                section_alert,
-                                commercial_partner_id
-                            ),
-                            move.invoice_currency_rate,
-                            lines
-                        )
+                            commercial_partner_id
+                        ),
+                        move.invoice_currency_rate,
+                        lines
+                    )
                     ):
                         warning.add(section_alert.id)
                 warning_sections = self.env['l10n_in.section.alert'].browse(warning)

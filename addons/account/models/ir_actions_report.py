@@ -24,7 +24,8 @@ class IrActionsReport(models.Model):
         invoices = self.env['account.move'].browse(res_ids)
         original_attachments = invoices.message_main_attachment_id
         if not original_attachments:
-            raise UserError(_("No original purchase document could be found for any of the selected purchase documents."))
+            raise UserError(
+                _("No original purchase document could be found for any of the selected purchase documents."))
 
         collected_streams = OrderedDict()
         for invoice in invoices:
@@ -35,7 +36,8 @@ class IrActionsReport(models.Model):
                     record = self.env[attachment.res_model].browse(attachment.res_id)
                     try:
                         stream = pdf.add_banner(stream, record.name or '', logo=True)
-                    except (ValueError, PdfReadError, TypeError, zlib_error, NotImplementedError, DependencyError, ArithmeticError):
+                    except (ValueError, PdfReadError, TypeError, zlib_error, NotImplementedError, DependencyError,
+                            ArithmeticError):
                         record._message_log(body=_(
                             "There was an error when trying to add the banner to the original PDF.\n"
                             "Please make sure the source file is valid."
@@ -48,7 +50,8 @@ class IrActionsReport(models.Model):
 
     def _is_invoice_report(self, report_ref):
         report = self._get_report(report_ref)
-        return (report.is_invoice_report and report.model == 'account.move') or report.report_name == 'account.report_invoice'
+        return (
+                    report.is_invoice_report and report.model == 'account.move') or report.report_name == 'account.report_invoice'
 
     def _get_splitted_report(self, report_ref, content, report_type):
         if report_type == 'html':
@@ -88,7 +91,9 @@ class IrActionsReport(models.Model):
         for master_xmlid in master_xmlids:
             master_report = self.env.ref(f"account.{master_xmlid}", raise_if_not_found=False)
             if master_report and master_report in self:
-                raise UserError(_("You cannot delete this report (%s), it is used by the accounting PDF generation engine.", master_report.name))
+                raise UserError(
+                    _("You cannot delete this report (%s), it is used by the accounting PDF generation engine.",
+                      master_report.name))
 
     def _get_rendering_context(self, report, docids, data):
         data = super()._get_rendering_context(report, docids, data)

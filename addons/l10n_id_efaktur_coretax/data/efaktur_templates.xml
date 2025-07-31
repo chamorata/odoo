@@ -24,7 +24,7 @@
                 <TaxInvoiceDate t-out="move['TaxInvoiceDate']"/>
                 <TaxInvoiceOpt t-out="move['TaxInvoiceOpt']"/>
                 <TrxCode t-out="move['TrxCode']"/>
-                <AddInfo t-out="move['AddInfo']" />
+                <AddInfo t-out="move['AddInfo']"/>
                 <CustomDoc t-out="move['CustomDoc']"/>
                 <CustomDocMonthYear t-out="move['CustomDocMonthYear']"/>
                 <RefDesc t-out="move['RefDesc']"/>
@@ -47,7 +47,8 @@
         </template>
 
         <template id="efaktur_coretax_template">
-            <TaxInvoiceBulk xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="TaxInvoice.xsd">
+            <TaxInvoiceBulk xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                            xsi:noNamespaceSchemaLocation="TaxInvoice.xsd">
                 <TIN t-out="TIN"/>
                 <ListOfTaxInvoice>
                     <!-- For each Invoice -->

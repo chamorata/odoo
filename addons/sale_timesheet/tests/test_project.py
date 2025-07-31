@@ -2,8 +2,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import Command
-from .common import TestCommonSaleTimesheet
 from odoo.tests import tagged, Form
+from .common import TestCommonSaleTimesheet
 
 
 @tagged('post_install', '-at_install')
@@ -51,8 +51,10 @@ class TestProject(TestCommonSaleTimesheet):
         self.assertEqual(task.sale_line_id, self.so.order_line[1])
         self.assertEqual(task.sale_order_id, self.so)
         sale_lines = self.project_global._get_sale_order_items()
-        self.assertEqual(sale_lines, task.sale_line_id + self.project_global.sale_line_id, 'The Sales Order Items found should be the one linked to the project and the one of project task.')
-        self.assertEqual(self.project_global._get_sale_orders(), self.so, 'The Sales Order fetched should be the one of the both sale_lines fetched.')
+        self.assertEqual(sale_lines, task.sale_line_id + self.project_global.sale_line_id,
+                         'The Sales Order Items found should be the one linked to the project and the one of project task.')
+        self.assertEqual(self.project_global._get_sale_orders(), self.so,
+                         'The Sales Order fetched should be the one of the both sale_lines fetched.')
 
         employee_mapping = self.env['project.sale.line.employee.map'].create({
             'project_id': self.project_global.id,
@@ -68,7 +70,8 @@ class TestProject(TestCommonSaleTimesheet):
         })
         self.env.invalidate_all()
         expected_task_sale_order_items |= task.sale_line_id
-        self.assertEqual(self.project_global._get_sale_order_items(), expected_task_sale_order_items | employee_mapping.sale_line_id)
+        self.assertEqual(self.project_global._get_sale_order_items(),
+                         expected_task_sale_order_items | employee_mapping.sale_line_id)
         self.assertEqual(self.project_global._get_sale_orders(), self.so)
 
         new_stage = self.env['project.task.type'].create({
@@ -86,8 +89,10 @@ class TestProject(TestCommonSaleTimesheet):
             'stage_id': done_stage.id,
         })
         self.env.flush_all()
-        self.assertEqual(self.project_global._fetch_sale_order_items({'project.task': [('stage_id.fold', '=', False)]}), employee_mapping.sale_line_id)
-        self.assertEqual(self.project_global._fetch_sale_order_items({'project.task': [('stage_id.fold', '=', True)]}), task.sale_line_id | employee_mapping.sale_line_id)
+        self.assertEqual(self.project_global._fetch_sale_order_items({'project.task': [('stage_id.fold', '=', False)]}),
+                         employee_mapping.sale_line_id)
+        self.assertEqual(self.project_global._fetch_sale_order_items({'project.task': [('stage_id.fold', '=', True)]}),
+                         task.sale_line_id | employee_mapping.sale_line_id)
 
         task2 = self.env['project.task'].create({
             'name': 'Task 2',
@@ -96,8 +101,10 @@ class TestProject(TestCommonSaleTimesheet):
             'stage_id': new_stage.id,
         })
 
-        self.assertEqual(self.project_global._fetch_sale_order_items({'project.task': [('stage_id.fold', '=', False)]}), task2.sale_line_id | employee_mapping.sale_line_id)
-        self.assertEqual(self.project_global._fetch_sale_order_items({'project.task': [('stage_id.fold', '=', True)]}), task.sale_line_id | employee_mapping.sale_line_id)
+        self.assertEqual(self.project_global._fetch_sale_order_items({'project.task': [('stage_id.fold', '=', False)]}),
+                         task2.sale_line_id | employee_mapping.sale_line_id)
+        self.assertEqual(self.project_global._fetch_sale_order_items({'project.task': [('stage_id.fold', '=', True)]}),
+                         task.sale_line_id | employee_mapping.sale_line_id)
 
         self.project_global.allow_billable = False
         self.assertFalse(self.project_global._get_sale_order_items())
@@ -108,9 +115,9 @@ class TestProject(TestCommonSaleTimesheet):
         employee_mapping = self.env['project.sale.line.employee.map'] \
             .with_context(default_project_id=self.project_global.id) \
             .create({
-                'employee_id': self.employee_manager.id,
-                'sale_line_id': self.project_global.sale_line_id.id,
-            })
+            'employee_id': self.employee_manager.id,
+            'sale_line_id': self.project_global.sale_line_id.id,
+        })
         self.assertFalse(employee_mapping.is_cost_changed)
         self.assertEqual(employee_mapping.cost, self.employee_manager.hourly_cost)
 
@@ -245,7 +252,7 @@ class TestProject(TestCommonSaleTimesheet):
             'order_id': sale_order.id,
             'product_id': self.product_delivery_timesheet1.id,
             'product_uom_qty': 10,
-            'task_id' : task.id,
+            'task_id': task.id,
         })
         sale_order.action_confirm()
         expected_sol.write({'remaining_hours': 10})

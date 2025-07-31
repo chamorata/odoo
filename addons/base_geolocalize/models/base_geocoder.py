@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-import requests
 import logging
 
-from odoo import api, fields, models, tools, _
-from odoo.exceptions import UserError
+import requests
 
+from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -91,7 +91,8 @@ class GeoCoder(models.AbstractModel):
             response = requests.get(url, headers=headers, params={'format': 'json', 'q': addr})
             _logger.info('openstreetmap nominatim service called')
             if response.status_code != 200:
-                _logger.warning('Request to openstreetmap failed.\nCode: %s\nContent: %s', response.status_code, response.content)
+                _logger.warning('Request to openstreetmap failed.\nCode: %s\nContent: %s', response.status_code,
+                                response.content)
             result = response.json()
         except Exception as e:
             self._raise_query_error(e)

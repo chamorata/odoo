@@ -9,7 +9,8 @@
     <record id="marketing_card_group_user" model="res.groups">
         <field name="name">Marketing Card User</field>
         <field name="category_id" ref="module_category_marketing_card"/>
-        <field name="implied_ids" eval="[(4, ref('base.group_user')), (4, ref('mass_mailing.group_mass_mailing_user'))]"/>
+        <field name="implied_ids"
+               eval="[(4, ref('base.group_user')), (4, ref('mass_mailing.group_mass_mailing_user'))]"/>
     </record>
 
     <record id="marketing_card_group_manager" model="res.groups">

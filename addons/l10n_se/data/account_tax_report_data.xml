@@ -20,7 +20,8 @@
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
                     <record id="tax_report_line_05" model="account.report.line">
-                        <field name="name">Fält 05 – Momspliktig försäljning som inte ingår i fält 06, 07 eller 08</field>
+                        <field name="name">Fält 05 – Momspliktig försäljning som inte ingår i fält 06, 07 eller 08
+                        </field>
                         <field name="code">se_05</field>
                         <field name="expression_ids">
                             <record id="tax_report_line_05_tag" model="account.report.expression">
@@ -109,7 +110,9 @@
             <record id="tax_report_title_purchases" model="account.report.line">
                 <field name="name">Block C – Momspliktiga inköp vid omvänd skattskyldighet</field>
                 <field name="code">se_c</field>
-                <field name="aggregation_formula">se_20.balance + se_21.balance + se_22.balance + se_23.balance + se_24.balance</field>
+                <field name="aggregation_formula">se_20.balance + se_21.balance + se_22.balance + se_23.balance +
+                    se_24.balance
+                </field>
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
                     <record id="tax_report_line_20" model="account.report.line">
@@ -124,7 +127,8 @@
                         </field>
                     </record>
                     <record id="tax_report_line_21" model="account.report.line">
-                        <field name="name">Fält 21 – Inköp av tjänster från ett annat EU-land, enligt huvudregeln</field>
+                        <field name="name">Fält 21 – Inköp av tjänster från ett annat EU-land, enligt huvudregeln
+                        </field>
                         <field name="code">se_21</field>
                         <field name="expression_ids">
                             <record id="tax_report_line_21_tag" model="account.report.expression">
@@ -273,7 +277,9 @@
             <record id="tax_report_title_exempt_sales" model="account.report.line">
                 <field name="name">Block E – Försäljning m.m. som är undantagen från moms</field>
                 <field name="code">se_e</field>
-                <field name="aggregation_formula">se_35.balance + se_36.balance + se_37.balance + se_38.balance + se_39.balance + se_40.balance + se_41.balance + se_42.balance</field>
+                <field name="aggregation_formula">se_35.balance + se_36.balance + se_37.balance + se_38.balance +
+                    se_39.balance + se_40.balance + se_41.balance + se_42.balance
+                </field>
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
                     <record id="tax_report_line_35" model="account.report.line">
@@ -321,7 +327,9 @@
                         </field>
                     </record>
                     <record id="tax_report_line_39" model="account.report.line">
-                        <field name="name">Fält 39 – Försäljning av tjänster till en beskattningsbar person (näringsidkare) i ett annat EU-land, enligt huvudregeln </field>
+                        <field name="name">Fält 39 – Försäljning av tjänster till en beskattningsbar person
+                            (näringsidkare) i ett annat EU-land, enligt huvudregeln
+                        </field>
                         <field name="code">se_39</field>
                         <field name="expression_ids">
                             <record id="tax_report_line_39_tag" model="account.report.expression">

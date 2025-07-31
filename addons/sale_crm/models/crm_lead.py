@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from dateutil.relativedelta import relativedelta
-
 from odoo import api, fields, models, _
 from odoo.osv import expression
 
@@ -10,12 +8,14 @@ from odoo.osv import expression
 class CrmLead(models.Model):
     _inherit = 'crm.lead'
 
-    sale_amount_total = fields.Monetary(compute='_compute_sale_data', string="Sum of Orders", help="Untaxed Total of Confirmed Orders", currency_field='company_currency')
+    sale_amount_total = fields.Monetary(compute='_compute_sale_data', string="Sum of Orders",
+                                        help="Untaxed Total of Confirmed Orders", currency_field='company_currency')
     quotation_count = fields.Integer(compute='_compute_sale_data', string="Number of Quotations")
     sale_order_count = fields.Integer(compute='_compute_sale_data', string="Number of Sale Orders")
     order_ids = fields.One2many('sale.order', 'opportunity_id', string='Orders')
 
-    @api.depends('order_ids.state', 'order_ids.currency_id', 'order_ids.amount_untaxed', 'order_ids.date_order', 'order_ids.company_id')
+    @api.depends('order_ids.state', 'order_ids.currency_id', 'order_ids.amount_untaxed', 'order_ids.date_order',
+                 'order_ids.company_id')
     def _compute_sale_data(self):
         for lead in self:
             company_currency = lead.company_currency or self.env.company.currency_id
@@ -46,7 +46,8 @@ class CrmLead(models.Model):
         action = self.env["ir.actions.actions"]._for_xml_id("sale.action_quotations_with_onboarding")
         action['context'] = self._prepare_opportunity_quotation_context()
         action['context']['search_default_draft'] = 1
-        action['domain'] = expression.AND([[('opportunity_id', '=', self.id)], self._get_action_view_sale_quotation_domain()])
+        action['domain'] = expression.AND(
+            [[('opportunity_id', '=', self.id)], self._get_action_view_sale_quotation_domain()])
         quotations = self.order_ids.filtered_domain(self._get_action_view_sale_quotation_domain())
         if len(quotations) == 1:
             action['views'] = [(self.env.ref('sale.view_order_form').id, 'form')]
@@ -105,8 +106,9 @@ class CrmLead(models.Model):
     def _update_revenues_from_so(self, order):
         for opportunity in self:
             if (
-                (opportunity.expected_revenue or 0) < order.amount_untaxed
-                and order.currency_id == opportunity.company_id.currency_id
+                    (opportunity.expected_revenue or 0) < order.amount_untaxed
+                    and order.currency_id == opportunity.company_id.currency_id
             ):
                 opportunity.expected_revenue = order.amount_untaxed
-                opportunity._track_set_log_message(_('Expected revenue has been updated based on the linked Sales Orders.'))
+                opportunity._track_set_log_message(
+                    _('Expected revenue has been updated based on the linked Sales Orders.'))

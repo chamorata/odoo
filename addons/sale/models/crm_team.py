@@ -13,8 +13,8 @@ class CrmTeam(models.Model):
         compute='_compute_invoiced',
         string='Invoiced This Month', readonly=True,
         help="Invoice revenue for the current month. This is the amount the sales "
-                "channel has invoiced this month. It is used to compute the progression ratio "
-                "of the current and target revenue on the kanban view.")
+             "channel has invoiced this month. It is used to compute the progression ratio "
+             "of the current and target revenue on the kanban view.")
     invoiced_target = fields.Float(
         string='Invoicing Target',
         help="Revenue Target for the current month (untaxed total of paid invoices).")
@@ -61,11 +61,11 @@ class CrmTeam(models.Model):
     def _compute_sales_to_invoice(self):
         sale_order_data = self.env['sale.order']._read_group([
             ('team_id', 'in', self.ids),
-            ('invoice_status','=','to invoice'),
+            ('invoice_status', '=', 'to invoice'),
         ], ['team_id'], ['__count'])
         data_map = {team.id: count for team, count in sale_order_data}
         for team in self:
-            team.sales_to_invoice_count = data_map.get(team.id,0.0)
+            team.sales_to_invoice_count = data_map.get(team.id, 0.0)
 
     def _compute_invoiced(self):
         if not self:
@@ -135,11 +135,11 @@ class CrmTeam(models.Model):
 
     def _graph_title_and_key(self):
         if self._in_sale_scope():
-            return ['', _('Sales: Untaxed Total')] # no more title
+            return ['', _('Sales: Untaxed Total')]  # no more title
         return super()._graph_title_and_key()
 
     def _compute_dashboard_button_name(self):
-        super(CrmTeam,self)._compute_dashboard_button_name()
+        super(CrmTeam, self)._compute_dashboard_button_name()
         if self._in_sale_scope():
             self.dashboard_button_name = _("Sales Analysis")
 

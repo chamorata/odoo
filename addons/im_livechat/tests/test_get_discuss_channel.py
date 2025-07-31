@@ -1,14 +1,15 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import timedelta
-from freezegun import freeze_time
 from unittest.mock import patch, PropertyMock
 
-from odoo import fields
-from odoo.tools.misc import limited_field_access_token
+from freezegun import freeze_time
 from odoo.addons.im_livechat.tests.common import TestImLivechatCommon
 from odoo.addons.mail.tests.common import MailCommon
+
+from odoo import fields
 from odoo.tests import new_test_user, tagged
+from odoo.tools.misc import limited_field_access_token
 
 
 @tagged("post_install", "-at_install")
@@ -21,12 +22,14 @@ class TestGetDiscussChannel(TestImLivechatCommon, MailCommon):
         for i in range(5):
             discuss_channels = self._open_livechat_discuss_channel()
             channel_operator_ids = [channel_info['operator']['id'] for channel_info in discuss_channels]
-            self.assertTrue(all(partner_id in channel_operator_ids for partner_id in self.operators.mapped('partner_id').ids))
+            self.assertTrue(
+                all(partner_id in channel_operator_ids for partner_id in self.operators.mapped('partner_id').ids))
 
     def test_channel_get_livechat_visitor_info(self):
         self.maxDiff = None
         belgium = self.env.ref('base.be')
-        test_user = self.env['res.users'].create({'name': 'Roger', 'login': 'roger', 'password': self.password, 'country_id': belgium.id})
+        test_user = self.env['res.users'].create(
+            {'name': 'Roger', 'login': 'roger', 'password': self.password, 'country_id': belgium.id})
 
         # ensure visitor info are correct with anonymous
         operator = self.operators[0]
@@ -274,7 +277,8 @@ class TestGetDiscussChannel(TestImLivechatCommon, MailCommon):
     def _open_livechat_discuss_channel(self):
         discuss_channels = []
         for i in range(5):
-            data = self.make_jsonrpc_request('/im_livechat/get_session', {'anonymous_name': 'Anonymous', 'channel_id': self.livechat_channel.id})
+            data = self.make_jsonrpc_request('/im_livechat/get_session',
+                                             {'anonymous_name': 'Anonymous', 'channel_id': self.livechat_channel.id})
             discuss_channels.append(data["discuss.channel"][0])
             # send a message to mark this channel as 'active'
             self.env["discuss.channel"].browse(data["discuss.channel"][0]["id"]).message_post(
@@ -306,7 +310,8 @@ class TestGetDiscussChannel(TestImLivechatCommon, MailCommon):
         self.assertIn(channel_id, channel_ids, "channel should be fetched by operator on new page")
 
     def test_read_channel_unpined_for_operator_after_one_day(self):
-        data = self.make_jsonrpc_request('/im_livechat/get_session', {'anonymous_name': 'visitor', 'channel_id': self.livechat_channel.id})
+        data = self.make_jsonrpc_request('/im_livechat/get_session',
+                                         {'anonymous_name': 'visitor', 'channel_id': self.livechat_channel.id})
         member_of_operator = self.env["discuss.channel.member"].search(
             [
                 ("channel_id", "=", data["discuss.channel"][0]["id"]),
@@ -324,7 +329,8 @@ class TestGetDiscussChannel(TestImLivechatCommon, MailCommon):
         self.assertFalse(member_of_operator.is_pinned, "read channel should be unpinned after one day")
 
     def test_unread_channel_not_unpined_for_operator_after_autovacuum(self):
-        data = self.make_jsonrpc_request('/im_livechat/get_session', {'anonymous_name': 'visitor', 'channel_id': self.livechat_channel.id})
+        data = self.make_jsonrpc_request('/im_livechat/get_session',
+                                         {'anonymous_name': 'visitor', 'channel_id': self.livechat_channel.id})
         member_of_operator = self.env["discuss.channel.member"].search(
             [
                 ("channel_id", "=", data["discuss.channel"][0]["id"]),

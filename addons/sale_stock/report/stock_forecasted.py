@@ -7,8 +7,10 @@ from odoo import models
 class StockForecasted(models.AbstractModel):
     _inherit = 'stock.forecasted_product_product'
 
-    def _prepare_report_line(self, quantity, move_out=None, move_in=None, replenishment_filled=True, product=False, reserved_move=False, in_transit=False, read=True):
-        line = super()._prepare_report_line(quantity, move_out, move_in, replenishment_filled, product, reserved_move, in_transit, read)
+    def _prepare_report_line(self, quantity, move_out=None, move_in=None, replenishment_filled=True, product=False,
+                             reserved_move=False, in_transit=False, read=True):
+        line = super()._prepare_report_line(quantity, move_out, move_in, replenishment_filled, product, reserved_move,
+                                            in_transit, read)
 
         if not move_out or not move_out.picking_id or not move_out.picking_id.sale_id:
             return line
@@ -37,10 +39,12 @@ class StockForecasted(models.AbstractModel):
         out_sum = 0
         if so_lines:
             product_uom = so_lines[0].product_id.uom_id
-            quantities = so_lines.mapped(lambda line: line.product_uom._compute_quantity(line.product_uom_qty, product_uom))
+            quantities = so_lines.mapped(
+                lambda line: line.product_uom._compute_quantity(line.product_uom_qty, product_uom))
             out_sum = sum(quantities)
         res['draft_sale_qty'] = out_sum
-        res['draft_sale_orders'] = so_lines.mapped("order_id").sorted(key=lambda so: so.name).read(fields=['id', 'name'])
+        res['draft_sale_orders'] = so_lines.mapped("order_id").sorted(key=lambda so: so.name).read(
+            fields=['id', 'name'])
         res['draft_sale_orders_matched'] = self.env.context.get('sale_line_to_match_id') in so_lines.ids
         res['qty']['out'] += out_sum
         return res

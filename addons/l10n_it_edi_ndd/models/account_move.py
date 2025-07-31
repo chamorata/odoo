@@ -1,7 +1,8 @@
+from odoo.addons.l10n_it_edi.models.account_move import get_text
+from odoo.addons.l10n_it_edi_ndd.models.account_payment_methode_line import L10N_IT_PAYMENT_METHOD_SELECTION
+
 from odoo import api, fields, models
 from odoo.tools.sql import column_exists, create_column
-from odoo.addons.l10n_it_edi_ndd.models.account_payment_methode_line import L10N_IT_PAYMENT_METHOD_SELECTION
-from odoo.addons.l10n_it_edi.models.account_move import get_text
 
 
 class AccountMove(models.Model):
@@ -93,7 +94,7 @@ class AccountMove(models.Model):
             return
         self = res
 
-        #l10n_it_payment_method
+        # l10n_it_payment_method
         if payment_method := get_text(data['xml_tree'], '//DatiPagamento/DettaglioPagamento/ModalitaPagamento'):
             if payment_method in self.env['account.payment.method.line']._get_l10n_it_payment_method_selection_code():
                 self.l10n_it_payment_method = payment_method

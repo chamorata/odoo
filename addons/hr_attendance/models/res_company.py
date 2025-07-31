@@ -1,10 +1,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+import uuid
+
+from werkzeug.urls import url_join
+
 from odoo import fields, models, api
 from odoo.osv.expression import OR
-
-import uuid
-from werkzeug.urls import url_join
 
 
 class ResCompany(models.Model):
@@ -27,7 +28,8 @@ class ResCompany(models.Model):
         ('back', 'Back Camera'),
     ], string='Barcode Source', default='front')
     attendance_kiosk_delay = fields.Integer(default=10)
-    attendance_kiosk_key = fields.Char(default=lambda s: uuid.uuid4().hex, copy=False, groups='hr_attendance.group_hr_attendance_manager')
+    attendance_kiosk_key = fields.Char(default=lambda s: uuid.uuid4().hex, copy=False,
+                                       groups='hr_attendance.group_hr_attendance_manager')
     attendance_kiosk_url = fields.Char(compute="_compute_attendance_kiosk_url")
     attendance_kiosk_use_pin = fields.Boolean(string='Employee PIN Identification')
     attendance_from_systray = fields.Boolean(string='Attendance From Systray', default=True)
@@ -42,7 +44,8 @@ class ResCompany(models.Model):
     @api.depends("attendance_kiosk_key")
     def _compute_attendance_kiosk_url(self):
         for company in self:
-            company.attendance_kiosk_url = url_join(self.env['res.company'].get_base_url(), '/hr_attendance/%s' % company.attendance_kiosk_key)
+            company.attendance_kiosk_url = url_join(self.env['res.company'].get_base_url(),
+                                                    '/hr_attendance/%s' % company.attendance_kiosk_key)
 
     # ---------------------------------------------------------
     # ORM Overrides
@@ -73,8 +76,8 @@ class ResCompany(models.Model):
         if 'overtime_company_threshold' in vals or 'overtime_employee_threshold' in vals:
             for company in self:
                 # If we modify the thresholds only
-                if (vals.get('overtime_company_threshold') != company.overtime_company_threshold) or\
-                    (vals.get('overtime_employee_threshold') != company.overtime_employee_threshold):
+                if (vals.get('overtime_company_threshold') != company.overtime_company_threshold) or \
+                        (vals.get('overtime_employee_threshold') != company.overtime_employee_threshold):
                     search_domains.append([('employee_id.company_id', '=', company.id)])
 
         res = super().write(vals)

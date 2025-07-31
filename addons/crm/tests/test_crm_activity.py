@@ -4,6 +4,7 @@
 from datetime import date, timedelta
 
 from odoo.addons.crm.tests.common import TestCrmCommon
+
 from odoo.tests.common import users
 
 
@@ -42,7 +43,8 @@ class TestCrmMailActivity(TestCrmCommon):
         # Initialize some batch data
         default_order = self.env['crm.lead']._order
         self.assertEqual(default_order, "priority desc, id desc")  # force updating this test is order changes
-        test_leads = self._create_leads_batch(count=10, partner_ids=[self.contact_1.id, self.contact_2.id, False]).sorted('id')
+        test_leads = self._create_leads_batch(count=10,
+                                              partner_ids=[self.contact_1.id, self.contact_2.id, False]).sorted('id')
 
         # assert initial data, ensure we did not break base behavior
         for lead in test_leads:
@@ -69,11 +71,14 @@ class TestCrmMailActivity(TestCrmCommon):
         deadlines_gl = [deadline_in1d, deadline_was1d, deadline_was2d, deadline_was1d, deadline_was2d,
                         deadline_in2d, False, False, False, False]
 
-        test_leads[0:4].activity_schedule(act_type_xmlid='crm.call_for_demo', user_id=self.user_sales_manager.id, date_deadline=deadline_in1d)
+        test_leads[0:4].activity_schedule(act_type_xmlid='crm.call_for_demo', user_id=self.user_sales_manager.id,
+                                          date_deadline=deadline_in1d)
         test_leads[0:3].activity_schedule(act_type_xmlid='crm.initial_contact', date_deadline=deadline_in2d)
         test_leads[5].activity_schedule(act_type_xmlid='crm.initial_contact', date_deadline=deadline_in2d)
-        (test_leads[1] | test_leads[3]).activity_schedule(act_type_xmlid='crm.initial_contact', date_deadline=deadline_was1d)
-        (test_leads[2] | test_leads[4]).activity_schedule(act_type_xmlid='crm.call_for_demo', date_deadline=deadline_was2d)
+        (test_leads[1] | test_leads[3]).activity_schedule(act_type_xmlid='crm.initial_contact',
+                                                          date_deadline=deadline_was1d)
+        (test_leads[2] | test_leads[4]).activity_schedule(act_type_xmlid='crm.call_for_demo',
+                                                          date_deadline=deadline_was2d)
         test_leads.invalidate_recordset()
 
         expected_ids_asc = [2, 4, 1, 3, 5, 0, 8, 7, 9, 6]
@@ -118,11 +123,15 @@ class TestCrmMailActivity(TestCrmCommon):
         self.lead_1.message_subscribe(partner_ids=[self.contact_1.id])
 
         # Check the client is not follower of any internal subtype
-        internal_subtypes = self.lead_1.message_follower_ids.filtered(lambda fol: fol.partner_id == self.contact_1).mapped('subtype_ids').filtered(lambda subtype: subtype.internal)
+        internal_subtypes = self.lead_1.message_follower_ids.filtered(
+            lambda fol: fol.partner_id == self.contact_1).mapped('subtype_ids').filtered(
+            lambda subtype: subtype.internal)
         self.assertFalse(internal_subtypes)
 
         # Add sale manager as follower of default subtypes
-        self.lead_1.message_subscribe(partner_ids=[self.user_sales_manager.partner_id.id], subtype_ids=[self.env.ref('mail.mt_activities').id, self.env.ref('mail.mt_comment').id])
+        self.lead_1.message_subscribe(partner_ids=[self.user_sales_manager.partner_id.id],
+                                      subtype_ids=[self.env.ref('mail.mt_activities').id,
+                                                   self.env.ref('mail.mt_comment').id])
 
         activity = self.env['mail.activity'].with_user(self.user_sales_leads).create({
             'activity_type_id': self.activity_type_1.id,

@@ -2,11 +2,11 @@
 
 from unittest.mock import patch
 
+from odoo.addons.payment.tests.common import PaymentCommon
+
 from odoo.exceptions import AccessError
 from odoo.tests import tagged
 from odoo.tools import mute_logger
-
-from odoo.addons.payment.tests.common import PaymentCommon
 
 
 @tagged('-at_install', 'post_install')
@@ -61,7 +61,7 @@ class TestPaymentTransaction(PaymentCommon):
         self.provider.support_refund = 'full_only'  # Should simply not be False
         tx = self._create_transaction('redirect', state='done')
         for reference_index, operation in enumerate(
-            ('online_redirect', 'online_direct', 'online_token', 'validation', 'refund')
+                ('online_redirect', 'online_direct', 'online_token', 'validation', 'refund')
         ):
             self._create_transaction(
                 'dummy',
@@ -175,8 +175,8 @@ class TestPaymentTransaction(PaymentCommon):
         source_tx = self._create_transaction(flow='direct', state='authorized')
         child_tx_1 = source_tx._create_child_transaction(100)
         with patch(
-            'odoo.addons.payment.models.payment_transaction.PaymentTransaction'
-            '._update_source_transaction_state'
+                'odoo.addons.payment.models.payment_transaction.PaymentTransaction'
+                '._update_source_transaction_state'
         ) as patched:
             child_tx_1._set_done()
             patched.assert_called_once()
@@ -187,10 +187,10 @@ class TestPaymentTransaction(PaymentCommon):
         source_tx = self._create_transaction(flow='direct', state='authorized')
         child_tx_1 = source_tx._create_child_transaction(100)
         child_tx_1._set_done()
-        child_tx_2 = source_tx._create_child_transaction(source_tx.amount-100)
+        child_tx_2 = source_tx._create_child_transaction(source_tx.amount - 100)
         with patch(
-            'odoo.addons.payment.models.payment_transaction.PaymentTransaction'
-            '._update_source_transaction_state'
+                'odoo.addons.payment.models.payment_transaction.PaymentTransaction'
+                '._update_source_transaction_state'
         ) as patched:
             child_tx_2._set_canceled()
             patched.assert_called_once()

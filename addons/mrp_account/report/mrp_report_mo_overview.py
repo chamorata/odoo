@@ -4,6 +4,7 @@
 from odoo import models
 from odoo.tools import float_is_zero
 
+
 class ReportMoOverview(models.AbstractModel):
     _inherit = 'report.mrp.report_mo_overview'
 

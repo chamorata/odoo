@@ -62,16 +62,19 @@ class TestCourseCertificationFailureFlow(TestSurveyCommon):
         slide_partner = self.slide_certification._action_set_viewed(self.user_portal.partner_id)
         self.slide_certification.with_user(self.user_portal)._generate_certification_url()
 
-        self.assertEqual(1, len(slide_partner.user_input_ids), 'A user input should have been automatically created upon slide view')
+        self.assertEqual(1, len(slide_partner.user_input_ids),
+                         'A user input should have been automatically created upon slide view')
 
         first_attempt_in_first_pool = slide_partner.user_input_ids[0]
         # Step 4: fill in the created user_input with wrong answers
         self.fill_in_answer(slide_partner.user_input_ids[0], certification.question_ids)
 
-        self.assertFalse(slide_partner.survey_scoring_success, 'Quizz should not be marked as passed with wrong answers')
+        self.assertFalse(slide_partner.survey_scoring_success,
+                         'Quizz should not be marked as passed with wrong answers')
         # forces recompute of partner_ids as we delete directly in relation
         self.channel.invalidate_model()
-        self.assertIn(self.user_portal.partner_id, self.channel.partner_ids, 'Portal user should still be a member of the course because they still have attempts left')
+        self.assertIn(self.user_portal.partner_id, self.channel.partner_ids,
+                      'Portal user should still be a member of the course because they still have attempts left')
         certification_urls = self.slide_certification.with_user(self.user_portal)._generate_certification_url()
         self.assertEqual(certification_urls[self.slide_certification.id],
                          slide_partner.user_input_ids[0].get_start_url(),
@@ -94,7 +97,8 @@ class TestCourseCertificationFailureFlow(TestSurveyCommon):
             ('channel_id', 'in', self.channel.ids),
             ('partner_id', 'in', slide_partner.partner_id.ids),
         ])
-        self.assertFalse(channel_partner.active, 'Portal user membership should have been archived from the course attendee because he failed his last attempt')
+        self.assertFalse(channel_partner.active,
+                         'Portal user membership should have been archived from the course attendee because he failed his last attempt')
 
         # Step 7: add portal user as member of the channel once again
         self.channel._action_add_members(self.user_portal.partner_id)
@@ -102,15 +106,18 @@ class TestCourseCertificationFailureFlow(TestSurveyCommon):
         self.channel.invalidate_model()
 
         self.slide_certification.with_user(self.user_portal)._generate_certification_url()
-        self.assertTrue(channel_partner.active, 'Portal user membership should be a unarchived upon joining the course once again')
-        self.assertEqual(1, len(slide_partner.user_input_ids), 'A new user input should have been automatically created upon slide view')
+        self.assertTrue(channel_partner.active,
+                        'Portal user membership should be a unarchived upon joining the course once again')
+        self.assertEqual(1, len(slide_partner.user_input_ids),
+                         'A new user input should have been automatically created upon slide view')
         first_attempt_in_second_pool = slide_partner.user_input_ids[0]
         # Step 8: fill in the created user_input with correct answers this time
         self.fill_in_answer(slide_partner.user_input_ids, certification.question_ids, good_answers=True)
         self.assertTrue(slide_partner.survey_scoring_success, 'Quizz should be marked as passed with correct answers')
         # forces recompute of partner_ids as we delete directly in relation
         self.channel.invalidate_model()
-        self.assertIn(self.user_portal.partner_id, self.channel.partner_ids, 'Portal user should still be a member of the course')
+        self.assertIn(self.user_portal.partner_id, self.channel.partner_ids,
+                      'Portal user should still be a member of the course')
         # Checking the attempts numbers
         self.assertEqual(1, first_attempt_in_first_pool.attempts_number,
                          'The first attempt of the first pool should be number 1')

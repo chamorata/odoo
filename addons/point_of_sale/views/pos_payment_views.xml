@@ -31,12 +31,12 @@
         <field name="model">pos.payment</field>
         <field name="arch" type="xml">
             <list string="Payments" create="0" delete="0">
-                <field name="currency_id" column_invisible="True" />
+                <field name="currency_id" column_invisible="True"/>
                 <field name="payment_date"/>
-                <field name="payment_method_id" />
-                <field name="pos_order_id" />
+                <field name="payment_method_id"/>
+                <field name="pos_order_id"/>
                 <field name="user_id" widget="many2one_avatar_employee"/>
-                <field name="amount" />
+                <field name="amount"/>
             </list>
         </field>
     </record>
@@ -48,10 +48,11 @@
             <search string="Payments">
                 <field name="name"/>
                 <field name="amount"/>
-                <field name="pos_order_id" />
+                <field name="pos_order_id"/>
                 <group expand="0" string="Group By">
-                    <filter name="group_by_payment_method" string="Payment Method" domain="[]"  context="{'group_by':'payment_method_id'}"/>
-                    <filter name="group_by_session" string="Session" domain="[]"  context="{'group_by':'session_id'}"/>
+                    <filter name="group_by_payment_method" string="Payment Method" domain="[]"
+                            context="{'group_by':'payment_method_id'}"/>
+                    <filter name="group_by_session" string="Session" domain="[]" context="{'group_by':'session_id'}"/>
                 </group>
             </search>
         </field>
@@ -67,11 +68,13 @@
         <field name="help" type="html">
             <p class="o_view_nocontent_empty_folder">
                 No orders found
-            </p><p>
+            </p>
+            <p>
                 To record new orders, start a new session.
             </p>
         </field>
     </record>
 
-    <menuitem id="menu_pos_payment" parent="menu_point_of_sale" action="action_pos_payment_form" sequence="3" groups="group_pos_manager,group_pos_user"/>
+    <menuitem id="menu_pos_payment" parent="menu_point_of_sale" action="action_pos_payment_form" sequence="3"
+              groups="group_pos_manager,group_pos_user"/>
 </odoo>

@@ -14,7 +14,8 @@
                             <field name="product_qty"/>
                             <field name="production_capacity"/>
                             <field name="product_uom_id" groups="uom.group_uom"/>
-                            <button name="action_prepare_split" type="object" icon="fa-scissors" title="Split Production"/>
+                            <button name="action_prepare_split" type="object" icon="fa-scissors"
+                                    title="Split Production"/>
                         </list>
                     </field>
                     <footer>
@@ -37,8 +38,12 @@
                             <field name="product_id"/>
                             <label for="product_qty"/>
                             <div class="o_row">
-                                <span><field name="product_qty"/></span>
-                                <span><field name="product_uom_id" groups="uom.group_uom"/></span>
+                                <span>
+                                    <field name="product_qty"/>
+                                </span>
+                                <span>
+                                    <field name="product_uom_id" groups="uom.group_uom"/>
+                                </span>
                             </div>
                         </group>
                         <group>
@@ -58,9 +63,12 @@
                         The total should be equal to the quantity to produce.
                     </div>
                     <footer>
-                        <button string="Split" class="btn-primary" type="object" name="action_split" data-hotkey="q" invisible="not valid_details"/>
-                        <button string="Discard" class="btn-secondary" special="cancel" data-hotkey="x" invisible="production_split_multi_id"/>
-                        <button string="Discard" class="btn-secondary" type="object" name="action_return_to_list" data-hotkey="x" invisible="not production_split_multi_id"/>
+                        <button string="Split" class="btn-primary" type="object" name="action_split" data-hotkey="q"
+                                invisible="not valid_details"/>
+                        <button string="Discard" class="btn-secondary" special="cancel" data-hotkey="x"
+                                invisible="production_split_multi_id"/>
+                        <button string="Discard" class="btn-secondary" type="object" name="action_return_to_list"
+                                data-hotkey="x" invisible="not production_split_multi_id"/>
                     </footer>
                 </form>
             </field>

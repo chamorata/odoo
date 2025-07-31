@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 
 from contextlib import contextmanager
-from freezegun import freeze_time
 from unittest.mock import patch
 
-from odoo import exceptions, tools
+from freezegun import freeze_time
 from odoo.addons.mail.tests.common import MailCommon
 from odoo.addons.phone_validation.tools import phone_validation
 from odoo.addons.sms.models.sms_sms import SmsApi, SmsSms
+
+from odoo import exceptions, tools
 from odoo.tests import common
 
 
@@ -27,7 +28,7 @@ class MockSMS(common.HttpCase):
         in addition to standard datetime mocks. Used mainly to detect sync
         issues. """
         with freeze_time(mock_dt), \
-             patch.object(self.env.cr, 'now', lambda: mock_dt):
+                patch.object(self.env.cr, 'now', lambda: mock_dt):
             yield
 
     # ------------------------------------------------------------
@@ -35,7 +36,8 @@ class MockSMS(common.HttpCase):
     # ------------------------------------------------------------
 
     @contextmanager
-    def mockSMSGateway(self, sms_allow_unlink=False, sim_error=None, nbr_t_error=None, moderated=False, force_delivered=False):
+    def mockSMSGateway(self, sms_allow_unlink=False, sim_error=None, nbr_t_error=None, moderated=False,
+                       force_delivered=False):
         self._clear_sms_sent()
         sms_create_origin = SmsSms.create
         sms_send_origin = SmsSms._send
@@ -52,7 +54,8 @@ class MockSMS(common.HttpCase):
             if local_endpoint == '/iap/sms/2/send':
                 result = []
                 for to_send in params['messages']:
-                    res = {'res_id': to_send['res_id'], 'state': 'delivered' if force_delivered else 'success', 'credit': 1}
+                    res = {'res_id': to_send['res_id'], 'state': 'delivered' if force_delivered else 'success',
+                           'credit': 1}
                     error = sim_error or (nbr_t_error and nbr_t_error.get(to_send['number']))
                     if error and error == 'credit':
                         res.update(credit=0, state='insufficient_credit')
@@ -84,7 +87,8 @@ class MockSMS(common.HttpCase):
                             error = 'insufficient_credit'
                         res = {
                             'uuid': number['uuid'],
-                            'state': error or ('delivered' if force_delivered else 'success' if not moderated else 'processing'),
+                            'state': error or (
+                                'delivered' if force_delivered else 'success' if not moderated else 'processing'),
                             'credit': 1,
                         }
                         if error:
@@ -106,12 +110,14 @@ class MockSMS(common.HttpCase):
 
         def _sms_sms_send(records, unlink_failed=False, unlink_sent=True, raise_exception=False):
             if sms_allow_unlink:
-                return sms_send_origin(records, unlink_failed=unlink_failed, unlink_sent=unlink_sent, raise_exception=raise_exception)
+                return sms_send_origin(records, unlink_failed=unlink_failed, unlink_sent=unlink_sent,
+                                       raise_exception=raise_exception)
             return sms_send_origin(records, unlink_failed=False, unlink_sent=False, raise_exception=raise_exception)
 
         try:
             with patch.object(SmsApi, '_contact_iap', side_effect=_contact_iap), \
-                    patch.object(SmsSms, 'create', autospec=True, wraps=SmsSms, side_effect=_sms_sms_create) as sms_create, \
+                    patch.object(SmsSms, 'create', autospec=True, wraps=SmsSms,
+                                 side_effect=_sms_sms_create) as sms_create, \
                     patch.object(SmsSms, '_send', autospec=True, wraps=SmsSms, side_effect=_sms_sms_send):
                 self._mock_sms_create = sms_create
                 yield
@@ -185,7 +191,8 @@ class SMSCase(MockSMS):
         """
         for number in numbers:
             sent_sms = next((sms for sms in self._sms if sms['number'] == number), None)
-            self.assertTrue(bool(sent_sms), 'Number %s not found in %s' % (number, repr([s['number'] for s in self._sms])))
+            self.assertTrue(bool(sent_sms),
+                            'Number %s not found in %s' % (number, repr([s['number'] for s in self._sms])))
             if content is not None:
                 self.assertIn(content, sent_sms['body'])
 
@@ -217,12 +224,14 @@ class SMSCase(MockSMS):
     def assertSMSCanceled(self, partner, number, failure_type, content=None, fields_values=None):
         """ Check canceled SMS. Search is done for a pair partner / number where
         partner can be an empty recordset. """
-        self.assertSMS(partner, number, 'canceled', failure_type=failure_type, content=content, fields_values=fields_values)
+        self.assertSMS(partner, number, 'canceled', failure_type=failure_type, content=content,
+                       fields_values=fields_values)
 
     def assertSMSFailed(self, partner, number, failure_type, content=None, fields_values=None):
         """ Check failed SMS. Search is done for a pair partner / number where
         partner can be an empty recordset. """
-        self.assertSMS(partner, number, 'error', failure_type=failure_type, content=content, fields_values=fields_values)
+        self.assertSMS(partner, number, 'error', failure_type=failure_type, content=content,
+                       fields_values=fields_values)
 
     def assertSMSOutgoing(self, partner, number, content=None, fields_values=None):
         """ Check outgoing SMS. Search is done for a pair partner / number where
@@ -272,7 +281,8 @@ class SMSCase(MockSMS):
             if number is None and partner:
                 number = partner._phone_format()
 
-            notif = notifications.filtered(lambda n: n.res_partner_id == partner and n.sms_number == number and n.notification_status == state)
+            notif = notifications.filtered(
+                lambda n: n.res_partner_id == partner and n.sms_number == number and n.notification_status == state)
 
             debug_info = ''
             if not notif:
@@ -280,8 +290,11 @@ class SMSCase(MockSMS):
                     f'To: {notif.sms_number} ({notif.res_partner_id}) - (State: {notif.notification_status})'
                     for notif in notifications
                 )
-            self.assertTrue(notif, 'SMS: not found notification for %s (number: %s, state: %s)\n%s' % (partner, number, state, debug_info))
-            self.assertEqual(notif.author_id, notif.mail_message_id.author_id, 'SMS: Message and notification should have the same author')
+            self.assertTrue(notif,
+                            'SMS: not found notification for %s (number: %s, state: %s)\n%s' % (partner, number, state,
+                                                                                                debug_info))
+            self.assertEqual(notif.author_id, notif.mail_message_id.author_id,
+                             'SMS: Message and notification should have the same author')
             for field_name, expected_value in (mail_message_values or {}).items():
                 self.assertEqual(notif.mail_message_id[field_name], expected_value)
             if state not in {'process', 'sent', 'ready', 'canceled', 'pending'}:
@@ -295,9 +308,11 @@ class SMSCase(MockSMS):
                 elif state == 'ready':
                     self.assertSMS(partner, number, 'outgoing', content=content)
                 elif state == 'exception':
-                    self.assertSMS(partner, number, 'error', failure_type=recipient_info['failure_type'], content=content)
+                    self.assertSMS(partner, number, 'error', failure_type=recipient_info['failure_type'],
+                                   content=content)
                 elif state == 'canceled':
-                    self.assertSMS(partner, number, 'canceled', failure_type=recipient_info['failure_type'], content=content)
+                    self.assertSMS(partner, number, 'canceled', failure_type=recipient_info['failure_type'],
+                                   content=content)
                 else:
                     raise NotImplementedError('Not implemented')
 
@@ -325,13 +340,16 @@ class SMSCommon(MailCommon, SMSCase):
         # some numbers for testing
         cls.random_numbers_str = '+32456998877, 0456665544'
         cls.random_numbers = cls.random_numbers_str.split(', ')
-        cls.random_numbers_san = [phone_validation.phone_format(number, 'BE', '32', force_format='E164') for number in cls.random_numbers]
+        cls.random_numbers_san = [phone_validation.phone_format(number, 'BE', '32', force_format='E164') for number in
+                                  cls.random_numbers]
         cls.test_numbers = ['+32456010203', '0456 04 05 06', '0032456070809']
-        cls.test_numbers_san = [phone_validation.phone_format(number, 'BE', '32', force_format='E164') for number in cls.test_numbers]
+        cls.test_numbers_san = [phone_validation.phone_format(number, 'BE', '32', force_format='E164') for number in
+                                cls.test_numbers]
 
         # some numbers for mass testing
         cls.mass_numbers = ['04561%s2%s3%s' % (x, x, x) for x in range(0, 10)]
-        cls.mass_numbers_san = [phone_validation.phone_format(number, 'BE', '32', force_format='E164') for number in cls.mass_numbers]
+        cls.mass_numbers_san = [phone_validation.phone_format(number, 'BE', '32', force_format='E164') for number in
+                                cls.mass_numbers]
 
     @classmethod
     def _create_sms_template(cls, model, body=False):

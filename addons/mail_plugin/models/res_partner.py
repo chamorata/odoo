@@ -9,7 +9,7 @@ class ResPartner(models.Model):
                                   compute='_compute_partner_iap_info')
 
     iap_search_domain = fields.Char('Search Domain / Email',
-                                compute='_compute_partner_iap_info')
+                                    compute='_compute_partner_iap_info')
 
     def _compute_partner_iap_info(self):
         partner_iaps = self.env['res.partner.iap'].sudo().search([('partner_id', 'in', self.ids)])

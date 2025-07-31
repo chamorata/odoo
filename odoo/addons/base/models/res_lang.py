@@ -55,7 +55,7 @@ class Lang(models.Model):
     _allow_sudo_commands = False
 
     _disallowed_datetime_patterns = list(tools.misc.DATETIME_FORMATS_MAP)
-    _disallowed_datetime_patterns.remove('%y') # this one is in fact allowed, just not good practice
+    _disallowed_datetime_patterns.remove('%y')  # this one is in fact allowed, just not good practice
 
     name = fields.Char(required=True)
     code = fields.Char(string='Locale Code', required=True, help='This field is used to set/get locales for user')
@@ -65,7 +65,8 @@ class Lang(models.Model):
     direction = fields.Selection([('ltr', 'Left-to-Right'), ('rtl', 'Right-to-Left')], required=True, default='ltr')
     date_format = fields.Char(string='Date Format', required=True, default=DEFAULT_DATE_FORMAT)
     time_format = fields.Char(string='Time Format', required=True, default=DEFAULT_TIME_FORMAT)
-    short_time_format = fields.Char(string='Short Time Format', required=True, default=DEFAULT_SHORT_TIME_FORMAT, help="Time Format without seconds")
+    short_time_format = fields.Char(string='Short Time Format', required=True, default=DEFAULT_SHORT_TIME_FORMAT,
+                                    help="Time Format without seconds")
     week_start = fields.Selection([('1', 'Monday'),
                                    ('2', 'Tuesday'),
                                    ('3', 'Wednesday'),
@@ -74,10 +75,10 @@ class Lang(models.Model):
                                    ('6', 'Saturday'),
                                    ('7', 'Sunday')], string='First Day of Week', required=True, default='7')
     grouping = fields.Char(string='Separator Format', required=True, default='[]',
-        help="The Separator Format should be like [,n] where 0 < n :starting from Unit digit. "
-             "-1 will end the separation. e.g. [3,2,-1] will represent 106500 to be 1,06,500; "
-             "[1,2,-1] will represent it to be 106,50,0;[3] will represent it as 106,500. "
-             "Provided ',' as the thousand separator in each case.")
+                           help="The Separator Format should be like [,n] where 0 < n :starting from Unit digit. "
+                                "-1 will end the separation. e.g. [3,2,-1] will represent 106500 to be 1,06,500; "
+                                "[1,2,-1] will represent it to be 106,50,0;[3] will represent it as 106,500. "
+                                "Provided ',' as the thousand separator in each case.")
     decimal_point = fields.Char(string='Decimal Separator', required=True, default='.', trim=False)
     thousands_sep = fields.Char(string='Thousands Separator', default=',', trim=False)
 
@@ -206,11 +207,11 @@ class Lang(models.Model):
             'iso_code': iso_lang,
             'name': lang_name,
             'active': True,
-            'date_format' : fix_datetime_format(locale.nl_langinfo(locale.D_FMT)),
-            'time_format' : fix_datetime_format(locale.nl_langinfo(locale.T_FMT)),
-            'decimal_point' : fix_xa0(str(conv['decimal_point'])),
-            'thousands_sep' : fix_xa0(str(conv['thousands_sep'])),
-            'grouping' : str(conv.get('grouping', [])),
+            'date_format': fix_datetime_format(locale.nl_langinfo(locale.D_FMT)),
+            'time_format': fix_datetime_format(locale.nl_langinfo(locale.T_FMT)),
+            'decimal_point': fix_xa0(str(conv['decimal_point'])),
+            'thousands_sep': fix_xa0(str(conv['thousands_sep'])),
+            'grouping': str(conv.get('grouping', [])),
         }
         try:
             return self.create(lang_info)
@@ -253,7 +254,8 @@ class Lang(models.Model):
         implementation of LangData
         """
         return OrderedSet(['id', 'name', 'code', 'iso_code', 'url_code', 'active', 'direction', 'date_format',
-                           'time_format', 'short_time_format', 'week_start', 'grouping', 'decimal_point', 'thousands_sep', 'flag_image_url'])
+                           'time_format', 'short_time_format', 'week_start', 'grouping', 'decimal_point',
+                           'thousands_sep', 'flag_image_url'])
 
     def _get_data(self, **kwargs: Any) -> LangData:
         """ Get the language data for the given field value in kwargs
@@ -328,10 +330,13 @@ class Lang(models.Model):
         if vals.get('active') == False:
             if self.env['res.users'].with_context(active_test=True).search_count([('lang', 'in', lang_codes)], limit=1):
                 raise UserError(_("Cannot deactivate a language that is currently used by users."))
-            if self.env['res.partner'].with_context(active_test=True).search_count([('lang', 'in', lang_codes)], limit=1):
+            if self.env['res.partner'].with_context(active_test=True).search_count([('lang', 'in', lang_codes)],
+                                                                                   limit=1):
                 raise UserError(_("Cannot deactivate a language that is currently used by contacts."))
-            if self.env['res.users'].with_context(active_test=False).search_count([('lang', 'in', lang_codes)], limit=1):
-                raise UserError(_("You cannot archive the language in which Odoo was setup as it is used by automated processes."))
+            if self.env['res.users'].with_context(active_test=False).search_count([('lang', 'in', lang_codes)],
+                                                                                  limit=1):
+                raise UserError(
+                    _("You cannot archive the language in which Odoo was setup as it is used by automated processes."))
             # delete linked ir.default specifying default partner's language
             self.env['ir.default'].discard_values('res.partner', 'lang', lang_codes)
 
@@ -346,12 +351,12 @@ class Lang(models.Model):
                     ('url_code', '=', short_code),
                 ], limit=1)  # url_code is unique
                 if (
-                    short_lang
-                    and not short_lang.active
-                    # `code` should always be the long format containing `_` but
-                    # there is a plan to change this in the future for `es_419`.
-                    # This `and` is about not failing if it's the case one day.
-                    and short_lang.code != short_code
+                        short_lang
+                        and not short_lang.active
+                        # `code` should always be the long format containing `_` but
+                        # there is a plan to change this in the future for `es_419`.
+                        # This `and` is about not failing if it's the case one day.
+                        and short_lang.code != short_code
                 ):
                     short_lang.url_code = short_lang.code
                     long_lang.url_code = short_code
@@ -369,7 +374,8 @@ class Lang(models.Model):
             if ctx_lang and (language.code == ctx_lang):
                 raise UserError(_("You cannot delete the language which is the user's preferred language."))
             if language.active:
-                raise UserError(_("You cannot delete the language which is Active!\nPlease de-activate the language first."))
+                raise UserError(
+                    _("You cannot delete the language which is Active!\nPlease de-activate the language first."))
 
     def unlink(self):
         self.env.registry.clear_cache()
@@ -418,7 +424,8 @@ class Lang(models.Model):
         """ Activate the selected languages """
         for lang in self.filtered(lambda l: not l.active):
             lang.toggle_active()
-        message = _("The languages that you selected have been successfully installed. Users can choose their favorite language in their preferences.")
+        message = _(
+            "The languages that you selected have been successfully installed. Users can choose their favorite language in their preferences.")
         return {
             'type': 'ir.actions.client',
             'tag': 'display_notification',
@@ -430,6 +437,7 @@ class Lang(models.Model):
                 'next': {'type': 'ir.actions.act_window_close'},
             }
         }
+
 
 def split(l, counts):
     """
@@ -449,7 +457,7 @@ def split(l, counts):
 
     """
     res = []
-    saved_count = len(l) # count to use when encoutering a zero
+    saved_count = len(l)  # count to use when encoutering a zero
     for count in counts:
         if not l:
             break
@@ -467,7 +475,9 @@ def split(l, counts):
         res.append(l)
     return res
 
+
 intersperse_pat = re.compile('([^0-9]*)([^ ]*)(.*)')
+
 
 def intersperse(string, counts, separator=''):
     """
@@ -476,7 +486,9 @@ def intersperse(string, counts, separator=''):
 
     """
     left, rest, right = intersperse_pat.match(string).groups()
+
     def reverse(s): return s[::-1]
+
     splits = split(reverse(rest), counts)
     res = separator.join(reverse(s) for s in reverse(splits))
-    return left + res + right, len(splits) > 0 and len(splits) -1 or 0
+    return left + res + right, len(splits) > 0 and len(splits) - 1 or 0

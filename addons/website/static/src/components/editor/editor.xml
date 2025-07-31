@@ -5,8 +5,8 @@
         <t t-out="this.loadingDummy"/>
     </div>
     <div t-if="state.showWysiwyg"
-        t-ref="wysiwyg-adapter"
-        t-att-class="{ o_w_wysiwyg_transition: !this.state.reloading, o_w_wysiwyg: this.websiteContext.snippetsLoaded }">
+         t-ref="wysiwyg-adapter"
+         t-att-class="{ o_w_wysiwyg_transition: !this.state.reloading, o_w_wysiwyg: this.websiteContext.snippetsLoaded }">
         <t t-component="this.WysiwygAdapterComponent" t-props="{
             'editingValue': this.wysiwygOptions.value,
             'options': this.wysiwygOptions,
@@ -19,7 +19,7 @@
             'savableSelector': this.savableSelector,
             'beforeEditorActive': this.beforeEditorActive,
             'removeWelcomeMessage': this.props.removeWelcomeMessage,
-        }" />
+        }"/>
     </div>
 </t>
 </templates>

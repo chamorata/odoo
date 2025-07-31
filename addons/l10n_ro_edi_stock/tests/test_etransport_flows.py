@@ -1,11 +1,11 @@
+from unittest.mock import patch
+
+from freezegun import freeze_time
+from odoo.addons.l10n_ro_edi_stock.tests.common import TestL10nRoEdiStockCommon
+
 from odoo.exceptions import UserError
 from odoo.tests import tagged
 from odoo.tools import misc
-
-from odoo.addons.l10n_ro_edi_stock.tests.common import TestL10nRoEdiStockCommon
-
-from unittest.mock import patch
-from freezegun import freeze_time
 
 
 @patch('odoo.addons.l10n_ro_edi_stock.models.etransport_api.ETransportAPI._make_etransport_request')
@@ -85,7 +85,8 @@ class TestETransportFlows(TestL10nRoEdiStockCommon):
             }
         }
 
-    def _assert_picking_state(self, picking, state=False, amt_documents=0, enabled_fields=('enable', 'fields_readonly')):
+    def _assert_picking_state(self, picking, state=False, amt_documents=0,
+                              enabled_fields=('enable', 'fields_readonly')):
         self.assertEqual(picking.l10n_ro_edi_stock_state, state)
         if amt_documents > 0:
             self.assertTrue(picking.l10n_ro_edi_stock_document_ids)
@@ -118,11 +119,13 @@ class TestETransportFlows(TestL10nRoEdiStockCommon):
     def test_send_and_amend_etransport(self, make_request):
         self._assert_picking_state(self.delivery_picking, enabled_fields=['enable'])
 
-        with self.assertRaises(UserError, msg=f'The picking {self.delivery_picking.name} is missing a delivery carrier.'):
+        with self.assertRaises(UserError,
+                               msg=f'The picking {self.delivery_picking.name} is missing a delivery carrier.'):
             self.delivery_picking.button_validate()
 
         self.delivery_picking.carrier_id = self.carrier
-        with self.assertRaises(UserError, msg=f'The delivery carrier of {self.delivery_picking.name} is missing the partner field value.'):
+        with self.assertRaises(UserError,
+                               msg=f'The delivery carrier of {self.delivery_picking.name} is missing the partner field value.'):
             self.delivery_picking.button_validate()
 
         self.delivery_picking.carrier_id.l10n_ro_edi_stock_partner_id = self.shipping_partner
@@ -145,8 +148,10 @@ class TestETransportFlows(TestL10nRoEdiStockCommon):
         # Successfully sent to ANAF
         make_request.return_value = self.successful_upload_response
         self.delivery_picking.action_l10n_ro_edi_stock_send_etransport()
-        self._assert_picking_state(self.delivery_picking, 'stock_sent', 1, ('enable', 'enable_fetch', 'fields_readonly'))
-        self._assert_etransport_document(self.delivery_picking.l10n_ro_edi_stock_document_ids, 'test_send_and_amend_etransport_1')
+        self._assert_picking_state(self.delivery_picking, 'stock_sent', 1,
+                                   ('enable', 'enable_fetch', 'fields_readonly'))
+        self._assert_etransport_document(self.delivery_picking.l10n_ro_edi_stock_document_ids,
+                                         'test_send_and_amend_etransport_1')
 
         # ANAF is still validating the document
         make_request.return_value = {
@@ -158,7 +163,8 @@ class TestETransportFlows(TestL10nRoEdiStockCommon):
             }
         }
         self.delivery_picking.action_l10n_ro_edi_stock_fetch_status()
-        self._assert_picking_state(self.delivery_picking, 'stock_sent', 1, ('enable', 'enable_fetch', 'fields_readonly'))
+        self._assert_picking_state(self.delivery_picking, 'stock_sent', 1,
+                                   ('enable', 'enable_fetch', 'fields_readonly'))
 
         # Document has been successfully validated
         make_request.return_value = {
@@ -183,8 +189,10 @@ class TestETransportFlows(TestL10nRoEdiStockCommon):
         with patch.object(self.env, 'context', dict(self.env.context) | {'l10n_ro_edi_stock_send_type': 'amend'}):
             self.delivery_picking.action_l10n_ro_edi_stock_send_etransport()
 
-        self._assert_picking_state(self.delivery_picking, 'stock_sent', 2, ('enable', 'enable_fetch', 'fields_readonly'))
-        self._assert_etransport_document(self.delivery_picking._l10n_ro_edi_stock_get_last_document('stock_sent'), 'test_send_and_amend_etransport_2')
+        self._assert_picking_state(self.delivery_picking, 'stock_sent', 2,
+                                   ('enable', 'enable_fetch', 'fields_readonly'))
+        self._assert_etransport_document(self.delivery_picking._l10n_ro_edi_stock_get_last_document('stock_sent'),
+                                         'test_send_and_amend_etransport_2')
 
         # Amended document has been successfully validated
         make_request.return_value = {
@@ -197,7 +205,8 @@ class TestETransportFlows(TestL10nRoEdiStockCommon):
         }
         self.delivery_picking.action_l10n_ro_edi_stock_fetch_status()
         self._assert_picking_state(self.delivery_picking, 'stock_validated', 2, ('enable', 'enable_amend'))
-        self._assert_etransport_document(self.delivery_picking._l10n_ro_edi_stock_get_last_document('stock_validated'), 'test_send_and_amend_etransport_2')
+        self._assert_etransport_document(self.delivery_picking._l10n_ro_edi_stock_get_last_document('stock_validated'),
+                                         'test_send_and_amend_etransport_2')
 
     def test_intra_community_purchase(self, make_request):
         self.receipt_picking.carrier_id = self.carrier
@@ -218,7 +227,8 @@ class TestETransportFlows(TestL10nRoEdiStockCommon):
         make_request.return_value = self.successful_upload_response
         self.receipt_picking.action_l10n_ro_edi_stock_send_etransport()
         self._assert_picking_state(self.receipt_picking, 'stock_sent', 1, ('enable', 'enable_fetch', 'fields_readonly'))
-        self._assert_etransport_document(self.receipt_picking.l10n_ro_edi_stock_document_ids, 'test_intra_community_purchase_1')
+        self._assert_etransport_document(self.receipt_picking.l10n_ro_edi_stock_document_ids,
+                                         'test_intra_community_purchase_1')
 
     def test_export(self, make_request):
         self.delivery_picking.carrier_id = self.carrier
@@ -238,5 +248,6 @@ class TestETransportFlows(TestL10nRoEdiStockCommon):
         # Successfully sent to ANAF
         make_request.return_value = self.successful_upload_response
         self.delivery_picking.action_l10n_ro_edi_stock_send_etransport()
-        self._assert_picking_state(self.delivery_picking, 'stock_sent', 1, ('enable', 'enable_fetch', 'fields_readonly'))
+        self._assert_picking_state(self.delivery_picking, 'stock_sent', 1,
+                                   ('enable', 'enable_fetch', 'fields_readonly'))
         self._assert_etransport_document(self.delivery_picking.l10n_ro_edi_stock_document_ids, 'test_export_1')

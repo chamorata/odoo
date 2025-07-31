@@ -1,9 +1,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.addons.account.tests.common import AccountTestInvoicingCommon
-from odoo.tests import tagged
-from odoo import fields, Command
 from freezegun import freeze_time
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
+from odoo import fields, Command
+from odoo.tests import tagged
 
 
 @tagged('post_install_l10n', 'post_install', '-at_install')

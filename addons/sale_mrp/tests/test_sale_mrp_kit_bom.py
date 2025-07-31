@@ -115,16 +115,16 @@ class TestSaleMrpKitBom(TransactionCase):
         })
 
         self.env['mrp.bom.line'].create({
-                'product_id': self.component_a.id,
-                'product_qty': 1.0,
-                'bom_id': self.bom.id,
-                'product_uom_id': self.env.ref('uom.product_uom_dozen').id,
+            'product_id': self.component_a.id,
+            'product_qty': 1.0,
+            'bom_id': self.bom.id,
+            'product_uom_id': self.env.ref('uom.product_uom_dozen').id,
         })
         self.env['mrp.bom.line'].create({
-                'product_id': self.component_b.id,
-                'product_qty': 2.0,
-                'bom_id': self.bom.id,
-                'product_uom_id': self.env.ref('uom.product_uom_unit').id,
+            'product_id': self.component_b.id,
+            'product_qty': 2.0,
+            'bom_id': self.bom.id,
+            'product_uom_id': self.env.ref('uom.product_uom_unit').id,
         })
 
         # Create a SO with one unit of the kit product
@@ -140,8 +140,10 @@ class TestSaleMrpKitBom(TransactionCase):
         })
         so.action_confirm()
         line = so.order_line
-        purchase_price = line.product_id.with_company(line.company_id)._compute_average_price(0, line.product_uom_qty, line.move_ids)
-        self.assertEqual(purchase_price, 92, "The purchase price must be the total cost of the components multiplied by their unit of measure")
+        purchase_price = line.product_id.with_company(line.company_id)._compute_average_price(0, line.product_uom_qty,
+                                                                                              line.move_ids)
+        self.assertEqual(purchase_price, 92,
+                         "The purchase price must be the total cost of the components multiplied by their unit of measure")
 
     def test_sale_mrp_kit_sale_price(self):
         """Check the total sale price of a KIT:
@@ -231,7 +233,6 @@ class TestSaleMrpKitBom(TransactionCase):
             bom_line.product_id = self.comp
             bom_line.product_qty = 0.08600
         self.bom = bom_product_form.save()
-
 
         self.customer = self.env['res.partner'].create({
             'name': 'customer',
@@ -465,7 +466,8 @@ class TestSaleMrpKitBom(TransactionCase):
         ship.package_level_ids._set_is_done()
 
         for move_line in ship.move_line_ids:
-            self.assertEqual(move_line.move_id.product_uom_qty, move_line.quantity, "Quantity done should be equal to the quantity reserved in the move line")
+            self.assertEqual(move_line.move_id.product_uom_qty, move_line.quantity,
+                             "Quantity done should be equal to the quantity reserved in the move line")
 
     def test_kit_in_delivery_slip(self):
         """
@@ -504,7 +506,8 @@ class TestSaleMrpKitBom(TransactionCase):
         }])
         colors = ['red', 'blue']
         prod_attr = self.env['product.attribute'].create({'name': 'Color', 'create_variant': 'always'})
-        prod_attr_values = self.env['product.attribute.value'].create([{'name': color, 'attribute_id': prod_attr.id, 'sequence': 1} for color in colors])
+        prod_attr_values = self.env['product.attribute.value'].create(
+            [{'name': color, 'attribute_id': prod_attr.id, 'sequence': 1} for color in colors])
         kit_2 = self.env['product.template'].create({
             'name': 'Kit 2',
             'attribute_line_ids': [(0, 0, {
@@ -585,7 +588,8 @@ class TestSaleMrpKitBom(TransactionCase):
         picking.button_validate()
         self.assertEqual(picking.state, 'done')
 
-        html_report = self.env['ir.actions.report']._render_qweb_html('stock.report_deliveryslip', picking.ids)[0].decode('utf-8').split('\n')
+        html_report = self.env['ir.actions.report']._render_qweb_html('stock.report_deliveryslip', picking.ids)[
+            0].decode('utf-8').split('\n')
         keys = [
             "Kit 1", "Compo 1", "Kit 2 (red)", "Compo 1", "Kit 2 (blue)", "Compo 1",
             "Kit 3", "Compo 1", "Kit 4", "Compo 1",
@@ -660,8 +664,8 @@ class TestSaleMrpKitBom(TransactionCase):
 
         # Return 10 components
         stock_return_picking_form = Form(self.env['stock.return.picking']
-            .with_context(active_ids=picking_ship.ids, active_id=picking_ship.id,
-            active_model='stock.picking'))
+                                         .with_context(active_ids=picking_ship.ids, active_id=picking_ship.id,
+                                                       active_model='stock.picking'))
         return_wiz = stock_return_picking_form.save()
         for return_move in return_wiz.product_return_moves:
             return_move.write({
@@ -677,8 +681,8 @@ class TestSaleMrpKitBom(TransactionCase):
 
         # Resend 5 components
         stock_return_picking_form = Form(self.env['stock.return.picking']
-            .with_context(active_ids=return_pick.ids, active_id=return_pick.id,
-            active_model='stock.picking'))
+                                         .with_context(active_ids=return_pick.ids, active_id=return_pick.id,
+                                                       active_model='stock.picking'))
         return_wiz = stock_return_picking_form.save()
         for return_move in return_wiz.product_return_moves:
             return_move.write({
@@ -789,7 +793,7 @@ class TestSaleMrpKitBom(TransactionCase):
                     'name': kit_product.name,
                     'product_id': kit_product.id,
                     'product_uom_qty': 4,
-            })],
+                })],
         })
         # confirm the SO and check the delivery
         so.action_confirm()
@@ -908,7 +912,8 @@ class TestSaleMrpKitBom(TransactionCase):
         so.picking_ids.move_ids[0].write({'quantity': 0.9})
         so.picking_ids.move_ids[1].write({'quantity': 0.1})
         self.assertEqual(so.picking_ids.move_ids.move_line_ids[0].product_packaging_qty, 1)
-        self.assertEqual(so.picking_ids.move_ids.move_line_ids[1].product_packaging_qty, 0)  # there is no packaging on that line
+        self.assertEqual(so.picking_ids.move_ids.move_line_ids[1].product_packaging_qty,
+                         0)  # there is no packaging on that line
         so.picking_ids.move_ids[0].product_packaging_id = packaging_comp
         self.assertEqual(so.picking_ids.move_ids.move_line_ids[0].product_packaging_qty, 2)
         # check that after validating, if the packages was changed to a package of the component the quantity is good

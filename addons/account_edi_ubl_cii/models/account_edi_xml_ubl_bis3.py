@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, _
 from odoo.addons.account.tools import dict_to_xml
 from odoo.addons.account_edi_ubl_cii.models.account_edi_xml_ubl_20 import UBL_NAMESPACES
-
 from stdnum.no import mva
+
+from odoo import models, _
 
 
 class AccountEdiXmlUBLBIS3(models.AbstractModel):
@@ -82,7 +82,8 @@ class AccountEdiXmlUBLBIS3(models.AbstractModel):
                 # For NL, VAT can be used as a Peppol endpoint, but KVK/OIN has to be used as PartyLegalEntity/CompanyID
                 # To implement a workaround on stable, company_registry field is used without recording whether
                 # the number is a KVK or OIN, and the length of the number (8 = KVK, 9 = OIN) is used to determine the type
-                nl_id = partner.company_registry if partner.peppol_eas not in ('0106', '0190') else partner.peppol_endpoint
+                nl_id = partner.company_registry if partner.peppol_eas not in ('0106',
+                                                                               '0190') else partner.peppol_endpoint
                 vals.update({
                     'company_id': nl_id,
                     'company_id_attrs': {'schemeID': '0190' if nl_id and len(nl_id) == 9 else '0106'},
@@ -347,9 +348,9 @@ class AccountEdiXmlUBLBIS3(models.AbstractModel):
             )
             scheme_vals = vals['vals'][f'accounting_{role}_party_vals']['party_vals']['party_tax_scheme_vals'][-1:]
             if (
-                not (scheme_vals and scheme_vals[0]['company_id'] and scheme_vals[0]['company_id'][:2].isalpha())
-                and (scheme_vals and scheme_vals[0]['tax_scheme_vals'].get('id') == 'VAT')
-                and self._name in ('account.edi.xml.ubl_bis3', 'account.edi.xml.ubl_nl', 'account.edi.xml.ubl_de')
+                    not (scheme_vals and scheme_vals[0]['company_id'] and scheme_vals[0]['company_id'][:2].isalpha())
+                    and (scheme_vals and scheme_vals[0]['tax_scheme_vals'].get('id') == 'VAT')
+                    and self._name in ('account.edi.xml.ubl_bis3', 'account.edi.xml.ubl_nl', 'account.edi.xml.ubl_de')
             ):
                 # [BR-CO-09]-The Seller VAT identifier (BT-31), the Seller tax representative VAT identifier (BT-63)
                 # and the Buyer VAT identifier (BT-48) shall have a prefix in accordance with ISO code ISO 3166-1
@@ -359,7 +360,8 @@ class AccountEdiXmlUBLBIS3(models.AbstractModel):
 
         if invoice.partner_shipping_id:
             # [BR-57]-Each Deliver to address (BG-15) shall contain a Deliver to country code (BT-80).
-            constraints['cen_en16931_delivery_address'] = self._check_required_fields(invoice.partner_shipping_id, 'country_id')
+            constraints['cen_en16931_delivery_address'] = self._check_required_fields(invoice.partner_shipping_id,
+                                                                                      'country_id')
         return constraints
 
     def _invoice_constraints_peppol_en16931_ubl(self, invoice, vals):
@@ -397,8 +399,8 @@ class AccountEdiXmlUBLBIS3(models.AbstractModel):
                     "%s should have a KVK or OIN number set in Company ID field or as Peppol e-address (EAS code 0106 or 0190).",
                     vals['supplier'].display_name
                 ) if (
-                    not vals['supplier'].peppol_eas in ('0106', '0190') and
-                    (not vals['supplier'].company_registry or len(vals['supplier'].company_registry) not in (8, 9))
+                        not vals['supplier'].peppol_eas in ('0106', '0190') and
+                        (not vals['supplier'].company_registry or len(vals['supplier'].company_registry) not in (8, 9))
                 ) else '',
 
                 # [NL-R-007] For suppliers in the Netherlands, the supplier MUST provide a means of payment
@@ -421,8 +423,9 @@ class AccountEdiXmlUBLBIS3(models.AbstractModel):
                         "%s should have a KVK or OIN number set in Company ID field or as Peppol e-address (EAS code 0106 or 0190).",
                         vals['customer'].display_name
                     ) if (
-                        not vals['customer'].commercial_partner_id.peppol_eas in ('0106', '0190') and
-                        (not vals['customer'].commercial_partner_id.company_registry or len(vals['customer'].commercial_partner_id.company_registry) not in (8, 9))
+                            not vals['customer'].commercial_partner_id.peppol_eas in ('0106', '0190') and
+                            (not vals['customer'].commercial_partner_id.company_registry or len(
+                                vals['customer'].commercial_partner_id.company_registry) not in (8, 9))
                     ) else '',
                 })
 
@@ -460,7 +463,8 @@ class AccountEdiXmlUBLBIS3(models.AbstractModel):
     def _export_invoice(self, invoice, convert_fixed_taxes=True):
         # Only for BIS3 invoices: if the 'account_edi_ubl_cii.use_new_dict_to_xml_helpers' param is set,
         # use the new dict_to_xml helpers.
-        if self._name == 'account.edi.xml.ubl_bis3' and self.env['ir.config_parameter'].sudo().get_param('account_edi_ubl_cii.use_new_dict_to_xml_helpers'):
+        if self._name == 'account.edi.xml.ubl_bis3' and self.env['ir.config_parameter'].sudo().get_param(
+                'account_edi_ubl_cii.use_new_dict_to_xml_helpers'):
             return self._export_invoice_new(invoice)
 
         return super()._export_invoice(invoice, convert_fixed_taxes=convert_fixed_taxes)
@@ -508,9 +512,10 @@ class AccountEdiXmlUBLBIS3(models.AbstractModel):
         customer = vals['customer']
         supplier = vals['supplier']
         intracom_delivery = (
-            customer.country_id.code in (economic_area := self.env.ref('base.europe').country_ids.mapped('code') + ['NO'])
-            and supplier.country_id.code in economic_area
-            and supplier.country_id != customer.country_id
+                customer.country_id.code in (
+            economic_area := self.env.ref('base.europe').country_ids.mapped('code') + ['NO'])
+                and supplier.country_id.code in economic_area
+                and supplier.country_id != customer.country_id
         )
         if intracom_delivery:
             document_node['cac:Delivery'] = {
@@ -564,7 +569,8 @@ class AccountEdiXmlUBLBIS3(models.AbstractModel):
                     # We have to handle their cases by changing the TaxScheme/ID to 'something other than VAT',
                     # preventing the trigger of the rule.
                     'cbc:ID': {'_text': (
-                        'NOT_EU_VAT' if commercial_partner.country_id and commercial_partner.vat and not commercial_partner.vat[:2].isalpha()
+                        'NOT_EU_VAT' if commercial_partner.country_id and commercial_partner.vat and not commercial_partner.vat[
+                                                                                                         :2].isalpha()
                         else 'VAT' if commercial_partner.vat
                         else commercial_partner.peppol_eas
                     )},
@@ -581,7 +587,8 @@ class AccountEdiXmlUBLBIS3(models.AbstractModel):
             # For NL, VAT can be used as a Peppol endpoint, but KVK/OIN has to be used as PartyLegalEntity/CompanyID
             # To implement a workaround on stable, company_registry field is used without recording whether
             # the number is a KVK or OIN, and the length of the number (8 = KVK, 9 = OIN) is used to determine the type
-            nl_id = commercial_partner.company_registry if commercial_partner.peppol_eas not in ('0106', '0190') else commercial_partner.peppol_endpoint
+            nl_id = commercial_partner.company_registry if commercial_partner.peppol_eas not in ('0106',
+                                                                                                 '0190') else commercial_partner.peppol_endpoint
             party_node['cac:PartyLegalEntity']['cbc:CompanyID'] = {
                 '_text': nl_id,
                 'schemeID': '0190' if nl_id and len(nl_id) == 9 else '0106'
@@ -675,7 +682,8 @@ class AccountEdiXmlUBLBIS3(models.AbstractModel):
 
     def _add_document_line_tax_category_nodes(self, line_node, vals):
         base_line = vals['base_line']
-        aggregated_tax_details = self.env['account.tax']._aggregate_base_line_tax_details(base_line, vals['tax_grouping_function'])
+        aggregated_tax_details = self.env['account.tax']._aggregate_base_line_tax_details(base_line,
+                                                                                          vals['tax_grouping_function'])
 
         line_node['cac:Item']['cac:ClassifiedTaxCategory'] = [
             # [UBL-CR-600] A UBL invoice should not include the InvoiceLine Item ClassifiedTaxCategory TaxExemptionReasonCode
@@ -737,7 +745,8 @@ class AccountEdiXmlUBLBIS3(models.AbstractModel):
             # "Intra-community supply" the Deliver to country code (BT-80) shall not be blank.
             'cen_en16931_delivery_country_code': (
                 _("For intracommunity supply, the delivery address should be included.")
-            ) if intracom_delivery and dict_to_xml(vals['document_node']['cac:Delivery']['cac:DeliveryLocation'], nsmap=nsmap, tag='cac:DeliveryLocation') is None else None,
+            ) if intracom_delivery and dict_to_xml(vals['document_node']['cac:Delivery']['cac:DeliveryLocation'],
+                                                   nsmap=nsmap, tag='cac:DeliveryLocation') is None else None,
 
             # [BR-IC-11]-In an Invoice with a VAT breakdown (BG-23) where the VAT category code (BT-118) is
             # "Intra-community supply" the Actual delivery date (BT-72) or the Invoicing period (BG-14)
@@ -745,9 +754,11 @@ class AccountEdiXmlUBLBIS3(models.AbstractModel):
             'cen_en16931_delivery_date_invoicing_period': (
                 _("For intracommunity supply, the actual delivery date or the invoicing period should be included.")
                 if (
-                    intracom_delivery
-                    and dict_to_xml(vals['document_node']['cac:Delivery']['cbc:ActualDeliveryDate'], nsmap=nsmap, tag='cbc:ActualDeliveryDate') is None
-                    and dict_to_xml(vals['document_node']['cac:InvoicePeriod'], nsmap=nsmap, tag='cac:InvoicePeriod') is None
+                        intracom_delivery
+                        and dict_to_xml(vals['document_node']['cac:Delivery']['cbc:ActualDeliveryDate'], nsmap=nsmap,
+                                        tag='cbc:ActualDeliveryDate') is None
+                        and dict_to_xml(vals['document_node']['cac:InvoicePeriod'], nsmap=nsmap,
+                                        tag='cac:InvoicePeriod') is None
                 )
                 else None
             )
@@ -769,7 +780,8 @@ class AccountEdiXmlUBLBIS3(models.AbstractModel):
                 constraints.update({'cen_en16931_tax_line': _("Each invoice line shall have one and only one tax.")})
 
         for role in ('supplier', 'customer'):
-            party_node = vals['document_node']['cac:AccountingCustomerParty'] if role == 'customer' else vals['document_node']['cac:AccountingSupplierParty']
+            party_node = vals['document_node']['cac:AccountingCustomerParty'] if role == 'customer' else \
+            vals['document_node']['cac:AccountingSupplierParty']
             constraints[f'cen_en16931_{role}_country'] = (
                 _("The country is required for the %s.", role)
                 if not party_node['cac:Party']['cac:PostalAddress']['cac:Country']['cbc:IdentificationCode']['_text']
@@ -777,9 +789,9 @@ class AccountEdiXmlUBLBIS3(models.AbstractModel):
             )
             tax_scheme_node = party_node['cac:Party']['cac:PartyTaxScheme']
             if tax_scheme_node and (
-                self._name in ('account.edi.xml.ubl_bis3', 'account.edi.xml.ubl_nl', 'account.edi.xml.ubl_de')
-                and (tax_scheme_node[0]['cac:TaxScheme']['cbc:ID']['_text'] == 'VAT')
-                and not (tax_scheme_node[0]['cbc:CompanyID']['_text'][:2].isalpha())
+                    self._name in ('account.edi.xml.ubl_bis3', 'account.edi.xml.ubl_nl', 'account.edi.xml.ubl_de')
+                    and (tax_scheme_node[0]['cac:TaxScheme']['cbc:ID']['_text'] == 'VAT')
+                    and not (tax_scheme_node[0]['cbc:CompanyID']['_text'][:2].isalpha())
             ):
                 # [BR-CO-09]-The Seller VAT identifier (BT-31), the Seller tax representative VAT identifier (BT-63)
                 # and the Buyer VAT identifier (BT-48) shall have a prefix in accordance with ISO code ISO 3166-1
@@ -789,7 +801,8 @@ class AccountEdiXmlUBLBIS3(models.AbstractModel):
 
         if invoice.partner_shipping_id:
             # [BR-57]-Each Deliver to address (BG-15) shall contain a Deliver to country code (BT-80).
-            constraints['cen_en16931_delivery_address'] = self._check_required_fields(invoice.partner_shipping_id, 'country_id')
+            constraints['cen_en16931_delivery_address'] = self._check_required_fields(invoice.partner_shipping_id,
+                                                                                      'country_id')
         return constraints
 
     def _invoice_constraints_peppol_en16931_ubl_new(self, invoice, vals):
@@ -806,8 +819,10 @@ class AccountEdiXmlUBLBIS3(models.AbstractModel):
             # PEPPOL-EN16931-R003: A buyer reference or purchase order reference MUST be provided.
             'peppol_en16931_ubl_buyer_ref_po_ref':
                 "A buyer reference or purchase order reference must be provided." if (
-                    dict_to_xml(vals['document_node']['cbc:BuyerReference'], nsmap=nsmap, tag='cbc:BuyerReference') is None
-                    and dict_to_xml(vals['document_node']['cac:OrderReference'], nsmap=nsmap, tag='cac:OrderReference') is None
+                        dict_to_xml(vals['document_node']['cbc:BuyerReference'], nsmap=nsmap,
+                                    tag='cbc:BuyerReference') is None
+                        and dict_to_xml(vals['document_node']['cac:OrderReference'], nsmap=nsmap,
+                                        tag='cac:OrderReference') is None
                 ) else None,
         }
 
@@ -829,8 +844,8 @@ class AccountEdiXmlUBLBIS3(models.AbstractModel):
                     "%s should have a KVK or OIN number set in Company ID field or as Peppol e-address (EAS code 0106 or 0190).",
                     vals['supplier'].display_name
                 ) if (
-                    not vals['supplier'].peppol_eas in ('0106', '0190') and
-                    (not vals['supplier'].company_registry or len(vals['supplier'].company_registry) not in (8, 9))
+                        not vals['supplier'].peppol_eas in ('0106', '0190') and
+                        (not vals['supplier'].company_registry or len(vals['supplier'].company_registry) not in (8, 9))
                 ) else '',
 
                 # [NL-R-007] For suppliers in the Netherlands, the supplier MUST provide a means of payment
@@ -853,8 +868,9 @@ class AccountEdiXmlUBLBIS3(models.AbstractModel):
                         "%s should have a KVK or OIN number set in Company ID field or as Peppol e-address (EAS code 0106 or 0190).",
                         vals['customer'].display_name
                     ) if (
-                        not vals['customer'].commercial_partner_id.peppol_eas in ('0106', '0190') and
-                        (not vals['customer'].commercial_partner_id.company_registry or len(vals['customer'].commercial_partner_id.company_registry) not in (8, 9))
+                            not vals['customer'].commercial_partner_id.peppol_eas in ('0106', '0190') and
+                            (not vals['customer'].commercial_partner_id.company_registry or len(
+                                vals['customer'].commercial_partner_id.company_registry) not in (8, 9))
                     ) else '',
                 })
 

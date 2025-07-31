@@ -16,6 +16,7 @@ ALGORITHM = 'sha1'
 DIGITS = 6
 TIMESTEP = 30
 
+
 class TOTP:
     def __init__(self, key):
         self._key = key
@@ -39,6 +40,7 @@ class TOTP:
             counter for counter in range(low, high)
             if hotp(self._key, counter) == code
         ), None)
+
 
 def hotp(secret, counter):
     # C is the 64b counter encoded in big-endian

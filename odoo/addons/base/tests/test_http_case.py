@@ -33,7 +33,7 @@ class TestHttpCase(HttpCase):
                     self.browser_js(url_path='about:blank', code=code)
             # second line must contains error message
             self.assertEqual(error_catcher.exception.args[0].splitlines()[-2:],
-            ['TypeError: test error message', '    at <anonymous>:1:15'])
+                             ['TypeError: test error message', '    at <anonymous>:1:15'])
         self.assertEqual(len(log_catcher.output), 1)
         self.assertIn('TypeError: test error message\n    at <anonymous>:1:15', log_catcher.output[0])
 
@@ -58,13 +58,15 @@ class TestHttpCase(HttpCase):
                 console_log_count += 1
         self.assertEqual(console_log_count, 1)
 
+
 @tagged('-at_install', 'post_install')
 class TestRunbotLog(HttpCase):
     def test_runbot_js_log(self):
         """Test that a ChromeBrowser console.dir is handled server side as a log of level RUNBOT."""
         log_message = 'this is a small test'
         with self.assertLogs() as log_catcher:
-            self.browser_js("about:blank", f"console.runbot = console.dir; console.runbot('{log_message}'); console.log('test successful');")
+            self.browser_js("about:blank",
+                            f"console.runbot = console.dir; console.runbot('{log_message}'); console.log('test successful');")
         found = False
         for record in log_catcher.records:
             if record.message == log_message:
@@ -138,6 +140,7 @@ class TestRequestRemaining(HttpCase):
                 self.url_open("/web/concurrent", timeout=10)
             else:
                 _logger.error('Something went wrong and thread was not able to aquire lock')
+
         TestRequestRemaining.thread_a = threading.Thread(target=late_request_thread)
         self.thread_a.start()
 
@@ -147,5 +150,6 @@ class TestRequestRemaining(HttpCase):
             self.main_lock.release()
             _logger.info('B started, waiting for A to finish')
             self.thread_a.join()
-        self.assertEqual(lc.output[0].split(':', 1)[1], 'odoo.tests.common:Request with path /web/concurrent has been ignored during test as it it does not contain the test_cursor cookie or it is expired. (required "/base/tests/test_http_case.py:TestRequestRemaining.test_requests_b", got "/base/tests/test_http_case.py:TestRequestRemaining.test_requests_a")')
+        self.assertEqual(lc.output[0].split(':', 1)[1],
+                         'odoo.tests.common:Request with path /web/concurrent has been ignored during test as it it does not contain the test_cursor cookie or it is expired. (required "/base/tests/test_http_case.py:TestRequestRemaining.test_requests_b", got "/base/tests/test_http_case.py:TestRequestRemaining.test_requests_a")')
         self.env.cr.fetchall()

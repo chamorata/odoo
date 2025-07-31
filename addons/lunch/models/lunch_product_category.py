@@ -4,7 +4,6 @@
 import base64
 
 from odoo import api, fields, models
-
 from odoo.tools.misc import file_open
 
 
@@ -21,12 +20,14 @@ class LunchProductCategory(models.Model):
     name = fields.Char('Product Category', required=True, translate=True)
     company_id = fields.Many2one('res.company')
     currency_id = fields.Many2one('res.currency', related='company_id.currency_id')
-    product_count = fields.Integer(compute='_compute_product_count', help="The number of products related to this category")
+    product_count = fields.Integer(compute='_compute_product_count',
+                                   help="The number of products related to this category")
     active = fields.Boolean(string='Active', default=True)
     image_1920 = fields.Image(default=_default_image)
 
     def _compute_product_count(self):
-        product_data = self.env['lunch.product']._read_group([('category_id', 'in', self.ids)], ['category_id'], ['__count'])
+        product_data = self.env['lunch.product']._read_group([('category_id', 'in', self.ids)], ['category_id'],
+                                                             ['__count'])
         data = {category.id: count for category, count in product_data}
         for category in self:
             category.product_count = data.get(category.id, 0)

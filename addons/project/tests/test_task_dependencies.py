@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from odoo.fields import Command, Datetime
-from odoo.exceptions import ValidationError
-from odoo.tests import tagged
-
 from odoo.addons.project.tests.test_project_base import TestProjectCommon
 
-from datetime import date
+from odoo.exceptions import ValidationError
+from odoo.fields import Command, Datetime
+from odoo.tests import tagged
 
 
 @tagged('-at_install', 'post_install')
@@ -84,17 +82,18 @@ class TestTaskDependencies(TestProjectCommon):
             self.task_3.write({
                 'depend_on_ids': [Command.link(self.task_1.id)],
             })
-        self.assertEqual(len(self.task_3.depend_on_ids), 0, "The dependency should not be added in the task 3 because of a cyclic dependency.")
+        self.assertEqual(len(self.task_3.depend_on_ids), 0,
+                         "The dependency should not be added in the task 3 because of a cyclic dependency.")
 
         # 5) Add task1 as dependency in task2 and check a validation error is raised
         with self.assertRaises(ValidationError), self.cr.savepoint():
             self.task_2.write({
                 'depend_on_ids': [Command.link(self.task_1.id)],
             })
-        self.assertEqual(len(self.task_2.depend_on_ids), 1, "The number of dependencies should no change in the task 2 because of a cyclic dependency.")
+        self.assertEqual(len(self.task_2.depend_on_ids), 1,
+                         "The number of dependencies should no change in the task 2 because of a cyclic dependency.")
 
     def test_task_dependencies_settings_change(self):
-
         def set_task_dependencies_setting(enabled):
             features_config = self.env["res.config.settings"].create({'group_project_task_dependencies': enabled})
             features_config.execute()
@@ -108,20 +107,24 @@ class TestTaskDependencies(TestProjectCommon):
         # (like demo data for instance)
         set_task_dependencies_setting(False)
         set_task_dependencies_setting(True)
-        self.assertTrue(self.project_pigs.allow_task_dependencies, "Projects allow_task_dependencies should follow group_project_task_dependencies setting changes")
+        self.assertTrue(self.project_pigs.allow_task_dependencies,
+                        "Projects allow_task_dependencies should follow group_project_task_dependencies setting changes")
 
         self.project_chickens = self.env['project.project'].create({
             'name': 'My Chicken Project'
         })
-        self.assertTrue(self.project_chickens.allow_task_dependencies, "New Projects allow_task_dependencies should default to group_project_task_dependencies")
+        self.assertTrue(self.project_chickens.allow_task_dependencies,
+                        "New Projects allow_task_dependencies should default to group_project_task_dependencies")
 
         set_task_dependencies_setting(False)
-        self.assertFalse(self.project_pigs.allow_task_dependencies, "Projects allow_task_dependencies should follow group_project_task_dependencies setting changes")
+        self.assertFalse(self.project_pigs.allow_task_dependencies,
+                         "Projects allow_task_dependencies should follow group_project_task_dependencies setting changes")
 
         self.project_ducks = self.env['project.project'].create({
             'name': 'My Ducks Project'
         })
-        self.assertFalse(self.project_ducks.allow_task_dependencies, "New Projects allow_task_dependencies should default to group_project_task_dependencies")
+        self.assertFalse(self.project_ducks.allow_task_dependencies,
+                         "New Projects allow_task_dependencies should default to group_project_task_dependencies")
 
     def test_duplicate_project_with_task_dependencies(self):
         self.project_pigs.allow_task_dependencies = True
@@ -149,7 +152,8 @@ class TestTaskDependencies(TestProjectCommon):
 
         self.project_pigs.allow_task_dependencies = False
         project_pigs_no_dep = self.project_pigs.copy()
-        self.assertFalse(project_pigs_no_dep.allow_task_dependencies, 'The copied project should have the dependencies feature disabled')
+        self.assertFalse(project_pigs_no_dep.allow_task_dependencies,
+                         'The copied project should have the dependencies feature disabled')
         self.assertFalse(project_pigs_no_dep.task_ids.depend_on_ids, 'The copied task should not have any dependencies')
         self.assertFalse(project_pigs_no_dep.task_ids.dependent_ids, 'The copied task should not have any dependencies')
 
@@ -160,7 +164,8 @@ class TestTaskDependencies(TestProjectCommon):
             'project_id': self.project_goats.id,
             'child_ids': [
                 Command.create({'name': 'Node 1', 'project_id': self.project_goats.id}),
-                Command.create({'name': 'SuperNode 2', 'project_id': self.project_goats.id, 'child_ids': [Command.create({'name': 'Node 2', 'project_id': self.project_goats.id})]}),
+                Command.create({'name': 'SuperNode 2', 'project_id': self.project_goats.id, 'child_ids': [
+                    Command.create({'name': 'Node 2', 'project_id': self.project_goats.id})]}),
                 Command.create({'name': 'Node 3', 'project_id': self.project_goats.id}),
             ],
         })
@@ -180,9 +185,11 @@ class TestTaskDependencies(TestProjectCommon):
 
         # Relation should only be copied between the newly created node
         self.assertEqual(len(parent_copy_node1.dependent_ids), 1)
-        self.assertEqual(parent_copy_node1.dependent_ids.ids, parent_copy_node2.ids, 'Node1copy - Node2copy relation should be present')
+        self.assertEqual(parent_copy_node1.dependent_ids.ids, parent_copy_node2.ids,
+                         'Node1copy - Node2copy relation should be present')
         self.assertEqual(len(parent_copy_node2.dependent_ids), 1)
-        self.assertEqual(parent_copy_node2.dependent_ids.ids, parent_copy_node3.ids, 'Node2copy - Node3copy relation should be present')
+        self.assertEqual(parent_copy_node2.dependent_ids.ids, parent_copy_node3.ids,
+                         'Node2copy - Node3copy relation should be present')
 
         # Original Node should not have new relation
         self.assertEqual(len(node1.dependent_ids), 1)

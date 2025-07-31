@@ -21,7 +21,8 @@ class EventRegistrationAnswer(models.Model):
     value_text_box = fields.Text('Text answer')
 
     _sql_constraints = [
-        ('value_check', "CHECK(value_answer_id IS NOT NULL OR COALESCE(value_text_box, '') <> '')", "There must be a suggested value or a text value.")
+        ('value_check', "CHECK(value_answer_id IS NOT NULL OR COALESCE(value_text_box, '') <> '')",
+         "There must be a suggested value or a text value.")
     ]
 
     # for displaying selected answers by attendees in attendees list view

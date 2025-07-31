@@ -1,5 +1,6 @@
-from odoo import tests
 from odoo.addons.website_livechat.tests.common import TestLivechatCommon
+
+from odoo import tests
 
 
 @tests.tagged("-at_install", "post_install")

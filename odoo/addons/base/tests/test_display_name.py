@@ -3,7 +3,6 @@ import contextlib
 from odoo.exceptions import UserError
 from odoo.tests.common import TransactionCase, tagged
 
-
 IGNORE_MODEL_NAMES = {
     'ir.attachment',
     'test_new_api.attachment',
@@ -11,6 +10,7 @@ IGNORE_MODEL_NAMES = {
     'account.multicurrency.revaluation.wizard',
     'account_followup.manual_reminder',
 }
+
 
 @tagged('-at_install', 'post_install')
 class TestEveryModel(TransactionCase):
@@ -22,8 +22,8 @@ class TestEveryModel(TransactionCase):
                 continue
 
             with self.subTest(
-                msg="`_compute_display_name` doesn't work with new record (first onchange call).",
-                model=model_name,
+                    msg="`_compute_display_name` doesn't work with new record (first onchange call).",
+                    model=model_name,
             ):
                 # Check that the first onchange with display_name works on every models
                 # OR it will fail anyway when people will use click on New

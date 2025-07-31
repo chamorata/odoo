@@ -6,10 +6,10 @@ from . import hr_employee
 from . import hr_timesheet
 from . import ir_http
 from . import ir_ui_menu
-from . import res_company
-from . import res_config_settings
+from . import project_collaborator
 from . import project_project
 from . import project_task
 from . import project_update
-from . import project_collaborator
+from . import res_company
+from . import res_config_settings
 from . import uom_uom

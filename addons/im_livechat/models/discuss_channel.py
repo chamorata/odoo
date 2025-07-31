@@ -1,10 +1,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, fields, models, _
-from odoo.addons.mail.tools.discuss import Store
-from odoo.tools import email_normalize, email_split, html2plaintext, plaintext2html
-
 from markupsafe import Markup
+from odoo.addons.mail.tools.discuss import Store
+
+from odoo import api, fields, models, _
+from odoo.tools import email_normalize, email_split, html2plaintext, plaintext2html
 
 
 class DiscussChannel(models.Model):
@@ -17,16 +17,19 @@ class DiscussChannel(models.Model):
     _inherit = ['rating.mixin', 'discuss.channel']
 
     anonymous_name = fields.Char('Anonymous Name')
-    channel_type = fields.Selection(selection_add=[('livechat', 'Livechat Conversation')], ondelete={'livechat': 'cascade'})
+    channel_type = fields.Selection(selection_add=[('livechat', 'Livechat Conversation')],
+                                    ondelete={'livechat': 'cascade'})
     duration = fields.Float('Duration', compute='_compute_duration', help='Duration of the session in hours')
-    livechat_active = fields.Boolean('Is livechat ongoing?', help='Livechat session is active until visitor leaves the conversation.')
+    livechat_active = fields.Boolean('Is livechat ongoing?',
+                                     help='Livechat session is active until visitor leaves the conversation.')
     livechat_channel_id = fields.Many2one('im_livechat.channel', 'Channel', index='btree_not_null')
     livechat_operator_id = fields.Many2one('res.partner', string='Operator', index='btree_not_null')
     chatbot_current_step_id = fields.Many2one('chatbot.script.step', string='Chatbot Current Step')
     chatbot_message_ids = fields.One2many('chatbot.message', 'discuss_channel_id', string='Chatbot Messages')
     country_id = fields.Many2one('res.country', string="Country", help="Country of the visitor of the channel")
 
-    _sql_constraints = [('livechat_operator_id', "CHECK((channel_type = 'livechat' and livechat_operator_id is not null) or (channel_type != 'livechat'))",
+    _sql_constraints = [('livechat_operator_id',
+                         "CHECK((channel_type = 'livechat' and livechat_operator_id is not null) or (channel_type != 'livechat'))",
                          'Livechat Operator ID is required for a channel of type livechat.')]
 
     @api.depends('message_ids')
@@ -50,12 +53,13 @@ class DiscussChannel(models.Model):
                 step_message = next((
                     m.mail_message_id for m in channel.sudo().chatbot_message_ids
                     if m.script_step_id == current_step_sudo
-                    and m.mail_message_id.author_id == chatbot_script.operator_partner_id
+                       and m.mail_message_id.author_id == chatbot_script.operator_partner_id
                 ), None) if channel.chatbot_current_step_id.sudo().step_type != 'forward_operator' else None
                 current_step = {
                     'scriptStep': current_step_sudo._format_for_frontend(),
                     "message": Store.one_id(step_message),
-                    'operatorFound': current_step_sudo.step_type == 'forward_operator' and len(channel.channel_member_ids) > 2,
+                    'operatorFound': current_step_sudo.step_type == 'forward_operator' and len(
+                        channel.channel_member_ids) > 2,
                 }
                 channel_info["chatbot"] = {
                     'script': chatbot_script._format_for_frontend(),
@@ -121,7 +125,7 @@ class DiscussChannel(models.Model):
             self.sudo().message_post(
                 author_id=self.env.ref('base.partner_root').id,
                 body=Markup('<div class="o_mail_notification o_hide_author">%s</div>')
-                % self._get_visitor_leave_message(**kwargs),
+                     % self._get_visitor_leave_message(**kwargs),
                 message_type='notification',
                 subtype_xmlid='mail.mt_comment'
             )
@@ -137,10 +141,12 @@ class DiscussChannel(models.Model):
             "company": company,
             "channel": self,
         }
-        mail_body = self.env['ir.qweb']._render('im_livechat.livechat_email_template', render_context, minimal_qcontext=True)
+        mail_body = self.env['ir.qweb']._render('im_livechat.livechat_email_template', render_context,
+                                                minimal_qcontext=True)
         mail_body = self.env['mail.render.mixin']._replace_local_links(mail_body)
         mail = self.env['mail.mail'].sudo().create({
-            'subject': _('Conversation with %s', self.livechat_operator_id.user_livechat_username or self.livechat_operator_id.name),
+            'subject': _('Conversation with %s',
+                         self.livechat_operator_id.user_livechat_username or self.livechat_operator_id.name),
             'email_from': company.catchall_formatted or company.email_formatted,
             'author_id': self.env.user.partner_id.id,
             'email_to': email_split(email)[0],

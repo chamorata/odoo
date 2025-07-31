@@ -13,7 +13,8 @@
                     <field name="set_count" widget='radio'/>
                 </group>
                 <footer>
-                    <button name="action_request_count" string="Confirm" type="object" class="btn-primary" data-hotkey="q"/>
+                    <button name="action_request_count" string="Confirm" type="object" class="btn-primary"
+                            data-hotkey="q"/>
                     <button string="Discard" class="btn-secondary" special="cancel" data-hotkey="x"/>
                 </footer>
             </form>
@@ -27,7 +28,8 @@
         <field name="view_id" ref="stock_inventory_request_count_form_view"/>
         <field name="context">{
             'default_quant_ids': active_ids
-        }</field>
+            }
+        </field>
         <field name="target">new</field>
     </record>
 </odoo>

@@ -1,7 +1,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, fields, models, tools, _
-from odoo.osv import expression
+from odoo import fields, models, tools
 
 
 class LeaveReport(models.Model):
@@ -19,7 +18,7 @@ class LeaveReport(models.Model):
     leave_type = fields.Selection([
         ('allocation', 'Allocation'),
         ('request', 'Time Off')
-        ], string='Request Type', readonly=True)
+    ], string='Request Type', readonly=True)
     department_id = fields.Many2one('hr.department', string='Department', readonly=True)
     holiday_status_id = fields.Many2one("hr.leave.type", string="Time Off Type", readonly=True)
     state = fields.Selection([
@@ -28,7 +27,7 @@ class LeaveReport(models.Model):
         ('refuse', 'Refused'),
         ('validate1', 'Second Approval'),
         ('validate', 'Approved')
-        ], string='Status', readonly=True)
+    ], string='Status', readonly=True)
     date_from = fields.Datetime('Start Date', readonly=True)
     date_to = fields.Datetime('End Date', readonly=True)
     company_id = fields.Many2one('res.company', string="Company", readonly=True)

@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from dateutil.relativedelta import relativedelta
 from operator import itemgetter
+
+from dateutil.relativedelta import relativedelta
+from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager
+from odoo.addons.project.controllers.portal import ProjectCustomerPortal
 
 from odoo import fields, http, _
 from odoo.http import request
-from odoo.tools import date_utils, groupby as groupbyelem
 from odoo.osv.expression import AND, FALSE_DOMAIN
-
-from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager
-from odoo.addons.project.controllers.portal import ProjectCustomerPortal
+from odoo.tools import date_utils, groupby as groupbyelem
 
 
 class TimesheetCustomerPortal(CustomerPortal):
@@ -62,13 +62,16 @@ class TimesheetCustomerPortal(CustomerPortal):
             'name': {'label': _('Description')},
         }
 
-    def _project_get_page_view_values(self, project, access_token, page=1, date_begin=None, date_end=None, sortby=None, search=None, search_in='content', groupby=None, **kwargs):
-        values = super()._project_get_page_view_values(project, access_token, page, date_begin, date_end, sortby, search, search_in, groupby, **kwargs)
+    def _project_get_page_view_values(self, project, access_token, page=1, date_begin=None, date_end=None, sortby=None,
+                                      search=None, search_in='content', groupby=None, **kwargs):
+        values = super()._project_get_page_view_values(project, access_token, page, date_begin, date_end, sortby,
+                                                       search, search_in, groupby, **kwargs)
         values['allow_timesheets'] = project.allow_timesheets
         return values
 
     @http.route(['/my/timesheets', '/my/timesheets/page/<int:page>'], type='http', auth="user", website=True)
-    def portal_my_timesheets(self, page=1, sortby=None, filterby=None, search=None, search_in='all', groupby='none', **kw):
+    def portal_my_timesheets(self, page=1, sortby=None, filterby=None, search=None, search_in='all', groupby='none',
+                             **kw):
         Timesheet = request.env['account.analytic.line']
         domain = Timesheet._timesheet_get_portal_domain()
         Timesheet_sudo = Timesheet.sudo()
@@ -92,15 +95,24 @@ class TimesheetCustomerPortal(CustomerPortal):
 
         searchbar_filters = {
             'all': {'label': _('All'), 'domain': []},
-            'last_year': {'label': _('Last Year'), 'domain': [('date', '>=', date_utils.start_of(last_year, 'year')), ('date', '<=', date_utils.end_of(last_year, 'year'))]},
-            'last_quarter': {'label': _('Last Quarter'), 'domain': [('date', '>=', last_quarter_start), ('date', '<=', last_quarter_end)]},
-            'last_month': {'label': _('Last Month'), 'domain': [('date', '>=', date_utils.start_of(last_month, 'month')), ('date', '<=', date_utils.end_of(last_month, 'month'))]},
-            'last_week': {'label': _('Last Week'), 'domain': [('date', '>=', date_utils.start_of(last_week, "week")), ('date', '<=', date_utils.end_of(last_week, 'week'))]},
+            'last_year': {'label': _('Last Year'), 'domain': [('date', '>=', date_utils.start_of(last_year, 'year')),
+                                                              ('date', '<=', date_utils.end_of(last_year, 'year'))]},
+            'last_quarter': {'label': _('Last Quarter'),
+                             'domain': [('date', '>=', last_quarter_start), ('date', '<=', last_quarter_end)]},
+            'last_month': {'label': _('Last Month'),
+                           'domain': [('date', '>=', date_utils.start_of(last_month, 'month')),
+                                      ('date', '<=', date_utils.end_of(last_month, 'month'))]},
+            'last_week': {'label': _('Last Week'), 'domain': [('date', '>=', date_utils.start_of(last_week, "week")),
+                                                              ('date', '<=', date_utils.end_of(last_week, 'week'))]},
             'today': {'label': _('Today'), 'domain': [("date", "=", today)]},
-            'week': {'label': _('This Week'), 'domain': [('date', '>=', date_utils.start_of(today, "week")), ('date', '<=', date_utils.end_of(today, 'week'))]},
-            'month': {'label': _('This Month'), 'domain': [('date', '>=', date_utils.start_of(today, 'month')), ('date', '<=', date_utils.end_of(today, 'month'))]},
-            'quarter': {'label': _('This Quarter'), 'domain': [('date', '>=', quarter_start), ('date', '<=', quarter_end)]},
-            'year': {'label': _('This Year'), 'domain': [('date', '>=', date_utils.start_of(today, 'year')), ('date', '<=', date_utils.end_of(today, 'year'))]},
+            'week': {'label': _('This Week'), 'domain': [('date', '>=', date_utils.start_of(today, "week")),
+                                                         ('date', '<=', date_utils.end_of(today, 'week'))]},
+            'month': {'label': _('This Month'), 'domain': [('date', '>=', date_utils.start_of(today, 'month')),
+                                                           ('date', '<=', date_utils.end_of(today, 'month'))]},
+            'quarter': {'label': _('This Quarter'),
+                        'domain': [('date', '>=', quarter_start), ('date', '<=', quarter_end)]},
+            'year': {'label': _('This Year'), 'domain': [('date', '>=', date_utils.start_of(today, 'year')),
+                                                         ('date', '<=', date_utils.end_of(today, 'year'))]},
         }
         # default sort by value
         if not sortby:
@@ -120,7 +132,8 @@ class TimesheetCustomerPortal(CustomerPortal):
         # pager
         pager = portal_pager(
             url="/my/timesheets",
-            url_args={'sortby': sortby, 'search_in': search_in, 'search': search, 'filterby': filterby, 'groupby': groupby},
+            url_args={'sortby': sortby, 'search_in': search_in, 'search': search, 'filterby': filterby,
+                      'groupby': groupby},
             total=timesheet_count,
             page=page,
             step=_items_per_page
@@ -140,7 +153,8 @@ class TimesheetCustomerPortal(CustomerPortal):
                 else:
                     time_data = Timesheet_sudo._read_group(domain, [field], ['unit_amount:sum'])
                     mapped_time = {field.id: unit_amount for field, unit_amount in time_data}
-                    grouped_timesheets = [(Timesheet_sudo.concat(*g), mapped_time[k.id]) for k, g in groupbyelem(timesheets, itemgetter(field))]
+                    grouped_timesheets = [(Timesheet_sudo.concat(*g), mapped_time[k.id]) for k, g in
+                                          groupbyelem(timesheets, itemgetter(field))]
                 return timesheets, grouped_timesheets
 
             grouped_timesheets = [(
@@ -170,6 +184,7 @@ class TimesheetCustomerPortal(CustomerPortal):
         })
         return request.render("hr_timesheet.portal_my_timesheets", values)
 
+
 class TimesheetProjectCustomerPortal(ProjectCustomerPortal):
 
     def _show_task_report(self, task_sudo, report_type, download):
@@ -177,10 +192,13 @@ class TimesheetProjectCustomerPortal(ProjectCustomerPortal):
         task_domain = AND([domain, [('task_id', '=', task_sudo.id)]])
         timesheets = request.env['account.analytic.line'].sudo().search(task_domain)
         return self._show_report(model=timesheets,
-            report_type=report_type, report_ref='hr_timesheet.timesheet_report_task_timesheets', download=download)
+                                 report_type=report_type, report_ref='hr_timesheet.timesheet_report_task_timesheets',
+                                 download=download)
 
-    def _prepare_tasks_values(self, page, date_begin, date_end, sortby, search, search_in, groupby, url="/my/tasks", domain=None, su=False, project=False):
-        values = super()._prepare_tasks_values(page, date_begin, date_end, sortby, search, search_in, groupby, url, domain, su, project)
+    def _prepare_tasks_values(self, page, date_begin, date_end, sortby, search, search_in, groupby, url="/my/tasks",
+                              domain=None, su=False, project=False):
+        values = super()._prepare_tasks_values(page, date_begin, date_end, sortby, search, search_in, groupby, url,
+                                               domain, su, project)
         values.update(
             is_uom_day=request.env['account.analytic.line']._is_timesheet_encode_uom_day(),
         )

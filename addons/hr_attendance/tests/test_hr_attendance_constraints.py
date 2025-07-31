@@ -102,7 +102,8 @@ class TestHrAttendance(TransactionCase):
             'check_in': '2025-04-07 09:00:00',
             'check_out': '2025-04-07 18:00:00',
         })
-        attendances = self.env['hr.attendance'].with_user(manager_user).with_context(allowed_company_ids=manager_user.company_ids.ids).search([])
+        attendances = self.env['hr.attendance'].with_user(manager_user).with_context(
+            allowed_company_ids=manager_user.company_ids.ids).search([])
         employee_ids = attendances.mapped('employee_id').ids
         self.assertIn(managed_employee.id, employee_ids, "Managed employee's attendance should be visible in the list")
         self.assertNotIn(unmanaged_employee.id, employee_ids, "Unmanaged employee's attendance should not be visible")

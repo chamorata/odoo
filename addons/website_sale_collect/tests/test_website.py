@@ -1,9 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.website_sale_collect.tests.common import ClickAndCollectCommon
+
 from odoo.fields import Command
 from odoo.tests import tagged
-
-from odoo.addons.website_sale_collect.tests.common import ClickAndCollectCommon
 
 
 @tagged('post_install', '-at_install')

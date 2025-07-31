@@ -2,12 +2,12 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import werkzeug.urls
-
-from odoo import http
 from odoo.addons.website.models.ir_http import sitemap_qs2dom
 from odoo.addons.website_google_map.controllers.main import GoogleMap
-from odoo.tools.translate import _
+
+from odoo import http
 from odoo.http import request
+from odoo.tools.translate import _
 
 
 class WebsiteCustomer(GoogleMap):
@@ -79,7 +79,8 @@ class WebsiteCustomer(GoogleMap):
             domain += [('website_tag_ids', 'in', tag_id)]
 
         # group by industry, based on customers found with the search(domain)
-        industries = Partner.sudo().read_group(domain, ["id", "industry_id"], groupby="industry_id", orderby="industry_id")
+        industries = Partner.sudo().read_group(domain, ["id", "industry_id"], groupby="industry_id",
+                                               orderby="industry_id")
         partners_count = Partner.sudo().search_count(domain)
 
         if industry:
@@ -134,7 +135,8 @@ class WebsiteCustomer(GoogleMap):
         partners = Partner.sudo().search(domain, offset=pager['offset'], limit=self._references_per_page)
         google_maps_api_key = request.website.google_maps_api_key
 
-        tags = Tag.search([('website_published', '=', True), ('partner_ids', 'in', partners.ids)], order='classname, name ASC')
+        tags = Tag.search([('website_published', '=', True), ('partner_ids', 'in', partners.ids)],
+                          order='classname, name ASC')
         tag = tag_id and Tag.browse(tag_id) or False
 
         values = {

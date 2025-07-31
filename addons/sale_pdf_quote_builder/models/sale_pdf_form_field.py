@@ -2,10 +2,10 @@
 
 import re
 
+from odoo.addons.sale_pdf_quote_builder import utils
+
 from odoo import Command, _, api, fields, models
 from odoo.exceptions import ValidationError
-
-from odoo.addons.sale_pdf_quote_builder import utils
 
 
 class SalePdfFormField(models.Model):

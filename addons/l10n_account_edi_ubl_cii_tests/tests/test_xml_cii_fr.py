@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from odoo.addons.l10n_account_edi_ubl_cii_tests.tests.common import TestUBLCommon
+
 from odoo.tests import tagged
+
 
 @tagged('post_install_l10n', 'post_install', '-at_install')
 class TestCIIFR(TestUBLCommon):
@@ -104,8 +106,8 @@ class TestCIIFR(TestUBLCommon):
         return super().setup_independent_company(
             phone='+1 (650) 555-0111',  # [BR-DE-6] "Seller contact telephone number" (BT-42) is required
             email="info@yourcompany.com",  # [BR-DE-7] The element "Seller contact email address" (BT-43) is required
-            vat='FR23334175221', # [BR-CO-26]-In order for the buyer to automatically ...
-            zip='123', # [BR-DE-4] The element "Seller post code" (BT-38) must be transmitted.
+            vat='FR23334175221',  # [BR-CO-26]-In order for the buyer to automatically ...
+            zip='123',  # [BR-DE-4] The element "Seller post code" (BT-38) must be transmitted.
             **kwargs,
         )
 
@@ -426,10 +428,14 @@ class TestCIIFR(TestUBLCommon):
             'amount_tax': 27.334,
             'currency_id': self.env['res.currency'].search([('name', '=', 'USD')], limit=1).id,
             'invoice_lines': [
-                {'price_unit': 95.24, 'price_subtotal': 95.24, 'quantity': 1, 'discount': 0, 'tax_ids': self.tax_5_purchase.ids},
-                {'price_unit': 100, 'price_subtotal': 100, 'quantity': 1, 'discount': 0, 'tax_ids': self.tax_5_purchase.ids},
-                {'price_unit': 190.48, 'price_subtotal': 171.43, 'quantity': 1, 'discount': 10.001049979000411, 'tax_ids': self.tax_5_purchase.ids},
-                {'price_unit': 200, 'price_subtotal': 180, 'quantity': 1, 'discount': 10.0, 'tax_ids': self.tax_5_purchase.ids},
+                {'price_unit': 95.24, 'price_subtotal': 95.24, 'quantity': 1, 'discount': 0,
+                 'tax_ids': self.tax_5_purchase.ids},
+                {'price_unit': 100, 'price_subtotal': 100, 'quantity': 1, 'discount': 0,
+                 'tax_ids': self.tax_5_purchase.ids},
+                {'price_unit': 190.48, 'price_subtotal': 171.43, 'quantity': 1, 'discount': 10.001049979000411,
+                 'tax_ids': self.tax_5_purchase.ids},
+                {'price_unit': 200, 'price_subtotal': 180, 'quantity': 1, 'discount': 10.0,
+                 'tax_ids': self.tax_5_purchase.ids},
             ]
         }
         self._assert_imported_invoice_from_file(
@@ -528,9 +534,12 @@ class TestCIIFR(TestUBLCommon):
             buyer=self.partner_2,
             move_type='out_invoice',
             invoice_line_ids=[
-                {'product_id': self.product_a.id, 'quantity': 1, 'price_unit': 100.0, 'tax_ids': [(6, 0, [self.tax_sale_a.id])]},
-                {'product_id': self.product_b.id, 'quantity': 1, 'price_unit': -50.0, 'tax_ids': [(6, 0, [self.tax_sale_a.id])]}
+                {'product_id': self.product_a.id, 'quantity': 1, 'price_unit': 100.0,
+                 'tax_ids': [(6, 0, [self.tax_sale_a.id])]},
+                {'product_id': self.product_b.id, 'quantity': 1, 'price_unit': -50.0,
+                 'tax_ids': [(6, 0, [self.tax_sale_a.id])]}
             ]
         )
 
-        self._assert_invoice_attachment(invoice.ubl_cii_xml_id, None, 'from_odoo/facturx_positive_discount_price_unit.xml')
+        self._assert_invoice_attachment(invoice.ubl_cii_xml_id, None,
+                                        'from_odoo/facturx_positive_discount_price_unit.xml')

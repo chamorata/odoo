@@ -1,8 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.account.models.company import PEPPOL_MAILING_COUNTRIES
+
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
-from odoo.addons.account.models.company import PEPPOL_MAILING_COUNTRIES
 
 
 class AccountMove(models.Model):
@@ -44,9 +45,9 @@ class AccountMove(models.Model):
             ]):
                 move.peppol_move_state = 'ready'
             elif (
-                move.state == 'draft'
-                and move.is_sale_document(include_receipts=True)
-                and move.peppol_move_state not in ('processing', 'done')
+                    move.state == 'draft'
+                    and move.is_sale_document(include_receipts=True)
+                    and move.peppol_move_state not in ('processing', 'done')
             ):
                 move.peppol_move_state = False
             else:
@@ -67,6 +68,7 @@ class AccountMove(models.Model):
             render_context['peppol_info'] = {
                 'peppol_country': invoice_country,
                 'is_peppol_sent': invoice.peppol_move_state in ('processing', 'done'),
-                'partner_on_peppol': invoice.commercial_partner_id.peppol_verification_state in ('valid', 'not_valid_format'),
+                'partner_on_peppol': invoice.commercial_partner_id.peppol_verification_state in ('valid',
+                                                                                                 'not_valid_format'),
             }
         return render_context

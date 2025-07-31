@@ -16,10 +16,10 @@
                     <div class="oe_edit_only o_row">
                         <field name="street_name" placeholder="Street" style="flex: 3 1 auto"
                                readonly="type == 'contact' and parent_id"/>
-                        <span> </span>
+                        <span></span>
                         <field name="street_number" placeholder="House #" style="flex: 1 1 auto"
                                readonly="type == 'contact' and parent_id"/>
-                        <span> - </span>
+                        <span>-</span>
                         <field name="street_number2" placeholder="Door #" style="flex: 1 1 auto"
                                readonly="type == 'contact' and parent_id"/>
                     </div>

@@ -2,11 +2,12 @@
 import logging
 import time
 from datetime import timedelta
+
 from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models, Command
-from odoo.tools.misc import file_open, formatLang
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools.misc import file_open, formatLang
 
 _logger = logging.getLogger(__name__)
 
@@ -66,21 +67,21 @@ class AccountChartTemplate(models.AbstractModel):
 
     def _post_load_demo_data(self, company=False):
         invoices = (
-            self.ref('demo_invoice_1')
-            + self.ref('demo_invoice_2')
-            + self.ref('demo_invoice_3')
-            + self.ref('demo_invoice_followup')
-            + self.ref('demo_invoice_5')
-            + self.ref('demo_invoice_equipment_purchase')
-            + self.ref('demo_move_auto_reconcile_1')
-            + self.ref('demo_move_auto_reconcile_2')
-            + self.ref('demo_move_auto_reconcile_3')
-            + self.ref('demo_move_auto_reconcile_4')
-            + self.ref('demo_move_auto_reconcile_5')
-            + self.ref('demo_move_auto_reconcile_6')
-            + self.ref('demo_move_auto_reconcile_7')
-            + self.ref('demo_move_auto_reconcile_8')
-            + self.ref('demo_move_auto_reconcile_9')
+                self.ref('demo_invoice_1')
+                + self.ref('demo_invoice_2')
+                + self.ref('demo_invoice_3')
+                + self.ref('demo_invoice_followup')
+                + self.ref('demo_invoice_5')
+                + self.ref('demo_invoice_equipment_purchase')
+                + self.ref('demo_move_auto_reconcile_1')
+                + self.ref('demo_move_auto_reconcile_2')
+                + self.ref('demo_move_auto_reconcile_3')
+                + self.ref('demo_move_auto_reconcile_4')
+                + self.ref('demo_move_auto_reconcile_5')
+                + self.ref('demo_move_auto_reconcile_6')
+                + self.ref('demo_move_auto_reconcile_7')
+                + self.ref('demo_move_auto_reconcile_8')
+                + self.ref('demo_move_auto_reconcile_9')
         )
 
         # the invoice_extract acts like a placeholder for the OCR to be ran and doesn't contain
@@ -133,7 +134,8 @@ class AccountChartTemplate(models.AbstractModel):
             ],
             limit=1,
         )
-        default_receivable = self.env.ref('base.res_partner_3').with_company(company or self.env.company).property_account_receivable_id
+        default_receivable = self.env.ref('base.res_partner_3').with_company(
+            company or self.env.company).property_account_receivable_id
         income_account = self.env['account.account'].with_company(company or self.env.company).search([
             *self.env['account.account']._check_company_domain(cid),
             ('account_type', '=', 'income'),
@@ -362,7 +364,8 @@ class AccountChartTemplate(models.AbstractModel):
             },
             'demo_bank_statement_line_2': {
                 'journal_id': bnk_journal.id,
-                'payment_ref': time.strftime(f'First {formatLang(self.env, 2000, currency_obj=self.env.company.currency_id)} of invoice %Y/00001'),
+                'payment_ref': time.strftime(
+                    f'First {formatLang(self.env, 2000, currency_obj=self.env.company.currency_id)} of invoice %Y/00001'),
                 'amount': 2000,
                 'partner_id': 'base.res_partner_12',
             },
@@ -515,16 +518,16 @@ class AccountChartTemplate(models.AbstractModel):
         :return (Model<account.account>): the most appropriate record found
         """
         return (
-            self.env['account.account'].browse(self.env['ir.model.data'].sudo().search([
-                ('name', '=', '%d_%s' % (company.id, xml_id)),
-                ('model', '=', 'account.account'),
-                ('module', '=like', 'l10n%')
-            ], limit=1).res_id)
-            or self.env['account.account'].with_company(company).search([
-                *self.env['account.account']._check_company_domain(company),
-                ('account_type', '=', account_type),
-            ], limit=1)
-            or self.env['account.account'].with_company(company).search([
-                *self.env['account.account']._check_company_domain(company),
-            ], limit=1)
+                self.env['account.account'].browse(self.env['ir.model.data'].sudo().search([
+                    ('name', '=', '%d_%s' % (company.id, xml_id)),
+                    ('model', '=', 'account.account'),
+                    ('module', '=like', 'l10n%')
+                ], limit=1).res_id)
+                or self.env['account.account'].with_company(company).search([
+            *self.env['account.account']._check_company_domain(company),
+            ('account_type', '=', account_type),
+        ], limit=1)
+                or self.env['account.account'].with_company(company).search([
+            *self.env['account.account']._check_company_domain(company),
+        ], limit=1)
         )

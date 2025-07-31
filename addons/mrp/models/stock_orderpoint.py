@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import _, api, fields, models
-from odoo.tools.float_utils import float_is_zero
-from odoo.osv.expression import AND
-from dateutil.relativedelta import relativedelta
 from datetime import datetime, time
+
+from odoo import _, api, fields, models
+from odoo.osv.expression import AND
+from odoo.tools.float_utils import float_is_zero
 
 
 class StockWarehouseOrderpoint(models.Model):
@@ -15,7 +15,8 @@ class StockWarehouseOrderpoint(models.Model):
     bom_id = fields.Many2one(
         'mrp.bom', string='Bill of Materials', check_company=True,
         domain="[('type', '=', 'normal'), '&', '|', ('company_id', '=', company_id), ('company_id', '=', False), '|', ('product_id', '=', product_id), '&', ('product_id', '=', False), ('product_tmpl_id', '=', product_tmpl_id)]")
-    manufacturing_visibility_days = fields.Float(default=0.0, help="Visibility Days applied on the manufacturing routes.")
+    manufacturing_visibility_days = fields.Float(default=0.0,
+                                                 help="Visibility Days applied on the manufacturing routes.")
 
     def _get_replenishment_order_notification(self):
         self.ensure_one()
@@ -68,7 +69,8 @@ class StockWarehouseOrderpoint(models.Model):
         if not self.env['stock.rule'].search([('action', '=', 'manufacture')]):
             return res
         # Compute rule_ids only for orderpoint with boms
-        orderpoints_with_bom = self.filtered(lambda orderpoint: orderpoint.product_id.variant_bom_ids or orderpoint.product_id.bom_ids)
+        orderpoints_with_bom = self.filtered(
+            lambda orderpoint: orderpoint.product_id.variant_bom_ids or orderpoint.product_id.bom_ids)
         for orderpoint in orderpoints_with_bom:
             if 'manufacture' in orderpoint.rule_ids.mapped('action'):
                 boms = (orderpoint.product_id.variant_bom_ids or orderpoint.product_id.bom_ids)
@@ -91,10 +93,12 @@ class StockWarehouseOrderpoint(models.Model):
             ratios_total = []
             for bom_line, bom_line_data in bom_sub_lines:
                 component = bom_line.product_id
-                if not component.is_storable or float_is_zero(bom_line_data['qty'], precision_rounding=bom_line.product_uom_id.rounding):
+                if not component.is_storable or float_is_zero(bom_line_data['qty'],
+                                                              precision_rounding=bom_line.product_uom_id.rounding):
                     continue
                 uom_qty_per_kit = bom_line_data['qty'] / bom_line_data['original_qty']
-                qty_per_kit = bom_line.product_uom_id._compute_quantity(uom_qty_per_kit, bom_line.product_id.uom_id, raise_if_failure=False)
+                qty_per_kit = bom_line.product_uom_id._compute_quantity(uom_qty_per_kit, bom_line.product_id.uom_id,
+                                                                        raise_if_failure=False)
                 if not qty_per_kit:
                     continue
                 qty_by_product_location, dummy = component._get_quantity_in_progress(orderpoint.location_id.ids)
@@ -105,7 +109,8 @@ class StockWarehouseOrderpoint(models.Model):
             # For a kit, the quantity in progress is :
             #  (the quantity if we have received all in-progress components) - (the quantity using only available components)
             product_qty = min(ratios_total or [0]) - min(ratios_qty_available or [0])
-            res[orderpoint.id] = orderpoint.product_id.uom_id._compute_quantity(product_qty, orderpoint.product_uom, round=False)
+            res[orderpoint.id] = orderpoint.product_id.uom_id._compute_quantity(product_qty, orderpoint.product_uom,
+                                                                                round=False)
 
         bom_manufacture = self.env['mrp.bom']._bom_find(orderpoints_without_kit.product_id, bom_type='normal')
         bom_manufacture = self.env['mrp.bom'].concat(*bom_manufacture.values())
@@ -136,7 +141,7 @@ class StockWarehouseOrderpoint(models.Model):
             lead_days_date = datetime.combine(orderpoint.lead_days_date, time.max)
             if date_start <= lead_days_date < date_finished:
                 res[orderpoint.id] += prod.product_uom_id._compute_quantity(
-                        prod.product_qty, orderpoint.product_uom, round=False)
+                    prod.product_qty, orderpoint.product_uom, round=False)
         return res
 
     def _get_qty_multiple_to_order(self):

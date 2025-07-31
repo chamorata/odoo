@@ -1,5 +1,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import contextlib
+
 try:
     import phonenumbers
 except ImportError:
@@ -38,7 +39,8 @@ class PeppolRegistration(models.TransientModel):
         string='EDI user',
         compute='_compute_edi_user_id',
     )
-    account_peppol_migration_key = fields.Char(related='company_id.account_peppol_migration_key', readonly=False)  # TODO remove in master
+    account_peppol_migration_key = fields.Char(related='company_id.account_peppol_migration_key',
+                                               readonly=False)  # TODO remove in master
     edi_mode_constraint = fields.Selection(
         selection=[('demo', 'Demo'), ('test', 'Test'), ('prod', 'Live')],
         compute='_compute_edi_mode_constraint',
@@ -46,7 +48,8 @@ class PeppolRegistration(models.TransientModel):
     )
     phone_number = fields.Char(related='company_id.account_peppol_phone_number', readonly=False)
     account_peppol_proxy_state = fields.Selection(related='company_id.account_peppol_proxy_state', readonly=False)
-    verification_code = fields.Char(related='edi_user_id.peppol_verification_code', readonly=False)  # TODO remove in master
+    verification_code = fields.Char(related='edi_user_id.peppol_verification_code',
+                                    readonly=False)  # TODO remove in master
     peppol_eas = fields.Selection(related='company_id.peppol_eas', readonly=False, required=True)
     peppol_endpoint = fields.Char(related='company_id.peppol_endpoint', readonly=False, required=True)
     peppol_warnings = fields.Json(
@@ -94,20 +97,21 @@ class PeppolRegistration(models.TransientModel):
     @api.depends('company_id.account_edi_proxy_client_ids')
     def _compute_edi_user_id(self):
         for wizard in self:
-            wizard.edi_user_id = wizard.company_id.account_edi_proxy_client_ids.filtered(lambda u: u.proxy_type == 'peppol')[:1]
+            wizard.edi_user_id = wizard.company_id.account_edi_proxy_client_ids.filtered(
+                lambda u: u.proxy_type == 'peppol')[:1]
 
     @api.depends('peppol_eas', 'peppol_endpoint', 'smp_registration')
     def _compute_peppol_warnings(self):
         for wizard in self:
             peppol_warnings = {}
             if (
-                wizard.peppol_eas
-                and wizard.peppol_endpoint
-                and not wizard.company_id._check_peppol_endpoint_number(warning=True)
+                    wizard.peppol_eas
+                    and wizard.peppol_endpoint
+                    and not wizard.company_id._check_peppol_endpoint_number(warning=True)
             ):
                 peppol_warnings['company_peppol_endpoint_warning'] = {
                     'message': _("The endpoint number might not be correct. "
-                                "Please check if you entered the right identification number."),
+                                 "Please check if you entered the right identification number."),
                 }
             if not wizard.smp_registration:
                 peppol_warnings['company_on_another_smp'] = {
@@ -269,7 +273,9 @@ class PeppolRegistration(models.TransientModel):
             raise UserError(
                 _('Cannot register a user with a %s application', self.account_peppol_proxy_state))
 
-        edi_user = self.edi_user_id or self.env['account_edi_proxy_client.user']._register_proxy_user(self.company_id, 'peppol', self.edi_mode)
+        edi_user = self.edi_user_id or self.env['account_edi_proxy_client.user']._register_proxy_user(self.company_id,
+                                                                                                      'peppol',
+                                                                                                      self.edi_mode)
 
         # if there is an error when activating the participant below,
         # the client side is rolled back and the edi user is deleted on the client side

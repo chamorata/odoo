@@ -5,7 +5,6 @@ import pytz
 from dateutil.relativedelta import relativedelta
 
 from odoo import models, fields, api, exceptions, _
-from odoo.tools import float_round
 
 
 class HrEmployee(models.Model):
@@ -47,7 +46,8 @@ class HrEmployee(models.Model):
     overtime_ids = fields.One2many(
         'hr.attendance.overtime', 'employee_id', groups="hr_attendance.group_hr_attendance_officer,hr.group_hr_user")
     total_overtime = fields.Float(
-        compute='_compute_total_overtime', compute_sudo=True, groups="hr_attendance.group_hr_attendance_officer,hr.group_hr_user")
+        compute='_compute_total_overtime', compute_sudo=True,
+        groups="hr_attendance.group_hr_attendance_officer,hr.group_hr_user")
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -91,7 +91,8 @@ class HrEmployee(models.Model):
         ))
 
         for employee in self:
-            employee.total_overtime = mapped_validated_overtimes.get(employee, 0) + mapped_overtime_adjustments.get(employee, 0)
+            employee.total_overtime = mapped_validated_overtimes.get(employee, 0) + mapped_overtime_adjustments.get(
+                employee, 0)
 
     def _compute_hours_last_month(self):
         """
@@ -179,7 +180,8 @@ class HrEmployee(models.Model):
                     'check_in': action_date,
                 }
             return self.env['hr.attendance'].create(vals)
-        attendance = self.env['hr.attendance'].search([('employee_id', '=', self.id), ('check_out', '=', False)], limit=1)
+        attendance = self.env['hr.attendance'].search([('employee_id', '=', self.id), ('check_out', '=', False)],
+                                                      limit=1)
         if attendance:
             if geo_information:
                 attendance.write({
@@ -217,7 +219,8 @@ class HrEmployee(models.Model):
             "type": "ir.actions.act_window",
             "name": _("Attendances This Month"),
             "res_model": "hr.attendance",
-            "views": [[self.env.ref('hr_attendance.hr_attendance_validated_hours_employee_simple_tree_view').id, "list"]],
+            "views": [
+                [self.env.ref('hr_attendance.hr_attendance_validated_hours_employee_simple_tree_view').id, "list"]],
             "context": {
                 "create": 0
             },

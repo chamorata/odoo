@@ -1,7 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import babel
 from datetime import datetime, time
+
+import babel
 from pytz import UTC, timezone
 
 from odoo.tests import common
@@ -11,6 +12,7 @@ class TestGroupbyWeek(common.TransactionCase):
     """ Test for read_group() with group by week: the first day of the week
     depends on the language.
     """
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -18,7 +20,7 @@ class TestGroupbyWeek(common.TransactionCase):
         # same for all locales
         cls.iso_weeks = {
             52: 2,  # 2022-01-01 and 2022-01-02 (W52 of 2021)
-             1: 1,  # 2022-01-03
+            1: 1,  # 2022-01-03
             21: 3,  # 2022-05-27, 2022-05-28, 2022-05-29
             22: 1,  # 2022-05-30
             24: 2,  # 2022-06-18 and 2022-06-19
@@ -52,16 +54,16 @@ class TestGroupbyWeek(common.TransactionCase):
             }
         }
         cls.records = cls.Model.create([  # BE,  SY,  US
-            {'date': '2022-01-01'},       # W52, W01, W01
-            {'date': '2022-01-02'},       # W52, W01, W02
-            {'date': '2022-01-03'},       # W01, W01, W02
-            {'date': '2022-05-27'},       # W21, W21, W22
-            {'date': '2022-05-28'},       # W21, W22, W22
-            {'date': '2022-05-29'},       # W21, W22, W23
-            {'date': '2022-05-30'},       # W22, W22, W23
-            {'date': '2022-06-18'},       # W24, W25, W25
-            {'date': '2022-06-19'},       # W24, W25, W26
-            {'date': '2022-06-20'},       # W25, W25, W26
+            {'date': '2022-01-01'},  # W52, W01, W01
+            {'date': '2022-01-02'},  # W52, W01, W02
+            {'date': '2022-01-03'},  # W01, W01, W02
+            {'date': '2022-05-27'},  # W21, W21, W22
+            {'date': '2022-05-28'},  # W21, W22, W22
+            {'date': '2022-05-29'},  # W21, W22, W23
+            {'date': '2022-05-30'},  # W22, W22, W23
+            {'date': '2022-06-18'},  # W24, W25, W25
+            {'date': '2022-06-19'},  # W24, W25, W26
+            {'date': '2022-06-20'},  # W25, W25, W26
         ])
 
     def set_context(self, lang, tz):

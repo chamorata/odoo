@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 import logging
+from datetime import timedelta, datetime
+
+from odoo.addons.account.controllers.portal import PortalAccount
 
 from odoo import http, _
 from odoo.http import request
 from odoo.osv.expression import AND
 from odoo.tools import format_amount
-from odoo.addons.account.controllers.portal import PortalAccount
-from datetime import timedelta, datetime
 
 _logger = logging.getLogger(__name__)
 
@@ -33,12 +34,12 @@ class PosController(PortalAccount):
         if not is_internal_user:
             return request.not_found()
         domain = [
-                ('state', 'in', ['opening_control', 'opened']),
-                ('user_id', '=', request.session.uid),
-                ('rescue', '=', False)
-                ]
+            ('state', 'in', ['opening_control', 'opened']),
+            ('user_id', '=', request.session.uid),
+            ('rescue', '=', False)
+        ]
         if config_id and request.env['pos.config'].sudo().browse(int(config_id)).exists():
-            domain = AND([domain,[('config_id', '=', int(config_id))]])
+            domain = AND([domain, [('config_id', '=', int(config_id))]])
             pos_config = request.env['pos.config'].sudo().browse(int(config_id))
         pos_session = request.env['pos.session'].sudo().search(domain, limit=1)
 
@@ -78,7 +79,9 @@ class PosController(PortalAccount):
     @http.route('/pos/sale_details_report', type='http', auth='user')
     def print_sale_details(self, date_start=False, date_stop=False, **kw):
         r = request.env['report.point_of_sale.report_saledetails']
-        pdf, _ = request.env['ir.actions.report'].with_context(date_start=date_start, date_stop=date_stop)._render_qweb_pdf('point_of_sale.sale_details_report', r)
+        pdf, _ = request.env['ir.actions.report'].with_context(date_start=date_start,
+                                                               date_stop=date_stop)._render_qweb_pdf(
+            'point_of_sale.sale_details_report', r)
         pdfhttpheaders = [('Content-Type', 'application/pdf'), ('Content-Length', len(pdf))]
         return request.make_response(pdf, headers=pdfhttpheaders)
 
@@ -100,7 +103,8 @@ class PosController(PortalAccount):
             else:
                 date_order = datetime(*[int(i) for i in form_values['date_order'].split('-')])
                 order = request.env['pos.order'].sudo().search([
-                    ('pos_reference', '=like', '%' + form_values['pos_reference'].strip().replace('%', r'\%').replace('_', r'\_')),
+                    ('pos_reference', '=like',
+                     '%' + form_values['pos_reference'].strip().replace('%', r'\%').replace('_', r'\_')),
                     ('date_order', '>=', date_order - timedelta(days=1)),
                     ('date_order', '<', date_order + timedelta(days=2)),
                     ('ticket_code', '=', form_values['ticket_code']),
@@ -146,12 +150,15 @@ class PosController(PortalAccount):
 
         # If the order was already invoiced, return the invoice directly by forcing the access token so that the non-connected user can see it.
         if pos_order.account_move and pos_order.account_move.is_sale_document():
-            return request.redirect('/my/invoices/%s?access_token=%s' % (pos_order.account_move.id, pos_order.account_move._portal_ensure_token()))
+            return request.redirect('/my/invoices/%s?access_token=%s' % (pos_order.account_move.id,
+                                                                         pos_order.account_move._portal_ensure_token()))
 
         # Get the optional extra fields that could be required for a localisation.
         pos_order_country = pos_order.company_id.account_fiscal_country_id
-        additional_partner_fields = request.env['res.partner'].get_partner_localisation_fields_required_to_invoice(pos_order_country)
-        additional_invoice_fields = request.env['account.move'].get_invoice_localisation_fields_required_to_invoice(pos_order_country)
+        additional_partner_fields = request.env['res.partner'].get_partner_localisation_fields_required_to_invoice(
+            pos_order_country)
+        additional_invoice_fields = request.env['account.move'].get_invoice_localisation_fields_required_to_invoice(
+            pos_order_country)
 
         user_is_connected = not request.env.user._is_public()
 
@@ -160,10 +167,12 @@ class PosController(PortalAccount):
         if kwargs and request.httprequest.method == 'POST':
             form_values.update(kwargs)
             # Extract the additional fields values from the kwargs now as they can't be there when validating the 'regular' partner form.
-            partner_values, prefixed_partner_values = _parse_additional_values(additional_partner_fields, 'partner_', kwargs)
+            partner_values, prefixed_partner_values = _parse_additional_values(additional_partner_fields, 'partner_',
+                                                                               kwargs)
             form_values['extra_field_values'].update(prefixed_partner_values)
             # Do the same for invoice values, separately as they are only needed for the invoice creation.
-            invoice_values, prefixed_invoice_values = _parse_additional_values(additional_invoice_fields, 'invoice_', kwargs)
+            invoice_values, prefixed_invoice_values = _parse_additional_values(additional_invoice_fields, 'invoice_',
+                                                                               kwargs)
             form_values['extra_field_values'].update(prefixed_invoice_values)
             # Check the basic form fields if the user is not connected as we will need these information to create the new user.
             if not user_is_connected:
@@ -175,10 +184,14 @@ class PosController(PortalAccount):
                 for field in self._get_mandatory_fields():
                     if not partner[field]:
                         error[field] = 'error'
-                        error_message.append(_('The %s must be filled in your details.', request.env['ir.model.fields']._get('res.partner', field).field_description))
+                        error_message.append(_('The %s must be filled in your details.',
+                                               request.env['ir.model.fields']._get('res.partner',
+                                                                                   field).field_description))
             # Check that the "optional" additional fields are filled.
-            error, error_message = self.extra_details_form_validate(partner_values, additional_partner_fields, error, error_message)
-            error, error_message = self.extra_details_form_validate(invoice_values, additional_invoice_fields, error, error_message)
+            error, error_message = self.extra_details_form_validate(partner_values, additional_partner_fields, error,
+                                                                    error_message)
+            error, error_message = self.extra_details_form_validate(invoice_values, additional_invoice_fields, error,
+                                                                    error_message)
             if not error:
                 return self._get_invoice(partner_values, invoice_values, pos_order, additional_invoice_fields, kwargs)
             else:
@@ -196,7 +209,9 @@ class PosController(PortalAccount):
         partner = (user_is_connected and request.env.user.partner_id) or pos_order.partner_id
         if partner:
             if additional_partner_fields:
-                form_values['extra_field_values'] = {'partner_' + field.name: partner[field.name] for field in additional_partner_fields if field.name not in form_values['extra_field_values']}
+                form_values['extra_field_values'] = {'partner_' + field.name: partner[field.name] for field in
+                                                     additional_partner_fields if
+                                                     field.name not in form_values['extra_field_values']}
 
             # This is just to ensure that the user went and filled its information at least once.
             # Another more thorough check is done upon posting the form.
@@ -235,11 +250,13 @@ class PosController(PortalAccount):
                     partner_values[field] = False
             partner_values.update({'zip': partner_values.pop('zipcode', '')})
         if request.env.user._is_public() and not pos_order.partner_id.id:
-            partner = request.env['res.partner'].sudo().create(partner_values)  # In this case, partner_values contains the whole partner info form.
+            partner = request.env['res.partner'].sudo().create(
+                partner_values)  # In this case, partner_values contains the whole partner info form.
         # If the user is connected, then we can update if needed its fields with the additional localized fields if any, then proceed.
         else:
             partner = pos_order.partner_id or (not request.env.user._is_public() and request.env.user.partner_id)
-            partner.write(partner_values)  # In this case, partner_values only contains the additional fields that can be updated.
+            partner.write(
+                partner_values)  # In this case, partner_values only contains the additional fields that can be updated.
 
         pos_order.partner_id = partner
         # Get the required fields for the invoice and add them to the context as default values.
@@ -248,4 +265,5 @@ class PosController(PortalAccount):
             with_context.update({f'default_{field.name}': invoice_values.get(field.name)})
         # Allowing default values for moves is important for some localizations that would need specific fields to be set on the invoice, such as Mexico.
         pos_order.with_context(with_context).action_pos_order_invoice()
-        return request.redirect('/my/invoices/%s?access_token=%s' % (pos_order.account_move.id, pos_order.account_move._portal_ensure_token()))
+        return request.redirect('/my/invoices/%s?access_token=%s' % (pos_order.account_move.id,
+                                                                     pos_order.account_move._portal_ensure_token()))

@@ -8,9 +8,8 @@ Signed,
 
 Marcel Savegnago marcel.savegnago@escodoo.com.br https://github.com/escodoo
 
-
 List of contributors:
 
-Marcel Savegnago marcel.savegnago@escodoo.com.br https://github.com/marcelsavegnago 
+Marcel Savegnago marcel.savegnago@escodoo.com.br https://github.com/marcelsavegnago
 
 Eduardo Aparício eduardo.aparicio@escodoo.com.br https://github.com/eduaparicio

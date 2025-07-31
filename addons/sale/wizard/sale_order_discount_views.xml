@@ -30,7 +30,8 @@
                     </div>
                 </sheet>
                 <footer>
-                    <button type="object" string="Apply" name="action_apply_discount" class="btn btn-primary" data-hotkey="q"/>
+                    <button type="object" string="Apply" name="action_apply_discount" class="btn btn-primary"
+                            data-hotkey="q"/>
                     <button special="cancel" string="Discard" class="btn btn-secondary" data-hotkey="x"/>
                 </footer>
             </form>

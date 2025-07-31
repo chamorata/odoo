@@ -14,7 +14,8 @@
                             <field name="name"/>
                             <field name="applicability"/>
                             <field name="tax_negate" readonly="1" invisible="applicability != 'taxes'"/>
-                            <field name="country_id" options="{'no_open': True, 'no_create': True}" invisible="applicability != 'taxes'"/>
+                            <field name="country_id" options="{'no_open': True, 'no_create': True}"
+                                   invisible="applicability != 'taxes'"/>
                         </group>
                     </sheet>
                 </form>
@@ -28,7 +29,7 @@
                 <list string="Tags">
                     <field name="name"/>
                     <field name="applicability"/>
-                    <field name="country_id" />
+                    <field name="country_id"/>
                 </list>
             </field>
         </record>

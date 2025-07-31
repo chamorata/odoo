@@ -2,10 +2,10 @@ from typing import Literal
 
 import markupsafe
 import requests
+from odoo.addons.l10n_ro_edi_stock.models.etransport_api import ETransportAPI
+from odoo.addons.l10n_ro_edi_stock.models.l10n_ro_edi_stock_document import DOCUMENT_STATES
 
 from odoo import api, fields, models, _
-from odoo.addons.l10n_ro_edi_stock.models.l10n_ro_edi_stock_document import DOCUMENT_STATES
-from odoo.addons.l10n_ro_edi_stock.models.etransport_api import ETransportAPI
 from odoo.exceptions import UserError
 
 OPERATION_TYPES = [
@@ -245,7 +245,8 @@ class Picking(models.Model):
 
     # Document fields
     l10n_ro_edi_stock_document_ids = fields.One2many(comodel_name='l10n_ro_edi.document', inverse_name='picking_id')
-    l10n_ro_edi_stock_document_uit = fields.Char(compute='_compute_l10n_ro_edi_stock_current_document_uit', string="eTransport UIT")
+    l10n_ro_edi_stock_document_uit = fields.Char(compute='_compute_l10n_ro_edi_stock_current_document_uit',
+                                                 string="eTransport UIT")
     l10n_ro_edi_stock_state = fields.Selection(
         selection=DOCUMENT_STATES,
         compute='_compute_l10n_ro_edi_stock_current_document_state',
@@ -255,14 +256,16 @@ class Picking(models.Model):
 
     # Data fields
     l10n_ro_edi_stock_operation_type = fields.Selection(selection=OPERATION_TYPES, string="eTransport Operation Type")
-    l10n_ro_edi_stock_available_operation_scopes = fields.Char(compute='_compute_l10n_ro_edi_stock_available_operation_scopes')
+    l10n_ro_edi_stock_available_operation_scopes = fields.Char(
+        compute='_compute_l10n_ro_edi_stock_available_operation_scopes')
     l10n_ro_edi_stock_operation_scope = fields.Selection(selection=OPERATION_SCOPES, string="Operation Scope")
 
     l10n_ro_edi_stock_vehicle_number = fields.Char(string="Vehicle Number", size=20)
     l10n_ro_edi_stock_trailer_1_number = fields.Char(string="Trailer 1 Number", size=20)
     l10n_ro_edi_stock_trailer_2_number = fields.Char(string="Trailer 2 Number", size=20)
 
-    l10n_ro_edi_stock_available_start_loc_types = fields.Char(compute='_compute_l10n_ro_edi_stock_available_location_types')
+    l10n_ro_edi_stock_available_start_loc_types = fields.Char(
+        compute='_compute_l10n_ro_edi_stock_available_location_types')
     l10n_ro_edi_stock_start_loc_type = fields.Selection(
         selection=LOCATION_TYPES,
         string="Start Location Type",
@@ -271,7 +274,8 @@ class Picking(models.Model):
         readonly=False,
     )
 
-    l10n_ro_edi_stock_available_end_loc_types = fields.Char(compute='_compute_l10n_ro_edi_stock_available_location_types')
+    l10n_ro_edi_stock_available_end_loc_types = fields.Char(
+        compute='_compute_l10n_ro_edi_stock_available_location_types')
     l10n_ro_edi_stock_end_loc_type = fields.Selection(
         selection=LOCATION_TYPES,
         string="End Location Type",
@@ -280,7 +284,8 @@ class Picking(models.Model):
         readonly=False,
     )
 
-    l10n_ro_edi_stock_start_bcp = fields.Selection(selection=BORDER_CROSSING_POINTS, string="Start Border Crossing Point")
+    l10n_ro_edi_stock_start_bcp = fields.Selection(selection=BORDER_CROSSING_POINTS,
+                                                   string="Start Border Crossing Point")
     l10n_ro_edi_stock_start_customs_office = fields.Selection(selection=CUSTOMS_OFFICES, string="Start Customs Office")
     l10n_ro_edi_stock_end_bcp = fields.Selection(selection=BORDER_CROSSING_POINTS, string="End Border Crossing Point")
     l10n_ro_edi_stock_end_customs_office = fields.Selection(selection=CUSTOMS_OFFICES, string="End Customs Office")
@@ -332,7 +337,8 @@ class Picking(models.Model):
     def _compute_l10n_ro_edi_stock_available_operation_scopes(self):
         for picking in self:
             if picking.l10n_ro_edi_stock_operation_type:
-                allowed_scopes = OPERATION_TYPE_TO_ALLOWED_SCOPE_CODES.get(picking.l10n_ro_edi_stock_operation_type, ("9999",))
+                allowed_scopes = OPERATION_TYPE_TO_ALLOWED_SCOPE_CODES.get(picking.l10n_ro_edi_stock_operation_type,
+                                                                           ("9999",))
             else:
                 allowed_scopes = [c for c, _dummy in OPERATION_SCOPES]
 
@@ -341,13 +347,16 @@ class Picking(models.Model):
     @api.depends('l10n_ro_edi_stock_operation_type')
     def _compute_l10n_ro_edi_stock_available_location_types(self):
         for picking in self:
-            picking.l10n_ro_edi_stock_available_start_loc_types = picking._l10n_ro_edi_stock_get_available_location_types(picking.l10n_ro_edi_stock_operation_type, 'start')
-            picking.l10n_ro_edi_stock_available_end_loc_types = picking._l10n_ro_edi_stock_get_available_location_types(picking.l10n_ro_edi_stock_operation_type, 'end')
+            picking.l10n_ro_edi_stock_available_start_loc_types = picking._l10n_ro_edi_stock_get_available_location_types(
+                picking.l10n_ro_edi_stock_operation_type, 'start')
+            picking.l10n_ro_edi_stock_available_end_loc_types = picking._l10n_ro_edi_stock_get_available_location_types(
+                picking.l10n_ro_edi_stock_operation_type, 'end')
 
     @api.depends('l10n_ro_edi_stock_document_ids', 'company_id.account_fiscal_country_id.code')
     def _compute_l10n_ro_edi_stock_current_document_state(self):
         for picking in self:
-            if picking.company_id.account_fiscal_country_id.code == 'RO' and (document := picking._l10n_ro_edi_stock_get_current_document()):
+            if picking.company_id.account_fiscal_country_id.code == 'RO' and (
+            document := picking._l10n_ro_edi_stock_get_current_document()):
                 picking.l10n_ro_edi_stock_state = document.state
             else:
                 picking.l10n_ro_edi_stock_state = False
@@ -355,7 +364,8 @@ class Picking(models.Model):
     @api.depends('l10n_ro_edi_stock_document_ids', 'company_id.account_fiscal_country_id.code')
     def _compute_l10n_ro_edi_stock_current_document_uit(self):
         for picking in self:
-            if picking.company_id.account_fiscal_country_id.code == 'RO' and (document := picking._l10n_ro_edi_stock_get_current_document()):
+            if picking.company_id.account_fiscal_country_id.code == 'RO' and (
+            document := picking._l10n_ro_edi_stock_get_current_document()):
                 picking.l10n_ro_edi_stock_document_uit = document.l10n_ro_edi_stock_uit
             else:
                 picking.l10n_ro_edi_stock_document_uit = False
@@ -386,8 +396,8 @@ class Picking(models.Model):
             picking.l10n_ro_edi_stock_enable_amend = picking.l10n_ro_edi_stock_enable and (
                     picking.l10n_ro_edi_stock_state == 'stock_validated'
                     or (
-                        picking.l10n_ro_edi_stock_state == 'stock_sending_failed'
-                        and picking._l10n_ro_edi_stock_get_last_document('stock_validated')
+                            picking.l10n_ro_edi_stock_state == 'stock_sending_failed'
+                            and picking._l10n_ro_edi_stock_get_last_document('stock_validated')
                     )
             )
 
@@ -412,11 +422,13 @@ class Picking(models.Model):
         for picking in self.filtered(self._l10n_ro_edi_stock_validate_carrier_filter):
             # validate carrier
             if not picking.carrier_id:
-                raise UserError(_("The picking %(picking_name)s is missing a delivery carrier.", picking_name=picking.name))
+                raise UserError(
+                    _("The picking %(picking_name)s is missing a delivery carrier.", picking_name=picking.name))
 
             # validate carrier partner
             if not picking.carrier_id.l10n_ro_edi_stock_partner_id:
-                raise UserError(_("The delivery carrier of %(picking_name)s is missing the partner field value.", picking_name=picking.name))
+                raise UserError(_("The delivery carrier of %(picking_name)s is missing the partner field value.",
+                                  picking_name=picking.name))
 
     @api.model
     def _l10n_ro_edi_stock_validate_carrier_filter(self, picking):
@@ -445,9 +457,11 @@ class Picking(models.Model):
             missing_carrier_partner_fields.append(_("Street"))
 
         if len(missing_carrier_partner_fields) == 1:
-            errors.append(_("The delivery carrier partner is missing the %(field_name)s field.", field_name=missing_carrier_partner_fields[0]))
+            errors.append(_("The delivery carrier partner is missing the %(field_name)s field.",
+                            field_name=missing_carrier_partner_fields[0]))
         elif len(missing_carrier_partner_fields) > 1:
-            errors.append(_("The delivery carrier partner is missing following fields: %(field_names)s", field_names=', '.join(missing_carrier_partner_fields)))
+            errors.append(_("The delivery carrier partner is missing following fields: %(field_names)s",
+                            field_names=', '.join(missing_carrier_partner_fields)))
 
         # operation type
         if not data['l10n_ro_edi_stock_operation_type']:
@@ -463,12 +477,15 @@ class Picking(models.Model):
             errors.append(_("Vehicle number is missing."))
 
         # All filled-in vehicle and trailer numbers must be unique
-        license_plates = [num for num in (data['l10n_ro_edi_stock_vehicle_number'], data['l10n_ro_edi_stock_trailer_1_number'], data['l10n_ro_edi_stock_trailer_2_number']) if num]
+        license_plates = [num for num in
+                          (data['l10n_ro_edi_stock_vehicle_number'], data['l10n_ro_edi_stock_trailer_1_number'],
+                           data['l10n_ro_edi_stock_trailer_2_number']) if num]
         if len(license_plates) != len(set(license_plates)):
             errors.append(_("Vehicle number and trailer number fields must be unique."))
 
         # rate codes
-        if 'intrastat_code_id' in self.env['product.product']._fields and data['l10n_ro_edi_stock_operation_type'] not in ('60', '70'):
+        if 'intrastat_code_id' in self.env['product.product']._fields and data[
+            'l10n_ro_edi_stock_operation_type'] not in ('60', '70'):
             product_without_code_names = {move_line.product_id.name
                                           for move in data['stock_move_ids']
                                           for move_line in move.move_line_ids
@@ -479,7 +496,8 @@ class Picking(models.Model):
                     (product_name,) = product_without_code_names
                     errors.append(_("Product %(name)s is missing the intrastat code value.", name=product_name))
                 else:
-                    errors.append(_("Products %(names)s are missing the intrastat code value.", names=", ".join(product_without_code_names)))
+                    errors.append(_("Products %(names)s are missing the intrastat code value.",
+                                    names=", ".join(product_without_code_names)))
 
         # Location types
         if not data['l10n_ro_edi_stock_start_loc_type']:
@@ -500,15 +518,18 @@ class Picking(models.Model):
             loc_group = _("'Start Location'") if location == 'start' else _("'End Location'")
 
             if loc_value == 'bcp' and not data[f'l10n_ro_edi_stock_{location}_bcp']:
-                errors.append(_("The border crossing point is missing under %(location_group)s", location_group=loc_group))
+                errors.append(
+                    _("The border crossing point is missing under %(location_group)s", location_group=loc_group))
             elif loc_value == 'customs' and not data[f'l10n_ro_edi_stock_{location}_customs_office']:
                 errors.append(_("The customs office is missing under %(location_group)s", location_group=loc_group))
             elif loc_value == 'location':
                 match data['picking_type_id'].code:
                     case 'outgoing':
-                        partner = data['picking_type_id'].warehouse_id.partner_id if location == 'start' else data['partner_id']
+                        partner = data['picking_type_id'].warehouse_id.partner_id if location == 'start' else data[
+                            'partner_id']
                     case 'incoming':
-                        partner = data['picking_type_id'].warehouse_id.partner_id if location == 'end' else data['partner_id']
+                        partner = data['picking_type_id'].warehouse_id.partner_id if location == 'end' else data[
+                            'partner_id']
                     case _other:
                         errors.append(_("Invalid picking type %(type_code)s", type_code=_other))
                         continue
@@ -524,9 +545,12 @@ class Picking(models.Model):
                     missing_field_names.append(_("Postal Code"))
 
                 if len(missing_field_names) == 1:
-                    errors.append(_("%(location_group)s is missing the %(field_name)s field.", location_group=loc_group, field_name=missing_field_names[0]))
+                    errors.append(_("%(location_group)s is missing the %(field_name)s field.", location_group=loc_group,
+                                    field_name=missing_field_names[0]))
                 elif len(missing_field_names) > 1:
-                    errors.append(_("%(location_group)s is missing following fields: %(field_names)s", location_group=loc_group, field_names=missing_field_names))
+                    errors.append(
+                        _("%(location_group)s is missing following fields: %(field_names)s", location_group=loc_group,
+                          field_names=missing_field_names))
 
         return errors
 
@@ -751,7 +775,8 @@ class Picking(models.Model):
         to_fetch = self.filtered(lambda p: p.l10n_ro_edi_stock_state == 'stock_sent')
 
         for picking in to_fetch:
-            current_sending_document = picking.l10n_ro_edi_stock_document_ids.filtered(lambda doc: doc.state == 'stock_sent')[0]
+            current_sending_document = \
+            picking.l10n_ro_edi_stock_document_ids.filtered(lambda doc: doc.state == 'stock_sent')[0]
 
             if errors := picking._l10n_ro_edi_stock_validate_fetch_data():
                 picking._l10n_ro_edi_stock_create_document_stock_sending_failed({
@@ -776,7 +801,8 @@ class Picking(models.Model):
                     'raw_xml': current_sending_document.attachment_id.raw,
                 })
             else:
-                documents_to_delete |= picking._l10n_ro_edi_stock_get_all_documents(('stock_sent', 'stock_sending_failed'))
+                documents_to_delete |= picking._l10n_ro_edi_stock_get_all_documents(
+                    ('stock_sent', 'stock_sending_failed'))
                 new_document_data = {
                     'l10n_ro_edi_stock_load_id': current_sending_document.l10n_ro_edi_stock_load_id,
                     'l10n_ro_edi_stock_uit': current_sending_document.l10n_ro_edi_stock_uit,
@@ -826,7 +852,8 @@ class Picking(models.Model):
                 'bunuriTransportate': [
                     {
                         'codScopOperatiune': data['l10n_ro_edi_stock_operation_scope'],
-                        'codTarifar': (product.intrastat_code_id.code if 'intrastat_code_id' in product._fields else None) or '00000000',
+                        'codTarifar': (
+                                          product.intrastat_code_id.code if 'intrastat_code_id' in product._fields else None) or '00000000',
                         'denumireMarfa': product.name,
                         'cantitate': move.product_qty,
                         'codUnitateMasura': move.product_uom._get_unece_code(),
@@ -843,8 +870,10 @@ class Picking(models.Model):
                 },
                 'dateTransport': {
                     'nrVehicul': data['l10n_ro_edi_stock_vehicle_number'].upper(),
-                    'nrRemorca1': data['l10n_ro_edi_stock_trailer_1_number'].upper() if data['l10n_ro_edi_stock_trailer_1_number'] else None,
-                    'nrRemorca2': data['l10n_ro_edi_stock_trailer_2_number'].upper() if data['l10n_ro_edi_stock_trailer_2_number'] else None,
+                    'nrRemorca1': data['l10n_ro_edi_stock_trailer_1_number'].upper() if data[
+                        'l10n_ro_edi_stock_trailer_1_number'] else None,
+                    'nrRemorca2': data['l10n_ro_edi_stock_trailer_2_number'].upper() if data[
+                        'l10n_ro_edi_stock_trailer_2_number'] else None,
                     'codTaraOrgTransport': transport_partner.country_code,
                     'codOrgTransport': self._l10n_ro_edi_stock_get_cod(transport_partner),
                     'denumireOrgTransport': transport_partner.name,
@@ -875,9 +904,11 @@ class Picking(models.Model):
                 case 'location':
                     match data['picking_type_id'].code:
                         case 'outgoing':
-                            partner = data['picking_type_id'].warehouse_id.partner_id if loc == 'start' else data['partner_id']
+                            partner = data['picking_type_id'].warehouse_id.partner_id if loc == 'start' else data[
+                                'partner_id']
                         case 'incoming':
-                            partner = data['picking_type_id'].warehouse_id.partner_id if loc == 'end' else data['partner_id']
+                            partner = data['picking_type_id'].warehouse_id.partner_id if loc == 'end' else data[
+                                'partner_id']
 
                     template_data['notificare'][key]['locatie'] = {
                         'codJudet': STATE_CODES[partner.state_id.code],
@@ -921,7 +952,8 @@ class Picking(models.Model):
         """
         :return the gross weight of a stock.move
         """
-        return move.weight + sum(line.result_package_id.shipping_weight for line in move.move_line_ids if line.result_package_id)
+        return move.weight + sum(
+            line.result_package_id.shipping_weight for line in move.move_line_ids if line.result_package_id)
 
     def _l10n_ro_edi_stock_report_unhandled_document_state(self, state: str):
         """

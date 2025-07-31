@@ -20,7 +20,8 @@
         <field name="domain">[
             ('active', '!=', False),
             ('karma', '>', 0),
-        ]</field>
+            ]
+        </field>
         <field name="batch_mode">True</field>
         <field name="batch_distinctive_field" ref="base.field_res_users__id"/>
         <field name="batch_user_expression">user.id</field>
@@ -62,7 +63,8 @@
             ('partner_id.country_id', '!=', False),
             ('partner_id.city', '!=', False),
             ('partner_id.email', '!=', False)
-        ]</field>
+            ]
+        </field>
         <field name="batch_mode">True</field>
         <field name="batch_distinctive_field" ref="base.field_res_users__id"/>
         <field name="batch_user_expression">user.id</field>
@@ -102,7 +104,8 @@
         <field name="condition">higher</field>
         <field name="domain">[
             ('member_status', '=', 'completed')
-        ]</field>
+            ]
+        </field>
         <field name="batch_mode">True</field>
         <field name="batch_distinctive_field" ref="website_slides.field_slide_channel_partner__partner_id"/>
         <field name="batch_user_expression">user.partner_id.id</field>
@@ -143,7 +146,8 @@
         <field name="domain">[
             ('completed', '=', True),
             (0, '=', 1)
-        ]</field>
+            ]
+        </field>
         <field name="batch_mode">True</field>
         <field name="batch_distinctive_field" ref="website_slides.field_slide_slide_partner__partner_id"/>
         <field name="batch_user_expression">user.partner_id.id</field>
@@ -183,7 +187,8 @@
         <field name="condition">higher</field>
         <field name="domain">[
             ('karma', '>=', 2000)
-        ]</field>
+            ]
+        </field>
         <field name="batch_mode">True</field>
         <field name="batch_distinctive_field" ref="base.field_res_users__id"/>
         <field name="batch_user_expression">user.id</field>

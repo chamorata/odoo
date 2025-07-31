@@ -7,9 +7,11 @@
         <field name="arch" type="xml">
             <data>
                 <xpath expr="//div[@name='kanban_primary_right']" position="inside">
-                    <div t-if="record.new_applicant_count.raw_value > 0" class="row g-0 ml32" groups="hr_recruitment.group_hr_recruitment_user">
+                    <div t-if="record.new_applicant_count.raw_value > 0" class="row g-0 ml32"
+                         groups="hr_recruitment.group_hr_recruitment_user">
                         <a name="%(hr_applicant_action_from_department)d" class="col" type="action">
-                            <field name="new_applicant_count"/> New Applicants
+                            <field name="new_applicant_count"/>
+                            New Applicants
                         </a>
                     </div>
                 </xpath>
@@ -17,7 +19,7 @@
                 <xpath expr="//div[hasclass('o_kanban_manage_reports')]" position="inside">
                     <div role="menuitem">
                         <a class="dropdown-item" name="%(action_hr_recruitment_report_filtered_department)d"
-                            type="action" groups="hr_recruitment.group_hr_recruitment_interviewer">
+                           type="action" groups="hr_recruitment.group_hr_recruitment_interviewer">
                             Recruitment
                         </a>
                     </div>

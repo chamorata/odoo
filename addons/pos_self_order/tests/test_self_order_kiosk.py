@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import odoo.tests
 from odoo.addons.pos_self_order.tests.self_order_common_test import SelfOrderCommonTest
+
+import odoo.tests
 from odoo import Command
 
 
@@ -46,7 +47,9 @@ class TestSelfOrderKiosk(SelfOrderCommonTest):
         self.pos_config.current_session_id.set_opening_control(0, "")
         self_route = self.pos_config._get_self_order_route()
         self.start_tour(self_route, "self_simple_order")
-        orders = self.env['pos.order'].search(['&', ('state', '=', 'draft'), '|', ('config_id', '=', self.pos_config.id), ('config_id', 'in', self.pos_config.trusted_config_ids.ids)])
+        orders = self.env['pos.order'].search(
+            ['&', ('state', '=', 'draft'), '|', ('config_id', '=', self.pos_config.id),
+             ('config_id', 'in', self.pos_config.trusted_config_ids.ids)])
         self.assertEqual(len(orders), 1)
 
     def test_order_price_null(self):

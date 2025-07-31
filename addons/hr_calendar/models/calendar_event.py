@@ -1,10 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from dateutil.relativedelta import relativedelta
+from odoo.addons.resource.models.utils import Intervals, sum_intervals, timezone_datetime
 from pytz import UTC
 
 from odoo import api, fields, models
-
-from odoo.addons.resource.models.utils import Intervals, sum_intervals, timezone_datetime
 
 
 class CalendarEvent(models.Model):
@@ -15,7 +14,8 @@ class CalendarEvent(models.Model):
     @api.depends('partner_ids', 'start', 'stop', 'allday')
     def _compute_unavailable_partner_ids(self):
         complete_events = self.filtered(
-            lambda event: event.start and event.stop and (event.stop > event.start or (event.stop >= event.start and event.allday)) and event.partner_ids)
+            lambda event: event.start and event.stop and (
+                        event.stop > event.start or (event.stop >= event.start and event.allday)) and event.partner_ids)
         incomplete_event = self - complete_events
         incomplete_event.unavailable_partner_ids = []
         if not complete_events:
@@ -59,9 +59,9 @@ class CalendarEvent(models.Model):
                 )])
 
                 if any(not (Intervals([(
-                    event.start.replace(hour=0, minute=0, second=0, tzinfo=UTC) + relativedelta(days=i),
-                    event.start.replace(hour=23, minute=59, second=59, tzinfo=UTC) + relativedelta(days=i),
-                    self.env['resource.calendar']
+                        event.start.replace(hour=0, minute=0, second=0, tzinfo=UTC) + relativedelta(days=i),
+                        event.start.replace(hour=23, minute=59, second=59, tzinfo=UTC) + relativedelta(days=i),
+                        self.env['resource.calendar']
                 )]) & global_interval) for i in range(0, (event.stop_date - event.start_date).days + 1)):
                     interval_by_event[event] = Intervals([])
                 else:

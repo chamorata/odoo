@@ -2,10 +2,10 @@
 
 import logging
 
-from odoo.tests import tagged
-
 from odoo.addons.mail.tests.common import mail_new_test_user
 from odoo.addons.product_matrix.tests.common import TestMatrixCommon
+
+from odoo.tests import tagged
 
 _logger = logging.getLogger(__name__)
 
@@ -61,7 +61,8 @@ class TestSaleMatrixUi(TestMatrixCommon):
         self.assertEqual(len(self.matrix_template.product_variant_ids), 8)
         self.assertEqual(len(self.matrix_template.product_variant_ids.product_template_attribute_value_ids), 6)
         self.assertEqual(len(self.matrix_template.attribute_line_ids.product_template_value_ids), 8)
-        self.env['sale.order.line'].search([('product_id', 'in', self.matrix_template.product_variant_ids.ids)]).order_id.action_confirm()
+        self.env['sale.order.line'].search(
+            [('product_id', 'in', self.matrix_template.product_variant_ids.ids)]).order_id.action_confirm()
 
         self.env.flush_all()
         self.assertEqual(round(self.matrix_template.sales_count, 2), 56.8)
@@ -73,6 +74,7 @@ class TestSaleMatrixUi(TestMatrixCommon):
         # NB: the *2 is because the no_variant attribute doesn't create a variant
         # but still gives different order lines.
         self.assertEqual(
-            len(self.env['sale.order.line'].search([('product_id', 'in', self.matrix_template.product_variant_ids.ids)])),
-            len(self.matrix_template.product_variant_ids)*2
+            len(self.env['sale.order.line'].search(
+                [('product_id', 'in', self.matrix_template.product_variant_ids.ids)])),
+            len(self.matrix_template.product_variant_ids) * 2
         )

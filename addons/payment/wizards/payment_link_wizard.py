@@ -1,10 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.payment import utils as payment_utils
 from werkzeug import urls
 
 from odoo import _, api, fields, models
-
-from odoo.addons.payment import utils as payment_utils
 
 
 class PaymentLinkWizard(models.TransientModel):
@@ -43,7 +42,8 @@ class PaymentLinkWizard(models.TransientModel):
             elif wizard.amount <= 0:
                 wizard.warning_message = _("Please set a positive amount.")
             elif wizard.amount > wizard.amount_max:
-                wizard.warning_message = _("Please set an amount lower than %s.", wizard.currency_id.format(wizard.amount_max))
+                wizard.warning_message = _("Please set an amount lower than %s.",
+                                           wizard.currency_id.format(wizard.amount_max))
 
     @api.depends('res_model', 'res_id')
     def _compute_company_id(self):

@@ -1,11 +1,12 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import json
+
+from odoo.addons.mail.tests.test_controller_common import TestControllerCommon
 from requests.exceptions import HTTPError
 
 import odoo
 from odoo.tools import file_open, mute_logger
-from odoo.addons.mail.tests.test_controller_common import TestControllerCommon
 
 
 @odoo.tests.tagged("-at_install", "post_install")
@@ -31,7 +32,7 @@ class TestAttachmentControllerCommon(TestControllerCommon):
                     self.assertFalse(attachment.exists())
                 else:
                     with self.assertRaises(
-                        HTTPError, msg="upload attachment should raise NotFound"
+                            HTTPError, msg="upload attachment should raise NotFound"
                     ):
                         self._upload_attachment(record.id, record._name, route_kw)
 
@@ -80,4 +81,4 @@ class TestAttachmentController(TestAttachmentControllerCommon):
         )
 
     def test_send_attachment_without_body(self):
-        self.start_tour("/odoo/discuss", "create_thread_for_attachment_without_body",login="admin")
+        self.start_tour("/odoo/discuss", "create_thread_for_attachment_without_body", login="admin")

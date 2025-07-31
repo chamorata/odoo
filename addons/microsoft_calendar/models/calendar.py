@@ -2,17 +2,17 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import logging
-import pytz
 import re
-from datetime import datetime, timedelta
+from datetime import datetime
+
+import pytz
 from dateutil.parser import parse
 from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models, _
-from odoo.osv import expression
 from odoo.exceptions import UserError, ValidationError
-from odoo.tools import email_normalize
 from odoo.osv import expression
+from odoo.tools import email_normalize
 
 ATTENDEE_CONVERTER_O2M = {
     'needsAction': 'notresponded',
@@ -34,6 +34,7 @@ VIDEOCALL_URL_PATTERNS = (
 MAX_RECURRENT_EVENT = 720
 
 _logger = logging.getLogger(__name__)
+
 
 class Meeting(models.Model):
     _name = 'calendar.event'
@@ -69,7 +70,8 @@ class Meeting(models.Model):
     def _skip_send_mail_status_update(self):
         """If microsoft calendar is not syncing, don't send a mail."""
         user_id = self._get_event_user_m()
-        if self.with_user(user_id)._check_microsoft_sync_status() and user_id._get_microsoft_sync_status() == "sync_active":
+        if self.with_user(
+                user_id)._check_microsoft_sync_status() and user_id._get_microsoft_sync_status() == "sync_active":
             return self.microsoft_id or self.need_sync_m
         return super()._skip_send_mail_status_update()
 
@@ -150,7 +152,8 @@ class Meeting(models.Model):
         """
         Suggest user to update recurrences in Outlook due to the Outlook Calendar spam limitation.
         """
-        error_msg = _("Due to an Outlook Calendar limitation, recurrence updates must be done directly in Outlook Calendar.")
+        error_msg = _(
+            "Due to an Outlook Calendar limitation, recurrence updates must be done directly in Outlook Calendar.")
         if any(not record.ms_universal_event_id for record in self):
             # If any event is not synced, suggest deleting it in Odoo and recreating it in Outlook.
             error_msg = _(
@@ -163,7 +166,8 @@ class Meeting(models.Model):
         """
         Suggest user to update recurrences in Outlook due to the Outlook Calendar spam limitation.
         """
-        raise UserError(_("Due to an Outlook Calendar limitation, recurrent events must be created directly in Outlook Calendar."))
+        raise UserError(
+            _("Due to an Outlook Calendar limitation, recurrent events must be created directly in Outlook Calendar."))
 
     def write(self, values):
         recurrence_update_setting = values.get('recurrence_update')
@@ -172,7 +176,8 @@ class Meeting(models.Model):
         # Forbid recurrence updates through Odoo and suggest user to update it in Outlook.
         if self._check_microsoft_sync_status():
             recurrency_in_batch = self.filtered(lambda ev: ev.recurrency)
-            recurrence_update_attempt = recurrence_update_setting or 'recurrency' in values or recurrency_in_batch and len(recurrency_in_batch) > 0
+            recurrence_update_attempt = recurrence_update_setting or 'recurrency' in values or recurrency_in_batch and len(
+                recurrency_in_batch) > 0
             if not notify_context and recurrence_update_attempt and not 'active' in values:
                 self._forbid_recurrence_update()
 
@@ -212,10 +217,11 @@ class Meeting(models.Model):
 
         # Deactivate events that were recreated after changing organizer.
         if deactivated_events:
-            res |= super(Meeting, deactivated_events.with_context(dont_notify=notify_context)).write({**values, 'active': False})
+            res |= super(Meeting, deactivated_events.with_context(dont_notify=notify_context)).write(
+                {**values, 'active': False})
 
         if recurrence_update_setting in ('all_events',) and len(self) == 1 \
-           and values.keys() & self._get_microsoft_synced_fields():
+                and values.keys() & self._get_microsoft_synced_fields():
             self.recurrence_id.need_sync_m = True
         return res
 
@@ -224,7 +230,8 @@ class Meeting(models.Model):
         if self and self._check_microsoft_sync_status():
             synced_events = self._get_synced_events()
             change_from_microsoft = self.env.context.get('dont_notify', False)
-            recurrence_deletion = any(ev.recurrency and ev.recurrence_id and ev.follow_recurrence for ev in synced_events)
+            recurrence_deletion = any(
+                ev.recurrency and ev.recurrence_id and ev.follow_recurrence for ev in synced_events)
             if not change_from_microsoft and recurrence_deletion:
                 self._forbid_recurrence_update()
         return super().unlink()
@@ -298,7 +305,6 @@ class Meeting(models.Model):
 
         return self._extend_microsoft_domain(domain)
 
-
     @api.model
     def _microsoft_to_odoo_values(self, microsoft_event, default_reminders=(), default_values=None, with_ids=False):
         if microsoft_event.is_cancelled():
@@ -315,7 +321,8 @@ class Meeting(models.Model):
         timeZone_stop = pytz.timezone(microsoft_event.end.get('timeZone'))
         start = parse(microsoft_event.start.get('dateTime')).astimezone(timeZone_start).replace(tzinfo=None)
         if microsoft_event.isAllDay:
-            stop = parse(microsoft_event.end.get('dateTime')).astimezone(timeZone_stop).replace(tzinfo=None) - relativedelta(days=1)
+            stop = parse(microsoft_event.end.get('dateTime')).astimezone(timeZone_stop).replace(
+                tzinfo=None) - relativedelta(days=1)
         else:
             stop = parse(microsoft_event.end.get('dateTime')).astimezone(timeZone_stop).replace(tzinfo=None)
         values = default_values or {}
@@ -355,7 +362,6 @@ class Meeting(models.Model):
             values['microsoft_id'] = microsoft_event.id
             values['ms_universal_event_id'] = microsoft_event.iCalUId
 
-
         if microsoft_event.is_recurrent():
             values['microsoft_recurrence_master_id'] = microsoft_event.seriesMasterId
 
@@ -371,7 +377,8 @@ class Meeting(models.Model):
         timeZone_stop = pytz.timezone(microsoft_event.end.get('timeZone'))
         start = parse(microsoft_event.start.get('dateTime')).astimezone(timeZone_start).replace(tzinfo=None)
         if microsoft_event.isAllDay:
-            stop = parse(microsoft_event.end.get('dateTime')).astimezone(timeZone_stop).replace(tzinfo=None) - relativedelta(days=1)
+            stop = parse(microsoft_event.end.get('dateTime')).astimezone(timeZone_stop).replace(
+                tzinfo=None) - relativedelta(days=1)
         else:
             stop = parse(microsoft_event.end.get('dateTime')).astimezone(timeZone_stop).replace(tzinfo=None)
         values = default_values or {}
@@ -449,7 +456,7 @@ class Meeting(models.Model):
                     interval = 'minutes'
                     duration = minutes
                     name = _("%s - At time of event", alarm_type_label)
-                elif minutes % (60*24) == 0:
+                elif minutes % (60 * 24) == 0:
                     interval = 'days'
                     duration = minutes / 60 / 24
                     name = _(
@@ -473,7 +480,8 @@ class Meeting(models.Model):
                         reminder_type=alarm_type_label,
                         duration=duration,
                     )
-                reminders_commands = [(0, 0, {'duration': duration, 'interval': interval, 'name': name, 'alarm_type': 'notification'})]
+                reminders_commands = [
+                    (0, 0, {'duration': duration, 'interval': interval, 'name': name, 'alarm_type': 'notification'})]
 
             alarm_to_rm = event_id.alarm_ids.filtered(lambda a: a.alarm_type == 'notification' and a.id != alarm.id)
             if alarm_to_rm:
@@ -538,7 +546,8 @@ class Meeting(models.Model):
             values['reminderMinutesBeforeStart'] = alarm_id.duration_minutes
 
         if 'user_id' in fields_to_sync:
-            values['organizer'] = {'emailAddress': {'address': self.user_id.email or '', 'name': self.user_id.display_name or ''}}
+            values['organizer'] = {
+                'emailAddress': {'address': self.user_id.email or '', 'name': self.user_id.display_name or ''}}
             values['isOrganizer'] = self.user_id == self.env.user
 
         if 'attendee_ids' in fields_to_sync:
@@ -638,7 +647,8 @@ class Meeting(models.Model):
             invalid_events = ['\t- %s: %s' % (event['display_time'], event['display_name'])
                               for event in invalid_event_ids]
             invalid_events = '\n'.join(invalid_events)
-            details = "(%d/%d)" % (list_length_limit, total_invalid_events) if list_length_limit < total_invalid_events else "(%d)" % total_invalid_events
+            details = "(%d/%d)" % (list_length_limit,
+                                   total_invalid_events) if list_length_limit < total_invalid_events else "(%d)" % total_invalid_events
             raise ValidationError(_("For a correct synchronization between Odoo and Outlook Calendar, "
                                     "all attendees must have an email address. However, some events do "
                                     "not respect this condition. As long as the events are incorrect, "

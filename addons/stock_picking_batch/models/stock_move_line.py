@@ -54,7 +54,8 @@ class StockMoveLine(models.Model):
             for line in lines:
                 move = line.move_id
                 line_by_move[move] |= line
-                qty = line.product_uom_id._compute_quantity(line.quantity, line.product_id.uom_id, rounding_method='HALF-UP')
+                qty = line.product_uom_id._compute_quantity(line.quantity, line.product_id.uom_id,
+                                                            rounding_method='HALF-UP')
                 qty_by_move[line.move_id] += qty
 
             # If all moves are to be transferred to the wave, link the picking to the wave
@@ -97,10 +98,13 @@ class StockMoveLine(models.Model):
     def _is_auto_waveable(self):
         self.ensure_one()
         if not self.picking_id \
-           or (self.picking_id.state != 'assigned' or float_is_zero(self.quantity, precision_rounding=self.product_uom_id.rounding)) and not self.env.context.get('skip_auto_waveable')  \
-           or self.batch_id.is_wave \
-           or not self.picking_type_id._is_auto_wave_grouped() \
-           or (self.picking_type_id.wave_group_by_category and self.product_id.categ_id not in self.picking_type_id.wave_category_ids):  # noqa: SIM103
+                or (self.picking_id.state != 'assigned' or float_is_zero(self.quantity,
+                                                                         precision_rounding=self.product_uom_id.rounding)) and not self.env.context.get(
+            'skip_auto_waveable') \
+                or self.batch_id.is_wave \
+                or not self.picking_type_id._is_auto_wave_grouped() \
+                or (
+                self.picking_type_id.wave_group_by_category and self.product_id.categ_id not in self.picking_type_id.wave_category_ids):  # noqa: SIM103
             return False
         return True
 
@@ -133,7 +137,8 @@ class StockMoveLine(models.Model):
                 loc = loc.location_id
         batchable_lines = self.env['stock.move.line'].browse(batchable_line_ids)
 
-        remaining_line_ids = batchable_lines._auto_wave_lines_into_existing_waves(nearest_parent_locations=lines_nearest_parent_locations)
+        remaining_line_ids = batchable_lines._auto_wave_lines_into_existing_waves(
+            nearest_parent_locations=lines_nearest_parent_locations)
         remaining_lines = self.env['stock.move.line'].browse(remaining_line_ids)
         if remaining_lines:
             remaining_lines._auto_wave_lines_into_new_waves(nearest_parent_locations=lines_nearest_parent_locations)
@@ -156,11 +161,13 @@ class StockMoveLine(models.Model):
                 if picking_type.batch_group_by_partner:
                     domain = expression.AND([domain, [('picking_ids.partner_id', 'in', lines.move_id.partner_id.ids)]])
                 if picking_type.batch_group_by_destination:
-                    domain = expression.AND([domain, [('picking_ids.partner_id.country_id', 'in', lines.move_id.partner_id.country_id.ids)]])
+                    domain = expression.AND([domain, [('picking_ids.partner_id.country_id', 'in',
+                                                       lines.move_id.partner_id.country_id.ids)]])
                 if picking_type.batch_group_by_src_loc:
                     domain = expression.AND([domain, [('picking_ids.location_id', 'in', lines.location_id.ids)]])
                 if picking_type.batch_group_by_dest_loc:
-                    domain = expression.AND([domain, [('picking_ids.location_dest_id', 'in', lines.location_dest_id.ids)]])
+                    domain = expression.AND(
+                        [domain, [('picking_ids.location_dest_id', 'in', lines.location_dest_id.ids)]])
 
                 potential_waves = self.env['stock.picking.batch'].search(domain)
                 wave_to_new_lines = defaultdict(set)
@@ -188,13 +195,20 @@ class StockMoveLine(models.Model):
                     wave_found = False
                     for wave in potential_waves:
                         if line.company_id != wave.company_id \
-                        or (picking_type.batch_group_by_partner and line.move_id.partner_id != wave.picking_ids.partner_id) \
-                        or (picking_type.batch_group_by_destination and line.move_id.partner_id.country_id != wave.picking_ids.partner_id.country_id) \
-                        or (picking_type.batch_group_by_src_loc and line.location_id != wave.picking_ids.location_id) \
-                        or (picking_type.batch_group_by_dest_loc and line.location_dest_id != wave.picking_ids.location_dest_id) \
-                        or (picking_type.wave_group_by_product and line.product_id != wave.move_line_ids.product_id) \
-                        or (picking_type.wave_group_by_category and line.product_id.categ_id != wave.move_line_ids.product_id.categ_id) \
-                        or (picking_type.wave_group_by_location and waves_nearest_parent_locations[wave] != nearest_parent_locations[line].id):
+                                or (
+                                picking_type.batch_group_by_partner and line.move_id.partner_id != wave.picking_ids.partner_id) \
+                                or (
+                                picking_type.batch_group_by_destination and line.move_id.partner_id.country_id != wave.picking_ids.partner_id.country_id) \
+                                or (
+                                picking_type.batch_group_by_src_loc and line.location_id != wave.picking_ids.location_id) \
+                                or (
+                                picking_type.batch_group_by_dest_loc and line.location_dest_id != wave.picking_ids.location_dest_id) \
+                                or (
+                                picking_type.wave_group_by_product and line.product_id != wave.move_line_ids.product_id) \
+                                or (
+                                picking_type.wave_group_by_category and line.product_id.categ_id != wave.move_line_ids.product_id.categ_id) \
+                                or (picking_type.wave_group_by_location and waves_nearest_parent_locations[wave] !=
+                                    nearest_parent_locations[line].id):
                             continue
 
                         wave_new_move_ids = wave_to_new_moves[wave]
@@ -206,9 +220,11 @@ class StockMoveLine(models.Model):
                         # and the extra weight that will be added to the wave. So we need to check that the move/picking of the line is not already in the wave
                         # so that we don't count them as new moves/pickings.
                         if not wave._is_line_auto_mergeable(
-                            line.move_id.id not in wave_move_ids and line.move_id.id not in wave_new_move_ids and len(wave_new_move_ids) + 1,
-                            line.picking_id.id not in wave_picking_ids and line.picking_id.id not in wave_new_picking_ids and len(wave_new_picking_ids) + 1,
-                            waves_new_extra_weight[wave] + line.product_id.weight * line.quantity_product_uom
+                                line.move_id.id not in wave_move_ids and line.move_id.id not in wave_new_move_ids and len(
+                                    wave_new_move_ids) + 1,
+                                line.picking_id.id not in wave_picking_ids and line.picking_id.id not in wave_new_picking_ids and len(
+                                    wave_new_picking_ids) + 1,
+                                waves_new_extra_weight[wave] + line.product_id.weight * line.quantity_product_uom
                         ):
                             continue
 
@@ -244,7 +260,8 @@ class StockMoveLine(models.Model):
             if picking_type.batch_group_by_partner:
                 domain = expression.AND([domain, [('move_id.partner_id', 'in', lines.move_id.partner_id.ids)]])
             if picking_type.batch_group_by_destination:
-                domain = expression.AND([domain, [('move_id.partner_id.country_id', 'in', lines.move_id.partner_id.country_id.ids)]])
+                domain = expression.AND(
+                    [domain, [('move_id.partner_id.country_id', 'in', lines.move_id.partner_id.country_id.ids)]])
             if picking_type.batch_group_by_src_loc:
                 domain = expression.AND([domain, [('location_id', 'in', lines.location_id.ids)]])
             if picking_type.batch_group_by_dest_loc:
@@ -274,14 +291,20 @@ class StockMoveLine(models.Model):
                     continue
                 for potential_line in potential_lines:
                     if line.id == potential_line.id \
-                    or line.company_id != potential_line.company_id \
-                    or (picking_type.batch_group_by_partner and line.move_id.partner_id != potential_line.move_id.partner_id) \
-                    or (picking_type.batch_group_by_destination and line.move_id.partner_id.country_id != potential_line.move_id.partner_id.country_id) \
-                    or (picking_type.batch_group_by_src_loc and line.location_id != potential_line.location_id) \
-                    or (picking_type.batch_group_by_dest_loc and line.location_dest_id != potential_line.location_dest_id) \
-                    or (picking_type.wave_group_by_product and line.product_id != potential_line.product_id) \
-                    or (picking_type.wave_group_by_category and line.product_id.categ_id != potential_line.product_id.categ_id) \
-                    or (picking_type.wave_group_by_location and lines_nearest_parent_locations[potential_line] != nearest_parent_locations[line].id):
+                            or line.company_id != potential_line.company_id \
+                            or (
+                            picking_type.batch_group_by_partner and line.move_id.partner_id != potential_line.move_id.partner_id) \
+                            or (
+                            picking_type.batch_group_by_destination and line.move_id.partner_id.country_id != potential_line.move_id.partner_id.country_id) \
+                            or (picking_type.batch_group_by_src_loc and line.location_id != potential_line.location_id) \
+                            or (
+                            picking_type.batch_group_by_dest_loc and line.location_dest_id != potential_line.location_dest_id) \
+                            or (picking_type.wave_group_by_product and line.product_id != potential_line.product_id) \
+                            or (
+                            picking_type.wave_group_by_category and line.product_id.categ_id != potential_line.product_id.categ_id) \
+                            or (
+                            picking_type.wave_group_by_location and lines_nearest_parent_locations[potential_line] !=
+                            nearest_parent_locations[line].id):
                         continue
 
                     line_to_lines[line].add(potential_line.id)
@@ -319,9 +342,9 @@ class StockMoveLine(models.Model):
                         wave_picking_ids.add(potential_line.picking_id.id)
                         wave_weight += potential_line.product_id.weight * potential_line.quantity_product_uom
                         if new_wave._is_line_auto_mergeable(
-                            len(wave_move_ids),
-                            len(wave_picking_ids),
-                            wave_weight
+                                len(wave_move_ids),
+                                len(wave_picking_ids),
+                                wave_weight
                         ):
                             wave_line_ids.add(potential_line.id)
                         else:

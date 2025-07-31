@@ -1,9 +1,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import http
-from odoo.http import request
 from odoo.addons.mail.models.discuss.mail_guest import add_guest_to_context
 from odoo.addons.mail.tools.discuss import Store
+
+from odoo import http
+from odoo.http import request
 
 
 class LivechatChatbotScriptController(http.Controller):
@@ -38,7 +39,8 @@ class LivechatChatbotScriptController(http.Controller):
     @add_guest_to_context
     def chatbot_trigger_step(self, channel_id, chatbot_script_id=None):
         chatbot_language = self._get_chatbot_language()
-        discuss_channel = request.env["discuss.channel"].with_context(lang=chatbot_language).search([("id", "=", channel_id)])
+        discuss_channel = request.env["discuss.channel"].with_context(lang=chatbot_language).search(
+            [("id", "=", channel_id)])
         if not discuss_channel:
             return None
 
@@ -74,7 +76,7 @@ class LivechatChatbotScriptController(http.Controller):
                 "isLast": next_step._is_last_step(discuss_channel),
                 "message": Store.one(posted_message, only_id=True),
                 "operatorFound": next_step.step_type == "forward_operator"
-                and len(discuss_channel.channel_member_ids) > 2,
+                                 and len(discuss_channel.channel_member_ids) > 2,
                 "scriptStep": Store.one(next_step, only_id=True),
             },
         )

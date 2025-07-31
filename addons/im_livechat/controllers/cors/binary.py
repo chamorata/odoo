@@ -1,9 +1,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 
-from odoo.http import route
-from odoo.addons.mail.controllers.discuss.binary import BinaryController
 from odoo.addons.im_livechat.tools.misc import downgrade_to_public_user, force_guest_env
+from odoo.addons.mail.controllers.discuss.binary import BinaryController
+
+from odoo.http import route
 
 
 class LivechatBinaryController(BinaryController):
@@ -35,7 +36,7 @@ class LivechatBinaryController(BinaryController):
     @route(["/im_livechat/cors/web/image"], type='http', auth="public", cors="*")
     # pylint: disable=redefined-builtin,invalid-name
     def livechat_content_image(
-        self, model, id, field, unique=False, guest_token=None, access_token=None
+            self, model, id, field, unique=False, guest_token=None, access_token=None
     ):
         if guest_token:
             force_guest_env(guest_token)

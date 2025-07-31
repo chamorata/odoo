@@ -70,7 +70,7 @@
     <template id="ubl_21_InvoiceType" inherit_id="account_edi_ubl_cii.ubl_20_InvoiceType" primary="True">
         <xpath expr="//*[local-name()='ProfileID']" position="after">
             <cbc:ProfileExecutionID xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
-                t-out="vals.get('profile_execution_id')"/>
+                                    t-out="vals.get('profile_execution_id')"/>
         </xpath>
         <xpath expr="//*[local-name()='IssueTime']" position="after">
             <t xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">
@@ -84,7 +84,8 @@
         </xpath>
         <xpath expr="//*[local-name()='LegalMonetaryTotal']" position="before">
             <t xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2">
-                <cac:WithholdingTaxTotal t-foreach="vals.get('withholding_tax_total_vals_list', [])" t-as="foreach_vals">
+                <cac:WithholdingTaxTotal t-foreach="vals.get('withholding_tax_total_vals_list', [])"
+                                         t-as="foreach_vals">
                     <t t-call="{{TaxTotalType_template}}">
                         <t t-set="vals" t-value="foreach_vals"/>
                     </t>
@@ -96,7 +97,8 @@
     <template id="ubl_21_InvoiceLineType" inherit_id="account_edi_ubl_cii.ubl_20_InvoiceLineType" primary="True">
         <xpath expr="//*[local-name()='TaxTotal']" position="after">
             <t xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2">
-                <cac:WithholdingTaxTotal t-foreach="vals.get('withholding_tax_total_vals_list', [])" t-as="foreach_vals">
+                <cac:WithholdingTaxTotal t-foreach="vals.get('withholding_tax_total_vals_list', [])"
+                                         t-as="foreach_vals">
                     <t t-call="{{TaxTotalType_template}}">
                         <t t-set="vals" t-value="foreach_vals"/>
                     </t>
@@ -117,13 +119,13 @@
     <template id="ubl_21_CreditNoteType" inherit_id="account_edi_ubl_cii.ubl_20_CreditNoteType" primary="True">
         <xpath expr="//*[local-name()='ProfileID']" position="after">
             <cbc:ProfileExecutionID xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
-                t-out="vals.get('profile_execution_id')"/>
+                                    t-out="vals.get('profile_execution_id')"/>
         </xpath>
         <xpath expr="//*[local-name()='IssueTime']" position="after">
             <t xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">
                 <cbc:CreditNoteTypeCode
-                    t-att="vals.get('document_type_code_attrs', {})"
-                    t-out="vals.get('document_type_code')"/>
+                        t-att="vals.get('document_type_code_attrs', {})"
+                        t-out="vals.get('document_type_code')"/>
             </t>
         </xpath>
         <xpath expr="//*[local-name()='TaxCurrencyCode']" position="after">
@@ -155,7 +157,7 @@
     <template id="ubl_21_DebitNoteType" inherit_id="account_edi_ubl_cii.ubl_20_DebitNoteType" primary="True">
         <xpath expr="//*[local-name()='ProfileID']" position="after">
             <cbc:ProfileExecutionID xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
-                t-out="vals.get('profile_execution_id')"/>
+                                    t-out="vals.get('profile_execution_id')"/>
         </xpath>
         <xpath expr="//*[local-name()='TaxCurrencyCode']" position="after">
             <t xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">

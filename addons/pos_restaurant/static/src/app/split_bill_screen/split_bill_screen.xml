@@ -15,21 +15,23 @@
 
                 <div class="main d-flex flex-column flex-lg-row flex-grow-1 gap-2 p-2 overflow-hidden">
                     <div class="flex-grow-1 w-100 w-lg-50 me-0 me-lg-2 rounded-3 bg-view overflow-auto">
-                        <OrderWidget lines="orderlines" t-slot-scope="scope" generalNote="currentOrder.general_note or ''">
-                            <t t-set="line" t-value="scope.line" />
+                        <OrderWidget lines="orderlines" t-slot-scope="scope"
+                                     generalNote="currentOrder.general_note or ''">
+                            <t t-set="line" t-value="scope.line"/>
                             <Orderline line="getLineData(line)"
-                                t-on-click="() => this.onClickLine(line)"
-                                class="{'selected active': qtyTracker[line.uuid] and qtyTracker[line.uuid] !== 0}" />
+                                       t-on-click="() => this.onClickLine(line)"
+                                       class="{'selected active': qtyTracker[line.uuid] and qtyTracker[line.uuid] !== 0}"/>
                         </OrderWidget>
                     </div>
                     <div class="controls flex-column flex-nowrap w-100 w-lg-50">
                         <div class="order-info mb-2 mt-2 mt-lg-0 py-3 py-lg-4 rounded-3 text-center bg-view">
                             <span class="subtotal text-success">
-                                <t t-esc="env.utils.formatCurrency(newOrderPrice)" />
+                                <t t-esc="env.utils.formatCurrency(newOrderPrice)"/>
                             </span>
                         </div>
                         <div class="pay-button">
-                            <div class="button btn btn-lg btn-primary py-3 py-lg-5 w-100" t-on-click="createSplittedOrder">
+                            <div class="button btn btn-lg btn-primary py-3 py-lg-5 w-100"
+                                 t-on-click="createSplittedOrder">
                                 <span>Split Order</span>
                             </div>
                         </div>

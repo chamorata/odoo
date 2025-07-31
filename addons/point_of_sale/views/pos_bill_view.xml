@@ -7,9 +7,9 @@
             <form string="Bills">
                 <sheet>
                     <group>
-                        <field name="name" />
-                        <field name="value" />
-                        <field name="pos_config_ids" widget="many2many_tags" />
+                        <field name="name"/>
+                        <field name="value"/>
+                        <field name="pos_config_ids" widget="many2many_tags"/>
                     </group>
                 </sheet>
             </form>
@@ -21,10 +21,10 @@
         <field name="model">pos.bill</field>
         <field name="arch" type="xml">
             <list string="Bills" create="1" delete="1" editable="bottom">
-                <field name="name" />
-                <field name="value" />
-                <field name="for_all_config" />
-                <field name="pos_config_ids" widget="many2many_tags" readonly="for_all_config" />
+                <field name="name"/>
+                <field name="value"/>
+                <field name="for_all_config"/>
+                <field name="pos_config_ids" widget="many2many_tags" readonly="for_all_config"/>
             </list>
         </field>
     </record>
@@ -36,10 +36,10 @@
     </record>
 
     <menuitem
-        id="menu_pos_bill"
-        name="Coins/Bills"
-        parent="menu_point_config_product"
-        sequence="4"
-        action="action_pos_bill"
-        groups="group_pos_manager"/>
+            id="menu_pos_bill"
+            name="Coins/Bills"
+            parent="menu_point_config_product"
+            sequence="4"
+            action="action_pos_bill"
+            groups="group_pos_manager"/>
 </odoo>

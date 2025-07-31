@@ -1,9 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.tests.common import HttpCase, tagged
-
 from odoo.addons.mail.tests.common import mail_new_test_user
 from odoo.addons.sale.tests.product_configurator_common import TestProductConfiguratorCommon
+
+from odoo.tests.common import HttpCase, tagged
 
 
 @tagged('post_install', '-at_install')
@@ -151,7 +151,8 @@ class TestProductConfiguratorUi(HttpCase, TestProductConfiguratorCommon):
         """
 
         # Required to see `pricelist_id` in the view
-        self.env.ref('base.group_user').write({'implied_ids': [(4, self.env.ref('product.group_product_pricelist').id)]})
+        self.env.ref('base.group_user').write(
+            {'implied_ids': [(4, self.env.ref('product.group_product_pricelist').id)]})
         self.env['res.partner'].create({
             'name': 'Azure Interior',
             'email': 'azure.Interior24@example.com',

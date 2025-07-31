@@ -6,9 +6,9 @@
             <field name="name">Marc Demo</field>
             <field name="company_id" ref="main_company"/>
             <field name="company_name">YourCompany</field>
-            <field name="street">3575  Buena Vista Avenue</field>
+            <field name="street">3575 Buena Vista Avenue</field>
             <field name="city">Eugene</field>
-            <field name="state_id"  model="res.country.state" search="[('code','=','OR')]"/>
+            <field name="state_id" model="res.country.state" search="[('code','=','OR')]"/>
             <field name="zip">97401</field>
             <field name="country_id" ref="us"/>
             <field name="tz">Europe/Brussels</field>
@@ -36,9 +36,13 @@
             <field name="partner_id" ref="base.partner_demo"/>
             <field name="login">demo</field>
             <field name="password">demo</field>
-            <field name="signature" type="html"><span>-- <br/>+Mr Demo</span></field>
+            <field name="signature" type="html">
+                <span>--<br/>+Mr Demo
+                </span>
+            </field>
             <field name="company_id" ref="main_company"/>
-            <field name="groups_id" eval="[Command.set([ref('base.group_user'), ref('base.group_partner_manager'), ref('base.group_allow_export')])]"/>
+            <field name="groups_id"
+                   eval="[Command.set([ref('base.group_user'), ref('base.group_partner_manager'), ref('base.group_allow_export')])]"/>
             <field name="image_1920" type="base64" file="base/static/img/user_demo-image.png"/>
         </record>
 
@@ -66,7 +70,10 @@
         </record>
 
         <record id="base.user_admin" model="res.users">
-            <field name="signature" type="html"><span>-- <br/>Mitchell Admin</span></field>
+            <field name="signature" type="html">
+                <span>--<br/>Mitchell Admin
+                </span>
+            </field>
         </record>
 
         <!-- Portal : partner and user -->
@@ -87,10 +94,12 @@
             <field name="login">portal</field>
             <field name="password">portal</field>
             <field name="signature"><![CDATA[<span>-- <br/>Mr Demo Portal</span>]]></field>
-            <field name="groups_id" eval="[Command.clear()]"/><!-- Avoid auto-including this user in any default group -->
+            <field name="groups_id"
+                   eval="[Command.clear()]"/><!-- Avoid auto-including this user in any default group -->
         </record>
 
-        <record id="base.group_portal" model="res.groups"><!-- Add the demo user to the portal (and therefore to the portal member group) -->
+        <record id="base.group_portal"
+                model="res.groups"><!-- Add the demo user to the portal (and therefore to the portal member group) -->
             <field name="users" eval="[Command.link(ref('demo_user0'))]"/>
         </record>
     </data>

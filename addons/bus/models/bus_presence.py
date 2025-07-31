@@ -25,10 +25,12 @@ class BusPresence(models.Model):
     user_id = fields.Many2one('res.users', 'Users', ondelete='cascade')
     last_poll = fields.Datetime('Last Poll', default=lambda self: fields.Datetime.now())
     last_presence = fields.Datetime('Last Presence', default=lambda self: fields.Datetime.now())
-    status = fields.Selection([('online', 'Online'), ('away', 'Away'), ('offline', 'Offline')], 'IM Status', default='offline')
+    status = fields.Selection([('online', 'Online'), ('away', 'Away'), ('offline', 'Offline')], 'IM Status',
+                              default='offline')
 
     def init(self):
-        self.env.cr.execute("CREATE UNIQUE INDEX IF NOT EXISTS bus_presence_user_unique ON %s (user_id) WHERE user_id IS NOT NULL" % self._table)
+        self.env.cr.execute(
+            "CREATE UNIQUE INDEX IF NOT EXISTS bus_presence_user_unique ON %s (user_id) WHERE user_id IS NOT NULL" % self._table)
 
     def create(self, values):
         presences = super().create(values)
@@ -59,7 +61,8 @@ class BusPresence(models.Model):
             # Hide transaction serialization errors, which can be ignored, the presence update is not essential
             # The errors are supposed from presence.write(...) call only
             with tools.mute_logger('odoo.sql_db'):
-                self._update_presence(inactivity_period=inactivity_period, identity_field=identity_field, identity_value=identity_value)
+                self._update_presence(inactivity_period=inactivity_period, identity_field=identity_field,
+                                      identity_value=identity_value)
                 # commit on success
                 self.env.cr.commit()
         except PG_CONCURRENCY_EXCEPTIONS_TO_RETRY:

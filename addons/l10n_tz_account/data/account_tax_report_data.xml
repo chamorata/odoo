@@ -53,7 +53,8 @@
                         <field name="name">Value of capital Goods for which VAT is deferred</field>
                         <field name="code">capital_good_deferred_vat</field>
                         <field name="expression_ids">
-                            <record id="tax_report_capital_good_deferred_vat_expr_value" model="account.report.expression">
+                            <record id="tax_report_capital_good_deferred_vat_expr_value"
+                                    model="account.report.expression">
                                 <field name="label">value</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">05.base</field>
@@ -163,7 +164,8 @@
                         <field name="name">Non-Creditable purchases</field>
                         <field name="code">non_creditable_purchases</field>
                         <field name="expression_ids">
-                            <record id="tax_report_non_creditable_purchases_expr_value" model="account.report.expression">
+                            <record id="tax_report_non_creditable_purchases_expr_value"
+                                    model="account.report.expression">
                                 <field name="label">value</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">15.base</field>
@@ -174,7 +176,8 @@
                         <field name="name">Value of capital Goods for which VAT is deferred</field>
                         <field name="code">capital_goods_deferred_vat_purchases</field>
                         <field name="expression_ids">
-                            <record id="tax_report_capital_goods_deferred_vat_purchases_expr_value" model="account.report.expression">
+                            <record id="tax_report_capital_goods_deferred_vat_purchases_expr_value"
+                                    model="account.report.expression">
                                 <field name="label">value</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">16.base</field>
@@ -185,18 +188,21 @@
                         <field name="name">Value of imported services</field>
                         <field name="code">imported_services_purchases</field>
                         <field name="expression_ids">
-                            <record id="tax_report_imported_services_purchases_expr_value" model="account.report.expression">
+                            <record id="tax_report_imported_services_purchases_expr_value"
+                                    model="account.report.expression">
                                 <field name="label">value</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">17.base</field>
                             </record>
-                            <record id="tax_report_imported_services_purchases_expr_rate" model="account.report.expression">
+                            <record id="tax_report_imported_services_purchases_expr_rate"
+                                    model="account.report.expression">
                                 <field name="label">rate</field>
                                 <field name="engine">external</field>
                                 <field name="formula">sum</field>
                                 <field name="subformula">editable</field>
                             </record>
-                            <record id="tax_report_imported_services_purchases_expr_amount" model="account.report.expression">
+                            <record id="tax_report_imported_services_purchases_expr_amount"
+                                    model="account.report.expression">
                                 <field name="label">amount</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">18.tax</field>
@@ -207,18 +213,21 @@
                         <field name="name">Taxable supplies</field>
                         <field name="code">taxable_supplies_purchases</field>
                         <field name="expression_ids">
-                            <record id="tax_report_taxable_supplies_purchases_expr_value" model="account.report.expression">
+                            <record id="tax_report_taxable_supplies_purchases_expr_value"
+                                    model="account.report.expression">
                                 <field name="label">value</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">20.base</field>
                             </record>
-                            <record id="tax_report_taxable_supplies_purchases_expr_rate" model="account.report.expression">
+                            <record id="tax_report_taxable_supplies_purchases_expr_rate"
+                                    model="account.report.expression">
                                 <field name="label">rate</field>
                                 <field name="engine">external</field>
                                 <field name="formula">sum</field>
                                 <field name="subformula">editable</field>
                             </record>
-                            <record id="tax_report_taxable_supplies_purchases_expr_amount" model="account.report.expression">
+                            <record id="tax_report_taxable_supplies_purchases_expr_amount"
+                                    model="account.report.expression">
                                 <field name="label">amount</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">21.tax</field>
@@ -229,18 +238,21 @@
                         <field name="name">Imports of taxable supplies</field>
                         <field name="code">imports_taxable_supplies_purchases</field>
                         <field name="expression_ids">
-                            <record id="tax_report_imports_taxable_supplies_purchases_expr_value" model="account.report.expression">
+                            <record id="tax_report_imports_taxable_supplies_purchases_expr_value"
+                                    model="account.report.expression">
                                 <field name="label">value</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">23.base</field>
                             </record>
-                            <record id="tax_report_imports_taxable_supplies_purchases_expr_rate" model="account.report.expression">
+                            <record id="tax_report_imports_taxable_supplies_purchases_expr_rate"
+                                    model="account.report.expression">
                                 <field name="label">rate</field>
                                 <field name="engine">external</field>
                                 <field name="formula">sum</field>
                                 <field name="subformula">editable</field>
                             </record>
-                            <record id="tax_report_imports_taxable_supplies_purchases_expr_amount" model="account.report.expression">
+                            <record id="tax_report_imports_taxable_supplies_purchases_expr_amount"
+                                    model="account.report.expression">
                                 <field name="label">amount</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">24.tax</field>

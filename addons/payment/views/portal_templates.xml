@@ -19,7 +19,9 @@
         -->
         <t t-call="portal.frontend_layout">
             <t t-set="page_title" t-value="'Payment'"/>
-            <t t-set="additional_title"><t t-esc="page_title"/></t>
+            <t t-set="additional_title">
+                <t t-esc="page_title"/>
+            </t>
             <div class="wrap">
                 <div class="container">
                     <!-- Portal breadcrumb -->
@@ -31,17 +33,20 @@
                                 There is nothing to pay.
                             </div>
                             <div t-elif="not currency" class="alert alert-warning">
-                                <strong>Warning</strong> The currency is missing or incorrect.
+                                <strong>Warning</strong>
+                                The currency is missing or incorrect.
                             </div>
                             <div t-elif="not partner_id" class="alert alert-warning">
-                                <strong>Warning</strong> You must be logged in to pay.
+                                <strong>Warning</strong>
+                                You must be logged in to pay.
                             </div>
                             <div t-elif="company_mismatch">
                                 <t t-call="payment.company_mismatch_warning"/>
                             </div>
                             <t t-else="">
                                 <div t-if="partner_is_different" class="alert alert-warning">
-                                    <strong>Warning</strong> Make sure you are logged in as the
+                                    <strong>Warning</strong>
+                                    Make sure you are logged in as the
                                     correct partner before making this payment.
                                 </div>
                                 <div class="text-bg-light row row-cols-1 row-cols-md-2 mx-0 py-2
@@ -80,7 +85,9 @@
         <div class="row mr16">
             <div class="alert alert-warning col-lg-12 ms-3 me-3" role="alert">
                 <p>
-                    Please switch to company <t t-esc="expected_company.name"/> to make this
+                    Please switch to company
+                    <t t-esc="expected_company.name"/>
+                    to make this
                     payment.
                 </p>
             </div>
@@ -91,7 +98,9 @@
     <template id="payment.payment_methods" name="Payment Methods">
         <t t-call="portal.frontend_layout">
             <t t-set="page_title" t-value="'Payment Methods'"/>
-            <t t-set="additional_title"><t t-esc="page_title"/></t>
+            <t t-set="additional_title">
+                <t t-esc="page_title"/>
+            </t>
             <div class="wrap">
                 <div class="container">
                     <!-- Portal breadcrumb -->
@@ -111,7 +120,9 @@
     <template id="payment.payment_status" name="Payment Status">
         <t t-call="portal.frontend_layout">
             <t t-set="page_title" t-value="'Payment Status'"/>
-            <t t-set="additional_title"><t t-esc="page_title"/></t>
+            <t t-set="additional_title">
+                <t t-esc="page_title"/>
+            </t>
             <div class="wrap">
                 <div class="container">
                     <!-- Portal breadcrumb -->
@@ -167,61 +178,64 @@
         -->
         <t t-call="portal.frontend_layout">
             <t t-set="page_title" t-value="'Payment Confirmation'"/>
-            <t t-set="additional_title"><t t-esc="page_title"/></t>
+            <t t-set="additional_title">
+                <t t-esc="page_title"/>
+            </t>
             <t t-set="show_pm" t-value="tx.payment_method_code != 'unknown'"/>
             <div class="wrap">
                 <div class="container">
                     <!-- Portal breadcrumb -->
                     <t t-call="payment.portal_breadcrumb"/>
                     <div class="row justify-content-center my-3">
-                    <div class="col-12 col-lg-7">
-                        <!-- Confirmation page -->
-                        <div class="row">
-                            <div class="col">
-                                <t t-call="payment.state_header"/>
+                        <div class="col-12 col-lg-7">
+                            <!-- Confirmation page -->
+                            <div class="row">
+                                <div class="col">
+                                    <t t-call="payment.state_header"/>
+                                </div>
                             </div>
-                        </div>
-                        <div t-att-class="'text-bg-light row row-cols-1 mx-0 mb-3 py-2 rounded'
+                            <div t-att-class="'text-bg-light row row-cols-1 mx-0 mb-3 py-2 rounded'
                                           + (' row-cols-md-4' if show_pm else ' row-cols-md-3')"
-                        >
-                            <t t-call="payment.summary_item">
-                                <t t-set="name" t-value="'amount'"/>
-                                <t t-set="label">Amount</t>
-                                <t t-set="value" t-value="tx.amount"/>
-                                <t t-set="options"
-                                   t-value="{'widget': 'monetary', 'display_currency': tx.currency_id}"
-                                />
-                            </t>
-                            <t t-call="payment.summary_item">
-                                <t t-set="name" t-value="'reference'"/>
-                                <t t-set="label">Reference</t>
-                                <t t-set="value" t-value="tx.reference"/>
-                                <t t-set="include_separator" t-value="True"/>
-                            </t>
-                            <t t-if="tx.payment_method_code != 'unknown'">
-                               <t t-call="payment.summary_item">
-                                    <t t-set="name" t-value="'method'"/>
-                                    <t t-set="label">Payment Method</t>
-                                    <t t-set="value" t-value="tx.payment_method_id.name"/>
+                            >
+                                <t t-call="payment.summary_item">
+                                    <t t-set="name" t-value="'amount'"/>
+                                    <t t-set="label">Amount</t>
+                                    <t t-set="value" t-value="tx.amount"/>
+                                    <t t-set="options"
+                                       t-value="{'widget': 'monetary', 'display_currency': tx.currency_id}"
+                                    />
+                                </t>
+                                <t t-call="payment.summary_item">
+                                    <t t-set="name" t-value="'reference'"/>
+                                    <t t-set="label">Reference</t>
+                                    <t t-set="value" t-value="tx.reference"/>
                                     <t t-set="include_separator" t-value="True"/>
-                               </t>
-                            </t>
-                            <t t-call="payment.summary_item">
-                                <t t-set="name" t-value="'provider'"/>
-                                <t t-set="label">Processed by</t>
-                                <t t-set="value" t-value="tx.provider_id.sudo().name"/>
-                                <t t-set="include_separator" t-value="True"/>
-                            </t>
-                        </div>
+                                </t>
+                                <t t-if="tx.payment_method_code != 'unknown'">
+                                    <t t-call="payment.summary_item">
+                                        <t t-set="name" t-value="'method'"/>
+                                        <t t-set="label">Payment Method</t>
+                                        <t t-set="value" t-value="tx.payment_method_id.name"/>
+                                        <t t-set="include_separator" t-value="True"/>
+                                    </t>
+                                </t>
+                                <t t-call="payment.summary_item">
+                                    <t t-set="name" t-value="'provider'"/>
+                                    <t t-set="label">Processed by</t>
+                                    <t t-set="value" t-value="tx.provider_id.sudo().name"/>
+                                    <t t-set="include_separator" t-value="True"/>
+                                </t>
+                            </div>
 
-                        <div class="row">
-                            <div class="col offset-md-3 ps-0">
-                                <a role="button" class="btn btn-primary float-end" href="/my/home">
-                                    Go to my Account <i class="oi oi-arrow-right ms-2"/>
-                                </a>
+                            <div class="row">
+                                <div class="col offset-md-3 ps-0">
+                                    <a role="button" class="btn btn-primary float-end" href="/my/home">
+                                        Go to my Account
+                                        <i class="oi oi-arrow-right ms-2"/>
+                                    </a>
+                                </div>
                             </div>
                         </div>
-                    </div>
                     </div>
                 </div>
             </div>
@@ -244,7 +258,9 @@
                                aria-label="Home"/>
                         </a>
                     </li>
-                    <li class="breadcrumb-item"><t t-esc="page_title"/></li>
+                    <li class="breadcrumb-item">
+                        <t t-esc="page_title"/>
+                    </li>
                 </ol>
             </div>
         </div>
@@ -357,13 +373,15 @@
                t-att-href="tx.landing_route"
                class="alert-link ms-auto text-nowrap"
             >
-                Skip <i class="oi oi-arrow-right ms-1 small"/>
+                Skip
+                <i class="oi oi-arrow-right ms-1 small"/>
             </a>
         </div>
     </template>
 
     <!-- "Manage payment methods" card on /my -->
-    <template id="portal_my_home_payment" name="Payment Methods" customize_show="True" inherit_id="portal.portal_my_home" priority="60">
+    <template id="portal_my_home_payment" name="Payment Methods" customize_show="True"
+              inherit_id="portal.portal_my_home" priority="60">
         <xpath expr="//div[hasclass('o_portal_docs')]" position="before">
             <t t-set="portal_client_category_enable" t-value="True"/>
         </xpath>
@@ -378,7 +396,8 @@
                             force_tokenization=True,
                         )"
             />
-            <t t-set="existing_tokens" t-value="partner_sudo.payment_token_ids + partner_sudo.commercial_partner_id.payment_token_ids"/>
+            <t t-set="existing_tokens"
+               t-value="partner_sudo.payment_token_ids + partner_sudo.commercial_partner_id.payment_token_ids"/>
             <t t-if="methods_allowing_tokenization or existing_tokens" t-call="portal.portal_docs_entry">
                 <t t-set="icon" t-value="'/payment/static/img/payment-methods.svg'"/>
                 <t t-set="title">Payment methods</t>

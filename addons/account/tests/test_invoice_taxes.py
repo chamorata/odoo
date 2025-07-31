@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 # pylint: disable=C0326
-from odoo import Command
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
+from odoo import Command
 from odoo.tests import tagged, Form
 
 
@@ -152,9 +153,9 @@ class TestInvoiceTaxes(AccountTestInvoicingCommon):
         ])
         invoice.action_post()
         self.assertRecordValues(invoice.line_ids.filtered('tax_line_id').sorted(lambda x: x.name), [
-            {'name': self.percent_tax_2.name,       'tax_base_amount': 100, 'balance': -12, 'tax_ids': []},
-            {'name': self.percent_tax_1.name,       'tax_base_amount': 100, 'balance': -21, 'tax_ids': []},
-            {'name': self.percent_tax_1_incl.name,  'tax_base_amount': 100, 'balance': -21, 'tax_ids': []},
+            {'name': self.percent_tax_2.name, 'tax_base_amount': 100, 'balance': -12, 'tax_ids': []},
+            {'name': self.percent_tax_1.name, 'tax_base_amount': 100, 'balance': -21, 'tax_ids': []},
+            {'name': self.percent_tax_1_incl.name, 'tax_base_amount': 100, 'balance': -21, 'tax_ids': []},
         ])
 
     def test_affecting_base_amount(self):
@@ -177,8 +178,9 @@ class TestInvoiceTaxes(AccountTestInvoicingCommon):
         ])
         invoice.action_post()
         self.assertRecordValues(invoice.line_ids.filtered('tax_line_id').sorted(lambda x: -x.balance), [
-            {'name': self.percent_tax_1_incl.name,      'tax_base_amount': 100, 'balance': -21,      'tax_ids': [self.percent_tax_2.id]},
-            {'name': self.percent_tax_2.name,           'tax_base_amount': 221, 'balance': -26.52,   'tax_ids': []},
+            {'name': self.percent_tax_1_incl.name, 'tax_base_amount': 100, 'balance': -21,
+             'tax_ids': [self.percent_tax_2.id]},
+            {'name': self.percent_tax_2.name, 'tax_base_amount': 221, 'balance': -26.52, 'tax_ids': []},
         ])
 
     def test_group_of_taxes(self):
@@ -201,9 +203,10 @@ class TestInvoiceTaxes(AccountTestInvoicingCommon):
         ])
         invoice.action_post()
         self.assertRecordValues(invoice.line_ids.filtered('tax_line_id').sorted('balance'), [
-            {'name': self.percent_tax_1_incl.name,      'tax_base_amount': 100.0,   'balance': -21.0,   'tax_ids': [self.percent_tax_2.id]},
-            {'name': self.percent_tax_2.name,           'tax_base_amount': 121.0,   'balance': -14.52,  'tax_ids': []},
-            {'name': self.percent_tax_2.name,           'tax_base_amount': 100.0,   'balance': -12.0,   'tax_ids': []},
+            {'name': self.percent_tax_1_incl.name, 'tax_base_amount': 100.0, 'balance': -21.0,
+             'tax_ids': [self.percent_tax_2.id]},
+            {'name': self.percent_tax_2.name, 'tax_base_amount': 121.0, 'balance': -14.52, 'tax_ids': []},
+            {'name': self.percent_tax_2.name, 'tax_base_amount': 100.0, 'balance': -12.0, 'tax_ids': []},
         ])
 
     def _create_tax_tag(self, tag_name):
@@ -220,8 +223,10 @@ class TestInvoiceTaxes(AccountTestInvoicingCommon):
         ref_base_tag = self._create_tax_tag('refund_base')
         ref_tax_tag = self._create_tax_tag('refund_tax')
 
-        account_1 = self.env['account.account'].create({'name': 'test1', 'code': 'test1', 'account_type': 'asset_current'})
-        account_2 = self.env['account.account'].create({'name': 'test2', 'code': 'test2', 'account_type': 'asset_current'})
+        account_1 = self.env['account.account'].create(
+            {'name': 'test1', 'code': 'test1', 'account_type': 'asset_current'})
+        account_2 = self.env['account.account'].create(
+            {'name': 'test2', 'code': 'test2', 'account_type': 'asset_current'})
 
         tax = self.env['account.tax'].create({
             'name': "Tax with account",
@@ -229,19 +234,19 @@ class TestInvoiceTaxes(AccountTestInvoicingCommon):
             'type_tax_use': 'sale',
             'amount': 42,
             'invoice_repartition_line_ids': [
-                (0,0, {
+                (0, 0, {
                     'repartition_type': 'base',
                     'tag_ids': [(4, inv_base_tag.id, 0)],
                 }),
 
-                (0,0, {
+                (0, 0, {
                     'factor_percent': 10,
                     'repartition_type': 'tax',
                     'account_id': account_1.id,
                     'tag_ids': [(4, inv_tax_tag_10.id, 0)],
                 }),
 
-                (0,0, {
+                (0, 0, {
                     'factor_percent': 90,
                     'repartition_type': 'tax',
                     'account_id': account_2.id,
@@ -249,18 +254,18 @@ class TestInvoiceTaxes(AccountTestInvoicingCommon):
                 }),
             ],
             'refund_repartition_line_ids': [
-                (0,0, {
+                (0, 0, {
                     'repartition_type': 'base',
                     'tag_ids': [(4, ref_base_tag.id, 0)],
                 }),
 
-                (0,0, {
+                (0, 0, {
                     'factor_percent': 10,
                     'repartition_type': 'tax',
                     'tag_ids': [(4, ref_tax_tag.id, 0)],
                 }),
 
-                (0,0, {
+                (0, 0, {
                     'factor_percent': 90,
                     'repartition_type': 'tax',
                     'account_id': account_1.id,
@@ -273,31 +278,41 @@ class TestInvoiceTaxes(AccountTestInvoicingCommon):
         invoice = self._create_invoice([(100, tax)], inv_type='out_invoice')
         invoice.action_post()
 
-        self.assertEqual(len(invoice.line_ids), 4, "There should be 4 account move lines created for the invoice: payable, base and 2 tax lines")
-        inv_base_line = invoice.line_ids.filtered(lambda x: not x.tax_repartition_line_id and x.account_id.account_type != 'asset_receivable')
+        self.assertEqual(len(invoice.line_ids), 4,
+                         "There should be 4 account move lines created for the invoice: payable, base and 2 tax lines")
+        inv_base_line = invoice.line_ids.filtered(
+            lambda x: not x.tax_repartition_line_id and x.account_id.account_type != 'asset_receivable')
         self.assertEqual(len(inv_base_line), 1, "There should be only one base line generated")
         self.assertEqual(abs(inv_base_line.balance), 100, "Base amount should be 100")
         self.assertEqual(inv_base_line.tax_tag_ids, inv_base_tag, "Base line should have received base tag")
         inv_tax_lines = invoice.line_ids.filtered(lambda x: x.tax_repartition_line_id.repartition_type == 'tax')
         self.assertEqual(len(inv_tax_lines), 2, "There should be two tax lines, one for each repartition line.")
-        self.assertEqual(abs(inv_tax_lines.filtered(lambda x: x.account_id == account_1).balance), 4.2, "Tax line on account 1 should amount to 4.2 (10% of 42)")
-        self.assertEqual(inv_tax_lines.filtered(lambda x: x.account_id == account_1).tax_tag_ids, inv_tax_tag_10, "Tax line on account 1 should have 10% tag")
-        self.assertAlmostEqual(abs(inv_tax_lines.filtered(lambda x: x.account_id == account_2).balance), 37.8, 2, "Tax line on account 2 should amount to 37.8 (90% of 42)")
-        self.assertEqual(inv_tax_lines.filtered(lambda x: x.account_id == account_2).tax_tag_ids, inv_tax_tag_90, "Tax line on account 2 should have 90% tag")
+        self.assertEqual(abs(inv_tax_lines.filtered(lambda x: x.account_id == account_1).balance), 4.2,
+                         "Tax line on account 1 should amount to 4.2 (10% of 42)")
+        self.assertEqual(inv_tax_lines.filtered(lambda x: x.account_id == account_1).tax_tag_ids, inv_tax_tag_10,
+                         "Tax line on account 1 should have 10% tag")
+        self.assertAlmostEqual(abs(inv_tax_lines.filtered(lambda x: x.account_id == account_2).balance), 37.8, 2,
+                               "Tax line on account 2 should amount to 37.8 (90% of 42)")
+        self.assertEqual(inv_tax_lines.filtered(lambda x: x.account_id == account_2).tax_tag_ids, inv_tax_tag_90,
+                         "Tax line on account 2 should have 90% tag")
 
         # Test refund repartition
         refund = self._create_invoice([(100, tax)], inv_type='out_refund')
         refund.action_post()
 
-        self.assertEqual(len(refund.line_ids), 4, "There should be 4 account move lines created for the refund: payable, base and 2 tax lines")
-        ref_base_line = refund.line_ids.filtered(lambda x: not x.tax_repartition_line_id and x.account_id.account_type != 'asset_receivable')
+        self.assertEqual(len(refund.line_ids), 4,
+                         "There should be 4 account move lines created for the refund: payable, base and 2 tax lines")
+        ref_base_line = refund.line_ids.filtered(
+            lambda x: not x.tax_repartition_line_id and x.account_id.account_type != 'asset_receivable')
         self.assertEqual(len(ref_base_line), 1, "There should be only one base line generated")
         self.assertEqual(abs(ref_base_line.balance), 100, "Base amount should be 100")
         self.assertEqual(ref_base_line.tax_tag_ids, ref_base_tag, "Base line should have received base tag")
         ref_tax_lines = refund.line_ids.filtered(lambda x: x.tax_repartition_line_id.repartition_type == 'tax')
         self.assertEqual(len(ref_tax_lines), 2, "There should be two refund tax lines")
-        self.assertEqual(abs(ref_tax_lines.filtered(lambda x: x.account_id == ref_base_line.account_id).balance), 4.2, "Refund tax line on base account should amount to 4.2 (10% of 42)")
-        self.assertAlmostEqual(abs(ref_tax_lines.filtered(lambda x: x.account_id == account_1).balance), 37.8, 2, "Refund tax line on account 1 should amount to 37.8 (90% of 42)")
+        self.assertEqual(abs(ref_tax_lines.filtered(lambda x: x.account_id == ref_base_line.account_id).balance), 4.2,
+                         "Refund tax line on base account should amount to 4.2 (10% of 42)")
+        self.assertAlmostEqual(abs(ref_tax_lines.filtered(lambda x: x.account_id == account_1).balance), 37.8, 2,
+                               "Refund tax line on account 1 should amount to 37.8 (90% of 42)")
         self.assertEqual(ref_tax_lines.mapped('tax_tag_ids'), ref_tax_tag, "Refund tax lines should have the right tag")
 
     def test_division_tax(self):
@@ -382,7 +397,6 @@ class TestInvoiceTaxes(AccountTestInvoicingCommon):
             credit_line.tax_ids.clear()
             credit_line.tax_ids.add(sale_tax)
 
-
         # Balance the journal entry.
         with move_form.line_ids.new() as credit_line:
             credit_line.name = 'balance'
@@ -392,9 +406,12 @@ class TestInvoiceTaxes(AccountTestInvoicingCommon):
         move = move_form.save()
 
         self.assertRecordValues(move.line_ids.sorted('balance'), [
-            {'balance': -1100.0,    'tax_ids': [],              'tax_tag_ids': [],                      'tax_base_amount': 0,       'tax_repartition_line_id': False,               'tax_tag_invert': False},
-            {'balance': 100.0,      'tax_ids': [],              'tax_tag_ids': self.tax_tag_neg.ids,    'tax_base_amount': 1000,    'tax_repartition_line_id': ref_tax_rep_ln.id,   'tax_tag_invert': False},
-            {'balance': 1000.0,     'tax_ids': sale_tax.ids,    'tax_tag_ids': self.base_tag_neg.ids,   'tax_base_amount': 0,       'tax_repartition_line_id': False,               'tax_tag_invert': False},
+            {'balance': -1100.0, 'tax_ids': [], 'tax_tag_ids': [], 'tax_base_amount': 0,
+             'tax_repartition_line_id': False, 'tax_tag_invert': False},
+            {'balance': 100.0, 'tax_ids': [], 'tax_tag_ids': self.tax_tag_neg.ids, 'tax_base_amount': 1000,
+             'tax_repartition_line_id': ref_tax_rep_ln.id, 'tax_tag_invert': False},
+            {'balance': 1000.0, 'tax_ids': sale_tax.ids, 'tax_tag_ids': self.base_tag_neg.ids, 'tax_base_amount': 0,
+             'tax_repartition_line_id': False, 'tax_tag_invert': False},
         ])
 
         # === Tax in credit ===
@@ -419,9 +436,12 @@ class TestInvoiceTaxes(AccountTestInvoicingCommon):
         move = move_form.save()
 
         self.assertRecordValues(move.line_ids.sorted('balance'), [
-            {'balance': -1000.0,    'tax_ids': sale_tax.ids,    'tax_tag_ids': self.base_tag_pos.ids,   'tax_base_amount': 0,       'tax_repartition_line_id': False,                'tax_tag_invert': True},
-            {'balance': -100.0,     'tax_ids': [],              'tax_tag_ids': self.tax_tag_pos.ids,    'tax_base_amount': 1000,    'tax_repartition_line_id': inv_tax_rep_ln.id,    'tax_tag_invert': True},
-            {'balance': 1100.0,     'tax_ids': [],              'tax_tag_ids': [],                      'tax_base_amount': 0,       'tax_repartition_line_id': False,                'tax_tag_invert': False},
+            {'balance': -1000.0, 'tax_ids': sale_tax.ids, 'tax_tag_ids': self.base_tag_pos.ids, 'tax_base_amount': 0,
+             'tax_repartition_line_id': False, 'tax_tag_invert': True},
+            {'balance': -100.0, 'tax_ids': [], 'tax_tag_ids': self.tax_tag_pos.ids, 'tax_base_amount': 1000,
+             'tax_repartition_line_id': inv_tax_rep_ln.id, 'tax_tag_invert': True},
+            {'balance': 1100.0, 'tax_ids': [], 'tax_tag_ids': [], 'tax_base_amount': 0,
+             'tax_repartition_line_id': False, 'tax_tag_invert': False},
         ])
 
     def test_misc_journal_entry_tax_tags_purchase(self):
@@ -477,9 +497,12 @@ class TestInvoiceTaxes(AccountTestInvoicingCommon):
         move = move_form.save()
 
         self.assertRecordValues(move.line_ids.sorted('balance'), [
-            {'balance': -1100.0,    'tax_ids': [],              'tax_tag_ids': [],                      'tax_base_amount': 0,       'tax_repartition_line_id': False,                'tax_tag_invert': False},
-            {'balance': 100.0,      'tax_ids': [],              'tax_tag_ids': self.tax_tag_pos.ids,    'tax_base_amount': 1000,    'tax_repartition_line_id': inv_tax_rep_ln.id,    'tax_tag_invert': False},
-            {'balance': 1000.0,     'tax_ids': purch_tax.ids,   'tax_tag_ids': self.base_tag_pos.ids,   'tax_base_amount': 0,       'tax_repartition_line_id': False,                'tax_tag_invert': False},
+            {'balance': -1100.0, 'tax_ids': [], 'tax_tag_ids': [], 'tax_base_amount': 0,
+             'tax_repartition_line_id': False, 'tax_tag_invert': False},
+            {'balance': 100.0, 'tax_ids': [], 'tax_tag_ids': self.tax_tag_pos.ids, 'tax_base_amount': 1000,
+             'tax_repartition_line_id': inv_tax_rep_ln.id, 'tax_tag_invert': False},
+            {'balance': 1000.0, 'tax_ids': purch_tax.ids, 'tax_tag_ids': self.base_tag_pos.ids, 'tax_base_amount': 0,
+             'tax_repartition_line_id': False, 'tax_tag_invert': False},
         ])
 
         # === Tax in credit ===
@@ -504,15 +527,19 @@ class TestInvoiceTaxes(AccountTestInvoicingCommon):
         move = move_form.save()
 
         self.assertRecordValues(move.line_ids.sorted('balance'), [
-            {'balance': -1000.0,    'tax_ids': purch_tax.ids,   'tax_tag_ids': self.base_tag_neg.ids,   'tax_base_amount': 0,       'tax_repartition_line_id': False,                'tax_tag_invert': True},
-            {'balance': -100.0,     'tax_ids': [],              'tax_tag_ids': self.tax_tag_neg.ids,    'tax_base_amount': 1000,    'tax_repartition_line_id': ref_tax_rep_ln.id,    'tax_tag_invert': True},
-            {'balance': 1100.0,     'tax_ids': [],              'tax_tag_ids': [],                      'tax_base_amount': 0,       'tax_repartition_line_id': False,                'tax_tag_invert': False},
+            {'balance': -1000.0, 'tax_ids': purch_tax.ids, 'tax_tag_ids': self.base_tag_neg.ids, 'tax_base_amount': 0,
+             'tax_repartition_line_id': False, 'tax_tag_invert': True},
+            {'balance': -100.0, 'tax_ids': [], 'tax_tag_ids': self.tax_tag_neg.ids, 'tax_base_amount': 1000,
+             'tax_repartition_line_id': ref_tax_rep_ln.id, 'tax_tag_invert': True},
+            {'balance': 1100.0, 'tax_ids': [], 'tax_tag_ids': [], 'tax_base_amount': 0,
+             'tax_repartition_line_id': False, 'tax_tag_invert': False},
         ])
 
     def test_misc_entry_tax_group_signs(self):
         """ Tests sign inversion of the tags on misc operations made with tax
         groups.
         """
+
         def _create_group_of_taxes(tax_type):
             # We use asymmetric tags between the child taxes to avoid shadowing errors
             child1_sale_tax = self.env['account.tax'].create({
@@ -562,7 +589,7 @@ class TestInvoiceTaxes(AccountTestInvoicingCommon):
                 'type_tax_use': tax_type,
                 'amount_type': 'group',
                 'amount': 10,
-                'children_tax_ids':[(6,0,[child1_sale_tax.id, child2_sale_tax.id])]
+                'children_tax_ids': [(6, 0, [child1_sale_tax.id, child2_sale_tax.id])]
             })
 
         def _create_misc_operation(tax, tax_field):
@@ -587,37 +614,39 @@ class TestInvoiceTaxes(AccountTestInvoicingCommon):
         # Sale tax on debit: use refund repartition
         debit_sale_move = _create_misc_operation(sale_group, 'debit')
         self.assertRecordValues(debit_sale_move.line_ids.sorted('balance'), [
-            {'balance': -1150.0,    'tax_ids': [],                  'tax_tag_ids': [],                      'tax_base_amount': 0},
-            {'balance': 50.0,       'tax_ids': [],                  'tax_tag_ids': [],                      'tax_base_amount': 1000},
-            {'balance': 100.0,      'tax_ids': [],                  'tax_tag_ids': self.tax_tag_neg.ids,    'tax_base_amount': 1000},
-            {'balance': 1000.0,     'tax_ids': sale_group.ids,      'tax_tag_ids': self.base_tag_neg.ids,   'tax_base_amount': 0},
+            {'balance': -1150.0, 'tax_ids': [], 'tax_tag_ids': [], 'tax_base_amount': 0},
+            {'balance': 50.0, 'tax_ids': [], 'tax_tag_ids': [], 'tax_base_amount': 1000},
+            {'balance': 100.0, 'tax_ids': [], 'tax_tag_ids': self.tax_tag_neg.ids, 'tax_base_amount': 1000},
+            {'balance': 1000.0, 'tax_ids': sale_group.ids, 'tax_tag_ids': self.base_tag_neg.ids, 'tax_base_amount': 0},
         ])
 
         # Sale tax on credit: use invoice repartition
         credit_sale_move = _create_misc_operation(sale_group, 'credit')
         self.assertRecordValues(credit_sale_move.line_ids.sorted('balance'), [
-            {'balance': -1000.0,    'tax_ids': sale_group.ids,      'tax_tag_ids': self.base_tag_pos.ids,   'tax_base_amount': 0},
-            {'balance': -100.0,     'tax_ids': [],                  'tax_tag_ids': [],                      'tax_base_amount': 1000},
-            {'balance': -50.0,      'tax_ids': [],                  'tax_tag_ids': self.tax_tag_pos.ids,    'tax_base_amount': 1000},
-            {'balance': 1150.0,     'tax_ids': [],                  'tax_tag_ids': [],                      'tax_base_amount': 0},
+            {'balance': -1000.0, 'tax_ids': sale_group.ids, 'tax_tag_ids': self.base_tag_pos.ids, 'tax_base_amount': 0},
+            {'balance': -100.0, 'tax_ids': [], 'tax_tag_ids': [], 'tax_base_amount': 1000},
+            {'balance': -50.0, 'tax_ids': [], 'tax_tag_ids': self.tax_tag_pos.ids, 'tax_base_amount': 1000},
+            {'balance': 1150.0, 'tax_ids': [], 'tax_tag_ids': [], 'tax_base_amount': 0},
         ])
 
         # Purchase tax on debit: use invoice repartition
         debit_purchase_move = _create_misc_operation(purchase_group, 'debit')
         self.assertRecordValues(debit_purchase_move.line_ids.sorted('balance'), [
-            {'balance': -1150.0,    'tax_ids': [],                  'tax_tag_ids': [],                      'tax_base_amount': 0},
-            {'balance': 50.0,       'tax_ids': [],                  'tax_tag_ids': self.tax_tag_pos.ids,    'tax_base_amount': 1000},
-            {'balance': 100.0,      'tax_ids': [],                  'tax_tag_ids': [],                      'tax_base_amount': 1000},
-            {'balance': 1000.0,     'tax_ids': purchase_group.ids,  'tax_tag_ids': self.base_tag_pos.ids,   'tax_base_amount': 0},
+            {'balance': -1150.0, 'tax_ids': [], 'tax_tag_ids': [], 'tax_base_amount': 0},
+            {'balance': 50.0, 'tax_ids': [], 'tax_tag_ids': self.tax_tag_pos.ids, 'tax_base_amount': 1000},
+            {'balance': 100.0, 'tax_ids': [], 'tax_tag_ids': [], 'tax_base_amount': 1000},
+            {'balance': 1000.0, 'tax_ids': purchase_group.ids, 'tax_tag_ids': self.base_tag_pos.ids,
+             'tax_base_amount': 0},
         ])
 
         # Purchase tax on credit: use refund repartition
         credit_purchase_move = _create_misc_operation(purchase_group, 'credit')
         self.assertRecordValues(credit_purchase_move.line_ids.sorted('balance'), [
-            {'balance': -1000.0,    'tax_ids': purchase_group.ids,  'tax_tag_ids': self.base_tag_neg.ids,   'tax_base_amount': 0},
-            {'balance': -100.0,     'tax_ids': [],                  'tax_tag_ids': self.tax_tag_neg.ids,    'tax_base_amount': 1000},
-            {'balance': -50.0,      'tax_ids': [],                  'tax_tag_ids': [],                      'tax_base_amount': 1000},
-            {'balance': 1150.0,     'tax_ids': [],                  'tax_tag_ids': [],                      'tax_base_amount': 0},
+            {'balance': -1000.0, 'tax_ids': purchase_group.ids, 'tax_tag_ids': self.base_tag_neg.ids,
+             'tax_base_amount': 0},
+            {'balance': -100.0, 'tax_ids': [], 'tax_tag_ids': self.tax_tag_neg.ids, 'tax_base_amount': 1000},
+            {'balance': -50.0, 'tax_ids': [], 'tax_tag_ids': [], 'tax_base_amount': 1000},
+            {'balance': 1150.0, 'tax_ids': [], 'tax_tag_ids': [], 'tax_base_amount': 0},
         ])
 
     def test_tax_calculation_foreign_currency_large_quantity(self):
@@ -650,8 +679,8 @@ class TestInvoiceTaxes(AccountTestInvoicingCommon):
         })
 
         self.assertRecordValues(invoice.line_ids.filtered('tax_line_id'), [{
-            'tax_base_amount': 48098.24,    # 20000 * 2.82 / 1.1726
-            'credit': 10100.63,             # tax_base_amount * 0.21
+            'tax_base_amount': 48098.24,  # 20000 * 2.82 / 1.1726
+            'credit': 10100.63,  # tax_base_amount * 0.21
         }])
 
     def test_ensure_no_unbalanced_entry(self):
@@ -695,8 +724,8 @@ class TestInvoiceTaxes(AccountTestInvoicingCommon):
         })
 
         self.assertRecordValues(invoice.line_ids.filtered('tax_line_id'), [{
-            'tax_base_amount': 567.38,      # 155.32 * 1 / (1 / 0.273748)
-            'balance': -119.16,             # tax_base_amount * 0.21
+            'tax_base_amount': 567.38,  # 155.32 * 1 / (1 / 0.273748)
+            'balance': -119.16,  # tax_base_amount * 0.21
         }])
 
         self.assertRecordValues(invoice.line_ids.filtered(lambda l: not l.name), [{
@@ -877,12 +906,14 @@ class TestInvoiceTaxes(AccountTestInvoicingCommon):
         self.assertRecordValues(
             invoice.line_ids,
             [
-                {'tax_ids': self.percent_tax_1.ids, 'tax_line_id': False,                 'tax_tag_ids': product_tag.ids,  'credit': 1000, 'debit': 0},
-                {'tax_ids': self.percent_tax_1.ids, 'tax_line_id': False,                 'tax_tag_ids': [],               'credit': 100,  'debit': 0},
-                {'tax_ids': self.percent_tax_2.ids, 'tax_line_id': False,                 'tax_tag_ids': [],               'credit': 200,  'debit': 0},
-                {'tax_ids': [],                     'tax_line_id': self.percent_tax_1.id, 'tax_tag_ids': product_tag.ids,  'credit': 210,  'debit': 0},
-                {'tax_ids': [],                     'tax_line_id': self.percent_tax_1.id, 'tax_tag_ids': [],               'credit': 21,   'debit': 0},
-                {'tax_ids': [],                     'tax_line_id': self.percent_tax_2.id, 'tax_tag_ids': [],               'credit': 24,   'debit': 0},
-                {'tax_ids': [],                     'tax_line_id': False,                 'tax_tag_ids': [],               'credit': 0,    'debit': 1555},
+                {'tax_ids': self.percent_tax_1.ids, 'tax_line_id': False, 'tax_tag_ids': product_tag.ids,
+                 'credit': 1000, 'debit': 0},
+                {'tax_ids': self.percent_tax_1.ids, 'tax_line_id': False, 'tax_tag_ids': [], 'credit': 100, 'debit': 0},
+                {'tax_ids': self.percent_tax_2.ids, 'tax_line_id': False, 'tax_tag_ids': [], 'credit': 200, 'debit': 0},
+                {'tax_ids': [], 'tax_line_id': self.percent_tax_1.id, 'tax_tag_ids': product_tag.ids, 'credit': 210,
+                 'debit': 0},
+                {'tax_ids': [], 'tax_line_id': self.percent_tax_1.id, 'tax_tag_ids': [], 'credit': 21, 'debit': 0},
+                {'tax_ids': [], 'tax_line_id': self.percent_tax_2.id, 'tax_tag_ids': [], 'credit': 24, 'debit': 0},
+                {'tax_ids': [], 'tax_line_id': False, 'tax_tag_ids': [], 'credit': 0, 'debit': 1555},
             ],
         )

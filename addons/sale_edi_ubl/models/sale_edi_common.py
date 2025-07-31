@@ -26,12 +26,12 @@ class SaleEdiCommon(models.AbstractModel):
         logs = self._import_fill_order(order, tree)
         if order:
             body = Markup("<strong>%s</strong>") % \
-                _("Format used to import the invoice: %s",
-                  self.env['ir.model']._get(self._name).name)
+                   _("Format used to import the invoice: %s",
+                     self.env['ir.model']._get(self._name).name)
             if logs:
                 order._create_activity_set_details()
                 body += Markup("<ul>%s</ul>") % \
-                    Markup().join(Markup("<li>%s</li>") % l for l in logs)
+                        Markup().join(Markup("<li>%s</li>") % l for l in logs)
             order.message_post(body=body)
 
         lines_with_products = order.order_line.filtered('product_id')

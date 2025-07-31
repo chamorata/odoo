@@ -3,9 +3,10 @@
 
 from datetime import datetime, timedelta
 
-from odoo import fields, tools
 from odoo.addons.crm.tests.common import TestCrmCommon
 from odoo.addons.event.tests.common import EventCase
+
+from odoo import fields, tools
 
 
 class EventCrmCase(TestCrmCommon, EventCase):
@@ -58,7 +59,7 @@ class EventCrmCase(TestCrmCommon, EventCase):
             'partner_id': cls.env.ref('base.public_partner').id if x == 0 else False,
             'email': 'email.%02d@test.example.com' % x,
             'phone': '04560000%02d' % x,
-        }  for x in range(1, 4)]
+        } for x in range(1, 4)]
 
     def assertLeadConvertion(self, rule, registrations, partner=None, **expected):
         """ Tool method hiding details of lead value generation and check
@@ -74,14 +75,18 @@ class EventCrmCase(TestCrmCommon, EventCase):
             ('registration_ids', 'in', registrations.ids),
             ('event_lead_rule_id', '=', rule.id)
         ])
-        self.assertEqual(len(lead), 1, 'Invalid registrations -> lead creation, found %s leads where only 1 is expected.' % len(lead))
-        self.assertEqual(lead.registration_ids, registrations, 'Invalid registrations -> lead creation, too much registrations on it.')
+        self.assertEqual(len(lead), 1,
+                         'Invalid registrations -> lead creation, found %s leads where only 1 is expected.' % len(lead))
+        self.assertEqual(lead.registration_ids, registrations,
+                         'Invalid registrations -> lead creation, too much registrations on it.')
         event = registrations.event_id
-        self.assertEqual(len(event), 1, 'Invalid registrations -> event assertion, all registrations should belong to same event')
+        self.assertEqual(len(event), 1,
+                         'Invalid registrations -> event assertion, all registrations should belong to same event')
 
         if partner is None:
             partner = self.env['res.partner']
-        expected_reg_name = partner.name or registrations._find_first_notnull('name') or registrations._find_first_notnull('email')
+        expected_reg_name = partner.name or registrations._find_first_notnull(
+            'name') or registrations._find_first_notnull('email')
         if partner:
             expected_contact_name = partner.name if not partner.is_company else False
             expected_partner_name = partner.name if partner.is_company else False
@@ -97,19 +102,23 @@ class EventCrmCase(TestCrmCommon, EventCase):
         registration_phone = registrations._find_first_notnull('phone')
         self.assertEqual(lead.partner_id, partner)
         self.assertEqual(lead.name, '%s - %s' % (event.name, expected_reg_name))
-        self.assertNotIn('False', lead.name)  # avoid a "Dear False" like construct ^^ (this assert is serious and intended)
+        self.assertNotIn('False',
+                         lead.name)  # avoid a "Dear False" like construct ^^ (this assert is serious and intended)
         self.assertEqual(lead.contact_name, expected_contact_name)
         self.assertEqual(lead.partner_name, expected_partner_name)
-        self.assertEqual(lead.email_from, partner.email if partner and partner.email else registrations._find_first_notnull('email'))
+        self.assertEqual(lead.email_from,
+                         partner.email if partner and partner.email else registrations._find_first_notnull('email'))
         self.assertEqual(lead.phone, partner.phone if partner and partner.phone else registration_phone)
-        exp_mobile = partner.mobile if partner and partner.mobile else ((registration_phone != lead.phone) and registration_phone)
+        exp_mobile = partner.mobile if partner and partner.mobile else (
+                    (registration_phone != lead.phone) and registration_phone)
         self.assertEqual(
             lead.mobile, exp_mobile,
             f"Expected {exp_mobile} (partner {partner.id} / {partner.mobile}) (registration phone {registration_phone} / lead phone {lead.phone})",
         )
 
         # description: to improve
-        self.assertNotIn('False', lead.description)  # avoid a "Dear False" like construct ^^ (this assert is serious and intended)
+        self.assertNotIn('False',
+                         lead.description)  # avoid a "Dear False" like construct ^^ (this assert is serious and intended)
         for registration in registrations:
             if registration.name:
                 self.assertIn(registration.name, lead.description)

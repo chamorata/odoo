@@ -8,6 +8,7 @@ import os
 import selectors
 import threading
 import time
+
 from psycopg2 import InterfaceError
 
 import odoo
@@ -46,6 +47,7 @@ NOTIFY_PAYLOAD_MAX_LENGTH = get_notify_payload_max_length()
 def json_dump(v):
     return json.dumps(v, separators=(',', ':'), default=json_default)
 
+
 def hashable(key):
     if isinstance(key, list):
         key = tuple(key)
@@ -83,7 +85,6 @@ def get_notify_payloads(channels):
 
 
 class ImBus(models.Model):
-
     _name = 'bus.bus'
     _description = 'Communication Bus'
 
@@ -232,7 +233,7 @@ class ImDispatch(threading.Thread):
         """ Dispatch postgres notifications to the relevant websockets """
         _logger.info("Bus.loop listen imbus on db postgres")
         with odoo.sql_db.db_connect('postgres').cursor() as cr, \
-             selectors.DefaultSelector() as sel:
+                selectors.DefaultSelector() as sel:
             cr.execute("listen imbus")
             cr.commit()
             conn = cr._cnx
@@ -260,6 +261,7 @@ class ImDispatch(threading.Thread):
                     continue
                 _logger.exception("Bus.loop error, sleep and retry")
                 time.sleep(TIMEOUT)
+
 
 # Partially undo a2ed3d3d5bdb6025a1ba14ad557a115a86413e65
 # IMDispatch has a lazy start, so we could initialize it anyway

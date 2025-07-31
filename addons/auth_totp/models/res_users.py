@@ -7,22 +7,26 @@ import logging
 import os
 import re
 
+from odoo.addons.auth_totp.models.totp import TOTP, TOTP_SECRET_SIZE
+
 from odoo import _, api, fields, models
 from odoo.addons.base.models.res_users import check_identity
 from odoo.exceptions import AccessDenied, UserError
 from odoo.http import request
 from odoo.tools import sql
 
-from odoo.addons.auth_totp.models.totp import TOTP, TOTP_SECRET_SIZE
-
 _logger = logging.getLogger(__name__)
 
 compress = functools.partial(re.sub, r'\s', '')
+
+
 class Users(models.Model):
     _inherit = 'res.users'
 
-    totp_secret = fields.Char(copy=False, groups=fields.NO_ACCESS, compute='_compute_totp_secret', inverse='_inverse_token')
-    totp_enabled = fields.Boolean(string="Two-factor authentication", compute='_compute_totp_enabled', search='_totp_enable_search')
+    totp_secret = fields.Char(copy=False, groups=fields.NO_ACCESS, compute='_compute_totp_secret',
+                              inverse='_inverse_token')
+    totp_enabled = fields.Boolean(string="Two-factor authentication", compute='_compute_totp_enabled',
+                                  search='_totp_enable_search')
     totp_trusted_device_ids = fields.One2many('auth_totp.device', 'user_id', string="Trusted Devices")
 
     def init(self):
@@ -52,7 +56,7 @@ class Users(models.Model):
             key = request.cookies.get('td_id')
             if key:
                 if request.env['auth_totp.device']._check_credentials_for_uid(
-                    scope="browser", key=key, uid=self.id):
+                        scope="browser", key=key, uid=self.id):
                     # the device is known
                     return False
             # 2FA enabled but not a trusted device
@@ -131,7 +135,8 @@ class Users(models.Model):
             'tag': 'display_notification',
             'params': {
                 'type': 'warning',
-                'message': _("Two-factor authentication disabled for the following user(s): %s", ', '.join(self.mapped('name'))),
+                'message': _("Two-factor authentication disabled for the following user(s): %s",
+                             ', '.join(self.mapped('name'))),
                 'next': {'type': 'ir.actions.act_window_close'},
             }
         }
@@ -147,7 +152,7 @@ class Users(models.Model):
         secret_bytes_count = TOTP_SECRET_SIZE // 8
         secret = base64.b32encode(os.urandom(secret_bytes_count)).decode()
         # format secret in groups of 4 characters for readability
-        secret = ' '.join(map(''.join, zip(*[iter(secret)]*4)))
+        secret = ' '.join(map(''.join, zip(*[iter(secret)] * 4)))
         w = self.env['auth_totp.wizard'].create({
             'user_id': self.id,
             'secret': secret,

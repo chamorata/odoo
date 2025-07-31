@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from odoo import Command
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.addons.l10n_eu_oss.models.eu_tag_map import EU_TAG_MAP
+
+from odoo import Command
 from odoo.tests import tagged
 
 
@@ -48,7 +49,8 @@ class TestOSSBelgium(AccountTestInvoicingCommon):
         """
         self.sub_child_company._map_eu_taxes()
         # get an eu country which isn't the current one:
-        another_eu_country_code = (self.env.ref('base.europe').country_ids - self.company_data['company'].country_id)[0].code
+        another_eu_country_code = (self.env.ref('base.europe').country_ids - self.company_data['company'].country_id)[
+            0].code
         tax_oss = self.env['account.tax'].search([('name', 'ilike', f'%"{another_eu_country_code}"%')], limit=1)
 
         for doc_type, report_expression_xml_id in (
@@ -56,12 +58,12 @@ class TestOSSBelgium(AccountTestInvoicingCommon):
                 ("refund", "l10n_be.tax_report_line_49_tag"),
         ):
             with self.subTest(doc_type=doc_type, report_expression_xml_id=report_expression_xml_id):
-                oss_tag_id = tax_oss[f"{doc_type}_repartition_line_ids"]\
-                    .filtered(lambda x: x.repartition_type == 'base')\
+                oss_tag_id = tax_oss[f"{doc_type}_repartition_line_ids"] \
+                    .filtered(lambda x: x.repartition_type == 'base') \
                     .tag_ids
 
-                expected_tag_id = self.env.ref(report_expression_xml_id)\
-                    ._get_matching_tags()\
+                expected_tag_id = self.env.ref(report_expression_xml_id) \
+                    ._get_matching_tags() \
                     .filtered(lambda t: not t.tax_negate)
 
                 self.assertIn(expected_tag_id, oss_tag_id, f"{doc_type} tag from Belgian CoA not correctly linked")
@@ -80,7 +82,8 @@ class TestOSSBelgium(AccountTestInvoicingCommon):
         self.sub_child_company._map_eu_taxes()
         fpos = self.env['account.fiscal.position'].search([('country_id', '=', another_eu_country.id)], limit=1)
         new_name = fpos.tax_ids.tax_dest_id[0].name
-        self.assertEqual(new_name, f"{original_name} (Copy)", "The tax name should be the same as the original one with (Copy) appended to it.")
+        self.assertEqual(new_name, f"{original_name} (Copy)",
+                         "The tax name should be the same as the original one with (Copy) appended to it.")
 
 
 @tagged('post_install', 'post_install_l10n', '-at_install')
@@ -98,19 +101,20 @@ class TestOSSSpain(AccountTestInvoicingCommon):
         tax creation mechanism.
         """
         # get an eu country which isn't the current one:
-        another_eu_country_code = (self.env.ref('base.europe').country_ids - self.company_data['company'].country_id)[0].code
+        another_eu_country_code = (self.env.ref('base.europe').country_ids - self.company_data['company'].country_id)[
+            0].code
         tax_oss = self.env['account.tax'].search([('name', 'ilike', f'%"{another_eu_country_code}"%')], limit=1)
 
         for doc_type, tag_xml_id in (
                 ("invoice", "l10n_es.mod_303_casilla_124_balance"),
         ):
             with self.subTest(doc_type=doc_type, report_line_xml_id=tag_xml_id):
-                oss_tag_id = tax_oss[f"{doc_type}_repartition_line_ids"]\
-                    .filtered(lambda x: x.repartition_type == 'base')\
+                oss_tag_id = tax_oss[f"{doc_type}_repartition_line_ids"] \
+                    .filtered(lambda x: x.repartition_type == 'base') \
                     .tag_ids
 
-                expected_tag_id = self.env.ref(tag_xml_id)\
-                    ._get_matching_tags()\
+                expected_tag_id = self.env.ref(tag_xml_id) \
+                    ._get_matching_tags() \
                     .filtered(lambda t: not t.tax_negate)
 
                 self.assertIn(expected_tag_id, oss_tag_id, f"{doc_type} tag from Spanish CoA not correctly linked")
@@ -126,7 +130,8 @@ class TestOSSUSA(AccountTestInvoicingCommon):
 
     def test_no_oss_tax(self):
         # get an eu country which isn't the current one:
-        another_eu_country_code = (self.env.ref('base.europe').country_ids - self.company_data['company'].country_id)[0].code
+        another_eu_country_code = (self.env.ref('base.europe').country_ids - self.company_data['company'].country_id)[
+            0].code
         tax_oss = self.env['account.tax'].search([('name', 'ilike', f'%"{another_eu_country_code}"%')], limit=1)
 
         self.assertFalse(len(tax_oss), "OSS tax shouldn't be instanced on a US company")
@@ -134,8 +139,10 @@ class TestOSSUSA(AccountTestInvoicingCommon):
     def test_oss_tax_on_eu_branch(self):
         """Ensure a company outside EU can have an EU branch with an EU VAT and that the OSS feature could be used on those"""
         # This test can only be run if l10n_be is installed
-        if not self.env['ir.module.module'].search_count([('name', '=', 'l10n_be'), ('state', '=', 'installed')], limit=1):
-            self.skipTest(reason="The belgian CoA is required for this test to be performed but the corresponding localization module isn't installed")
+        if not self.env['ir.module.module'].search_count([('name', '=', 'l10n_be'), ('state', '=', 'installed')],
+                                                         limit=1):
+            self.skipTest(
+                reason="The belgian CoA is required for this test to be performed but the corresponding localization module isn't installed")
 
         self.root_company = self.company_data['company']
         self.root_company.child_ids = [Command.create({'name': 'Branch A'})]
@@ -189,4 +196,5 @@ class TestOSSMap(AccountTestInvoicingCommon):
             for tax_report_line_xml_id in filter(lambda d: d, oss_tags.values()):
                 with self.subTest(chart_template=chart_template, tax_report_line_xml_id=tax_report_line_xml_id):
                     tag = self.env.ref(tax_report_line_xml_id, raise_if_not_found=False)
-                    self.assertIsNotNone(tag, f"The following xml_id is incorrect in EU_TAG_MAP.py: {tax_report_line_xml_id}")
+                    self.assertIsNotNone(tag,
+                                         f"The following xml_id is incorrect in EU_TAG_MAP.py: {tax_report_line_xml_id}")

@@ -98,7 +98,9 @@
                 </field>
             </record>
             <record id="tax_report_line_8A" model="account.report.line">
-                <field name="name">8A. Total value of all supplies of goods (and directly related services) to other EU Member States</field>
+                <field name="name">8A. Total value of all supplies of goods (and directly related services) to other EU
+                    Member States
+                </field>
                 <field name="code">cy_8A</field>
                 <field name="expression_ids">
                     <record id="tax_report_line_8A_amount" model="account.report.expression">
@@ -109,7 +111,8 @@
                 </field>
             </record>
             <record id="tax_report_line_8B" model="account.report.line">
-                <field name="name">8B. Total value of services provided to taxable persons in other EU Member States</field>
+                <field name="name">8B. Total value of services provided to taxable persons in other EU Member States
+                </field>
                 <field name="code">cy_8B</field>
                 <field name="expression_ids">
                     <record id="tax_report_line_8B_amount" model="account.report.expression">
@@ -120,7 +123,9 @@
                 </field>
             </record>
             <record id="tax_report_line_9" model="account.report.line">
-                <field name="name">9. Total value of sales taxed at the rate of 0% (other than those included in box 8A)</field>
+                <field name="name">9. Total value of sales taxed at the rate of 0% (other than those included in box
+                    8A)
+                </field>
                 <field name="code">cy_9</field>
                 <field name="expression_ids">
                     <record id="tax_report_line_9_amount" model="account.report.expression">
@@ -143,7 +148,9 @@
                 </field>
             </record>
             <record id="tax_report_line_11A" model="account.report.line">
-                <field name="name">11A. Total value of acquisitions of goods (and directly related services) from other EU Member States</field>
+                <field name="name">11A. Total value of acquisitions of goods (and directly related services) from other
+                    EU Member States
+                </field>
                 <field name="code">cy_11A</field>
                 <field name="expression_ids">
                     <record id="tax_report_line_11A_amount" model="account.report.expression">
@@ -154,7 +161,9 @@
                 </field>
             </record>
             <record id="tax_report_line_11B" model="account.report.line">
-                <field name="name">11B. Total value of services received from taxable persons residence in other EU Member States</field>
+                <field name="name">11B. Total value of services received from taxable persons residence in other EU
+                    Member States
+                </field>
                 <field name="code">cy_11B</field>
                 <field name="expression_ids">
                     <record id="tax_report_line_11B_amount" model="account.report.expression">

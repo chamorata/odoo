@@ -72,7 +72,9 @@ class StockWarehouse(models.Model):
 
     def _get_all_routes(self):
         routes = super(StockWarehouse, self)._get_all_routes()
-        routes |= self.filtered(lambda self: self.buy_to_resupply and self.buy_pull_id and self.buy_pull_id.route_id).mapped('buy_pull_id').mapped('route_id')
+        routes |= self.filtered(
+            lambda self: self.buy_to_resupply and self.buy_pull_id and self.buy_pull_id.route_id).mapped(
+            'buy_pull_id').mapped('route_id')
         return routes
 
     def get_rules_dict(self):
@@ -96,7 +98,7 @@ class StockWarehouse(models.Model):
     def _update_name_and_code(self, name=False, code=False):
         res = super(StockWarehouse, self)._update_name_and_code(name, code)
         warehouse = self[0]
-        #change the buy stock rule name
+        # change the buy stock rule name
         if warehouse.buy_pull_id and name:
             warehouse.buy_pull_id.write({'name': warehouse.buy_pull_id.name.replace(warehouse.name, name, 1)})
         return res
@@ -108,7 +110,8 @@ class ReturnPicking(models.TransientModel):
     def _prepare_move_default_values(self, return_line, new_picking):
         vals = super()._prepare_move_default_values(return_line, new_picking)
         if self.location_id.usage == "supplier":
-            vals['purchase_line_id'], vals['partner_id'] = return_line.move_id._get_purchase_line_and_partner_from_chain()
+            vals['purchase_line_id'], vals[
+                'partner_id'] = return_line.move_id._get_purchase_line_and_partner_from_chain()
         return vals
 
     def _create_return(self):
@@ -127,7 +130,8 @@ class Orderpoint(models.Model):
         domain="['|', ('product_id', '=', product_id), '&', ('product_id', '=', False), ('product_tmpl_id', '=', product_tmpl_id)]")
     vendor_id = fields.Many2one(related='supplier_id.partner_id', string="Vendor", store=True)
     purchase_visibility_days = fields.Float(default=0.0, help="Visibility Days applied on the purchase routes.")
-    product_supplier_id = fields.Many2one('res.partner', compute='_compute_product_supplier_id', store=True, string='Product Supplier')
+    product_supplier_id = fields.Many2one('res.partner', compute='_compute_product_supplier_id', store=True,
+                                          string='Product Supplier')
 
     @api.depends('product_id.purchase_order_line_ids.product_qty', 'product_id.purchase_order_line_ids.state')
     def _compute_qty(self):
@@ -145,7 +149,8 @@ class Orderpoint(models.Model):
                 orderpoint.visibility_days = orderpoint.purchase_visibility_days
         return res
 
-    @api.depends('product_tmpl_id', 'product_tmpl_id.seller_ids', 'product_tmpl_id.seller_ids.sequence', 'product_tmpl_id.seller_ids.partner_id')
+    @api.depends('product_tmpl_id', 'product_tmpl_id.seller_ids', 'product_tmpl_id.seller_ids.sequence',
+                 'product_tmpl_id.seller_ids.partner_id')
     def _compute_product_supplier_id(self):
         for orderpoint in self:
             orderpoint.product_supplier_id = orderpoint.product_tmpl_id.seller_ids.sorted('sequence')[:1].partner_id.id
@@ -163,7 +168,8 @@ class Orderpoint(models.Model):
         if not self.env['stock.rule'].search([('action', '=', 'buy')]):
             return res
         # Compute rule_ids only for orderpoint whose compnay_id.days_to_purchase != orderpoint.days_to_order
-        orderpoints_to_compute = self.filtered(lambda orderpoint: orderpoint.days_to_order != orderpoint.company_id.days_to_purchase)
+        orderpoints_to_compute = self.filtered(
+            lambda orderpoint: orderpoint.days_to_order != orderpoint.company_id.days_to_purchase)
         for orderpoint in orderpoints_to_compute:
             if 'buy' in orderpoint.rule_ids.mapped('action'):
                 orderpoint.days_to_order = orderpoint.company_id.days_to_purchase
@@ -231,7 +237,8 @@ class Orderpoint(models.Model):
         qty_by_product_location, dummy = self.product_id._get_quantity_in_progress(self.location_id.ids)
         for orderpoint in self:
             product_qty = qty_by_product_location.get((orderpoint.product_id.id, orderpoint.location_id.id), 0.0)
-            product_uom_qty = orderpoint.product_id.uom_id._compute_quantity(product_qty, orderpoint.product_uom, round=False)
+            product_uom_qty = orderpoint.product_id.uom_id._compute_quantity(product_qty, orderpoint.product_uom,
+                                                                             round=False)
             res[orderpoint.id] += product_uom_qty
         return res
 
@@ -252,7 +259,8 @@ class Orderpoint(models.Model):
 class StockLot(models.Model):
     _inherit = 'stock.lot'
 
-    purchase_order_ids = fields.Many2many('purchase.order', string="Purchase Orders", compute='_compute_purchase_order_ids', readonly=True, store=False)
+    purchase_order_ids = fields.Many2many('purchase.order', string="Purchase Orders",
+                                          compute='_compute_purchase_order_ids', readonly=True, store=False)
     purchase_order_count = fields.Integer('Purchase order count', compute='_compute_purchase_order_ids')
 
     @api.depends('name')
@@ -277,7 +285,8 @@ class StockLot(models.Model):
 class ProcurementGroup(models.Model):
     _inherit = 'procurement.group'
 
-    purchase_line_ids = fields.One2many('purchase.order.line', 'group_id', string='Linked Purchase Order Lines', copy=False)
+    purchase_line_ids = fields.One2many('purchase.order.line', 'group_id', string='Linked Purchase Order Lines',
+                                        copy=False)
 
     @api.model
     def run(self, procurements, raise_user_error=True):

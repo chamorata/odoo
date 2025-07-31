@@ -1,8 +1,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.tests import tagged
 from datetime import datetime
+
 from odoo.addons.hr_calendar.tests.common import TestHrCalendarCommon
+
+from odoo.tests import tagged
 
 
 @tagged('work_hours')
@@ -12,7 +14,7 @@ class TestWorkingHours(TestHrCalendarCommon):
         super().setUpClass()
         if 'hr.contract' in cls.env:
             cls.skipTest(cls,
-                "hr_contract module is installed. To test these features you need to install test_hr_contract_calendar")
+                         "hr_contract module is installed. To test these features you need to install test_hr_contract_calendar")
 
     def test_working_hours_2_emp_same_calendar(self):
         self.env.user.company_id = self.company_A

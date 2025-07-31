@@ -33,7 +33,8 @@ class AccountMove(models.Model):
         price_unit_prec = self.env['decimal.precision'].precision_get('Product Price')
 
         for move in self:
-            if move.move_type not in ('in_invoice', 'in_refund', 'in_receipt') or not move.company_id.anglo_saxon_accounting:
+            if move.move_type not in ('in_invoice', 'in_refund',
+                                      'in_receipt') or not move.company_id.anglo_saxon_accounting:
                 continue
 
             move = move.with_company(move.company_id)
@@ -47,10 +48,11 @@ class AccountMove(models.Model):
                 debit_pdiff_account = False
                 if line.product_id.cost_method == 'standard':
                     debit_pdiff_account = line.product_id.property_account_creditor_price_difference \
-                        or line.product_id.categ_id.property_account_creditor_price_difference_categ
+                                          or line.product_id.categ_id.property_account_creditor_price_difference_categ
                     debit_pdiff_account = move.fiscal_position_id.map_account(debit_pdiff_account)
                 else:
-                    debit_pdiff_account = line.product_id.product_tmpl_id.get_product_accounts(fiscal_pos=move.fiscal_position_id)['expense']
+                    debit_pdiff_account = \
+                    line.product_id.product_tmpl_id.get_product_accounts(fiscal_pos=move.fiscal_position_id)['expense']
                 if not debit_pdiff_account:
                     continue
 
@@ -61,10 +63,9 @@ class AccountMove(models.Model):
                 # discount has been applied, we can't round the price unit anymore, and hence we
                 # can't compare them.
                 if (
-                    not move.currency_id.is_zero(price_subtotal)
-                    and float_compare(line["price_unit"], line.price_unit, precision_digits=price_unit_prec) == 0
+                        not move.currency_id.is_zero(price_subtotal)
+                        and float_compare(line["price_unit"], line.price_unit, precision_digits=price_unit_prec) == 0
                 ):
-
                     # Add price difference account line.
                     vals = {
                         'name': line.name[:64],
@@ -129,17 +130,20 @@ class AccountMove(models.Model):
             svls, _amls = valued_lines._apply_price_difference()
             stock_valuation_layers |= svls
 
-        for (product, company), dummy in groupby(stock_valuation_layers, key=lambda svl: (svl.product_id, svl.company_id)):
+        for (product, company), dummy in groupby(stock_valuation_layers,
+                                                 key=lambda svl: (svl.product_id, svl.company_id)):
             product = product.with_company(company.id)
             if not float_is_zero(product.quantity_svl, precision_rounding=product.uom_id.rounding):
-                product.sudo().with_context(disable_auto_svl=True).write({'standard_price': product.value_svl / product.quantity_svl})
+                product.sudo().with_context(disable_auto_svl=True).write(
+                    {'standard_price': product.value_svl / product.quantity_svl})
 
         for (lot, company), dummy in groupby(stock_valuation_layers, key=lambda svl: (svl.lot_id, svl.company_id)):
             if not lot:
                 continue
             lot = lot.with_company(company.id)
             if not float_is_zero(lot.quantity_svl, precision_rounding=lot.product_id.uom_id.rounding):
-                lot.sudo().with_context(disable_auto_svl=True).write({'standard_price': lot.value_svl / lot.quantity_svl})
+                lot.sudo().with_context(disable_auto_svl=True).write(
+                    {'standard_price': lot.value_svl / lot.quantity_svl})
 
         posted = super(AccountMove, self.with_context(skip_cogs_reconciliation=True))._post(soft)
 
@@ -160,9 +164,11 @@ class AccountMove(models.Model):
         Returns the stock moves associated to this invoice."""
         rslt = super(AccountMove, self)._stock_account_get_last_step_stock_moves()
         for invoice in self.filtered(lambda x: x.move_type == 'in_invoice'):
-            rslt += invoice.mapped('invoice_line_ids.purchase_line_id.move_ids').filtered(lambda x: x.state == 'done' and x.location_id.usage == 'supplier')
+            rslt += invoice.mapped('invoice_line_ids.purchase_line_id.move_ids').filtered(
+                lambda x: x.state == 'done' and x.location_id.usage == 'supplier')
         for invoice in self.filtered(lambda x: x.move_type == 'in_refund'):
-            rslt += invoice.mapped('invoice_line_ids.purchase_line_id.move_ids').filtered(lambda x: x.state == 'done' and x.location_dest_id.usage == 'supplier')
+            rslt += invoice.mapped('invoice_line_ids.purchase_line_id.move_ids').filtered(
+                lambda x: x.state == 'done' and x.location_dest_id.usage == 'supplier')
         return rslt
 
     @api.depends('purchase_id')

@@ -46,11 +46,11 @@ class Company(models.Model):
             for destination_country in oss_countries:
                 mapping = []
                 fpos = self.env['account.fiscal.position'].search([
-                            ('company_id', '=', company.id),
-                            ('country_id', '=', destination_country.id),
-                            ('auto_apply', '=', True),
-                            ('vat_required', '=', False),
-                            ('foreign_vat', '=', False)], limit=1)
+                    ('company_id', '=', company.id),
+                    ('country_id', '=', destination_country.id),
+                    ('auto_apply', '=', True),
+                    ('vat_required', '=', False),
+                    ('foreign_vat', '=', False)], limit=1)
                 if not fpos:
                     fpos = self.env['account.fiscal.position'].create({
                         'name': f'OSS B2C {destination_country.name}',
@@ -62,7 +62,8 @@ class Company(models.Model):
                 foreign_taxes = {tax.amount: tax for tax in fpos.tax_ids.tax_dest_id if tax.amount_type == 'percent'}
 
                 for domestic_tax in taxes:
-                    tax_amount = EU_TAX_MAP.get((domestic_tax.country_id.code, domestic_tax.amount, destination_country.code), False)
+                    tax_amount = EU_TAX_MAP.get(
+                        (domestic_tax.country_id.code, domestic_tax.amount, destination_country.code), False)
                     if tax_amount and domestic_tax not in fpos.tax_ids.tax_src_id:
                         if not foreign_taxes.get(tax_amount, False):
                             oss_tax_group_local_xml_id = f"{company.id}_oss_tax_group_{str(tax_amount).replace('.', '_')}_{company.account_fiscal_country_id.code}"
@@ -90,7 +91,8 @@ class Company(models.Model):
                                 ('type_tax_use', '=', 'sale'),
                                 ('country_id', '=', company.account_fiscal_country_id.id),
                             ], order='sequence,id desc', limit=1)
-                            foreign_tax_copy_name = existing_foreign_tax and _('%(tax_name)s (Copy)', tax_name=existing_foreign_tax.name)
+                            foreign_tax_copy_name = existing_foreign_tax and _('%(tax_name)s (Copy)',
+                                                                               tax_name=existing_foreign_tax.name)
                             foreign_taxes[tax_amount] = self.env['account.tax'].create({
                                 'name': foreign_tax_copy_name or foreign_tax_name,
                                 'amount': tax_amount,
@@ -103,7 +105,8 @@ class Company(models.Model):
                                 'sequence': 1000,
                                 'company_id': company.id,
                             })
-                        mapping.append((0, 0, {'tax_src_id': domestic_tax.id, 'tax_dest_id': foreign_taxes[tax_amount].id}))
+                        mapping.append(
+                            (0, 0, {'tax_src_id': domestic_tax.id, 'tax_dest_id': foreign_taxes[tax_amount].id}))
                 if mapping:
                     fpos.write({
                         'tax_ids': mapping
@@ -114,7 +117,8 @@ class Company(models.Model):
         oss_account, oss_tags = self._get_oss_account(), self._get_oss_tags()
         repartition_line_ids = {}
         for doc_type, rep_type in product(('invoice', 'refund'), ('base', 'tax')):
-            vals = {'document_type': doc_type, 'repartition_type': rep_type, 'tag_ids': [Command.link(tag.id) for tag in oss_tags[f'{doc_type}_{rep_type}_tag']]}
+            vals = {'document_type': doc_type, 'repartition_type': rep_type,
+                    'tag_ids': [Command.link(tag.id) for tag in oss_tags[f'{doc_type}_{rep_type}_tag']]}
             if oss_account:
                 vals['account_id'] = oss_account.id
             repartition_line_ids.setdefault(doc_type, []).append(Command.create(vals))
@@ -122,29 +126,31 @@ class Company(models.Model):
 
     def _get_oss_account(self):
         self.ensure_one()
-        if not (oss_account := self.env.ref(f'l10n_eu_oss.oss_tax_account_company_{self.id}', raise_if_not_found=False)):
+        if not (
+        oss_account := self.env.ref(f'l10n_eu_oss.oss_tax_account_company_{self.id}', raise_if_not_found=False)):
             oss_account = self._create_oss_account()
         return oss_account
 
     def _create_oss_account(self):
         if (
-            self.chart_template in EU_ACCOUNT_MAP
-            and (oss_account_if_exists :=
-                self.env['account.account'].with_company(self).search([
-                    ('company_ids', '=', self.id),
-                    ('code', '=', EU_ACCOUNT_MAP[self.chart_template])
-                ])
-            )
+                self.chart_template in EU_ACCOUNT_MAP
+                and (oss_account_if_exists :=
+        self.env['account.account'].with_company(self).search([
+            ('company_ids', '=', self.id),
+            ('code', '=', EU_ACCOUNT_MAP[self.chart_template])
+        ])
+        )
         ):
             oss_account = oss_account_if_exists
         else:
             sales_tax_accounts = self.env['account.tax'].search([
-                    *self.env['account.tax']._check_company_domain(self),
-                    ('type_tax_use', '=', 'sale'),
-                ]).invoice_repartition_line_ids.mapped('account_id')
+                *self.env['account.tax']._check_company_domain(self),
+                ('type_tax_use', '=', 'sale'),
+            ]).invoice_repartition_line_ids.mapped('account_id')
             if not sales_tax_accounts:
                 return False
-            new_code = self.env['account.account'].with_company(self)._search_new_account_code(sales_tax_accounts[0].with_company(self).code)
+            new_code = self.env['account.account'].with_company(self)._search_new_account_code(
+                sales_tax_accounts[0].with_company(self).code)
             oss_account = self.env['account.account'].create({
                 'name': f'{sales_tax_accounts[0].name} OSS',
                 'code': new_code,
@@ -176,7 +182,8 @@ class Company(models.Model):
 
         # If that l10n module isn't installed, it means the company doesn't use any tax report for that country
         # and thus hasn't nor need those tax report tag
-        is_coa_module_installed = self.env['account.chart.template']._get_chart_template_mapping()[chart_template]['installed']
+        is_coa_module_installed = self.env['account.chart.template']._get_chart_template_mapping()[chart_template][
+            'installed']
         if not is_coa_module_installed:
             chart_template = None
 

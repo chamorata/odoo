@@ -3,9 +3,10 @@
 
 import json
 
+from odoo.addons.website.controllers.form import WebsiteForm
+
 from odoo import _
 from odoo.http import request
-from odoo.addons.website.controllers.form import WebsiteForm
 
 
 class WebsiteNewsletterForm(WebsiteForm):

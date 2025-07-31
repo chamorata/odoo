@@ -26,7 +26,8 @@ class LoyaltyCard(models.Model):
         for card in self:
             card.display_name = f'{card.program_id.name}: {card.code}'
 
-    program_id = fields.Many2one('loyalty.program', ondelete='restrict', default=lambda self: self.env.context.get('active_id', None))
+    program_id = fields.Many2one('loyalty.program', ondelete='restrict',
+                                 default=lambda self: self.env.context.get('active_id', None))
     program_type = fields.Selection(related='program_id.program_type')
     company_id = fields.Many2one(related='program_id.company_id', store=True)
     currency_id = fields.Many2one(related='program_id.currency_id')
@@ -91,7 +92,7 @@ class LoyaltyCard(models.Model):
     def _get_mail_author(self):
         self.ensure_one()
         return (
-            self.env.user._is_internal() and self.env.user or self.company_id or self.env.company
+                self.env.user._is_internal() and self.env.user or self.company_id or self.env.company
         ).partner_id
 
     def _get_signature(self):
@@ -165,17 +166,17 @@ class LoyaltyCard(models.Model):
             return
         milestones_per_program = dict()
         for program in self.program_id:
-            milestones_per_program[program] = program.communication_plan_ids\
-                .filtered(lambda c: c.trigger == 'points_reach')\
+            milestones_per_program[program] = program.communication_plan_ids \
+                .filtered(lambda c: c.trigger == 'points_reach') \
                 .sorted('points', reverse=True)
         for coupon in self:
             if not coupon._get_mail_partner():
                 continue
             coupon_change = points_changes[coupon]
             # Do nothing if coupon lost points or did not change
-            if not milestones_per_program[coupon.program_id] or\
-                not coupon.partner_id or\
-                coupon_change['old'] >= coupon_change['new']:
+            if not milestones_per_program[coupon.program_id] or \
+                    not coupon.partner_id or \
+                    coupon_change['old'] >= coupon_change['new']:
                 continue
             this_milestone = False
             for milestone in milestones_per_program[coupon.program_id]:
@@ -184,8 +185,8 @@ class LoyaltyCard(models.Model):
                     break
             if not this_milestone:
                 continue
-            this_milestone.mail_template_id.send_mail(res_id=coupon.id, email_layout_xmlid='mail.mail_notification_light')
-
+            this_milestone.mail_template_id.send_mail(res_id=coupon.id,
+                                                      email_layout_xmlid='mail.mail_notification_light')
 
     @api.model_create_multi
     def create(self, vals_list):

@@ -15,7 +15,8 @@
         </xpath>
     </template>
 
-    <template id="gst_report_purchasequotation_document_inherit" inherit_id="purchase.report_purchasequotation_document">
+    <template id="gst_report_purchasequotation_document_inherit"
+              inherit_id="purchase.report_purchasequotation_document">
         <xpath expr="//t[@t-foreach='o.order_line']//td[@id='product']" position="replace">
             <td>
                 <span t-field="order_line.name"/>

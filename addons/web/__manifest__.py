@@ -101,13 +101,13 @@ This module provides the core of the Odoo Web Client.
             'web/static/src/core/utils/transitions.scss',
             'web/static/src/model/**/*',
             'web/static/src/search/**/*',
-            'web/static/src/webclient/icons.scss', # variables required in list_controller.scss
+            'web/static/src/webclient/icons.scss',  # variables required in list_controller.scss
             'web/static/src/views/**/*',
             ('remove', 'web/static/src/views/graph/**'),
             ('remove', 'web/static/src/views/pivot/**'),
 
             'web/static/src/webclient/**/*',
-            ('remove', 'web/static/src/webclient/clickbot/clickbot.js'), # lazy loaded
+            ('remove', 'web/static/src/webclient/clickbot/clickbot.js'),  # lazy loaded
             ('remove', 'web/static/src/views/form/button_box/*.scss'),
 
             # remove the report code and whitelist only what's needed
@@ -228,7 +228,8 @@ This module provides the core of the Odoo Web Client.
 
             'web/static/src/env.js',
             'web/static/src/core/utils/transitions.scss',  # included early because used by other files
-            'web/static/src/core/**/*',  # Note that 'web/static/src/core/utils/ui.js' is included in assets_frontend_minimal already
+            'web/static/src/core/**/*',
+            # Note that 'web/static/src/core/utils/ui.js' is included in assets_frontend_minimal already
             ('remove', 'web/static/src/core/commands/**/*'),
             ('remove', 'web/static/src/core/debug/debug_menu.js'),
             ('remove', 'web/static/src/core/file_viewer/file_viewer.dark.scss'),
@@ -275,7 +276,8 @@ This module provides the core of the Odoo Web Client.
             ('include', 'web._assets_bootstrap_backend'),
             ('remove', 'web/static/src/scss/utilities_custom_backend.scss'),
             ('remove', 'web/static/src/scss/bootstrap_review_backend.scss'),
-            ('after', 'web/static/src/scss/utilities_custom.scss', 'web/static/src/webclient/actions/reports/utilities_custom_report.scss'),
+            ('after', 'web/static/src/scss/utilities_custom.scss',
+             'web/static/src/webclient/actions/reports/utilities_custom_report.scss'),
 
             'web/static/lib/popper/popper.js',
             'web/static/lib/bootstrap/js/dist/util/index.js',
@@ -373,7 +375,7 @@ This module provides the core of the Odoo Web Client.
             'web/static/src/session.js',
             'web/static/src/core/utils/transitions.scss',
             'web/static/src/core/**/*',
-            ('remove', 'web/static/src/core/emoji_picker/emoji_data.js'), # always lazy-loaded
+            ('remove', 'web/static/src/core/emoji_picker/emoji_data.js'),  # always lazy-loaded
         ],
         'web._assets_primary_variables': [
             'web/static/src/scss/primary_variables.scss',
@@ -464,7 +466,7 @@ This module provides the core of the Odoo Web Client.
             'web/static/tests/**/*',
 
             ('remove', 'web/static/tests/tours/**/*'),
-            ('remove', 'web/static/tests/legacy/**/*'), # to remove when all legacy tests are ported
+            ('remove', 'web/static/tests/legacy/**/*'),  # to remove when all legacy tests are ported
         ],
         'web.tests_assets': [
             ('include', 'web.assets_backend'),
@@ -531,11 +533,11 @@ This module provides the core of the Odoo Web Client.
         'web.assets_clickbot': [
             'web/static/src/webclient/clickbot/clickbot.js',
         ],
-        "web.chartjs_lib" : [
+        "web.chartjs_lib": [
             '/web/static/lib/Chart/Chart.js',
             '/web/static/lib/chartjs-adapter-luxon/chartjs-adapter-luxon.js',
         ],
-        "web.fullcalendar_lib" : [
+        "web.fullcalendar_lib": [
             '/web/static/lib/fullcalendar/core/index.global.js',
             '/web/static/lib/fullcalendar/core/locales-all.global.js',
             '/web/static/lib/fullcalendar/interaction/index.global.js',

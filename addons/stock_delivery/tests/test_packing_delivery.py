@@ -1,10 +1,12 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import Command
+from unittest.mock import patch
+
 from odoo.addons.stock.tests.test_packing import TestPackingCommon
+
+from odoo import Command
 from odoo.exceptions import UserError
 from odoo.tests import Form
-from unittest.mock import patch
 
 
 class TestPacking(TestPackingCommon):
@@ -128,7 +130,8 @@ class TestPacking(TestPackingCommon):
             'name': 'Sale order',
             'partner_id': self.env['res.partner'].create({'name': 'Rando le clodo'}).id,
             'order_line': [
-                (0, 0, {'name': self.product_aw.name, 'product_id': self.product_aw.id, 'product_uom_qty': 1, 'price_unit': 1})
+                (0, 0, {'name': self.product_aw.name, 'product_id': self.product_aw.id, 'product_uom_qty': 1,
+                        'price_unit': 1})
             ]
         })
         delivery_wizard = Form(self.env['choose.delivery.carrier'].with_context({
@@ -150,8 +153,8 @@ class TestPacking(TestPackingCommon):
 
         # Mock carrier shipping method
         with patch(
-            'odoo.addons.stock_delivery.models.delivery_carrier.DeliveryCarrier.fixed_send_shipping',
-            return_value=[{'exact_price': 0, 'tracking_number': "666"}]
+                'odoo.addons.stock_delivery.models.delivery_carrier.DeliveryCarrier.fixed_send_shipping',
+                return_value=[{'exact_price': 0, 'tracking_number': "666"}]
         ):
             picking_ship.send_to_shipper()
 
@@ -208,8 +211,10 @@ class TestPacking(TestPackingCommon):
         self.assertEqual(len(move_lines_to_pack), 2, 'There should be move lines that can be "put in pack"')
         delivery_1._pre_put_in_pack_hook(move_lines_to_pack)
         package = delivery_1._put_in_pack(move_lines_to_pack)
-        self.assertEqual(delivery_1.move_line_ids.result_package_id, package, 'Delivery 1 moves should have been put in package.')
-        self.assertEqual(delivery_2.move_line_ids.result_package_id, package, 'Delivery 2 moves should have been put in package.')
+        self.assertEqual(delivery_1.move_line_ids.result_package_id, package,
+                         'Delivery 1 moves should have been put in package.')
+        self.assertEqual(delivery_2.move_line_ids.result_package_id, package,
+                         'Delivery 2 moves should have been put in package.')
 
     def test_picking_access_error_on_package(self):
         """ In a multi-company environment, a reusable package which is used by 2+ companies can cause access errors

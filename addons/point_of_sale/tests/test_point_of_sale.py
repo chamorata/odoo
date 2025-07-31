@@ -75,8 +75,10 @@ class TestPointOfSale(TransactionCase):
         )
         # Add attribute and values, simulating variant creation
         size_attribute = self.env['product.attribute'].create({'name': 'Size'})
-        attribute_value_1 = self.env['product.attribute.value'].create({'name': 'Large', 'attribute_id': size_attribute.id})
-        attribute_value_2 = self.env['product.attribute.value'].create({'name': 'Small', 'attribute_id': size_attribute.id})
+        attribute_value_1 = self.env['product.attribute.value'].create(
+            {'name': 'Large', 'attribute_id': size_attribute.id})
+        attribute_value_2 = self.env['product.attribute.value'].create(
+            {'name': 'Small', 'attribute_id': size_attribute.id})
         original_product_id = product.id
         product_template = product.product_tmpl_id
         product.product_tmpl_id.with_context(create_product_product=True).write({
@@ -86,4 +88,5 @@ class TestPointOfSale(TransactionCase):
             })],
         })
         # Check that original product should not be in combo anymore (replace by variants)
-        self.assertTrue(original_product_id not in product_combo.combo_item_ids.mapped('product_id').ids, "Original product should not be in combo")
+        self.assertTrue(original_product_id not in product_combo.combo_item_ids.mapped('product_id').ids,
+                        "Original product should not be in combo")

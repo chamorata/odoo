@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api
-from odoo.tools import SQL
 from odoo.addons.account.models.account_move import PAYMENT_STATE_SELECTION
 
-from functools import lru_cache
+from odoo import models, fields, api
+from odoo.tools import SQL
 
 
 class AccountInvoiceReport(models.Model):
@@ -28,12 +27,12 @@ class AccountInvoiceReport(models.Model):
         ('in_invoice', 'Vendor Bill'),
         ('out_refund', 'Customer Credit Note'),
         ('in_refund', 'Vendor Credit Note'),
-        ], readonly=True)
+    ], readonly=True)
     state = fields.Selection([
         ('draft', 'Draft'),
         ('posted', 'Open'),
         ('cancel', 'Cancelled')
-        ], string='Invoice Status', readonly=True)
+    ], string='Invoice Status', readonly=True)
     payment_state = fields.Selection(selection=PAYMENT_STATE_SELECTION, string='Payment Status', readonly=True)
     fiscal_position_id = fields.Many2one('account.fiscal.position', string='Fiscal Position', readonly=True)
     invoice_date = fields.Date(readonly=True, string="Invoice Date")
@@ -44,7 +43,8 @@ class AccountInvoiceReport(models.Model):
     product_uom_id = fields.Many2one('uom.uom', string='Unit of Measure', readonly=True)
     product_categ_id = fields.Many2one('product.category', string='Product Category', readonly=True)
     invoice_date_due = fields.Date(string='Due Date', readonly=True)
-    account_id = fields.Many2one('account.account', string='Revenue/Expense Account', readonly=True, domain=[('deprecated', '=', False)])
+    account_id = fields.Many2one('account.account', string='Revenue/Expense Account', readonly=True,
+                                 domain=[('deprecated', '=', False)])
     price_subtotal_currency = fields.Float(string='Untaxed Amount in Currency', readonly=True)
     price_subtotal = fields.Float(string='Untaxed Amount', readonly=True)
     price_total = fields.Float(string='Total in Currency', readonly=True)
@@ -198,6 +198,7 @@ class ReportInvoiceWithoutPayment(models.AbstractModel):
             'docs': docs,
             'qr_code_urls': qr_code_urls,
         }
+
 
 class ReportInvoiceWithPayment(models.AbstractModel):
     _name = 'report.account.report_invoice_with_payments'

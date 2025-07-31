@@ -3,9 +3,10 @@
 
 """ Implementation of "INVENTORY VALUATION TESTS (With valuation layers)" spreadsheet. """
 
-from odoo.fields import Command
-from odoo.addons.stock_account.tests.test_stockvaluationlayer import TestStockValuationCommon
 from odoo.addons.stock_account.tests.test_stockvaluation import TestStockValuationBase
+from odoo.addons.stock_account.tests.test_stockvaluationlayer import TestStockValuationCommon
+
+from odoo.fields import Command
 from odoo.tests import Form
 from odoo.tests.common import tagged
 
@@ -105,7 +106,8 @@ class TestMrpValuationStandard(TestMrpValuationCommon):
             'categ_id': self.product1.product_tmpl_id.categ_id.id,
         })
         self.bom.write({
-            'byproduct_ids': [(0, 0, {'product_id': byproduct.id, 'product_uom_id': self.uom_unit.id, 'product_qty': 1, 'cost_share': byproduct_cost_share})]
+            'byproduct_ids': [(0, 0, {'product_id': byproduct.id, 'product_uom_id': self.uom_unit.id, 'product_qty': 1,
+                                      'cost_share': byproduct_cost_share})]
         })
 
         mo = self._make_mo(self.bom, 2)
@@ -475,7 +477,8 @@ class TestMrpStockValuation(TestStockValuationBase):
         """Create move into/out of a production location, test we create account
         entries with the Production Cost account.
         """
-        production_location = self.env['stock.location'].search([('usage', '=', 'production'), ('company_id', '=', self.env.company.id)])
+        production_location = self.env['stock.location'].search(
+            [('usage', '=', 'production'), ('company_id', '=', self.env.company.id)])
         picking_type_in = self.env.ref('stock.picking_type_in')
         picking_type_out = self.env.ref('stock.picking_type_out')
 
@@ -548,7 +551,8 @@ class TestMrpStockValuation(TestStockValuationBase):
             'reconcile': True,
         })
 
-        production_location = self.env['stock.location'].search([('usage', '=', 'production'), ('company_id', '=', self.env.company.id)])
+        production_location = self.env['stock.location'].search(
+            [('usage', '=', 'production'), ('company_id', '=', self.env.company.id)])
         production_location.write({
             'valuation_in_account_id': production_in_account.id,
             'valuation_out_account_id': production_out_account.id,

@@ -10,7 +10,8 @@ class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
     pickup_location_data = fields.Json()
-    carrier_id = fields.Many2one('delivery.carrier', string="Delivery Method", check_company=True, help="Fill this field if you plan to invoice the shipping based on picking.")
+    carrier_id = fields.Many2one('delivery.carrier', string="Delivery Method", check_company=True,
+                                 help="Fill this field if you plan to invoice the shipping based on picking.")
     delivery_message = fields.Char(readonly=True, copy=False)
     delivery_set = fields.Boolean(compute='_compute_delivery_state')
     recompute_delivery_price = fields.Boolean('Delivery cost should be recomputed')
@@ -20,7 +21,8 @@ class SaleOrder(models.Model):
     @api.depends('order_line')
     def _compute_is_service_products(self):
         for so in self:
-            so.is_all_service = all(line.product_id.type == 'service' for line in so.order_line.filtered(lambda x: not x.display_type))
+            so.is_all_service = all(
+                line.product_id.type == 'service' for line in so.order_line.filtered(lambda x: not x.display_type))
 
     def _compute_amount_total_without_delivery(self):
         self.ensure_one()
@@ -53,7 +55,8 @@ class SaleOrder(models.Model):
         if not to_delete:
             raise UserError(
                 _('You can not update the shipping costs on an order where it was already invoiced!\n\nThe following delivery lines (product, invoiced quantity and price) have already been processed:\n\n')
-                + '\n'.join(['- %s: %s x %s' % (line.product_id.with_context(display_default_code=False).display_name, line.qty_invoiced, line.price_unit) for line in delivery_lines])
+                + '\n'.join(['- %s: %s x %s' % (line.product_id.with_context(display_default_code=False).display_name,
+                                                line.qty_invoiced, line.price_unit) for line in delivery_lines])
             )
         to_delete.unlink()
 
@@ -125,8 +128,9 @@ class SaleOrder(models.Model):
         else:
             name = _('Add a shipping method')
             carrier = (
-                self.with_company(self.company_id).partner_shipping_id.property_delivery_carrier_id
-                or self.with_company(self.company_id).partner_shipping_id.commercial_partner_id.property_delivery_carrier_id
+                    self.with_company(self.company_id).partner_shipping_id.property_delivery_carrier_id
+                    or self.with_company(
+                self.company_id).partner_shipping_id.commercial_partner_id.property_delivery_carrier_id
             )
         return {
             'name': name,
@@ -207,7 +211,7 @@ class SaleOrder(models.Model):
 
         if carrier.product_id.description_sale:
             so_description = '%s: %s' % (carrier.name,
-                                        carrier.product_id.description_sale)
+                                         carrier.product_id.description_sale)
         else:
             so_description = carrier.name
         values = {
@@ -220,7 +224,7 @@ class SaleOrder(models.Model):
             'tax_id': [(6, 0, taxes_ids)],
             'is_delivery': True,
         }
-        if carrier.free_over and self.currency_id.is_zero(price_unit) :
+        if carrier.free_over and self.currency_id.is_zero(price_unit):
             values['name'] = _('%s\nFree Shipping', values['name'])
         if self.order_line:
             values['sequence'] = self.order_line[-1].sequence + 1
@@ -239,7 +243,8 @@ class SaleOrder(models.Model):
     def _get_estimated_weight(self):
         self.ensure_one()
         weight = 0.0
-        for order_line in self.order_line.filtered(lambda l: l.product_id.type == 'consu' and not l.is_delivery and not l.display_type and l.product_uom_qty > 0):
+        for order_line in self.order_line.filtered(
+                lambda l: l.product_id.type == 'consu' and not l.is_delivery and not l.display_type and l.product_uom_qty > 0):
             weight += order_line.product_qty * order_line.product_id.weight
         return weight
 

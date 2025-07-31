@@ -3,9 +3,10 @@
 
 from unittest.mock import patch
 
+from odoo.addons.survey.tests import common
+
 from odoo import Command
 from odoo.addons.base.models.ir_mail_server import IrMailServer
-from odoo.addons.survey.tests import common
 from odoo.tests import tagged
 from odoo.tests.common import HttpCase
 
@@ -106,10 +107,12 @@ class TestCertificationFlow(common.TestSurveyCommon, HttpCase):
             self._answer_question(q01, q01.suggested_answer_ids.ids[3], answer_token, csrf_token)
             self._answer_question(q02, q02.suggested_answer_ids.ids[1], answer_token, csrf_token)
             self._answer_question(q03, "I think they're great!", answer_token, csrf_token)
-            self._answer_question(q04, q04.suggested_answer_ids.ids[0], answer_token, csrf_token, button_submit='previous')
+            self._answer_question(q04, q04.suggested_answer_ids.ids[0], answer_token, csrf_token,
+                                  button_submit='previous')
             self._answer_question(q03, "Just kidding, I don't like it...", answer_token, csrf_token)
             self._answer_question(q04, q04.suggested_answer_ids.ids[0], answer_token, csrf_token)
-            self._answer_question(q05, [q05.suggested_answer_ids.ids[0], q05.suggested_answer_ids.ids[1], q05.suggested_answer_ids.ids[3]], answer_token, csrf_token)
+            self._answer_question(q05, [q05.suggested_answer_ids.ids[0], q05.suggested_answer_ids.ids[1],
+                                        q05.suggested_answer_ids.ids[3]], answer_token, csrf_token)
 
         user_inputs.invalidate_recordset()
         # Check that certification is successfully passed
@@ -168,7 +171,7 @@ class TestCertificationFlow(common.TestSurveyCommon, HttpCase):
                 'company_ids': [new_company.id],
             })
             new_company.invalidate_model()  # cache pollution
-        self.env['ir.actions.report'].with_user(user_new_company).with_company(new_company)\
+        self.env['ir.actions.report'].with_user(user_new_company).with_company(new_company) \
             ._render_qweb_pdf('survey.certification_report_view', res_ids=user_inputs.ids)
 
     def test_randomized_certification(self):
@@ -263,4 +266,5 @@ class TestCertificationFlow(common.TestSurveyCommon, HttpCase):
                 'incorrect': 0,
                 'skipped': 0,
             }
-        }, "With the configured randomization, there should be exactly 1 correctly answered question in the 'Page 1' section.")
+        },
+                         "With the configured randomization, there should be exactly 1 correctly answered question in the 'Page 1' section.")

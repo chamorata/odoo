@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
+from datetime import timedelta
+
+import pytz
+from freezegun import freeze_time
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
-from odoo.tests import tagged, Form
+
 from odoo import Command, fields
 from odoo.exceptions import UserError
-
-
-from datetime import timedelta
-from freezegun import freeze_time
-import pytz
+from odoo.tests import tagged, Form
 
 
 @tagged('-at_install', 'post_install')
@@ -38,7 +38,8 @@ class TestPurchase(AccountTestInvoicingCommon):
 
         # Check that the same date is planned on both PO lines.
         self.assertNotEqual(po.order_line[0].date_planned, False)
-        self.assertAlmostEqual(po.order_line[0].date_planned, po.order_line[1].date_planned, delta=timedelta(seconds=10))
+        self.assertAlmostEqual(po.order_line[0].date_planned, po.order_line[1].date_planned,
+                               delta=timedelta(seconds=10))
         self.assertAlmostEqual(po.order_line[0].date_planned, po.date_planned, delta=timedelta(seconds=10))
 
         orig_date_planned = po.order_line[0].date_planned
@@ -157,7 +158,8 @@ class TestPurchase(AccountTestInvoicingCommon):
         localized_date_planned = po.date_planned.astimezone(po_tz)
         self.assertEqual(localized_date_planned, po.get_localized_date_planned())
         # Ensure that the function get_localized_date_planned can accept a date in string format
-        self.assertEqual(localized_date_planned, po.get_localized_date_planned(po.date_planned.strftime('%Y-%m-%d %H:%M:%S')))
+        self.assertEqual(localized_date_planned,
+                         po.get_localized_date_planned(po.date_planned.strftime('%Y-%m-%d %H:%M:%S')))
 
         # check vendor is a message recipient
         self.assertTrue(po.partner_id in po.message_partner_ids)
@@ -279,7 +281,6 @@ class TestPurchase(AccountTestInvoicingCommon):
             line.product_packaging_qty = 2.0
         po_form.save()
         self.assertEqual(po.order_line.product_qty, 2.0)
-
 
         with po_form.order_line.edit(0) as line:
             line.product_qty = 24.0
@@ -437,8 +438,10 @@ class TestPurchase(AccountTestInvoicingCommon):
         with po_form.order_line.new() as po_line:
             po_line.product_id = product
         purchase_order_usd = po_form.save()
-        self.assertEqual(purchase_order_usd.order_line.price_unit, product.standard_price, "Value shouldn't be rounded $")
-        self.assertEqual(purchase_order_usd.amount_total_cc, purchase_order_usd.amount_total, "Company Total should be 0.14$")
+        self.assertEqual(purchase_order_usd.order_line.price_unit, product.standard_price,
+                         "Value shouldn't be rounded $")
+        self.assertEqual(purchase_order_usd.amount_total_cc, purchase_order_usd.amount_total,
+                         "Company Total should be 0.14$")
 
         po_form = Form(self.env['purchase.order'])
         po_form.partner_id = self.partner_a
@@ -446,10 +449,13 @@ class TestPurchase(AccountTestInvoicingCommon):
         with po_form.order_line.new() as po_line:
             po_line.product_id = product
         purchase_order_coco = po_form.save()
-        self.assertEqual(purchase_order_coco.order_line.price_unit, currency_rate.rate * product.standard_price, "Value shouldn't be rounded 🍫")
-        self.assertEqual(purchase_order_coco.amount_total_cc, round(purchase_order_coco.amount_total / currency_rate.rate, 2), "Company Total should be 0.14$, since 1$ = 0.5🍫")
+        self.assertEqual(purchase_order_coco.order_line.price_unit, currency_rate.rate * product.standard_price,
+                         "Value shouldn't be rounded 🍫")
+        self.assertEqual(purchase_order_coco.amount_total_cc,
+                         round(purchase_order_coco.amount_total / currency_rate.rate, 2),
+                         "Company Total should be 0.14$, since 1$ = 0.5🍫")
         self.assertEqual(purchase_order_coco.tax_totals['amount_total_cc'], "($\xa00.14)")
-        #check if the correct currency is set on the purchase order by comparing the expected price and actual price
+        # check if the correct currency is set on the purchase order by comparing the expected price and actual price
 
         company_a = self.company_data['company']
         company_b = self.company_data_2['company']
@@ -480,7 +486,7 @@ class TestPurchase(AccountTestInvoicingCommon):
         product_b.supplier_taxes_id = False
         product_b.update({'standard_price': 10.0})
 
-        #create a purchase order with the product from company B
+        # create a purchase order with the product from company B
         order_b = self.env['purchase.order'].with_company(company_b).create({
             'partner_id': self.partner_a.id,
             'order_line': [(0, 0, {
@@ -545,20 +551,20 @@ class TestPurchase(AccountTestInvoicingCommon):
         product is not set on the purchase order line.
         """
 
-        #create a contact of type contact
+        # create a contact of type contact
         contact = self.env['res.partner'].create({
             'name': 'Contact',
             'type': 'contact',
         })
 
-        #create a contact of type Delivery Address lnked to the contact
+        # create a contact of type Delivery Address lnked to the contact
         delivery_address = self.env['res.partner'].create({
             'name': 'Delivery Address',
             'type': 'delivery',
             'parent_id': contact.id,
         })
 
-        #create a product that use the delivery address as vendor
+        # create a product that use the delivery address as vendor
         product = self.env['product.product'].create({
             'name': 'Product A',
             'seller_ids': [(0, 0, {
@@ -568,7 +574,7 @@ class TestPurchase(AccountTestInvoicingCommon):
             })]
         })
 
-        #create a purchase order with the delivery address as partner
+        # create a purchase order with the delivery address as partner
         po_form = Form(self.env['purchase.order'])
         po_form.partner_id = delivery_address
         with po_form.order_line.new() as po_line:
@@ -901,7 +907,8 @@ class TestPurchase(AccountTestInvoicingCommon):
 
         with self.assertRaises(UserError) as context:
             PurchaseOrder.browse([po_1.id]).action_merge()
-        self.assertEqual(context.exception.args[0], "Please select at least two purchase orders with state RFQ and RFQ sent to merge.")
+        self.assertEqual(context.exception.args[0],
+                         "Please select at least two purchase orders with state RFQ and RFQ sent to merge.")
 
         selected_purchase_orders = po_1 | po_2
         selected_purchase_orders.action_merge()
@@ -940,7 +947,8 @@ class TestPurchase(AccountTestInvoicingCommon):
             ]
         })
 
-        po = self.env['purchase.order'].with_context(allowed_company_ids=[company_a.id, company_b.id]).with_company(company_b).create({
+        po = self.env['purchase.order'].with_context(allowed_company_ids=[company_a.id, company_b.id]).with_company(
+            company_b).create({
             'partner_id': self.partner_a.id,
             'company_id': company_b.id,
             'order_line': [Command.create({

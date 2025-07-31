@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
+from unittest.mock import patch
+
 from odoo.addons.website_slides.tests import common as slides_common
+
 from odoo.exceptions import UserError
 from odoo.tests.common import users
-from unittest.mock import patch
 
 
 class TestSlidesManagement(slides_common.SlidesCase):
@@ -50,9 +52,11 @@ class TestSlidesManagement(slides_common.SlidesCase):
         for slide in self.channel.slide_ids:
             self.assertFalse(slide.active, "All slides should be archived when a channel is archived")
             if not slide.is_category:
-                self.assertFalse(slide.is_published, "All slides should be unpublished when a channel is archived, except categories")
+                self.assertFalse(slide.is_published,
+                                 "All slides should be unpublished when a channel is archived, except categories")
             else:
-                self.assertTrue(slide.is_published, "All slides should be unpublished when a channel is archived, except categories")
+                self.assertTrue(slide.is_published,
+                                "All slides should be unpublished when a channel is archived, except categories")
 
     @users('user_manager')
     def test_channel_partner_next_slide(self):
@@ -182,10 +186,10 @@ class TestSlidesManagement(slides_common.SlidesCase):
         with self.mock_mail_gateway():
             self.env['slide.slide.partner'].create([
                 {'channel_id': self.channel.id,
-                'completed': True,
-                'partner_id': self.user_officer.partner_id.id,
-                'slide_id': slide.id,
-                }
+                 'completed': True,
+                 'partner_id': self.user_officer.partner_id.id,
+                 'slide_id': slide.id,
+                 }
                 for slide in all_channels.slide_content_ids
             ])
         slide_created_mails = self._new_mails.filtered(lambda m: m.model == 'slide.channel.partner')
@@ -235,12 +239,12 @@ class TestSlidesManagement(slides_common.SlidesCase):
 
     def test_unlink_slide_channel(self):
         self.assertTrue(self.channel.slide_content_ids.mapped('question_ids').exists(),
-            "Has question(s) linked to the slides")
+                        "Has question(s) linked to the slides")
         self.assertTrue(self.channel.channel_partner_ids.exists(), "Has participant(s)")
 
         self.channel.with_user(self.user_manager).unlink()
         self.assertFalse(self.channel.exists(),
-            "Should have deleted channel along with the slides even if there are slides with quiz and participant(s)")
+                         "Should have deleted channel along with the slides even if there are slides with quiz and participant(s)")
 
     def test_default_completion_time(self):
         """Verify whether the system calculates the completion time when it is not specified,
@@ -250,8 +254,8 @@ class TestSlidesManagement(slides_common.SlidesCase):
             return 13.37
 
         with patch(
-            'odoo.addons.website_slides.models.slide_slide.Slide._get_completion_time_pdf',
-            new=_get_completion_time_pdf
+                'odoo.addons.website_slides.models.slide_slide.Slide._get_completion_time_pdf',
+                new=_get_completion_time_pdf
         ):
             slides_1 = self.env['slide.slide'].create({
                 'name': 'Test_Content',
@@ -278,13 +282,14 @@ class TestSlidesManagement(slides_common.SlidesCase):
     @users('user_manager')
     def test_mail_completed_not_on_unpublishing_or_unlinking_slides(self):
         """Check that participants do not receive a course completion email when slides are deleted/unpublished."""
+
         def were_emails_sent():
             new_mails = self._new_mails.filtered(lambda m: m.model == 'slide.channel.partner')
             return len(new_mails) > 0
 
         # Setup
         self.assertGreater(len(self.channel.channel_partner_ids), self.channel.members_completed_count,
-            "Channel shall have at least one participant not yet completer")
+                           "Channel shall have at least one participant not yet completer")
         slides_initially_published = self.channel.slide_ids.filtered('is_published')
         self.assertGreaterEqual(len(slides_initially_published), 2, "The test requires at least two published slides.")
 
@@ -295,7 +300,8 @@ class TestSlidesManagement(slides_common.SlidesCase):
 
         with self.mock_mail_gateway():
             slides_initially_published.is_published = False
-        self.assertFalse(were_emails_sent(), "Participants should not receive emails when all remaining slides are unpublished.")
+        self.assertFalse(were_emails_sent(),
+                         "Participants should not receive emails when all remaining slides are unpublished.")
 
         # Unlinking slides
         with self.mock_mail_gateway():
@@ -304,7 +310,8 @@ class TestSlidesManagement(slides_common.SlidesCase):
 
         with self.mock_mail_gateway():
             self.channel.slide_ids.with_user(self.user_manager).unlink()
-        self.assertFalse(were_emails_sent(), "Participants should not receive emails when all remaining slides are deleted.")
+        self.assertFalse(were_emails_sent(),
+                         "Participants should not receive emails when all remaining slides are deleted.")
 
 
 class TestSequencing(slides_common.SlidesCase):
@@ -316,14 +323,17 @@ class TestSequencing(slides_common.SlidesCase):
         self.assertEqual(self.slide.category_id, self.env['slide.slide'])
         self.assertEqual(self.slide_2.category_id, self.category)
         self.assertEqual(self.slide_3.category_id, self.category)
-        self.assertEqual([s.id for s in self.channel.slide_ids], [self.slide.id, self.category.id, self.slide_2.id, self.slide_3.id])
+        self.assertEqual([s.id for s in self.channel.slide_ids],
+                         [self.slide.id, self.category.id, self.slide_2.id, self.slide_3.id])
 
         self.slide.write({'sequence': 0})
-        self.assertEqual([s.id for s in self.channel.slide_ids], [self.slide.id, self.category.id, self.slide_2.id, self.slide_3.id])
+        self.assertEqual([s.id for s in self.channel.slide_ids],
+                         [self.slide.id, self.category.id, self.slide_2.id, self.slide_3.id])
         self.assertEqual(self.slide_2.category_id, self.category)
         self.slide_2.write({'sequence': 1})
         self.channel.invalidate_recordset()
-        self.assertEqual([s.id for s in self.channel.slide_ids], [self.slide.id, self.slide_2.id, self.category.id, self.slide_3.id])
+        self.assertEqual([s.id for s in self.channel.slide_ids],
+                         [self.slide.id, self.slide_2.id, self.category.id, self.slide_3.id])
         self.assertEqual(self.slide_2.category_id, self.env['slide.slide'])
 
         channel_2 = self.env['slide.channel'].create({
@@ -363,7 +373,8 @@ class TestSequencing(slides_common.SlidesCase):
         self.slide_3.write({'sequence': 3})
 
         self.channel.invalidate_recordset()
-        self.assertEqual([s.id for s in self.channel.slide_ids], [self.slide.id, self.slide_3.id, self.category.id, self.slide_2.id])
+        self.assertEqual([s.id for s in self.channel.slide_ids],
+                         [self.slide.id, self.slide_3.id, self.category.id, self.slide_2.id])
         self.assertEqual(self.slide.sequence, 1)
 
         # insert a new category and check resequence_slides does as expected
@@ -382,7 +393,8 @@ class TestSequencing(slides_common.SlidesCase):
         self.assertEqual(self.slide_3.sequence, 3)
         self.assertEqual(self.category.sequence, 4)
         self.assertEqual(self.slide_2.sequence, 5)
-        self.assertEqual([s.id for s in self.channel.slide_ids], [self.slide.id, new_category.id, self.slide_3.id, self.category.id, self.slide_2.id])
+        self.assertEqual([s.id for s in self.channel.slide_ids],
+                         [self.slide.id, new_category.id, self.slide_3.id, self.category.id, self.slide_2.id])
 
     @users('user_officer')
     def test_channel_enroll_policy(self):

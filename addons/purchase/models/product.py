@@ -1,30 +1,34 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from dateutil.relativedelta import relativedelta
+
 from odoo import api, fields, models, _
 from odoo.addons.base.models.res_partner import WARNING_MESSAGE, WARNING_HELP
-from odoo.tools.float_utils import float_round
 from odoo.exceptions import UserError
-from dateutil.relativedelta import relativedelta
+from odoo.tools.float_utils import float_round
 
 
 class ProductTemplate(models.Model):
     _name = 'product.template'
     _inherit = 'product.template'
 
-    purchased_product_qty = fields.Float(compute='_compute_purchased_product_qty', string='Purchased', digits='Product Unit of Measure')
+    purchased_product_qty = fields.Float(compute='_compute_purchased_product_qty', string='Purchased',
+                                         digits='Product Unit of Measure')
     purchase_method = fields.Selection([
         ('purchase', 'On ordered quantities'),
         ('receive', 'On received quantities'),
     ], string="Control Policy", compute='_compute_purchase_method', precompute=True, store=True, readonly=False,
         help="On ordered quantities: Control bills based on ordered quantities.\n"
-            "On received quantities: Control bills based on received quantities.")
-    purchase_line_warn = fields.Selection(WARNING_MESSAGE, 'Purchase Order Line Warning', help=WARNING_HELP, required=True, default="no-message")
+             "On received quantities: Control bills based on received quantities.")
+    purchase_line_warn = fields.Selection(WARNING_MESSAGE, 'Purchase Order Line Warning', help=WARNING_HELP,
+                                          required=True, default="no-message")
     purchase_line_warn_msg = fields.Text('Message for Purchase Order Line')
 
     @api.depends('type')
     def _compute_purchase_method(self):
-        default_purchase_method = self.env['product.template'].default_get(['purchase_method']).get('purchase_method', 'receive')
+        default_purchase_method = self.env['product.template'].default_get(['purchase_method']).get('purchase_method',
+                                                                                                    'receive')
         for product in self:
             if product.type == 'service':
                 product.purchase_method = 'purchase'
@@ -34,8 +38,9 @@ class ProductTemplate(models.Model):
     def _compute_purchased_product_qty(self):
         for template in self.with_context(active_test=False):
             template.purchased_product_qty = float_round(sum(p.purchased_product_qty for
-                p in template.product_variant_ids), precision_rounding=template.uom_id.rounding
-            )
+                                                             p in template.product_variant_ids),
+                                                         precision_rounding=template.uom_id.rounding
+                                                         )
 
     def _get_backend_root_menu_ids(self):
         return super()._get_backend_root_menu_ids() + [self.env.ref('purchase.menu_purchase_root').id]
@@ -65,7 +70,7 @@ class ProductProduct(models.Model):
     _inherit = 'product.product'
 
     purchased_product_qty = fields.Float(compute='_compute_purchased_product_qty', string='Purchased',
-        digits='Product Unit of Measure')
+                                         digits='Product Unit of Measure')
 
     is_in_purchase_order = fields.Boolean(
         compute='_compute_is_in_purchase_order',
@@ -85,7 +90,8 @@ class ProductProduct(models.Model):
             if not product.id:
                 product.purchased_product_qty = 0.0
                 continue
-            product.purchased_product_qty = float_round(purchased_data.get(product.id, 0), precision_rounding=product.uom_id.rounding)
+            product.purchased_product_qty = float_round(purchased_data.get(product.id, 0),
+                                                        precision_rounding=product.uom_id.rounding)
 
     @api.depends_context('order_id')
     def _compute_is_in_purchase_order(self):
@@ -132,6 +138,7 @@ class ProductSupplierinfo(models.Model):
         if params and 'order_id' in params and params['order_id'].company_id:
             company_id = params['order_id'].company_id
         return super()._get_filtered_supplier(company_id, product_id, params)
+
 
 class ProductPackaging(models.Model):
     _inherit = 'product.packaging'

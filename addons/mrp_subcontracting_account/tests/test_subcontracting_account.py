@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.mrp_account.tests.test_bom_price import TestBomPriceCommon
+from odoo.addons.mrp_subcontracting.tests.common import TestMrpSubcontractingCommon
+
 from odoo import Command, fields
 from odoo.tests import Form, tagged
 from odoo.tools.float_utils import float_round, float_compare
-
-from odoo.addons.mrp_subcontracting.tests.common import TestMrpSubcontractingCommon
-from odoo.addons.mrp_account.tests.test_bom_price import TestBomPriceCommon
 
 
 @tagged('post_install', '-at_install')
@@ -113,15 +113,15 @@ class TestAccountSubcontractingFlows(TestMrpSubcontractingCommon):
         all_amls_ids += amls.ids
         self.assertRecordValues(amls, [
             # Receipt from subcontractor
-            {'account_id': stock_valu_acc_id,   'product_id': self.finished.id,    'debit': 60.0, 'credit': 0.0},
-            {'account_id': stock_in_acc_id,     'product_id': self.finished.id,    'debit': 0.0,   'credit': 30.0},
-            {'account_id': stock_cop_acc_id,    'product_id': self.finished.id,    'debit': 0.0,   'credit': 30.0},
+            {'account_id': stock_valu_acc_id, 'product_id': self.finished.id, 'debit': 60.0, 'credit': 0.0},
+            {'account_id': stock_in_acc_id, 'product_id': self.finished.id, 'debit': 0.0, 'credit': 30.0},
+            {'account_id': stock_cop_acc_id, 'product_id': self.finished.id, 'debit': 0.0, 'credit': 30.0},
             # Delivery com2 to subcontractor
-            {'account_id': stock_valu_acc_id,   'product_id': self.comp2.id,       'debit': 0.0,   'credit': 20.0},
-            {'account_id': stock_cop_acc_id,    'product_id': self.comp2.id,       'debit': 20.0,  'credit': 0.0},
+            {'account_id': stock_valu_acc_id, 'product_id': self.comp2.id, 'debit': 0.0, 'credit': 20.0},
+            {'account_id': stock_cop_acc_id, 'product_id': self.comp2.id, 'debit': 20.0, 'credit': 0.0},
             # Delivery com2 to subcontractor
-            {'account_id': stock_valu_acc_id,   'product_id': self.comp1.id,       'debit': 0.0,   'credit': 10.0},
-            {'account_id': stock_cop_acc_id,    'product_id': self.comp1.id,       'debit': 10.0,  'credit': 0.0},
+            {'account_id': stock_valu_acc_id, 'product_id': self.comp1.id, 'debit': 0.0, 'credit': 10.0},
+            {'account_id': stock_cop_acc_id, 'product_id': self.comp1.id, 'debit': 10.0, 'credit': 0.0},
         ])
 
         # Do the same without any additionnal cost
@@ -149,14 +149,14 @@ class TestAccountSubcontractingFlows(TestMrpSubcontractingCommon):
         all_amls_ids += amls.ids
         self.assertRecordValues(amls, [
             # Receipt from subcontractor
-            {'account_id': stock_cop_acc_id,     'product_id': self.finished.id,    'debit': 0.0,   'credit': 30.0},
-            {'account_id': stock_valu_acc_id,   'product_id': self.finished.id,    'debit': 30.0,  'credit': 0.0},
+            {'account_id': stock_cop_acc_id, 'product_id': self.finished.id, 'debit': 0.0, 'credit': 30.0},
+            {'account_id': stock_valu_acc_id, 'product_id': self.finished.id, 'debit': 30.0, 'credit': 0.0},
             # Delivery com2 to subcontractor
-            {'account_id': stock_valu_acc_id,   'product_id': self.comp2.id,       'debit': 0.0,   'credit': 20.0},
-            {'account_id': stock_cop_acc_id,    'product_id': self.comp2.id,       'debit': 20.0,  'credit': 0.0},
+            {'account_id': stock_valu_acc_id, 'product_id': self.comp2.id, 'debit': 0.0, 'credit': 20.0},
+            {'account_id': stock_cop_acc_id, 'product_id': self.comp2.id, 'debit': 20.0, 'credit': 0.0},
             # Delivery com2 to subcontractor
-            {'account_id': stock_valu_acc_id,   'product_id': self.comp1.id,       'debit': 0.0,   'credit': 10.0},
-            {'account_id': stock_cop_acc_id,    'product_id': self.comp1.id,       'debit': 10.0,  'credit': 0.0},
+            {'account_id': stock_valu_acc_id, 'product_id': self.comp1.id, 'debit': 0.0, 'credit': 10.0},
+            {'account_id': stock_cop_acc_id, 'product_id': self.comp1.id, 'debit': 10.0, 'credit': 0.0},
         ])
 
         # Scrap first subcontract MO and ensure that the additional cost is not added.
@@ -276,20 +276,21 @@ class TestAccountSubcontractingFlows(TestMrpSubcontractingCommon):
         amls = self.env['account.move.line'].search([('id', 'not in', all_amls_ids)])
         all_amls_ids += amls.ids
         # get the account/input account of production location
-        production_location = self.env['stock.location'].search([('usage', '=', 'production'), ('company_id', '=', self.env.company.id)])
+        production_location = self.env['stock.location'].search(
+            [('usage', '=', 'production'), ('company_id', '=', self.env.company.id)])
         production_in_acc_id = production_location.valuation_in_account_id.id
         production_out_acc_id = production_location.valuation_out_account_id.id
         self.assertRecordValues(amls, [
             # Receipt from subcontractor     | should use output account of production location
-            {'account_id': stock_valu_acc_id,      'product_id': self.finished.id,    'debit': 60.0,  'credit': 0.0},
-            {'account_id': stock_in_acc_id,        'product_id': self.finished.id,    'debit': 0.0,   'credit': 30.0},
-            {'account_id': production_out_acc_id,  'product_id': self.finished.id,    'debit': 0.0,   'credit': 30.0},
+            {'account_id': stock_valu_acc_id, 'product_id': self.finished.id, 'debit': 60.0, 'credit': 0.0},
+            {'account_id': stock_in_acc_id, 'product_id': self.finished.id, 'debit': 0.0, 'credit': 30.0},
+            {'account_id': production_out_acc_id, 'product_id': self.finished.id, 'debit': 0.0, 'credit': 30.0},
             # Delivery com2 to subcontractor | should use input account of production location
-            {'account_id': stock_valu_acc_id,      'product_id': self.comp2.id,       'debit': 0.0,   'credit': 20.0},
-            {'account_id': production_in_acc_id,   'product_id': self.comp2.id,       'debit': 20.0,  'credit': 0.0},
+            {'account_id': stock_valu_acc_id, 'product_id': self.comp2.id, 'debit': 0.0, 'credit': 20.0},
+            {'account_id': production_in_acc_id, 'product_id': self.comp2.id, 'debit': 20.0, 'credit': 0.0},
             # Delivery com2 to subcontractor | should use input account of production location
-            {'account_id': stock_valu_acc_id,      'product_id': self.comp1.id,       'debit': 0.0,   'credit': 10.0},
-            {'account_id': production_in_acc_id,   'product_id': self.comp1.id,       'debit': 10.0,  'credit': 0.0},
+            {'account_id': stock_valu_acc_id, 'product_id': self.comp1.id, 'debit': 0.0, 'credit': 10.0},
+            {'account_id': production_in_acc_id, 'product_id': self.comp1.id, 'debit': 10.0, 'credit': 0.0},
         ])
 
     def test_subcontracting_account_backorder(self):
@@ -476,15 +477,16 @@ class TestAccountSubcontractingFlows(TestMrpSubcontractingCommon):
         amls = self.env['account.move.line'].search([('id', 'not in', all_amls_ids)])
         self.assertRecordValues(amls, [
             # Receipt from subcontractor
-            {'account_id': stock_valu_acc_id,   'product_id': self.finished.id,    'debit': 40.0,  'credit': 0.0},
-            {'account_id': stock_in_acc_id,     'product_id': self.finished.id,    'debit': 0.0,   'credit': 10.0},   # adjust according to the difference
-            {'account_id': stock_cop_acc_id,    'product_id': self.finished.id,    'debit': 0.0,   'credit': 30.0},
+            {'account_id': stock_valu_acc_id, 'product_id': self.finished.id, 'debit': 40.0, 'credit': 0.0},
+            {'account_id': stock_in_acc_id, 'product_id': self.finished.id, 'debit': 0.0, 'credit': 10.0},
+            # adjust according to the difference
+            {'account_id': stock_cop_acc_id, 'product_id': self.finished.id, 'debit': 0.0, 'credit': 30.0},
             # Delivery com2 to subcontractor
-            {'account_id': stock_valu_acc_id,   'product_id': self.comp2.id,       'debit': 0.0,   'credit': 20.0},
-            {'account_id': stock_cop_acc_id,    'product_id': self.comp2.id,       'debit': 20.0,  'credit': 0.0},
+            {'account_id': stock_valu_acc_id, 'product_id': self.comp2.id, 'debit': 0.0, 'credit': 20.0},
+            {'account_id': stock_cop_acc_id, 'product_id': self.comp2.id, 'debit': 20.0, 'credit': 0.0},
             # Delivery com2 to subcontractor
-            {'account_id': stock_valu_acc_id,   'product_id': self.comp1.id,       'debit': 0.0,   'credit': 10.0},
-            {'account_id': stock_cop_acc_id,    'product_id': self.comp1.id,       'debit': 10.0,  'credit': 0.0},
+            {'account_id': stock_valu_acc_id, 'product_id': self.comp1.id, 'debit': 0.0, 'credit': 10.0},
+            {'account_id': stock_cop_acc_id, 'product_id': self.comp1.id, 'debit': 10.0, 'credit': 0.0},
         ])
 
     def test_input_output_accout_with_subcontract(self):
@@ -567,7 +569,8 @@ class TestBomPriceSubcontracting(TestBomPriceCommon):
         # -----------------------------------------------------------------
         self.assertEqual(self.dining_table.standard_price, 1000, "Initial price of the Product should be 1000")
         self.dining_table.button_bom_cost()
-        self.assertEqual(float_round(self.dining_table.standard_price, precision_digits=2), 700.0, "After computing price from BoM price should be 700")
+        self.assertEqual(float_round(self.dining_table.standard_price, precision_digits=2), 700.0,
+                         "After computing price from BoM price should be 700")
 
         # Cost of BoM (Table Head 1 Dozen)
         # -----------------------------------------------------------------
@@ -582,8 +585,10 @@ class TestBomPriceSubcontracting(TestBomPriceCommon):
 
         self.assertEqual(self.table_head.standard_price, 300, "Initial price of the Product should be 300")
         self.Product.browse([self.dining_table.id, self.table_head.id]).action_bom_cost()
-        self.assertEqual(float_compare(self.table_head.standard_price, 478.75, precision_digits=2), 0, "After computing price from BoM price should be 878.75")
-        self.assertEqual(float_compare(self.dining_table.standard_price, 878.75, precision_digits=2), 0, "After computing price from BoM price should be 878.75")
+        self.assertEqual(float_compare(self.table_head.standard_price, 478.75, precision_digits=2), 0,
+                         "After computing price from BoM price should be 878.75")
+        self.assertEqual(float_compare(self.dining_table.standard_price, 878.75, precision_digits=2), 0,
+                         "After computing price from BoM price should be 878.75")
 
     def test_02_compute_price_subcontracting_cost(self):
         """Test calculation of bom cost with subcontracting and supplier in different currency."""
@@ -608,10 +613,10 @@ class TestBomPriceSubcontracting(TestBomPriceCommon):
             'company_id': self.env.company.id,
         })
         supplier = self.env['product.supplierinfo'].create([{
-                'partner_id': partner.id,
-                'product_tmpl_id': product.product_tmpl_id.id,
-                'price': 120.0,
-                'currency_id': currency_a.id,
+            'partner_id': partner.id,
+            'product_tmpl_id': product.product_tmpl_id.id,
+            'price': 120.0,
+            'currency_id': currency_a.id,
         }])
         self.env['mrp.bom'].create({
             'product_tmpl_id': product.product_tmpl_id.id,

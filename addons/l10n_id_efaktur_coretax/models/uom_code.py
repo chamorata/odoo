@@ -2,6 +2,7 @@
 
 from odoo import api, fields, models
 
+
 class EfakturUomCode(models.Model):
     _name = "l10n_id_efaktur_coretax.uom.code"
     _description = "UOM categorization according to E-Faktur"

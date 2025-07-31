@@ -2,10 +2,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import logging
-import pytz
 import textwrap
-
 from datetime import timedelta
+
+import pytz
 from dateutil.relativedelta import relativedelta
 
 from odoo import _, api, Command, fields, models, tools
@@ -22,7 +22,8 @@ _logger = logging.getLogger(__name__)
 try:
     import vobject
 except ImportError:
-    _logger.warning("`vobject` Python module not found, iCal file generation disabled. Consider installing this module if you want to generate iCal files")
+    _logger.warning(
+        "`vobject` Python module not found, iCal file generation disabled. Consider installing this module if you want to generate iCal files")
     vobject = None
 
 
@@ -37,19 +38,19 @@ class EventType(models.Model):
                   'interval_unit': 'now',
                   'interval_type': 'after_sub',
                   'template_ref': 'mail.template, %i' % self.env.ref('event.event_subscription').id,
-                 }),
+                  }),
                 (0, 0,
                  {'interval_nbr': 1,
                   'interval_unit': 'hours',
                   'interval_type': 'before_event',
                   'template_ref': 'mail.template, %i' % self.env.ref('event.event_reminder').id,
-                 }),
+                  }),
                 (0, 0,
                  {'interval_nbr': 3,
                   'interval_unit': 'days',
                   'interval_type': 'before_event',
                   'template_ref': 'mail.template, %i' % self.env.ref('event.event_reminder').id,
-                 })]
+                  })]
 
     def _default_question_ids(self):
         return [
@@ -78,7 +79,7 @@ class EventType(models.Model):
         default=_default_event_mail_type_ids)
     # ticket reports
     ticket_instructions = fields.Html('Ticket Instructions', translate=True,
-        help="This information will be printed on your tickets.")
+                                      help="This information will be printed on your tickets.")
     question_ids = fields.One2many(
         'event.question', 'event_type_id', default=_default_question_ids,
         string='Questions', copy=True)
@@ -131,7 +132,8 @@ class EventEvent(models.Model):
 
     name = fields.Char(string='Event', translate=True, required=True)
     note = fields.Html(string='Note', store=True, compute="_compute_note", readonly=False)
-    description = fields.Html(string='Description', translate=html_translate, sanitize_attributes=False, sanitize_form=False, default=_default_description)
+    description = fields.Html(string='Description', translate=html_translate, sanitize_attributes=False,
+                              sanitize_form=False, default=_default_description)
     active = fields.Boolean(default=True)
     user_id = fields.Many2one(
         'res.users', string='Responsible', tracking=True,
@@ -157,7 +159,8 @@ class EventEvent(models.Model):
     # properties
     registration_properties_definition = fields.PropertiesDefinition('Registration Properties')
     # Kanban fields
-    kanban_state = fields.Selection([('normal', 'In Progress'), ('done', 'Done'), ('blocked', 'Blocked')], default='normal', copy=False)
+    kanban_state = fields.Selection([('normal', 'In Progress'), ('done', 'Done'), ('blocked', 'Blocked')],
+                                    default='normal', copy=False)
     kanban_state_label = fields.Char(
         string='Kanban State Label', compute='_compute_kanban_state_label',
         store=True, tracking=True)
@@ -198,9 +201,9 @@ class EventEvent(models.Model):
     event_registrations_open = fields.Boolean(
         'Registration open', compute='_compute_event_registrations_open', compute_sudo=True,
         help="Registrations are open if:\n"
-        "- the event is not ended\n"
-        "- there are seats available on event\n"
-        "- the tickets are sellable (if ticketing is used)")
+             "- the event is not ended\n"
+             "- there are seats available on event\n"
+             "- the tickets are sellable (if ticketing is used)")
     event_registrations_sold_out = fields.Boolean(
         'Sold Out', compute='_compute_event_registrations_sold_out', compute_sudo=True,
         help='The event is sold out if no more seats are available on event. If ticketing is used and all tickets are sold out, the event will be sold out.')
@@ -213,7 +216,7 @@ class EventEvent(models.Model):
         compute='_compute_date_tz', precompute=True, readonly=False, store=True,
         help="Indicates the timezone in which the event dates/times will be displayed on the website.")
     date_begin = fields.Datetime(string='Start Date', required=True, tracking=True,
-        help="When the event is scheduled to take place (expressed in your local timezone on the form view).")
+                                 help="When the event is scheduled to take place (expressed in your local timezone on the form view).")
     date_end = fields.Datetime(string='End Date', required=True, tracking=True)
     date_begin_located = fields.Char(string='Start Date Located', compute='_compute_date_begin_tz')
     date_end_located = fields.Char(string='End Date Located', compute='_compute_date_end_tz')
@@ -234,7 +237,7 @@ class EventEvent(models.Model):
     country_id = fields.Many2one(
         'res.country', 'Country', related='address_id.country_id', readonly=False, store=True)
     lang = fields.Selection(_lang_get, string='Language',
-        help="All the communication emails sent to attendees will be translated in this language.")
+                            help="All the communication emails sent to attendees will be translated in this language.")
     # ticket reports
     badge_format = fields.Selection(
         string='Badge Dimension',
@@ -247,8 +250,8 @@ class EventEvent(models.Model):
         ], default='A6', required=True)
     badge_image = fields.Image('Badge Background', max_width=1024, max_height=1024)
     ticket_instructions = fields.Html('Ticket Instructions', translate=True,
-        compute='_compute_ticket_instructions', store=True, readonly=False,
-        help="This information will be printed on your tickets.")
+                                      compute='_compute_ticket_instructions', store=True, readonly=False,
+                                      help="This information will be printed on your tickets.")
     # questions
     question_ids = fields.One2many(
         'event.question', 'event_id', 'Questions', copy=True,
@@ -369,9 +372,11 @@ class EventEvent(models.Model):
             current_datetime = fields.Datetime.context_timestamp(event, fields.Datetime.now())
             date_end_tz = event.date_end.astimezone(pytz.timezone(event.date_tz or 'UTC')) if event.date_end else False
             event.event_registrations_open = event.event_registrations_started and \
-                (date_end_tz >= current_datetime if date_end_tz else True) and \
-                (not event.seats_limited or not event.seats_max or event.seats_available) and \
-                (not event.event_ticket_ids or any(ticket.sale_available for ticket in event.event_ticket_ids))
+                                             (date_end_tz >= current_datetime if date_end_tz else True) and \
+                                             (
+                                                         not event.seats_limited or not event.seats_max or event.seats_available) and \
+                                             (not event.event_ticket_ids or any(
+                                                 ticket.sale_available for ticket in event.event_ticket_ids))
 
     @api.depends('event_ticket_ids.start_sale_datetime')
     def _compute_start_sale_date(self):
@@ -391,8 +396,8 @@ class EventEvent(models.Model):
         """
         for event in self:
             event.event_registrations_sold_out = (
-                (event.seats_limited and event.seats_max and not event.seats_available)
-                or (event.event_ticket_ids and all(ticket.is_sold_out for ticket in event.event_ticket_ids))
+                    (event.seats_limited and event.seats_max and not event.seats_available)
+                    or (event.event_ticket_ids and all(ticket.is_sold_out for ticket in event.event_ticket_ids))
             )
 
     @api.depends('date_tz', 'date_begin')
@@ -491,7 +496,6 @@ class EventEvent(models.Model):
             [('address_id.country_id', 'ilike', value)],
         ])
 
-
     # seats
 
     @api.depends('event_type_id')
@@ -537,13 +541,14 @@ class EventEvent(models.Model):
 
             # lines to keep: those with already sent emails or registrations
             mails_to_remove = event.event_mail_ids.filtered(
-                lambda mail: not(mail._origin.mail_done) and not(mail._origin.mail_registration_ids)
+                lambda mail: not (mail._origin.mail_done) and not (mail._origin.mail_registration_ids)
             )
             command = [Command.unlink(mail.id) for mail in mails_to_remove]
 
             # lines to add: those which do not have the exact copy available in lines to keep
             if event.event_type_id.event_type_mail_ids:
-                mails_to_keep_vals = {frozendict(mail._prepare_event_mail_values()) for mail in event.event_mail_ids - mails_to_remove}
+                mails_to_keep_vals = {frozendict(mail._prepare_event_mail_values()) for mail in
+                                      event.event_mail_ids - mails_to_remove}
                 for mail in event.event_type_id.event_type_mail_ids:
                     mail_values = frozendict(mail._prepare_event_mail_values())
                     if mail_values not in mails_to_keep_vals:
@@ -587,7 +592,9 @@ class EventEvent(models.Model):
             if event.event_type_id.event_type_ticket_ids:
                 command += [
                     Command.create({
-                        attribute_name: line[attribute_name] if not isinstance(line[attribute_name], models.BaseModel) else line[attribute_name].id
+                        attribute_name: line[attribute_name] if not isinstance(line[attribute_name],
+                                                                               models.BaseModel) else line[
+                            attribute_name].id
                         for attribute_name in self.env['event.type.ticket']._get_event_ticket_fields_whitelist()
                     }) for line in event.event_type_id.event_type_ticket_ids
                 ]
@@ -603,7 +610,7 @@ class EventEvent(models.Model):
     def _compute_ticket_instructions(self):
         for event in self:
             if is_html_empty(event.ticket_instructions) and not \
-               is_html_empty(event.event_type_id.ticket_instructions):
+                    is_html_empty(event.event_type_id.ticket_instructions):
                 event.ticket_instructions = event.event_type_id.ticket_instructions
 
     @api.depends('address_id')
@@ -683,9 +690,9 @@ class EventEvent(models.Model):
     @api.model
     def _get_mail_message_access(self, res_ids, operation, model_name=None):
         if (
-            operation == 'create'
-            and self.env.user.has_group('event.group_event_registration_desk')
-            and (not model_name or model_name == 'event.event')
+                operation == 'create'
+                and self.env.user.has_group('event.group_event_registration_desk')
+                and (not model_name or model_name == 'event.event')
         ):
             # allow the registration desk users to post messages on Event
             # can not be done with "_mail_post_access" otherwise public user will be
@@ -707,7 +714,8 @@ class EventEvent(models.Model):
         if first_ended_stage:
             self.write({'stage_id': first_ended_stage.id})
 
-    def mail_attendees(self, template_id, force_send=False, filter_func=lambda self: self.state not in ('cancel', 'draft')):
+    def mail_attendees(self, template_id, force_send=False,
+                       filter_func=lambda self: self.state not in ('cancel', 'draft')):
         for event in self:
             for attendee in event.registration_ids.filtered(filter_func):
                 self.env['mail.template'].browse(template_id).send_mail(attendee.id, force_send=force_send)
@@ -769,7 +777,8 @@ class EventEvent(models.Model):
         The dl links are always made event-dependant, hence the method linked to the record in self.
         """
         self.ensure_one()
-        return tools.hmac(self.env(su=True), 'event-registration-ticket-report-access', (self.id, sorted(registration_ids)))
+        return tools.hmac(self.env(su=True), 'event-registration-ticket-report-access',
+                          (self.id, sorted(registration_ids)))
 
     @api.autovacuum
     def _gc_mark_events_done(self):

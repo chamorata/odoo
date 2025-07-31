@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
+from odoo import Command
 from odoo import fields
 from odoo.tests import common, new_test_user
-from odoo import Command
+
 
 class TestPrivateReadGroup(common.TransactionCase):
 
@@ -717,33 +718,33 @@ class TestPrivateReadGroup(common.TransactionCase):
         User = self.env['test_read_group.user']
         mario, luigi = User.create([{'name': 'Mario'}, {'name': 'Luigi'}])
         tasks = self.env['test_read_group.task'].create([
-            {   # both users
+            {  # both users
                 'name': "Super Mario Bros.",
                 'user_ids': [Command.set((mario + luigi).ids)],
             },
-            {   # mario only
+            {  # mario only
                 'name': "Paper Mario",
                 'user_ids': [Command.set(mario.ids)],
             },
-            {   # luigi only
+            {  # luigi only
                 'name': "Luigi's Mansion",
                 'user_ids': [Command.set(luigi.ids)],
             },
-            {   # no user
+            {  # no user
                 'name': 'Donkey Kong',
             },
         ])
 
         # TODO: should we order by the relation and not by the id also for many2many (same than many2one) ? for public methods ?
         self.assertEqual(tasks._read_group(
-                [('id', 'in', tasks.ids)],
-                ['user_ids'],
-                ['name:array_agg'],
-            ),
+            [('id', 'in', tasks.ids)],
+            ['user_ids'],
+            ['name:array_agg'],
+        ),
             [
-                (mario, ["Super Mario Bros.", "Paper Mario"]),      # tasks of Mario
+                (mario, ["Super Mario Bros.", "Paper Mario"]),  # tasks of Mario
                 (luigi, ["Super Mario Bros.", "Luigi's Mansion"]),  # tasks of Luigi
-                (User, ["Donkey Kong"]),                            # tasks of nobody
+                (User, ["Donkey Kong"]),  # tasks of nobody
             ],
         )
 

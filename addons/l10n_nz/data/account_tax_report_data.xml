@@ -19,7 +19,9 @@
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
                     <record id="tax_report_box5" model="account.report.line">
-                        <field name="name">[BOX 5] Total sales and income for the period(including GST and zero-rated Supplies)</field>
+                        <field name="name">[BOX 5] Total sales and income for the period(including GST and zero-rated
+                            Supplies)
+                        </field>
                         <field name="code">NZBOX5</field>
                         <field name="expression_ids">
                             <record id="tax_report_box5_tag" model="account.report.expression">
@@ -74,7 +76,9 @@
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
                     <record id="tax_report_box11" model="account.report.line">
-                        <field name="name">[BOX 11] Total purchases and expenses(including GST) for which tax invoicing requirements have been met</field>
+                        <field name="name">[BOX 11] Total purchases and expenses(including GST) for which tax invoicing
+                            requirements have been met
+                        </field>
                         <field name="code">NZBOX11</field>
                         <field name="expression_ids">
                             <record id="tax_report_box11_tag" model="account.report.expression">

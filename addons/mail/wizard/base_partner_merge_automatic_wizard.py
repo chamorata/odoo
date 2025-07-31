@@ -5,7 +5,6 @@ from odoo.tools import format_list
 
 
 class MergePartnerAutomatic(models.TransientModel):
-
     _inherit = 'base.partner.merge.automatic.wizard'
 
     def _log_merge_operation(self, src_partners, dst_partner):
@@ -16,7 +15,8 @@ class MergePartnerAutomatic(models.TransientModel):
                 format_list(
                     self.env,
                     [
-                        self.env._("%(partner)s <%(email)s> (ID %(id)s)", partner=p.name, email=p.email or "n/a", id=p.id)
+                        self.env._("%(partner)s <%(email)s> (ID %(id)s)", partner=p.name, email=p.email or "n/a",
+                                   id=p.id)
                         for p in src_partners
                     ]
                 ),

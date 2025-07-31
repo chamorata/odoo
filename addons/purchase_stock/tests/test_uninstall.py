@@ -2,11 +2,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from unittest.mock import patch
 
+from odoo.addons.purchase_stock.models.purchase_order_line import PurchaseOrderLine
+
 from odoo import fields
 from odoo.addons.base.models.ir_model import MODULE_UNINSTALL_FLAG
-from odoo.addons.purchase_stock.models.purchase_order_line import PurchaseOrderLine
 from odoo.tests.common import tagged
-
 from .common import PurchaseTestCommon
 
 
@@ -39,6 +39,7 @@ class TestUninstallPurchaseStock(PurchaseTestCommon):
         ])
 
         original_compute = PurchaseOrderLine._compute_qty_received
+
         def _compute_qty_received(records):
             records.read()
             with self.assertQueryCount(0):

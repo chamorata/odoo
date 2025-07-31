@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, models, _
-from odoo.exceptions import UserError
+from odoo import api, models
 
 
 class ReportStockRule(models.AbstractModel):
@@ -23,7 +22,8 @@ class ReportStockRule(models.AbstractModel):
         # Some routes don't have a warehouse_id but contain rules of different warehouses,
         # we filter here the ones we want to display and build for each one a dict containing the rule,
         # their source and destination location.
-        relevant_rules = routes.mapped('rule_ids').filtered(lambda r: not r.warehouse_id or r.warehouse_id in warehouses)
+        relevant_rules = routes.mapped('rule_ids').filtered(
+            lambda r: not r.warehouse_id or r.warehouse_id in warehouses)
         rules_and_loc = []
         for rule in relevant_rules:
             rules_and_loc.append(self._get_rule_loc(rule, product))
@@ -58,10 +58,10 @@ class ReportStockRule(models.AbstractModel):
                     for x in range(len(locations_names)):
                         res.append([])
                     idx = locations_names.index(rule_loc['destination'].display_name)
-                    tpl = (rule, 'destination', route_color, )
+                    tpl = (rule, 'destination', route_color,)
                     res[idx] = tpl
                     idx = locations_names.index(rule_loc['source'].display_name)
-                    tpl = (rule, 'origin', route_color, )
+                    tpl = (rule, 'origin', route_color,)
                     res[idx] = tpl
                     route_lines.append(res)
         return {
@@ -110,10 +110,13 @@ class ReportStockRule(models.AbstractModel):
                 starting_rules = [d for d in rules_and_loc if d['source'] not in all_dest]
                 start_locations = self.env['stock.location'].concat(*([r['source'] for r in starting_rules]))
             used_rules = self.env['stock.rule']
-            locations |= self._sort_locations_by_warehouse(rules_and_loc, used_rules, start_locations, ordered_locations, warehouse_id)
+            locations |= self._sort_locations_by_warehouse(rules_and_loc, used_rules, start_locations,
+                                                           ordered_locations, warehouse_id)
             if any(location not in locations for location in all_warehouse_locations):
-                remaining_locations = self.env['stock.location'].concat(*([r['source'] for r in rules_and_loc])).filtered(lambda l: l not in locations)
-                locations |= self._sort_locations_by_warehouse(rules_and_loc, used_rules, remaining_locations, ordered_locations, warehouse_id)
+                remaining_locations = self.env['stock.location'].concat(
+                    *([r['source'] for r in rules_and_loc])).filtered(lambda l: l not in locations)
+                locations |= self._sort_locations_by_warehouse(rules_and_loc, used_rules, remaining_locations,
+                                                               ordered_locations, warehouse_id)
         locations |= all_locations.filtered(lambda l: l.usage in ('customer'))
         locations |= all_locations.filtered(lambda l: l not in locations)
         return locations
@@ -137,5 +140,6 @@ class ReportStockRule(models.AbstractModel):
                 if r['rule'] in remaining_rules:
                     remaining_rules_location |= r['destination']
             start_locations = rules_start_dest_locations - ordered_locations - remaining_rules_location
-            ordered_locations = self._sort_locations_by_warehouse(rules_and_loc, used_rules, start_locations, ordered_locations, warehouse_id)
+            ordered_locations = self._sort_locations_by_warehouse(rules_and_loc, used_rules, start_locations,
+                                                                  ordered_locations, warehouse_id)
         return ordered_locations

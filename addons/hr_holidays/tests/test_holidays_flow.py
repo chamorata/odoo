@@ -3,14 +3,14 @@
 
 import time
 from datetime import datetime, date
+
 from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
+from odoo.addons.hr_holidays.tests.common import TestHrHolidaysCommon
 from psycopg2 import IntegrityError
 
 from odoo import Command
 from odoo.tools import date_utils, mute_logger, test_reports
-
-from odoo.addons.hr_holidays.tests.common import TestHrHolidaysCommon
 
 
 class TestHolidaysFlow(TestHrHolidaysCommon):
@@ -51,11 +51,13 @@ class TestHolidaysFlow(TestHrHolidaysCommon):
         })
         hol1_user_group = hol1_employee_group.with_user(self.user_hruser_id)
         hol1_manager_group = hol1_employee_group.with_user(self.user_hrmanager_id)
-        self.assertEqual(hol1_user_group.state, 'confirm', 'hr_holidays: newly created leave request should be in confirm state')
+        self.assertEqual(hol1_user_group.state, 'confirm',
+                         'hr_holidays: newly created leave request should be in confirm state')
 
         # HrUser validates the employee leave request -> should work
         hol1_user_group.action_approve()
-        self.assertEqual(hol1_manager_group.state, 'validate', 'hr_holidays: validated leave request should be in validate state')
+        self.assertEqual(hol1_manager_group.state, 'validate',
+                         'hr_holidays: validated leave request should be in validate state')
 
         # Employee creates a leave request in a no-limit category department manager only
         leave_date = date_utils.start_of(date.today() + relativedelta(days=11), 'week')
@@ -68,11 +70,13 @@ class TestHolidaysFlow(TestHrHolidaysCommon):
         })
         hol12_user_group = hol12_employee_group.with_user(self.user_hruser_id)
         hol12_manager_group = hol12_employee_group.with_user(self.user_hrmanager_id)
-        self.assertEqual(hol12_user_group.state, 'confirm', 'hr_holidays: newly created leave request should be in confirm state')
+        self.assertEqual(hol12_user_group.state, 'confirm',
+                         'hr_holidays: newly created leave request should be in confirm state')
 
         # HrManager validate the employee leave request
         hol12_manager_group.action_approve()
-        self.assertEqual(hol1_user_group.state, 'validate', 'hr_holidays: validates leave request should be in validate state')
+        self.assertEqual(hol1_user_group.state, 'validate',
+                         'hr_holidays: validates leave request should be in validate state')
 
     @mute_logger('odoo.addons.base.models.ir_model', 'odoo.models')
     def test_01_leave_request_flow_limited(self):
@@ -114,13 +118,13 @@ class TestHolidaysFlow(TestHrHolidaysCommon):
             def _check_holidays_status(holiday_status, employee, ml, lt, rl, vrl):
                 result = holiday_status.get_allocation_data(employee)[employee][0][1]
                 self.assertEqual(result['max_leaves'], ml,
-                                'hr_holidays: wrong type days computation')
+                                 'hr_holidays: wrong type days computation')
                 self.assertEqual(result['leaves_taken'], lt,
-                                'hr_holidays: wrong type days computation')
+                                 'hr_holidays: wrong type days computation')
                 self.assertEqual(result['remaining_leaves'], rl,
-                                'hr_holidays: wrong type days computation')
+                                 'hr_holidays: wrong type days computation')
                 self.assertEqual(result['virtual_remaining_leaves'], vrl,
-                                'hr_holidays: wrong type days computation')
+                                 'hr_holidays: wrong type days computation')
 
             # HrManager creates some holiday statuses
             HolidayStatusManagerGroup = HolidaysStatus.with_user(self.user_hrmanager_id)
@@ -174,7 +178,7 @@ class TestHolidaysFlow(TestHrHolidaysCommon):
             # HrManager validates the second step
             hol2_user_group.with_user(self.user_hrmanager_id).action_validate()
             self.assertEqual(hol2.state, 'validate',
-                            'hr_holidays: second validation should lead to validate state')
+                             'hr_holidays: second validation should lead to validate state')
             # Check left days: - 1 day taken
             hol_status_2_employee_group.invalidate_model(['max_leaves', 'leaves_taken'])
             _check_holidays_status(hol_status_2_employee_group, self.employee_emp, 2.0, 1.0, 1.0, 1.0)
@@ -182,14 +186,14 @@ class TestHolidaysFlow(TestHrHolidaysCommon):
             # HrManager finds an error: he refuses the leave request
             hol2.with_user(self.user_hrmanager_id).action_refuse()
             self.assertEqual(hol2.state, 'refuse',
-                            'hr_holidays: refuse should lead to refuse state')
+                             'hr_holidays: refuse should lead to refuse state')
             # Check left days: 2 days left again
 
             hol_status_2_employee_group.invalidate_model(['max_leaves'])
             _check_holidays_status(hol_status_2_employee_group, self.employee_emp, 2.0, 0.0, 2.0, 2.0)
 
             self.assertEqual(hol2.state, 'refuse',
-                            'hr_holidays: hr_user should not be able to reset a refused leave request')
+                             'hr_holidays: hr_user should not be able to reset a refused leave request')
 
             employee_id = self.ref('hr.employee_admin')
             # cl can be of maximum 20 days for employee_admin
@@ -227,7 +231,8 @@ class TestHolidaysFlow(TestHrHolidaysCommon):
             'holiday_type': 'Approved'
         }
         self.env.company.external_report_layout_id = self.env.ref('web.external_layout_standard').id
-        test_reports.try_report_action(self.env.cr, self.env.uid, 'action_hr_holidays_summary_employee', wiz_data=data_dict, context=ctx, our_module='hr_holidays')
+        test_reports.try_report_action(self.env.cr, self.env.uid, 'action_hr_holidays_summary_employee',
+                                       wiz_data=data_dict, context=ctx, our_module='hr_holidays')
 
     def test_sql_constraint_dates(self):
         # The goal is mainly to verify that a human friendly

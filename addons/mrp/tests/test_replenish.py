@@ -2,24 +2,24 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import datetime, timedelta
-from freezegun import freeze_time
 from json import loads
 
-from odoo.tests import Form
+from freezegun import freeze_time
 from odoo.addons.mrp.tests.common import TestMrpCommon
-from odoo import Command, fields
 
+from odoo import Command, fields
+from odoo.tests import Form
 
 
 class TestMrpReplenish(TestMrpCommon):
 
     def _create_wizard(self, product, wh):
         return self.env['product.replenish'].with_context(default_product_tmpl_id=product.product_tmpl_id.id).create({
-                'product_id': product.id,
-                'product_uom_id': self.uom_unit.id,
-                'quantity': 1,
-                'warehouse_id': wh.id,
-            })
+            'product_id': product.id,
+            'product_uom_id': self.uom_unit.id,
+            'quantity': 1,
+            'warehouse_id': wh.id,
+        })
 
     def test_mrp_delay(self):
         """Open the replenish view and check if delay is taken into account
@@ -97,7 +97,8 @@ class TestMrpReplenish(TestMrpCommon):
         on the MO. """
         warehouse = self.env.ref('stock.warehouse0')
         warehouse.manufacture_steps = 'pbm'
-        basic_mo, dummy1, dummy2, product_to_scrap, other_product = self.generate_mo(qty_final=1, qty_base_1=1, qty_base_2=1)
+        basic_mo, dummy1, dummy2, product_to_scrap, other_product = self.generate_mo(qty_final=1, qty_base_1=1,
+                                                                                     qty_base_2=1)
         for product in (product_to_scrap, other_product):
             self.env['stock.quant'].create({
                 'product_id': product.id,
@@ -172,7 +173,8 @@ class TestMrpReplenish(TestMrpCommon):
         wh = self.env.user._get_default_warehouse_id()
         wh.manufacture_steps = 'pbm'
         finished_product = self.product_4
-        finished_product.route_ids = [(6, 0, self.env['stock.route'].search([('name', '=', 'Manufacture')], limit=1).ids)]
+        finished_product.route_ids = [
+            (6, 0, self.env['stock.route'].search([('name', '=', 'Manufacture')], limit=1).ids)]
         self.env['ir.config_parameter'].set_param('stock.visibility_days', '365')
 
         orderpoint = self.env['stock.warehouse.orderpoint'].create({'product_id': finished_product.id})

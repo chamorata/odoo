@@ -1,8 +1,9 @@
-import odoo
-from odoo import Command
+from unittest.mock import patch
+
 from odoo.addons.im_livechat.tests.common import TestImLivechatCommon
 
-from unittest.mock import patch
+import odoo
+from odoo import Command
 
 
 @odoo.tests.tagged("-at_install", "post_install")

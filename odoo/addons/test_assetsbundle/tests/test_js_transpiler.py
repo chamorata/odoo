@@ -396,7 +396,6 @@ return __exports;
 
         self.assertEqual(result, expected_result)
 
-
     def test_09_variables(self):
         input_content = """export const v = 5;
 

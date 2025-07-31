@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from odoo import Command
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
-from odoo.tests import tagged
+
+from odoo import Command
 from odoo.exceptions import UserError
+from odoo.tests import tagged
 
 
 @tagged('post_install', '-at_install')
@@ -20,7 +21,6 @@ class TestAccountTax(AccountTestInvoicingCommon):
         return {}
 
     def set_up_and_use_tax(self):
-
         self.env['account.move'].create({
             'move_type': 'out_invoice',
             'date': '2023-01-01',
@@ -125,9 +125,9 @@ class TestAccountTax(AccountTestInvoicingCommon):
 
         self.set_up_and_use_tax()
 
-        last_invoice_rep_line = self.company_data['default_tax_sale'].invoice_repartition_line_ids\
+        last_invoice_rep_line = self.company_data['default_tax_sale'].invoice_repartition_line_ids \
             .filtered(lambda tax_rep: not tax_rep.factor_percent)
-        last_refund_rep_line = self.company_data['default_tax_sale'].refund_repartition_line_ids\
+        last_refund_rep_line = self.company_data['default_tax_sale'].refund_repartition_line_ids \
             .filtered(lambda tax_rep: not tax_rep.factor_percent)
 
         self.company_data['default_tax_sale'].write({
@@ -147,17 +147,20 @@ class TestAccountTax(AccountTestInvoicingCommon):
         self.flush_tracking()
 
         previews = self.company_data['default_tax_sale'].message_ids.mapped('preview')
-        self.assertIn("Invoice repartition line 3: 0.0 -100.0 (Factor Percent) None ['TaxTag12345'] (Tax Grids)", previews)
-        self.assertIn("Refund repartition line 3: 0.0 -100.0 (Factor Percent) None 131000 Tax Paid (Account) False True (Use in tax closing)", previews)
+        self.assertIn("Invoice repartition line 3: 0.0 -100.0 (Factor Percent) None ['TaxTag12345'] (Tax Grids)",
+                      previews)
+        self.assertIn(
+            "Refund repartition line 3: 0.0 -100.0 (Factor Percent) None 131000 Tax Paid (Account) False True (Use in tax closing)",
+            previews)
 
     def test_logging_of_repartition_lines_reordering_when_tax_is_used(self):
         """ Reordering repartition lines in a used tax should be logged. """
 
         self.set_up_and_use_tax()
 
-        last_invoice_rep_line = self.company_data['default_tax_sale'].invoice_repartition_line_ids\
+        last_invoice_rep_line = self.company_data['default_tax_sale'].invoice_repartition_line_ids \
             .filtered(lambda tax_rep: not tax_rep.factor_percent)
-        last_refund_rep_line = self.company_data['default_tax_sale'].refund_repartition_line_ids\
+        last_refund_rep_line = self.company_data['default_tax_sale'].refund_repartition_line_ids \
             .filtered(lambda tax_rep: not tax_rep.factor_percent)
 
         self.company_data['default_tax_sale'].write({
@@ -172,15 +175,19 @@ class TestAccountTax(AccountTestInvoicingCommon):
 
         previews = self.company_data['default_tax_sale'].message_ids.mapped('preview')
         self.assertIn("Invoice repartition line 1: 100.0 0.0 (Factor Percent)", previews)
-        self.assertIn("Invoice repartition line 3: 0.0 100.0 (Factor Percent) None 251000 Tax Received (Account) False True (Use in tax closing)", previews)
+        self.assertIn(
+            "Invoice repartition line 3: 0.0 100.0 (Factor Percent) None 251000 Tax Received (Account) False True (Use in tax closing)",
+            previews)
 
     def test_logging_of_repartition_lines_removal_when_tax_is_used(self):
         """ Deleting repartition lines in a used tax should be logged. """
 
         self.set_up_and_use_tax()
 
-        last_invoice_rep_line = self.company_data['default_tax_sale'].invoice_repartition_line_ids.sorted(key=lambda r: r.sequence)[-1]
-        last_refund_rep_line = self.company_data['default_tax_sale'].refund_repartition_line_ids.sorted(key=lambda r: r.sequence)[-1]
+        last_invoice_rep_line = \
+        self.company_data['default_tax_sale'].invoice_repartition_line_ids.sorted(key=lambda r: r.sequence)[-1]
+        last_refund_rep_line = \
+        self.company_data['default_tax_sale'].refund_repartition_line_ids.sorted(key=lambda r: r.sequence)[-1]
 
         self.company_data['default_tax_sale'].write({
             "invoice_repartition_line_ids": [
@@ -305,8 +312,10 @@ class TestAccountTax(AccountTestInvoicingCommon):
             'amount_total': 100.0,
         }])
         self.assertRecordValues(invoice.line_ids, [
-            {'display_type': 'product',         'tax_ids': tax.ids,     'balance': -100.0,  'account_id': self.company_data['default_account_revenue'].id},
-            {'display_type': 'tax',             'tax_ids': [],          'balance': -15.0,   'account_id': account_1.id},
-            {'display_type': 'tax',             'tax_ids': [],          'balance': 15.0,    'account_id': account_2.id},
-            {'display_type': 'payment_term',    'tax_ids': [],          'balance': 100.0,   'account_id': self.company_data['default_account_receivable'].id},
+            {'display_type': 'product', 'tax_ids': tax.ids, 'balance': -100.0,
+             'account_id': self.company_data['default_account_revenue'].id},
+            {'display_type': 'tax', 'tax_ids': [], 'balance': -15.0, 'account_id': account_1.id},
+            {'display_type': 'tax', 'tax_ids': [], 'balance': 15.0, 'account_id': account_2.id},
+            {'display_type': 'payment_term', 'tax_ids': [], 'balance': 100.0,
+             'account_id': self.company_data['default_account_receivable'].id},
         ])

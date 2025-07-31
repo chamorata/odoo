@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo.tests import HttpCase, tagged
-from odoo.tools import mute_logger
+from odoo.addons.sale.tests.common import SaleCommon
 
 from odoo.addons.base.tests.common import BaseUsersCommon, HttpCaseWithUserPortal
-from odoo.addons.sale.tests.common import SaleCommon
+from odoo.tests import HttpCase, tagged
+from odoo.tools import mute_logger
 
 
 @tagged('post_install', '-at_install')
@@ -79,7 +79,8 @@ class TestSalesControllers(BaseUsersCommon, HttpCase, SaleCommon):
 
         req = self.url_open(portal_so.get_portal_url(report_type='pdf', download=True), allow_redirects=False)
         self.assertEqual(req.status_code, 200)
-        self.assertEqual(req.headers['content-disposition'], f"attachment; filename*=UTF-8''Quotation_{portal_so.name}.pdf")
+        self.assertEqual(req.headers['content-disposition'],
+                         f"attachment; filename*=UTF-8''Quotation_{portal_so.name}.pdf")
 
 
 @tagged('post_install', '-at_install')

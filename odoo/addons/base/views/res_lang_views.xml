@@ -15,20 +15,20 @@
                     <field name="direction" groups="base.group_no_one"/>
                     <field name="active"/>
                     <button name="%(base.action_view_base_language_install)d"
-                        string="Activate"
-                        type="action"
-                        icon="fa-check"
-                        invisible="active"/>
+                            string="Activate"
+                            type="action"
+                            icon="fa-check"
+                            invisible="active"/>
                     <button name="%(base.action_view_base_language_install)d"
-                        string="Update"
-                        type="action"
-                        icon="fa-refresh"
-                        invisible="not active"/>
+                            string="Update"
+                            type="action"
+                            icon="fa-refresh"
+                            invisible="not active"/>
                     <button name="action_archive"
-                        string="Disable"
-                        type="object"
-                        icon="fa-times"
-                        invisible="not active"/>
+                            string="Disable"
+                            type="object"
+                            icon="fa-times"
+                            invisible="not active"/>
                 </list>
             </field>
         </record>
@@ -41,9 +41,9 @@
                     <sheet>
                         <div class="oe_button_box" name="button_box">
                             <button name="%(base.action_view_base_language_install)d"
-                                type="action"
-                                class="oe_stat_button"
-                                icon="fa-refresh">
+                                    type="action"
+                                    class="oe_stat_button"
+                                    icon="fa-refresh">
                                 <div class="o_field_widget o_stat_info">
                                     <span class="o_stat_text">Activate and Translate</span>
                                 </div>
@@ -52,9 +52,11 @@
                         <field name="flag_image" widget="image" class="oe_avatar"/>
                         <div class="oe_title">
                             <label for="name"/>
-                            <h1><field name="name" placeholder="e.g. French"/></h1>
+                            <h1>
+                                <field name="name" placeholder="e.g. French"/>
+                            </h1>
                         </div>
-                        <group >
+                        <group>
                             <group>
                                 <field name="code"/>
                                 <field name="iso_code"/>
@@ -75,7 +77,9 @@
                         <div class="row">
                             <div class="col-md-8 row">
                                 <div class="col-12">
-                                    <div class="o_horizontal_separator mb-3 mt-4 text-uppercase fw-bolder small">Legends for supported Date and Time Formats</div>
+                                    <div class="o_horizontal_separator mb-3 mt-4 text-uppercase fw-bolder small">Legends
+                                        for supported Date and Time Formats
+                                    </div>
                                 </div>
                                 <div class="col-sm">
                                     <div>%a - Abbreviated day of the week.</div>
@@ -98,16 +102,17 @@
                                 </div>
                             </div>
                             <div class="col-md-4 text-info">
-                                <div class="o_horizontal_separator mb-3 mt-4 text-uppercase fw-bolder small">Examples</div>
-                                <div>1. %b, %B         ==> Dec, December</div>
-                                <div>2. %a ,%A         ==> Fri, Friday</div>
-                                <div>3. %y, %Y         ==> 08, 2008</div>
-                                <div>4. %d, %m         ==> 05, 12</div>
-                                <div>5. %H:%M:%S      ==> 18:25:20</div>
-                                <div>6. %I:%M:%S %p  ==> 06:25:20 PM</div>
-                                <div>7. %j              ==> 340</div>
-                                <div>8. %S              ==> 20</div>
-                                <div>9. %w              ==> 5 ( Friday is the 6th day)</div>
+                                <div class="o_horizontal_separator mb-3 mt-4 text-uppercase fw-bolder small">Examples
+                                </div>
+                                <div>1. %b, %B ==> Dec, December</div>
+                                <div>2. %a ,%A ==> Fri, Friday</div>
+                                <div>3. %y, %Y ==> 08, 2008</div>
+                                <div>4. %d, %m ==> 05, 12</div>
+                                <div>5. %H:%M:%S ==> 18:25:20</div>
+                                <div>6. %I:%M:%S %p ==> 06:25:20 PM</div>
+                                <div>7. %j ==> 340</div>
+                                <div>8. %S ==> 20</div>
+                                <div>9. %w ==> 5 ( Friday is the 6th day)</div>
                             </div>
                         </div>
                     </sheet>
@@ -121,8 +126,8 @@
             <field name="arch" type="xml">
                 <search string="Languages">
                     <field name="name"
-                        filter_domain="['|', '|', ('name', 'ilike', self), ('code', 'ilike', self), ('iso_code', 'ilike', self)]"
-                        string="Language"/>
+                           filter_domain="['|', '|', ('name', 'ilike', self), ('code', 'ilike', self), ('iso_code', 'ilike', self)]"
+                           string="Language"/>
                     <field name="direction"/>
                     <separator/>
                     <filter string="Active" name="active" domain="[('active', '=', True)]"/>

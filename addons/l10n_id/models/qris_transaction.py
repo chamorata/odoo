@@ -1,5 +1,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from datetime import timedelta
+
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 
@@ -44,7 +45,8 @@ class QRISTransaction(models.Model):
     @api.model
     def _get_latest_transaction(self, model, model_id):
         """ Find latest transaction associated to the model and model_id """
-        return self.search([('model', '=', model), ('model_id', '=', model_id)], order='qris_creation_datetime desc', limit=1)
+        return self.search([('model', '=', model), ('model_id', '=', model_id)], order='qris_creation_datetime desc',
+                           limit=1)
 
     def _l10n_id_get_qris_qr_statuses(self):
         """ Fetch the result of the transaction
@@ -79,5 +81,6 @@ class QRISTransaction(models.Model):
         These can no longer be paid and status will no longer change
         """
         time_limit = fields.Datetime.now() - timedelta(seconds=2100)
-        transactions = self.env['l10n_id.qris.transaction'].search([('qris_creation_datetime', '<=', time_limit), ('paid', '=', False)])
+        transactions = self.env['l10n_id.qris.transaction'].search(
+            [('qris_creation_datetime', '<=', time_limit), ('paid', '=', False)])
         transactions.unlink()

@@ -1,11 +1,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.payment import utils as payment_utils
+from odoo.addons.website_sale.controllers.main import WebsiteSale
+
 from odoo import _
 from odoo.exceptions import UserError, ValidationError
 from odoo.http import request, route
-
-from odoo.addons.payment import utils as payment_utils
-from odoo.addons.website_sale.controllers.main import WebsiteSale
 
 
 class Delivery(WebsiteSale):
@@ -188,8 +188,8 @@ class Delivery(WebsiteSale):
             #     order_sudo.partner_shipping_id.id, ['partner_shipping_id']
             # )
         elif not self._are_same_addresses(
-            partial_delivery_address,
-            order_sudo.partner_shipping_id,
+                partial_delivery_address,
+                order_sudo.partner_shipping_id,
         ):
             # Check if a child partner doesn't already exist with the same information. The phone
             # isn't always checked because it isn't sent in delivery information with Google Pay.
@@ -217,12 +217,12 @@ class Delivery(WebsiteSale):
 
         # Preselect the cheapest method imitating the behavior of the express checkout form.
         if (
-            sorted_delivery_methods
-            and order_sudo.carrier_id.id != sorted_delivery_methods[0]['id']
-            and (cheapest_dm := next((
+                sorted_delivery_methods
+                and order_sudo.carrier_id.id != sorted_delivery_methods[0]['id']
+                and (cheapest_dm := next((
                 dm for dm in order_sudo._get_delivery_methods()
                 if dm.id == sorted_delivery_methods[0]['id']), None
-            ))
+        ))
         ):
             order_sudo._set_delivery_method(cheapest_dm)
 
@@ -282,8 +282,8 @@ class Delivery(WebsiteSale):
                     partner=order.partner_shipping_id,
                 )
                 if (
-                    not is_express_checkout_flow
-                    and request.website.show_line_subtotals_tax_selection == 'tax_excluded'
+                        not is_express_checkout_flow
+                        and request.website.show_line_subtotals_tax_selection == 'tax_excluded'
                 ):
                     rate['price'] = taxes['total_excluded']
                 else:

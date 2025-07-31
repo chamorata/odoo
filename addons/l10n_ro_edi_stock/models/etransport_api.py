@@ -1,8 +1,8 @@
-import requests
 import re
 
-from odoo import _
+import requests
 
+from odoo import _
 
 SCHEMATRON_ERROR_ID_PATTERN = r'BR-(?:CL-)?\d{3}'
 
@@ -19,7 +19,8 @@ def _cleanup_errors(errors: list[str]) -> list[str]:
             if key == 'textEroare':
                 return value.strip()
 
-    return [_cleanup_schematron_error(err) if re.search(SCHEMATRON_ERROR_ID_PATTERN, err) else err.strip() for err in errors]
+    return [_cleanup_schematron_error(err) if re.search(SCHEMATRON_ERROR_ID_PATTERN, err) else err.strip() for err in
+            errors]
 
 
 class ETransportAPI:

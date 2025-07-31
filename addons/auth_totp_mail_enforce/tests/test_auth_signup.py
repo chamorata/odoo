@@ -1,8 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.addons.base.tests.common import HttpCaseWithUserDemo, HttpCaseWithUserPortal
-
 from odoo import http
+from odoo.addons.base.tests.common import HttpCaseWithUserDemo, HttpCaseWithUserPortal
 from odoo.tests.common import tagged
 
 

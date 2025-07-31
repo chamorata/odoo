@@ -3,7 +3,7 @@
 
 from ast import literal_eval
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.osv import expression
 
 
@@ -14,15 +14,15 @@ class StockPickingType(models.Model):
         ('mrp_operation', 'Manufacturing')
     ], ondelete={'mrp_operation': lambda recs: recs.write({'code': 'incoming', 'active': False})})
     count_mo_todo = fields.Integer(string="Number of Manufacturing Orders to Process",
-        compute='_get_mo_count')
+                                   compute='_get_mo_count')
     count_mo_waiting = fields.Integer(string="Number of Manufacturing Orders Waiting",
-        compute='_get_mo_count')
+                                      compute='_get_mo_count')
     count_mo_late = fields.Integer(string="Number of Manufacturing Orders Late",
-        compute='_get_mo_count')
+                                   compute='_get_mo_count')
     count_mo_in_progress = fields.Integer(string="Number of Manufacturing Orders In Progress",
-        compute='_get_mo_count')
+                                          compute='_get_mo_count')
     count_mo_to_close = fields.Integer(string="Number of Manufacturing Orders To Close",
-        compute='_get_mo_count')
+                                       compute='_get_mo_count')
     use_create_components_lots = fields.Boolean(
         string="Create New Lots/Serial Numbers for Components",
         help="Allow to create new lot/serial numbers for the components",
@@ -85,8 +85,9 @@ class StockPickingType(models.Model):
         }
         for key, domain in domains.items():
             data = self.env['mrp.production']._read_group(domain +
-                [('state', 'not in', ('done', 'cancel')), ('picking_type_id', 'in', mrp_picking_types.ids)],
-                ['picking_type_id'], ['__count'])
+                                                          [('state', 'not in', ('done', 'cancel')),
+                                                           ('picking_type_id', 'in', mrp_picking_types.ids)],
+                                                          ['picking_type_id'], ['__count'])
             count = {picking_type.id: count for picking_type, count in data}
             for record in mrp_picking_types:
                 record[key] = count.get(record.id, 0)
@@ -115,6 +116,7 @@ class StockPickingType(models.Model):
         picking_type_id_to_dates.update({r[0].id: r[1] for r in mrp_records})
         mrp_records = [(i, d, self.env._('Confirmed')) for i, d in picking_type_id_to_dates.items()]
         return records + mrp_records
+
 
 class StockPicking(models.Model):
     _inherit = 'stock.picking'

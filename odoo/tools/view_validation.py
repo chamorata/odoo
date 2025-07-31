@@ -7,11 +7,11 @@ import os
 import re
 
 from lxml import etree
+
 from odoo import tools
 from odoo.osv.expression import DOMAIN_OPERATORS
 
 _logger = logging.getLogger(__name__)
-
 
 _validators = collections.defaultdict(list)
 _relaxng_cache = {}
@@ -20,7 +20,7 @@ READONLY = re.compile(r"\breadonly\b")
 
 # predefined symbols for evaluating attributes (invisible, readonly...)
 IGNORED_IN_EXPRESSION = {
-    'True', 'False', 'None',    # those are identifiers in Python 2.7
+    'True', 'False', 'None',  # those are identifiers in Python 2.7
     'self',
     'uid',
     'context',
@@ -178,7 +178,7 @@ def _get_expression_contextual_values(item_ast):
             values = {f"{path}.{item_ast.attr}"}
             return values
         return values
-    if isinstance(item_ast, ast.Index): # deprecated python ast class for Subscript key
+    if isinstance(item_ast, ast.Index):  # deprecated python ast class for Subscript key
         return _get_expression_contextual_values(item_ast.value)
     if isinstance(item_ast, ast.Subscript):
         values = _get_expression_contextual_values(item_ast.value)
@@ -286,10 +286,12 @@ def valid_view(arch, **kwargs):
 def validate(*view_types):
     """ Registers a view-validation function for the specific view types
     """
+
     def decorator(fn):
         for arch in view_types:
             _validators[arch].append(fn)
         return fn
+
     return decorator
 
 

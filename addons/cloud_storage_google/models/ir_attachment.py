@@ -33,7 +33,8 @@ def get_cloud_storage_google_credential(env):
 
 class IrAttachment(models.Model):
     _inherit = 'ir.attachment'
-    _cloud_storage_google_url_pattern = re.compile(r'https://storage\.googleapis\.com/(?P<bucket_name>[\w\-.]+)/(?P<blob_name>[^?]+)')
+    _cloud_storage_google_url_pattern = re.compile(
+        r'https://storage\.googleapis\.com/(?P<bucket_name>[\w\-.]+)/(?P<blob_name>[^?]+)')
 
     def _get_cloud_storage_google_info(self):
         match = self._cloud_storage_google_url_pattern.match(self.url)
@@ -68,7 +69,8 @@ class IrAttachment(models.Model):
             return super()._generate_cloud_storage_download_info()
         info = self._get_cloud_storage_google_info()
         return {
-            'url': self._generate_cloud_storage_google_signed_url(info['bucket_name'], info['blob_name'], method='GET', expiration=self._cloud_storage_download_url_time_to_expiry),
+            'url': self._generate_cloud_storage_google_signed_url(info['bucket_name'], info['blob_name'], method='GET',
+                                                                  expiration=self._cloud_storage_download_url_time_to_expiry),
             'time_to_expiry': self._cloud_storage_download_url_time_to_expiry,
         }
 
@@ -77,7 +79,8 @@ class IrAttachment(models.Model):
             return super()._generate_cloud_storage_upload_info()
         info = self._get_cloud_storage_google_info()
         return {
-            'url': self._generate_cloud_storage_google_signed_url(info['bucket_name'], info['blob_name'], method='PUT', expiration=self._cloud_storage_upload_url_time_to_expiry),
+            'url': self._generate_cloud_storage_google_signed_url(info['bucket_name'], info['blob_name'], method='PUT',
+                                                                  expiration=self._cloud_storage_upload_url_time_to_expiry),
             'method': 'PUT',
             'response_status': 200,
         }

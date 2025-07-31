@@ -3,13 +3,12 @@
 
 from datetime import date, timedelta
 
-from odoo.osv import expression
+from odoo.addons.hr_holidays.tests.common import TestHrHolidaysCommon
 
 from odoo.addons.base.tests.common import HttpCase
 from odoo.tests.common import tagged
 from odoo.tests.common import users
 
-from odoo.addons.hr_holidays.tests.common import TestHrHolidaysCommon
 
 @tagged('post_install', '-at_install', 'holiday_calendar')
 class TestHolidaysCalendar(HttpCase, TestHrHolidaysCommon):
@@ -38,7 +37,8 @@ class TestHolidaysCalendar(HttpCase, TestHrHolidaysCommon):
         # Tour that takes a leave on the first thursday of the year.
         self.start_tour('/', 'time_off_request_calendar_view', login='enguerran')
 
-        last_leave = self.env['hr.leave'].search([('employee_id.id', '=', self.employee_emp.id)]).sorted(lambda leave: leave.create_date)[-1]
+        last_leave = self.env['hr.leave'].search([('employee_id.id', '=', self.employee_emp.id)]).sorted(
+            lambda leave: leave.create_date)[-1]
         self.assertEqual(last_leave.date_from.weekday(), 3, "It should be Thursday")
         self.assertEqual(last_leave.date_from.hour, expected_leave_start, "Wrong start of the day")
         self.assertEqual(last_leave.date_to.hour, expected_leave_end, "Wrong end of the day")

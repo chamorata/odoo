@@ -2,9 +2,9 @@
 
 from datetime import datetime
 
-from odoo.tests import tagged, users
-
 from odoo.addons.sale.tests.common import SaleCommon
+
+from odoo.tests import tagged, users
 
 
 @tagged('post_install', '-at_install')

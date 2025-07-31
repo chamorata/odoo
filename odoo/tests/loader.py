@@ -7,11 +7,10 @@ import threading
 from pathlib import Path
 from unittest import case
 
-from .. import tools
-from .tag_selector import TagsSelector
-from .suite import OdooSuite
 from .result import OdooTestResult
-
+from .suite import OdooSuite
+from .tag_selector import TagsSelector
+from .. import tools
 
 _logger = logging.getLogger(__name__)
 

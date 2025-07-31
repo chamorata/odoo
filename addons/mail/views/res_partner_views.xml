@@ -12,9 +12,9 @@
                     <label for="email" class="oe_inline"/>
                     <div class="o_row o_row_readonly">
                         <button name="mail_action_blacklist_remove" class="fa fa-ban text-danger"
-                            title="This email is blacklisted for mass mailings. Click to unblacklist."
-                            type="object" context="{'default_email': email}" groups="base.group_user"
-                            invisible="not is_blacklisted"/>
+                                title="This email is blacklisted for mass mailings. Click to unblacklist."
+                                type="object" context="{'default_email': email}" groups="base.group_user"
+                                invisible="not is_blacklisted"/>
                         <field name="email" widget="email" context="{'gravatar_image': True}" required="user_ids"/>
                     </div>
                 </xpath>
@@ -35,21 +35,21 @@
             </field>
         </record>
 
-       <record id="res_partner_view_search_inherit_mail" model="ir.ui.view">
+        <record id="res_partner_view_search_inherit_mail" model="ir.ui.view">
             <field name="name">res.partner.view.search.inherit.mail</field>
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="base.view_res_partner_filter"/>
             <field name="arch" type="xml">
-                    <filter name="inactive" position="after">
-                        <filter invisible="1" string="Late Activities" name="activities_overdue"
-                                domain="[('my_activity_date_deadline', '&lt;', context_today().strftime('%Y-%m-%d'))]"
-                                help="Show all records which has next action date is before today"/>
-                        <filter invisible="1" string="Today Activities" name="activities_today"
-                                domain="[('my_activity_date_deadline', '=', context_today().strftime('%Y-%m-%d'))]"/>
-                        <filter invisible="1" string="Future Activities" name="activities_upcoming_all"
-                                domain="[('my_activity_date_deadline', '&gt;', context_today().strftime('%Y-%m-%d'))]"/>
-                        <separator/>
-                    </filter>
+                <filter name="inactive" position="after">
+                    <filter invisible="1" string="Late Activities" name="activities_overdue"
+                            domain="[('my_activity_date_deadline', '&lt;', context_today().strftime('%Y-%m-%d'))]"
+                            help="Show all records which has next action date is before today"/>
+                    <filter invisible="1" string="Today Activities" name="activities_today"
+                            domain="[('my_activity_date_deadline', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                    <filter invisible="1" string="Future Activities" name="activities_upcoming_all"
+                            domain="[('my_activity_date_deadline', '&gt;', context_today().strftime('%Y-%m-%d'))]"/>
+                    <separator/>
+                </filter>
             </field>
         </record>
 
@@ -72,7 +72,8 @@
                     <field name="id"/>
                     <templates>
                         <div t-name="activity-box">
-                            <img t-att-src="activity_image('res.partner', 'avatar_128', record.id.raw_value)" role="img" t-att-title="record.name.value" t-att-alt="record.name.value"/>
+                            <img t-att-src="activity_image('res.partner', 'avatar_128', record.id.raw_value)" role="img"
+                                 t-att-title="record.name.value" t-att-alt="record.name.value"/>
                             <div class="ms-2">
                                 <field name="name" display="full" class="o_text_block"/>
                                 <field name="parent_id" muted="1" display="full" class="o_text_block"/>
@@ -105,7 +106,8 @@
                 'default_partner_to': '{{ object.id or \'\' }}',
                 'default_subtype_xmlid': 'mail.mt_comment',
                 'default_reply_to_force_new': True,
-            }</field>
+                }
+            </field>
             <field name="binding_model_id" ref="base.model_res_partner"/>
             <field name="binding_view_types">list</field>
         </record>

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api
-from odoo.tools.translate import _
 from odoo.exceptions import UserError
+from odoo.tools.translate import _
 
 
 class AccountDebitNote(models.TransientModel):
@@ -30,13 +30,15 @@ class AccountDebitNote(models.TransientModel):
     @api.model
     def default_get(self, fields):
         res = super(AccountDebitNote, self).default_get(fields)
-        move_ids = self.env['account.move'].browse(self.env.context['active_ids']) if self.env.context.get('active_model') == 'account.move' else self.env['account.move']
+        move_ids = self.env['account.move'].browse(self.env.context['active_ids']) if self.env.context.get(
+            'active_model') == 'account.move' else self.env['account.move']
         if any(move.state != "posted" for move in move_ids):
             raise UserError(_('You can only debit posted moves.'))
         elif any(move.debit_origin_id for move in move_ids):
             raise UserError(_("You can't make a debit note for an invoice that is already linked to a debit note."))
         elif any(move.move_type not in ['out_invoice', 'in_invoice', 'out_refund', 'in_refund'] for move in move_ids):
-            raise UserError(_("You can make a debit note only for a Customer Invoice, a Customer Credit Note, a Vendor Bill or a Vendor Credit Note."))
+            raise UserError(
+                _("You can make a debit note only for a Customer Invoice, a Customer Credit Note, a Vendor Bill or a Vendor Credit Note."))
         res['move_ids'] = [(6, 0, move_ids.ids)]
         return res
 
@@ -44,7 +46,8 @@ class AccountDebitNote(models.TransientModel):
     def _compute_from_moves(self):
         for record in self:
             move_ids = record.move_ids
-            record.move_type = move_ids[0].move_type if len(move_ids) == 1 or not any(m.move_type != move_ids[0].move_type for m in move_ids) else False
+            record.move_type = move_ids[0].move_type if len(move_ids) == 1 or not any(
+                m.move_type != move_ids[0].move_type for m in move_ids) else False
 
     @api.depends('move_type')
     def _compute_journal_type(self):
@@ -57,14 +60,14 @@ class AccountDebitNote(models.TransientModel):
         else:
             type = move.move_type
         default_values = {
-                'ref': '%s, %s' % (move.name, self.reason) if self.reason else move.name,
-                'date': self.date or move.date,
-                'invoice_date': move.is_invoice(include_receipts=True) and (self.date or move.date) or False,
-                'journal_id': self.journal_id and self.journal_id.id or move.journal_id.id,
-                'invoice_payment_term_id': None,
-                'debit_origin_id': move.id,
-                'move_type': type,
-            }
+            'ref': '%s, %s' % (move.name, self.reason) if self.reason else move.name,
+            'date': self.date or move.date,
+            'invoice_date': move.is_invoice(include_receipts=True) and (self.date or move.date) or False,
+            'journal_id': self.journal_id and self.journal_id.id or move.journal_id.id,
+            'invoice_payment_term_id': None,
+            'debit_origin_id': move.id,
+            'move_type': type,
+        }
         if not self.copy_lines or move.move_type in [('in_refund', 'out_refund')]:
             default_values['line_ids'] = [(5, 0, 0)]
         return default_values
@@ -72,7 +75,7 @@ class AccountDebitNote(models.TransientModel):
     def create_debit(self):
         self.ensure_one()
         new_moves = self.env['account.move']
-        for move in self.move_ids.with_context(include_business_fields=True): #copy sale/purchase links
+        for move in self.move_ids.with_context(include_business_fields=True):  # copy sale/purchase links
             default_values = self._prepare_default_values(move)
             new_move = move.copy(default=default_values)
             move_msg = _("This debit note was created from: %s", move._get_html_link())

@@ -4,6 +4,7 @@
 from odoo import api, models
 from odoo.tools import float_compare
 
+
 class ReportBomStructure(models.AbstractModel):
     _inherit = 'report.mrp.report_bom_structure'
 
@@ -27,7 +28,8 @@ class ReportBomStructure(models.AbstractModel):
                     'lead_time': supplier.delay + rules_delay + purchase_lead,
                     'supplier_delay': supplier.delay + rules_delay + purchase_lead,
                     'supplier': supplier,
-                    'route_alert': float_compare(qty_supplier_uom, supplier.min_qty, precision_rounding=product.uom_id.rounding) < 0,
+                    'route_alert': float_compare(qty_supplier_uom, supplier.min_qty,
+                                                 precision_rounding=product.uom_id.rounding) < 0,
                     'qty_checked': quantity,
                 }
         return res

@@ -4,15 +4,13 @@ import json
 import logging
 import pprint
 
+from odoo.addons.payment import utils as payment_utils
+from odoo.addons.payment_paypal import const
 from werkzeug.exceptions import Forbidden
 
 from odoo import _, http
 from odoo.exceptions import ValidationError
 from odoo.http import request
-
-from odoo.addons.payment import utils as payment_utils
-from odoo.addons.payment_paypal import const
-
 
 _logger = logging.getLogger(__name__)
 

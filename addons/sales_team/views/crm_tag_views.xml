@@ -31,7 +31,7 @@
         <field name="arch" type="xml">
             <list string="Tags" editable="bottom" sample="1">
                 <field name="name"/>
-                <field name="color" widget="color_picker" />
+                <field name="color" widget="color_picker"/>
             </list>
         </field>
     </record>
@@ -43,9 +43,10 @@
         <field name="view_id" ref="sales_team_crm_tag_view_tree"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-            Create CRM Tags
-            </p><p>
-            Use Tags to manage and track your Opportunities (product structure, sales type, ...)
+                Create CRM Tags
+            </p>
+            <p>
+                Use Tags to manage and track your Opportunities (product structure, sales type, ...)
             </p>
         </field>
     </record>

@@ -1,7 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import datetime
+
 from freezegun import freeze_time
+
 from odoo.tests import common, new_test_user
 
 
@@ -19,11 +21,11 @@ class TestsCommon(common.TransactionCase):
             'amount': 100,
         })
 
-        self.manager = new_test_user(self.env, 'cle-lunch-manager', 'base.group_user,base.group_partner_manager,lunch.group_lunch_manager')
+        self.manager = new_test_user(self.env, 'cle-lunch-manager',
+                                     'base.group_user,base.group_partner_manager,lunch.group_lunch_manager')
         with self.with_user('cle-lunch-manager'):
-
             self.location_office_1 = self.env['lunch.location'].create({
-                'name' : 'Farm 1',
+                'name': 'Farm 1',
             })
 
             self.location_office_2 = self.env['lunch.location'].create({

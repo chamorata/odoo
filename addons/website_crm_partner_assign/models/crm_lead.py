@@ -1,6 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import random
+
 from markupsafe import Markup
 
 from odoo import api, fields, models, _
@@ -12,7 +13,10 @@ class CrmLead(models.Model):
 
     partner_latitude = fields.Float('Geo Latitude', digits=(10, 7))
     partner_longitude = fields.Float('Geo Longitude', digits=(10, 7))
-    partner_assigned_id = fields.Many2one('res.partner', 'Assigned Partner', tracking=True, domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]", help="Partner this case has been forwarded/assigned to.", index='btree_not_null')
+    partner_assigned_id = fields.Many2one('res.partner', 'Assigned Partner', tracking=True,
+                                          domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",
+                                          help="Partner this case has been forwarded/assigned to.",
+                                          index='btree_not_null')
     partner_declined_ids = fields.Many2many(
         'res.partner',
         'crm_lead_declined_partner',
@@ -59,7 +63,8 @@ class CrmLead(models.Model):
             self.env.user._bus_send('simple_notification', {
                 'type': 'danger',
                 'title': _("Warning"),
-                'message': _('There is no country set in addresses for %(lead_names)s.', lead_names=', '.join(leads_without_country.mapped('name'))),
+                'message': _('There is no country set in addresses for %(lead_names)s.',
+                             lead_names=', '.join(leads_without_country.mapped('name'))),
             })
         return leads_with_country.assign_partner(partner_id=False)
 
@@ -253,9 +258,10 @@ class CrmLead(models.Model):
     def update_contact_details_from_portal(self, values):
         self.browse().check_access('write')
         fields = ['partner_name', 'phone', 'mobile', 'email_from', 'street', 'street2',
-            'city', 'zip', 'state_id', 'country_id']
+                  'city', 'zip', 'state_id', 'country_id']
         if any([key not in fields for key in values]):
-            raise UserError(_("Not allowed to update the following field(s): %s.", ", ".join([key for key in values if not key in fields])))
+            raise UserError(_("Not allowed to update the following field(s): %s.",
+                              ", ".join([key for key in values if not key in fields])))
         return self.sudo().write(values)
 
     @api.model

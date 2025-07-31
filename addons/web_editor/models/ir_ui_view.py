@@ -4,12 +4,13 @@
 import copy
 import logging
 import uuid
+
 from lxml import etree, html
 
 from odoo import api, models, _
-from odoo.osv import expression
-from odoo.exceptions import ValidationError
 from odoo.addons.base.models.ir_ui_view import MOVABLE_BRANDING
+from odoo.exceptions import ValidationError
+from odoo.osv import expression
 
 _logger = logging.getLogger(__name__)
 
@@ -43,9 +44,9 @@ class IrUiView(models.Model):
             del attributes['contenteditable']
         return attributes
 
-    #------------------------------------------------------
+    # ------------------------------------------------------
     # Save from html
-    #------------------------------------------------------
+    # ------------------------------------------------------
 
     @api.model
     def extract_embedded_fields(self, arch):
@@ -95,7 +96,8 @@ class IrUiView(models.Model):
             return False
 
         arch = etree.Element('data')
-        xpath = etree.Element('xpath', expr="//*[hasclass('oe_structure')][@id='{}']".format(el.get('id')), position="replace")
+        xpath = etree.Element('xpath', expr="//*[hasclass('oe_structure')][@id='{}']".format(el.get('id')),
+                              position="replace")
         arch.append(xpath)
         attributes = self._get_cleaned_non_editing_attributes(el.attrib.items())
         structure = etree.Element(el.tag, attrib=attributes)
@@ -171,13 +173,15 @@ class IrUiView(models.Model):
         records_from.flush_model([name_field_from])
         existing_translation_dictionary = field_to.get_translation_dictionary(
             record_to[name_field_to],
-            {lang: record_to.with_context(prefetch_langs=True, lang=lang)[name_field_to] for lang in langs if lang != lang_env}
+            {lang: record_to.with_context(prefetch_langs=True, lang=lang)[name_field_to] for lang in langs if
+             lang != lang_env}
         )
         extra_translation_dictionary = {}
         for record_from in records_from:
             extra_translation_dictionary.update(field_from.get_translation_dictionary(
                 record_from[name_field_from],
-                {lang: record_from.with_context(prefetch_langs=True, lang=lang)[name_field_from] for lang in langs if lang != lang_env}
+                {lang: record_from.with_context(prefetch_langs=True, lang=lang)[name_field_from] for lang in langs if
+                 lang != lang_env}
             ))
         for term, extra_translation_values in extra_translation_dictionary.items():
             existing_translation_values = existing_translation_dictionary.setdefault(term, {})
@@ -194,7 +198,8 @@ class IrUiView(models.Model):
 
         # 2. Set translations
         new_value = {
-            lang: field_to.translate(lambda term: translation_dictionary.get(term, {}).get(lang), record_to[name_field_to])
+            lang: field_to.translate(lambda term: translation_dictionary.get(term, {}).get(lang),
+                                     record_to[name_field_to])
             for lang in langs
         }
         record_to.env.cache.update_raw(record_to, field_to, [new_value], dirty=True)
@@ -260,7 +265,7 @@ class IrUiView(models.Model):
     def to_field_ref(self, el):
         # filter out meta-information inserted in the document
         attributes = {k: v for k, v in el.attrib.items()
-                           if not k.startswith('data-oe-')}
+                      if not k.startswith('data-oe-')}
         attributes['t-field'] = el.get('data-oe-expression')
 
         out = html.html_parser.makeelement(el.tag, attrib=attributes)
@@ -320,7 +325,8 @@ class IrUiView(models.Model):
     def _view_get_inherited_children(self, view):
         if self._context.get('no_primary_children', False):
             original_hierarchy = self._context.get('__views_get_original_hierarchy', [])
-            return view.inherit_children_ids.filtered(lambda extension: extension.mode != 'primary' or extension.id in original_hierarchy)
+            return view.inherit_children_ids.filtered(
+                lambda extension: extension.mode != 'primary' or extension.id in original_hierarchy)
         return view.inherit_children_ids
 
     @api.model
@@ -370,7 +376,8 @@ class IrUiView(models.Model):
             except ValueError:
                 continue
             if called_view and called_view not in views_to_return and called_view.id not in visited:
-                views_to_return += self._views_get(called_view, get_children=get_children, bundles=bundles, visited=visited + views_to_return.ids)
+                views_to_return += self._views_get(called_view, get_children=get_children, bundles=bundles,
+                                                   visited=visited + views_to_return.ids)
 
         if not get_children:
             return views_to_return
@@ -381,7 +388,8 @@ class IrUiView(models.Model):
         for extension in extensions.sorted(key=lambda v: v.id):
             # only return optional grandchildren if this child is enabled
             if extension.id not in visited:
-                for ext_view in self._views_get(extension, get_children=extension.active, root=False, visited=visited + views_to_return.ids):
+                for ext_view in self._views_get(extension, get_children=extension.active, root=False,
+                                                visited=visited + views_to_return.ids):
                     if ext_view not in views_to_return:
                         views_to_return += ext_view
         return views_to_return

@@ -6,8 +6,8 @@ class BaseDocumentLayout(models.TransientModel):
 
     from_invoice = fields.Boolean()
     qr_code = fields.Boolean(related='company_id.qr_code', readonly=False)
-    vat = fields.Char(related='company_id.vat', readonly=False,)
-    account_number = fields.Char(compute='_compute_account_number', inverse='_inverse_account_number',)
+    vat = fields.Char(related='company_id.vat', readonly=False, )
+    account_number = fields.Char(compute='_compute_account_number', inverse='_inverse_account_number', )
 
     def document_layout_save(self):
         """Save layout and onboarding step progress, return super() result"""
@@ -23,8 +23,8 @@ class BaseDocumentLayout(models.TransientModel):
 
     def _get_preview_template(self):
         if (
-            self.env.context.get('active_model') == 'account.move'
-            and self.env.context.get('active_id')
+                self.env.context.get('active_model') == 'account.move'
+                and self.env.context.get('active_id')
         ):
             return 'account.report_invoice_wizard_iframe'
         return super()._get_preview_template()
@@ -32,8 +32,8 @@ class BaseDocumentLayout(models.TransientModel):
     def _get_render_information(self, styles):
         res = super()._get_render_information(styles)
         if (
-            self.env.context.get('active_model') == 'account.move'
-            and self.env.context.get('active_id')
+                self.env.context.get('active_model') == 'account.move'
+                and self.env.context.get('active_id')
         ):
             res.update({
                 'o': self.env['account.move'].browse(self.env.context.get('active_id')),

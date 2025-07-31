@@ -1,27 +1,27 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from datetime import datetime
+import functools
 import gc
 import json
 import logging
-import sys
-import time
-import threading
 import re
-import functools
+import sys
+import threading
+import time
+from datetime import datetime
 
 from psycopg2 import OperationalError
 
 from odoo import tools
 from odoo.tools import SQL
 
-
 _logger = logging.getLogger(__name__)
 
 # ensure we have a non patched time for profiling times when using freezegun
 real_datetime_now = datetime.now
 real_time = time.time.__call__
+
 
 def _format_frame(frame):
     code = frame.f_code
@@ -88,8 +88,8 @@ class Collector:
     This is a generic implementation of a basic collector, to be inherited.
     It defines default behaviors for creating an entry in the collector.
     """
-    name = None                 # symbolic name of the collector
-    _registry = {}              # map collector names to their class
+    name = None  # symbolic name of the collector
+    _registry = {}  # map collector names to their class
 
     @classmethod
     def __init_subclass__(cls):
@@ -125,7 +125,7 @@ class Collector:
     def progress(self, entry=None, frame=None):
         """ Checks if the limits were met and add to the entries"""
         if self.profiler.entry_count_limit \
-            and self.profiler.entry_count() >= self.profiler.entry_count_limit:
+                and self.profiler.entry_count() >= self.profiler.entry_count_limit:
             self.profiler.end()
 
         self.add(entry=entry, frame=frame)
@@ -149,7 +149,7 @@ class Collector:
         return self._entries
 
     def summary(self):
-        return f"{'='*10} {self.name} {'='*10} \n Entries: {len(self._entries)}"
+        return f"{'=' * 10} {self.name} {'=' * 10} \n Entries: {len(self._entries)}"
 
 
 class SQLCollector(Collector):
@@ -311,6 +311,7 @@ class QwebTracker():
                 # Therefore 'profile' is a key to the cache.
                 options['profile'] = True
             return method_render(self, template, values, **options)
+
         return _tracked_method_render
 
     @classmethod
@@ -333,9 +334,11 @@ class QwebTracker():
                     with ExecutionContext(template=ref):
                         return render_template(self, values)
                 return render_template(self, values)
+
             template_functions[def_name] = profiled_method_compile
 
             return (template_functions, def_name)
+
         return _tracked_compile
 
     @classmethod
@@ -348,6 +351,7 @@ class QwebTracker():
             leave = f"{' ' * 4 * level}self.env.context['qweb_tracker'].leave_directive({directive!r}, {el.attrib!r}, {options['_qweb_error_path_xml'][0]!r})"
             code_directive = method_compile_directive(self, el, options, directive, level)
             return [enter, *code_directive, leave] if code_directive else []
+
         return _tracked_compile_directive
 
     def __init__(self, view_id, arch, cr):
@@ -417,6 +421,7 @@ class QwebCollector(Collector):
 
         def hook(event, sql_log_count, **kwargs):
             self.events.append((event, kwargs, sql_log_count, real_time()))
+
         self.hook = hook
 
     def _get_directive_profiling_name(self, directive, attrib):
@@ -508,6 +513,7 @@ class ExecutionContext:
     This context stored by collector beside stack and is used by Speedscope
     to add a level to the stack with this information.
     """
+
     def __init__(self, **context):
         self.context = context
         self.previous_context = None
@@ -526,6 +532,7 @@ class Profiler:
     Context manager to use to start the recording of some execution.
     Will save sql and async stack trace by default.
     """
+
     def __init__(self, collectors=None, db=..., profile_session=None,
                  description=None, disable_gc=False, params=None, log=False):
         """
@@ -551,7 +558,8 @@ class Profiler:
         self.profile_id = None
         self.log = log
         self.sub_profilers = []
-        self.entry_count_limit = int(self.params.get("entry_count_limit", 0))   # the limit could be set using a smarter way
+        self.entry_count_limit = int(
+            self.params.get("entry_count_limit", 0))  # the limit could be set using a smarter way
         self.done = False
 
         if db is ...:
@@ -559,7 +567,8 @@ class Profiler:
             db = getattr(threading.current_thread(), 'dbname', None)
             if not db:
                 # only raise if path is not given and db is not explicitely disabled
-                raise Exception('Database name cannot be defined automaticaly. \n Please provide a valid/falsy dbname or path parameter')
+                raise Exception(
+                    'Database name cannot be defined automaticaly. \n Please provide a valid/falsy dbname or path parameter')
         self.db = db
 
         # collectors
@@ -630,7 +639,8 @@ class Profiler:
                         "init_stack_trace": json.dumps(_format_stack(self.init_stack_trace)),
                         "duration": self.duration,
                         "entry_count": self.entry_count(),
-                        "sql_count": sum(len(collector.entries) for collector in self.collectors if collector.name == 'sql')
+                        "sql_count": sum(
+                            len(collector.entries) for collector in self.collectors if collector.name == 'sql')
                     }
                     for collector in self.collectors:
                         if collector.entries:
@@ -747,6 +757,7 @@ class Nested:
     be ignored, too. This is also why Nested() does not use
     contextlib.contextmanager.
     """
+
     def __init__(self, profiler, context_manager):
         self.profiler = profiler
         self.context_manager = context_manager

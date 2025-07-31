@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from collections import defaultdict
 import itertools
+from collections import defaultdict
+
+from odoo.addons.mail.tools.discuss import Store
 
 from odoo import api, fields, models, Command
-from odoo.addons.mail.tools.discuss import Store
 
 
 class Followers(models.Model):
@@ -67,7 +68,8 @@ class Followers(models.Model):
         return super(Followers, self).unlink()
 
     _sql_constraints = [
-        ('mail_followers_res_partner_res_model_id_uniq', 'unique(res_model,res_id,partner_id)', 'Error, a partner cannot follow twice the same object.'),
+        ('mail_followers_res_partner_res_model_id_uniq', 'unique(res_model,res_id,partner_id)',
+         'Error, a partner cannot follow twice the same object.'),
     ]
 
     @api.depends("partner_id")
@@ -382,7 +384,8 @@ WHERE %s
 GROUP BY fol.id%s%s""" % (
             ', partner.partner_share' if include_pshare else '',
             ', partner.active' if include_active else '',
-            'LEFT JOIN res_partner partner ON partner.id = fol.partner_id' if (include_pshare or include_active) else '',
+            'LEFT JOIN res_partner partner ON partner.id = fol.partner_id' if (
+                        include_pshare or include_active) else '',
             where_clause,
             ', partner.partner_share' if include_pshare else '',
             ', partner.active' if include_active else ''
@@ -447,11 +450,13 @@ GROUP BY fol.id%s%s""" % (
 
         default, _, external = self.env['mail.message.subtype'].default_subtypes(res_model)
         if partner_ids and customer_ids is None:
-            customer_ids = self.env['res.partner'].sudo().search([('id', 'in', partner_ids), ('partner_share', '=', True)]).ids
+            customer_ids = self.env['res.partner'].sudo().search(
+                [('id', 'in', partner_ids), ('partner_share', '=', True)]).ids
 
         p_stypes = dict((pid, external.ids if pid in customer_ids else default.ids) for pid in partner_ids)
 
-        return self._add_followers(res_model, res_ids, partner_ids, p_stypes, check_existing=check_existing, existing_policy=existing_policy)
+        return self._add_followers(res_model, res_ids, partner_ids, p_stypes, check_existing=check_existing,
+                                   existing_policy=existing_policy)
 
     def _add_followers(self, res_model, res_ids, partner_ids, subtypes,
                        check_existing=False, existing_policy='skip'):
@@ -505,7 +510,9 @@ GROUP BY fol.id%s%s""" % (
                         'subtype_ids': [Command.set(subtypes[partner_id])],
                     })
                 elif existing_policy in ('replace', 'update'):
-                    fol_id, sids = next(((key, val[2]) for key, val in data_fols.items() if val[0] == res_id and val[1] == partner_id), (False, []))
+                    fol_id, sids = next(
+                        ((key, val[2]) for key, val in data_fols.items() if val[0] == res_id and val[1] == partner_id),
+                        (False, []))
                     new_sids = set(subtypes[partner_id]) - set(sids)
                     old_sids = set(sids) - set(subtypes[partner_id])
                     update_cmd = []

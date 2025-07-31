@@ -85,7 +85,7 @@ class ODSReader(object):
             if arrCells:
                 arrRows.append(arrCells)
 
-            #else:
+            # else:
             #    print ("Empty or commented row (", row_comment, ")")
 
         self.SHEETS[name] = arrRows

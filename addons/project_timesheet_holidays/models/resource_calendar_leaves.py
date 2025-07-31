@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from collections import defaultdict
+
 from pytz import timezone, utc
 
 from odoo import api, fields, models, _
@@ -10,7 +11,8 @@ from odoo import api, fields, models, _
 class ResourceCalendarLeaves(models.Model):
     _inherit = "resource.calendar.leaves"
 
-    timesheet_ids = fields.One2many('account.analytic.line', 'global_leave_id', string="Analytic Lines", export_string_translation=False)
+    timesheet_ids = fields.One2many('account.analytic.line', 'global_leave_id', string="Analytic Lines",
+                                    export_string_translation=False)
 
     def _get_resource_calendars(self):
         leaves_with_calendar = self.filtered('calendar_id')
@@ -155,7 +157,8 @@ class ResourceCalendarLeaves(models.Model):
             for employee in employees:
                 holidays = holidays_by_employee.get(employee.id)
                 for index, (day_date, work_hours_count) in enumerate(work_hours_list):
-                    if not holidays or all(not (date_from <= day_date and date_to >= day_date) for date_from, date_to in holidays):
+                    if not holidays or all(
+                            not (date_from <= day_date and date_to >= day_date) for date_from, date_to in holidays):
                         vals_list.append(
                             leave._timesheet_prepare_line_values(
                                 index,
@@ -195,7 +198,8 @@ class ResourceCalendarLeaves(models.Model):
         }
 
     def _generate_timesheeets(self):
-        results_with_leave_timesheet = self.filtered(lambda r: not r.resource_id and r.company_id.internal_project_id and r.company_id.leave_timesheet_task_id)
+        results_with_leave_timesheet = self.filtered(
+            lambda r: not r.resource_id and r.company_id.internal_project_id and r.company_id.leave_timesheet_task_id)
         if results_with_leave_timesheet:
             results_with_leave_timesheet._timesheet_create_lines()
 
@@ -243,7 +247,9 @@ class ResourceCalendarLeaves(models.Model):
         date_from, date_to, calendar_id = vals.get('date_from'), vals.get('date_to'), vals.get('calendar_id')
         global_time_off_updated = self.env['resource.calendar.leaves']
         if date_from or date_to or 'calendar_id' in vals:
-            global_time_off_updated = self.filtered(lambda r: (date_from is not None and r.date_from != date_from) or (date_to is not None and r.date_to != date_to) or (calendar_id is None or r.calendar_id.id != calendar_id))
+            global_time_off_updated = self.filtered(lambda r: (date_from is not None and r.date_from != date_from) or (
+                        date_to is not None and r.date_to != date_to) or (
+                                                                          calendar_id is None or r.calendar_id.id != calendar_id))
             timesheets = global_time_off_updated.sudo().timesheet_ids
             if timesheets:
                 timesheets.write({'global_leave_id': False})

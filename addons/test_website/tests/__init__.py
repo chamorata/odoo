@@ -11,8 +11,8 @@ from . import test_is_multilang
 from . import test_media
 from . import test_menu
 from . import test_multi_company
-from . import test_page_manager
 from . import test_page
+from . import test_page_manager
 from . import test_performance
 from . import test_qweb
 from . import test_redirect

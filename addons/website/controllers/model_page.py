@@ -26,8 +26,8 @@ class ModelPageController(Controller):
         ])
 
         page = request.env["website.controller.page"].search(website_page_domain, limit=1)
-        if not page or\
-            (not page.website_published and not request.env.user.has_group('website.group_website_designer')):
+        if not page or \
+                (not page.website_published and not request.env.user.has_group('website.group_website_designer')):
             raise werkzeug.exceptions.NotFound()
 
         if record_slug is not None:
@@ -59,7 +59,8 @@ class ModelPageController(Controller):
                 raise werkzeug.exceptions.NotFound()
 
             render_context = {
-                "main_object": page.sudo() if not implements_published_mixin else record,  # The template reads some fields that are actually on view
+                "main_object": page.sudo() if not implements_published_mixin else record,
+                # The template reads some fields that are actually on view
                 "record": record,
                 "listing": {
                     'href': '.',
@@ -98,7 +99,8 @@ class ModelPageController(Controller):
             scope=5,
         )
 
-        records = Model.search(AND(domains), limit=self.pager_step, offset=self.pager_step * (page_number - 1), order=searches["order"])
+        records = Model.search(AND(domains), limit=self.pager_step, offset=self.pager_step * (page_number - 1),
+                               order=searches["order"])
 
         render_context = {
             "order_by": searches["order"],
@@ -109,6 +111,6 @@ class ModelPageController(Controller):
             "record_to_url": record_to_url,
             "layout_mode": layout_mode,
             "view_id": view.id,
-            "main_object": page.sudo(), # The template reads some fields that are actually on view
+            "main_object": page.sudo(),  # The template reads some fields that are actually on view
         }
         return request.render(view.key, render_context)

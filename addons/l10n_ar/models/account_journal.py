@@ -5,7 +5,6 @@ from odoo.exceptions import UserError, ValidationError, RedirectWarning
 
 
 class AccountJournal(models.Model):
-
     _inherit = "account.journal"
 
     l10n_ar_afip_pos_system = fields.Selection(
@@ -113,7 +112,8 @@ class AccountJournal(models.Model):
             '23', '24', '25', '26', '27', '28', '33', '43', '45', '46', '48', '58', '60', '61', '150', '151', '157',
             '158', '161', '162', '164', '166', '167', '171', '172', '180', '182', '186', '188', '332']
         codes = []
-        if (self.type == 'sale' and not self.l10n_ar_is_pos) or (self.type == 'purchase' and afip_pos_system in ['II_IM', 'RLI_RLM']):
+        if (self.type == 'sale' and not self.l10n_ar_is_pos) or (
+                self.type == 'purchase' and afip_pos_system in ['II_IM', 'RLI_RLM']):
             codes = no_pos_docs + lsg_codes
         elif self.type == 'purchase' and afip_pos_system == 'RAW_MAW':
             # electronic invoices (wsfev1) (intersection between available docs on ws and no_pos_docs)
@@ -142,10 +142,11 @@ class AccountJournal(models.Model):
     def _check_afip_pos_system(self):
         journals = self.filtered(
             lambda j: j.l10n_ar_is_pos and j.type == 'purchase' and
-            j.l10n_ar_afip_pos_system not in ['II_IM', 'RLI_RLM', 'RAW_MAW'])
+                      j.l10n_ar_afip_pos_system not in ['II_IM', 'RLI_RLM', 'RAW_MAW'])
         if journals:
             raise ValidationError("\n".join(
-                _("The pos system %(system)s can not be used on a purchase journal (id %(id)s)", system=x.l10n_ar_afip_pos_system, id=x.id)
+                _("The pos system %(system)s can not be used on a purchase journal (id %(id)s)",
+                  system=x.l10n_ar_afip_pos_system, id=x.id)
                 for x in journals
             ))
 
@@ -177,15 +178,17 @@ class AccountJournal(models.Model):
 
             for journal in self:
                 if (
-                    journal.company_id.account_fiscal_country_id.code != "AR"
-                    or journal.type not in ['sale', 'purchase']
-                    or journal.id not in journal_with_entry_ids
+                        journal.company_id.account_fiscal_country_id.code != "AR"
+                        or journal.type not in ['sale', 'purchase']
+                        or journal.id not in journal_with_entry_ids
                 ):
                     continue
 
                 for field in fields_to_check:
                     # Wouldn't work if there was a relational field, as we would compare an id with a recordset.
                     if vals[field] != journal[field]:
-                        raise UserError(_("You can not change %s journal's configuration if it already has validated invoices", journal.name))
+                        raise UserError(
+                            _("You can not change %s journal's configuration if it already has validated invoices",
+                              journal.name))
 
         return super().write(vals)

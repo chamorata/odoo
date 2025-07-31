@@ -2,8 +2,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from lxml import etree
-from odoo import fields, Command
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
+from odoo import fields, Command
 from odoo.tests import tagged
 from odoo.tools import file_open
 from odoo.tools.safe_eval import datetime
@@ -269,7 +270,8 @@ class TestAccountEdiUblCii(AccountTestInvoicingCommon):
             'name': 'test_invoice.xml',
         })
         xml_tree = etree.fromstring(xml_attachment.raw)
-        actual_delivery_date = xml_tree.find('.//ram:ActualDeliverySupplyChainEvent/ram:OccurrenceDateTime/udt:DateTimeString', self.namespaces)
+        actual_delivery_date = xml_tree.find(
+            './/ram:ActualDeliverySupplyChainEvent/ram:OccurrenceDateTime/udt:DateTimeString', self.namespaces)
         self.assertEqual(actual_delivery_date.text, '20241231')
 
     def test_billing_date_in_cii_xml(self):
@@ -288,8 +290,12 @@ class TestAccountEdiUblCii(AccountTestInvoicingCommon):
             'name': 'test_invoice.xml',
         })
         xml_tree = etree.fromstring(xml_attachment.raw)
-        start_date = xml_tree.find('.//ram:ApplicableHeaderTradeSettlement/ram:BillingSpecifiedPeriod/ram:StartDateTime/udt:DateTimeString', self.namespaces)
-        end_date = xml_tree.find('.//ram:ApplicableHeaderTradeSettlement/ram:BillingSpecifiedPeriod/ram:EndDateTime/udt:DateTimeString', self.namespaces)
+        start_date = xml_tree.find(
+            './/ram:ApplicableHeaderTradeSettlement/ram:BillingSpecifiedPeriod/ram:StartDateTime/udt:DateTimeString',
+            self.namespaces)
+        end_date = xml_tree.find(
+            './/ram:ApplicableHeaderTradeSettlement/ram:BillingSpecifiedPeriod/ram:EndDateTime/udt:DateTimeString',
+            self.namespaces)
         self.assertEqual(start_date.text, '20241201')
         self.assertEqual(end_date.text, '20241231')
 
@@ -330,16 +336,24 @@ class TestAccountEdiUblCii(AccountTestInvoicingCommon):
         })
         xml_tree = etree.fromstring(xml_attachment.raw)
 
-        line_start_dates = xml_tree.findall('.//ram:SpecifiedLineTradeSettlement/ram:BillingSpecifiedPeriod/ram:StartDateTime/udt:DateTimeString', self.namespaces)
+        line_start_dates = xml_tree.findall(
+            './/ram:SpecifiedLineTradeSettlement/ram:BillingSpecifiedPeriod/ram:StartDateTime/udt:DateTimeString',
+            self.namespaces)
         self.assertEqual([date.text for date in line_start_dates], ['20241119', '20241201', '20241129'])
 
-        line_end_dates = xml_tree.findall('.//ram:SpecifiedLineTradeSettlement/ram:BillingSpecifiedPeriod/ram:EndDateTime/udt:DateTimeString', self.namespaces)
+        line_end_dates = xml_tree.findall(
+            './/ram:SpecifiedLineTradeSettlement/ram:BillingSpecifiedPeriod/ram:EndDateTime/udt:DateTimeString',
+            self.namespaces)
         self.assertEqual([value.text for value in line_end_dates], ['20241211', '20241226', '20241215'])
 
-        global_start_date = xml_tree.find('.//ram:ApplicableHeaderTradeSettlement/ram:BillingSpecifiedPeriod/ram:StartDateTime/udt:DateTimeString', self.namespaces)
+        global_start_date = xml_tree.find(
+            './/ram:ApplicableHeaderTradeSettlement/ram:BillingSpecifiedPeriod/ram:StartDateTime/udt:DateTimeString',
+            self.namespaces)
         self.assertEqual(global_start_date.text, '20241119')
 
-        global_end_date = xml_tree.find('.//ram:ApplicableHeaderTradeSettlement/ram:BillingSpecifiedPeriod/ram:EndDateTime/udt:DateTimeString', self.namespaces)
+        global_end_date = xml_tree.find(
+            './/ram:ApplicableHeaderTradeSettlement/ram:BillingSpecifiedPeriod/ram:EndDateTime/udt:DateTimeString',
+            self.namespaces)
         self.assertEqual(global_end_date.text, '20241226')
 
         line_vals = [
@@ -415,4 +429,5 @@ class TestAccountEdiUblCii(AccountTestInvoicingCommon):
         })
         imported_invoice = self.import_attachment(xml_attachment, self.company_data["default_journal_sale"])
         for line in imported_invoice.invoice_line_ids:
-            self.assertFalse(line.discount, "A discount on the imported lines signals a rounding error in the discount computation")
+            self.assertFalse(line.discount,
+                             "A discount on the imported lines signals a rounding error in the discount computation")

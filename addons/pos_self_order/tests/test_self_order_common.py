@@ -1,9 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import odoo.tests
 from odoo.addons.point_of_sale.tests.common_setup_methods import setup_product_combo_items
 from odoo.addons.pos_self_order.tests.self_order_common_test import SelfOrderCommonTest
 
+import odoo.tests
 from odoo.exceptions import UserError
 
 
@@ -60,7 +60,8 @@ class TestSelfOrderCommon(SelfOrderCommonTest):
             self.start_tour(self_route, "self_order_pos_closed")
 
     def test_self_order_config_default_user(self):
-        self.pos_config.payment_method_ids = self.pos_config.payment_method_ids.filtered(lambda pm: not pm.is_cash_count)
+        self.pos_config.payment_method_ids = self.pos_config.payment_method_ids.filtered(
+            lambda pm: not pm.is_cash_count)
         for mode in ("mobile", "consultation", "kiosk"):
             self.pos_config.write({"self_ordering_mode": mode})
             with self.assertRaises(UserError):

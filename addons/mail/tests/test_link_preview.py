@@ -1,13 +1,13 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from markupsafe import Markup
+import io
 from unittest.mock import patch
 
-import io
 import requests
-
+from markupsafe import Markup
 from odoo.addons.mail.tests.common import MailCommon
 from odoo.addons.mail.tools import link_preview
+
 from odoo.tests.common import tagged
 
 
@@ -131,12 +131,15 @@ class TestLinkPreview(MailCommon):
         ]
         session = requests.Session()
         for (get_patch, url), expected in zip(test_cases, expected_values):
-            with self.subTest(get_patch=get_patch, url=url, expected=expected), patch.object(requests.Session, 'get', get_patch):
+            with self.subTest(get_patch=get_patch, url=url, expected=expected), patch.object(requests.Session, 'get',
+                                                                                             get_patch):
                 preview = link_preview.get_link_preview_from_url(url, session)
                 self.assertEqual(preview, expected)
 
     def test_link_preview(self):
-        with patch.object(requests.Session, 'get', self._patch_with_og_properties), patch.object(requests.Session, 'head', self._patch_head_html):
+        with patch.object(requests.Session, 'get', self._patch_with_og_properties), patch.object(requests.Session,
+                                                                                                 'head',
+                                                                                                 self._patch_head_html):
             throttle = int(self.env['ir.config_parameter'].sudo().get_param('mail.link_preview_throttle', 99))
             self.env['mail.link.preview'].create([
                 {'source_url': self.source_url, 'message_id': self.existing_message.id}
@@ -195,7 +198,7 @@ class TestLinkPreview(MailCommon):
     def test_link_preview_ignore_internal_link(self):
         """Test internal links are properly ignored from link preview."""
         with patch.object(requests.Session, "get", self._patch_with_og_properties), patch.object(
-            requests.Session, "head", self._patch_head_html
+                requests.Session, "head", self._patch_head_html
         ):
             urls = [
                 ("http://localhost:8069/", "http://localhost:8069/odoo", 0),

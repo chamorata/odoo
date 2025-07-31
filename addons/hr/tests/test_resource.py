@@ -2,9 +2,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import datetime
-from pytz import utc
 
 from odoo.addons.resource.models.utils import Intervals
+from pytz import utc
 
 from .common import TestHrCommon
 

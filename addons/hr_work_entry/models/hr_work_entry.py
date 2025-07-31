@@ -6,9 +6,9 @@ from contextlib import contextmanager
 
 from dateutil.relativedelta import relativedelta
 from psycopg2 import OperationalError
-from odoo.exceptions import UserError
 
 from odoo import _, api, fields, models, tools
+from odoo.exceptions import UserError
 from odoo.osv import expression
 
 
@@ -19,11 +19,15 @@ class HrWorkEntry(models.Model):
 
     name = fields.Char(required=True, compute='_compute_name', store=True, readonly=False)
     active = fields.Boolean(default=True)
-    employee_id = fields.Many2one('hr.employee', required=True, domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]", index=True)
+    employee_id = fields.Many2one('hr.employee', required=True,
+                                  domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",
+                                  index=True)
     date_start = fields.Datetime(required=True, string='From')
     date_stop = fields.Datetime(compute='_compute_date_stop', store=True, readonly=False, string='To')
     duration = fields.Float(compute='_compute_duration', store=True, string="Duration", readonly=False)
-    work_entry_type_id = fields.Many2one('hr.work.entry.type', index=True, default=lambda self: self.env['hr.work.entry.type'].search([], limit=1), domain="['|', ('country_id', '=', False), ('country_id', '=', country_id)]")
+    work_entry_type_id = fields.Many2one('hr.work.entry.type', index=True,
+                                         default=lambda self: self.env['hr.work.entry.type'].search([], limit=1),
+                                         domain="['|', ('country_id', '=', False), ('country_id', '=', country_id)]")
     code = fields.Char(related='work_entry_type_id.code')
     external_code = fields.Char(related='work_entry_type_id.external_code')
     color = fields.Integer(related='work_entry_type_id.color', readonly=True)
@@ -34,8 +38,9 @@ class HrWorkEntry(models.Model):
         ('cancelled', 'Cancelled')
     ], default='draft')
     company_id = fields.Many2one('res.company', string='Company', readonly=True, required=True,
-        default=lambda self: self.env.company)
-    conflict = fields.Boolean('Conflicts', compute='_compute_conflict', store=True)  # Used to show conflicting work entries first
+                                 default=lambda self: self.env.company)
+    conflict = fields.Boolean('Conflicts', compute='_compute_conflict',
+                              store=True)  # Used to show conflicting work entries first
     department_id = fields.Many2one('hr.department', related='employee_id.department_id', store=True)
     country_id = fields.Many2one('res.country', related='employee_id.company_id.country_id')
 
@@ -50,7 +55,8 @@ class HrWorkEntry(models.Model):
     # CHECK constraints, it's backed by an index.
     # 1: https://www.postgresql.org/docs/9.6/sql-createtable.html#SQL-CREATETABLE-EXCLUDE
     _sql_constraints = [
-        ('_work_entry_has_end', 'check (date_stop IS NOT NULL)', 'Work entry must end. Please define an end date or a duration.'),
+        ('_work_entry_has_end', 'check (date_stop IS NOT NULL)',
+         'Work entry must end. Please define an end date or a duration.'),
         ('_work_entry_start_before_end', 'check (date_stop > date_start)', 'Starting time should be before end time.'),
         (
             '_work_entries_no_validated_conflict',
@@ -66,7 +72,8 @@ class HrWorkEntry(models.Model):
     ]
 
     def init(self):
-        tools.create_index(self._cr, "hr_work_entry_date_start_date_stop_index", self._table, ["date_start", "date_stop"])
+        tools.create_index(self._cr, "hr_work_entry_date_start_date_stop_index", self._table,
+                           ["date_start", "date_stop"])
 
     @api.depends('work_entry_type_id', 'employee_id')
     def _compute_name(self):
@@ -74,7 +81,8 @@ class HrWorkEntry(models.Model):
             if not work_entry.employee_id:
                 work_entry.name = _('Undefined')
             else:
-                work_entry.name = "%s: %s" % (work_entry.work_entry_type_id.name or _('Undefined Type'), work_entry.employee_id.name)
+                work_entry.name = "%s: %s" % (work_entry.work_entry_type_id.name or _('Undefined Type'),
+                                              work_entry.employee_id.name)
 
     @api.depends('state')
     def _compute_conflict(self):
@@ -254,7 +262,8 @@ class HrWorkEntryType(models.Model):
     _description = 'HR Work Entry Type'
 
     name = fields.Char(required=True, translate=True)
-    code = fields.Char(string="Payroll Code", required=True, help="Careful, the Code is used in many references, changing it could lead to unwanted changes.")
+    code = fields.Char(string="Payroll Code", required=True,
+                       help="Careful, the Code is used in many references, changing it could lead to unwanted changes.")
     external_code = fields.Char(help="Use this code to export your data to a third party")
     color = fields.Integer(default=0)
     sequence = fields.Integer(default=25)
@@ -268,8 +277,10 @@ class HrWorkEntryType(models.Model):
     def _check_work_entry_type_country(self):
         if self.env.ref('hr_work_entry.work_entry_type_attendance') in self:
             raise UserError(_("You can't change the country of this specific work entry type."))
-        elif not self.env.context.get('install_mode') and self.env['hr.work.entry'].sudo().search_count([('work_entry_type_id', 'in', self.ids)], limit=1):
-            raise UserError(_("You can't change the Country of this work entry type cause it's currently used by the system. You need to delete related working entries first."))
+        elif not self.env.context.get('install_mode') and self.env['hr.work.entry'].sudo().search_count(
+                [('work_entry_type_id', 'in', self.ids)], limit=1):
+            raise UserError(
+                _("You can't change the Country of this work entry type cause it's currently used by the system. You need to delete related working entries first."))
 
     @api.constrains('code', 'country_id')
     def _check_code_unicity(self):

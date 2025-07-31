@@ -138,10 +138,14 @@
                 <attribute name="string">Assigned to</attribute>
             </xpath>
             <xpath expr="//filter[@name='filter_create_date']" position="replace">
-                <filter name="filter_write_date" string="Submitted On" date="write_date" default_period="custom_write_date_last_30_days">
-                    <filter name="write_date_last_7_days" string="Last 7 Days" domain="[('write_date', '&gt;', datetime.datetime.combine(context_today() - datetime.timedelta(days=7), datetime.time(23, 59, 59)).to_utc())]"/>
-                    <filter name="write_date_last_30_days" string="Last 30 Days" domain="[('write_date', '&gt;', datetime.datetime.combine(context_today() - datetime.timedelta(days=30), datetime.time(23, 59, 59)).to_utc())]"/>
-                    <filter name="write_date_last_365_days" string="Last 365 Days" domain="[('write_date', '&gt;', datetime.datetime.combine(context_today() - datetime.timedelta(days=365), datetime.time(23, 59, 59)).to_utc())]"/>
+                <filter name="filter_write_date" string="Submitted On" date="write_date"
+                        default_period="custom_write_date_last_30_days">
+                    <filter name="write_date_last_7_days" string="Last 7 Days"
+                            domain="[('write_date', '&gt;', datetime.datetime.combine(context_today() - datetime.timedelta(days=7), datetime.time(23, 59, 59)).to_utc())]"/>
+                    <filter name="write_date_last_30_days" string="Last 30 Days"
+                            domain="[('write_date', '&gt;', datetime.datetime.combine(context_today() - datetime.timedelta(days=30), datetime.time(23, 59, 59)).to_utc())]"/>
+                    <filter name="write_date_last_365_days" string="Last 365 Days"
+                            domain="[('write_date', '&gt;', datetime.datetime.combine(context_today() - datetime.timedelta(days=365), datetime.time(23, 59, 59)).to_utc())]"/>
                 </filter>
             </xpath>
             <xpath expr="//filter[@name='month']" position="attributes">
@@ -154,7 +158,9 @@
         <field name="name">Ratings</field>
         <field name="res_model">rating.rating</field>
         <field name="view_mode">kanban,list,graph,pivot,form</field>
-        <field name="domain">[('consumed','=',True), ('parent_res_model','=','project.project'), ('parent_res_id', '=', active_id)]</field>
+        <field name="domain">[('consumed','=',True), ('parent_res_model','=','project.project'), ('parent_res_id', '=',
+            active_id)]
+        </field>
         <field name="search_view_id" ref="rating_rating_view_search_project"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_empty_folder">
@@ -202,7 +208,8 @@
         <field name="name">Ratings</field>
         <field name="res_model">rating.rating</field>
         <field name="view_mode">kanban,list,pivot,graph,form</field>
-        <field name="domain">[('res_model', '=', 'project.task'), ('res_id', '=', active_id), ('consumed', '=', True)]</field>
+        <field name="domain">[('res_model', '=', 'project.task'), ('res_id', '=', active_id), ('consumed', '=', True)]
+        </field>
         <field name="search_view_id" ref="rating_rating_view_search_project"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_empty_folder">
@@ -267,7 +274,8 @@
         <field name="context">{
             'search_default_filter_write_date': 1,
             'graph_groupbys': ['rated_partner_id'],
-        }</field>
+            }
+        </field>
     </record>
 
     <record id="rating_rating_action_project_report_kanban" model="ir.actions.act_window.view">

@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from collections import namedtuple
+from odoo.addons.l10n_it_edi.tests.common import TestItEdi
 
 from odoo import Command, fields
 from odoo.tests import tagged
-from odoo.addons.l10n_it_edi.tests.common import TestItEdi
 
 
 @tagged('post_install_l10n', 'post_install', '-at_install')
@@ -207,7 +206,8 @@ class TestItEdiReverseCharge(TestItEdi):
         })
         credit_note.action_post()
 
-        (bills.line_ids + credit_note.line_ids).filtered(lambda line: line.account_type == 'liability_payable').reconcile()
+        (bills.line_ids + credit_note.line_ids).filtered(
+            lambda line: line.account_type == 'liability_payable').reconcile()
         self._assert_export_invoice(credit_note, 'credit_note_reverse_charge.xml')
 
     def test_reverse_charge_bill_2(self):

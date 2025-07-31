@@ -12,8 +12,10 @@ class HrEmployeeCVWizard(models.TransientModel):
 
     employee_ids = fields.Many2many('hr.employee')
 
-    color_primary = fields.Char('Primary Color', default=lambda self: self.env.company.primary_color or "#666666", required=True)
-    color_secondary = fields.Char('Secondary Color', default=lambda self: self.env.company.secondary_color or "#666666", required=True)
+    color_primary = fields.Char('Primary Color', default=lambda self: self.env.company.primary_color or "#666666",
+                                required=True)
+    color_secondary = fields.Char('Secondary Color', default=lambda self: self.env.company.secondary_color or "#666666",
+                                  required=True)
 
     show_skills = fields.Boolean(string='Skills', default=True)
     show_contact = fields.Boolean(string='Contact Information', default=True)

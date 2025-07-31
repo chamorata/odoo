@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import odoo
 from odoo.addons.point_of_sale.tests.common import TestPoSCommon
+
+import odoo
 
 
 @odoo.tests.tagged('post_install', '-at_install')
@@ -23,7 +24,6 @@ class TestPosMargin(TestPoSCommon):
         self.customer_location = self.env.ref('stock.stock_location_customers')
         self.supplier_location = self.env.ref('stock.stock_location_suppliers')
         self.uom_unit = self.env.ref('uom.product_uom_unit')
-
 
     def test_positive_margin(self):
         """
@@ -339,7 +339,6 @@ class TestPosMargin(TestPoSCommon):
         product2 = self.create_product('Product 2', self.categ_basic, 50, 30)
         self.env.company.point_of_sale_update_stock_quantities = 'closing'
 
-
         move1 = self.env['stock.move'].create({
             'name': 'IN 2 unit @ 3 per unit',
             'location_id': self.supplier_location.id,
@@ -389,7 +388,8 @@ class TestPosMargin(TestPoSCommon):
         self.assertEqual(self.pos_session.order_ids[1].margin_percent, 0)
 
         # close session
-        total_cash_payment = sum(self.pos_session.mapped('order_ids.payment_ids').filtered(lambda payment: payment.payment_method_id.type == 'cash').mapped('amount'))
+        total_cash_payment = sum(self.pos_session.mapped('order_ids.payment_ids').filtered(
+            lambda payment: payment.payment_method_id.type == 'cash').mapped('amount'))
         self.pos_session.post_closing_cash_details(total_cash_payment)
         self.pos_session.close_session_from_ui()
 

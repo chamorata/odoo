@@ -17,6 +17,7 @@ class LRU(MutableMapping[K, V], typing.Generic[K, V]):
 
     Original Copyright 2003 Josiah Carlson, later rebuilt on OrderedDict and added typing.
     """
+
     def __init__(self, count: int, pairs: Iterable[tuple[K, V]] = ()):
         self._lock = threading.RLock()
         self.count = max(count, 1)

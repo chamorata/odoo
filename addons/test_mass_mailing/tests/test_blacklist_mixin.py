@@ -3,6 +3,7 @@
 
 from odoo.addons.test_mass_mailing.models.mailing_models import MailingBLacklist
 from odoo.addons.test_mass_mailing.tests import common
+
 from odoo.exceptions import UserError
 from odoo.tests.common import users
 

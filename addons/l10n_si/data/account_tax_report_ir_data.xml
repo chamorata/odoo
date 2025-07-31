@@ -184,7 +184,7 @@
                                 </field>
                             </record>
                         </field>
-                         <field name="children_ids">
+                        <field name="children_ids">
                             <record id="tax_report_ir_14" model="account.report.line">
                                 <field name="name">14. VAT 22%</field>
                                 <field name="code">ir_14</field>
@@ -196,7 +196,7 @@
                                     </record>
                                 </field>
                             </record>
-                             <record id="tax_report_ir_15a" model="account.report.line">
+                            <record id="tax_report_ir_15a" model="account.report.line">
                                 <field name="name">15a. VAT 9,5%</field>
                                 <field name="code">ir_15a</field>
                                 <field name="expression_ids">
@@ -207,7 +207,7 @@
                                     </record>
                                 </field>
                             </record>
-                             <record id="tax_report_ir_15b" model="account.report.line">
+                            <record id="tax_report_ir_15b" model="account.report.line">
                                 <field name="name">15b. VAT 5%</field>
                                 <field name="code">ir_15b</field>
                                 <field name="expression_ids">
@@ -236,7 +236,7 @@
                                 </field>
                             </record>
                         </field>
-                         <field name="children_ids">
+                        <field name="children_ids">
                             <record id="tax_report_ir_16" model="account.report.line">
                                 <field name="name">16. VAT BL 22%</field>
                                 <field name="code">ir_16</field>
@@ -308,14 +308,15 @@
                     <record id="tax_report_ir_self_taxation_slo_under_article_761" model="account.report.line">
                         <field name="name">Self-taxation - SLO under Article 76a</field>
                         <field name="expression_ids">
-                            <record id="tax_report_ir_self_taxation_slo_under_article_761_formula" model="account.report.expression">
+                            <record id="tax_report_ir_self_taxation_slo_under_article_761_formula"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">aggregation</field>
                                 <field name="formula">ir_20.balance + ir_21a.balance + ir_21b.balance</field>
                             </record>
                         </field>
-                         <field name="children_ids">
-                             <record id="tax_report_ir_20" model="account.report.line">
+                        <field name="children_ids">
+                            <record id="tax_report_ir_20" model="account.report.line">
                                 <field name="name">20. VAT 22%</field>
                                 <field name="code">ir_20</field>
                                 <field name="sequence">4310</field>
@@ -326,8 +327,8 @@
                                         <field name="formula">ir_20</field>
                                     </record>
                                 </field>
-                             </record>
-                             <record id="tax_report_ir_21a" model="account.report.line">
+                            </record>
+                            <record id="tax_report_ir_21a" model="account.report.line">
                                 <field name="name">21a. VAT 9,5%</field>
                                 <field name="code">ir_21a</field>
                                 <field name="expression_ids">
@@ -338,7 +339,7 @@
                                     </record>
                                 </field>
                             </record>
-                             <record id="tax_report_ir_21b" model="account.report.line">
+                            <record id="tax_report_ir_21b" model="account.report.line">
                                 <field name="name">21b. VAT 5%</field>
                                 <field name="code">ir_21b</field>
                                 <field name="expression_ids">
@@ -354,14 +355,15 @@
                     <record id="tax_report_ir_self_taxation_3rd_world_imports" model="account.report.line">
                         <field name="name">Self-taxation - 3rd world imports</field>
                         <field name="expression_ids">
-                            <record id="tax_report_ir_self_taxation_3rd_world_imports_formula" model="account.report.expression">
+                            <record id="tax_report_ir_self_taxation_3rd_world_imports_formula"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">aggregation</field>
                                 <field name="formula">ir_22.balance + ir_22a.balance + ir_22b.balance</field>
                             </record>
                         </field>
-                         <field name="children_ids">
-                             <record id="tax_report_ir_22" model="account.report.line">
+                        <field name="children_ids">
+                            <record id="tax_report_ir_22" model="account.report.line">
                                 <field name="name">22. VAT 22%</field>
                                 <field name="code">ir_22</field>
                                 <field name="sequence">4410</field>
@@ -372,8 +374,8 @@
                                         <field name="formula">ir_22</field>
                                     </record>
                                 </field>
-                             </record>
-                             <record id="tax_report_ir_22a" model="account.report.line">
+                            </record>
+                            <record id="tax_report_ir_22a" model="account.report.line">
                                 <field name="name">22a. VAT 9,5%</field>
                                 <field name="code">ir_22a</field>
                                 <field name="sequence">4420</field>
@@ -385,7 +387,7 @@
                                     </record>
                                 </field>
                             </record>
-                             <record id="tax_report_ir_22b" model="account.report.line">
+                            <record id="tax_report_ir_22b" model="account.report.line">
                                 <field name="name">22b. VAT 5%</field>
                                 <field name="code">ir_22b</field>
                                 <field name="sequence">4430</field>

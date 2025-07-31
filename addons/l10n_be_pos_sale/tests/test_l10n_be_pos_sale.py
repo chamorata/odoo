@@ -1,9 +1,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import odoo
-
 from odoo.addons.point_of_sale.tests.test_frontend import TestPointOfSaleHttpCommon
+
+import odoo
 from odoo import Command
+
 
 @odoo.tests.tagged('post_install_l10n', 'post_install', '-at_install')
 class TestPoSSaleL10NBe(TestPointOfSaleHttpCommon):
@@ -14,8 +15,8 @@ class TestPoSSaleL10NBe(TestPointOfSaleHttpCommon):
         super().setUpClass()
 
     def test_settle_order_is_invoice(self):
-
-        intracom_fpos = self.env["account.chart.template"].with_company(self.env.user.company_id).ref("fiscal_position_template_3", False)
+        intracom_fpos = self.env["account.chart.template"].with_company(self.env.user.company_id).ref(
+            "fiscal_position_template_3", False)
 
         intracom_tax = self.env['account.tax'].create({
             'name': 'test_intracom_taxes_computation_0_1',
@@ -123,4 +124,5 @@ class TestPoSSaleL10NBeNormalCompany(TestPointOfSaleHttpCommon):
             })],
         })
         self.main_pos_config.open_ui()
-        self.start_tour("/pos/ui?config_id=%d" % self.main_pos_config.id, 'PosSettleOrderTryInvoice', login="accountman")
+        self.start_tour("/pos/ui?config_id=%d" % self.main_pos_config.id, 'PosSettleOrderTryInvoice',
+                        login="accountman")

@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates>
-    <t t-name="resource_mail.Many2OneAvatarResourceField" t-inherit="mail.Many2OneAvatarUserField" t-inherit-mode="primary">
+    <t t-name="resource_mail.Many2OneAvatarResourceField" t-inherit="mail.Many2OneAvatarUserField"
+       t-inherit-mode="primary">
         <xpath expr="//span[hasclass('o_m2o_avatar')]" position="attributes">
-            <attribute name="t-attf-class" add="{{ displayResourcePopover ? 'o_field_many2one_avatar': '' }}" separator=" "/>
+            <attribute name="t-attf-class" add="{{ displayResourcePopover ? 'o_field_many2one_avatar': '' }}"
+                       separator=" "/>
         </xpath>
         <xpath expr="//span[hasclass('o_m2o_avatar')]/img" position="attributes">
-            <attribute name="t-if">props.record.data.resource_type !== 'material' &amp;&amp; props.record.data[props.name] !== false</attribute>
+            <attribute name="t-if">props.record.data.resource_type !== 'material' &amp;&amp;
+                props.record.data[props.name] !== false
+            </attribute>
         </xpath>
         <xpath expr="//span[hasclass('o_m2o_avatar')]/img" position="after">
             <t t-if="props.record.data.resource_type === 'material'">
@@ -19,9 +23,12 @@
         </xpath>
     </t>
 
-    <t t-name="resource_mail.KanbanMany2OneAvatarResourceField" t-inherit="mail.KanbanMany2OneAvatarUserField" t-inherit-mode="primary">
+    <t t-name="resource_mail.KanbanMany2OneAvatarResourceField" t-inherit="mail.KanbanMany2OneAvatarUserField"
+       t-inherit-mode="primary">
         <xpath expr="//span[hasclass('o_m2o_avatar')]/img" position="attributes">
-            <attribute name="t-if">props.record.data.resource_type !== 'material' &amp;&amp; props.record.data[props.name] !== false</attribute>
+            <attribute name="t-if">props.record.data.resource_type !== 'material' &amp;&amp;
+                props.record.data[props.name] !== false
+            </attribute>
         </xpath>
         <xpath expr="//span[hasclass('o_m2o_avatar')]/img" position="after">
             <t t-if="props.record.data.resource_type === 'material'">

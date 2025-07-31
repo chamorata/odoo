@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.crm.tests.common import TestCrmCommon
+
 from odoo.tests import tagged, users
 from odoo.tools import formataddr, mute_logger
 
@@ -68,20 +69,20 @@ class NewLeadNotification(TestCrmCommon):
                 'partner_id': self.contact_1.id,
                 'user_id': self.user_sales_leads.id,
             }, {
-              'name': 'Test Suggestion (partner no email)',
-              'partner_id': partner_no_email.id,
-              'user_id': self.user_sales_leads.id
+                'name': 'Test Suggestion (partner no email)',
+                'partner_id': partner_no_email.id,
+                'user_id': self.user_sales_leads.id
             }, {
-              'name': 'Test Suggestion (partner no email with cc email)',
-              'partner_id': partner_no_email.id,
-              'email_cc': 'test_cc@odoo.com',
-              'user_id': self.user_sales_leads.id
+                'name': 'Test Suggestion (partner no email with cc email)',
+                'partner_id': partner_no_email.id,
+                'email_cc': 'test_cc@odoo.com',
+                'user_id': self.user_sales_leads.id
             }
         ])
         for lead, expected_suggested in zip(
-            lead_format + lead_multi + lead_from + lead_partner + lead_partner_no_email + lead_partner_no_email_with_cc,
-            [
-                [{
+                lead_format + lead_multi + lead_from + lead_partner + lead_partner_no_email + lead_partner_no_email_with_cc,
+                [
+                    [{
                         'name': 'New Customer',
                         'email': 'new.customer.format@test.example.com',
                         'lang': None,
@@ -92,8 +93,8 @@ class NewLeadNotification(TestCrmCommon):
                             'name': 'Format Name',
                             'user_id': self.user_sales_leads.id,
                         },
-                  }],
-                [{
+                    }],
+                    [{
                         'name': 'Multi Name',
                         'email': 'new.customer.multi.1@test.example.com,new.customer.2@test.example.com',
                         'lang': None,
@@ -104,8 +105,8 @@ class NewLeadNotification(TestCrmCommon):
                             'name': 'Multi Name',
                             'user_id': self.user_sales_leads.id,
                         },
-                  }],
-                [{
+                    }],
+                    [{
                         'name': 'Std Name',
                         'email': 'new.customer.simple@test.example.com',
                         'lang': None,
@@ -116,39 +117,39 @@ class NewLeadNotification(TestCrmCommon):
                             'name': 'Std Name',
                             'user_id': self.user_sales_leads.id,
                         },
-                  }],
-                [{
+                    }],
+                    [{
                         'partner_id': self.contact_1.id,
                         'name': 'Philip J Fry',
                         'email': 'philip.j.fry@test.example.com',
                         'lang': self.contact_1.lang,
                         'reason': 'Customer',
                         'create_values': {}
-                  }],
-                [{
-                  'partner_id': partner_no_email.id,
-                  'name': 'Test Partner',
-                  'lang': partner_no_email.lang,
-                  'reason': 'Customer',
-                  'create_values': {}
-                  }],
-                [
-                    {
-                      'name': False,
-                      'email': 'test_cc@odoo.com',
-                      'lang': None,
-                      'reason': 'CC Email',
-                      'create_values': {}
-                    },
-                    {
-                      'partner_id': partner_no_email.id,
-                      'name': 'Test Partner',
-                      'lang': partner_no_email.lang,
-                      'reason': 'Customer',
-                      'create_values':{}
-                    }
+                    }],
+                    [{
+                        'partner_id': partner_no_email.id,
+                        'name': 'Test Partner',
+                        'lang': partner_no_email.lang,
+                        'reason': 'Customer',
+                        'create_values': {}
+                    }],
+                    [
+                        {
+                            'name': False,
+                            'email': 'test_cc@odoo.com',
+                            'lang': None,
+                            'reason': 'CC Email',
+                            'create_values': {}
+                        },
+                        {
+                            'partner_id': partner_no_email.id,
+                            'name': 'Test Partner',
+                            'lang': partner_no_email.lang,
+                            'reason': 'Customer',
+                            'create_values': {}
+                        }
+                    ]
                 ]
-            ]
         ):
             with self.subTest(lead=lead, lead_name=lead.name, email_from=lead.email_from):
                 res = lead._message_get_suggested_recipients()
@@ -161,7 +162,8 @@ class NewLeadNotification(TestCrmCommon):
                         self.assertFalse(res_customer_data)
                     else:
                         for partner_fname in expected_customer_data:
-                            found, expected_suggested = res_customer_data[partner_fname], expected_customer_data[partner_fname]
+                            found, expected_suggested = res_customer_data[partner_fname], expected_customer_data[
+                                partner_fname]
                             self.assertEqual(
                                 found, expected_suggested,
                                 f'Lead suggested customer: wrong value for {partner_fname} got {found} instead of {expected_suggested}')

@@ -1,7 +1,7 @@
 import werkzeug.urls
+from odoo.addons.mass_mailing_sms.tests.common import MassSMSCommon
 
 from odoo.tests.common import users
-from odoo.addons.mass_mailing_sms.tests.common import MassSMSCommon
 
 
 class TestMailingListSms(MassSMSCommon):
@@ -29,7 +29,8 @@ class TestMailingListSms(MassSMSCommon):
         trace = mailing.mailing_trace_ids.filtered(lambda t: t.res_id == partner.id)
         self.assertTrue(trace, 'Trace not found for the partner')
 
-        unsubscribe_url = werkzeug.urls.url_join(mailing.get_base_url(), f'/sms/{mailing.id}/unsubscribe/{trace.sms_code}')
+        unsubscribe_url = werkzeug.urls.url_join(mailing.get_base_url(),
+                                                 f'/sms/{mailing.id}/unsubscribe/{trace.sms_code}')
         response = self.opener.get(url=unsubscribe_url, data={'sms_number': trace.sms_number})
 
         self.assertEqual(response.status_code, 200)

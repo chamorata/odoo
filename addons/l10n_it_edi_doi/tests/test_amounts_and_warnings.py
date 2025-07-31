@@ -1,9 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from freezegun import freeze_time
+from odoo.addons.l10n_it_edi_doi.tests.common import TestItEdiDoi
 
 from odoo import Command
-from odoo.addons.l10n_it_edi_doi.tests.common import TestItEdiDoi
 from odoo.tests import tagged, Form
 
 
@@ -161,19 +161,19 @@ class TestItEdiDoiRemaining(TestItEdiDoi):
         }])
 
         invoice = self.create_invoice(declaration, [
-                Command.create({
-                    'name': 'declaration line',
-                    'quantity': 1,
-                    'price_unit': 1000.0,  # == declaration.threshold
-                    'tax_ids': [Command.set(declaration_tax.ids)],
-                }),
-                Command.create({
-                    # The line should be ignored since it does not use the special tax
-                    'name': 'not a declaration line',
-                    'quantity': 1,
-                    'price_unit': 2000.0,  # > declaration.threshold; not counted
-                    'tax_ids': False,
-                }),
+            Command.create({
+                'name': 'declaration line',
+                'quantity': 1,
+                'price_unit': 1000.0,  # == declaration.threshold
+                'tax_ids': [Command.set(declaration_tax.ids)],
+            }),
+            Command.create({
+                # The line should be ignored since it does not use the special tax
+                'name': 'not a declaration line',
+                'quantity': 1,
+                'price_unit': 2000.0,  # > declaration.threshold; not counted
+                'tax_ids': False,
+            }),
         ])
         # The amounts have not changed since the invoice has not been posted yet.
         self.assertRecordValues(declaration, [{
@@ -356,14 +356,14 @@ class TestItEdiDoiRemaining(TestItEdiDoi):
 
         for i in range(2):
             self.env['sale.advance.payment.inv'].with_context({
-                   'active_model': 'sale.order',
-                   'active_ids': [order.id],
-                   'active_id': order.id,
-                   'default_journal_id': self.company_data_2['default_journal_sale'].id,
-               }).create({
-                   'advance_payment_method': 'percentage',
-                   'amount': 50,
-               }).create_invoices()
+                'active_model': 'sale.order',
+                'active_ids': [order.id],
+                'active_id': order.id,
+                'default_journal_id': self.company_data_2['default_journal_sale'].id,
+            }).create({
+                'advance_payment_method': 'percentage',
+                'amount': 50,
+            }).create_invoices()
 
         invoice = order.invoice_ids[0]
 

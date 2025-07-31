@@ -1,6 +1,7 @@
 from odoo.addons.account.tests.test_tax import TestTaxCommon
-from odoo.tests import tagged
+
 from odoo.exceptions import ValidationError
+from odoo.tests import tagged
 
 
 @tagged('post_install', '-at_install')
@@ -12,12 +13,12 @@ class TestTaxesComputation(TestTaxCommon):
         return values
 
     def assert_python_taxes_computation(
-        self,
-        formula,
-        price_unit,
-        expected_values,
-        product_values=None,
-        price_include_override='tax_excluded',
+            self,
+            formula,
+            price_unit,
+            expected_values,
+            product_values=None,
+            price_include_override='tax_excluded',
     ):
         tax = self.python_tax(formula, price_include_override=price_include_override)
         if product_values:

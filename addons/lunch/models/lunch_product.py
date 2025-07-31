@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import base64
-
 from collections import defaultdict
 
 from odoo import api, fields, models, _
@@ -31,14 +29,16 @@ class LunchProduct(models.Model):
     new_until = fields.Date('New Until')
     is_new = fields.Boolean(compute='_compute_is_new')
 
-    favorite_user_ids = fields.Many2many('res.users', 'lunch_product_favorite_user_rel', 'product_id', 'user_id', check_company=True)
+    favorite_user_ids = fields.Many2many('res.users', 'lunch_product_favorite_user_rel', 'product_id', 'user_id',
+                                         check_company=True)
     is_favorite = fields.Boolean(compute='_compute_is_favorite', inverse='_inverse_is_favorite')
 
     last_order_date = fields.Date(compute='_compute_last_order_date')
 
     product_image = fields.Image(compute='_compute_product_image')
     # This field is used only for searching
-    is_available_at = fields.Many2one('lunch.location', 'Product Availability', compute='_compute_is_available_at', search='_search_is_available_at')
+    is_available_at = fields.Many2one('lunch.location', 'Product Availability', compute='_compute_is_available_at',
+                                      search='_search_is_available_at')
 
     @api.depends('image_128', 'category_id.image_128')
     def _compute_product_image(self):
@@ -93,9 +93,11 @@ class LunchProduct(models.Model):
             value = [value]
 
         if operator in expression.NEGATIVE_TERM_OPERATORS:
-            return expression.AND([[('supplier_id.available_location_ids', 'not in', value)], [('supplier_id.available_location_ids', '!=', False)]])
+            return expression.AND([[('supplier_id.available_location_ids', 'not in', value)],
+                                   [('supplier_id.available_location_ids', '!=', False)]])
 
-        return expression.OR([[('supplier_id.available_location_ids', 'in', value)], [('supplier_id.available_location_ids', '=', False)]])
+        return expression.OR([[('supplier_id.available_location_ids', 'in', value)],
+                              [('supplier_id.available_location_ids', '=', False)]])
 
     def _sync_active_from_related(self):
         """ Archive/unarchive product after related field is archived/unarchived """
@@ -104,10 +106,14 @@ class LunchProduct(models.Model):
     def toggle_active(self):
         invalid_products = self.filtered(lambda product: not product.active and not product.category_id.active)
         if invalid_products:
-            raise UserError(_("The following product categories are archived. You should either unarchive the categories or change the category of the product.\n%s", '\n'.join(invalid_products.category_id.mapped('name'))))
+            raise UserError(
+                _("The following product categories are archived. You should either unarchive the categories or change the category of the product.\n%s",
+                  '\n'.join(invalid_products.category_id.mapped('name'))))
         invalid_products = self.filtered(lambda product: not product.active and not product.supplier_id.active)
         if invalid_products:
-            raise UserError(_("The following suppliers are archived. You should either unarchive the suppliers or change the supplier of the product.\n%s", '\n'.join(invalid_products.supplier_id.mapped('name'))))
+            raise UserError(
+                _("The following suppliers are archived. You should either unarchive the suppliers or change the supplier of the product.\n%s",
+                  '\n'.join(invalid_products.supplier_id.mapped('name'))))
         return super().toggle_active()
 
     def _inverse_is_favorite(self):

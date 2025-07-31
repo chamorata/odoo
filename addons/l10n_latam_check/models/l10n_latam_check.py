@@ -1,12 +1,12 @@
 # pylint: disable=protected-access
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import logging
+
 import stdnum
 
 from odoo import models, fields, api, Command, _
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import index_exists
-
 
 _logger = logging.getLogger(__name__)
 
@@ -111,8 +111,8 @@ class l10nLatamAccountPaymentCheck(models.Model):
                 rec.issue_state = False
             elif rec.amount and not rec.outstanding_line_id.amount_residual:
                 if any(
-                    line.account_id.account_type in ['liability_payable', 'asset_receivable']
-                    for line in rec.outstanding_line_id.matched_debit_ids.debit_move_id.move_id.line_ids
+                        line.account_id.account_type in ['liability_payable', 'asset_receivable']
+                        for line in rec.outstanding_line_id.matched_debit_ids.debit_move_id.move_id.line_ids
                 ):
                     rec.issue_state = 'voided'
                 else:
@@ -129,7 +129,8 @@ class l10nLatamAccountPaymentCheck(models.Model):
     def _get_last_operation(self):
         self.ensure_one()
         return (self.payment_id + self.operation_ids).filtered(
-                lambda x: x.state not in ['draft', 'canceled']).sorted(key=lambda payment: (payment.date, payment._origin.id))[-1:]
+            lambda x: x.state not in ['draft', 'canceled']).sorted(
+            key=lambda payment: (payment.date, payment._origin.id))[-1:]
 
     @api.depends('payment_id.state', 'operation_ids.state')
     def _compute_current_journal(self):

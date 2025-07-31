@@ -10,8 +10,10 @@ class HrCandidate(models.Model):
 
     candidate_skill_ids = fields.One2many('hr.candidate.skill', 'candidate_id', string="Skills")
     skill_ids = fields.Many2many('hr.skill', compute='_compute_skill_ids', store=True)
-    matching_skill_ids = fields.Many2many(comodel_name='hr.skill', string="Matching Skills", compute="_compute_matching_skill_ids")
-    missing_skill_ids = fields.Many2many(comodel_name='hr.skill', string="Missing Skills", compute="_compute_matching_skill_ids")
+    matching_skill_ids = fields.Many2many(comodel_name='hr.skill', string="Matching Skills",
+                                          compute="_compute_matching_skill_ids")
+    missing_skill_ids = fields.Many2many(comodel_name='hr.skill', string="Missing Skills",
+                                         compute="_compute_matching_skill_ids")
     matching_score = fields.Float(string="Matching Score(%)", compute="_compute_matching_skill_ids")
 
     @api.depends_context('active_id')
@@ -27,7 +29,8 @@ class HrCandidate(models.Model):
                 job_skills = self.env['hr.job'].browse(job_id).skill_ids
                 candidate.matching_skill_ids = job_skills & candidate.skill_ids
                 candidate.missing_skill_ids = job_skills - candidate.skill_ids
-                candidate.matching_score = (len(candidate.matching_skill_ids) / len(job_skills)) * 100 if job_skills else 0
+                candidate.matching_score = (len(candidate.matching_skill_ids) / len(
+                    job_skills)) * 100 if job_skills else 0
 
     @api.depends('candidate_skill_ids.skill_id')
     def _compute_skill_ids(self):

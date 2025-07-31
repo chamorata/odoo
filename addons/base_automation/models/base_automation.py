@@ -8,6 +8,7 @@ from collections import defaultdict
 from uuid import uuid4
 
 from dateutil.relativedelta import relativedelta
+
 from odoo import _, api, exceptions, fields, models
 from odoo.http import request
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT, safe_eval
@@ -95,15 +96,16 @@ class BaseAutomation(models.Model):
         "ir.model", string="Model", domain=[("field_id", "!=", False)], required=True, ondelete="cascade",
         help="Model on which the automation rule runs."
     )
-    model_name = fields.Char(related="model_id.model", string="Model Name", readonly=True, inverse="_inverse_model_name")
+    model_name = fields.Char(related="model_id.model", string="Model Name", readonly=True,
+                             inverse="_inverse_model_name")
     model_is_mail_thread = fields.Boolean(related="model_id.is_mail_thread")
     action_server_ids = fields.One2many("ir.actions.server", "base_automation_id",
-        context={'default_usage': 'base_automation'},
-        string="Actions",
-        compute="_compute_action_server_ids",
-        store=True,
-        readonly=False,
-    )
+                                        context={'default_usage': 'base_automation'},
+                                        string="Actions",
+                                        compute="_compute_action_server_ids",
+                                        store=True,
+                                        readonly=False,
+                                        )
     url = fields.Char(compute='_compute_url')
     webhook_uuid = fields.Char(string="Webhook UUID", readonly=True, copy=False, default=lambda self: str(uuid4()))
     record_getter = fields.Char(default="model.env[payload.get('_model')].browse(int(payload.get('_id')))",
@@ -115,7 +117,9 @@ class BaseAutomation(models.Model):
     def _check_trigger(self):
         for automation in self:
             if automation.trigger in MAIL_TRIGGERS and not automation.model_id.is_mail_thread:
-                raise exceptions.ValidationError(_("Mail event can not be configured on model %s. Only models with discussion feature can be used.", automation.model_id.name))
+                raise exceptions.ValidationError(
+                    _("Mail event can not be configured on model %s. Only models with discussion feature can be used.",
+                      automation.model_id.name))
 
     trigger = fields.Selection(
         [
@@ -172,8 +176,8 @@ class BaseAutomation(models.Model):
         compute='_compute_trg_date_range_data',
         readonly=False, store=True,
         help="Delay after the trigger date. "
-        "You can put a negative number if you need a delay before the "
-        "trigger date, like sending a reminder 15 minutes before a meeting.")
+             "You can put a negative number if you need a delay before the "
+             "trigger date, like sending a reminder 15 minutes before a meeting.")
     trg_date_range_type = fields.Selection(
         [('minutes', 'Minutes'), ('hour', 'Hours'), ('day', 'Days'), ('month', 'Months')],
         string='Delay type',
@@ -227,7 +231,7 @@ class BaseAutomation(models.Model):
                 raise exceptions.ValidationError(
                     _('Target model of actions %(action_names)s are different from rule model.',
                       action_names=', '.join(failing_actions.mapped('name'))
-                     )
+                      )
                 )
 
     @api.depends("trigger", "webhook_uuid")
@@ -301,7 +305,8 @@ class BaseAutomation(models.Model):
 
     @api.depends('trigger', 'trg_field_ref')
     def _compute_trg_field_ref_model_name(self):
-        to_compute = self.filtered(lambda a: a.trigger in ['on_stage_set', 'on_tag_set'] and a.trg_field_ref is not False)
+        to_compute = self.filtered(
+            lambda a: a.trigger in ['on_stage_set', 'on_tag_set'] and a.trg_field_ref is not False)
         # wondering why we check based on 'is not'? Because the ref could be an empty recordset
         # and we still need to introspec on the model in that case - not just ignore it
         to_reset = (self - to_compute)
@@ -379,7 +384,6 @@ class BaseAutomation(models.Model):
             else False
         )
         self.trigger_field_ids = field
-
 
     @api.onchange('trigger', 'action_server_ids')
     def _onchange_trigger_or_actions(self):
@@ -547,7 +551,7 @@ class BaseAutomation(models.Model):
         if self.record_getter:
             try:
                 record = safe_eval.safe_eval(self.record_getter, self._get_eval_context(payload=payload))
-            except Exception as e: # noqa: BLE001
+            except Exception as e:  # noqa: BLE001
                 msg = "Webhook #%s could not be triggered because the record_getter failed:\n%s"
                 msg_args = (self.id, traceback.format_exc())
                 _logger.warning(msg, *msg_args)
@@ -565,7 +569,7 @@ class BaseAutomation(models.Model):
 
         try:
             return self._process(record)
-        except Exception as e: # noqa: BLE001
+        except Exception as e:  # noqa: BLE001
             msg = "Webhook #%s failed with error:\n%s"
             msg_args = (self.id, traceback.format_exc())
             _logger.warning(msg, *msg_args)
@@ -628,6 +632,7 @@ class BaseAutomation(models.Model):
 
     def _get_cron_interval(self, automations=None):
         """ Return the expected time interval used by the cron, in minutes. """
+
         def get_delay(rec):
             return abs(rec.trg_date_range) * DATE_RANGE_FACTOR[rec.trg_date_range_type]
 
@@ -753,6 +758,7 @@ class BaseAutomation(models.Model):
         """ Patch models that should trigger action rules based on creation,
             modification, deletion of records and form onchanges.
         """
+
         #
         # Note: the patched methods must be defined inside another function,
         # otherwise their closure may be wrong. For instance, the function
@@ -764,6 +770,7 @@ class BaseAutomation(models.Model):
 
         def make_create():
             """ Instanciate a create method that processes automation rules. """
+
             @api.model_create_multi
             def create(self, vals_list, **kw):
                 # retrieve the automation rules to possibly execute
@@ -785,6 +792,7 @@ class BaseAutomation(models.Model):
 
         def make_write():
             """ Instanciate a write method that processes automation rules. """
+
             def write(self, vals, **kw):
                 # retrieve the automation rules to possibly execute
                 automations = self.env['base.automation']._get_actions(self, WRITE_TRIGGERS)
@@ -795,7 +803,8 @@ class BaseAutomation(models.Model):
                 pre = {a: a._filter_pre(records) for a in automations}
                 # read old values before the update
                 old_values = {
-                    record.id: {field_name: record[field_name] for field_name in vals if field_name in record._fields and record._fields[field_name].store}
+                    record.id: {field_name: record[field_name] for field_name in vals if
+                                field_name in record._fields and record._fields[field_name].store}
                     for record in records
                 }
                 # call original method
@@ -814,6 +823,7 @@ class BaseAutomation(models.Model):
 
         def make_compute_field_value():
             """ Instanciate a compute_field_value method that processes automation rules. """
+
             #
             # Note: This is to catch updates made by field recomputations.
             #
@@ -851,6 +861,7 @@ class BaseAutomation(models.Model):
 
         def make_unlink():
             """ Instanciate an unlink method that processes automation rules. """
+
             def unlink(self, **kwargs):
                 # retrieve the action rules to possibly execute
                 automations = self.env['base.automation']._get_actions(self, ['on_unlink'])
@@ -869,6 +880,7 @@ class BaseAutomation(models.Model):
 
         def make_onchange(automation_rule_id):
             """ Instanciate an onchange method for the given automation rule. """
+
             def base_automation_onchange(self):
                 automation_rule = self.env['base.automation'].browse(automation_rule_id)
                 result = {}
@@ -904,7 +916,7 @@ class BaseAutomation(models.Model):
                 # the run of automations for a real message
                 # Don't execute if we know already that a message is only internal
                 message_sudo = message.sudo().with_context(active_test=False)
-                if "__action_done"  in self.env.context or message_sudo.is_internal or message_sudo.subtype_id.internal:
+                if "__action_done" in self.env.context or message_sudo.is_internal or message_sudo.subtype_id.internal:
                     return message
                 if message_sudo.message_type in ('notification', 'auto_comment', 'user_notification'):
                     return message
@@ -922,6 +934,7 @@ class BaseAutomation(models.Model):
                     automation._process(records)
 
                 return message
+
             return _message_post
 
         patched_models = defaultdict(set)
@@ -1028,12 +1041,14 @@ class BaseAutomation(models.Model):
                             last_run,
                             compute_leaves=True,
                         )
-                    is_process_to_run = past_last_run[calendar.id] <= fields.Datetime.to_datetime(record_dt) < past_now[calendar.id]
+                    is_process_to_run = past_last_run[calendar.id] <= fields.Datetime.to_datetime(record_dt) < past_now[
+                        calendar.id]
                 else:
                     is_process_to_run = (
-                        last_run <=
-                        fields.Datetime.from_string(record_dt) + DATE_RANGE_FUNCTION[automation.trg_date_range_type](automation.trg_date_range)
-                        < now
+                            last_run <=
+                            fields.Datetime.from_string(record_dt) + DATE_RANGE_FUNCTION[
+                                automation.trg_date_range_type](automation.trg_date_range)
+                            < now
                     )
                 if is_process_to_run:
                     try:

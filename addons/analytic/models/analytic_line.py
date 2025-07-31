@@ -3,9 +3,9 @@ from dateutil.relativedelta import relativedelta
 from lxml.builder import E
 
 from odoo import api, fields, models, _
-from odoo.tools import Query, SQL
 from odoo.exceptions import ValidationError
 from odoo.osv.expression import OR
+from odoo.tools import Query, SQL
 
 
 class AnalyticPlanFields(models.AbstractModel):
@@ -77,8 +77,8 @@ class AnalyticPlanFields(models.AbstractModel):
                 'column_name': plan['column_name'],
             }
             for plan in self.env['account.analytic.plan']
-                .sudo().with_company(company)
-                .get_relevant_plans(business_domain=business_domain, company_id=company.id)
+            .sudo().with_company(company)
+            .get_relevant_plans(business_domain=business_domain, company_id=company.id)
             if plan['applicability'] == 'mandatory'
         ]
 
@@ -145,7 +145,8 @@ class AnalyticPlanFields(models.AbstractModel):
                     while current := current.children_ids:
                         _depth, subfname = current[0]._hierarchy_name()
                         if subfname in self._fields:
-                            account_filter_node.addnext(E.filter(name=subfname, context=f"{{'group_by': '{subfname}'}}"))
+                            account_filter_node.addnext(
+                                E.filter(name=subfname, context=f"{{'group_by': '{subfname}'}}"))
         return arch, view
 
 

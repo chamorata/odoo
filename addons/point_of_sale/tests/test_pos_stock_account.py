@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import tools
-import odoo
 from odoo.addons.point_of_sale.tests.common import TestPoSCommon
+
+import odoo
+
 
 @odoo.tests.tagged('post_install', '-at_install')
 class TestPoSStock(TestPoSCommon):
     """ Tests for anglo saxon accounting scenario.
     """
+
     def setUp(self):
         super(TestPoSStock, self).setUp()
 
@@ -77,7 +79,8 @@ class TestPoSStock(TestPoSCommon):
             # check values before closing the session
             self.assertEqual(4, self.pos_session.order_count)
             orders_total = sum(order.amount_total for order in self.pos_session.order_ids)
-            self.assertAlmostEqual(orders_total, self.pos_session.total_payments_amount, msg='Total order amount should be equal to the total payment amount.')
+            self.assertAlmostEqual(orders_total, self.pos_session.total_payments_amount,
+                                   msg='Total order amount should be equal to the total payment amount.')
             self.assertAlmostEqual(orders_total, 1070.0, msg='The orders\'s total amount should equal the computed.')
 
             # check product qty_available after syncing the order
@@ -88,14 +91,16 @@ class TestPoSStock(TestPoSCommon):
             # picking and stock moves should be in done state
             for order in self.pos_session.order_ids:
                 self.assertEqual(order.picking_ids[0].state, 'done', 'Picking should be in done state.')
-                self.assertTrue(all(state == 'done' for state in order.picking_ids[0].move_ids.mapped('state')), 'Move Lines should be in done state.')
+                self.assertTrue(all(state == 'done' for state in order.picking_ids[0].move_ids.mapped('state')),
+                                'Move Lines should be in done state.')
 
         self._run_test({
             'payment_methods': self.cash_pm1 | self.bank_pm1,
             'orders': [
                 {'pos_order_lines_ui_args': [(self.product1, 10), (self.product2, 10)], 'uuid': '00100-010-0001'},
                 {'pos_order_lines_ui_args': [(self.product2, 7), (self.product3, 7)], 'uuid': '00100-010-0002'},
-                {'pos_order_lines_ui_args': [(self.product1, 6), (self.product2, 6), (self.product3, 6)], 'uuid': '00100-010-0003'},
+                {'pos_order_lines_ui_args': [(self.product1, 6), (self.product2, 6), (self.product3, 6)],
+                 'uuid': '00100-010-0003'},
                 {'pos_order_lines_ui_args': [(self.product4, 6)], 'uuid': '00100-010-0004'},
             ],
             'before_closing_cb': _before_closing_cb,
@@ -103,17 +108,23 @@ class TestPoSStock(TestPoSCommon):
             'journal_entries_after_closing': {
                 'session_journal_entry': {
                     'line_ids': [
-                        {'account_id': self.sales_account.id, 'partner_id': False, 'debit': 0, 'credit': 1070.0, 'reconciled': False},
-                        {'account_id': self.expense_account.id, 'partner_id': False, 'debit': 327, 'credit': 0, 'reconciled': False},
-                        {'account_id': self.cash_pm1.receivable_account_id.id, 'partner_id': False, 'debit': 1070.0, 'credit': 0, 'reconciled': True},
-                        {'account_id': self.output_account.id, 'partner_id': False, 'debit': 0, 'credit': 327, 'reconciled': True},
+                        {'account_id': self.sales_account.id, 'partner_id': False, 'debit': 0, 'credit': 1070.0,
+                         'reconciled': False},
+                        {'account_id': self.expense_account.id, 'partner_id': False, 'debit': 327, 'credit': 0,
+                         'reconciled': False},
+                        {'account_id': self.cash_pm1.receivable_account_id.id, 'partner_id': False, 'debit': 1070.0,
+                         'credit': 0, 'reconciled': True},
+                        {'account_id': self.output_account.id, 'partner_id': False, 'debit': 0, 'credit': 327,
+                         'reconciled': True},
                     ],
                 },
                 'cash_statement': [
-                    ((1070.0, ), {
+                    ((1070.0,), {
                         'line_ids': [
-                            {'account_id': self.cash_pm1.journal_id.default_account_id.id, 'partner_id': False, 'debit': 1070.0, 'credit': 0, 'reconciled': False},
-                            {'account_id': self.cash_pm1.receivable_account_id.id, 'partner_id': False, 'debit': 0, 'credit': 1070.0, 'reconciled': True},
+                            {'account_id': self.cash_pm1.journal_id.default_account_id.id, 'partner_id': False,
+                             'debit': 1070.0, 'credit': 0, 'reconciled': False},
+                            {'account_id': self.cash_pm1.receivable_account_id.id, 'partner_id': False, 'debit': 0,
+                             'credit': 1070.0, 'reconciled': True},
                         ]
                     }),
                 ],
@@ -147,7 +158,8 @@ class TestPoSStock(TestPoSCommon):
             # check values before closing the session
             self.assertEqual(3, self.pos_session.order_count)
             orders_total = sum(order.amount_total for order in self.pos_session.order_ids)
-            self.assertAlmostEqual(orders_total, self.pos_session.total_payments_amount, msg='Total order amount should be equal to the total payment amount.')
+            self.assertAlmostEqual(orders_total, self.pos_session.total_payments_amount,
+                                   msg='Total order amount should be equal to the total payment amount.')
             self.assertAlmostEqual(orders_total, 1010.0, msg='The orders\'s total amount should equal the computed.')
 
             # check product qty_available after syncing the order
@@ -158,14 +170,16 @@ class TestPoSStock(TestPoSCommon):
             # picking and stock moves should be in done state
             for order in self.pos_session.order_ids:
                 self.assertEqual(order.picking_ids[0].state, 'done', 'Picking should be in done state.')
-                self.assertTrue(all(state == 'done' for state in order.picking_ids[0].move_ids.mapped('state')), 'Move Lines should be in done state.')
+                self.assertTrue(all(state == 'done' for state in order.picking_ids[0].move_ids.mapped('state')),
+                                'Move Lines should be in done state.')
 
         self._run_test({
             'payment_methods': self.cash_pm1 | self.bank_pm1,
             'orders': [
                 {'pos_order_lines_ui_args': [(self.product1, 10), (self.product2, 10)], 'uuid': '00100-010-0001'},
                 {'pos_order_lines_ui_args': [(self.product2, 7), (self.product3, 7)], 'uuid': '00100-010-0002'},
-                {'pos_order_lines_ui_args': [(self.product1, 6), (self.product2, 6), (self.product3, 6)], 'is_invoiced': True, 'customer': self.customer, 'uuid': '00100-010-0003'},
+                {'pos_order_lines_ui_args': [(self.product1, 6), (self.product2, 6), (self.product3, 6)],
+                 'is_invoiced': True, 'customer': self.customer, 'uuid': '00100-010-0003'},
             ],
             'before_closing_cb': _before_closing_cb,
             'journal_entries_before_closing': {
@@ -173,8 +187,10 @@ class TestPoSStock(TestPoSCommon):
                     'payments': [
                         ((self.cash_pm1, 360.0), {
                             'line_ids': [
-                                {'account_id': self.c1_receivable.id, 'partner_id': self.customer.id, 'debit': 0, 'credit': 360.0, 'reconciled': True},
-                                {'account_id': self.pos_receivable_account.id, 'partner_id': False, 'debit': 360.0, 'credit': 0, 'reconciled': False},
+                                {'account_id': self.c1_receivable.id, 'partner_id': self.customer.id, 'debit': 0,
+                                 'credit': 360.0, 'reconciled': True},
+                                {'account_id': self.pos_receivable_account.id, 'partner_id': False, 'debit': 360.0,
+                                 'credit': 0, 'reconciled': False},
                             ]
                         }),
                     ],
@@ -183,25 +199,31 @@ class TestPoSStock(TestPoSCommon):
             'journal_entries_after_closing': {
                 'session_journal_entry': {
                     'line_ids': [
-                        {'account_id': self.sales_account.id, 'partner_id': False, 'debit': 0, 'credit': 650, 'reconciled': False},
-                        {'account_id': self.expense_account.id, 'partner_id': False, 'debit': 206, 'credit': 0, 'reconciled': False},
-                        {'account_id': self.cash_pm1.receivable_account_id.id, 'partner_id': False, 'debit': 1010.0, 'credit': 0, 'reconciled': True},
-                        {'account_id': self.pos_receivable_account.id, 'partner_id': False, 'debit': 0, 'credit': 360, 'reconciled': True},
-                        {'account_id': self.output_account.id, 'partner_id': False, 'debit': 0, 'credit': 206, 'reconciled': True},
+                        {'account_id': self.sales_account.id, 'partner_id': False, 'debit': 0, 'credit': 650,
+                         'reconciled': False},
+                        {'account_id': self.expense_account.id, 'partner_id': False, 'debit': 206, 'credit': 0,
+                         'reconciled': False},
+                        {'account_id': self.cash_pm1.receivable_account_id.id, 'partner_id': False, 'debit': 1010.0,
+                         'credit': 0, 'reconciled': True},
+                        {'account_id': self.pos_receivable_account.id, 'partner_id': False, 'debit': 0, 'credit': 360,
+                         'reconciled': True},
+                        {'account_id': self.output_account.id, 'partner_id': False, 'debit': 0, 'credit': 206,
+                         'reconciled': True},
                     ],
                 },
                 'cash_statement': [
-                    ((1010.0, ), {
+                    ((1010.0,), {
                         'line_ids': [
-                            {'account_id': self.cash_pm1.journal_id.default_account_id.id, 'partner_id': False, 'debit': 1010.0, 'credit': 0, 'reconciled': False},
-                            {'account_id': self.cash_pm1.receivable_account_id.id, 'partner_id': False, 'debit': 0, 'credit': 1010.0, 'reconciled': True},
+                            {'account_id': self.cash_pm1.journal_id.default_account_id.id, 'partner_id': False,
+                             'debit': 1010.0, 'credit': 0, 'reconciled': False},
+                            {'account_id': self.cash_pm1.receivable_account_id.id, 'partner_id': False, 'debit': 0,
+                             'credit': 1010.0, 'reconciled': True},
                         ]
                     }),
                 ],
                 'bank_payments': [],
             },
         })
-
 
     def test_03_order_product_w_owner(self):
         """
@@ -236,8 +258,10 @@ class TestPoSStock(TestPoSCommon):
         # picking and stock moves should be in done state
         for order in self.pos_session.order_ids:
             self.assertEqual(order.picking_ids[0].state, 'done', 'Picking should be in done state.')
-            self.assertTrue(all(state == 'done' for state in order.picking_ids[0].move_ids.mapped('state')), 'Move Lines should be in done state.')
-            self.assertTrue(self.partner_a == order.picking_ids[0].move_ids[0].move_line_ids[0].owner_id, 'Move Lines Owner should be taken into account.')
+            self.assertTrue(all(state == 'done' for state in order.picking_ids[0].move_ids.mapped('state')),
+                            'Move Lines should be in done state.')
+            self.assertTrue(self.partner_a == order.picking_ids[0].move_ids[0].move_line_ids[0].owner_id,
+                            'Move Lines Owner should be taken into account.')
 
         # close the session
         self.pos_session.action_pos_session_validate()

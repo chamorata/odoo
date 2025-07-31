@@ -13,9 +13,11 @@ class StockRequestCount(models.TransientModel):
         'Inventory Date', required=True,
         help="Choose a date to get the inventory at that date",
         default=fields.Datetime.now)
-    user_id = fields.Many2one('res.users', string="User", domain=lambda self: [('groups_id', 'in', self.env.ref('stock.group_stock_user').id)])
+    user_id = fields.Many2one('res.users', string="User",
+                              domain=lambda self: [('groups_id', 'in', self.env.ref('stock.group_stock_user').id)])
     quant_ids = fields.Many2many('stock.quant')
-    set_count = fields.Selection([('empty', 'Leave Empty'), ('set', 'Set Current Value')], default='empty', string='Count')
+    set_count = fields.Selection([('empty', 'Leave Empty'), ('set', 'Set Current Value')], default='empty',
+                                 string='Count')
 
     def action_request_count(self):
         for count_request in self:
@@ -34,7 +36,7 @@ class StockRequestCount(models.TransientModel):
         # Searches sibling quants for tracked product.
         if tracked_quants:
             domain = {('&', ('product_id', '=', quant.product_id.id), ('location_id', '=', quant.location_id.id))
-                    for quant in tracked_quants}
+                      for quant in tracked_quants}
             domain = expression.OR(domain)
             sibling_quants = self.env['stock.quant'].search(domain)
             quants_to_count |= sibling_quants

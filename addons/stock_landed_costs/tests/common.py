@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from odoo.addons.stock_account.tests.test_anglo_saxon_valuation_reconciliation_common import ValuationReconciliationTestCommon
+from odoo.addons.stock_account.tests.test_anglo_saxon_valuation_reconciliation_common import \
+    ValuationReconciliationTestCommon
 
 
 class TestStockLandedCostsCommon(ValuationReconciliationTestCommon):
@@ -52,7 +53,8 @@ class TestStockLandedCostsCommon(ValuationReconciliationTestCommon):
             'volume': 1.5,
             'categ_id': cls.categ_real_time.id})
         # Create service type product 1.Labour 2.Brokerage 3.Transportation 4.Packaging
-        cls.landed_cost = cls.Product.create({'name': 'Landed Cost', 'type': 'service', 'categ_id': cls.product_category.id})
+        cls.landed_cost = cls.Product.create(
+            {'name': 'Landed Cost', 'type': 'service', 'categ_id': cls.product_category.id})
         cls.brokerage_quantity = cls.Product.create({'name': 'Brokerage Cost', 'type': 'service'})
         cls.transportation_weight = cls.Product.create({'name': 'Transportation Cost', 'type': 'service'})
         cls.packaging_volume = cls.Product.create({'name': 'Packaging Cost', 'type': 'service'})

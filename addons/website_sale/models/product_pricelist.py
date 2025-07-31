@@ -1,15 +1,15 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.website.models import ir_http
+
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
-
-from odoo.addons.website.models import ir_http
 
 
 class ProductPricelist(models.Model):
     _inherit = 'product.pricelist'
 
-    #=== DEFAULT METHODS ===#
+    # === DEFAULT METHODS ===#
 
     def _default_website(self):
         """ Find the first company's website, if there is one. """
@@ -21,7 +21,7 @@ class ProductPricelist(models.Model):
         domain = [('company_id', '=', company_id)]
         return self.env['website'].search(domain, limit=1)
 
-    #=== FIELDS ===#
+    # === FIELDS ===#
 
     website_id = fields.Many2one(
         string="Website",
@@ -37,7 +37,7 @@ class ProductPricelist(models.Model):
     code = fields.Char(string="E-commerce Promotional Code", groups='base.group_user')
     selectable = fields.Boolean(help="Allow the end user to choose this price list")
 
-    #=== CONSTRAINT METHODS ===#
+    # === CONSTRAINT METHODS ===#
 
     @api.constrains('company_id', 'website_id')
     def _check_websites_in_company(self):
@@ -52,7 +52,7 @@ class ProductPricelist(models.Model):
                     "\nLeave the Company field empty or select a website from that company."
                 ))
 
-    #=== CRUD METHODS ===#
+    # === CRUD METHODS ===#
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -79,7 +79,7 @@ class ProductPricelist(models.Model):
         self and self.env.registry.clear_cache()
         return res
 
-    #=== BUSINESS METHODS ===#
+    # === BUSINESS METHODS ===#
 
     def _get_partner_pricelist_multi_search_domain_hook(self, company_id):
         domain = super()._get_partner_pricelist_multi_search_domain_hook(company_id)
@@ -110,7 +110,8 @@ class ProductPricelist(models.Model):
         self.ensure_one()
         if self.company_id and self.company_id != website.company_id:
             return False
-        return self.active and self.website_id.id == website.id or (not self.website_id and (self.selectable or self.sudo().code))
+        return self.active and self.website_id.id == website.id or (
+                    not self.website_id and (self.selectable or self.sudo().code))
 
     def _is_available_in_country(self, country_code):
         self.ensure_one()

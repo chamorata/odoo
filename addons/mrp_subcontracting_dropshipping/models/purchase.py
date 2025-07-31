@@ -2,13 +2,13 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import api, fields, models, _
-from odoo.exceptions import UserError
 
 
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
-    default_location_dest_id_is_subcontracting_loc = fields.Boolean(related='picking_type_id.default_location_dest_id.is_subcontracting_location')
+    default_location_dest_id_is_subcontracting_loc = fields.Boolean(
+        related='picking_type_id.default_location_dest_id.is_subcontracting_location')
 
     @api.depends('default_location_dest_id_is_subcontracting_loc')
     def _compute_dest_address_id(self):
@@ -22,7 +22,8 @@ class PurchaseOrder(models.Model):
     def onchange_picking_type_id(self):
         if self.default_location_dest_id_is_subcontracting_loc:
             return {
-                'warning': {'title': _('Warning'), 'message': _('Please note this purchase order is for subcontracting purposes.')}
+                'warning': {'title': _('Warning'),
+                            'message': _('Please note this purchase order is for subcontracting purposes.')}
             }
 
     def _get_destination_location(self):

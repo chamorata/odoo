@@ -20,7 +20,8 @@
                         type="object"
                         context="{'l10n_ro_edi_stock_send_type': 'amend'}"
                         invisible="not l10n_ro_edi_stock_enable_amend"/>
-                <button name="action_l10n_ro_edi_stock_fetch_status" string="Fetch Status" type="object" invisible="not l10n_ro_edi_stock_enable_fetch"/>
+                <button name="action_l10n_ro_edi_stock_fetch_status" string="Fetch Status" type="object"
+                        invisible="not l10n_ro_edi_stock_enable_fetch"/>
             </xpath>
 
             <xpath expr="//field[@name='owner_id']" position="after">
@@ -41,7 +42,8 @@
 
                     <group>
                         <group string="General">
-                            <field name="l10n_ro_edi_stock_operation_type" readonly="l10n_ro_edi_stock_fields_readonly"/>
+                            <field name="l10n_ro_edi_stock_operation_type"
+                                   readonly="l10n_ro_edi_stock_fields_readonly"/>
                             <field name="l10n_ro_edi_stock_operation_scope"
                                    widget="dynamic_selection"
                                    options="{'available_field': 'l10n_ro_edi_stock_available_operation_scopes'}"
@@ -50,9 +52,12 @@
                         </group>
 
                         <group string="Transport">
-                            <field name="l10n_ro_edi_stock_vehicle_number" readonly="l10n_ro_edi_stock_fields_readonly"/>
-                            <field name="l10n_ro_edi_stock_trailer_1_number" readonly="l10n_ro_edi_stock_fields_readonly"/>
-                            <field name="l10n_ro_edi_stock_trailer_2_number" readonly="l10n_ro_edi_stock_fields_readonly"/>
+                            <field name="l10n_ro_edi_stock_vehicle_number"
+                                   readonly="l10n_ro_edi_stock_fields_readonly"/>
+                            <field name="l10n_ro_edi_stock_trailer_1_number"
+                                   readonly="l10n_ro_edi_stock_fields_readonly"/>
+                            <field name="l10n_ro_edi_stock_trailer_2_number"
+                                   readonly="l10n_ro_edi_stock_fields_readonly"/>
                         </group>
 
                         <group string="Start Location">
@@ -62,8 +67,11 @@
                                    options="{'available_field': 'l10n_ro_edi_stock_available_start_loc_types'}"
                                    readonly="l10n_ro_edi_stock_fields_readonly"/>
 
-                            <field name="l10n_ro_edi_stock_start_bcp" readonly="l10n_ro_edi_stock_fields_readonly" invisible="l10n_ro_edi_stock_start_loc_type != 'bcp'" />
-                            <field name="l10n_ro_edi_stock_start_customs_office" readonly="l10n_ro_edi_stock_fields_readonly" invisible="l10n_ro_edi_stock_start_loc_type != 'customs'"/>
+                            <field name="l10n_ro_edi_stock_start_bcp" readonly="l10n_ro_edi_stock_fields_readonly"
+                                   invisible="l10n_ro_edi_stock_start_loc_type != 'bcp'"/>
+                            <field name="l10n_ro_edi_stock_start_customs_office"
+                                   readonly="l10n_ro_edi_stock_fields_readonly"
+                                   invisible="l10n_ro_edi_stock_start_loc_type != 'customs'"/>
                         </group>
 
                         <group string="End Location">
@@ -73,8 +81,11 @@
                                    options="{'available_field': 'l10n_ro_edi_stock_available_end_loc_types'}"
                                    readonly="l10n_ro_edi_stock_fields_readonly"/>
 
-                            <field name="l10n_ro_edi_stock_end_bcp" readonly="l10n_ro_edi_stock_fields_readonly" invisible="l10n_ro_edi_stock_end_loc_type != 'bcp'"/>
-                            <field name="l10n_ro_edi_stock_end_customs_office" readonly="l10n_ro_edi_stock_fields_readonly" invisible="l10n_ro_edi_stock_end_loc_type != 'customs'"/>
+                            <field name="l10n_ro_edi_stock_end_bcp" readonly="l10n_ro_edi_stock_fields_readonly"
+                                   invisible="l10n_ro_edi_stock_end_loc_type != 'bcp'"/>
+                            <field name="l10n_ro_edi_stock_end_customs_office"
+                                   readonly="l10n_ro_edi_stock_fields_readonly"
+                                   invisible="l10n_ro_edi_stock_end_loc_type != 'customs'"/>
                         </group>
                     </group>
                 </page>

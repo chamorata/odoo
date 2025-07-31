@@ -3,7 +3,7 @@
 
 import time
 
-from odoo import api, fields, models, _
+from odoo import fields, models, _
 
 
 class ProductMargin(models.TransientModel):

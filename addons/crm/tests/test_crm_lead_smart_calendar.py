@@ -2,9 +2,12 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import date, datetime
-from odoo.addons.mail.tests.common import mail_new_test_user
+
 from odoo.addons.crm.tests.common import TestCrmCommon
+from odoo.addons.mail.tests.common import mail_new_test_user
+
 from odoo.tests.common import tagged, users
+
 
 @tagged('post_install', '-at_install')
 class TestCRMLeadSmartCalendar(TestCrmCommon):
@@ -96,7 +99,6 @@ class TestCRMLeadSmartCalendar(TestCrmCommon):
 
     @users('user_UTC_pt_PT')
     def test_meeting_view_parameters_2(self):
-
         lead_smart_calendar_1 = self.env['crm.lead'].create({'name': 'Lead 1 - user_UTC_pt_PT'})
 
         self.calendar_meeting_1.write({'opportunity_id': lead_smart_calendar_1.id})

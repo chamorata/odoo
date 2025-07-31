@@ -1,10 +1,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.product.tests.common import ProductCommon
+
 from odoo.exceptions import UserError
 from odoo.fields import Command
 from odoo.tests import tagged, Form
-
-from odoo.addons.product.tests.common import ProductCommon
 
 
 @tagged('post_install', '-at_install')
@@ -50,20 +50,20 @@ class TestPricelist(ProductCommon):
         # applying the computation manually
 
         self.assertEqual(
-            self.pricelist._get_product_price(self.usb_adapter, 1.0)*0.9,
+            self.pricelist._get_product_price(self.usb_adapter, 1.0) * 0.9,
             self.sale_pricelist_id._get_product_price(self.usb_adapter, 1.0))
 
         self.assertEqual(
-            self.pricelist._get_product_price(self.datacard, 1.0)-0.5,
+            self.pricelist._get_product_price(self.datacard, 1.0) - 0.5,
             self.sale_pricelist_id._get_product_price(self.datacard, 1.0))
 
         self.assertAlmostEqual(
-            self.sale_pricelist_id._get_product_price(self.usb_adapter, 1.0, uom=self.uom_unit)*12,
+            self.sale_pricelist_id._get_product_price(self.usb_adapter, 1.0, uom=self.uom_unit) * 12,
             self.sale_pricelist_id._get_product_price(self.usb_adapter, 1.0, uom=self.uom_dozen))
 
         # price_surcharge applies to product default UoM, here "Units", so surcharge will be multiplied
         self.assertAlmostEqual(
-            self.sale_pricelist_id._get_product_price(self.datacard, 1.0, uom=self.uom_unit)*12,
+            self.sale_pricelist_id._get_product_price(self.datacard, 1.0, uom=self.uom_unit) * 12,
             self.sale_pricelist_id._get_product_price(self.datacard, 1.0, uom=self.uom_dozen))
 
     def test_11_markup(self):

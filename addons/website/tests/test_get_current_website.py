@@ -1,10 +1,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import json
 
-from odoo import Command
 from odoo.addons.website.tools import MockRequest
-from odoo.tests import tagged
+
+from odoo import Command
 from odoo.addons.base.tests.common import HttpCaseWithUserDemo
+from odoo.tests import tagged
 
 
 @tagged('post_install', '-at_install')

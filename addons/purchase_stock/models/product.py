@@ -20,7 +20,7 @@ class ProductTemplate(models.Model):
 
     property_account_creditor_price_difference = fields.Many2one(
         'account.account', string="Price Difference Account", company_dependent=True, ondelete='restrict',
-        help="This account is used in automated inventory valuation to "\
+        help="This account is used in automated inventory valuation to " \
              "record the price difference between a purchase order and its related vendor bill when validating this vendor bill.")
 
     @api.model
@@ -37,7 +37,8 @@ class ProductProduct(models.Model):
     _name = 'product.product'
     _inherit = 'product.product'
 
-    purchase_order_line_ids = fields.One2many('purchase.order.line', 'product_id', string="PO Lines") # used to compute quantities
+    purchase_order_line_ids = fields.One2many('purchase.order.line', 'product_id',
+                                              string="PO Lines")  # used to compute quantities
 
     def _get_quantity_in_progress(self, location_ids=False, warehouse_ids=False):
         if not location_ids:
@@ -48,8 +49,9 @@ class ProductProduct(models.Model):
         qty_by_product_location, qty_by_product_wh = super()._get_quantity_in_progress(location_ids, warehouse_ids)
         domain = self._get_lines_domain(location_ids, warehouse_ids)
         groups = self.env['purchase.order.line'].sudo()._read_group(domain,
-            ['order_id', 'product_id', 'product_uom', 'orderpoint_id', 'location_final_id'],
-            ['product_qty:sum'])
+                                                                    ['order_id', 'product_id', 'product_uom',
+                                                                     'orderpoint_id', 'location_final_id'],
+                                                                    ['product_qty:sum'])
         for order, product, uom, orderpoint, location_final, product_qty_sum in groups:
             if orderpoint:
                 location = orderpoint.location_id
@@ -71,28 +73,28 @@ class ProductProduct(models.Model):
         if location_ids:
             domains.append([
                 '|',
-                    '&',
-                    ('orderpoint_id', '=', False),
-                    '|',
-                        '&',
-                            ('location_final_id', '=', False),
-                            ('order_id.picking_type_id.default_location_dest_id', 'in', location_ids),
-                        '&',
-                            ('move_ids', '=', False),
-                            ('location_final_id', 'child_of', location_ids),
-                    '&',
-                        ('move_dest_ids', '=', False),
-                        ('orderpoint_id.location_id', 'in', location_ids)
+                '&',
+                ('orderpoint_id', '=', False),
+                '|',
+                '&',
+                ('location_final_id', '=', False),
+                ('order_id.picking_type_id.default_location_dest_id', 'in', location_ids),
+                '&',
+                ('move_ids', '=', False),
+                ('location_final_id', 'child_of', location_ids),
+                '&',
+                ('move_dest_ids', '=', False),
+                ('orderpoint_id.location_id', 'in', location_ids)
             ])
         if warehouse_ids:
             domains.append([
                 '|',
-                    '&',
-                        ('orderpoint_id', '=', False),
-                        ('order_id.picking_type_id.warehouse_id', 'in', warehouse_ids),
-                    '&',
-                        ('move_dest_ids', '=', False),
-                        ('orderpoint_id.warehouse_id', 'in', warehouse_ids)
+                '&',
+                ('orderpoint_id', '=', False),
+                ('order_id.picking_type_id.warehouse_id', 'in', warehouse_ids),
+                '&',
+                ('move_dest_ids', '=', False),
+                ('orderpoint_id.warehouse_id', 'in', warehouse_ids)
             ])
         domains = expression.OR(domains) if domains else []
         return expression.AND([rfq_domain, domains])

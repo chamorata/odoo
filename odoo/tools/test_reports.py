@@ -10,11 +10,12 @@
 import logging
 import os
 import tempfile
-from lxml import etree
 from subprocess import Popen, PIPE
 
-from .. import api
+from lxml import etree
+
 from .safe_eval import safe_eval
+from .. import api
 
 _logger = logging.getLogger(__name__)
 _test_logger = logging.getLogger('odoo.tests')
@@ -46,7 +47,8 @@ def try_report(cr, uid, rname, ids, data=None, context=None, our_module=None, re
             os.write(fd, res_data)
             os.close(fd)
 
-            proc = Popen(['pdftotext', '-enc', 'UTF-8', '-nopgbrk', rfname, '-'], shell=False, stdout=PIPE, encoding="utf-8")
+            proc = Popen(['pdftotext', '-enc', 'UTF-8', '-nopgbrk', rfname, '-'], shell=False, stdout=PIPE,
+                         encoding="utf-8")
             res_text, _stderr = proc.communicate()
             os.unlink(rfname)
         except Exception:
@@ -66,9 +68,10 @@ def try_report(cr, uid, rname, ids, data=None, context=None, our_module=None, re
     _test_logger.info("  + Report %s produced correctly.", rname)
     return True
 
+
 def try_report_action(cr, uid, action_id, active_model=None, active_ids=None,
-                wiz_data=None, wiz_buttons=None,
-                context=None, our_module=None):
+                      wiz_data=None, wiz_buttons=None,
+                      context=None, our_module=None):
     """Take an ir.actions.act_window and follow it until a report is produced
 
         :param cr:
@@ -120,7 +123,7 @@ def try_report_action(cr, uid, action_id, active_model=None, active_ids=None,
         act_model, act_id = action._name, action.id
     else:
         assert isinstance(action_id, int)
-        act_model = 'ir.actions.act_window'     # assume that
+        act_model = 'ir.actions.act_window'  # assume that
         act_id = action_id
         act_xmlid = '<%s>' % act_id
 
@@ -130,8 +133,9 @@ def try_report_action(cr, uid, action_id, active_model=None, active_ids=None,
             return
         # Updating the context : Adding the context of action in order to use it on Views called from buttons
         context = dict(env.context)
-        if datas.get('id',False):
-            context.update( {'active_id': datas.get('id',False), 'active_ids': datas.get('ids',[]), 'active_model': datas.get('model',False)})
+        if datas.get('id', False):
+            context.update({'active_id': datas.get('id', False), 'active_ids': datas.get('ids', []),
+                            'active_model': datas.get('model', False)})
         context1 = action.get('context', {})
         if isinstance(context1, str):
             context1 = safe_eval(context1, dict(context))
@@ -145,9 +149,9 @@ def try_report_action(cr, uid, action_id, active_model=None, active_ids=None,
             view_id = False
             view_type = None
             if action.get('views', []):
-                if isinstance(action['views'],list):
+                if isinstance(action['views'], list):
                     view_id, view_type = action['views'][0]
-                    datas['view_mode']= view_type
+                    datas['view_mode'] = view_type
                 else:
                     if action.get('view_id', False):
                         view_id = action['view_id'][0]
@@ -163,7 +167,7 @@ def try_report_action(cr, uid, action_id, active_model=None, active_ids=None,
             assert datas['res_model'], "Cannot use the view without a model"
             # Here, we have a view that we need to emulate
             log_test("will emulate a %s view: %s#%s",
-                        view_type, datas['res_model'], view_id or '?')
+                     view_type, datas['res_model'], view_id or '?')
 
             model = env[datas['res_model']]
             view_res = model.get_view(view_id, view_type)
@@ -185,7 +189,7 @@ def try_report_action(cr, uid, action_id, active_model=None, active_ids=None,
                 if model._fields[fk].type in ('one2many', 'many2many') \
                         and view_data.get(fk, False) \
                         and isinstance(view_data[fk], list) \
-                        and not isinstance(view_data[fk][0], tuple) :
+                        and not isinstance(view_data[fk][0], tuple):
                     view_data[fk] = [(6, 0, view_data[fk])]
 
             action_name = action.get('name')
@@ -232,7 +236,7 @@ def try_report_action(cr, uid, action_id, active_model=None, active_ids=None,
                 raise AssertionError("view form doesn't have any buttons to press!")
 
             buttons.sort(key=lambda b: b['weight'])
-            _logger.debug('Buttons are: %s', ', '.join([ '%s: %d' % (b['string'], b['weight']) for b in buttons]))
+            _logger.debug('Buttons are: %s', ', '.join(['%s: %d' % (b['string'], b['weight']) for b in buttons]))
 
             res = None
             while buttons and not res:
@@ -242,7 +246,7 @@ def try_report_action(cr, uid, action_id, active_model=None, active_ids=None,
                     log_test("the \"%s\" button has no type, cannot use it", b['string'])
                     continue
                 if b['type'] == 'object':
-                    #there we are! press the button!
+                    # there we are! press the button!
                     rec = env[datas['res_model']].browse(datas['res_id'])
                     func = getattr(rec, b['name'], None)
                     if not func:
@@ -252,10 +256,10 @@ def try_report_action(cr, uid, action_id, active_model=None, active_ids=None,
                     break
                 else:
                     _logger.warning("in the \"%s\" form, the \"%s\" button has unknown type %s",
-                        action_name, b['string'], b['type'])
+                                    action_name, b['string'], b['type'])
             return res
 
-        elif action['type']=='ir.actions.report':
+        elif action['type'] == 'ir.actions.report':
             if 'window' in datas:
                 del datas['window']
             if not datas:

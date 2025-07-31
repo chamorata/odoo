@@ -1,5 +1,6 @@
 from odoo import api, models
 
+
 class PosConfig(models.Model):
     _inherit = 'pos.config'
 
@@ -41,6 +42,7 @@ class PosConfig(models.Model):
     def load_onboarding_restaurant_scenario(self):
         super().load_onboarding_restaurant_scenario()
         if (self.env.company.chart_template or '').startswith('be'):
-            config = self.env.ref(self._get_suffixed_ref_name('pos_restaurant.pos_config_main_restaurant'), raise_if_not_found=False)
+            config = self.env.ref(self._get_suffixed_ref_name('pos_restaurant.pos_config_main_restaurant'),
+                                  raise_if_not_found=False)
             if config:
                 self._create_takeaway_fiscal_position(config)

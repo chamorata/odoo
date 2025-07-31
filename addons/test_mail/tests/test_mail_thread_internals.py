@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from markupsafe import Markup
-from unittest.mock import patch
-from unittest.mock import DEFAULT
 import base64
+from unittest.mock import DEFAULT
+from unittest.mock import patch
 
-from odoo import exceptions
+from markupsafe import Markup
 from odoo.addons.mail.tests.common import MailCommon
+from odoo.addons.mail.tools.discuss import Store
 from odoo.addons.test_mail.models.test_mail_models import MailTestSimple
 from odoo.addons.test_mail.tests.common import TestRecipients
-from odoo.addons.mail.tools.discuss import Store
+
+from odoo import exceptions
 from odoo.tests import Form, tagged, users
 from odoo.tools import mute_logger
 
@@ -53,10 +54,11 @@ class TestAPI(MailCommon, TestRecipients):
                 if with_markup:
                     expected_body = Markup(
                         f'<div class="ltr"><img src="/web/image/{new_attachment.id}?access_token={new_attachment.access_token}" '
-                         'alt="test_image.jpeg" width="542" height="253">Zboing</div>'
+                        'alt="test_image.jpeg" width="542" height="253">Zboing</div>'
                     )
                 else:
-                    expected_body = Markup('<p>&lt;div class="ltr"&gt;&lt;img src="cid:ii_lps7a8sm0" alt="test_image.jpeg" width="542" height="253"&gt;Zboing&lt;/div&gt;</p>')
+                    expected_body = Markup(
+                        '<p>&lt;div class="ltr"&gt;&lt;img src="cid:ii_lps7a8sm0" alt="test_image.jpeg" width="542" height="253"&gt;Zboing&lt;/div&gt;</p>')
                 self.assertEqual(message.attachment_ids, attachments + new_attachment)
                 self.assertEqual(message.body, expected_body)
                 new_attachment.unlink()
@@ -73,7 +75,8 @@ class TestAPI(MailCommon, TestRecipients):
                     [("test_image.jpeg", "b", {"cid": "ii_lps7a8sm0"})], attachments.ids, message_values,
                 )
                 if not with_markup:
-                    self.assertFalse('body' in processed_values, 'Mail: escaped html does not contain tags to handle anymore')
+                    self.assertFalse('body' in processed_values,
+                                     'Mail: escaped html does not contain tags to handle anymore')
                 else:
                     self.assertTrue(isinstance(processed_values['body'], Markup))
 
@@ -96,7 +99,8 @@ class TestAPI(MailCommon, TestRecipients):
         )
         self.assertEqual(message.body, expected)
         ticket_record._message_update_content(message, "Hello <R&D/>")
-        self.assertEqual(message.body, Markup('<p>Hello &lt;R&amp;D/&gt;<span class="o-mail-Message-edited"></span></p>'))
+        self.assertEqual(message.body,
+                         Markup('<p>Hello &lt;R&amp;D/&gt;<span class="o-mail-Message-edited"></span></p>'))
 
     @mute_logger('openerp.addons.mail.models.mail_mail')
     @users('employee')
@@ -146,7 +150,8 @@ class TestAPI(MailCommon, TestRecipients):
         )
         self.assertFalse(message.attachment_ids)
         self.assertFalse((attachments + new_attachments).exists())
-        self.assertEqual(message.body, Markup('<p>Another Body, void attachments</p><span class="o-mail-Message-edited"></span>'))
+        self.assertEqual(message.body,
+                         Markup('<p>Another Body, void attachments</p><span class="o-mail-Message-edited"></span>'))
 
     @mute_logger('openerp.addons.mail.models.mail_mail')
     @users('employee')
@@ -183,7 +188,8 @@ class TestChatterTweaks(MailCommon, TestRecipients):
     @classmethod
     def setUpClass(cls):
         super(TestChatterTweaks, cls).setUpClass()
-        cls.test_record = cls.env['mail.test.simple'].with_context(cls._test_context).create({'name': 'Test', 'email_from': 'ignasse@example.com'})
+        cls.test_record = cls.env['mail.test.simple'].with_context(cls._test_context).create(
+            {'name': 'Test', 'email_from': 'ignasse@example.com'})
 
     def test_post_no_subscribe_author(self):
         original = self.test_record.message_follower_ids
@@ -195,15 +201,19 @@ class TestChatterTweaks(MailCommon, TestRecipients):
     def test_post_no_subscribe_recipients(self):
         original = self.test_record.message_follower_ids
         self.test_record.with_user(self.user_employee).with_context({'mail_create_nosubscribe': True}).message_post(
-            body='Test Body', message_type='comment', subtype_xmlid='mail.mt_comment', partner_ids=[self.partner_1.id, self.partner_2.id])
+            body='Test Body', message_type='comment', subtype_xmlid='mail.mt_comment',
+            partner_ids=[self.partner_1.id, self.partner_2.id])
         self.assertEqual(self.test_record.message_follower_ids.mapped('partner_id'), original.mapped('partner_id'))
 
     @mute_logger('odoo.addons.mail.models.mail_mail')
     def test_post_subscribe_recipients(self):
         original = self.test_record.message_follower_ids
-        self.test_record.with_user(self.user_employee).with_context({'mail_create_nosubscribe': True, 'mail_post_autofollow': True}).message_post(
-            body='Test Body', message_type='comment', subtype_xmlid='mail.mt_comment', partner_ids=[self.partner_1.id, self.partner_2.id])
-        self.assertEqual(self.test_record.message_follower_ids.mapped('partner_id'), original.mapped('partner_id') | self.partner_1 | self.partner_2)
+        self.test_record.with_user(self.user_employee).with_context(
+            {'mail_create_nosubscribe': True, 'mail_post_autofollow': True}).message_post(
+            body='Test Body', message_type='comment', subtype_xmlid='mail.mt_comment',
+            partner_ids=[self.partner_1.id, self.partner_2.id])
+        self.assertEqual(self.test_record.message_follower_ids.mapped('partner_id'),
+                         original.mapped('partner_id') | self.partner_1 | self.partner_2)
 
     @mute_logger('odoo.addons.mail.models.mail_mail')
     def test_chatter_context_cleaning(self):
@@ -215,17 +225,20 @@ class TestChatterTweaks(MailCommon, TestRecipients):
 
     def test_chatter_mail_create_nolog(self):
         """ Test disable of automatic chatter message at create """
-        rec = self.env['mail.test.simple'].with_user(self.user_employee).with_context({'mail_create_nolog': True}).create({'name': 'Test'})
+        rec = self.env['mail.test.simple'].with_user(self.user_employee).with_context(
+            {'mail_create_nolog': True}).create({'name': 'Test'})
         self.flush_tracking()
         self.assertEqual(rec.message_ids, self.env['mail.message'])
 
-        rec = self.env['mail.test.simple'].with_user(self.user_employee).with_context({'mail_create_nolog': False}).create({'name': 'Test'})
+        rec = self.env['mail.test.simple'].with_user(self.user_employee).with_context(
+            {'mail_create_nolog': False}).create({'name': 'Test'})
         self.flush_tracking()
         self.assertEqual(len(rec.message_ids), 1)
 
     def test_chatter_mail_notrack(self):
         """ Test disable of automatic value tracking at create and write """
-        rec = self.env['mail.test.track'].with_user(self.user_employee).create({'name': 'Test', 'user_id': self.user_employee.id})
+        rec = self.env['mail.test.track'].with_user(self.user_employee).create(
+            {'name': 'Test', 'user_id': self.user_employee.id})
         self.flush_tracking()
         self.assertEqual(len(rec.message_ids), 1,
                          "A creation message without tracking values should have been posted")
@@ -246,7 +259,8 @@ class TestChatterTweaks(MailCommon, TestRecipients):
 
     def test_chatter_tracking_disable(self):
         """ Test disable of all chatter features at create and write """
-        rec = self.env['mail.test.track'].with_user(self.user_employee).with_context({'tracking_disable': True}).create({'name': 'Test', 'user_id': self.user_employee.id})
+        rec = self.env['mail.test.track'].with_user(self.user_employee).with_context({'tracking_disable': True}).create(
+            {'name': 'Test', 'user_id': self.user_employee.id})
         self.flush_tracking()
         self.assertEqual(rec.sudo().message_ids, self.env['mail.message'])
         self.assertEqual(rec.sudo().mapped('message_ids.tracking_value_ids'), self.env['mail.tracking.value'])
@@ -259,7 +273,8 @@ class TestChatterTweaks(MailCommon, TestRecipients):
         self.flush_tracking()
         self.assertEqual(len(rec.sudo().mapped('message_ids.tracking_value_ids')), 1)
 
-        rec = self.env['mail.test.track'].with_user(self.user_employee).with_context({'tracking_disable': False}).create({'name': 'Test', 'user_id': self.user_employee.id})
+        rec = self.env['mail.test.track'].with_user(self.user_employee).with_context(
+            {'tracking_disable': False}).create({'name': 'Test', 'user_id': self.user_employee.id})
         self.flush_tracking()
         self.assertEqual(len(rec.sudo().message_ids), 1,
                          "Creation message without tracking values should have been posted")
@@ -303,7 +318,8 @@ class TestDiscuss(MailCommon, TestRecipients):
             employee_partner = self.env['res.partner'].with_user(self.user_employee).browse(self.partner_employee.ids)
 
             # mark all as read clear needactions
-            msg1 = self.test_record.message_post(body='Test', message_type='comment', subtype_xmlid='mail.mt_comment', partner_ids=[employee_partner.id])
+            msg1 = self.test_record.message_post(body='Test', message_type='comment', subtype_xmlid='mail.mt_comment',
+                                                 partner_ids=[employee_partner.id])
             self._reset_bus()
             with self.assertBus(
                     [(self.cr.dbname, 'res.partner', employee_partner.id)],
@@ -319,7 +335,8 @@ class TestDiscuss(MailCommon, TestRecipients):
             self.assertEqual(na_count, 0, "mark all as read should conclude all needactions")
 
             # mark all as read also clear inaccessible needactions
-            msg2 = self.test_record.message_post(body='Zest', message_type='comment', subtype_xmlid='mail.mt_comment', partner_ids=[employee_partner.id])
+            msg2 = self.test_record.message_post(body='Zest', message_type='comment', subtype_xmlid='mail.mt_comment',
+                                                 partner_ids=[employee_partner.id])
             needaction_accessible = len(employee_partner.env['mail.message'].search([['needaction', '=', True]]))
             self.assertEqual(needaction_accessible, 1, "a new message to a partner is readable to that partner")
 
@@ -346,12 +363,14 @@ class TestDiscuss(MailCommon, TestRecipients):
             self.assertEqual(na_count, 0, "mark all read should conclude all needactions even inacessible ones")
 
     def test_set_message_done_user(self):
-        with self.assertSinglePostNotifications([{'partner': self.partner_employee, 'type': 'inbox'}], message_info={'content': 'Test'}):
+        with self.assertSinglePostNotifications([{'partner': self.partner_employee, 'type': 'inbox'}],
+                                                message_info={'content': 'Test'}):
             message = self.test_record.message_post(
                 body='Test', message_type='comment', subtype_xmlid='mail.mt_comment',
                 partner_ids=[self.user_employee.partner_id.id])
         message.with_user(self.user_employee).set_message_done()
-        self.assertMailNotifications(message, [{'notif': [{'partner': self.partner_employee, 'type': 'inbox', 'is_read': True}]}])
+        self.assertMailNotifications(message, [{'notif': [
+            {'partner': self.partner_employee, 'type': 'inbox', 'is_read': True}]}])
         # TDE TODO: it seems bus notifications could be checked
 
     def test_set_star(self):
@@ -426,8 +445,12 @@ class TestDiscuss(MailCommon, TestRecipients):
         user1.notification_type = 'inbox'
         user2 = self.env['res.users'].create({'login': 'user2', 'name': 'User 2'})
         user2.notification_type = 'inbox'
-        message1 = self.test_record.with_user(self.user_admin).message_post(body='Message 1', partner_ids=[user1.partner_id.id, user2.partner_id.id])
-        message2 = self.test_record.with_user(self.user_admin).message_post(body='Message 2', partner_ids=[user1.partner_id.id, user2.partner_id.id])
+        message1 = self.test_record.with_user(self.user_admin).message_post(body='Message 1',
+                                                                            partner_ids=[user1.partner_id.id,
+                                                                                         user2.partner_id.id])
+        message2 = self.test_record.with_user(self.user_admin).message_post(body='Message 2',
+                                                                            partner_ids=[user1.partner_id.id,
+                                                                                         user2.partner_id.id])
 
         # both notified users should have the 2 messages in Inbox initially
         res = self.env['mail.message'].with_user(user1)._message_fetch(domain=[['needaction', '=', True]])
@@ -455,6 +478,7 @@ class TestDiscuss(MailCommon, TestRecipients):
         with self.mock_mail_gateway():
             def _connect(*args, **kwargs):
                 raise Exception("Some exception")
+
             self.connect_mocked.side_effect = _connect
 
             self.user_admin.notification_type = 'email'
@@ -501,7 +525,8 @@ class TestDiscuss(MailCommon, TestRecipients):
             body='test',
             partner_ids=[self.partner_2.id],
         )
-        channel_message = self.env['mail.message'].sudo().search([('model', '=', 'discuss.channel'), ('res_id', 'in', channel.ids)])
+        channel_message = self.env['mail.message'].sudo().search(
+            [('model', '=', 'discuss.channel'), ('res_id', 'in', channel.ids)])
         self.assertEqual(len(channel_message), 1, "Test message should have been posted")
         channel.sudo().unlink()
         remaining_message = channel_message.exists()
@@ -540,7 +565,7 @@ class TestNoThread(MailCommon, TestRecipients):
         with self.mock_mail_gateway():
             mail_compose_message.action_send_mail()
         self.assertEqual(self._new_mails.attachment_ids['datas'], base64.b64encode(b'This is test attachment content'),
-            "The attachment was not included correctly in the sent message")
+                         "The attachment was not included correctly in the sent message")
 
     @users('employee')
     def test_message_to_store(self):
@@ -579,20 +604,20 @@ class TestNoThread(MailCommon, TestRecipients):
         for subject in ["Test Notify", False]:
             with self.subTest():
                 with self.assertPostNotifications([{
-                        'content': 'Hello Paulo',
-                        'email_values': {
-                            'reply_to': self.company_admin.catchall_formatted,
-                        },
-                        'message_type': 'user_notification',
-                        'notif': [{
-                            'check_send': True,
-                            'is_read': True,
-                            'partner': self.partner_2,
-                            'status': 'sent',
-                            'type': 'email',
-                        }],
-                        'subtype': 'mail.mt_note',
-                    }]):
+                    'content': 'Hello Paulo',
+                    'email_values': {
+                        'reply_to': self.company_admin.catchall_formatted,
+                    },
+                    'message_type': 'user_notification',
+                    'notif': [{
+                        'check_send': True,
+                        'is_read': True,
+                        'partner': self.partner_2,
+                        'status': 'sent',
+                        'type': 'email',
+                    }],
+                    'subtype': 'mail.mt_note',
+                }]):
                     _message = self.env['mail.thread'].message_notify(
                         body='<p>Hello Paulo</p>',
                         model=test_record._name,
@@ -666,21 +691,21 @@ class TestNoThread(MailCommon, TestRecipients):
     def test_message_notify_norecord(self):
         """ Test notifying on no record, just using the abstract model itself. """
         with self.assertPostNotifications([{
-                'content': 'Hello Paulo',
-                'email_values': {
-                    'reply_to': self.company_admin.catchall_formatted,
-                    'subject': 'Test Notify',
-                },
-                'message_type': 'user_notification',
-                'notif': [{
-                    'check_send': True,
-                    'is_read': True,
-                    'partner': self.partner_2,
-                    'status': 'sent',
-                    'type': 'email',
-                }],
-                'subtype': 'mail.mt_note',
-            }]):
+            'content': 'Hello Paulo',
+            'email_values': {
+                'reply_to': self.company_admin.catchall_formatted,
+                'subject': 'Test Notify',
+            },
+            'message_type': 'user_notification',
+            'notif': [{
+                'check_send': True,
+                'is_read': True,
+                'partner': self.partner_2,
+                'status': 'sent',
+                'type': 'email',
+            }],
+            'subtype': 'mail.mt_note',
+        }]):
             _message = self.env['mail.thread'].message_notify(
                 body=Markup('<p>Hello Paulo</p>'),
                 partner_ids=self.partner_2.ids,

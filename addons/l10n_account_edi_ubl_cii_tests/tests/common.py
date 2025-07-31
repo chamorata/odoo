@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 import base64
-
-from freezegun import freeze_time
 from os.path import join as opj
 
+from freezegun import freeze_time
+from lxml import etree
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
 from odoo import fields
 from odoo.tools import misc
-
-from lxml import etree
 
 
 class TestUBLCommon(AccountTestInvoicingCommon):
@@ -227,11 +226,13 @@ class TestUBLCommon(AccountTestInvoicingCommon):
         self.assertEqual(new_invoice.journal_id, journal2)
 
         # If no journal, fallback on the context
-        new_invoice2 = self.env['account.journal'].with_context(default_journal_id=journal3.id)._create_document_from_attachment(attachment.id)
+        new_invoice2 = self.env['account.journal'].with_context(
+            default_journal_id=journal3.id)._create_document_from_attachment(attachment.id)
         self.assertEqual(new_invoice2.journal_id, journal3)
 
         # If no journal and no journal in the context, fallback on the move type
-        new_invoice3 = self.env['account.journal'].with_context(default_move_type='out_invoice')._create_document_from_attachment(attachment.id)
+        new_invoice3 = self.env['account.journal'].with_context(
+            default_move_type='out_invoice')._create_document_from_attachment(attachment.id)
         self.assertEqual(new_invoice3.journal_id, self.company_data['default_journal_sale'])
 
     def _test_encoding_in_attachment(self, attachment, filename):

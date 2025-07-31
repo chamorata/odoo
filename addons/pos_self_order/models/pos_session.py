@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import models, api, _, fields
+from odoo import models, api, _
 
 
 class PosSession(models.Model):
@@ -42,16 +42,16 @@ class PosSession(models.Model):
     def _load_pos_data(self, data):
         sessions = super()._load_pos_data(data)
         sessions['data'][0]['_self_ordering'] = (
-            self.env["pos.config"]
-            .sudo()
-            .search_count(
-                [
-                    *self.env["pos.config"]._check_company_domain(self.env.company),
-                    '|', ("self_ordering_mode", "=", "kiosk"),
-                    ("self_ordering_mode", "=", "mobile"),
-                ],
-                limit=1,
-            )
-            > 0
+                self.env["pos.config"]
+                .sudo()
+                .search_count(
+                    [
+                        *self.env["pos.config"]._check_company_domain(self.env.company),
+                        '|', ("self_ordering_mode", "=", "kiosk"),
+                        ("self_ordering_mode", "=", "mobile"),
+                    ],
+                    limit=1,
+                )
+                > 0
         )
         return sessions

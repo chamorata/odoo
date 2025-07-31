@@ -1,67 +1,67 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 675 643">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 675 643">
     <style>
-		@keyframes move_1_90deg {
-			0%     {transform: scale(1) rotate(0deg);}
-			1.25%  {transform: scale(.5) rotate(90deg);}
-			2.91%  {transform: scale(.5) rotate(90deg);}
-			4.16%  {transform: scale(1) rotate(90deg);}
-			50%    {transform: scale(1) rotate(90deg);}
-			51.25% {transform: scale(.5) rotate(90deg);}
-			52.91% {transform: scale(.5) rotate(90deg);}
-			54.16% {transform: scale(1) rotate(0deg);}
-			100%   {transform: scale(1) rotate(0deg);}
-		}
+        @keyframes move_1_90deg {
+        0% {transform: scale(1) rotate(0deg);}
+        1.25% {transform: scale(.5) rotate(90deg);}
+        2.91% {transform: scale(.5) rotate(90deg);}
+        4.16% {transform: scale(1) rotate(90deg);}
+        50% {transform: scale(1) rotate(90deg);}
+        51.25% {transform: scale(.5) rotate(90deg);}
+        52.91% {transform: scale(.5) rotate(90deg);}
+        54.16% {transform: scale(1) rotate(0deg);}
+        100% {transform: scale(1) rotate(0deg);}
+        }
         @keyframes move_2_90deg {
-			0%     {transform: scale(1) rotate(0deg);}
-			25%     {transform: scale(1) rotate(0deg);}
-			26.25%  {transform: scale(.5) rotate(90deg);}
-			27.91%  {transform: scale(.5) rotate(90deg);}
-			29.16%  {transform: scale(1) rotate(90deg);}
-			75%    {transform: scale(1) rotate(90deg);}
-			76.25% {transform: scale(.5) rotate(90deg);}
-			77.91% {transform: scale(.5) rotate(90deg);}
-			79.16% {transform: scale(1) rotate(0deg);}
-			100%   {transform: scale(1) rotate(0deg);}
-		}
+        0% {transform: scale(1) rotate(0deg);}
+        25% {transform: scale(1) rotate(0deg);}
+        26.25% {transform: scale(.5) rotate(90deg);}
+        27.91% {transform: scale(.5) rotate(90deg);}
+        29.16% {transform: scale(1) rotate(90deg);}
+        75% {transform: scale(1) rotate(90deg);}
+        76.25% {transform: scale(.5) rotate(90deg);}
+        77.91% {transform: scale(.5) rotate(90deg);}
+        79.16% {transform: scale(1) rotate(0deg);}
+        100% {transform: scale(1) rotate(0deg);}
+        }
         @keyframes move_1_min_90deg {
-			0%     {transform: scale(1) rotate(0deg);}
-			1.25%  {transform: scale(.5) rotate(90deg);}
-			2.91%  {transform: scale(.5) rotate(90deg);}
-			4.16%  {transform: scale(1) rotate(90deg);}
-			50%    {transform: scale(1) rotate(90deg);}
-			51.25% {transform: scale(.5) rotate(90deg);}
-			52.91% {transform: scale(.5) rotate(90deg);}
-			54.16% {transform: scale(1) rotate(0deg);}
-			100%   {transform: scale(1) rotate(0deg);}
-		}
+        0% {transform: scale(1) rotate(0deg);}
+        1.25% {transform: scale(.5) rotate(90deg);}
+        2.91% {transform: scale(.5) rotate(90deg);}
+        4.16% {transform: scale(1) rotate(90deg);}
+        50% {transform: scale(1) rotate(90deg);}
+        51.25% {transform: scale(.5) rotate(90deg);}
+        52.91% {transform: scale(.5) rotate(90deg);}
+        54.16% {transform: scale(1) rotate(0deg);}
+        100% {transform: scale(1) rotate(0deg);}
+        }
         @keyframes move_2_min_90deg {
-			0%     {transform: scale(1) rotate(0deg);}
-			25%     {transform: scale(1) rotate(0deg);}
-			26.25%  {transform: scale(.5) rotate(90deg);}
-			27.91%  {transform: scale(.5) rotate(90deg);}
-			29.16%  {transform: scale(1) rotate(90deg);}
-			75%    {transform: scale(1) rotate(90deg);}
-			76.25% {transform: scale(.5) rotate(90deg);}
-			77.91% {transform: scale(.5) rotate(90deg);}
-			79.16% {transform: scale(1) rotate(0deg);}
-			100%   {transform: scale(1) rotate(0deg);}
-		}
-		polygon {
-			transform-box: fill-box;
-			transform-origin: center;
-		}
-		#poly_1 {animation: move_1_90deg 24s cubic-bezier(.445, .05, .55, .95) infinite;}
-		#poly_2 {animation: move_2_90deg 24s cubic-bezier(.445, .05, .55, .95) infinite;}
-		#poly_3 {animation: move_1_min_90deg 24s cubic-bezier(.445, .05, .55, .95) infinite;}
-		#poly_4 {animation: move_2_min_90deg 24s cubic-bezier(.445, .05, .55, .95) infinite;}
-		#poly_5 {animation: move_1_90deg 24s cubic-bezier(.445, .05, .55, .95) infinite;}
-		#poly_6 {animation: move_2_90deg 24s cubic-bezier(.445, .05, .55, .95) infinite;}
-		#poly_7 {animation: move_1_min_90deg 24s cubic-bezier(.445, .05, .55, .95) infinite;}
-		#poly_8 {animation: move_2_min_90deg 24s cubic-bezier(.445, .05, .55, .95) infinite;}
-		#poly_9 {animation: move_1_90deg 24s cubic-bezier(.445, .05, .55, .95) infinite;}
-		#poly_10 {animation: move_2_90deg 24s cubic-bezier(.445, .05, .55, .95) infinite;}
-		#poly_11 {animation: move_1_min_90deg 24s cubic-bezier(.445, .05, .55, .95) infinite;}
-		#poly_12 {animation: move_2_min_90deg 24s cubic-bezier(.445, .05, .55, .95) infinite;}
+        0% {transform: scale(1) rotate(0deg);}
+        25% {transform: scale(1) rotate(0deg);}
+        26.25% {transform: scale(.5) rotate(90deg);}
+        27.91% {transform: scale(.5) rotate(90deg);}
+        29.16% {transform: scale(1) rotate(90deg);}
+        75% {transform: scale(1) rotate(90deg);}
+        76.25% {transform: scale(.5) rotate(90deg);}
+        77.91% {transform: scale(.5) rotate(90deg);}
+        79.16% {transform: scale(1) rotate(0deg);}
+        100% {transform: scale(1) rotate(0deg);}
+        }
+        polygon {
+        transform-box: fill-box;
+        transform-origin: center;
+        }
+        #poly_1 {animation: move_1_90deg 24s cubic-bezier(.445, .05, .55, .95) infinite;}
+        #poly_2 {animation: move_2_90deg 24s cubic-bezier(.445, .05, .55, .95) infinite;}
+        #poly_3 {animation: move_1_min_90deg 24s cubic-bezier(.445, .05, .55, .95) infinite;}
+        #poly_4 {animation: move_2_min_90deg 24s cubic-bezier(.445, .05, .55, .95) infinite;}
+        #poly_5 {animation: move_1_90deg 24s cubic-bezier(.445, .05, .55, .95) infinite;}
+        #poly_6 {animation: move_2_90deg 24s cubic-bezier(.445, .05, .55, .95) infinite;}
+        #poly_7 {animation: move_1_min_90deg 24s cubic-bezier(.445, .05, .55, .95) infinite;}
+        #poly_8 {animation: move_2_min_90deg 24s cubic-bezier(.445, .05, .55, .95) infinite;}
+        #poly_9 {animation: move_1_90deg 24s cubic-bezier(.445, .05, .55, .95) infinite;}
+        #poly_10 {animation: move_2_90deg 24s cubic-bezier(.445, .05, .55, .95) infinite;}
+        #poly_11 {animation: move_1_min_90deg 24s cubic-bezier(.445, .05, .55, .95) infinite;}
+        #poly_12 {animation: move_2_min_90deg 24s cubic-bezier(.445, .05, .55, .95) infinite;}
     </style>
     <g transform="translate(0 193)">
         <polygon id="poly_1" points="675 0 562.5 112.5 675 112.5 675 0" fill="#383E45"/>

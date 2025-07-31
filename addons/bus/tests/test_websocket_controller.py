@@ -1,8 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.tests import JsonRpcException
-from odoo.addons.base.tests.common import HttpCaseWithUserDemo
 from odoo.addons.bus.models.bus import channel_with_db, json_dump
+
+from odoo.addons.base.tests.common import HttpCaseWithUserDemo
+from odoo.tests import JsonRpcException
 
 
 class TestWebsocketController(HttpCaseWithUserDemo):

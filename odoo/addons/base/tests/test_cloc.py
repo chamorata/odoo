@@ -1,6 +1,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo.tools import cloc
 from odoo.tests import TransactionCase, tagged
+from odoo.tools import cloc
 
 XML_TEST = """<!-- Comment -->
 <?xml version="1.0" encoding="UTF-8"?>
@@ -126,6 +126,7 @@ SCSS_TEST = '''
 }
 '''
 
+
 class TestClocCustomization(TransactionCase):
     def create_xml_id(self, module, name, rec):
         self.env['ir.model.data'].create({
@@ -172,7 +173,8 @@ for rec in records:
         self.create_xml_id('studio_customization', 'invoice_count', f1)
         cl = cloc.Cloc()
         cl.count_customization(self.env)
-        self.assertEqual(cl.code.get('odoo/studio', 0), 0, 'Studio auto generated count field should not be counted in cloc')
+        self.assertEqual(cl.code.get('odoo/studio', 0), 0,
+                         'Studio auto generated count field should not be counted in cloc')
         f2 = self.create_field('x_studio_custom_field')
         self.create_xml_id('studio_customization', 'studio_custom', f2)
         cl = cloc.Cloc()

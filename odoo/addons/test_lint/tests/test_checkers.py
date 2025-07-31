@@ -2,14 +2,12 @@ import json
 import os
 import tempfile
 import unittest
-
 from contextlib import contextmanager
 from subprocess import run, PIPE
 from textwrap import dedent
 
-from odoo.tools.which import which
 from odoo.tests.common import TransactionCase
-
+from odoo.tools.which import which
 from . import _odoo_checker_sql_injection
 
 try:
@@ -22,6 +20,7 @@ try:
     pylint_bin = which('pylint')
 except IOError:
     pylint_bin = None
+
 
 class UnittestLinter(PyLinter):
     current_file = 'not_test_checkers.py'
@@ -131,18 +130,17 @@ class TestSqlLint(TestPylintChecks):
         """)
         self.assertFalse(r, f"unnecessary fstring should be innocuous\n{errs}")
 
-        #r, errs = self.check("""
-        #def do_the_thing(cr, name, value):
+        # r, errs = self.check("""
+        # def do_the_thing(cr, name, value):
         #    cr.execute(f'select {name} from thing where field = %s', [value])
-        #""")
-        #self.assertFalse(r, f"probably has a good reason for the extra arg\n{errs}")
+        # """)
+        # self.assertFalse(r, f"probably has a good reason for the extra arg\n{errs}")
 
         r, errs = self.check("""
         def do_the_thing(self):
             self.env.cr.execute(f'select name from {self._table}')
         """)
         self.assertFalse(r, f'underscore-attributes are allowable\n{errs}')
-
 
     @contextmanager
     def assertMessages(self, *messages):
@@ -158,7 +156,7 @@ class TestSqlLint(TestPylintChecks):
 
     def test_sql_injection_detection(self):
         self.linter = UnittestLinter()
-        self.linter.current_file = 'dummy.py' # should not be prefixed by test
+        self.linter.current_file = 'dummy.py'  # should not be prefixed by test
         checker = _odoo_checker_sql_injection.OdooBaseChecker(self.linter)
 
         node = _odoo_checker_sql_injection.astroid.extract_node("""
@@ -278,15 +276,15 @@ class TestSqlLint(TestPylintChecks):
         with self.assertMessages("sql-injection"):
             checker.visit_call(node)
 
-        #TODO
-        #node = _odoo_checker_sql_injection.astroid.extract_node("""
-        #def test_function(self):
+        # TODO
+        # node = _odoo_checker_sql_injection.astroid.extract_node("""
+        # def test_function(self):
         #    def test():
         #        return "hello world"
         #    my_injection_variable= "aaaaaaaa {test}".format(test=test()) #Const
         #    self.env.cr.execute('select * from hello where id = %s' % my_injection_variable) #@
-        #""")
-        #with self.assertNoMessages():
+        # """)
+        # with self.assertNoMessages():
         #    checker.visit_call(node)
 
         node = _odoo_checker_sql_injection.astroid.extract_node("""
@@ -318,7 +316,7 @@ class TestSqlLint(TestPylintChecks):
                 AND model.mobile %s
             ''' % (self._table, condition, condition)
             self.env.cr.execute(query) #@
-        """) #Real false positive example from the code
+        """)  # Real false positive example from the code
         with self.assertMessages():
             checker.visit_call(node)
 
@@ -328,7 +326,7 @@ class TestSqlLint(TestPylintChecks):
             value = 'bbb'
             op1 , val1 = (operator,value)
             self.env.cr.execute('query' + op1) #@
-        """) #Test tuple assignement
+        """)  # Test tuple assignement
         with self.assertMessages():
             checker.visit_call(node)
 
@@ -352,7 +350,7 @@ class TestSqlLint(TestPylintChecks):
         def _init_column(self, column_name):
             query = f'UPDATE "{self._table}" SET "{column_name}" = %s WHERE "{column_name}" IS NULL'
             self._cr.execute(query, (value,)) #@
-        """) #Test private function arg should not flag
+        """)  # Test private function arg should not flag
         with self.assertMessages():
             checker.visit_call(node)
 

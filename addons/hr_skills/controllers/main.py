@@ -4,7 +4,6 @@
 import re
 
 from odoo import _
-
 from odoo.http import request, route, Controller, content_disposition
 
 
@@ -27,14 +26,14 @@ class HrEmployeeCV(Controller):
 
         pdf_content, dummy = request.env['ir.actions.report'].sudo()._render_qweb_pdf(
             report, employees.ids, data={
-            'color_primary': color_primary,
-            'color_secondary': color_secondary,
-            'resume_type_education': resume_type_education,
-            'skill_type_language': skill_type_language,
-            'show_skills': 'show_skills' in post,
-            'show_contact': 'show_contact' in post,
-            'show_others': 'show_others' in post,
-        })
+                'color_primary': color_primary,
+                'color_secondary': color_secondary,
+                'resume_type_education': resume_type_education,
+                'skill_type_language': skill_type_language,
+                'show_skills': 'show_skills' in post,
+                'show_contact': 'show_contact' in post,
+                'show_others': 'show_others' in post,
+            })
 
         if len(employees) == 1:
             report_name = _('Resume %s', employees.name)

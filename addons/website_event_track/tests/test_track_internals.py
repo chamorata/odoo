@@ -4,10 +4,12 @@
 from datetime import datetime, timedelta
 from unittest.mock import patch
 
-from odoo import fields
 from odoo.addons.website.models.website_visitor import WebsiteVisitor
 from odoo.addons.website_event.tests.common import TestEventOnlineCommon
+
+from odoo import fields
 from odoo.tests.common import users
+
 
 class TestTrackData(TestEventOnlineCommon):
 
@@ -95,6 +97,7 @@ class TestTrackData(TestEventOnlineCommon):
             new_track.contact_phone, customer.phone,
             'Track customer should take over existing contact phone value')
 
+
 class TestTrackSuggestions(TestEventOnlineCommon):
 
     def test_track_suggestion(self):
@@ -160,12 +163,12 @@ class TestTrackSuggestions(TestEventOnlineCommon):
             all_suggestions = current_track._get_track_suggestions()
             self.assertEqual(
                 all_suggestions.ids,
-                (track_3 + track_5 + track_4 + track_6 + track_2).ids # whlst / wishlst def / tags count / location
+                (track_3 + track_5 + track_4 + track_6 + track_2).ids  # whlst / wishlst def / tags count / location
             )
 
             track_suggestion = current_track._get_track_suggestions(limit=1)
             self.assertEqual(track_suggestion, track_3,
-                'Returned track should be the manually wishlisted one')
+                             'Returned track should be the manually wishlisted one')
 
             # remove wishlist, keynote should be top
             visitor_track.unlink()

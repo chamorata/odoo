@@ -2,7 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.sale_loyalty.tests.common import TestSaleCouponCommon
-from odoo.exceptions import UserError
+
 from odoo.tests import tagged
 
 
@@ -39,7 +39,7 @@ class TestSaleInvoicing(TestSaleCouponCommon):
             ]
         })
 
-        #Check default invoice_policy on discount product
+        # Check default invoice_policy on discount product
         self.assertEqual(discount_coupon_program.reward_ids.discount_line_product_id.invoice_policy, 'order')
 
         order._update_programs_and_rewards()
@@ -97,7 +97,7 @@ class TestSaleInvoicing(TestSaleCouponCommon):
             'order_id': order.id,
         })
 
-        #Check default invoice_policy on discount product
+        # Check default invoice_policy on discount product
         self.assertEqual(discount_coupon_program.reward_ids.discount_line_product_id.invoice_policy, 'order')
 
         self._auto_rewards(order, discount_coupon_program)
@@ -119,4 +119,5 @@ class TestSaleInvoicing(TestSaleCouponCommon):
         order._update_programs_and_rewards()
         self.assertEqual(len(order.order_line), 3, 'Coupon correctly applied')
 
-        self.assertTrue(order.order_line.sorted(lambda x: x.sequence)[-1].is_reward_line, 'Global coupons appear on the last line')
+        self.assertTrue(order.order_line.sorted(lambda x: x.sequence)[-1].is_reward_line,
+                        'Global coupons appear on the last line')

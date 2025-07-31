@@ -1,10 +1,11 @@
 import logging
-
-from markupsafe import Markup
-from hashlib import sha256
 from base64 import b64decode, b64encode
-from lxml import etree
 from datetime import datetime
+from hashlib import sha256
+
+from lxml import etree
+from markupsafe import Markup
+
 from odoo import models, fields, _, api
 from odoo.exceptions import UserError
 from odoo.tools import format_list
@@ -51,12 +52,13 @@ class AccountEdiFormat(models.Model):
             Calculate the SHA256 value of the SignedProperties XML node. The algorithm used by ZATCA expects the indentation
             of the nodes to start with 40 spaces, except for the root SignedProperties node.
         """
-        signed_properties = etree.fromstring(self.env['ir.qweb']._render('l10n_sa_edi.export_sa_zatca_ubl_signed_properties', {
-            'issuer_name': issuer_name,
-            'serial_number': serial_number,
-            'signing_time': signing_time,
-            'public_key_hashing': public_key,
-        }))
+        signed_properties = etree.fromstring(
+            self.env['ir.qweb']._render('l10n_sa_edi.export_sa_zatca_ubl_signed_properties', {
+                'issuer_name': issuer_name,
+                'serial_number': serial_number,
+                'signing_time': signing_time,
+                'public_key_hashing': public_key,
+            }))
         etree.indent(signed_properties, space='    ')
         signed_properties_split = etree.tostring(signed_properties).decode().split('\n')
         signed_properties_final = ""
@@ -230,10 +232,10 @@ class AccountEdiFormat(models.Model):
             PCSID_data, certificate = invoice.journal_id._l10n_sa_api_get_pcsid()
         except UserError as e:
             return ({
-                'error': _("Could not generate PCSID values:\n%(error)s", error=e.args[0]),
-                'blocking_level': 'error',
-                'response': unsigned_xml
-            }, unsigned_xml)
+                        'error': _("Could not generate PCSID values:\n%(error)s", error=e.args[0]),
+                        'blocking_level': 'error',
+                        'response': unsigned_xml
+                    }, unsigned_xml)
 
         certificate_sudo = self.env['certificate.certificate'].sudo().browse(certificate)
 
@@ -242,10 +244,10 @@ class AccountEdiFormat(models.Model):
             signed_xml = self._l10n_sa_get_signed_xml(invoice, unsigned_xml, certificate_sudo)
         except UserError as e:
             return ({
-                'error': _("Could not generate signed XML values:\n%(error)s", error=e.args[0]),
-                'blocking_level': 'error',
-                'response': unsigned_xml
-            }, unsigned_xml)
+                        'error': _("Could not generate signed XML values:\n%(error)s", error=e.args[0]),
+                        'blocking_level': 'error',
+                        'response': unsigned_xml
+                    }, unsigned_xml)
 
         # Once the XML content has been generated and signed, we submit it to ZATCA
         return self._l10n_sa_submit_einvoice(invoice, signed_xml, PCSID_data), signed_xml
@@ -408,22 +410,26 @@ class AccountEdiFormat(models.Model):
         if invoice.commercial_partner_id == invoice.company_id.partner_id.commercial_partner_id:
             errors.append(_("- You cannot post invoices where the Seller is the Buyer"))
 
-        if not all(line.tax_ids for line in invoice.invoice_line_ids.filtered(lambda line: line.display_type == 'product' and line._check_edi_line_tax_required())):
+        if not all(line.tax_ids for line in invoice.invoice_line_ids.filtered(
+                lambda line: line.display_type == 'product' and line._check_edi_line_tax_required())):
             errors.append(_("- Invoice lines should have at least one Tax applied."))
 
         if not journal._l10n_sa_ready_to_submit_einvoices():
             errors.append(
-                _("- Finish the Onboarding procees for journal %s by requesting the CSIDs and completing the checks.", journal.name))
+                _("- Finish the Onboarding procees for journal %s by requesting the CSIDs and completing the checks.",
+                  journal.name))
 
         if not company._l10n_sa_check_organization_unit():
             errors.append(
                 _("- The company VAT identification must contain 15 digits, with the first and last digits being '3' as per the BR-KSA-39 and BR-KSA-40 of ZATCA KSA business rule."))
         if not company.sudo().l10n_sa_private_key_id:
             errors.append(
-                _("- No Private Key was generated for company %s. A Private Key is mandatory in order to generate Certificate Signing Requests (CSR).", company.name))
+                _("- No Private Key was generated for company %s. A Private Key is mandatory in order to generate Certificate Signing Requests (CSR).",
+                  company.name))
         if not journal.l10n_sa_serial_number:
             errors.append(
-                _("- No Serial Number was assigned for journal %s. A Serial Number is mandatory in order to generate Certificate Signing Requests (CSR).", journal.name))
+                _("- No Serial Number was assigned for journal %s. A Serial Number is mandatory in order to generate Certificate Signing Requests (CSR).",
+                  journal.name))
 
         supplier_missing_info = self._l10n_sa_check_seller_missing_info(invoice)
         customer_missing_info = self._l10n_sa_check_buyer_missing_info(invoice)

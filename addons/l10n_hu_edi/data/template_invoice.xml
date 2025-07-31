@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <template id="nav_online_invoice_xml_3_0">
-        <InvoiceData xmlns="http://schemas.nav.gov.hu/OSA/3.0/data" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.nav.gov.hu/OSA/3.0/data invoiceData.xsd"
-            xmlns:common="http://schemas.nav.gov.hu/NTCA/1.0/common" xmlns:base="http://schemas.nav.gov.hu/OSA/3.0/base">
+        <InvoiceData xmlns="http://schemas.nav.gov.hu/OSA/3.0/data"
+                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                     xsi:schemaLocation="http://schemas.nav.gov.hu/OSA/3.0/data invoiceData.xsd"
+                     xmlns:base="http://schemas.nav.gov.hu/OSA/3.0/base">
             <invoiceNumber t-out="invoice.name"/>
             <invoiceIssueDate t-out="invoiceIssueDate"/>
             <completenessIndicator t-out="format_bool(completenessIndicator)"/>
@@ -142,8 +144,10 @@
             <case t-out="tax.l10n_hu_tax_type"/>
             <reason t-out="tax.l10n_hu_tax_reason"/>
         </vatOutOfScope>
-        <vatDomesticReverseCharge t-if="tax.l10n_hu_tax_type == 'DOMESTIC_REVERSE'" t-translation="off">true</vatDomesticReverseCharge>
-        <marginSchemeIndicator t-if="tax.l10n_hu_tax_type in ['TRAVEL_AGENCY', 'SECOND_HAND', 'ARTWORK', 'ANTIQUES']" t-out="tax.l10n_hu_tax_type"/>
+        <vatDomesticReverseCharge t-if="tax.l10n_hu_tax_type == 'DOMESTIC_REVERSE'" t-translation="off">true
+        </vatDomesticReverseCharge>
+        <marginSchemeIndicator t-if="tax.l10n_hu_tax_type in ['TRAVEL_AGENCY', 'SECOND_HAND', 'ARTWORK', 'ANTIQUES']"
+                               t-out="tax.l10n_hu_tax_type"/>
         <vatAmountMismatch t-if="tax.l10n_hu_tax_type in ['REFUNDABLE_VAT', 'NONREFUNDABLE_VAT']">
             <vatRate>
                 <vatPercentage t-out="float_repr(vatPercentage, 4)"/>
@@ -151,7 +155,7 @@
         </vatAmountMismatch>
         <noVatCharge t-if="tax.l10n_hu_tax_type == 'NO_VAT'" t-translation="off">true</noVatCharge>
     </template>
-    
+
     <template id="nav_online_invoice_xml_3_0_line">
         <t t-set="line" t-value="line_values['line']"/>
         <lineNumber t-out="line_values['lineNumber']"/>

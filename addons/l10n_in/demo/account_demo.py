@@ -28,15 +28,17 @@ class AccountChartTemplate(models.AbstractModel):
                     'mail.message': self._get_demo_data_mail_message(company),
                 }
             else:
-                _logger.warning('Error while loading Indian-Accounting demo data in the company "%s".State is not set in the company.', company.name)
+                _logger.warning(
+                    'Error while loading Indian-Accounting demo data in the company "%s".State is not set in the company.',
+                    company.name)
         else:
             demo_data = super()._get_demo_data(company)
         return demo_data
 
     @api.model
     def _get_demo_data_config_settings(self, company=False):
-        return{
-            'sales_credit_limit':{
+        return {
+            'sales_credit_limit': {
                 'account_use_credit_limit': True,
                 'account_default_credit_limit': '10000'
             }
@@ -44,7 +46,7 @@ class AccountChartTemplate(models.AbstractModel):
 
     @api.model
     def _get_demo_data_res_partner_category(self, company=False):
-        return{
+        return {
             'res_partner_category_registered': {
                 'name': 'Registered',
                 'color': 2,
@@ -60,8 +62,8 @@ class AccountChartTemplate(models.AbstractModel):
         cid = company and company.id or self.env.company.id
         inter_state_ref = 'base.state_in_ts'
         intra_state_ref = 'base.state_in_gj'
-        default_partner_dict = {'country_id': 'base.in', 'is_company': True, 'company_id': cid,}
-        return{
+        default_partner_dict = {'country_id': 'base.in', 'is_company': True, 'company_id': cid, }
+        return {
             'res_partner_registered_customer': {
                 **default_partner_dict,
                 'name': 'B2B Customer Intra State',
@@ -86,7 +88,7 @@ class AccountChartTemplate(models.AbstractModel):
                 'zip': '500014',
                 'vat': '36AAACM4154G1ZO',
             },
-            'res_partner_unregistered_customer':{
+            'res_partner_unregistered_customer': {
                 **default_partner_dict,
                 'name': 'B2C Customer Intra State',
                 'category_id': 'res_partner_category_unregistered',
@@ -96,7 +98,7 @@ class AccountChartTemplate(models.AbstractModel):
                 'city': 'Rajkot',
                 'zip': '360001'
             },
-            'res_partner_unregistered_customer_inter_state':{
+            'res_partner_unregistered_customer_inter_state': {
                 **default_partner_dict,
                 'name': 'B2C Customer Inter State',
                 'category_id': 'res_partner_category_unregistered',
@@ -147,9 +149,11 @@ class AccountChartTemplate(models.AbstractModel):
     @api.model
     def _get_demo_data_move(self, company=False):
         cid = company.id or self.env.company.id
+
         def _get_tax_by_id(tax_id):
-            tax = self.env.ref('account.%s_%s'%((cid), (tax_id)))
+            tax = self.env.ref('account.%s_%s' % ((cid), (tax_id)))
             return tax.id
+
         if company.account_fiscal_country_id.code == "IN":
             sale_journal = self.env['account.journal'].search(
                 domain=[
@@ -177,13 +181,14 @@ class AccountChartTemplate(models.AbstractModel):
                             'product_id': 'product.product_product_9',
                             'quantity': 3,
                             'price_unit': 400.0,
-                            'tax_ids': [Command.set([_get_tax_by_id('sgst_sale_28'), _get_tax_by_id('cess_5_plus_1591_sale')])],
+                            'tax_ids': [
+                                Command.set([_get_tax_by_id('sgst_sale_28'), _get_tax_by_id('cess_5_plus_1591_sale')])],
                         }),
                         Command.create({
                             'product_id': 'product.product_product_10',
                             'quantity': 4,
                             'price_unit': 300.0,
-                            'tax_ids':[Command.set([_get_tax_by_id('sgst_sale_18')])],
+                            'tax_ids': [Command.set([_get_tax_by_id('sgst_sale_18')])],
                         }),
                     ],
                 },
@@ -338,22 +343,22 @@ class AccountChartTemplate(models.AbstractModel):
                     ]
                 },
                 'demo_bill_cdnr_2': {
-                        'ref': '000072',
-                        'move_type': 'in_refund',
-                        'partner_id': 'res_partner_registered_supplier_1',
-                        'invoice_user_id': 'base.user_demo',
-                        'invoice_payment_term_id': 'account.account_payment_term_end_following_month',
-                        'invoice_date': datetime.now(),
-                        'l10n_in_gst_treatment': 'regular',
-                        'invoice_line_ids': [
-                            Command.create({
-                                'product_id': 'product.consu_delivery_01',
-                                'quantity': 1,
-                                'price_unit': 1000.0,
-                                'tax_ids': [Command.set([_get_tax_by_id('igst_purchase_18')])],
-                            }),
-                        ]
-                    },
+                    'ref': '000072',
+                    'move_type': 'in_refund',
+                    'partner_id': 'res_partner_registered_supplier_1',
+                    'invoice_user_id': 'base.user_demo',
+                    'invoice_payment_term_id': 'account.account_payment_term_end_following_month',
+                    'invoice_date': datetime.now(),
+                    'l10n_in_gst_treatment': 'regular',
+                    'invoice_line_ids': [
+                        Command.create({
+                            'product_id': 'product.consu_delivery_01',
+                            'quantity': 1,
+                            'price_unit': 1000.0,
+                            'tax_ids': [Command.set([_get_tax_by_id('igst_purchase_18')])],
+                        }),
+                    ]
+                },
                 # Demo of B2CS (business to consumer small) Taxable supplies made to other unregistered Person and below INR 2.5 lakhs invoice value.
                 'demo_invoice_b2cs': {
                     'move_type': 'out_invoice',
@@ -474,7 +479,8 @@ class AccountChartTemplate(models.AbstractModel):
                             'product_id': 'product.product_product_9',
                             'quantity': 3,
                             'price_unit': 400.0,
-                            'tax_ids': [Command.set([_get_tax_by_id('sgst_sale_28'), _get_tax_by_id('cess_5_plus_1591_sale')])],
+                            'tax_ids': [
+                                Command.set([_get_tax_by_id('sgst_sale_28'), _get_tax_by_id('cess_5_plus_1591_sale')])],
                         }),
                         Command.create({
                             'product_id': 'product.product_product_10',
@@ -533,7 +539,7 @@ class AccountChartTemplate(models.AbstractModel):
     @api.model
     def _get_demo_data_attachment(self, company=False):
         if company.account_fiscal_country_id.code == "IN":
-            return{
+            return {
                 'ir_attachment_in_invoice_1': {
                     'type': 'binary',
                     'name': 'in_invoice_demo_1.pdf',
@@ -555,7 +561,6 @@ class AccountChartTemplate(models.AbstractModel):
             }
         else:
             return super()._get_demo_data_attachment(company)
-
 
     @api.model
     def _get_demo_data_mail_message(self, company=False):
@@ -589,22 +594,22 @@ class AccountChartTemplate(models.AbstractModel):
         if company.account_fiscal_country_id.code == "IN":
             if company.state_id:
                 invoices = (
-                    self.ref('demo_invoice_b2b_1')
-                    + self.ref('demo_invoice_b2b_2')
-                    + self.ref('demo_invoice_b2cs')
-                    + self.ref('demo_invoice_b2cl')
-                    + self.ref('demo_invoice_exp')
-                    + self.ref('demo_invoice_nill')
-                    + self.ref('demo_invoice_cdnr_1')
-                    + self.ref('demo_invoice_cdnr_2')
-                    + self.ref('demo_invoice_cdnur')
-                    + self.ref('demo_bill_b2b_1')
-                    + self.ref('demo_bill_b2b_2')
-                    + self.ref('demo_bill_b2b_3')
-                    + self.ref('demo_bill_imp')
-                    + self.ref('demo_bill_cdnr_1')
-                    + self.ref('demo_bill_cdnr_2')
-                    + self.ref('demo_invoice_service')
+                        self.ref('demo_invoice_b2b_1')
+                        + self.ref('demo_invoice_b2b_2')
+                        + self.ref('demo_invoice_b2cs')
+                        + self.ref('demo_invoice_b2cl')
+                        + self.ref('demo_invoice_exp')
+                        + self.ref('demo_invoice_nill')
+                        + self.ref('demo_invoice_cdnr_1')
+                        + self.ref('demo_invoice_cdnr_2')
+                        + self.ref('demo_invoice_cdnur')
+                        + self.ref('demo_bill_b2b_1')
+                        + self.ref('demo_bill_b2b_2')
+                        + self.ref('demo_bill_b2b_3')
+                        + self.ref('demo_bill_imp')
+                        + self.ref('demo_bill_cdnr_1')
+                        + self.ref('demo_bill_cdnr_2')
+                        + self.ref('demo_invoice_service')
                 )
                 for move in invoices:
                     try:

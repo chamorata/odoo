@@ -5,7 +5,6 @@ import re
 
 from difflib import SequenceMatcher
 
-
 # ------------------------------------------------------------
 # Patch and comparison functions
 # ------------------------------------------------------------
@@ -159,8 +158,8 @@ def generate_comparison(new_content, old_content):
                 current_line_tag = current_line.split(">")[0]
                 line_tag = line.split(">")[0]
                 if current_line[-1] == ">" and (
-                    current_line_tag == line_tag
-                    or current_line_tag.split(" ")[0] == line_tag.split(" ")[0]
+                        current_line_tag == line_tag
+                        or current_line_tag.split(" ")[0] == line_tag.split(" ")[0]
                 ):
                     comparison[start_index + i] = "delete_me>"
 
@@ -181,7 +180,7 @@ def generate_comparison(new_content, old_content):
                 # Only use this line if it doesn't generate an empty
                 # <removed> tag
                 if not re.search(
-                    EMPTY_OPERATION_TAG, deletion_flagged_comparison
+                        EMPTY_OPERATION_TAG, deletion_flagged_comparison
                 ):
                     comparison[index] = deletion_flagged_comparison
 
@@ -204,7 +203,7 @@ def generate_comparison(new_content, old_content):
                 if not re.search(EMPTY_OPERATION_TAG, addition_flagged_line):
                     comparison.insert(start_index, addition_flagged_line)
                 elif (
-                    line.split(">")[0] != comparison[start_index].split(">")[0]
+                        line.split(">")[0] != comparison[start_index].split(">")[0]
                 ):
                     comparison.insert(start_index, line)
 
@@ -274,7 +273,7 @@ def _patch_generator(new_content, old_content):
     old_content_lines = old_content.split(LINE_SEPARATOR)
 
     for group in SequenceMatcher(
-        None, new_content_lines, old_content_lines, False
+            None, new_content_lines, old_content_lines, False
     ).get_grouped_opcodes(0):
         patch_content_line = []
         first, last = group[0], group[-1]

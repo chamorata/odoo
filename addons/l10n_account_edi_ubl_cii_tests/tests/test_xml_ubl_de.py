@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-from odoo import Command
-from odoo.addons.l10n_account_edi_ubl_cii_tests.tests.common import TestUBLCommon
-from odoo.tests import tagged
-from odoo.exceptions import UserError
 import base64
+
+from odoo.addons.l10n_account_edi_ubl_cii_tests.tests.common import TestUBLCommon
+
+from odoo import Command
+from odoo.tests import tagged
 
 
 @tagged('post_install_l10n', 'post_install', '-at_install')

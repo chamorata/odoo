@@ -2,10 +2,10 @@
 
 from unittest.mock import patch
 
+from odoo.addons.payment_authorize.tests.common import AuthorizeCommon
+
 from odoo.tests import tagged
 from odoo.tools import mute_logger
-
-from odoo.addons.payment_authorize.tests.common import AuthorizeCommon
 
 
 @tagged('post_install', '-at_install')
@@ -16,9 +16,9 @@ class TestRefundFlows(AuthorizeCommon):
         it on Odoo. """
         source_tx = self._create_transaction('direct', state='done')
         with patch(
-            'odoo.addons.payment_authorize.models.authorize_request.AuthorizeAPI'
-            '.get_transaction_details',
-            return_value={'transaction': {'transactionStatus': 'voided'}},
+                'odoo.addons.payment_authorize.models.authorize_request.AuthorizeAPI'
+                '.get_transaction_details',
+                return_value={'transaction': {'transactionStatus': 'voided'}},
         ):
             source_tx._send_refund_request(amount_to_refund=source_tx.amount)
         self.assertEqual(source_tx.state, 'cancel')
@@ -28,9 +28,9 @@ class TestRefundFlows(AuthorizeCommon):
         a refund transaction on Odoo. """
         source_tx = self._create_transaction('direct', state='done')
         with patch(
-            'odoo.addons.payment_authorize.models.authorize_request.AuthorizeAPI'
-            '.get_transaction_details',
-            return_value={'transaction': {'transactionStatus': 'refundSettledSuccessfully'}},
+                'odoo.addons.payment_authorize.models.authorize_request.AuthorizeAPI'
+                '.get_transaction_details',
+                return_value={'transaction': {'transactionStatus': 'refundSettledSuccessfully'}},
         ):
             source_tx._send_refund_request(amount_to_refund=source_tx.amount)
         refund_tx = self.env['payment.transaction'].search(
@@ -44,9 +44,9 @@ class TestRefundFlows(AuthorizeCommon):
         it on Authorize.net instead of refunding it. """
         source_tx = self._create_transaction('direct', state='done')
         with patch(
-            'odoo.addons.payment_authorize.models.authorize_request.AuthorizeAPI'
-            '.get_transaction_details',
-            return_value={'transaction': {'transactionStatus': 'authorizedPendingCapture'}},
+                'odoo.addons.payment_authorize.models.authorize_request.AuthorizeAPI'
+                '.get_transaction_details',
+                return_value={'transaction': {'transactionStatus': 'authorizedPendingCapture'}},
         ), patch(
             'odoo.addons.payment_authorize.models.authorize_request.AuthorizeAPI.void'
         ) as void_mock, patch(
@@ -62,9 +62,9 @@ class TestRefundFlows(AuthorizeCommon):
         create a refund transaction on Odoo. """
         source_tx = self._create_transaction('direct', state='done')
         with patch(
-            'odoo.addons.payment_authorize.models.authorize_request.AuthorizeAPI'
-            '.get_transaction_details',
-            return_value={'transaction': {'transactionStatus': 'settledSuccessfully'}},
+                'odoo.addons.payment_authorize.models.authorize_request.AuthorizeAPI'
+                '.get_transaction_details',
+                return_value={'transaction': {'transactionStatus': 'settledSuccessfully'}},
         ), patch(
             'odoo.addons.payment_authorize.models.authorize_request.AuthorizeAPI.refund'
         ) as refund_mock, patch(

@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from datetime import date, datetime, timedelta
-from freezegun import freeze_time
+from datetime import datetime, timedelta
 
+from freezegun import freeze_time
 from odoo.addons.event_sale.tests.common import TestEventSaleCommon
-from odoo.fields import Datetime as FieldsDatetime, Date as FieldsDate
+
+from odoo.fields import Datetime as FieldsDatetime
 from odoo.tests.common import users
 
 
@@ -53,7 +54,7 @@ class TestEventData(TestEventSaleCommon):
         self.assertFalse(event.event_registrations_open)
 
         # at least one valid ticket -> ok is back
-        event_product = self.env['product.product'].create({'name': 'Test Registration Product New',})
+        event_product = self.env['product.product'].create({'name': 'Test Registration Product New', })
         new_ticket = self.env['event.event.ticket'].create({
             'name': 'TestTicket 2',
             'event_id': event.id,

@@ -36,9 +36,9 @@ class SaleOrder(models.Model):
                 self.env['quotation.document']._check_company_domain(order.company_id),
                 order='sequence',
             ).filtered(lambda doc:
-                order.sale_order_template_id in doc.quotation_template_ids
-                or not doc.quotation_template_ids
-            ) | order.quotation_document_ids
+                       order.sale_order_template_id in doc.quotation_template_ids
+                       or not doc.quotation_template_ids
+                       ) | order.quotation_document_ids
 
     @api.depends('available_product_document_ids', 'order_line', 'order_line.available_product_document_ids')
     def _compute_is_pdf_quote_builder_available(self):
@@ -68,9 +68,9 @@ class SaleOrder(models.Model):
             }
         self.ensure_one()
         existing_mapping = (
-            self.customizable_pdf_form_fields
-            and json.loads(self.customizable_pdf_form_fields)
-        ) or {}
+                                   self.customizable_pdf_form_fields
+                                   and json.loads(self.customizable_pdf_form_fields)
+                           ) or {}
 
         headers_available = self.available_product_document_ids.filtered(
             lambda doc: doc.document_type == 'header'
@@ -90,7 +90,7 @@ class SaleOrder(models.Model):
                     'files': [{
                         'name': doc.name.rstrip('.pdf'),
                         'id': doc.id,
-                        'is_selected': doc in line.sudo().product_document_ids, # User should be
+                        'is_selected': doc in line.sudo().product_document_ids,  # User should be
                         # able to access all product documents even without sales access
                         'custom_form_fields': [{
                             'name': custom_form_field.name,

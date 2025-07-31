@@ -1,7 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from pytz import timezone, UTC, utc
 from datetime import timedelta, datetime
+
+from pytz import timezone, UTC, utc
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
@@ -17,8 +18,9 @@ class HrEmployeeBase(models.AbstractModel):
     active = fields.Boolean("Active")
     color = fields.Integer('Color Index', default=0)
     department_id = fields.Many2one('hr.department', 'Department', check_company=True)
-    member_of_department = fields.Boolean("Member of department", compute='_compute_part_of_department', search='_search_part_of_department',
-        help="Whether the employee is a member of the active user's department or one of it's child department.")
+    member_of_department = fields.Boolean("Member of department", compute='_compute_part_of_department',
+                                          search='_search_part_of_department',
+                                          help="Whether the employee is a member of the active user's department or one of it's child department.")
     job_id = fields.Many2one('hr.job', 'Job Position', check_company=True)
     job_title = fields.Char("Job Title", compute="_compute_job_title", store=True, readonly=False)
     company_id = fields.Many2one('res.company', 'Company')
@@ -32,8 +34,10 @@ class HrEmployeeBase(models.AbstractModel):
         check_company=True)
     work_phone = fields.Char('Work Phone', compute="_compute_phones", store=True, readonly=False)
     phone = fields.Char(related="user_id.phone")
-    mobile_phone = fields.Char('Work Mobile', compute="_compute_work_contact_details", store=True, inverse='_inverse_work_contact_details')
-    work_email = fields.Char('Work Email', compute="_compute_work_contact_details", store=True, inverse='_inverse_work_contact_details')
+    mobile_phone = fields.Char('Work Mobile', compute="_compute_work_contact_details", store=True,
+                               inverse='_inverse_work_contact_details')
+    work_email = fields.Char('Work Email', compute="_compute_work_contact_details", store=True,
+                             inverse='_inverse_work_contact_details')
     email = fields.Char(related="user_id.email")
     work_contact_id = fields.Many2one('res.partner', 'Work Contact', copy=False)
     work_location_id = fields.Many2one('hr.work.location', 'Work Location', domain="[('address_id', '=', address_id)]")
@@ -49,7 +53,7 @@ class HrEmployeeBase(models.AbstractModel):
     is_flexible = fields.Boolean(compute='_compute_is_flexible', store=True)
     is_fully_flexible = fields.Boolean(compute='_compute_is_flexible', store=True)
     parent_id = fields.Many2one('hr.employee', 'Manager', compute="_compute_parent_id", store=True, readonly=False,
-        domain="['|', ('company_id', '=', False), ('company_id', 'in', allowed_company_ids)]")
+                                domain="['|', ('company_id', '=', False), ('company_id', 'in', allowed_company_ids)]")
     coach_id = fields.Many2one(
         'hr.employee', 'Coach', compute='_compute_coach', store=True, readonly=False,
         domain="['|', ('company_id', '=', False), ('company_id', 'in', allowed_company_ids)]",
@@ -62,7 +66,8 @@ class HrEmployeeBase(models.AbstractModel):
         ('present', 'Present'),
         ('absent', 'Absent'),
         ('archive', 'Archived'),
-        ('out_of_working_hour', 'Out of Working hours')], compute='_compute_presence_state', default='out_of_working_hour')
+        ('out_of_working_hour', 'Out of Working hours')], compute='_compute_presence_state',
+        default='out_of_working_hour')
     last_activity = fields.Date(compute="_compute_last_activity")
     last_activity_time = fields.Char(compute="_compute_last_activity")
     hr_icon_display = fields.Selection([
@@ -170,7 +175,8 @@ class HrEmployeeBase(models.AbstractModel):
 
     @api.depends('user_id')
     def _compute_last_activity(self):
-        presences = self.env['bus.presence'].search_read([('user_id', 'in', self.mapped('user_id').ids)], ['user_id', 'last_presence'])
+        presences = self.env['bus.presence'].search_read([('user_id', 'in', self.mapped('user_id').ids)],
+                                                         ['user_id', 'last_presence'])
         # transform the result to a dict with this format {user.id: last_presence}
         presences = {p['user_id'][0]: p['last_presence'] for p in presences}
 
@@ -287,7 +293,8 @@ class HrEmployeeBase(models.AbstractModel):
                 to_datetime = utc.localize(stop_dt).astimezone(timezone(tz or 'UTC'))
                 # Getting work interval of the first is working. Functions called on resource_calendar_id
                 # are waiting for singleton
-                work_interval = res_employee_ids[0].resource_calendar_id._work_intervals_batch(from_datetime, to_datetime)[False]
+                work_interval = \
+                res_employee_ids[0].resource_calendar_id._work_intervals_batch(from_datetime, to_datetime)[False]
                 # Employee that is not supposed to work have empty items.
                 if len(work_interval._items) > 0:
                     # The employees should be working now according to their work schedule

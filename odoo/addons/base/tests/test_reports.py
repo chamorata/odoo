@@ -15,6 +15,7 @@ try:
     from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
     from pdfminer.pdfpage import PDFPage
     from pdfminer.pdfparser import PDFParser
+
     pdfminer = True
 except ImportError:
     pdfminer = False
@@ -25,7 +26,8 @@ _logger = logging.getLogger(__name__)
 @odoo.tests.tagged('post_install', '-at_install', 'post_install_l10n')
 class TestReports(odoo.tests.TransactionCase):
     def test_reports(self):
-        invoice_domain = [('move_type', 'in', ('out_invoice', 'out_refund', 'out_receipt', 'in_invoice', 'in_refund', 'in_receipt'))]
+        invoice_domain = [
+            ('move_type', 'in', ('out_invoice', 'out_refund', 'out_receipt', 'in_invoice', 'in_refund', 'in_receipt'))]
         specific_model_domains = {
             'account.report_original_vendor_bill': [('move_type', 'in', ('in_invoice', 'in_receipt'))],
             'account.report_invoice_with_payments': invoice_domain,
@@ -80,6 +82,7 @@ class TestReports(odoo.tests.TransactionCase):
         })
 
         pdf_text = "0"
+
         def _run_wkhtmltopdf(*args, **kwargs):
             return bytes(pdf_text, "utf-8")
 
@@ -124,15 +127,17 @@ PAPER_SIZES = {
     (792, 1224): 'Ledger',
 }
 
+
 class Box:
     """
     Utility class to help assertions
     """
+
     def __init__(self, obj, page_height, page_width):
         self.x1 = round(obj.x0, 1)
-        self.y1 = round(page_height-obj.y1, 1)
+        self.y1 = round(page_height - obj.y1, 1)
         self.x2 = round(obj.x1, 1)
-        self.y2 = round(page_height-obj.y0, 1)
+        self.y2 = round(page_height - obj.y0, 1)
         self.page_height = page_height
         self.page_width = page_width
 
@@ -261,12 +266,15 @@ class TestReportsRenderingCommon(odoo.tests.HttpCase):
         # this test does not aims to test company base.document.layout, but the rendering only.
         if partners is None:
             partners = self.partners
-        self.last_pdf_content = self.env['ir.actions.report'].with_context(force_report_rendering=True)._render_qweb_pdf(self.report, partners.ids)[0]
+        self.last_pdf_content = \
+        self.env['ir.actions.report'].with_context(force_report_rendering=True)._render_qweb_pdf(self.report,
+                                                                                                 partners.ids)[0]
         return self.last_pdf_content
 
     def save_pdf(self):
         assert self.last_pdf_content
-        odoo.tests.save_test_file(self._testMethodName, self.last_pdf_content, 'pdf_', 'pdf', document_type='Report PDF', logger=_logger)
+        odoo.tests.save_test_file(self._testMethodName, self.last_pdf_content, 'pdf_', 'pdf',
+                                  document_type='Report PDF', logger=_logger)
 
     def _get_pdf_pages(self, pdf_content):
         ioBytes = io.BytesIO(pdf_content)
@@ -293,7 +301,7 @@ class TestReportsRenderingCommon(odoo.tests.HttpCase):
                 self.get_paper_format(page.mediabox),
                 expected_format,
                 "Expecting pdf to be in A4 portait format",
-            ) # this is the default expected format and other layout assertions are based on this one.
+            )  # this is the default expected format and other layout assertions are based on this one.
             interpreter.process_page(page)
             layout = device.get_result()
             elements = []
@@ -305,7 +313,7 @@ class TestReportsRenderingCommon(odoo.tests.HttpCase):
                     page_width=pages[0].mediabox[2],
                 )
                 if isinstance(obj, LTTextBox):
-                    #inverse x to start from top left corner
+                    # inverse x to start from top left corner
                     elements.append((box, obj.get_text().strip()))
                 elif isinstance(obj, LTFigure):
                     elements.append((box, 'LTFigure'))
@@ -427,13 +435,13 @@ class TestReportsRendering(TestReportsRenderingCommon):
         expected_pages_contents = []
         for partner in self.partners:
             expected_pages_contents.append([
-                'LTFigure', #logo
+                'LTFigure',  # logo
                 'Some header Text',
                 f'Name: {partner.name}',
                 f'Footer for {partner.name} Page: 1 / 2',
             ])
             expected_pages_contents.append([
-                'LTFigure', #logo
+                'LTFigure',  # logo
                 'Some header Text',
                 f'Last page for {partner.name}',
                 f'Footer for {partner.name} Page: 2 / 2',
@@ -456,7 +464,7 @@ class TestReportsRendering(TestReportsRenderingCommon):
         pages = self._parse_pdf(pdf_content)
 
         self.assertEqual(len(pages), 6,
-                        '6 pages are expected, 3 per record (you may ensure `nb_lines` has a correct value to generate an oveflow)')
+                         '6 pages are expected, 3 per record (you may ensure `nb_lines` has a correct value to generate an oveflow)')
         first_page_break_at = int(
             pages[1][2][1].split('\n')[0])  # This element should be the first line, 61 when this test was written
         second_page_break_at = int(pages[2][2][1].split('\n')[0])
@@ -518,31 +526,32 @@ class TestReportsRendering(TestReportsRenderingCommon):
         pdf_content = self.create_pdf(page_content=page_content)
         pages = self._parse_pdf(pdf_content)
 
-        self.assertEqual(len(pages), 6, '6 pages are expected, 3 per record (you may ensure `nb_lines` has a correct value to generate an oveflow)')
+        self.assertEqual(len(pages), 6,
+                         '6 pages are expected, 3 per record (you may ensure `nb_lines` has a correct value to generate an oveflow)')
 
         # This element should be the first line of the table, 28 when this test was written
         first_page_break_at = int(pages[1][5][1])
         second_page_break_at = int(pages[2][5][1])
 
         def expected_table(start, end):
-            table = ['T1', 'T2', 'T3'] # thead
+            table = ['T1', 'T2', 'T3']  # thead
             for i in range(start, end):
                 table += [str(i), str(i), str(i)]
-            table += ['T1', 'T2', 'T3'] # tfoot
+            table += ['T1', 'T2', 'T3']  # tfoot
             return table
 
         expected_pages_contents = []
         for partner in self.partners:
             expected_pages_contents.append([
-                'LTFigure', #logo
+                'LTFigure',  # logo
                 'Some header Text',
-                * expected_table(0, first_page_break_at),
+                *expected_table(0, first_page_break_at),
                 f'Footer for {partner.name} Page: 1 / 3',
             ])
             expected_pages_contents.append([
-                'LTFigure', #logo
+                'LTFigure',  # logo
                 'Some header Text',
-                * expected_table(first_page_break_at, second_page_break_at),
+                *expected_table(first_page_break_at, second_page_break_at),
                 f'Footer for {partner.name} Page: 2 / 3',
             ])
             expected_pages_contents.append([
@@ -583,7 +592,8 @@ class TestReportsRenderingLimitations(TestReportsRenderingCommon):
         self.assertEqual(len(page), 3, "Expecting 3 box per page, Header, body, footer")
         header = page[0][0]
         content = page[1][0]
-        self.assertGreaterEqual(content.top, header.end_top, "EXISTING LIMITATION: large header shouldn't overflow on body, but they do")
+        self.assertGreaterEqual(content.top, header.end_top,
+                                "EXISTING LIMITATION: large header shouldn't overflow on body, but they do")
 
 
 @odoo.tests.tagged('post_install', '-at_install')

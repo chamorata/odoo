@@ -9,7 +9,8 @@ class Users(models.Model):
     _inherit = 'res.users'
 
     karma = fields.Integer('Karma', compute='_compute_karma', store=True, readonly=False)
-    karma_tracking_ids = fields.One2many('gamification.karma.tracking', 'user_id', string='Karma Changes', groups="base.group_system")
+    karma_tracking_ids = fields.One2many('gamification.karma.tracking', 'user_id', string='Karma Changes',
+                                         groups="base.group_system")
     badge_ids = fields.One2many('gamification.badge.user', 'user_id', string='Badges', copy=False)
     gold_badge = fields.Integer('Gold badges count', compute="_get_user_badge_level")
     silver_badge = fields.Integer('Silver badges count', compute="_get_user_badge_level")
@@ -166,12 +167,12 @@ FROM (
     ) intermediate
 ) final
 WHERE final.user_id IN %s""",
-            where_query.from_clause,
-            where_query.where_clause or SQL("TRUE"),
-            SQL("AND tracking.tracking_date::DATE >= %s::DATE", from_date) if from_date else SQL(),
-            SQL("AND tracking.tracking_date::DATE <= %s::DATE", to_date) if to_date else SQL(),
-            tuple(self.ids),
-        )
+                  where_query.from_clause,
+                  where_query.where_clause or SQL("TRUE"),
+                  SQL("AND tracking.tracking_date::DATE >= %s::DATE", from_date) if from_date else SQL(),
+                  SQL("AND tracking.tracking_date::DATE <= %s::DATE", to_date) if to_date else SQL(),
+                  tuple(self.ids),
+                  )
 
         self.env.cr.execute(sql)
         return self.env.cr.dictfetchall()
@@ -209,10 +210,10 @@ FROM (
     WHERE %s
 ) sub
 WHERE sub.user_id IN %s""",
-            where_query.from_clause,
-            where_query.where_clause or SQL("TRUE"),
-            tuple(self.ids),
-        )
+                  where_query.from_clause,
+                  where_query.where_clause or SQL("TRUE"),
+                  tuple(self.ids),
+                  )
         self.env.cr.execute(sql)
         return self.env.cr.dictfetchall()
 
@@ -282,8 +283,8 @@ WHERE sub.user_id IN %s""",
                 ('karma', '>=', r['karma_min']),
                 ('id', 'in', users_todo.ids),
                 '|',  # noqa
-                    '|', ('rank_id', '!=', rank_id), ('rank_id', '=', False),
-                    '|', ('next_rank_id', '!=', next_rank_id), ('next_rank_id', '=', False if next_rank_id else -1),
+                '|', ('rank_id', '!=', rank_id), ('rank_id', '=', False),
+                '|', ('next_rank_id', '!=', next_rank_id), ('next_rank_id', '=', False if next_rank_id else -1),
             ]
             users = self.env['res.users'].search(dom)
             if users:

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from collections import defaultdict
+
 from odoo import api, fields, models, _
 
 
@@ -28,13 +29,15 @@ class StockLot(models.Model):
             lot.repair_part_count = len(lot.repair_line_ids)
 
     def _compute_in_repair_count(self):
-        lot_data = self.env['repair.order']._read_group([('lot_id', 'in', self.ids), ('state', 'not in', ('done', 'cancel'))], ['lot_id'], ['__count'])
+        lot_data = self.env['repair.order']._read_group(
+            [('lot_id', 'in', self.ids), ('state', 'not in', ('done', 'cancel'))], ['lot_id'], ['__count'])
         result = {lot.id: count for lot, count in lot_data}
         for lot in self:
             lot.in_repair_count = result.get(lot.id, 0)
 
     def _compute_repaired_count(self):
-        lot_data = self.env['repair.order']._read_group([('lot_id', 'in', self.ids), ('state', '=', 'done')], ['lot_id'], ['__count'])
+        lot_data = self.env['repair.order']._read_group([('lot_id', 'in', self.ids), ('state', '=', 'done')],
+                                                        ['lot_id'], ['__count'])
         result = {lot.id: count for lot, count in lot_data}
         for lot in self:
             lot.repaired_count = result.get(lot.id, 0)

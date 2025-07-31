@@ -13,7 +13,7 @@
         'views/res_config_settings_views.xml',
         'views/res_users_views.xml',
         'views/microsoft_calendar_views.xml',
-        ],
+    ],
     'installable': True,
     'post_init_hook': 'init_initiating_microsoft_uuid',
     'assets': {

@@ -1,6 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-import time
 import logging
+import time
+
 from odoo import api, models, Command
 from odoo.exceptions import UserError, ValidationError
 
@@ -8,7 +9,6 @@ _logger = logging.getLogger(__name__)
 
 
 class AccountChartTemplate(models.AbstractModel):
-
     _inherit = "account.chart.template"
 
     @api.model
@@ -26,21 +26,21 @@ class AccountChartTemplate(models.AbstractModel):
         if company.account_fiscal_country_id.code != "UY":
             return super()._post_load_demo_data(company)
         invoices = (
-            self.ref('demo_invoice_1')
-            + self.ref('demo_invoice_2')
-            + self.ref('demo_invoice_3')
-            + self.ref('demo_invoice_4')
-            + self.ref('demo_invoice_5')
-            + self.ref('demo_invoice_6')
-            + self.ref('demo_invoice_8')
-            + self.ref('demo_invoice_9')
-            + self.ref('demo_sup_invoice_1')
-            + self.ref('demo_sup_invoice_2')
-            + self.ref('demo_sup_invoice_3')
-            + self.ref('demo_sup_invoice_6')
-            + self.ref('demo_sup_invoice_7')
-            + self.ref('demo_sup_invoice_8')
-            + self.ref('demo_sup_invoice_9')
+                self.ref('demo_invoice_1')
+                + self.ref('demo_invoice_2')
+                + self.ref('demo_invoice_3')
+                + self.ref('demo_invoice_4')
+                + self.ref('demo_invoice_5')
+                + self.ref('demo_invoice_6')
+                + self.ref('demo_invoice_8')
+                + self.ref('demo_invoice_9')
+                + self.ref('demo_sup_invoice_1')
+                + self.ref('demo_sup_invoice_2')
+                + self.ref('demo_sup_invoice_3')
+                + self.ref('demo_sup_invoice_6')
+                + self.ref('demo_sup_invoice_7')
+                + self.ref('demo_sup_invoice_8')
+                + self.ref('demo_sup_invoice_9')
         )
         # the invoice_extract acts like a placeholder for the OCR to be ran and
         # doesn't contain any lines yet
@@ -52,12 +52,12 @@ class AccountChartTemplate(models.AbstractModel):
 
         # Post the reversal moves
         invoices_to_revert = (
-            self.ref('demo_refund_invoice_1')
-            + self.ref('demo_refund_invoice_2')
-            + self.ref('demo_refund_invoice_3')
-            + self.ref('demo_refund_invoice_4')
-            + self.ref('demo_sup_refund_invoice_3')
-            + self.ref('demo_sup_refund_invoice_2')
+                self.ref('demo_refund_invoice_1')
+                + self.ref('demo_refund_invoice_2')
+                + self.ref('demo_refund_invoice_3')
+                + self.ref('demo_refund_invoice_4')
+                + self.ref('demo_sup_refund_invoice_3')
+                + self.ref('demo_sup_refund_invoice_2')
         )
         for move in invoices_to_revert:
             try:

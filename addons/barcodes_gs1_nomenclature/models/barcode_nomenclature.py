@@ -1,6 +1,6 @@
-import re
-import datetime
 import calendar
+import datetime
+import re
 
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
@@ -42,9 +42,9 @@ class BarcodeNomenclature(models.Model):
         now = datetime.date.today()
         current_century = now.year // 100
         substract_year = int(gs1_date[0:2]) - (now.year % 100)
-        century = (51 <= substract_year <= 99 and current_century - 1) or\
-            (-99 <= substract_year <= -50 and current_century + 1) or\
-            current_century
+        century = (51 <= substract_year <= 99 and current_century - 1) or \
+                  (-99 <= substract_year <= -50 and current_century + 1) or \
+                  current_century
         year = century * 100 + int(gs1_date[0:2])
 
         if gs1_date[-2:] == '00':  # Day is not mandatory, when not set -> last day of the month
@@ -67,7 +67,8 @@ class BarcodeNomenclature(models.Model):
                 if rule.gs1_decimal_usage:
                     decimal_position = int(match.group(1)[-1])
                 if decimal_position > 0:
-                    result['value'] = float(match.group(2)[:-decimal_position] + "." + match.group(2)[-decimal_position:])
+                    result['value'] = float(
+                        match.group(2)[:-decimal_position] + "." + match.group(2)[-decimal_position:])
                 else:
                     result['value'] = int(match.group(2))
             except Exception:

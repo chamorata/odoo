@@ -1,5 +1,5 @@
-from odoo.tests.common import TransactionCase, new_test_user
 from odoo.tests import tagged
+from odoo.tests.common import TransactionCase, new_test_user
 
 
 @tagged('hr_applicant')
@@ -52,26 +52,28 @@ class TestHrApplicant(TransactionCase):
         self.assertCountEqual(self.applicant.categ_ids.ids, [self.category_1.id, self.category_2.id])
         self.applicant.candidate_id = self.candidate_3.id
         # Applicant tags: 1, 2, 3
-        self.assertCountEqual(self.applicant.categ_ids.ids, [self.category_1.id, self.category_2.id, self.category_3.id])
+        self.assertCountEqual(self.applicant.categ_ids.ids,
+                              [self.category_1.id, self.category_2.id, self.category_3.id])
         self.applicant.candidate_id = self.candidate_0.id
         # Applicant tags: 1, 2, 3
-        self.assertCountEqual(self.applicant.categ_ids.ids, [self.category_1.id, self.category_2.id, self.category_3.id])
+        self.assertCountEqual(self.applicant.categ_ids.ids,
+                              [self.category_1.id, self.category_2.id, self.category_3.id])
 
     def test_update_interviewer_for_multiple_applicants(self):
         """
             Test that assigning interviewer to multiple applicants.
         """
         interviewer_user_1 = new_test_user(self.env, 'sma',
-            groups='base.group_user,hr_recruitment.group_hr_recruitment_interviewer',
-            name='Recruitment Interviewer', email='sma@example.com')
+                                           groups='base.group_user,hr_recruitment.group_hr_recruitment_interviewer',
+                                           name='Recruitment Interviewer', email='sma@example.com')
 
         interviewer_user_2 = new_test_user(self.env, 'jab',
-            groups='base.group_user,hr_recruitment.group_hr_recruitment_interviewer',
-            name='Recruitment Interviewer', email='jab@example.com')
+                                           groups='base.group_user,hr_recruitment.group_hr_recruitment_interviewer',
+                                           name='Recruitment Interviewer', email='jab@example.com')
 
         interviewer_user_3 = new_test_user(self.env, 'aad',
-            groups='base.group_user,hr_recruitment.group_hr_recruitment_interviewer',
-            name='Recruitment Interviewer', email='aad@example.com')
+                                           groups='base.group_user,hr_recruitment.group_hr_recruitment_interviewer',
+                                           name='Recruitment Interviewer', email='aad@example.com')
 
         applicant = self.applicant
         applicant.write({'interviewer_ids': [(6, 0, [interviewer_user_1.id])]})

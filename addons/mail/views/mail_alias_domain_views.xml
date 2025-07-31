@@ -63,8 +63,8 @@
                 <field name="company_ids" groups="base.group_multi_company"/>
                 <group expand="0" string="Group By">
                     <filter string="Company" name="group_by_company_ids"
-                        domain="[]" context="{'group_by': 'company_ids'}"
-                        groups="base.group_multi_company"/>
+                            domain="[]" context="{'group_by': 'company_ids'}"
+                            groups="base.group_multi_company"/>
                 </group>
             </search>
         </field>

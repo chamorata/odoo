@@ -2,8 +2,8 @@
 
 import json
 import struct
-from threading import Event
 import unittest
+from threading import Event
 from unittest.mock import patch
 
 try:

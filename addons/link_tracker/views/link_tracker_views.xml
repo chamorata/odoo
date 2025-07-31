@@ -7,7 +7,8 @@
             <field name="model">link.tracker</field>
             <field name="arch" type="xml">
                 <search string="Links">
-                    <field name="url" string="Title and URL" filter_domain="['|', ('title', 'ilike', self), ('url', 'ilike', self)]"/>
+                    <field name="url" string="Title and URL"
+                           filter_domain="['|', ('title', 'ilike', self), ('url', 'ilike', self)]"/>
                     <field name="title"/>
                     <field name="label"/>
                     <field name="campaign_id"/>
@@ -30,13 +31,14 @@
                     <sheet>
                         <div class="oe_button_box" name="button_box">
                             <button type="object" icon="fa-sign-out" name="action_visit_page"
-                                string="Visit Page" class="oe_stat_button">
+                                    string="Visit Page" class="oe_stat_button">
                                 <div class="o_field_widget o_stat_info">
                                     <span class="o_stat_text">Visit Page</span>
                                 </div>
                             </button>
 
-                            <button type="object" class="oe_stat_button" name="action_view_statistics" icon="fa-bar-chart-o">
+                            <button type="object" class="oe_stat_button" name="action_view_statistics"
+                                    icon="fa-bar-chart-o">
                                 <field name="count" string="Clicks" widget="statinfo"/>
                             </button>
                         </div>
@@ -97,7 +99,8 @@
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
                     Create a link tracker
-                </p><p>
+                </p>
+                <p>
                     Trackers are used to collect count stat about click on links and generate short URLs.
                 </p>
             </field>
@@ -180,7 +183,8 @@
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
                     Create a link tracker
-                </p><p>
+                </p>
+                <p>
                     Trackers are used to collect count stat about click on links and generate short URLs.
                 </p>
             </field>
@@ -189,9 +193,9 @@
 
         <!-- MENUS -->
         <menuitem id="link_tracker_menu_main"
-            name="Link Tracker"
-            parent="utm.menu_link_tracker_root"
-            action="link_tracker_action"
-            groups="base.group_no_one"/>
+                  name="Link Tracker"
+                  parent="utm.menu_link_tracker_root"
+                  action="link_tracker_action"
+                  groups="base.group_no_one"/>
     </data>
 </odoo>

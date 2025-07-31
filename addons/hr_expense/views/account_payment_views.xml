@@ -13,9 +13,9 @@
                             icon="fa-file-text-o"
                             type="object"
                             invisible="not expense_sheet_id">
-                            <div class="o_stat_info">
-                                <span class="o_stat_text">Expense Report</span>
-                            </div>
+                        <div class="o_stat_info">
+                            <span class="o_stat_text">Expense Report</span>
+                        </div>
                     </button>
                 </xpath>
             </field>

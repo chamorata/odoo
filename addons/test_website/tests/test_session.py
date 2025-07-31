@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from lxml import html
 from unittest.mock import patch
 
-from odoo import http
+from lxml import html
 from odoo.addons.website.models.website import Website
-import odoo.tests
 
+import odoo.tests
+from odoo import http
 from odoo.addons.base.tests.common import HttpCaseWithUserDemo
 
 
@@ -60,7 +60,6 @@ class TestWebsiteSession(HttpCaseWithUserDemo):
         get_cached_values_without_cache = Website._get_cached_values.__cache__.method
         with patch.object(Website, '_get_cached_values',
                           side_effect=get_cached_values_without_cache, autospec=True):
-
             # ensure that permissions on logout are OK
             res = self.url_open('/web/session/logout')
             self.assertEqual(res.status_code, 200)

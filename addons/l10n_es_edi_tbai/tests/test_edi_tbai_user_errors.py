@@ -3,7 +3,6 @@ from unittest.mock import patch
 from odoo import Command
 from odoo.exceptions import UserError
 from odoo.tests import tagged
-
 from .common import TestEsEdiTbaiCommonGipuzkoa
 
 
@@ -33,7 +32,8 @@ class TestTbaiUserErrors(TestEsEdiTbaiCommonGipuzkoa):
         with self.assertRaises(UserError) as e:
             self.invoice_send_wizard.action_send_and_print()
 
-        self.assertEqual(str(e.exception), self.tbai_error_msg + "Please specify a tax agency on your company for TicketBAI.")
+        self.assertEqual(str(e.exception),
+                         self.tbai_error_msg + "Please specify a tax agency on your company for TicketBAI.")
 
     def test_no_company_vat(self):
         self.invoice_to_send.company_id.vat = False
@@ -41,7 +41,8 @@ class TestTbaiUserErrors(TestEsEdiTbaiCommonGipuzkoa):
         with self.assertRaises(UserError) as e:
             self.invoice_send_wizard.action_send_and_print()
 
-        self.assertEqual(str(e.exception), self.tbai_error_msg + "Please configure the Tax ID on your company for TicketBAI.")
+        self.assertEqual(str(e.exception),
+                         self.tbai_error_msg + "Please configure the Tax ID on your company for TicketBAI.")
 
     def test_no_tax_on_line(self):
         invoice = self.env['account.move'].create({
@@ -68,7 +69,8 @@ class TestTbaiUserErrors(TestEsEdiTbaiCommonGipuzkoa):
         with self.assertRaises(UserError) as e:
             self._get_invoice_send_wizard(invoice).action_send_and_print()
 
-        self.assertEqual(str(e.exception), self.tbai_error_msg + "There should be at least one tax set on each line in order to send to TicketBAI.")
+        self.assertEqual(str(e.exception),
+                         self.tbai_error_msg + "There should be at least one tax set on each line in order to send to TicketBAI.")
 
     def test_pending_invoice(self):
         first_invoice = self._create_posted_invoice()
@@ -79,8 +81,8 @@ class TestTbaiUserErrors(TestEsEdiTbaiCommonGipuzkoa):
         # Post first with request error
         try:
             with patch(
-                'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
-                side_effect=self.mock_request_error,
+                    'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
+                    side_effect=self.mock_request_error,
             ):
                 first_invoice_send_wizard.action_send_and_print()
             raise AssertionError("A UserError should have been raised.")
@@ -94,22 +96,23 @@ class TestTbaiUserErrors(TestEsEdiTbaiCommonGipuzkoa):
             second_invoice_send_wizard.action_send_and_print()
             raise AssertionError("A UserError should have been raised.")
         except UserError as e:
-            self.assertEqual(str(e), self.tbai_error_msg + f"TicketBAI: Cannot post invoice while chain head ({first_invoice.name}) has not been posted")
+            self.assertEqual(str(e),
+                             self.tbai_error_msg + f"TicketBAI: Cannot post invoice while chain head ({first_invoice.name}) has not been posted")
             self.assertEqual(second_invoice.l10n_es_tbai_state, 'to_send')
             self.assertFalse(second_invoice.l10n_es_tbai_chain_index)
             self.assertEqual(second_invoice.l10n_es_tbai_post_document_id.state, 'to_send')
 
         # Post first with success
         with patch(
-            'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
-            return_value=self.mock_response_post_invoice_success,
+                'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
+                return_value=self.mock_response_post_invoice_success,
         ):
             first_invoice_send_wizard.action_send_and_print()
 
         # Can now post second with success
         with patch(
-            'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
-            return_value=self.mock_response_post_invoice_success,
+                'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
+                return_value=self.mock_response_post_invoice_success,
         ):
             second_invoice_send_wizard.action_send_and_print()
 
@@ -135,19 +138,20 @@ class TestTbaiUserErrors(TestEsEdiTbaiCommonGipuzkoa):
             credit_note_send_wizard.action_send_and_print()
             raise AssertionError("A UserError should have been raised.")
         except UserError as e:
-            self.assertEqual(str(e), self.tbai_error_msg + "TicketBAI: Cannot post a reversal document while the source document has not been posted")
+            self.assertEqual(str(e),
+                             self.tbai_error_msg + "TicketBAI: Cannot post a reversal document while the source document has not been posted")
 
         # Post the source invoice
         with patch(
-            'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
-            return_value=self.mock_response_post_invoice_success,
+                'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
+                return_value=self.mock_response_post_invoice_success,
         ):
             self.invoice_send_wizard.action_send_and_print()
 
         # It is now possible to post the credit note
         with patch(
-            'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
-            return_value=self.mock_response_post_invoice_success,
+                'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
+                return_value=self.mock_response_post_invoice_success,
         ):
             credit_note_send_wizard.action_send_and_print()
 

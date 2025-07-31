@@ -18,7 +18,8 @@
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
                     <record id="tax_report_line_parent_line_report_2" model="account.report.line">
-                        <field name="name">Local sales (excluding fixed assets) taxed at a rate different from zero</field>
+                        <field name="name">Local sales (excluding fixed assets) taxed at a rate different from zero
+                        </field>
                         <field name="children_ids">
                             <record id="tax_report_line_104_401" model="account.report.line">
                                 <field name="name">Gross value(401)</field>
@@ -94,7 +95,7 @@
                             <record id="tax_report_line_104_425" model="account.report.line">
                                 <field name="name">Gross value(425)</field>
                                 <field name="code">c425_104</field>
-                            <field name="expression_ids">
+                                <field name="expression_ids">
                                     <record id="tax_report_line_104_425_tag" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">tax_tags</field>
@@ -125,7 +126,9 @@
                         </field>
                     </record>
                     <record id="tax_report_line_parent_line_report_10" model="account.report.line">
-                        <field name="name">VAT generated on the difference between sales and credit notes at different rates (adjustment payable)</field>
+                        <field name="name">VAT generated on the difference between sales and credit notes at different
+                            rates (adjustment payable)
+                        </field>
                         <field name="children_ids">
                             <record id="tax_report_line_104_423" model="account.report.line">
                                 <field name="name">Tax generated(423)</field>
@@ -140,7 +143,9 @@
                         </field>
                     </record>
                     <record id="tax_report_line_parent_line_report_12" model="account.report.line">
-                        <field name="name">VAT generated on the difference between sales and credit notes at different rates (credit adjustment)</field>
+                        <field name="name">VAT generated on the difference between sales and credit notes at different
+                            rates (credit adjustment)
+                        </field>
                         <field name="children_ids">
                             <record id="tax_report_line_104_424" model="account.report.line">
                                 <field name="name">Tax generated(424)</field>
@@ -155,7 +160,9 @@
                         </field>
                     </record>
                     <record id="tax_report_line_parent_line_report_14" model="account.report.line">
-                        <field name="name">Local sales (excluding fixed assets) taxed at 0% rate that do not entitle to tax credits</field>
+                        <field name="name">Local sales (excluding fixed assets) taxed at 0% rate that do not entitle to
+                            tax credits
+                        </field>
                         <field name="children_ids">
                             <record id="tax_report_line_104_403" model="account.report.line">
                                 <field name="name">Gross value(403)</field>
@@ -180,7 +187,8 @@
                         </field>
                     </record>
                     <record id="tax_report_line_parent_line_report_17" model="account.report.line">
-                        <field name="name">Sales of fixed assets taxed at 0% rate that do not entitle to tax credits</field>
+                        <field name="name">Sales of fixed assets taxed at 0% rate that do not entitle to tax credits
+                        </field>
                         <field name="children_ids">
                             <record id="tax_report_line_104_404" model="account.report.line">
                                 <field name="name">Gross value(404)</field>
@@ -205,7 +213,9 @@
                         </field>
                     </record>
                     <record id="tax_report_line_parent_line_report_20" model="account.report.line">
-                        <field name="name">Local sales (excluding fixed assets) taxed at 0% rate that entitle to tax credits</field>
+                        <field name="name">Local sales (excluding fixed assets) taxed at 0% rate that entitle to tax
+                            credits
+                        </field>
                         <field name="children_ids">
                             <record id="tax_report_line_104_405" model="account.report.line">
                                 <field name="name">Gross value(405)</field>
@@ -414,7 +424,9 @@
                         </field>
                     </record>
                     <record id="tax_report_line_parent_line_report_44" model="account.report.line">
-                        <field name="name">Reimbursement income as intermediary / values invoiced by transport operators (informative)</field>
+                        <field name="name">Reimbursement income as intermediary / values invoiced by transport operators
+                            (informative)
+                        </field>
                         <field name="children_ids">
                             <record id="tax_report_line_104_434" model="account.report.line">
                                 <field name="name">Gross value(434)</field>
@@ -467,7 +479,9 @@
                         </field>
                     </record>
                     <record id="tax_report_line_104_481" model="account.report.line">
-                        <field name="name">Total transfers taxed at a rate different from zero to credit this month(481)</field>
+                        <field name="name">Total transfers taxed at a rate different from zero to credit this
+                            month(481)
+                        </field>
                         <field name="expression_ids">
                             <record id="tax_report_line_104_481_tag" model="account.report.expression">
                                 <field name="label">balance</field>
@@ -537,7 +551,9 @@
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
                     <record id="tax_report_line_parent_line_report_57" model="account.report.line">
-                        <field name="name">Acquisitions and payments (excluding fixed assets) taxed at a rate different from zero (with the right to tax credits)</field>
+                        <field name="name">Acquisitions and payments (excluding fixed assets) taxed at a rate different
+                            from zero (with the right to tax credits)
+                        </field>
                         <field name="children_ids">
                             <record id="tax_report_line_104_500" model="account.report.line">
                                 <field name="name">Gross value(500)</field>
@@ -575,7 +591,9 @@
                         </field>
                     </record>
                     <record id="tax_report_line_parent_line_report_61" model="account.report.line">
-                        <field name="name">Local acquisitions of fixed assets taxed at a rate different from zero (with the right to tax credits)</field>
+                        <field name="name">Local acquisitions of fixed assets taxed at a rate different from zero (with
+                            the right to tax credits)
+                        </field>
                         <field name="children_ids">
                             <record id="tax_report_line_104_501" model="account.report.line">
                                 <field name="name">Gross value(501)</field>
@@ -613,7 +631,9 @@
                         </field>
                     </record>
                     <record id="tax_report_line_parent_line_report_62" model="account.report.line">
-                        <field name="name">Acquisitions and local payments (excludes fixed assets) taxed at 5% (with the right to tax credits)</field>
+                        <field name="name">Acquisitions and local payments (excludes fixed assets) taxed at 5% (with the
+                            right to tax credits)
+                        </field>
                         <field name="children_ids">
                             <record id="tax_report_line_104_540" model="account.report.line">
                                 <field name="name">Gross value(540)</field>
@@ -651,7 +671,9 @@
                         </field>
                     </record>
                     <record id="tax_report_line_parent_line_report_65" model="account.report.line">
-                        <field name="name">Other acquisitions and payments taxed at a rate different from zero (not entitled to tax credit)</field>
+                        <field name="name">Other acquisitions and payments taxed at a rate different from zero (not
+                            entitled to tax credit)
+                        </field>
                         <field name="children_ids">
                             <record id="tax_report_line_104_502" model="account.report.line">
                                 <field name="name">Gross value(502)</field>
@@ -727,7 +749,9 @@
                         </field>
                     </record>
                     <record id="tax_report_line_parent_line_report_73" model="account.report.line">
-                        <field name="name">Imports of goods (excludes fixed assets) taxed at a rate different from zero</field>
+                        <field name="name">Imports of goods (excludes fixed assets) taxed at a rate different from
+                            zero
+                        </field>
                         <field name="children_ids">
                             <record id="tax_report_line_104_504" model="account.report.line">
                                 <field name="name">Gross value(504)</field>
@@ -803,7 +827,9 @@
                         </field>
                     </record>
                     <record id="tax_report_line_parent_line_report_81" model="account.report.line">
-                        <field name="name">VAT generated on the difference between acquisitions and credit notes at different rates (positive adjustment to tax credit)</field>
+                        <field name="name">VAT generated on the difference between acquisitions and credit notes at
+                            different rates (positive adjustment to tax credit)
+                        </field>
                         <field name="children_ids">
                             <record id="tax_report_line_104_526" model="account.report.line">
                                 <field name="name">Tax generated(526)</field>
@@ -819,7 +845,9 @@
                         </field>
                     </record>
                     <record id="tax_report_line_parent_line_report_83" model="account.report.line">
-                        <field name="name">VAT generated on the difference between acquisitions and credit notes at different rates (negative adjustment to tax credit)</field>
+                        <field name="name">VAT generated on the difference between acquisitions and credit notes at
+                            different rates (negative adjustment to tax credit)
+                        </field>
                         <field name="children_ids">
                             <record id="tax_report_line_104_527" model="account.report.line">
                                 <field name="name">Tax generated(527)</field>
@@ -1051,7 +1079,9 @@
                         </field>
                     </record>
                     <record id="tax_report_line_parent_line_report_109" model="account.report.line">
-                        <field name="name">Net payments for reimbursement as intermediary / values invoiced by partners to transport operators (informative)</field>
+                        <field name="name">Net payments for reimbursement as intermediary / values invoiced by partners
+                            to transport operators (informative)
+                        </field>
                         <field name="children_ids">
                             <record id="tax_report_line_104_535" model="account.report.line">
                                 <field name="name">Gross value(535)</field>
@@ -1095,7 +1125,9 @@
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
                     <record id="tax_report_line_104_601" model="account.report.line">
-                        <field name="name">Tax incurred (if the difference in fields 499-564 is greater than zero)(601)</field>
+                        <field name="name">Tax incurred (if the difference in fields 499-564 is greater than
+                            zero)(601)
+                        </field>
                         <field name="code">c601</field>
                         <field name="expression_ids">
                             <record id="tax_report_line_104_601_tag" model="account.report.expression">
@@ -1106,7 +1138,9 @@
                         </field>
                     </record>
                     <record id="tax_report_line_104_602" model="account.report.line">
-                        <field name="name">Tax credit applicable in this period (if the difference in fields 499-564 is less than zero)(602)</field>
+                        <field name="name">Tax credit applicable in this period (if the difference in fields 499-564 is
+                            less than zero)(602)
+                        </field>
                         <field name="code">c602</field>
                         <field name="expression_ids">
                             <record id="tax_report_line_104_602_tag" model="account.report.expression">
@@ -1117,7 +1151,9 @@
                         </field>
                     </record>
                     <record id="tax_report_line_104_604" model="account.report.line">
-                        <field name="name">(-) VAT offset for sales made in affected areas - Solidarity Law, restitution of tax credit in resolutions(604)</field>
+                        <field name="name">(-) VAT offset for sales made in affected areas - Solidarity Law, restitution
+                            of tax credit in resolutions(604)
+                        </field>
                         <field name="code">c604</field>
                         <field name="expression_ids">
                             <record id="tax_report_line_104_604_tag" model="account.report.expression">
@@ -1131,7 +1167,9 @@
                         <field name="name">(-) Tax credit balance from previous month</field>
                         <field name="children_ids">
                             <record id="tax_report_line_104_605" model="account.report.line">
-                                <field name="name">For acquisitions and imports (transfer field 615 from the previous period's declaration)(605)</field>
+                                <field name="name">For acquisitions and imports (transfer field 615 from the previous
+                                    period's declaration)(605)
+                                </field>
                                 <field name="code">c605</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_line_104_605_tag" model="account.report.expression">
@@ -1142,7 +1180,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_104_606" model="account.report.line">
-                                <field name="name">For VAT withholdings at source that have been made (transfer the field 617 of the previous period's return)(606)</field>
+                                <field name="name">For VAT withholdings at source that have been made (transfer the
+                                    field 617 of the previous period's return)(606)
+                                </field>
                                 <field name="code">c606</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_line_104_606_tag" model="account.report.expression">
@@ -1153,7 +1193,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_104_608" model="account.report.line">
-                                <field name="name">VAT offset for sales made in affected areas - Solidarity Law (transfer field 619 of the previous period's return)(608)</field>
+                                <field name="name">VAT offset for sales made in affected areas - Solidarity Law
+                                    (transfer field 619 of the previous period's return)(608)
+                                </field>
                                 <field name="code">c608</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_line_104_608_tag" model="account.report.expression">
@@ -1177,7 +1219,9 @@
                         </field>
                     </record>
                     <record id="tax_report_line_104_610" model="account.report.line">
-                        <field name="name">(+) Adjustment for VAT refunded or deducted for purchases made by electronic means(610)</field>
+                        <field name="name">(+) Adjustment for VAT refunded or deducted for purchases made by electronic
+                            means(610)
+                        </field>
                         <field name="code">c610</field>
                         <field name="expression_ids">
                             <record id="tax_report_line_104_610_tag" model="account.report.expression">
@@ -1188,7 +1232,10 @@
                         </field>
                     </record>
                     <record id="tax_report_line_104_612" model="account.report.line">
-                        <field name="name">(+) Adjustment for VAT refunds and VAT rejections (VAT refunds), VAT adjustment for control processes and others (import acquisitions), attributable to tax credit(612)</field>
+                        <field name="name">(+) Adjustment for VAT refunds and VAT rejections (VAT refunds), VAT
+                            adjustment for control processes and others (import acquisitions), attributable to tax
+                            credit(612)
+                        </field>
                         <field name="code">c612</field>
                         <field name="expression_ids">
                             <record id="tax_report_line_104_612_tag" model="account.report.expression">
@@ -1199,7 +1246,9 @@
                         </field>
                     </record>
                     <record id="tax_report_line_104_613" model="account.report.line">
-                        <field name="name">(+) Adjustment for VAT refunded and rejected VAT, VAT adjustment for control processes and others (for VAT withholdings at source), attributable to tax credit(613)</field>
+                        <field name="name">(+) Adjustment for VAT refunded and rejected VAT, VAT adjustment for control
+                            processes and others (for VAT withholdings at source), attributable to tax credit(613)
+                        </field>
                         <field name="code">c613</field>
                         <field name="expression_ids">
                             <record id="tax_report_line_104_613_tag" model="account.report.expression">
@@ -1210,7 +1259,9 @@
                         </field>
                     </record>
                     <record id="tax_report_line_104_614" model="account.report.line">
-                        <field name="name">(+) Adjustment for VAT refunded by other public sector institutions attributable to tax credit in the month(614)</field>
+                        <field name="name">(+) Adjustment for VAT refunded by other public sector institutions
+                            attributable to tax credit in the month(614)
+                        </field>
                         <field name="code">c614</field>
                         <field name="expression_ids">
                             <record id="tax_report_line_104_614_tag" model="account.report.expression">
@@ -1246,7 +1297,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_104_619" model="account.report.line">
-                                <field name="name">VAT offset for sales made in affected areas - Solidarity Law, restitution of tax credit in resolutions(619)</field>
+                                <field name="name">VAT offset for sales made in affected areas - Solidarity Law,
+                                    restitution of tax credit in resolutions(619)
+                                </field>
                                 <field name="code">c619</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_line_104_619_tag" model="account.report.expression">
@@ -1259,7 +1312,9 @@
                         </field>
                     </record>
                     <record id="tax_report_line_104_620" model="account.report.line">
-                        <field name="name">SUBTOTAL PAYABLE If (601-602-603-604-605-606-607-608-609+610+611+612+613+614) &gt; 0(620)</field>
+                        <field name="name">SUBTOTAL PAYABLE If (601-602-603-604-605-606-607-608-609+610+611+612+613+614)
+                            &gt; 0(620)
+                        </field>
                         <field name="code">c620</field>
                         <field name="expression_ids">
                             <record id="tax_report_line_104_620_tag" model="account.report.expression">
@@ -1270,7 +1325,9 @@
                         </field>
                     </record>
                     <record id="tax_report_line_104_621" model="account.report.line">
-                        <field name="name">Presumptive VAT on gaming halls (mechanical bingo) and other games of chance (applicable for years prior to 2013)(621)</field>
+                        <field name="name">Presumptive VAT on gaming halls (mechanical bingo) and other games of chance
+                            (applicable for years prior to 2013)(621)
+                        </field>
                         <field name="code">c621</field>
                         <field name="expression_ids">
                             <record id="tax_report_line_104_621_tag" model="account.report.expression">
@@ -1294,11 +1351,15 @@
                 </field>
             </record>
             <record id="tax_report_line_parent_line_report_133" model="account.report.line">
-                <field name="name">TAX ON FOREIGN EXCHANGE OUTFLOWS FOR PURPOSES OF REFUND TO REGULAR EXPORTERS OF GOODS</field>
+                <field name="name">TAX ON FOREIGN EXCHANGE OUTFLOWS FOR PURPOSES OF REFUND TO REGULAR EXPORTERS OF
+                    GOODS
+                </field>
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
                     <record id="tax_report_line_parent_line_report_134" model="account.report.line">
-                        <field name="name">Imports of raw materials, inputs and capital goods that are incorporated in the production processes of goods to be exported</field>
+                        <field name="name">Imports of raw materials, inputs and capital goods that are incorporated in
+                            the production processes of goods to be exported
+                        </field>
                         <field name="children_ids">
                             <record id="tax_report_line_104_700" model="account.report.line">
                                 <field name="name">Value(700)</field>
@@ -1466,7 +1527,9 @@
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
                     <record id="tax_report_line_parent_line_report_151" model="account.report.line">
-                        <field name="name">In a dependency relationship that exceeds or does not exceed the tax-deductible basis</field>
+                        <field name="name">In a dependency relationship that exceeds or does not exceed the
+                            tax-deductible basis
+                        </field>
                         <field name="children_ids">
                             <record id="tax_report_line_103_302" model="account.report.line">
                                 <field name="name">Taxable income(302)</field>
@@ -1500,7 +1563,8 @@
                                                 <field name="name">Taxable income(303)</field>
                                                 <field name="code">c303</field>
                                                 <field name="expression_ids">
-                                                    <record id="tax_report_line_103_303_tag" model="account.report.expression">
+                                                    <record id="tax_report_line_103_303_tag"
+                                                            model="account.report.expression">
                                                         <field name="label">balance</field>
                                                         <field name="engine">tax_tags</field>
                                                         <field name="formula">303 (Reporte 103)</field>
@@ -1511,7 +1575,8 @@
                                                 <field name="name">Value withheld(353)</field>
                                                 <field name="code">c353</field>
                                                 <field name="expression_ids">
-                                                    <record id="tax_report_line_103_353_tag" model="account.report.expression">
+                                                    <record id="tax_report_line_103_353_tag"
+                                                            model="account.report.expression">
                                                         <field name="label">balance</field>
                                                         <field name="engine">tax_tags</field>
                                                         <field name="formula">353 (Reporte 103)</field>
@@ -1520,14 +1585,16 @@
                                             </record>
                                         </field>
                                     </record>
-                                     <record id="tax_report_line_parent_line_report_156" model="account.report.line">
-                                        <field name="name">Servicios profesionales prestados por sociedades residentes</field>
+                                    <record id="tax_report_line_parent_line_report_156" model="account.report.line">
+                                        <field name="name">Servicios profesionales prestados por sociedades residentes
+                                        </field>
                                         <field name="children_ids">
                                             <record id="tax_report_line_103_3030" model="account.report.line">
                                                 <field name="name">Base imponible(3030)</field>
                                                 <field name="code">c3030</field>
                                                 <field name="expression_ids">
-                                                    <record id="tax_report_line_103_3030_tag" model="account.report.expression">
+                                                    <record id="tax_report_line_103_3030_tag"
+                                                            model="account.report.expression">
                                                         <field name="label">balance</field>
                                                         <field name="engine">tax_tags</field>
                                                         <field name="formula">3030 (Reporte 103)</field>
@@ -1538,7 +1605,8 @@
                                                 <field name="name">Valor retenido(3530)</field>
                                                 <field name="code">c3530</field>
                                                 <field name="expression_ids">
-                                                    <record id="tax_report_line_103_3530_tag" model="account.report.expression">
+                                                    <record id="tax_report_line_103_3530_tag"
+                                                            model="account.report.expression">
                                                         <field name="label">balance</field>
                                                         <field name="engine">tax_tags</field>
                                                         <field name="formula">3530 (Reporte 103)</field>
@@ -1554,7 +1622,8 @@
                                                 <field name="name">Taxable income(304)</field>
                                                 <field name="code">c304</field>
                                                 <field name="expression_ids">
-                                                    <record id="tax_report_line_103_304_tag" model="account.report.expression">
+                                                    <record id="tax_report_line_103_304_tag"
+                                                            model="account.report.expression">
                                                         <field name="label">balance</field>
                                                         <field name="engine">tax_tags</field>
                                                         <field name="formula">304 (Reporte 103)</field>
@@ -1565,7 +1634,8 @@
                                                 <field name="name">Value withheld(354)</field>
                                                 <field name="code">c354</field>
                                                 <field name="expression_ids">
-                                                    <record id="tax_report_line_103_354_tag" model="account.report.expression">
+                                                    <record id="tax_report_line_103_354_tag"
+                                                            model="account.report.expression">
                                                         <field name="label">balance</field>
                                                         <field name="engine">tax_tags</field>
                                                         <field name="formula">354 (Reporte 103)</field>
@@ -1581,7 +1651,8 @@
                                                 <field name="name">Taxable income(307)</field>
                                                 <field name="code">c307</field>
                                                 <field name="expression_ids">
-                                                    <record id="tax_report_line_103_307_tag" model="account.report.expression">
+                                                    <record id="tax_report_line_103_307_tag"
+                                                            model="account.report.expression">
                                                         <field name="label">balance</field>
                                                         <field name="engine">tax_tags</field>
                                                         <field name="formula">307 (Reporte 103)</field>
@@ -1592,7 +1663,8 @@
                                                 <field name="name">Value withheld(357)</field>
                                                 <field name="code">c357</field>
                                                 <field name="expression_ids">
-                                                    <record id="tax_report_line_103_357_tag" model="account.report.expression">
+                                                    <record id="tax_report_line_103_357_tag"
+                                                            model="account.report.expression">
                                                         <field name="label">balance</field>
                                                         <field name="engine">tax_tags</field>
                                                         <field name="formula">357 (Reporte 103)</field>
@@ -1608,7 +1680,8 @@
                                                 <field name="name">Taxable income(308)</field>
                                                 <field name="code">c308</field>
                                                 <field name="expression_ids">
-                                                    <record id="tax_report_line_103_308_tag" model="account.report.expression">
+                                                    <record id="tax_report_line_103_308_tag"
+                                                            model="account.report.expression">
                                                         <field name="label">balance</field>
                                                         <field name="engine">tax_tags</field>
                                                         <field name="formula">308 (Reporte 103)</field>
@@ -1619,7 +1692,8 @@
                                                 <field name="name">Value withheld(358)</field>
                                                 <field name="code">c358</field>
                                                 <field name="expression_ids">
-                                                    <record id="tax_report_line_103_358_tag" model="account.report.expression">
+                                                    <record id="tax_report_line_103_358_tag"
+                                                            model="account.report.expression">
                                                         <field name="label">balance</field>
                                                         <field name="engine">tax_tags</field>
                                                         <field name="formula">358 (Reporte 103)</field>
@@ -1635,7 +1709,8 @@
                                                 <field name="name">Taxable income(309)</field>
                                                 <field name="code">c309</field>
                                                 <field name="expression_ids">
-                                                    <record id="tax_report_line_103_309_tag" model="account.report.expression">
+                                                    <record id="tax_report_line_103_309_tag"
+                                                            model="account.report.expression">
                                                         <field name="label">balance</field>
                                                         <field name="engine">tax_tags</field>
                                                         <field name="formula">309 (Reporte 103)</field>
@@ -1646,7 +1721,8 @@
                                                 <field name="name">Value withheld(359)</field>
                                                 <field name="code">c359</field>
                                                 <field name="expression_ids">
-                                                    <record id="tax_report_line_103_359_tag" model="account.report.expression">
+                                                    <record id="tax_report_line_103_359_tag"
+                                                            model="account.report.expression">
                                                         <field name="label">balance</field>
                                                         <field name="engine">tax_tags</field>
                                                         <field name="formula">359 (Reporte 103)</field>
@@ -1656,13 +1732,16 @@
                                         </field>
                                     </record>
                                     <record id="tax_report_line_parent_line_report_170" model="account.report.line">
-                                        <field name="name">Private passenger transportation or public or private freight service</field>
+                                        <field name="name">Private passenger transportation or public or private freight
+                                            service
+                                        </field>
                                         <field name="children_ids">
                                             <record id="tax_report_line_103_310" model="account.report.line">
                                                 <field name="name">Taxable income(310)</field>
                                                 <field name="code">c310</field>
                                                 <field name="expression_ids">
-                                                    <record id="tax_report_line_103_310_tag" model="account.report.expression">
+                                                    <record id="tax_report_line_103_310_tag"
+                                                            model="account.report.expression">
                                                         <field name="label">balance</field>
                                                         <field name="engine">tax_tags</field>
                                                         <field name="formula">310 (Reporte 103)</field>
@@ -1673,7 +1752,8 @@
                                                 <field name="name">Value withheld(360)</field>
                                                 <field name="code">c360</field>
                                                 <field name="expression_ids">
-                                                    <record id="tax_report_line_103_360_tag" model="account.report.expression">
+                                                    <record id="tax_report_line_103_360_tag"
+                                                            model="account.report.expression">
                                                         <field name="label">balance</field>
                                                         <field name="engine">tax_tags</field>
                                                         <field name="formula">360 (Reporte 103)</field>
@@ -1739,7 +1819,10 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_parent_line_report_177" model="account.report.line">
-                                <field name="name">Compras al productor: de bienes de origen agrícola, avícola, pecuario, apícola, cunícola, bioacuático, forestal y carnes en estado natural y los descritos en el art.27.1 de LRTI.</field>
+                                <field name="name">Compras al productor: de bienes de origen agrícola, avícola,
+                                    pecuario, apícola, cunícola, bioacuático, forestal y carnes en estado natural y los
+                                    descritos en el art.27.1 de LRTI.
+                                </field>
                                 <field name="children_ids">
                                     <record id="tax_report_line_103_3120" model="account.report.line">
                                         <field name="name">Base imponible(3120)</field>
@@ -1766,7 +1849,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_parent_line_report_178" model="account.report.line">
-                                <field name="name">Compras al Comercializador: de Bienes de Origen Bioacuático, Forestal y los Descritos el Art.27.1 de LRTI</field>
+                                <field name="name">Compras al Comercializador: de Bienes de Origen Bioacuático, Forestal
+                                    y los Descritos el Art.27.1 de LRTI
+                                </field>
                                 <field name="children_ids">
                                     <record id="tax_report_line_103_3121" model="account.report.line">
                                         <field name="name">Base imponible(3121)</field>
@@ -1793,7 +1878,8 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_parent_line_report_182" model="account.report.line">
-                                <field name="name">For royalties, copyrights, trademarks, patents and similar rights</field>
+                                <field name="name">For royalties, copyrights, trademarks, patents and similar rights
+                                </field>
                                 <field name="children_ids">
                                     <record id="tax_report_line_103_314" model="account.report.line">
                                         <field name="name">Taxable income(314)</field>
@@ -1820,7 +1906,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_parent_line_report_183" model="account.report.line">
-                                <field name="name">Comisiones pagadas a sociedades, nacionales o extranjeras residentes en el Ecuador y establecimientos permanentes domiciliados en el país</field>
+                                <field name="name">Comisiones pagadas a sociedades, nacionales o extranjeras residentes
+                                    en el Ecuador y establecimientos permanentes domiciliados en el país
+                                </field>
                                 <field name="children_ids">
                                     <record id="tax_report_line_103_3140" model="account.report.line">
                                         <field name="name">Base imponible(3140)</field>
@@ -1856,7 +1944,8 @@
                                                 <field name="name">Taxable income(319)</field>
                                                 <field name="code">c319</field>
                                                 <field name="expression_ids">
-                                                    <record id="tax_report_line_103_319_tag" model="account.report.expression">
+                                                    <record id="tax_report_line_103_319_tag"
+                                                            model="account.report.expression">
                                                         <field name="label">balance</field>
                                                         <field name="engine">tax_tags</field>
                                                         <field name="formula">319 (Reporte 103)</field>
@@ -1867,7 +1956,8 @@
                                                 <field name="name">Value withheld(369)</field>
                                                 <field name="code">c369</field>
                                                 <field name="expression_ids">
-                                                    <record id="tax_report_line_103_369_tag" model="account.report.expression">
+                                                    <record id="tax_report_line_103_369_tag"
+                                                            model="account.report.expression">
                                                         <field name="label">balance</field>
                                                         <field name="engine">tax_tags</field>
                                                         <field name="formula">369 (Reporte 103)</field>
@@ -1883,7 +1973,8 @@
                                                 <field name="name">Taxable income(320)</field>
                                                 <field name="code">c320</field>
                                                 <field name="expression_ids">
-                                                    <record id="tax_report_line_103_320_tag" model="account.report.expression">
+                                                    <record id="tax_report_line_103_320_tag"
+                                                            model="account.report.expression">
                                                         <field name="label">balance</field>
                                                         <field name="engine">tax_tags</field>
                                                         <field name="formula">320 (Reporte 103)</field>
@@ -1894,7 +1985,8 @@
                                                 <field name="name">Value withheld(370)</field>
                                                 <field name="code">c370</field>
                                                 <field name="expression_ids">
-                                                    <record id="tax_report_line_103_370_tag" model="account.report.expression">
+                                                    <record id="tax_report_line_103_370_tag"
+                                                            model="account.report.expression">
                                                         <field name="label">balance</field>
                                                         <field name="engine">tax_tags</field>
                                                         <field name="formula">370 (Reporte 103)</field>
@@ -1960,7 +2052,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_parent_line_report_198" model="account.report.line">
-                                <field name="name">Financial returns between institutions of the financial system and popular and solidarity economy entities</field>
+                                <field name="name">Financial returns between institutions of the financial system and
+                                    popular and solidarity economy entities
+                                </field>
                                 <field name="children_ids">
                                     <record id="tax_report_line_103_324" model="account.report.line">
                                         <field name="name">Taxable income(324)</field>
@@ -2014,7 +2108,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_parent_line_report_204" model="account.report.line">
-                                <field name="name">Dividends distributed that correspond to the single income tax established in art. 27 of the LRTI</field>
+                                <field name="name">Dividends distributed that correspond to the single income tax
+                                    established in art. 27 of the LRTI
+                                </field>
                                 <field name="children_ids">
                                     <record id="tax_report_line_103_326" model="account.report.line">
                                         <field name="name">Taxable income(326)</field>
@@ -2138,7 +2234,8 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_parent_line_report_218" model="account.report.line">
-                                <field name="name">Payments for goods and services not subject to withholding tax</field>
+                                <field name="name">Payments for goods and services not subject to withholding tax
+                                </field>
                                 <field name="children_ids">
                                     <record id="tax_report_line_103_332" model="account.report.line">
                                         <field name="name">Taxable income(332)</field>
@@ -2154,7 +2251,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_parent_line_report_220" model="account.report.line">
-                                <field name="name">Disposal of capital rights and other rights listed on the Ecuadorian stock exchange</field>
+                                <field name="name">Disposal of capital rights and other rights listed on the Ecuadorian
+                                    stock exchange
+                                </field>
                                 <field name="children_ids">
                                     <record id="tax_report_line_103_333" model="account.report.line">
                                         <field name="name">Taxable income(333)</field>
@@ -2181,7 +2280,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_parent_line_report_223" model="account.report.line">
-                                <field name="name">Disposal of rights representing capital and other rights not listed on the Ecuadorian stock exchange</field>
+                                <field name="name">Disposal of rights representing capital and other rights not listed
+                                    on the Ecuadorian stock exchange
+                                </field>
                                 <field name="children_ids">
                                     <record id="tax_report_line_103_334" model="account.report.line">
                                         <field name="name">Taxable income(334)</field>
@@ -2296,7 +2397,9 @@
                         </field>
                     </record>
                     <record id="tax_report_line_parent_line_report_236" model="account.report.line">
-                        <field name="name">Local production and sale of bananas, whether or not produced by the same taxpayer</field>
+                        <field name="name">Local production and sale of bananas, whether or not produced by the same
+                            taxpayer
+                        </field>
                         <field name="children_ids">
                             <record id="tax_report_line_103_3380" model="account.report.line">
                                 <field name="name">Taxable income(3380)</field>
@@ -2461,7 +2564,8 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_parent_line_report_255" model="account.report.line">
-                                <field name="name">Applicable to other percentages (including Micro-enterprise regime)</field>
+                                <field name="name">Applicable to other percentages (including Micro-enterprise regime)
+                                </field>
                                 <field name="children_ids">
                                     <record id="tax_report_line_103_346" model="account.report.line">
                                         <field name="name">Taxable income(346)</field>
@@ -2490,7 +2594,9 @@
                         </field>
                     </record>
                     <record id="tax_report_line_parent_line_report_258" model="account.report.line">
-                        <field name="name">Single tax on income from agricultural activities at the production / local marketing or export stage</field>
+                        <field name="name">Single tax on income from agricultural activities at the production / local
+                            marketing or export stage
+                        </field>
                         <field name="children_ids">
                             <record id="tax_report_line_103_348" model="account.report.line">
                                 <field name="name">Taxable income(348)</field>
@@ -2656,7 +2762,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_parent_line_report_278" model="account.report.line">
-                                <field name="name">Dividends with no beneficial owner, natural person resident in Ecuador</field>
+                                <field name="name">Dividends with no beneficial owner, natural person resident in
+                                    Ecuador
+                                </field>
                                 <field name="children_ids">
                                     <record id="tax_report_line_103_4050" model="account.report.line">
                                         <field name="name">Taxable income(4050)</field>
@@ -2683,7 +2791,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_parent_line_report_281" model="account.report.line">
-                                <field name="name">Dividends with beneficial ownership by an individual resident in Ecuador</field>
+                                <field name="name">Dividends with beneficial ownership by an individual resident in
+                                    Ecuador
+                                </field>
                                 <field name="children_ids">
                                     <record id="tax_report_line_103_4060" model="account.report.line">
                                         <field name="name">Taxable income(4060)</field>
@@ -2710,7 +2820,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_parent_line_report_284" model="account.report.line">
-                                <field name="name">Dividends in breach of the duty to disclose the company's shareholder structure</field>
+                                <field name="name">Dividends in breach of the duty to disclose the company's shareholder
+                                    structure
+                                </field>
                                 <field name="children_ids">
                                     <record id="tax_report_line_103_4070" model="account.report.line">
                                         <field name="name">Taxable income(4070)</field>
@@ -2789,7 +2901,8 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_parent_line_report_293" model="account.report.line">
-                                <field name="name">Technical, administrative or consulting services and royalties</field>
+                                <field name="name">Technical, administrative or consulting services and royalties
+                                </field>
                                 <field name="children_ids">
                                     <record id="tax_report_line_103_410" model="account.report.line">
                                         <field name="name">Taxable income(410)</field>
@@ -2940,7 +3053,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_parent_line_report_311" model="account.report.line">
-                                <field name="name">Dividends with no beneficial owner, natural person resident in Ecuador</field>
+                                <field name="name">Dividends with no beneficial owner, natural person resident in
+                                    Ecuador
+                                </field>
                                 <field name="children_ids">
                                     <record id="tax_report_line_103_4160" model="account.report.line">
                                         <field name="name">Taxable income(4160)</field>
@@ -2967,7 +3082,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_parent_line_report_314" model="account.report.line">
-                                <field name="name">Dividends with beneficial ownership by an individual resident in Ecuador</field>
+                                <field name="name">Dividends with beneficial ownership by an individual resident in
+                                    Ecuador
+                                </field>
                                 <field name="children_ids">
                                     <record id="tax_report_line_103_4170" model="account.report.line">
                                         <field name="name">Taxable income(4170)</field>
@@ -2994,7 +3111,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_parent_line_report_317" model="account.report.line">
-                                <field name="name">Dividends in breach of the duty to disclose the company's shareholder structure</field>
+                                <field name="name">Dividends in breach of the duty to disclose the company's shareholder
+                                    structure
+                                </field>
                                 <field name="children_ids">
                                     <record id="tax_report_line_103_4180" model="account.report.line">
                                         <field name="name">Taxable income(4180)</field>
@@ -3074,7 +3193,8 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_parent_line_report_326" model="account.report.line">
-                                <field name="name">Technical, administrative or consulting services and royalties</field>
+                                <field name="name">Technical, administrative or consulting services and royalties
+                                </field>
                                 <field name="children_ids">
                                     <record id="tax_report_line_103_421" model="account.report.line">
                                         <field name="name">Taxable income(421)</field>
@@ -3199,7 +3319,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_parent_line_report_341" model="account.report.line">
-                                <field name="name">Dividends with no beneficial owner, natural person resident in Ecuador</field>
+                                <field name="name">Dividends with no beneficial owner, natural person resident in
+                                    Ecuador
+                                </field>
                                 <field name="children_ids">
                                     <record id="tax_report_line_103_4260" model="account.report.line">
                                         <field name="name">Taxable income(4260)</field>
@@ -3226,7 +3348,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_parent_line_report_344" model="account.report.line">
-                                <field name="name">Dividends with beneficial ownership by an individual resident in Ecuador</field>
+                                <field name="name">Dividends with beneficial ownership by an individual resident in
+                                    Ecuador
+                                </field>
                                 <field name="children_ids">
                                     <record id="tax_report_line_103_4270" model="account.report.line">
                                         <field name="name">Taxable income(4270)</field>
@@ -3253,7 +3377,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_parent_line_report_347" model="account.report.line">
-                                <field name="name">Dividends in breach of the duty to disclose the company's shareholder structure</field>
+                                <field name="name">Dividends in breach of the duty to disclose the company's shareholder
+                                    structure
+                                </field>
                                 <field name="children_ids">
                                     <record id="tax_report_line_103_4280" model="account.report.line">
                                         <field name="name">Taxable income(4280)</field>
@@ -3332,7 +3458,8 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_parent_line_report_356" model="account.report.line">
-                                <field name="name">Technical, administrative or consulting services and royalties</field>
+                                <field name="name">Technical, administrative or consulting services and royalties
+                                </field>
                                 <field name="children_ids">
                                     <record id="tax_report_line_103_431" model="account.report.line">
                                         <field name="name">Taxable income(431)</field>

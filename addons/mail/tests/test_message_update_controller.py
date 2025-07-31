@@ -1,10 +1,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from markupsafe import Markup
+from odoo.addons.mail.tests.test_controller_common import TestControllerCommon
 
 import odoo
 from odoo.tests import JsonRpcException
-from odoo.addons.mail.tests.test_controller_common import TestControllerCommon
 
 
 @odoo.tests.tagged("-at_install", "post_install")
@@ -29,8 +29,8 @@ class TestMessageUpdateControllerCommon(TestControllerCommon):
                                      Markup('<p>Altered message body<span class="o-mail-Message-edited"></span></p>'))
                 else:
                     with self.assertRaises(
-                        JsonRpcException,
-                        msg="update message content should raise NotFound",
+                            JsonRpcException,
+                            msg="update message content should raise NotFound",
                     ):
                         self._update_content(message.id, self.alter_message_body, route_kw)
 

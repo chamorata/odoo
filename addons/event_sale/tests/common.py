@@ -3,9 +3,10 @@
 
 from datetime import datetime, timedelta
 
-from odoo import fields
 from odoo.addons.event_product.tests.common import TestEventProductCommon
 from odoo.addons.sales_team.tests.common import TestSalesCommon
+
+from odoo import fields
 
 
 class TestEventSaleCommon(TestEventProductCommon, TestSalesCommon):

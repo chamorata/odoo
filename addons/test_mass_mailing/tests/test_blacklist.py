@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.tests.common import users
 from odoo.addons.test_mass_mailing.tests import common
+
 from odoo.exceptions import AccessError
+from odoo.tests.common import users
 
 
 class TestBLAccessRights(common.TestMassMailCommon):
@@ -149,7 +150,8 @@ class TestBLConsistency(common.TestMassMailCommon):
         search_res = self.env['mail.blacklist'].search([('email', '=', 'Aegon? <john.snow@example.com>')])
         self.assertEqual(search_res, self.bl_rec)
 
-        search_res = self.env['mail.blacklist'].search([('email', '=', '"John; \"You know Nothing\" Snow" <john.snow@example.com>')])
+        search_res = self.env['mail.blacklist'].search(
+            [('email', '=', '"John; \"You know Nothing\" Snow" <john.snow@example.com>')])
         self.assertEqual(search_res, self.bl_rec)
 
     @users('user_marketing')

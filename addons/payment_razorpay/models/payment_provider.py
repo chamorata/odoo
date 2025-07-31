@@ -6,12 +6,10 @@ import logging
 import pprint
 
 import requests
+from odoo.addons.payment_razorpay import const
 
 from odoo import _, fields, models
 from odoo.exceptions import ValidationError
-
-from odoo.addons.payment_razorpay import const
-
 
 _logger = logging.getLogger(__name__)
 
@@ -38,7 +36,7 @@ class PaymentProvider(models.Model):
         groups='base.group_system',
     )
 
-    #=== COMPUTE METHODS ===#
+    # === COMPUTE METHODS ===#
 
     def _compute_feature_support_fields(self):
         """ Override of `payment` to enable additional features. """

@@ -8,18 +8,18 @@
         <field name="arch" type="xml">
             <setting id="website_checkout_registration" position="after">
                 <setting
-                    id="newsletter_address"
-                    string="Newsletter"
-                    help="Show a checkbox to sign up for the selected newsletter to guest users"
-                    groups="mass_mailing.group_mass_mailing_user"
+                        id="newsletter_address"
+                        string="Newsletter"
+                        help="Show a checkbox to sign up for the selected newsletter to guest users"
+                        groups="mass_mailing.group_mass_mailing_user"
                 >
                     <field name="is_newsletter_enabled"/>
                     <div class="content-group" invisible="not is_newsletter_enabled">
                         <label for="newsletter_id" class="o_light_label me-2"/>
                         <field
-                            name="newsletter_id"
-                            class="oe_inline"
-                            required="is_newsletter_enabled"
+                                name="newsletter_id"
+                                class="oe_inline"
+                                required="is_newsletter_enabled"
                         />
                     </div>
                 </setting>

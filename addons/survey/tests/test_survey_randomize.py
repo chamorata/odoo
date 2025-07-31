@@ -48,9 +48,12 @@ class TestSurveyRandomize(TransactionCase):
         generated_questions = self.survey1._prepare_user_input_predefined_questions()
 
         self.assertEqual(len(generated_questions.ids), 10, msg="Expected 10 unique questions")
-        self.assertEqual(len(generated_questions.filtered(lambda question: question.page_id == page_1)), 3, msg="Expected 3 questions in page 1")
-        self.assertEqual(len(generated_questions.filtered(lambda question: question.page_id == page_2)), 5, msg="Expected 5 questions in page 2")
-        self.assertEqual(len(generated_questions.filtered(lambda question: question.page_id == page_3)), 2, msg="Expected 2 questions in page 3")
+        self.assertEqual(len(generated_questions.filtered(lambda question: question.page_id == page_1)), 3,
+                         msg="Expected 3 questions in page 1")
+        self.assertEqual(len(generated_questions.filtered(lambda question: question.page_id == page_2)), 5,
+                         msg="Expected 5 questions in page 2")
+        self.assertEqual(len(generated_questions.filtered(lambda question: question.page_id == page_3)), 2,
+                         msg="Expected 2 questions in page 3")
 
     def _add_questions(self, question_and_pages, page, count):
         for i in range(count):

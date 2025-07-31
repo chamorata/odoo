@@ -12,7 +12,7 @@
                 <field name="transifex_url"
                        widget="url"
                        text="Contribute"
-                       string="Transifex" />
+                       string="Transifex"/>
             </list>
         </field>
     </record>
@@ -42,6 +42,7 @@
         <field name="state">code</field>
         <field name="code">action = model._open_code_translations()</field>
     </record>
-    <menuitem action="action_code_translations" id="menu_transifex_code_translations" parent="base.menu_translation_app"/>
+    <menuitem action="action_code_translations" id="menu_transifex_code_translations"
+              parent="base.menu_translation_app"/>
 
 </odoo>

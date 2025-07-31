@@ -8,8 +8,8 @@ import unittest
 import warnings
 from base64 import b64encode
 from pathlib import Path
-from unittest.mock import patch
 from socket import getaddrinfo  # keep a reference on the non-patched function
+from unittest.mock import patch
 
 from odoo import modules
 from odoo.exceptions import UserError
@@ -23,7 +23,6 @@ try:
     import aiosmtpd.handlers
 except ImportError:
     aiosmtpd = None
-
 
 PASSWORD = 'secretpassword'
 _openssl = shutil.which('openssl')
@@ -76,9 +75,11 @@ class TestIrMailServerSMTPD(TransactionCaseWithUserDemo):
             @property
             def login_data(self):
                 return self._login_data
+
             @login_data.setter
             def login_data(self, value):
                 self._login_data = value
+
         patcher = patch('aiosmtpd.smtp.Session', Session)
         patcher.start()
         cls.addClassCleanup(patcher.stop)
@@ -91,6 +92,7 @@ class TestIrMailServerSMTPD(TransactionCaseWithUserDemo):
             "Requiring AUTH while not requiring TLS can lead to security vulnerabilities!",
             category=UserWarning
         )
+
         class CustomFilter(logging.Filter):
             def filter(self, record):
                 if record.msg == "auth_required == True but auth_require_tls == False":
@@ -98,6 +100,7 @@ class TestIrMailServerSMTPD(TransactionCaseWithUserDemo):
                 if record.msg == "tls_context.verify_mode not in {CERT_NONE, CERT_OPTIONAL}; this might cause client connection problems":
                     return False
                 return True
+
         logging.getLogger('mail.log').addFilter(CustomFilter())
 
         # decrease aiosmtpd verbosity, odoo INFO = aiosmtpd WARNING
@@ -123,11 +126,13 @@ class TestIrMailServerSMTPD(TransactionCaseWithUserDemo):
                     # context = ssl.create_default_context()  # what it should do
                 context.load_verify_locations(cafile=str(cls.ssl_ca.cert))
                 super().starttls(context=context)
+
         class TEST_SMTP_SSL(smtplib.SMTP_SSL):
             def _get_socket(self, *args, **kwargs):
                 # self.context = ssl.create_default_context()  # what it should do
                 self.context.load_verify_locations(cafile=str(cls.ssl_ca.cert))
                 return super()._get_socket(*args, **kwargs)
+
         patcher = patch('smtplib.SMTP', TEST_SMTP)
         patcher.start()
         cls.addClassCleanup(patcher.stop)
@@ -164,7 +169,7 @@ class TestIrMailServerSMTPD(TransactionCaseWithUserDemo):
 
     @contextlib.contextmanager
     def start_smtpd(
-        self, encryption, ssl_context=None, auth_required=True, stop_on_cleanup=True
+            self, encryption, ssl_context=None, auth_required=True, stop_on_cleanup=True
     ):
         """
         Start a smtp daemon in a background thread, stop it upon exiting
@@ -239,13 +244,13 @@ class TestIrMailServerSMTPD(TransactionCaseWithUserDemo):
         matrix = [
             # authentication, name, certificate, private key, error pattern
             ('login', "missing", '', '',
-                r"The server has closed the connection unexpectedly\. "
-                r"Check configuration served on this port number\.\n "
-                r"Connection unexpectedly closed"),
+             r"The server has closed the connection unexpectedly\. "
+             r"Check configuration served on this port number\.\n "
+             r"Connection unexpectedly closed"),
             ('certificate', "self signed", self_signed_cert, self_signed_key,
-                r"The server has closed the connection unexpectedly\. "
-                r"Check configuration served on this port number\.\n "
-                r"Connection unexpectedly closed"),
+             r"The server has closed the connection unexpectedly\. "
+             r"Check configuration served on this port number\.\n "
+             r"Connection unexpectedly closed"),
             ('certificate', "valid client", client_cert, client_key, None),
         ]
 
@@ -265,7 +270,6 @@ class TestIrMailServerSMTPD(TransactionCaseWithUserDemo):
                             self.assertRegex(error_capture.exception.args[0], error_pattern)
                         else:
                             mail_server.test_smtp_connection()
-
 
     def test_authentication_login_matrix(self):
         """
@@ -293,12 +297,12 @@ class TestIrMailServerSMTPD(TransactionCaseWithUserDemo):
             # auth_required, password, error_pattern
             (False, MISSING, None),
             (True, MISSING,
-                r"The server refused the sender address \(noreply@localhost\) "
-                r"with error b'5\.7\.0 Authentication required'"),
+             r"The server refused the sender address \(noreply@localhost\) "
+             r"with error b'5\.7\.0 Authentication required'"),
             (True, INVALID,
-                r"The server has closed the connection unexpectedly\. "
-                r"Check configuration served on this port number\.\n "
-                r"Connection unexpectedly closed:.* timed out"),
+             r"The server has closed the connection unexpectedly\. "
+             r"Check configuration served on this port number\.\n "
+             r"Connection unexpectedly closed:.* timed out"),
             (True, PASSWORD, None),
         ]
 
@@ -341,27 +345,27 @@ class TestIrMailServerSMTPD(TransactionCaseWithUserDemo):
         matrix = [
             # client, server, error_pattern
             ('none', 'ssl',
-                r"The server has closed the connection unexpectedly\. "
-                r"Check configuration served on this port number\.\n "
-                r"Connection unexpectedly closed: timed out"),
+             r"The server has closed the connection unexpectedly\. "
+             r"Check configuration served on this port number\.\n "
+             r"Connection unexpectedly closed: timed out"),
             ('none', 'starttls',
-                r"The server refused the sender address \(noreply@localhost\) with error "
-                r"b'Must issue a STARTTLS command first'"),
+             r"The server refused the sender address \(noreply@localhost\) with error "
+             r"b'Must issue a STARTTLS command first'"),
             ('starttls', 'none',
-                r"An option is not supported by the server:\n "
-                r"STARTTLS extension not supported by server\."),
+             r"An option is not supported by the server:\n "
+             r"STARTTLS extension not supported by server\."),
             ('starttls', 'ssl',
-                r"The server has closed the connection unexpectedly\. "
-                r"Check configuration served on this port number\.\n "
-                r"Connection unexpectedly closed: timed out"),
+             r"The server has closed the connection unexpectedly\. "
+             r"Check configuration served on this port number\.\n "
+             r"Connection unexpectedly closed: timed out"),
             ('ssl', 'none',
-                r"An SSL exception occurred\. "
-                r"Check connection security type\.\n "
-                r".*?wrong version number"),
+             r"An SSL exception occurred\. "
+             r"Check connection security type\.\n "
+             r".*?wrong version number"),
             ('ssl', 'starttls',
-                r"An SSL exception occurred\. "
-                r"Check connection security type\.\n "
-                r".*?wrong version number"),
+             r"An SSL exception occurred\. "
+             r"Check connection security type\.\n "
+             r".*?wrong version number"),
         ]
 
         for client_encryption, server_encryption, error_pattern in matrix:
@@ -411,10 +415,10 @@ class TestIrMailServerSMTPD(TransactionCaseWithUserDemo):
                 mail_server.smtp_authentication = authentication
                 mail_server.smtp_encryption = encryption
                 with self.subTest(
-                    encryption=encryption,
-                    authentication=authentication,
-                    cert_good=certificate == cert_good,
-                    host_good=hostname == host_good,
+                        encryption=encryption,
+                        authentication=authentication,
+                        cert_good=certificate == cert_good,
+                        host_good=hostname == host_good,
                 ):
                     mitm_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
                     mitm_context.load_cert_chain(certificate.cert, certificate.key)

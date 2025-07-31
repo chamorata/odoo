@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from cups import Connection as CupsConnection
 from re import sub
 from threading import Lock
 
+from cups import Connection as CupsConnection
 from odoo.addons.hw_drivers.interface import Interface
 
 conn = CupsConnection()

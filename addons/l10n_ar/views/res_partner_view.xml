@@ -22,10 +22,13 @@
         <field name="arch" type="xml">
 
             <field name="property_account_position_id" position="after">
-                <label for="l10n_ar_gross_income_type" string="Gross Income" invisible="'AR' not in fiscal_country_codes"/>
+                <label for="l10n_ar_gross_income_type" string="Gross Income"
+                       invisible="'AR' not in fiscal_country_codes"/>
                 <div name="gross_income" invisible="'AR'not in fiscal_country_codes">
                     <field name="l10n_ar_gross_income_type" class="oe_inline"/>
-                    <field name="l10n_ar_gross_income_number" placeholder="Number..." class="oe_inline" invisible="l10n_ar_gross_income_type not in ['multilateral', 'local']" required="l10n_ar_gross_income_type in ['multilateral', 'local']"/>
+                    <field name="l10n_ar_gross_income_number" placeholder="Number..." class="oe_inline"
+                           invisible="l10n_ar_gross_income_type not in ['multilateral', 'local']"
+                           required="l10n_ar_gross_income_type in ['multilateral', 'local']"/>
                 </div>
             </field>
 
@@ -41,7 +44,8 @@
                 <field name="l10n_ar_afip_responsibility_type_id"/>
             </field>
             <filter name="salesperson" position="before">
-                <filter string="AFIP Responsibility Type" name="l10n_ar_afip_responsibility_type_id_filter" context="{'group_by': 'l10n_ar_afip_responsibility_type_id'}"/>
+                <filter string="AFIP Responsibility Type" name="l10n_ar_afip_responsibility_type_id_filter"
+                        context="{'group_by': 'l10n_ar_afip_responsibility_type_id'}"/>
             </filter>
         </field>
     </record>

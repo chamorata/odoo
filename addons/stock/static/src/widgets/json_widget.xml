@@ -5,10 +5,15 @@
         <hr/>
         <p>
             The forecasted stock on the <b t-esc="jsonValue.lead_days_date"/>
-            is <t t-if="jsonValue.qty_to_order &lt;= 0"><b><t t-esc="qtyForecast"/></b></t><t t-else="">
+            is
+            <t t-if="jsonValue.qty_to_order &lt;= 0"><b><t t-esc="qtyForecast"/></b></t>
+            <t t-else="">
             below the inventory <b>minimum of <t t-esc="productMinQty"/>
-            : <t t-esc="qtyToOrder"/> should be replenished</b> to reach the maximum of
-            <t t-esc="productMaxQty"/>.</t>
+                :
+                <t t-esc="qtyToOrder"/>
+                should be replenished</b>
+                to reach the maximum of
+                <t t-esc="productMaxQty"/>.</t>
         </p>
         <table t-if="jsonValue.lead_days_description" class="table table-borderless table-sm">
             <tbody>
@@ -29,7 +34,8 @@
                 <tr t-if="jsonValue.visibility_days > 0">
                     <td>Visibility days</td>
                     <td class="text-end text-nowrap">
-                        + <t t-out="jsonValue.visibility_days"/> Day(s)
+                        + <t t-out="jsonValue.visibility_days"/>
+                        Day(s)
                     </td>
                 </tr>
                 <tr t-if="jsonValue.visibility_days > 0" class="table-info fw-bold">

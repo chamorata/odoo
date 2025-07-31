@@ -28,7 +28,8 @@ class IrModel(models.Model):
                         if field.model_name in model_names_to_fetch
                     ]
                     if inverse_fields:
-                        field_data['inverse_fname_by_model_name'] = {field.model_name: field.name for field in inverse_fields}
+                        field_data['inverse_fname_by_model_name'] = {field.model_name: field.name for field in
+                                                                     inverse_fields}
                     if field_data['type'] == 'many2one_reference':
                         field_data['model_name_ref_fname'] = model._fields[fname].model_field
             model_definitions[model_name] = {"fields": fields_data_by_fname}

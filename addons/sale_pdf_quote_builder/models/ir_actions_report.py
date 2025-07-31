@@ -70,7 +70,7 @@ class IrActionsReport(models.Model):
 
     @api.model
     def _update_mapping_and_add_pages_to_writer(
-        self, writer, document, form_fields_values_mapping, prefix, order, order_line=None
+            self, writer, document, form_fields_values_mapping, prefix, order, order_line=None
     ):
         """ Update the mapping with the field-value of the document, and add the doc to the writer.
 

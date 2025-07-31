@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+import base64
 from collections import defaultdict
+
 from odoo import _, models
 from odoo.tools import float_compare
-import base64
+
 
 class PosOrder(models.Model):
     _inherit = 'pos.order'
@@ -24,7 +26,8 @@ class PosOrder(models.Model):
             return {
                 'successful': False,
                 'payload': {
-                    'message': _('Some coupons are invalid. The applied coupons have been updated. Please check the order.'),
+                    'message': _(
+                        'Some coupons are invalid. The applied coupons have been updated. Please check the order.'),
                     'removed_coupons': list(coupon_difference),
                 }
             }
@@ -43,7 +46,8 @@ class PosOrder(models.Model):
             return {
                 'successful': False,
                 'payload': {
-                    'message': _('The following codes already exist in the database, perhaps they were already sold?\n%s',
+                    'message': _(
+                        'The following codes already exist in the database, perhaps they were already sold?\n%s',
                         ', '.join(coupons.mapped('code'))),
                 }
             }
@@ -80,7 +84,8 @@ class PosOrder(models.Model):
 
         It will also return the points of all concerned coupons to be updated in the cache.
         """
-        get_partner_id = lambda partner_id: partner_id and self.env['res.partner'].browse(partner_id).exists() and partner_id or False
+        get_partner_id = lambda partner_id: partner_id and self.env['res.partner'].browse(
+            partner_id).exists() and partner_id or False
         # Keys are stringified when using rpc
         coupon_data = {int(k): v for k, v in coupon_data.items()}
 
@@ -140,7 +145,7 @@ class PosOrder(models.Model):
         # Important to include the updated gift cards so that it can be printed. Check coupon_report.
         for coupon in new_coupons | updated_gift_cards:
             if coupon.program_id not in report_per_program:
-                report_per_program[coupon.program_id] = coupon.program_id.communication_plan_ids.\
+                report_per_program[coupon.program_id] = coupon.program_id.communication_plan_ids. \
                     filtered(lambda c: c.trigger == 'create').pos_report_print_id
             for report in report_per_program[coupon.program_id]:
                 coupon_per_report[report.id].append(coupon.id)
@@ -162,10 +167,10 @@ class PosOrder(models.Model):
                 'expiration_date': coupon.expiration_date,
                 'code': coupon.code,
             } for coupon in new_coupons if (
-                coupon.program_id.applies_on == 'future'
-                # Don't send the coupon code for the gift card and ewallet programs.
-                # It should not be printed in the ticket.
-                and coupon.program_id.sudo().program_type not in ['gift_card', 'ewallet']
+                    coupon.program_id.applies_on == 'future'
+                    # Don't send the coupon code for the gift card and ewallet programs.
+                    # It should not be printed in the ticket.
+                    and coupon.program_id.sudo().program_type not in ['gift_card', 'ewallet']
             )],
             'coupon_report': coupon_per_report,
         }
@@ -177,7 +182,8 @@ class PosOrder(models.Model):
             if partner_id:
                 partner_coupons = self.env['loyalty.card'].search(
                     [('partner_id', '=', partner_id), ('program_type', '=', 'loyalty')])
-                existing_coupon_for_program = partner_coupons.filtered(lambda c: c.program_id.id == coupon_vals['program_id'])
+                existing_coupon_for_program = partner_coupons.filtered(
+                    lambda c: c.program_id.id == coupon_vals['program_id'])
                 if existing_coupon_for_program:
                     coupon_vals['coupon_id'] = existing_coupon_for_program[0].id
                     coupon_key_to_modify.append([coupon_id, existing_coupon_for_program[0].id])
@@ -201,7 +207,8 @@ class PosOrder(models.Model):
                     filtered_gift_cards = gift_cards.filtered(lambda gc: gc.program_id == program)
                     if filtered_gift_cards:
                         action_report = program.pos_report_print_id
-                        report = action_report._render_qweb_pdf(action_report.report_name, filtered_gift_cards.mapped('id'))
+                        report = action_report._render_qweb_pdf(action_report.report_name,
+                                                                filtered_gift_cards.mapped('id'))
                         filename = name + '.pdf'
                         gift_card_pdf = self.env['ir.attachment'].create({
                             'name': filename,

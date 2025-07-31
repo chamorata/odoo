@@ -2,13 +2,13 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import unittest
-
 from datetime import date
+
 from dateutil.relativedelta import relativedelta
+from odoo.addons.hr_holidays.tests.common import TestHrHolidaysCommon
 
 from odoo import tests
-from odoo.addons.hr_holidays.tests.common import TestHrHolidaysCommon
-from odoo.exceptions import AccessError, UserError, ValidationError
+from odoo.exceptions import AccessError, UserError
 from odoo.tools import date_utils
 from odoo.tools import mute_logger
 
@@ -359,6 +359,7 @@ class TestAcessRightsStates(TestHrHolidaysAccessRightsCommon):
             leave._force_cancel("Cancel the leave")
             leave.with_user(self.user_hrmanager.id).action_reset_confirm()
 
+
 @tests.tagged('access_rights', 'access_rights_create')
 class TestAccessRightsCreate(TestHrHolidaysAccessRightsCommon):
     @mute_logger('odoo.models.unlink', 'odoo.addons.mail.models.mail_mail')
@@ -381,7 +382,6 @@ class TestAccessRightsCreate(TestHrHolidaysAccessRightsCommon):
         }
         with self.assertRaises(AccessError):
             self.request_leave(self.user_employee_id, date.today() + relativedelta(days=5), 1, values)
-
 
     # hr_holidays.group_hr_holidays_user
 
@@ -578,7 +578,8 @@ class TestAccessRightsWrite(TestHrHolidaysAccessRightsCommon):
             'holiday_status_id': self.leave_type.id,
             'state': 'confirm',
         }
-        hr_leave = self.request_leave(self.user_hruser_id, date_utils.start_of(date.today() + relativedelta(days=7), 'week'), 1, values)
+        hr_leave = self.request_leave(self.user_hruser_id,
+                                      date_utils.start_of(date.today() + relativedelta(days=7), 'week'), 1, values)
         with self.assertRaises(AccessError):
             hr_leave.with_user(self.user_employee_id).action_approve()
         self.employee_hruser.write({'leave_manager_id': self.user_employee_id})
@@ -596,7 +597,8 @@ class TestAccessRightsWrite(TestHrHolidaysAccessRightsCommon):
             'holiday_status_id': self.leave_type.id,
             'state': 'confirm',
         }
-        hr_leave = self.request_leave(self.user_hruser_id, date_utils.start_of(date.today() + relativedelta(days=7), 'week'), 1, values)
+        hr_leave = self.request_leave(self.user_hruser_id,
+                                      date_utils.start_of(date.today() + relativedelta(days=7), 'week'), 1, values)
         hr_leave.with_user(self.user_hruser_id).action_approve()
 
     # ----------------------------------------
@@ -672,10 +674,10 @@ class TestAccessRightsWrite(TestHrHolidaysAccessRightsCommon):
 
     # TODO Can always cancel with great powers comes great responbilities
 
+
 class TestAccessRightsUnlink(TestHrHolidaysAccessRightsCommon):
 
     # base.group_user
-
 
     def test_leave_unlink_confirm_by_user(self):
         """ A simple user may delete its leave in confirm state in the future"""
@@ -711,6 +713,7 @@ class TestAccessRightsUnlink(TestHrHolidaysAccessRightsCommon):
         leave.with_user(self.user_hrmanager_id).write({'state': 'validate'})
         with self.assertRaises(UserError), self.cr.savepoint():
             leave.with_user(self.user_employee.id).unlink()
+
 
 class TestMultiCompany(TestHrHolidaysCommon):
 

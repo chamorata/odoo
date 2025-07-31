@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import re
 import json
-import pytz
-import markupsafe
-
+import logging
+import re
 from collections import defaultdict
+
+import markupsafe
+import pytz
 from markupsafe import Markup
+from odoo.addons.iap import jsonrpc
 
 from odoo import models, fields, api, _
+from odoo.exceptions import AccessError
 from odoo.tools import html_escape, float_is_zero, float_compare
-from odoo.exceptions import AccessError, ValidationError
-from odoo.addons.iap import jsonrpc
-import logging
 
 _logger = logging.getLogger(__name__)
 
@@ -37,18 +37,18 @@ class AccountEdiFormat(models.Model):
 
     def _get_l10n_in_gst_tags(self):
         return (
-           self.env.ref('l10n_in.tax_tag_base_sgst')
-           + self.env.ref('l10n_in.tax_tag_base_cgst')
-           + self.env.ref('l10n_in.tax_tag_base_igst')
-           + self.env.ref('l10n_in.tax_tag_base_cess')
-           + self.env.ref('l10n_in.tax_tag_zero_rated')
+                self.env.ref('l10n_in.tax_tag_base_sgst')
+                + self.env.ref('l10n_in.tax_tag_base_cgst')
+                + self.env.ref('l10n_in.tax_tag_base_igst')
+                + self.env.ref('l10n_in.tax_tag_base_cess')
+                + self.env.ref('l10n_in.tax_tag_zero_rated')
         ).ids
 
     def _get_l10n_in_non_taxable_tags(self):
         return (
-           self.env.ref("l10n_in.tax_tag_exempt")
-           + self.env.ref("l10n_in.tax_tag_nil_rated")
-           + self.env.ref("l10n_in.tax_tag_non_gst_supplies")
+                self.env.ref("l10n_in.tax_tag_exempt")
+                + self.env.ref("l10n_in.tax_tag_nil_rated")
+                + self.env.ref("l10n_in.tax_tag_non_gst_supplies")
         ).ids
 
     def _get_move_applicability(self, move):
@@ -56,13 +56,15 @@ class AccountEdiFormat(models.Model):
         self.ensure_one()
         if self.code != 'in_einvoice_1_03':
             return super()._get_move_applicability(move)
-        is_under_gst = any(move_line_tag.id in self._get_l10n_in_gst_tags() for move_line_tag in move.line_ids.tax_tag_ids)
-        if move.is_sale_document(include_receipts=True) and move.country_code == 'IN' and is_under_gst and move.l10n_in_gst_treatment in (
-            "regular",
-            "composition",
-            "overseas",
-            "special_economic_zone",
-            "deemed_export",
+        is_under_gst = any(
+            move_line_tag.id in self._get_l10n_in_gst_tags() for move_line_tag in move.line_ids.tax_tag_ids)
+        if move.is_sale_document(
+                include_receipts=True) and move.country_code == 'IN' and is_under_gst and move.l10n_in_gst_treatment in (
+                "regular",
+                "composition",
+                "overseas",
+                "special_economic_zone",
+                "deemed_export",
         ):
             return {
                 'post': self._l10n_in_edi_post_invoice,
@@ -96,7 +98,9 @@ class AccountEdiFormat(models.Model):
         if not re.match("^.{1,16}$", move.name):
             error_message.append(_("Invoice number should not be more than 16 characters"))
         all_base_tags = self._get_l10n_in_gst_tags() + self._get_l10n_in_non_taxable_tags()
-        for line in move.invoice_line_ids.filtered(lambda line: line.display_type not in ('line_note', 'line_section', 'rounding') and not self._l10n_in_is_global_discount(line)):
+        for line in move.invoice_line_ids.filtered(lambda line: line.display_type not in ('line_note', 'line_section',
+                                                                                          'rounding') and not self._l10n_in_is_global_discount(
+                line)):
             if line.display_type == 'product':
                 if line.discount < 0:
                     error_message.append(_("Negative discount is not allowed, set in line %s", line.name))
@@ -106,12 +110,13 @@ class AccountEdiFormat(models.Model):
                 elif not re.match(r'^\d{4}$|^\d{6}$|^\d{8}$', hsn_code):
                     error_message.append(_(
                         "Invalid HSN Code (%(hsn_code)s) in product line %(product_line)s") % {
-                        'hsn_code': hsn_code,
-                        'product_line': line.product_id.name or line.name
-                    })
+                                             'hsn_code': hsn_code,
+                                             'product_line': line.product_id.name or line.name
+                                         })
             if not line.tax_tag_ids or not any(move_line_tag.id in all_base_tags for move_line_tag in line.tax_tag_ids):
                 error_message.append(_(
-                    """Set an appropriate GST tax on line "%s" (if it's zero rated or nil rated then select it also)""", line.product_id.name))
+                    """Set an appropriate GST tax on line "%s" (if it's zero rated or nil rated then select it also)""",
+                    line.product_id.name))
         return error_message
 
     def _l10n_in_edi_get_iap_buy_credits_message(self, company):
@@ -163,7 +168,8 @@ class AccountEdiFormat(models.Model):
                     "blocking_level": "error",
                 }}
             elif error:
-                error_message = "<br/>".join([html_escape("[%s] %s" % (e.get("code"), e.get("message"))) for e in error])
+                error_message = "<br/>".join(
+                    [html_escape("[%s] %s" % (e.get("code"), e.get("message"))) for e in error])
                 return {invoice: {
                     "success": False,
                     "error": error_message,
@@ -219,7 +225,8 @@ class AccountEdiFormat(models.Model):
                     "blocking_level": "error",
                 }}
             if error:
-                error_message = "<br/>".join([html_escape("[%s] %s" % (e.get("code"), e.get("message"))) for e in error])
+                error_message = "<br/>".join(
+                    [html_escape("[%s] %s" % (e.get("code"), e.get("message"))) for e in error])
                 return {invoice: {
                     "success": False,
                     "error": error_message,
@@ -253,21 +260,21 @@ class AccountEdiFormat(models.Model):
         if partner.country_id.code == "IN" and not re.match("^([1-9][0-9]{5})$", partner.zip or ""):
             message.append(_("- ZIP code required 6 digits ranging from 100000 to 999999"))
         if (
-            partner.country_id.code == "IN"
-            and not re.match(r"^(?!0+$)([0-9]{2})$", partner.state_id.l10n_in_tin or "")
+                partner.country_id.code == "IN"
+                and not re.match(r"^(?!0+$)([0-9]{2})$", partner.state_id.l10n_in_tin or "")
         ):
             message.append(_("- State TIN Number must be exactly 2 digits."))
         if partner.phone and not re.match("^[0-9]{10,12}$",
-            self._l10n_in_edi_extract_digits(partner.phone)
-        ):
+                                          self._l10n_in_edi_extract_digits(partner.phone)
+                                          ):
             message.append(_("- Mobile number should be minimum 10 or maximum 12 digits"))
         if partner.email and (
-            not re.match(r"^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$", partner.email)
-            or not re.match("^.{6,100}$", partner.email)
+                not re.match(r"^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$", partner.email)
+                or not re.match("^.{6,100}$", partner.email)
         ):
             message.append(_("- Email address should be valid and not more then 100 characters"))
         if message:
-            message.insert(0, "%s" %(partner.display_name))
+            message.insert(0, "%s" % (partner.display_name))
         return message
 
     def _get_l10n_in_edi_saler_buyer_party(self, move):
@@ -280,7 +287,7 @@ class AccountEdiFormat(models.Model):
 
     @api.model
     def _get_l10n_in_edi_partner_details(self, partner, set_vat=True, set_phone_and_email=True,
-            is_overseas=False, pos_state_id=False):
+                                         is_overseas=False, pos_state_id=False):
         """
             Create the dictionary based partner details
             if set_vat is true then, vat(GSTIN) and legal name(LglNm) is added
@@ -351,7 +358,7 @@ class AccountEdiFormat(models.Model):
                 line.company_currency_id,
                 line.company_id,
                 line.date or fields.Date.context_today(self)
-                )
+            )
         else:
             unit_price_in_inr = ((sign * line.balance) / (1 - (line.discount / 100))) / quantity
 
@@ -375,7 +382,7 @@ class AccountEdiFormat(models.Model):
             "Discount": self._l10n_in_round_value((unit_price_in_inr * quantity) * (line.discount / 100)),
             "AssAmt": self._l10n_in_round_value((sign * line.balance)),
             "GstRt": self._l10n_in_round_value(tax_details_by_code.get("igst_rate", 0.00) or (
-                tax_details_by_code.get("cgst_rate", 0.00) + tax_details_by_code.get("sgst_rate", 0.00)), 3),
+                    tax_details_by_code.get("cgst_rate", 0.00) + tax_details_by_code.get("sgst_rate", 0.00)), 3),
             "IgstAmt": self._l10n_in_round_value(tax_details_by_code.get("igst_amount", 0.00)),
             "CgstAmt": self._l10n_in_round_value(tax_details_by_code.get("cgst_amount", 0.00)),
             "SgstAmt": self._l10n_in_round_value(tax_details_by_code.get("sgst_amount", 0.00)),
@@ -411,8 +418,9 @@ class AccountEdiFormat(models.Model):
 
             totally discounted lines are kept as 0, though
         """
+
         def discount_group_key(line_vals):
-            return "%s-%s"%(line_vals['HsnCd'], line_vals['GstRt'])
+            return "%s-%s" % (line_vals['HsnCd'], line_vals['GstRt'])
 
         def put_discount_on(discount_line_vals, other_line_vals):
             discount = discount_line_vals['AssAmt'] * -1
@@ -425,11 +433,15 @@ class AccountEdiFormat(models.Model):
                     'CgstAmt': self._l10n_in_round_value(discount_line_vals['CgstAmt'] + other_line_vals['CgstAmt']),
                     'SgstAmt': self._l10n_in_round_value(discount_line_vals['SgstAmt'] + other_line_vals['SgstAmt']),
                     'CesAmt': self._l10n_in_round_value(discount_line_vals['CesAmt'] + other_line_vals['CesAmt']),
-                    'CesNonAdvlAmt': self._l10n_in_round_value(discount_line_vals['CesNonAdvlAmt'] + other_line_vals['CesNonAdvlAmt']),
-                    'StateCesAmt': self._l10n_in_round_value(discount_line_vals['StateCesAmt'] + other_line_vals['StateCesAmt']),
-                    'StateCesNonAdvlAmt': self._l10n_in_round_value(discount_line_vals['StateCesNonAdvlAmt'] + other_line_vals['StateCesNonAdvlAmt']),
+                    'CesNonAdvlAmt': self._l10n_in_round_value(
+                        discount_line_vals['CesNonAdvlAmt'] + other_line_vals['CesNonAdvlAmt']),
+                    'StateCesAmt': self._l10n_in_round_value(
+                        discount_line_vals['StateCesAmt'] + other_line_vals['StateCesAmt']),
+                    'StateCesNonAdvlAmt': self._l10n_in_round_value(
+                        discount_line_vals['StateCesNonAdvlAmt'] + other_line_vals['StateCesNonAdvlAmt']),
                     'OthChrg': self._l10n_in_round_value(discount_line_vals['OthChrg'] + other_line_vals['OthChrg']),
-                    'TotItemVal': self._l10n_in_round_value(discount_line_vals['TotItemVal'] + other_line_vals['TotItemVal']),
+                    'TotItemVal': self._l10n_in_round_value(
+                        discount_line_vals['TotItemVal'] + other_line_vals['TotItemVal']),
                 })
                 other_line_vals.update({
                     'Discount': self._l10n_in_round_value(other_line_vals['Discount'] + discount_to_allow),
@@ -452,22 +464,27 @@ class AccountEdiFormat(models.Model):
                 'CgstAmt': self._l10n_in_round_value(other_line_vals['CgstAmt'] + discount_line_vals['CgstAmt']),
                 'SgstAmt': self._l10n_in_round_value(other_line_vals['SgstAmt'] + discount_line_vals['SgstAmt']),
                 'CesAmt': self._l10n_in_round_value(other_line_vals['CesAmt'] + discount_line_vals['CesAmt']),
-                'CesNonAdvlAmt': self._l10n_in_round_value(other_line_vals['CesNonAdvlAmt'] + discount_line_vals['CesNonAdvlAmt']),
-                'StateCesAmt': self._l10n_in_round_value(other_line_vals['StateCesAmt'] + discount_line_vals['StateCesAmt']),
-                'StateCesNonAdvlAmt': self._l10n_in_round_value(other_line_vals['StateCesNonAdvlAmt'] + discount_line_vals['StateCesNonAdvlAmt']),
+                'CesNonAdvlAmt': self._l10n_in_round_value(
+                    other_line_vals['CesNonAdvlAmt'] + discount_line_vals['CesNonAdvlAmt']),
+                'StateCesAmt': self._l10n_in_round_value(
+                    other_line_vals['StateCesAmt'] + discount_line_vals['StateCesAmt']),
+                'StateCesNonAdvlAmt': self._l10n_in_round_value(
+                    other_line_vals['StateCesNonAdvlAmt'] + discount_line_vals['StateCesNonAdvlAmt']),
                 'OthChrg': self._l10n_in_round_value(other_line_vals['OthChrg'] + discount_line_vals['OthChrg']),
-                'TotItemVal': self._l10n_in_round_value(other_line_vals['TotItemVal'] + discount_line_vals['TotItemVal']),
+                'TotItemVal': self._l10n_in_round_value(
+                    other_line_vals['TotItemVal'] + discount_line_vals['TotItemVal']),
             })
             return True
 
         discount_lines = []
-        for discount_line in json_payload['ItemList'].copy(): #to be sure to not skip in the loop:
+        for discount_line in json_payload['ItemList'].copy():  # to be sure to not skip in the loop:
             if discount_line['AssAmt'] < 0:
                 discount_lines.append(discount_line)
                 json_payload['ItemList'].remove(discount_line)
         if not discount_lines:
             return json_payload
-        invoice.message_post(body=_("Negative lines will be decreased from positive invoice lines having the same taxes and HSN code"))
+        invoice.message_post(
+            body=_("Negative lines will be decreased from positive invoice lines having the same taxes and HSN code"))
 
         lines_grouped_and_sorted = defaultdict(list)
         for line in sorted(json_payload['ItemList'], key=lambda i: i['AssAmt'], reverse=True):
@@ -486,7 +503,8 @@ class AccountEdiFormat(models.Model):
         tax_details_by_code = self._get_l10n_in_tax_details_by_line_code(tax_details.get("tax_details", {}))
         is_intra_state = invoice.l10n_in_state_id == invoice.company_id.state_id
         is_overseas = invoice.l10n_in_gst_treatment == "overseas"
-        lines = invoice.invoice_line_ids.filtered(lambda line: line.display_type not in ('line_note', 'line_section', 'rounding'))
+        lines = invoice.invoice_line_ids.filtered(
+            lambda line: line.display_type not in ('line_note', 'line_section', 'rounding'))
         global_discount_line = lines.filtered(self._l10n_in_is_global_discount)
         lines -= global_discount_line
         tax_details_per_record = tax_details.get("tax_details_per_record")
@@ -517,12 +535,12 @@ class AccountEdiFormat(models.Model):
                 "SgstVal": self._l10n_in_round_value(tax_details_by_code.get("sgst_amount", 0.00)),
                 "IgstVal": self._l10n_in_round_value(tax_details_by_code.get("igst_amount", 0.00)),
                 "CesVal": self._l10n_in_round_value((
-                    tax_details_by_code.get("cess_amount", 0.00)
-                    + tax_details_by_code.get("cess_non_advol_amount", 0.00)),
+                        tax_details_by_code.get("cess_amount", 0.00)
+                        + tax_details_by_code.get("cess_non_advol_amount", 0.00)),
                 ),
                 "StCesVal": self._l10n_in_round_value((
-                    tax_details_by_code.get("state_cess_amount", 0.00)
-                    + tax_details_by_code.get("state_cess_non_advol_amount", 0.00)),
+                        tax_details_by_code.get("state_cess_amount", 0.00)
+                        + tax_details_by_code.get("state_cess_non_advol_amount", 0.00)),
                 ),
                 "Discount": self._l10n_in_round_value(global_discount_amount),
                 "RndOffAmt": self._l10n_in_round_value(
@@ -539,11 +557,12 @@ class AccountEdiFormat(models.Model):
         if saler_buyer.get("seller_details") != saler_buyer.get("dispatch_details"):
             json_payload.update({
                 "DispDtls": self._get_l10n_in_edi_partner_details(saler_buyer.get("dispatch_details"),
-                    set_vat=False, set_phone_and_email=False)
+                                                                  set_vat=False, set_phone_and_email=False)
             })
         if saler_buyer.get("buyer_details") != saler_buyer.get("ship_to_details"):
             json_payload.update({
-                "ShipDtls": self._get_l10n_in_edi_partner_details(saler_buyer.get("ship_to_details"), is_overseas=is_overseas)
+                "ShipDtls": self._get_l10n_in_edi_partner_details(saler_buyer.get("ship_to_details"),
+                                                                  is_overseas=is_overseas)
             })
         if is_overseas:
             json_payload.update({
@@ -587,7 +606,7 @@ class AccountEdiFormat(models.Model):
                         line_code = "state_cess"
                 else:
                     for gst in ["cgst", "sgst", "igst"]:
-                        if any(tag in tags for tag in self.env.ref("l10n_in.tax_tag_%s"%(gst))):
+                        if any(tag in tags for tag in self.env.ref("l10n_in.tax_tag_%s" % (gst))):
                             line_code = gst
                         # need to separate rc tax value so it's not pass to other values
                         if any(tag in tags for tag in self.env.ref("l10n_in.tax_tag_%s_rc" % (gst))):
@@ -627,7 +646,8 @@ class AccountEdiFormat(models.Model):
 
     def _l10n_in_get_supply_type(self, move, tax_details_by_code):
         supply_type = "B2B"
-        if move.l10n_in_gst_treatment in ("overseas", "special_economic_zone") and tax_details_by_code.get("igst_amount"):
+        if move.l10n_in_gst_treatment in ("overseas", "special_economic_zone") and tax_details_by_code.get(
+                "igst_amount"):
             supply_type = move.l10n_in_gst_treatment == "overseas" and "EXPWP" or "SEZWP"
         elif move.l10n_in_gst_treatment in ("overseas", "special_economic_zone"):
             supply_type = move.l10n_in_gst_treatment == "overseas" and "EXPWOP" or "SEZWOP"
@@ -635,7 +655,7 @@ class AccountEdiFormat(models.Model):
             supply_type = "DEXP"
         return supply_type
 
-    #================================ API methods ===========================
+    # ================================ API methods ===========================
 
     @api.model
     def _l10n_in_edi_no_config_response(self):
@@ -664,10 +684,10 @@ class AccountEdiFormat(models.Model):
         })
         try:
             return self.env['iap.account']._l10n_in_connect_to_server(
-              company.sudo().l10n_in_edi_production_env,
-              params,
-              url_path,
-              "l10n_in_edi.endpoint"
+                company.sudo().l10n_in_edi_production_env,
+                params,
+                url_path,
+                "l10n_in_edi.endpoint"
             )
         except AccessError as e:
             _logger.warning("Connection error: %s", e.args[0])
@@ -675,14 +695,15 @@ class AccountEdiFormat(models.Model):
                 "error": [{
                     "code": "404",
                     "message": _("Unable to connect to the online E-invoice service."
-                        "The web service may be temporary down. Please try again in a moment.")
+                                 "The web service may be temporary down. Please try again in a moment.")
                 }]
             }
 
     @api.model
     def _l10n_in_edi_authenticate(self, company):
         params = {"password": company.sudo().l10n_in_edi_password}
-        response = self._l10n_in_edi_connect_to_server(company, url_path="/iap/l10n_in_edi/1/authenticate", params=params)
+        response = self._l10n_in_edi_connect_to_server(company, url_path="/iap/l10n_in_edi/1/authenticate",
+                                                       params=params)
         # validity data-time in Indian standard time(UTC+05:30) so remove that gap and store in odoo
         if "data" in response:
             tz = pytz.timezone("Asia/Kolkata")

@@ -1,5 +1,5 @@
-from typing import Union
 from dataclasses import dataclass
+from typing import Union
 
 import cbor2
 
@@ -34,7 +34,7 @@ class DecodedRSAPublicKey:
 
 
 def decode_credential_public_key(
-    key: bytes,
+        key: bytes,
 ) -> Union[DecodedOKPPublicKey, DecodedEC2PublicKey, DecodedRSAPublicKey]:
     """
     Decode a CBOR-encoded public key and turn it into a data structure.

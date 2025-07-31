@@ -10,7 +10,7 @@ class HrEmployeePublic(models.Model):
     _description = 'Public Employee'
     _order = 'name'
     _auto = False
-    _log_access = True # Include magic fields
+    _log_access = True  # Include magic fields
 
     # Fields coming from hr.employee.base
     create_date = fields.Datetime(readonly=True)
@@ -34,7 +34,8 @@ class HrEmployeePublic(models.Model):
     # Manager-only fields
     is_manager = fields.Boolean(compute='_compute_is_manager')
 
-    employee_id = fields.Many2one('hr.employee', 'Employee', compute="_compute_employee_id", search="_search_employee_id", compute_sudo=True)
+    employee_id = fields.Many2one('hr.employee', 'Employee', compute="_compute_employee_id",
+                                  search="_search_employee_id", compute_sudo=True)
     # hr.employee.public specific fields
     child_ids = fields.One2many('hr.employee.public', 'parent_id', string='Direct subordinates', readonly=True)
     image_1920 = fields.Image("Image", related='employee_id.image_1920', compute_sudo=True)
@@ -82,7 +83,8 @@ class HrEmployeePublic(models.Model):
 
     @api.model
     def _get_fields(self):
-        return ','.join('emp.%s' % name for name, field in self._fields.items() if field.store and field.type not in ['many2many', 'one2many'])
+        return ','.join('emp.%s' % name for name, field in self._fields.items() if
+                        field.store and field.type not in ['many2many', 'one2many'])
 
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)

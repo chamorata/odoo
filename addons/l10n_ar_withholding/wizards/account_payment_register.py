@@ -2,9 +2,8 @@
 import logging
 
 from odoo import models, fields, api, Command, _
-from odoo.exceptions import ValidationError
 from odoo.exceptions import UserError
-from datetime import datetime
+from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -15,14 +14,17 @@ class AccountPaymentRegister(models.TransientModel):
     l10n_ar_withholding_ids = fields.One2many(
         'l10n_ar.payment.register.withholding', 'payment_register_id', string="Withholdings",
         compute="_compute_l10n_ar_withholding_ids", readonly=False, store=True)
-    l10n_ar_net_amount = fields.Monetary(compute='_compute_l10n_ar_net_amount', readonly=True, help="Net amount after withholdings")
+    l10n_ar_net_amount = fields.Monetary(compute='_compute_l10n_ar_net_amount', readonly=True,
+                                         help="Net amount after withholdings")
     l10n_ar_adjustment_warning = fields.Boolean(compute="_compute_l10n_ar_adjustment_warning")
 
-    @api.depends('l10n_latam_move_check_ids.amount', 'amount', 'l10n_ar_net_amount', 'l10n_latam_new_check_ids.amount', 'payment_method_code')
+    @api.depends('l10n_latam_move_check_ids.amount', 'amount', 'l10n_ar_net_amount', 'l10n_latam_new_check_ids.amount',
+                 'payment_method_code')
     def _compute_l10n_ar_adjustment_warning(self):
         wizard_register = self
         for wizard in self:
-            checks = wizard.l10n_latam_new_check_ids if wizard.filtered(lambda x: x._is_latam_check_payment(check_subtype='new_check')) else wizard.l10n_latam_move_check_ids
+            checks = wizard.l10n_latam_new_check_ids if wizard.filtered(
+                lambda x: x._is_latam_check_payment(check_subtype='new_check')) else wizard.l10n_latam_move_check_ids
             checks_amount = sum(checks.mapped('amount'))
             if checks_amount and wizard.l10n_ar_net_amount != checks_amount:
                 wizard.l10n_ar_adjustment_warning = True
@@ -55,13 +57,13 @@ class AccountPaymentRegister(models.TransientModel):
             balance = self.company_currency_id.round(line.amount * conversion_rate)
             # create withholding amount applied move line only if amount != 0
             payment_vals['write_off_line_vals'].append({
-                    'currency_id': self.currency_id.id,
-                    'name': line.name,
-                    'account_id': account_id,
-                    'amount_currency': sign * line.amount,
-                    'balance': sign * balance,
-                    'tax_base_amount': sign * line.base_amount,
-                    'tax_repartition_line_id': tax_repartition_line_id,
+                'currency_id': self.currency_id.id,
+                'name': line.name,
+                'account_id': account_id,
+                'amount_currency': sign * line.amount,
+                'balance': sign * balance,
+                'tax_base_amount': sign * line.base_amount,
+                'tax_repartition_line_id': tax_repartition_line_id,
             })
 
         for base_amount in list(set(self.l10n_ar_withholding_ids.mapped('base_amount'))):
@@ -110,9 +112,11 @@ class AccountPaymentRegister(models.TransientModel):
                 ('partner_id', '=', wizard.partner_id.commercial_partner_id.id),
                 ('tax_id.l10n_ar_withholding_payment_type', '=', wizard.partner_type)
             ])
-            wizard.l10n_ar_withholding_ids = [Command.clear()] + [Command.create({'tax_id': x.tax_id.id}) for x in partner_taxes]
+            wizard.l10n_ar_withholding_ids = [Command.clear()] + [Command.create({'tax_id': x.tax_id.id}) for x in
+                                                                  partner_taxes]
 
     def action_create_payments(self):
         if self.l10n_ar_withholding_ids and not self.payment_method_line_id.payment_account_id:
-            raise ValidationError(_("A payment cannot have withholding if the payment method has no outstanding accounts"))
+            raise ValidationError(
+                _("A payment cannot have withholding if the payment method has no outstanding accounts"))
         return super().action_create_payments()

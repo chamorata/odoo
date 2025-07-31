@@ -2,10 +2,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.hr.tests.common import TestHrCommon
-from odoo.addons.base.models.ir_qweb import QWebException
-
 from odoo.addons.mail.tests.common import mail_new_test_user
 
+from odoo.addons.base.models.ir_qweb import QWebException
 from odoo.exceptions import AccessError
 
 
@@ -52,7 +51,8 @@ class TestMultiCompany(TestHrCommon):
         cls.company_a = cls.env['res.company'].create({'name': 'Company A'})
         cls.company_b = cls.env['res.company'].create({'name': 'Company B'})
 
-        cls.user_a = mail_new_test_user(cls.env, login='user_a', company_id=cls.company_a.id, company_ids=(cls.company_a | cls.company_b).ids)
+        cls.user_a = mail_new_test_user(cls.env, login='user_a', company_id=cls.company_a.id,
+                                        company_ids=(cls.company_a | cls.company_b).ids)
         cls.user_b = mail_new_test_user(cls.env, login='user_b', company_id=cls.company_b.id)
 
         cls.employee_a = cls.env['hr.employee'].create({

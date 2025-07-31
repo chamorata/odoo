@@ -42,7 +42,8 @@
             'default_can_be_expensed': 1,
             'default_type': 'service',
             'default_expense_policy' : 'cost',
-        }</field>
+            }
+        </field>
     </record>
 
 </odoo>

@@ -3,8 +3,8 @@
 
 import logging
 from threading import Lock
-import win32print
 
+import win32print
 from odoo.addons.hw_drivers.interface import Interface
 
 _logger = logging.getLogger(__name__)

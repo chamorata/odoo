@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from ...webauthn.helpers import generate_challenge, generate_user_handle, byteslike_to_bytes
+from ...webauthn.helpers import generate_challenge, generate_user_handle
 from ...webauthn.helpers.cose import COSEAlgorithmIdentifier
 from ...webauthn.helpers.structs import (
     AttestationConveyancePreference,
@@ -15,7 +15,7 @@ from ...webauthn.helpers.structs import (
 
 
 def _generate_pub_key_cred_params(
-    supported_algs: List[COSEAlgorithmIdentifier],
+        supported_algs: List[COSEAlgorithmIdentifier],
 ) -> List[PublicKeyCredentialParameters]:
     """
     Take an array of algorithm ID ints and return an array of PublicKeyCredentialParameters
@@ -40,18 +40,18 @@ default_supported_pub_key_params = _generate_pub_key_cred_params(
 
 
 def generate_registration_options(
-    *,
-    rp_id: str,
-    rp_name: str,
-    user_name: str,
-    user_id: Optional[bytes] = None,
-    user_display_name: Optional[str] = None,
-    challenge: Optional[bytes] = None,
-    timeout: int = 60000,
-    attestation: AttestationConveyancePreference = AttestationConveyancePreference.NONE,
-    authenticator_selection: Optional[AuthenticatorSelectionCriteria] = None,
-    exclude_credentials: Optional[List[PublicKeyCredentialDescriptor]] = None,
-    supported_pub_key_algs: Optional[List[COSEAlgorithmIdentifier]] = None,
+        *,
+        rp_id: str,
+        rp_name: str,
+        user_name: str,
+        user_id: Optional[bytes] = None,
+        user_display_name: Optional[str] = None,
+        challenge: Optional[bytes] = None,
+        timeout: int = 60000,
+        attestation: AttestationConveyancePreference = AttestationConveyancePreference.NONE,
+        authenticator_selection: Optional[AuthenticatorSelectionCriteria] = None,
+        exclude_credentials: Optional[List[PublicKeyCredentialDescriptor]] = None,
+        supported_pub_key_algs: Optional[List[COSEAlgorithmIdentifier]] = None,
 ) -> PublicKeyCredentialCreationOptions:
     """Generate options for registering a credential via navigator.credentials.create()
 

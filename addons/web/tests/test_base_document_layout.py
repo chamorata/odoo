@@ -1,11 +1,11 @@
 import os
-from PIL import Image
 from functools import partial
+
+from PIL import Image
 
 from odoo.tests import TransactionCase, tagged, Form
 from odoo.tools import frozendict
 from odoo.tools.image import image_to_base64, hex_to_rgb
-
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 _file_cache = {}
@@ -55,7 +55,8 @@ class TestBaseDocumentLayoutHelpers(TransactionCase):
             if not fname_split[0] in _file_cache:
                 with Image.open(os.path.join(dir_path, fname), 'r') as img:
                     base64_img = image_to_base64(img, 'PNG')
-                    primary, secondary = self.env['base.document.layout'].extract_image_primary_secondary_colors(base64_img)
+                    primary, secondary = self.env['base.document.layout'].extract_image_primary_secondary_colors(
+                        base64_img)
                     _img = frozendict({
                         'img': base64_img,
                         'colors': {
@@ -206,7 +207,6 @@ class TestBaseDocumentLayout(TestBaseDocumentLayoutHelpers):
                 base64_img = image_to_base64(img, 'PNG')
                 doc_layout.logo = base64_img
             self.assertNotEqual(None, doc_layout.primary_color)
-
 
     # /!\ This case is NOT supported, and probably not supportable
     # res.partner resizes manu-militari the image it is given

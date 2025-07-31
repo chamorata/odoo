@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import Command
 from odoo.addons.sms.tests.common import SMSCommon
 from odoo.addons.test_mail_sms.tests.common import TestSMSRecipients
+
+from odoo import Command
 from odoo.tests import tagged
 from odoo.tools import mute_logger
 
@@ -80,9 +81,11 @@ class TestSMSActions(TestSMSActionsCommon):
 
         self.assertMessageBusNotifications(self.msg)
         self.assertSMSNotification([
-            {'partner': self.partner_1, 'number': self.notif_p1.sms_number, 'state': 'canceled', 'failure_type': 'sms_number_format'},
-            {'partner': self.partner_2, 'number': self.notif_p2.sms_number, 'state': 'exception', 'failure_type': 'sms_credit'}
-        ], 'TEST BODY', self.msg, check_sms=False)    # do not check new sms as they already exist
+            {'partner': self.partner_1, 'number': self.notif_p1.sms_number, 'state': 'canceled',
+             'failure_type': 'sms_number_format'},
+            {'partner': self.partner_2, 'number': self.notif_p2.sms_number, 'state': 'exception',
+             'failure_type': 'sms_credit'}
+        ], 'TEST BODY', self.msg, check_sms=False)  # do not check new sms as they already exist
 
         self._reset_bus()
         self.sms_p2.with_context(sms_skip_msg_notification=True).action_set_canceled()
@@ -90,9 +93,11 @@ class TestSMSActions(TestSMSActionsCommon):
 
         self.assertEqual(self.env['bus.bus'].search([]), self.env['bus.bus'], 'SMS: no bus notifications unless asked')
         self.assertSMSNotification([
-            {'partner': self.partner_1, 'number': self.notif_p1.sms_number, 'state': 'canceled', 'failure_type': 'sms_number_format'},
-            {'partner': self.partner_2, 'number': self.notif_p2.sms_number, 'state': 'canceled', 'failure_type': 'sms_credit'}
-        ], 'TEST BODY', self.msg, check_sms=False)    # do not check new sms as they already exist
+            {'partner': self.partner_1, 'number': self.notif_p1.sms_number, 'state': 'canceled',
+             'failure_type': 'sms_number_format'},
+            {'partner': self.partner_2, 'number': self.notif_p2.sms_number, 'state': 'canceled',
+             'failure_type': 'sms_credit'}
+        ], 'TEST BODY', self.msg, check_sms=False)  # do not check new sms as they already exist
 
     def test_sms_set_error(self):
         self._reset_bus()
@@ -107,9 +112,11 @@ class TestSMSActions(TestSMSActionsCommon):
 
         self.assertMessageBusNotifications(self.msg)
         self.assertSMSNotification([
-            {'partner': self.partner_1, 'number': self.notif_p1.sms_number, 'state': 'exception', 'failure_type': 'sms_server'},
-            {'partner': self.partner_2, 'number': self.notif_p2.sms_number, 'state': 'exception', 'failure_type': 'sms_server'}
-        ], 'TEST BODY', self.msg, check_sms=False)    # do not check new sms as they already exist
+            {'partner': self.partner_1, 'number': self.notif_p1.sms_number, 'state': 'exception',
+             'failure_type': 'sms_server'},
+            {'partner': self.partner_2, 'number': self.notif_p2.sms_number, 'state': 'exception',
+             'failure_type': 'sms_server'}
+        ], 'TEST BODY', self.msg, check_sms=False)  # do not check new sms as they already exist
 
     def test_sms_set_outgoing(self):
         self._reset_bus()
@@ -121,7 +128,7 @@ class TestSMSActions(TestSMSActionsCommon):
         self.assertSMSNotification([
             {'partner': self.partner_1, 'number': self.notif_p1.sms_number, 'state': 'ready'},
             {'partner': self.partner_2, 'number': self.notif_p2.sms_number, 'state': 'ready'}
-        ], 'TEST BODY', self.msg, check_sms=False)    # do not check new sms as they already exist
+        ], 'TEST BODY', self.msg, check_sms=False)  # do not check new sms as they already exist
 
 
 @tagged('sms_management')
@@ -149,7 +156,8 @@ class TestSMSWizards(TestSMSActionsCommon):
 
         with self.with_user('employee'):
             wizard = self.env['sms.resend'].with_context(default_mail_message_id=self.msg.id).create({})
-            wizard.write({'recipient_ids': [(1, r.id, {'resend': True, 'sms_number': self.random_numbers[idx]}) for idx, r in enumerate(wizard.recipient_ids.sorted())]})
+            wizard.write({'recipient_ids': [(1, r.id, {'resend': True, 'sms_number': self.random_numbers[idx]}) for
+                                            idx, r in enumerate(wizard.recipient_ids.sorted())]})
             with self.mockSMSGateway():
                 wizard.action_resend()
 
@@ -168,8 +176,10 @@ class TestSMSWizards(TestSMSActionsCommon):
                 wizard.action_cancel()
 
         self.assertSMSNotification([
-            {'partner': self.partner_1, 'state': 'canceled', 'number': self.notif_p1.sms_number, 'failure_type': 'sms_number_format'},
-            {'partner': self.partner_2, 'state': 'canceled', 'number': self.notif_p2.sms_number, 'failure_type': 'sms_credit'}
+            {'partner': self.partner_1, 'state': 'canceled', 'number': self.notif_p1.sms_number,
+             'failure_type': 'sms_number_format'},
+            {'partner': self.partner_2, 'state': 'canceled', 'number': self.notif_p2.sms_number,
+             'failure_type': 'sms_credit'}
         ], 'TEST BODY', self.msg, check_sms=False)
         self.assertMessageBusNotifications(self.msg)
 
@@ -177,14 +187,17 @@ class TestSMSWizards(TestSMSActionsCommon):
     def test_sms_resend_internals(self):
         self._reset_bus()
         self.assertSMSNotification([
-            {'partner': self.partner_1, 'state': 'exception', 'number': self.notif_p1.sms_number, 'failure_type': 'sms_number_format'},
-            {'partner': self.partner_2, 'state': 'exception', 'number': self.notif_p2.sms_number, 'failure_type': 'sms_credit'}
+            {'partner': self.partner_1, 'state': 'exception', 'number': self.notif_p1.sms_number,
+             'failure_type': 'sms_number_format'},
+            {'partner': self.partner_2, 'state': 'exception', 'number': self.notif_p2.sms_number,
+             'failure_type': 'sms_credit'}
         ], 'TEST BODY', self.msg, check_sms=False)
 
         with self.with_user('employee'):
             wizard = self.env['sms.resend'].with_context(default_mail_message_id=self.msg.id).create({})
             self.assertTrue(wizard.has_insufficient_credit)
-            self.assertEqual(set(wizard.mapped('recipient_ids.partner_name')), set((self.partner_1 | self.partner_2).mapped('display_name')))
+            self.assertEqual(set(wizard.mapped('recipient_ids.partner_name')),
+                             set((self.partner_1 | self.partner_2).mapped('display_name')))
             wizard.write({'recipient_ids': [(1, r.id, {'resend': True}) for r in wizard.recipient_ids]})
             with self.mockSMSGateway():
                 wizard.action_resend()
@@ -195,10 +208,13 @@ class TestSMSWizards(TestSMSActionsCommon):
 
         with self.with_user('employee'):
             wizard = self.env['sms.resend'].with_context(default_mail_message_id=self.msg.id).create({})
-            wizard.write({'recipient_ids': [(1, r.id, {'resend': True if r.partner_id == self.partner_1 else False}) for r in wizard.recipient_ids]})
+            wizard.write({'recipient_ids': [(1, r.id, {'resend': True if r.partner_id == self.partner_1 else False}) for
+                                            r in wizard.recipient_ids]})
             with self.mockSMSGateway():
                 wizard.action_resend()
 
-        self.assertSMSNotification([{'partner': self.partner_1, 'state': 'pending'}], 'TEST BODY', self.msg, check_sms=True)
-        self.assertSMSNotification([{'partner': self.partner_2, 'state': 'canceled', 'number': self.notif_p2.sms_number, 'failure_type': 'sms_credit'}], 'TEST BODY', self.msg, check_sms=False)
+        self.assertSMSNotification([{'partner': self.partner_1, 'state': 'pending'}], 'TEST BODY', self.msg,
+                                   check_sms=True)
+        self.assertSMSNotification([{'partner': self.partner_2, 'state': 'canceled', 'number': self.notif_p2.sms_number,
+                                     'failure_type': 'sms_credit'}], 'TEST BODY', self.msg, check_sms=False)
         self.assertMessageBusNotifications(self.msg, count=2)

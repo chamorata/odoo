@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import Command
+from odoo.addons.mail.tests.common import MailCommon
+from odoo.addons.sale.tests.common import SaleCommon
+
+from odoo.addons.base.tests.common import BaseUsersCommon
 from odoo.exceptions import AccessError, UserError
 from odoo.tests import tagged
 from odoo.tools import mute_logger
-
-from odoo.addons.base.tests.common import BaseUsersCommon
-from odoo.addons.mail.tests.common import MailCommon
-from odoo.addons.sale.tests.common import SaleCommon
 
 
 @tagged('post_install', '-at_install')
@@ -100,9 +99,9 @@ class TestAccessRights(BaseUsersCommon, SaleCommon, MailCommon):
 
         move_as_salesperson.sudo().action_post()
 
-        composer = self.env['account.move.send.wizard']\
-            .with_user(self.sale_user2)\
-            .with_context(active_model='account.move', active_ids=move_as_salesperson.ids)\
+        composer = self.env['account.move.send.wizard'] \
+            .with_user(self.sale_user2) \
+            .with_context(active_model='account.move', active_ids=move_as_salesperson.ids) \
             .create({})
 
         # Salesperson can send & print

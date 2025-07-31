@@ -30,7 +30,7 @@ class MailActivityPlan(models.Model):
     res_model = fields.Selection(
         selection=_get_model_selection, string="Model", required=True,
         help='Specify a model if the activity should be specific to a model'
-              ' and not available when managing activities for other models.')
+             ' and not available when managing activities for other models.')
     steps_count = fields.Integer(compute='_compute_steps_count')
     has_user_on_demand = fields.Boolean('Has on demand responsible', compute='_compute_has_user_on_demand')
 

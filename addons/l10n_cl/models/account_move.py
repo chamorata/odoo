@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo.exceptions import ValidationError
 from odoo import models, fields, api, _
-from odoo.tools.misc import formatLang
+from odoo.exceptions import ValidationError
 from odoo.tools.float_utils import float_repr, float_round
+from odoo.tools.misc import formatLang
 
 SII_VAT = '60805000-0'
 
@@ -27,7 +27,8 @@ class AccountMove(models.Model):
             elif self.move_type in ['in_refund', 'out_refund']:
                 domain += [('internal_type', '=', 'credit_note')]
             if self.company_id.partner_id.l10n_cl_sii_taxpayer_type == '1':
-                domain += [('code', '!=', '71')]  # Companies with VAT Affected doesn't have "Boleta de honorarios Electrónica"
+                domain += [
+                    ('code', '!=', '71')]  # Companies with VAT Affected doesn't have "Boleta de honorarios Electrónica"
             return domain
         if self.move_type == 'in_refund':
             internal_types_domain = ('internal_type', '=', 'credit_note')
@@ -60,11 +61,11 @@ class AccountMove(models.Model):
             country_id = rec.partner_id.country_id
             latam_document_type_code = rec.l10n_latam_document_type_id.code
             if (rec.journal_id.type == 'purchase' and tax_payer_type == '4' and country_id.code != 'CL' and
-                latam_document_type_code == '61' and
-               '46' in rec.l10n_cl_reference_ids.mapped('l10n_cl_reference_doc_type_selection')):
+                    latam_document_type_code == '61' and
+                    '46' in rec.l10n_cl_reference_ids.mapped('l10n_cl_reference_doc_type_selection')):
                 continue
             if (not tax_payer_type or not vat) and (country_id.code == "CL" and latam_document_type_code
-                                                  and latam_document_type_code not in ['35', '38', '39', '41']):
+                                                    and latam_document_type_code not in ['35', '38', '39', '41']):
                 raise ValidationError(_('Tax payer type and vat number are mandatory for this type of '
                                         'document. Please set the current tax payer type of this customer'))
             if rec.journal_id.type == 'sale' and rec.journal_id.l10n_latam_use_documents:
@@ -79,7 +80,7 @@ class AccountMove(models.Model):
                                             ' (Tesorería General de La República)'))
                 if not tax_payer_type or not vat:
                     if country_id.code == "CL" and latam_document_type_code not in [
-                            '35', '38', '39', '41']:
+                        '35', '38', '39', '41']:
                         raise ValidationError(_('Tax payer type and vat number are mandatory for this type of '
                                                 'document. Please set the current tax payer type of this supplier'))
                 if tax_payer_type == '2' and latam_document_type_code not in ['70', '71', '56', '61']:
@@ -126,7 +127,8 @@ class AccountMove(models.Model):
             param['company_id'] = self.company_id.id or False
             param['l10n_latam_document_type_id'] = self.l10n_latam_document_type_id.id or 0
             param['move_type'] = (('in_invoice', 'in_refund') if
-                  self.l10n_latam_document_type_id._is_doc_type_vendor() else ('out_invoice', 'out_refund'))
+                                  self.l10n_latam_document_type_id._is_doc_type_vendor() else ('out_invoice',
+                                                                                               'out_refund'))
         return where_string, param
 
     def _get_name_invoice_report(self):
@@ -150,9 +152,11 @@ class AccountMove(models.Model):
             for subtotal in tax_totals['subtotals']
             for tax_group in subtotal['tax_groups']
         }
-        tax_group_ids_to_exclude = self.env['account.tax.group'].browse(tax_group_ids).filtered(lambda x: x.l10n_cl_sii_code == 14).ids
+        tax_group_ids_to_exclude = self.env['account.tax.group'].browse(tax_group_ids).filtered(
+            lambda x: x.l10n_cl_sii_code == 14).ids
         if tax_group_ids_to_exclude:
-            return self.env['account.tax']._exclude_tax_groups_from_tax_totals_summary(tax_totals, tax_group_ids_to_exclude)
+            return self.env['account.tax']._exclude_tax_groups_from_tax_totals_summary(tax_totals,
+                                                                                       tax_group_ids_to_exclude)
         return tax_totals
 
     def _l10n_cl_include_sii(self):
@@ -197,7 +201,7 @@ class AccountMove(models.Model):
                 'subtotal_amount_exempt': 0,
                 'vat_amount': 0,
                 'total_amount': currency_round_other_currency.round(abs(self.amount_total_signed))
-                    if export else currency_round_other_currency.round(self.amount_total),
+                if export else currency_round_other_currency.round(self.amount_total),
                 'round_currency': currency_round_other_currency.decimal_places,
                 'name': self._l10n_cl_normalize_currency_name(currency_round_other_currency.name),
                 'rate': round(abs(self.amount_total_signed) / self.amount_total, 4),
@@ -212,11 +216,13 @@ class AccountMove(models.Model):
                 if line.tax_ids.filtered(lambda x: x.l10n_cl_sii_code == 14):
                     values['subtotal_amount_taxable'] += line[key_main_currency] * sign_main_currency
                     if other_currency:
-                        values['second_currency']['subtotal_amount_taxable'] += line[key_other_currency] * sign_main_currency
+                        values['second_currency']['subtotal_amount_taxable'] += line[
+                                                                                    key_other_currency] * sign_main_currency
                 elif not line.tax_ids:
                     values['subtotal_amount_exempt'] += line[key_main_currency] * sign_main_currency
                     if other_currency:
-                        values['second_currency']['subtotal_amount_exempt'] += line[key_other_currency] * sign_main_currency
+                        values['second_currency']['subtotal_amount_exempt'] += line[
+                                                                                   key_other_currency] * sign_main_currency
         values['global_discounts'] = []
         for gd in global_discounts:
             main_value = currency_round_main_currency.round(abs(gd.price_subtotal)) if \
@@ -255,8 +261,9 @@ class AccountMove(models.Model):
                 'tax_percent': abs(line.tax_line_id.amount),
                 'tax_amount_currency': self.currency_id.round(abs(line.amount_currency)),
                 'tax_amount': self.currency_id.round(abs(line.balance))} for line in self.line_ids.filtered(
-            lambda x: x.tax_group_id.id in [self.env['account.chart.template'].with_company(self.company_id).ref('tax_group_ila').id,
-                                            self.env['account.chart.template'].with_company(self.company_id).ref('tax_group_retenciones').id])]
+            lambda x: x.tax_group_id.id in [
+                self.env['account.chart.template'].with_company(self.company_id).ref('tax_group_ila').id,
+                self.env['account.chart.template'].with_company(self.company_id).ref('tax_group_retenciones').id])]
         return tax
 
     def _float_repr_float_round(self, value, decimal_places):

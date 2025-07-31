@@ -15,21 +15,22 @@
                          t-options="{'widget': 'monetary', 'from_currency': event.company_id.sudo().currency_id, 'display_currency': website.currency_id}"/>
                 </t>
                 <h5 t-if="website.show_line_subtotals_tax_selection == 'tax_excluded'"
-                      t-field="booth_category.price_reduce"
-                      t-options="{'widget': 'monetary', 'from_currency': event.company_id.sudo().currency_id, 'display_currency': website.currency_id}"/>
+                    t-field="booth_category.price_reduce"
+                    t-options="{'widget': 'monetary', 'from_currency': event.company_id.sudo().currency_id, 'display_currency': website.currency_id}"/>
                 <h5 t-else=""
-                      t-field="booth_category.price_reduce_taxinc"
-                      t-options="{'widget': 'monetary', 'from_currency': event.company_id.sudo().currency_id, 'display_currency': website.currency_id}"/>
+                    t-field="booth_category.price_reduce_taxinc"
+                    t-options="{'widget': 'monetary', 'from_currency': event.company_id.sudo().currency_id, 'display_currency': website.currency_id}"/>
             </t>
             <h5 t-else="">Free</h5>
         </xpath>
         <xpath expr="//input[@name='booth_category_id']" position="attributes">
             <attribute name="t-att-data-price">
                 event.company_id.sudo().currency_id._convert(
-                    booth_category.price_reduce_taxinc if website.show_line_subtotals_tax_selection == 'tax_included' else booth_category.price_reduce,
-                    website.currency_id,
-                    event.company_id,
-                    datetime.date.today()
+                booth_category.price_reduce_taxinc if website.show_line_subtotals_tax_selection == 'tax_included' else
+                booth_category.price_reduce,
+                website.currency_id,
+                event.company_id,
+                datetime.date.today()
                 ) or '0'
             </attribute>
         </xpath>

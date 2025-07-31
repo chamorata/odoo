@@ -15,10 +15,13 @@
                     <div col="2"
                          class="alert alert-warning"
                          role="alert">
-                        <span>Are you sure you want to cancel this order? <br/></span>
+                        <span>Are you sure you want to cancel this order?
+                            <br/>
+                        </span>
                         <span id="display_invoice_alert"
                               invisible="not display_invoice_alert">
-                            Draft invoices for this order will be cancelled. <br/>
+                            Draft invoices for this order will be cancelled.
+                            <br/>
                         </span>
                     </div>
                     <group col="2">

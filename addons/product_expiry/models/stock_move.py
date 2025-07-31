@@ -2,8 +2,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import datetime
-import dateutil.parser as dparser
 from re import findall as re_findall
+
+import dateutil.parser as dparser
 
 from odoo import fields, models
 from odoo.tools import get_lang
@@ -17,7 +18,8 @@ class StockMove(models.Model):
 
     def _generate_serial_move_line_commands(self, field_data, location_dest_id=False, origin_move_line=None):
         """Override to add a default `expiration_date` into the move lines values."""
-        move_lines_commands = super()._generate_serial_move_line_commands(field_data, location_dest_id, origin_move_line)
+        move_lines_commands = super()._generate_serial_move_line_commands(field_data, location_dest_id,
+                                                                          origin_move_line)
         if self.product_id.use_expiration_date:
             date = fields.Datetime.today() + datetime.timedelta(days=self.product_id.expiration_time)
             for move_line_command in move_lines_commands:
@@ -74,10 +76,21 @@ class StockMove(models.Model):
 
     def _update_reserved_quantity(self, need, location_id, lot_id=None, package_id=None, owner_id=None, strict=True):
         if self.product_id.use_expiration_date:
-            return super(StockMove, self.with_context(with_expiration=self.date))._update_reserved_quantity(need, location_id, lot_id, package_id, owner_id, strict)
+            return super(StockMove, self.with_context(with_expiration=self.date))._update_reserved_quantity(need,
+                                                                                                            location_id,
+                                                                                                            lot_id,
+                                                                                                            package_id,
+                                                                                                            owner_id,
+                                                                                                            strict)
         return super()._update_reserved_quantity(need, location_id, lot_id, package_id, owner_id, strict)
 
-    def _get_available_quantity(self, location_id, lot_id=None, package_id=None, owner_id=None, strict=False, allow_negative=False):
+    def _get_available_quantity(self, location_id, lot_id=None, package_id=None, owner_id=None, strict=False,
+                                allow_negative=False):
         if self.product_id.use_expiration_date:
-            return super(StockMove, self.with_context(with_expiration=self.date))._get_available_quantity(location_id, lot_id, package_id, owner_id, strict, allow_negative)
+            return super(StockMove, self.with_context(with_expiration=self.date))._get_available_quantity(location_id,
+                                                                                                          lot_id,
+                                                                                                          package_id,
+                                                                                                          owner_id,
+                                                                                                          strict,
+                                                                                                          allow_negative)
         return super()._get_available_quantity(location_id, lot_id, package_id, owner_id, strict, allow_negative)

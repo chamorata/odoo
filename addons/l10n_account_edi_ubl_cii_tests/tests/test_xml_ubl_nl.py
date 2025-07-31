@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-from odoo.addons.l10n_account_edi_ubl_cii_tests.tests.common import TestUBLCommon
-from odoo.tests import tagged
-from odoo import Command
-
 from lxml import etree
+from odoo.addons.l10n_account_edi_ubl_cii_tests.tests.common import TestUBLCommon
+
+from odoo import Command
+from odoo.tests import tagged
 
 
 @tagged('post_install_l10n', 'post_install', '-at_install')
@@ -230,7 +230,8 @@ class TestUBLNL(TestUBLCommon):
                 'tax_ids': [Command.set([self.tax_10_fixed.id, self.tax_7_purchase.id])]
             }]
         )
-        amount = etree.fromstring(invoice.ubl_cii_xml_id.raw).find('.//{*}LegalMonetaryTotal/{*}LineExtensionAmount').text
+        amount = etree.fromstring(invoice.ubl_cii_xml_id.raw).find(
+            './/{*}LegalMonetaryTotal/{*}LineExtensionAmount').text
         self.assertEqual(amount, '60.00')
 
     ####################################################

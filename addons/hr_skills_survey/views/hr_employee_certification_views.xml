@@ -4,9 +4,9 @@
         <field name="model">hr.resume.line</field>
         <field name="arch" type="xml">
             <list expand="1"
-                decoration-danger="expiration_status == 'expired'"
-                decoration-warning="expiration_status == 'expiring'"
-                default_group_by="employee_id">
+                  decoration-danger="expiration_status == 'expired'"
+                  decoration-warning="expiration_status == 'expiring'"
+                  default_group_by="employee_id">
                 <field name="employee_id" widget="many2one_avatar_user"/>
                 <field name="name"/>
                 <field name="date_start" string="Validity Start"/>
@@ -25,7 +25,8 @@
                 <field name="name"/>
                 <field name="survey_id"/>
                 <separator/>
-                <filter string="Expiring Soon" name="certification_expiring" domain="[('expiration_status', '=', 'expiring')]"/>
+                <filter string="Expiring Soon" name="certification_expiring"
+                        domain="[('expiration_status', '=', 'expiring')]"/>
                 <filter string="Expired" name="certification_expired" domain="[('expiration_status', '=', 'expired')]"/>
                 <separator/>
                 <filter string="Valid Until" name="date_end" date="date_end"/>
@@ -50,10 +51,10 @@
     </record>
 
     <menuitem
-        id="hr_employee_certication_report_menu"
-        name="Certifications"
-        action="hr_employee_certification_report_action"
-        parent="hr.hr_menu_hr_reports"
-        groups="hr.group_hr_user"
-        sequence="20"/>
+            id="hr_employee_certication_report_menu"
+            name="Certifications"
+            action="hr_employee_certification_report_action"
+            parent="hr.hr_menu_hr_reports"
+            groups="hr.group_hr_user"
+            sequence="20"/>
 </odoo>

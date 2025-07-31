@@ -21,7 +21,8 @@ SINVOICE_TIMEOUT = 60  # They recommend between 60 and 90 seconds, but 60s is al
 def _l10n_vn_edi_send_request(method, url, json_data=None, params=None, headers=None, cookies=None):
     """ Send a request to the API based on the given parameters. In case of errors, the error message is returned. """
     try:
-        response = requests.request(method, url, json=json_data, params=params, headers=headers, cookies=cookies, timeout=SINVOICE_TIMEOUT)
+        response = requests.request(method, url, json=json_data, params=params, headers=headers, cookies=cookies,
+                                    timeout=SINVOICE_TIMEOUT)
         resp_json = response.json()
         error = None
         if resp_json.get('code') or resp_json.get('error'):
@@ -86,7 +87,8 @@ class AccountMove(models.Model):
     )
     l10n_vn_edi_sinvoice_file_id = fields.Many2one(
         comodel_name='ir.attachment',
-        compute=lambda self: self._compute_linked_attachment_id('l10n_vn_edi_sinvoice_file_id', 'l10n_vn_edi_sinvoice_file'),
+        compute=lambda self: self._compute_linked_attachment_id('l10n_vn_edi_sinvoice_file_id',
+                                                                'l10n_vn_edi_sinvoice_file'),
         depends=['l10n_vn_edi_sinvoice_file'],
         copy=False,
         readonly=True,
@@ -100,7 +102,8 @@ class AccountMove(models.Model):
     )
     l10n_vn_edi_sinvoice_xml_file_id = fields.Many2one(
         comodel_name='ir.attachment',
-        compute=lambda self: self._compute_linked_attachment_id('l10n_vn_edi_sinvoice_xml_file_id', 'l10n_vn_edi_sinvoice_xml_file'),
+        compute=lambda self: self._compute_linked_attachment_id('l10n_vn_edi_sinvoice_xml_file_id',
+                                                                'l10n_vn_edi_sinvoice_xml_file'),
         depends=['l10n_vn_edi_sinvoice_xml_file'],
         copy=False,
         readonly=True,
@@ -114,7 +117,8 @@ class AccountMove(models.Model):
     )
     l10n_vn_edi_sinvoice_pdf_file_id = fields.Many2one(
         comodel_name='ir.attachment',
-        compute=lambda self: self._compute_linked_attachment_id('l10n_vn_edi_sinvoice_pdf_file_id', 'l10n_vn_edi_sinvoice_pdf_file'),
+        compute=lambda self: self._compute_linked_attachment_id('l10n_vn_edi_sinvoice_pdf_file_id',
+                                                                'l10n_vn_edi_sinvoice_pdf_file'),
         depends=['l10n_vn_edi_sinvoice_pdf_file'],
         copy=False,
         readonly=True,
@@ -210,7 +214,8 @@ class AccountMove(models.Model):
     def _get_fields_to_detach(self):
         # EXTENDS account
         fields_list = super()._get_fields_to_detach()
-        fields_list.extend(['l10n_vn_edi_sinvoice_file', 'l10n_vn_edi_sinvoice_xml_file','l10n_vn_edi_sinvoice_pdf_file'])
+        fields_list.extend(
+            ['l10n_vn_edi_sinvoice_file', 'l10n_vn_edi_sinvoice_xml_file', 'l10n_vn_edi_sinvoice_pdf_file'])
         return fields_list
 
     def _l10n_vn_edi_fetch_invoice_file_data(self, file_format):
@@ -387,9 +392,9 @@ class AccountMove(models.Model):
         # Ensure to tag the move as 'Ready to send' upon posting if it makes sense.
         posted.filtered(
             lambda invoice:
-                invoice.country_code == 'VN'
-                and invoice.is_sale_document()
-                and not invoice._l10n_vn_edi_is_sent()
+            invoice.country_code == 'VN'
+            and invoice.is_sale_document()
+            and not invoice._l10n_vn_edi_is_sent()
         ).l10n_vn_edi_invoice_state = 'ready_to_send'
 
         return posted
@@ -411,14 +416,17 @@ class AccountMove(models.Model):
         company_phone = company.phone and self._l10n_vn_edi_format_phone_number(company.phone)
         if company_phone and not company_phone.isdecimal():
             errors.append(_('Phone number for company %s must only contain digits or +.', company.display_name))
-        commercial_partner_phone = commercial_partner.phone and self._l10n_vn_edi_format_phone_number(commercial_partner.phone)
+        commercial_partner_phone = commercial_partner.phone and self._l10n_vn_edi_format_phone_number(
+            commercial_partner.phone)
         if commercial_partner_phone and not commercial_partner_phone.isdecimal():
-            errors.append(_('Phone number for partner %s must only contain digits or +.', commercial_partner.display_name))
+            errors.append(
+                _('Phone number for partner %s must only contain digits or +.', commercial_partner.display_name))
         if not self.l10n_vn_edi_invoice_symbol:
             errors.append(_('The invoice symbol must be provided.'))
         if self.l10n_vn_edi_invoice_symbol and not self.l10n_vn_edi_invoice_symbol.invoice_template_id:
             errors.append(_("The invoice symbol's template must be provided."))
-        if self.move_type == 'out_refund' and (not self.reversed_entry_id or not self.reversed_entry_id._l10n_vn_edi_is_sent()):
+        if self.move_type == 'out_refund' and (
+                not self.reversed_entry_id or not self.reversed_entry_id._l10n_vn_edi_is_sent()):
             errors.append(_('You can only send a credit note linked to a previously sent invoice.'))
         if not company.street or not company.state_id or not company.country_id:
             errors.append(_('The street, state and country of company %s must be provided.', company.display_name))
@@ -426,7 +434,8 @@ class AccountMove(models.Model):
             vnd = self.env.ref('base.VND')
             rate = vnd.with_context(date=self.invoice_date or self.date).rate
             if not vnd.active or rate == 1:
-                errors.append(_('Please make sure that the VND currency is enabled, and that the exchange rates are set.'))
+                errors.append(
+                    _('Please make sure that the VND currency is enabled, and that the exchange rates are set.'))
         return errors
 
     def _l10n_vn_edi_send_invoice(self, invoice_json_data):
@@ -608,7 +617,8 @@ class AccountMove(models.Model):
                 'adjustmentType': '5' if self.move_type == 'out_refund' else '3',  # Adjustment or replacement
                 'adjustmentInvoiceType': self.l10n_vn_edi_adjustment_type or '',
                 'originalInvoiceId': adjustment_origin_invoice.l10n_vn_edi_invoice_number,
-                'originalInvoiceIssueDate': self._l10n_vn_edi_format_date(adjustment_origin_invoice.l10n_vn_edi_issue_date),
+                'originalInvoiceIssueDate': self._l10n_vn_edi_format_date(
+                    adjustment_origin_invoice.l10n_vn_edi_issue_date),
                 'originalTemplateCode': adjustment_origin_invoice.l10n_vn_edi_invoice_symbol.invoice_template_id.name,
                 'additionalReferenceDesc': self.l10n_vn_edi_agreement_document_name,
                 'additionalReferenceDate': self._l10n_vn_edi_format_date(self.l10n_vn_edi_agreement_document_date),
@@ -620,7 +630,8 @@ class AccountMove(models.Model):
         """ Create and return the buyer information for the current invoice. """
         self.ensure_one()
 
-        commercial_partner_phone = self.commercial_partner_id.phone and self._l10n_vn_edi_format_phone_number(self.commercial_partner_id.phone)
+        commercial_partner_phone = self.commercial_partner_id.phone and self._l10n_vn_edi_format_phone_number(
+            self.commercial_partner_id.phone)
         buyer_information = {
             'buyerName': self.partner_id.name,
             'buyerLegalName': self.commercial_partner_id.name,
@@ -740,7 +751,8 @@ class AccountMove(models.Model):
                 'taxPercentage': tax_percentage['tax_percentage'],
                 'taxableAmount': tax_percentage_values['base_amount_currency'],
                 'taxAmount': tax_percentage_values['tax_amount_currency'],
-                'taxableAmountPos': self.move_type == 'out_invoice',  # For adjustment invoice, the amount should be considered as negative.
+                'taxableAmountPos': self.move_type == 'out_invoice',
+                # For adjustment invoice, the amount should be considered as negative.
                 'taxAmountPos': self.move_type == 'out_invoice',  # Same
             })
 
@@ -775,7 +787,8 @@ class AccountMove(models.Model):
         if credentials_company.l10n_vn_edi_token and credentials_company.l10n_vn_edi_token_expiry > datetime.now():
             return credentials_company.l10n_vn_edi_token, ""
 
-        data = {'username': credentials_company.l10n_vn_edi_username, 'password': credentials_company.l10n_vn_edi_password}
+        data = {'username': credentials_company.l10n_vn_edi_username,
+                'password': credentials_company.l10n_vn_edi_password}
         request_response, error_message = _l10n_vn_edi_send_request(
             method='POST',
             url='https://api-vinvoice.viettel.vn/auth/login',  # This one is special and uses another base address.

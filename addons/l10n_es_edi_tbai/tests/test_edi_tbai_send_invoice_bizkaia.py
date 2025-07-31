@@ -2,7 +2,6 @@ from unittest.mock import patch
 
 from odoo.exceptions import UserError
 from odoo.tests import tagged
-
 from .common import TestEsEdiTbaiCommonBizkaia
 
 
@@ -23,8 +22,8 @@ class TestSendAndPrintEdiBizkaia(TestEsEdiTbaiCommonBizkaia):
 
         # Post with success
         with patch(
-            'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
-            return_value=self.mock_response_post_invoice_success,
+                'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
+                return_value=self.mock_response_post_invoice_success,
         ):
             invoice_send_wizard.action_send_and_print()
 
@@ -32,8 +31,8 @@ class TestSendAndPrintEdiBizkaia(TestEsEdiTbaiCommonBizkaia):
 
         # Cancel with success
         with patch(
-            'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
-            return_value=self.mock_response_cancel_invoice_success,
+                'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
+                return_value=self.mock_response_cancel_invoice_success,
         ):
             invoice.l10n_es_tbai_cancel()
 
@@ -46,8 +45,8 @@ class TestSendAndPrintEdiBizkaia(TestEsEdiTbaiCommonBizkaia):
         # Post with error
         try:
             with patch(
-                'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
-                return_value=self.mock_response_post_invoice_failure,
+                    'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
+                    return_value=self.mock_response_post_invoice_failure,
             ):
                 invoice_send_wizard.action_send_and_print()
             raise AssertionError("A UserError should have been raised.")
@@ -57,8 +56,8 @@ class TestSendAndPrintEdiBizkaia(TestEsEdiTbaiCommonBizkaia):
 
         # Post with success
         with patch(
-            'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
-            return_value=self.mock_response_post_invoice_success,
+                'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
+                return_value=self.mock_response_post_invoice_success,
         ):
             invoice_send_wizard.action_send_and_print()
 
@@ -70,16 +69,16 @@ class TestSendAndPrintEdiBizkaia(TestEsEdiTbaiCommonBizkaia):
 
         # Post with success
         with patch(
-            'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
-            return_value=self.mock_response_post_invoice_success,
+                'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
+                return_value=self.mock_response_post_invoice_success,
         ):
             invoice_send_wizard.action_send_and_print()
 
         # Cancel with error
         try:
             with patch(
-                'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
-                return_value=self.mock_response_cancel_invoice_failure,
+                    'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
+                    return_value=self.mock_response_cancel_invoice_failure,
             ):
                 invoice.l10n_es_tbai_cancel()
             raise AssertionError("A UserError should have been raised.")
@@ -94,8 +93,8 @@ class TestSendAndPrintEdiBizkaia(TestEsEdiTbaiCommonBizkaia):
         # Post with request error
         try:
             with patch(
-                'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
-                side_effect=self.mock_request_error,
+                    'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
+                    side_effect=self.mock_request_error,
             ):
                 invoice_send_wizard.action_send_and_print()
             raise AssertionError("A UserError should have been raised.")
@@ -109,16 +108,16 @@ class TestSendAndPrintEdiBizkaia(TestEsEdiTbaiCommonBizkaia):
 
         # Post with success
         with patch(
-            'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
-            return_value=self.mock_response_post_invoice_success,
+                'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
+                return_value=self.mock_response_post_invoice_success,
         ):
             invoice_send_wizard.action_send_and_print()
 
         # Cancel with request error
         try:
             with patch(
-                'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
-                side_effect=self.mock_request_error,
+                    'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
+                    side_effect=self.mock_request_error,
             ):
                 invoice.l10n_es_tbai_cancel()
             raise AssertionError("A UserError should have been raised.")

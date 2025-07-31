@@ -66,7 +66,7 @@ class ServerActions(models.Model):
                 raise ValidationError(
                     _('SMS template model of %(action_name)s does not match action model.',
                       action_name=action.name
-                     )
+                      )
                 )
 
     def _run_action_sms_multi(self, eval_context=None):

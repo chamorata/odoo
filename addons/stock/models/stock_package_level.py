@@ -31,7 +31,7 @@ class StockPackageLevel(models.Model):
         ('new', 'New'),
         ('done', 'Done'),
         ('cancel', 'Cancelled'),
-    ],string='State', compute='_compute_state')
+    ], string='State', compute='_compute_state')
     is_fresh_package = fields.Boolean(compute='_compute_fresh_pack')
 
     picking_type_code = fields.Selection(related='picking_id.picking_type_code')
@@ -46,7 +46,8 @@ class StockPackageLevel(models.Model):
             if package_level.is_fresh_package:
                 package_level.is_done = True
             else:
-                package_level.is_done = package_level._check_move_lines_map_quant_package(package_level.package_id, only_picked=True)
+                package_level.is_done = package_level._check_move_lines_map_quant_package(package_level.package_id,
+                                                                                          only_picked=True)
 
     def _set_is_done(self):
         for package_level in self:
@@ -57,17 +58,20 @@ class StockPackageLevel(models.Model):
                         lambda ml: not ml.package_level_id and ml.package_id == package_level.package_id
                     ).unlink()
                     for quant in package_level.package_id.quant_ids:
-                        corresponding_mls = package_level.move_line_ids.filtered(lambda ml: ml.product_id == quant.product_id and ml.lot_id == quant.lot_id)
+                        corresponding_mls = package_level.move_line_ids.filtered(
+                            lambda ml: ml.product_id == quant.product_id and ml.lot_id == quant.lot_id)
                         to_dispatch = quant.quantity
                         if corresponding_mls:
                             for ml in corresponding_mls:
-                                qty = min(to_dispatch, ml.move_id.product_qty) if len(corresponding_mls) > 1 else to_dispatch
+                                qty = min(to_dispatch, ml.move_id.product_qty) if len(
+                                    corresponding_mls) > 1 else to_dispatch
                                 to_dispatch = to_dispatch - qty
                                 ml_update_dict[ml] += qty
                                 if float_is_zero(to_dispatch, precision_rounding=ml.product_id.uom_id.rounding):
                                     break
                         else:
-                            corresponding_move = package_level.move_ids.filtered(lambda m: m.product_id == quant.product_id)[:1]
+                            corresponding_move = package_level.move_ids.filtered(
+                                lambda m: m.product_id == quant.product_id)[:1]
                             self.env['stock.move.line'].create({
                                 'location_id': package_level.location_id.id,
                                 'location_dest_id': package_level.location_dest_id.id,
@@ -92,7 +96,8 @@ class StockPackageLevel(models.Model):
     @api.depends('move_line_ids', 'move_line_ids.package_id', 'move_line_ids.result_package_id')
     def _compute_fresh_pack(self):
         for package_level in self:
-            if not package_level.move_line_ids or all(ml.package_id and ml.package_id == ml.result_package_id for ml in package_level.move_line_ids):
+            if not package_level.move_line_ids or all(
+                    ml.package_id and ml.package_id == ml.result_package_id for ml in package_level.move_line_ids):
                 package_level.is_fresh_package = False
             else:
                 package_level.is_fresh_package = True
@@ -102,18 +107,21 @@ class StockPackageLevel(models.Model):
         for package_level in self:
             if not package_level.move_ids and not package_level.move_line_ids:
                 package_level.state = 'draft'
-            elif not package_level.move_line_ids and package_level.move_ids.filtered(lambda m: m.state not in ('done', 'cancel')):
+            elif not package_level.move_line_ids and package_level.move_ids.filtered(
+                    lambda m: m.state not in ('done', 'cancel')):
                 package_level.state = 'confirmed'
-            elif package_level.move_line_ids and not package_level.move_line_ids.filtered(lambda ml: ml.state in ('done', 'cancel')):
+            elif package_level.move_line_ids and not package_level.move_line_ids.filtered(
+                    lambda ml: ml.state in ('done', 'cancel')):
                 if package_level.is_fresh_package:
                     package_level.state = 'new'
                 elif package_level._check_move_lines_map_quant_package(package_level.package_id):
                     package_level.state = 'assigned'
                 else:
                     package_level.state = 'confirmed'
-            elif package_level.move_line_ids.filtered(lambda ml: ml.state =='done'):
+            elif package_level.move_line_ids.filtered(lambda ml: ml.state == 'done'):
                 package_level.state = 'done'
-            elif package_level.move_line_ids.filtered(lambda ml: ml.state == 'cancel') or package_level.move_ids.filtered(lambda m: m.state == 'cancel'):
+            elif package_level.move_line_ids.filtered(
+                    lambda ml: ml.state == 'cancel') or package_level.move_ids.filtered(lambda m: m.state == 'cancel'):
                 package_level.state = 'cancel'
             else:
                 package_level.state = 'draft'

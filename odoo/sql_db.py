@@ -44,6 +44,7 @@ def undecimalize(value, cr):
         return None
     return float(value)
 
+
 DECIMAL_TO_FLOAT_TYPE = psycopg2.extensions.new_type((1700,), 'float', undecimalize)
 psycopg2.extensions.register_type(DECIMAL_TO_FLOAT_TYPE)
 psycopg2.extensions.register_type(psycopg2.extensions.new_array_type((1231,), 'float[]', DECIMAL_TO_FLOAT_TYPE))
@@ -94,6 +95,7 @@ class Savepoint:
 
     :param BaseCursor cr: the cursor to execute the `SAVEPOINT` queries on
     """
+
     def __init__(self, cr):
         self.name = str(uuid.uuid1())
         self._cr = cr
@@ -267,7 +269,7 @@ class Cursor(BaseCursor):
             *any* data which may be modified during the life of the cursor.
 
     """
-    IN_MAX = 1000   # decent limit on size of IN queries - guideline = Oracle limit
+    IN_MAX = 1000  # decent limit on size of IN queries - guideline = Oracle limit
 
     def __init__(self, pool, dbname, dsn):
         super().__init__()
@@ -291,7 +293,7 @@ class Cursor(BaseCursor):
             self.__caller = frame_codeinfo(currentframe(), 2)
         else:
             self.__caller = False
-        self._closed = False   # real initialization value
+        self._closed = False  # real initialization value
         # See the docstring of this class.
         self.connection.set_isolation_level(ISOLATION_LEVEL_REPEATABLE_READ)
         self.connection.set_session(readonly=pool.readonly)
@@ -397,7 +399,8 @@ class Cursor(BaseCursor):
         # self instead of self._obj to the first parameter of psycopg2.extras.execute_values.
         if isinstance(query, Composable):
             query = query.as_string(self._obj)
-        return psycopg2.extras.execute_values(self, query, argslist, template=template, page_size=page_size, fetch=fetch)
+        return psycopg2.extras.execute_values(self, query, argslist, template=template, page_size=page_size,
+                                              fetch=fetch)
 
     def split_for_in_conditions(self, ids: Iterable[T], size: int = 0) -> Iterator[tuple[T, ...]]:
         """Split a list of identifiers into one or more smaller tuples
@@ -409,6 +412,7 @@ class Cursor(BaseCursor):
 
         if not _logger.isEnabledFor(logging.DEBUG):
             return
+
         def process(type):
             sqllogs = {'from': self.sql_from_log, 'into': self.sql_into_log}
             sum = 0
@@ -423,6 +427,7 @@ class Cursor(BaseCursor):
             sum = timedelta(microseconds=sum)
             _logger.debug("SUM %s:%s/%d [%d]", type, sum, self.sql_log_count, sql_counter)
             sqllogs[type].clear()
+
         process('from')
         process('into')
         self.sql_log_count = 0
@@ -567,7 +572,8 @@ class TestCursor(BaseCursor):
             self._savepoint = Savepoint(self._cursor._obj)
             if self.readonly:
                 # this will simulate a readonly connection
-                self._cursor._obj.execute('SET TRANSACTION READ ONLY')  # use _obj to avoid impacting query count and profiler.
+                self._cursor._obj.execute(
+                    'SET TRANSACTION READ ONLY')  # use _obj to avoid impacting query count and profiler.
 
     def _check(self, operation):
         if self.current_test:
@@ -601,7 +607,7 @@ class TestCursor(BaseCursor):
         self.clear()
         self.prerollback.clear()
         self.postrollback.clear()
-        self.postcommit.clear()         # TestCursor ignores post-commit hooks by default
+        self.postcommit.clear()  # TestCursor ignores post-commit hooks by default
 
     def rollback(self):
         """ Perform an SQL `ROLLBACK` """
@@ -636,6 +642,7 @@ class PsycoConnection(psycopg2.extensions.connection):
                 @property
                 def password(self):
                     pass
+
             return PsycoConnectionInfo(self)
 
 
@@ -648,6 +655,7 @@ class ConnectionPool(object):
         The connections are *not* automatically closed. Only a close_db()
         can trigger that.
     """
+
     def __init__(self, maxconn=64, readonly=False):
         self._connections = []
         self._maxconn = max(maxconn, 1)
@@ -760,7 +768,7 @@ class ConnectionPool(object):
                 count += 1
         if count:
             _logger.info('%r: Closed %d connections %s', self, count,
-                        (dsn and last and 'to %r' % last.dsn) or '')
+                         (dsn and last and 'to %r' % last.dsn) or '')
 
     def _dsn_equals(self, dsn1, dsn2):
         alias_keys = {'dbname': 'database'}
@@ -776,6 +784,7 @@ class ConnectionPool(object):
 class Connection(object):
     """ A lightweight instance of a connection to postgres
     """
+
     def __init__(self, pool, dbname, dsn):
         self.__dbname = dbname
         self.__dsn = dsn
@@ -797,6 +806,7 @@ class Connection(object):
 
     def __bool__(self):
         raise NotImplementedError()
+
 
 def connection_info_for(db_or_uri, readonly=False):
     """ parse the given `db_or_uri` and return a 2-tuple (dbname, connection_params)
@@ -837,8 +847,10 @@ def connection_info_for(db_or_uri, readonly=False):
 
     return db_or_uri, connection_info
 
+
 _Pool = None
 _Pool_readonly = None
+
 
 def db_connect(to, allow_uri=False, readonly=False):
     global _Pool, _Pool_readonly  # noqa: PLW0603 (global-statement)
@@ -854,12 +866,14 @@ def db_connect(to, allow_uri=False, readonly=False):
         raise ValueError('URI connections not allowed')
     return Connection(_Pool_readonly if readonly else _Pool, db, info)
 
+
 def close_db(db_name):
     """ You might want to call odoo.modules.registry.Registry.delete(db_name) along this function."""
     if _Pool:
         _Pool.close_all(connection_info_for(db_name)[1])
     if _Pool_readonly:
         _Pool_readonly.close_all(connection_info_for(db_name)[1])
+
 
 def close_all():
     if _Pool:

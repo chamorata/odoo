@@ -62,13 +62,14 @@ class ProductPublicCategory(models.Model):
         translate=html_translate,
     )
 
-    #=== COMPUTE METHODS ===#
+    # === COMPUTE METHODS ===#
 
     @api.depends('parent_path')
     def _compute_parents_and_self(self):
         for category in self:
             if category.parent_path:
-                category.parents_and_self = self.env['product.public.category'].browse([int(p) for p in category.parent_path.split('/')[:-1]])
+                category.parents_and_self = self.env['product.public.category'].browse(
+                    [int(p) for p in category.parent_path.split('/')[:-1]])
             else:
                 category.parents_and_self = category
 
@@ -79,14 +80,14 @@ class ProductPublicCategory(models.Model):
                 lambda cat: cat.name or self.env._("New")
             ))
 
-    #=== CONSTRAINT METHODS ===#
+    # === CONSTRAINT METHODS ===#
 
     @api.constrains('parent_id')
     def check_parent_id(self):
         if self._has_cycle():
             raise ValueError(self.env._("Error! You cannot create recursive categories."))
 
-    #=== BUSINESS METHODS ===#
+    # === BUSINESS METHODS ===#
 
     @api.model
     def _search_get_detail(self, website, order, options):

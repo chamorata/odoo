@@ -75,16 +75,20 @@ class TestResPartner(TransactionCase):
         partner_form = Form(vat_partner)
 
         partner_form.vat = 'IT12345676017'
-        self.assertEqual(partner_form.l10n_it_codice_fiscale, '12345676017', "We give the Parnter a VAT, l10n_it_codice_fiscale is given accordingly")
+        self.assertEqual(partner_form.l10n_it_codice_fiscale, '12345676017',
+                         "We give the Parnter a VAT, l10n_it_codice_fiscale is given accordingly")
 
         partner_form.country_id = self.env.ref('base.ir')
-        self.assertFalse(partner_form.l10n_it_codice_fiscale, "Partner is given Iran as country, l10n_it_codice_fiscale is removed")
+        self.assertFalse(partner_form.l10n_it_codice_fiscale,
+                         "Partner is given Iran as country, l10n_it_codice_fiscale is removed")
 
         partner_form.country_id = self.env.ref('base.it')
-        self.assertEqual(partner_form.l10n_it_codice_fiscale, '12345676017', "The partner was given the wrong country, we correct it to Italy")
+        self.assertEqual(partner_form.l10n_it_codice_fiscale, '12345676017',
+                         "The partner was given the wrong country, we correct it to Italy")
 
         partner_form.vat = 'IT12345670017'
-        self.assertEqual(partner_form.l10n_it_codice_fiscale, '12345670017', "There was a typo in the VAT, changing it should change l10n_it_codice_fiscale as well")
+        self.assertEqual(partner_form.l10n_it_codice_fiscale, '12345670017',
+                         "There was a typo in the VAT, changing it should change l10n_it_codice_fiscale as well")
 
     def _test_normalized_data(self, testdata):
         prefix = "normalized_"

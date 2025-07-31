@@ -10,7 +10,8 @@ class PosOrder(models.Model):
 
     currency_rate = fields.Float(compute='_compute_currency_rate', store=True, digits=0, readonly=True)
     crm_team_id = fields.Many2one('crm.team', string="Sales Team", ondelete="set null")
-    sale_order_count = fields.Integer(string='Sale Order Count', compute='_count_sale_order', readonly=True, groups="sales_team.group_sale_salesman")
+    sale_order_count = fields.Integer(string='Sale Order Count', compute='_count_sale_order', readonly=True,
+                                      groups="sales_team.group_sale_salesman")
 
     def _count_sale_order(self):
         for order in self:
@@ -26,7 +27,9 @@ class PosOrder(models.Model):
     def _compute_currency_rate(self):
         for order in self:
             date_order = order.date_order or fields.Datetime.now()
-            order.currency_rate = self.env['res.currency']._get_conversion_rate(order.company_id.currency_id, order.currency_id, order.company_id, date_order.date())
+            order.currency_rate = self.env['res.currency']._get_conversion_rate(order.company_id.currency_id,
+                                                                                order.currency_id, order.company_id,
+                                                                                date_order.date())
 
     def _prepare_invoice_vals(self):
         invoice_vals = super(PosOrder, self)._prepare_invoice_vals()
@@ -54,7 +57,9 @@ class PosOrder(models.Model):
 
         order_ids = self.browse([o['id'] for o in data["pos.order"]])
         for order in order_ids:
-            for line in order.lines.filtered(lambda l: l.product_id == order.config_id.down_payment_product_id and l.qty != 0 and (l.sale_order_origin_id or l.refunded_orderline_id.sale_order_origin_id)):
+            for line in order.lines.filtered(
+                    lambda l: l.product_id == order.config_id.down_payment_product_id and l.qty != 0 and (
+                            l.sale_order_origin_id or l.refunded_orderline_id.sale_order_origin_id)):
                 sale_lines = line.sale_order_origin_id.order_line or line.refunded_orderline_id.sale_order_origin_id.order_line
                 sale_order_origin = line.sale_order_origin_id or line.refunded_orderline_id.sale_order_origin_id
                 if not any(line.display_type and line.is_downpayment for line in sale_lines):
@@ -66,7 +71,9 @@ class PosOrder(models.Model):
                 if order.partner_id.lang and order.partner_id.lang != line.env.lang:
                     line = line.with_context(lang=order.partner_id.lang)
 
-                sale_order_line_description = _("Down payment (ref: %(order_reference)s on \n %(date)s)", order_reference=order_reference, date=format_date(line.env, line.order_id.date_order))
+                sale_order_line_description = _("Down payment (ref: %(order_reference)s on \n %(date)s)",
+                                                order_reference=order_reference,
+                                                date=format_date(line.env, line.order_id.date_order))
                 sale_line = self.env['sale.order.line'].create({
                     'order_id': sale_order_origin.id,
                     'product_id': line.product_id.id,
@@ -103,7 +110,8 @@ class PosOrder(models.Model):
 
                     def get_expected_qty_to_ship_later():
                         pos_pickings = so_line.pos_order_line_ids.order_id.picking_ids
-                        if pos_pickings and all(pos_picking.state in ['confirmed', 'assigned'] for pos_picking in pos_pickings):
+                        if pos_pickings and all(
+                                pos_picking.state in ['confirmed', 'assigned'] for pos_picking in pos_pickings):
                             return sum((so_line._convert_qty(so_line, pos_line.qty, 'p2s') for pos_line in
                                         so_line.pos_order_line_ids if so_line.product_id.type != 'service'), 0)
                         return 0
@@ -114,7 +122,8 @@ class PosOrder(models.Model):
                         new_qty = 0
                     stock_move.product_uom_qty = so_line.compute_uom_qty(new_qty, stock_move, False)
                     # If the product is delivered with more than one step, we need to update the quantity of the other steps
-                    for move in so_line_stock_move_ids.filtered(lambda m: m.state in ['waiting', 'confirmed', 'assigned'] and m.product_id == stock_move.product_id):
+                    for move in so_line_stock_move_ids.filtered(lambda m: m.state in ['waiting', 'confirmed',
+                                                                                      'assigned'] and m.product_id == stock_move.product_id):
                         move.product_uom_qty = stock_move.product_uom_qty
                         waiting_picking_ids.add(move.picking_id.id)
                     waiting_picking_ids.add(picking.id)
@@ -192,7 +201,8 @@ class PosOrderLine(models.Model):
         compute="_compute_qty_delivered",
         store=True, readonly=False, copy=False)
 
-    @api.depends('order_id.state', 'order_id.picking_ids', 'order_id.picking_ids.state', 'order_id.picking_ids.move_ids.quantity')
+    @api.depends('order_id.state', 'order_id.picking_ids', 'order_id.picking_ids.state',
+                 'order_id.picking_ids.move_ids.quantity')
     def _compute_qty_delivered(self):
         for order_line in self:
             if order_line.order_id.state in ['paid', 'done', 'invoiced']:
@@ -217,5 +227,6 @@ class PosOrderLine(models.Model):
     def _launch_stock_rule_from_pos_order_lines(self):
         orders = self.mapped('order_id')
         for order in orders:
-            self.env['stock.move'].browse(order.lines.sale_order_line_id.move_ids._rollup_move_origs()).filtered(lambda ml: ml.state not in ['cancel', 'done'])._action_cancel()
+            self.env['stock.move'].browse(order.lines.sale_order_line_id.move_ids._rollup_move_origs()).filtered(
+                lambda ml: ml.state not in ['cancel', 'done'])._action_cancel()
         return super()._launch_stock_rule_from_pos_order_lines()

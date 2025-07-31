@@ -1,20 +1,21 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from datetime import timedelta
 from collections import defaultdict
+from datetime import timedelta
 
 from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 from odoo.osv import expression
 from odoo.tools import float_compare
-from odoo.exceptions import UserError
 
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
     qty_delivered_method = fields.Selection(selection_add=[('stock_move', 'Stock Moves')])
-    route_id = fields.Many2one('stock.route', string='Route', domain=[('sale_selectable', '=', True)], ondelete='restrict')
+    route_id = fields.Many2one('stock.route', string='Route', domain=[('sale_selectable', '=', True)],
+                               ondelete='restrict')
     move_ids = fields.One2many('stock.move', 'sale_line_id', string='Stock Moves')
     virtual_available_at_date = fields.Float(compute='_compute_qty_at_date', digits='Product Unit of Measure')
     scheduled_date = fields.Datetime(compute='_compute_qty_at_date')
@@ -47,7 +48,8 @@ class SaleOrderLine(models.Model):
                     ),
                     # if there are multiple rules on the route, prefer those that pull from the SO's warehouse
                     # or those that are not warehouse specific
-                    key=lambda rule: 0 if rule.location_src_id.warehouse_id in (False, line.order_id.warehouse_id) else 1
+                    key=lambda rule: 0 if rule.location_src_id.warehouse_id in (False,
+                                                                                line.order_id.warehouse_id) else 1
                 )
                 if rules:
                     line.warehouse_id = rules[0].location_src_id.warehouse_id
@@ -57,7 +59,8 @@ class SaleOrderLine(models.Model):
         """Compute the visibility of the inventory widget."""
         for line in self:
             line.qty_to_deliver = line.product_uom_qty - line.qty_delivered
-            if line.state in ('draft', 'sent', 'sale') and line.is_storable and line.product_uom and line.qty_to_deliver > 0:
+            if line.state in ('draft', 'sent',
+                              'sale') and line.is_storable and line.product_uom and line.qty_to_deliver > 0:
                 if line.state == 'sale' and not line.move_ids:
                     line.display_qty_widget = False
                 else:
@@ -105,7 +108,8 @@ class SaleOrderLine(models.Model):
             line.free_qty_today = 0
             for move in moves:
                 line.qty_available_today += move.product_uom._compute_quantity(move.quantity, line.product_uom)
-                line.free_qty_today += move.product_id.uom_id._compute_quantity(move.forecast_availability, line.product_uom)
+                line.free_qty_today += move.product_id.uom_id._compute_quantity(move.forecast_availability,
+                                                                                line.product_uom)
             line.scheduled_date = line.order_id.commitment_date or line._expected_date()
             line.virtual_available_at_date = False
             treated |= line
@@ -120,7 +124,8 @@ class SaleOrderLine(models.Model):
             grouped_lines[(line.warehouse_id.id, line.order_id.commitment_date or line._expected_date())] |= line
 
         for (warehouse, scheduled_date), lines in grouped_lines.items():
-            product_qties = lines.mapped('product_id').with_context(to_date=scheduled_date, warehouse_id=warehouse).read([
+            product_qties = lines.mapped('product_id').with_context(to_date=scheduled_date,
+                                                                    warehouse_id=warehouse).read([
                 'qty_available',
                 'free_qty',
                 'virtual_available',
@@ -134,13 +139,17 @@ class SaleOrderLine(models.Model):
                 qty_available_today, free_qty_today, virtual_available_at_date = qties_per_product[line.product_id.id]
                 line.qty_available_today = qty_available_today - qty_processed_per_product[line.product_id.id]
                 line.free_qty_today = free_qty_today - qty_processed_per_product[line.product_id.id]
-                line.virtual_available_at_date = virtual_available_at_date - qty_processed_per_product[line.product_id.id]
+                line.virtual_available_at_date = virtual_available_at_date - qty_processed_per_product[
+                    line.product_id.id]
                 line.forecast_expected_date = False
                 product_qty = line.product_uom_qty
                 if line.product_uom and line.product_id.uom_id and line.product_uom != line.product_id.uom_id:
-                    line.qty_available_today = line.product_id.uom_id._compute_quantity(line.qty_available_today, line.product_uom)
-                    line.free_qty_today = line.product_id.uom_id._compute_quantity(line.free_qty_today, line.product_uom)
-                    line.virtual_available_at_date = line.product_id.uom_id._compute_quantity(line.virtual_available_at_date, line.product_uom)
+                    line.qty_available_today = line.product_id.uom_id._compute_quantity(line.qty_available_today,
+                                                                                        line.product_uom)
+                    line.free_qty_today = line.product_id.uom_id._compute_quantity(line.free_qty_today,
+                                                                                   line.product_uom)
+                    line.virtual_available_at_date = line.product_id.uom_id._compute_quantity(
+                        line.virtual_available_at_date, line.product_uom)
                     product_qty = line.product_uom._compute_quantity(product_qty, line.product_id.uom_id)
                 qty_processed_per_product[line.product_id.id] += product_qty
             treated |= lines
@@ -168,7 +177,9 @@ class SaleOrderLine(models.Model):
             mto_route = line.warehouse_id.mto_pull_id.route_id
             if not mto_route:
                 try:
-                    mto_route = self.env['stock.warehouse']._find_or_create_global_route('stock.route_warehouse0_mto', _('Replenish on Order (MTO)'), create=False)
+                    mto_route = self.env['stock.warehouse']._find_or_create_global_route('stock.route_warehouse0_mto',
+                                                                                         _('Replenish on Order (MTO)'),
+                                                                                         create=False)
                 except UserError:
                     # if route MTO not found in ir_model_data, we treat the product as in MTS
                     pass
@@ -201,11 +212,13 @@ class SaleOrderLine(models.Model):
                 for move in outgoing_moves:
                     if move.state != 'done':
                         continue
-                    qty += move.product_uom._compute_quantity(move.quantity, line.product_uom, rounding_method='HALF-UP')
+                    qty += move.product_uom._compute_quantity(move.quantity, line.product_uom,
+                                                              rounding_method='HALF-UP')
                 for move in incoming_moves:
                     if move.state != 'done':
                         continue
-                    qty -= move.product_uom._compute_quantity(move.quantity, line.product_uom, rounding_method='HALF-UP')
+                    qty -= move.product_uom._compute_quantity(move.quantity, line.product_uom,
+                                                              rounding_method='HALF-UP')
                 line.qty_delivered = qty
 
     @api.model_create_multi
@@ -239,7 +252,7 @@ class SaleOrderLine(models.Model):
 
     @api.depends('product_id')
     def _compute_customer_lead(self):
-        super()._compute_customer_lead() # Reset customer_lead when the product is modified
+        super()._compute_customer_lead()  # Reset customer_lead when the product is modified
         for line in self:
             line.customer_lead = line.product_id.sale_delay
 
@@ -268,7 +281,8 @@ class SaleOrderLine(models.Model):
             'warehouse_id': self.warehouse_id,
             'partner_id': self.order_id.partner_shipping_id.id,
             'location_final_id': self._get_location_final(),
-            'product_description_variants': self.with_context(lang=self.order_id.partner_id.lang)._get_sale_order_line_multiline_description_variants(),
+            'product_description_variants': self.with_context(
+                lang=self.order_id.partner_id.lang)._get_sale_order_line_multiline_description_variants(),
             'company_id': self.order_id.company_id,
             'product_packaging_id': self.product_packaging_id,
             'sequence': self.sequence,
@@ -302,7 +316,8 @@ class SaleOrderLine(models.Model):
         outgoing_moves_ids = set()
         incoming_moves_ids = set()
 
-        moves = self.move_ids.filtered(lambda r: r.state != 'cancel' and not r.scrapped and self.product_id == r.product_id)
+        moves = self.move_ids.filtered(
+            lambda r: r.state != 'cancel' and not r.scrapped and self.product_id == r.product_id)
         if moves and not strict:
             # The first move created was the one created from the intial rule that started it all.
             sorted_moves = moves.sorted('id')
@@ -313,13 +328,14 @@ class SaleOrderLine(models.Model):
                     triggering_rule_ids.append(move.rule_id.id)
                     seen_wh_ids.add(move.warehouse_id.id)
         if self._context.get('accrual_entry_date'):
-            moves = moves.filtered(lambda r: fields.Date.context_today(r, r.date) <= self._context['accrual_entry_date'])
+            moves = moves.filtered(
+                lambda r: fields.Date.context_today(r, r.date) <= self._context['accrual_entry_date'])
 
         for move in moves:
             if not move._is_dropshipped_returned() and (
-                (strict and move.location_dest_id._is_outgoing()) or (
-                not strict and move.rule_id.id in triggering_rule_ids and
-                (move.location_final_id or move.location_dest_id)._is_outgoing()
+                    (strict and move.location_dest_id._is_outgoing()) or (
+                    not strict and move.rule_id.id in triggering_rule_ids and
+                    (move.location_final_id or move.location_dest_id)._is_outgoing()
             )):
                 if not move.origin_returned_move_id or (move.origin_returned_move_id and move.to_refund):
                     outgoing_moves_ids.add(move.id)
@@ -401,11 +417,14 @@ class SaleOrderLine(models.Model):
     def _update_line_quantity(self, values):
         precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
         line_products = self.filtered(lambda l: l.product_id.type == 'consu')
-        if line_products.mapped('qty_delivered') and float_compare(values['product_uom_qty'], max(line_products.mapped('qty_delivered')), precision_digits=precision) == -1:
-            raise UserError(_('The ordered quantity of a sale order line cannot be decreased below the amount already delivered. Instead, create a return in your inventory.'))
+        if line_products.mapped('qty_delivered') and float_compare(values['product_uom_qty'],
+                                                                   max(line_products.mapped('qty_delivered')),
+                                                                   precision_digits=precision) == -1:
+            raise UserError(
+                _('The ordered quantity of a sale order line cannot be decreased below the amount already delivered. Instead, create a return in your inventory.'))
         super(SaleOrderLine, self)._update_line_quantity(values)
 
-    #=== HOOKS ===#
+    # === HOOKS ===#
 
     def _get_action_add_from_catalog_extra_context(self, order):
         extra_context = super()._get_action_add_from_catalog_extra_context(order)

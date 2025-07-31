@@ -2,6 +2,7 @@
 from odoo import models, _
 from odoo.exceptions import UserError
 
+
 class AccountMoveSendWizard(models.TransientModel):
     _inherit = 'account.move.send.wizard'
 

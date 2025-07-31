@@ -18,12 +18,21 @@
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
                     <record id="account_tax_report_line_chtax_200" model="account.report.line">
-                        <field name="name">200 - Total amount of agreed or collected consideration incl. from supplies opted for taxation, transfer of supplies acc. to the notification procedure and supplies provided abroad (worldwide turnover)</field>
+                        <field name="name">200 - Total amount of agreed or collected consideration incl. from supplies
+                            opted for taxation, transfer of supplies acc. to the notification procedure and supplies
+                            provided abroad (worldwide turnover)
+                        </field>
                         <field name="code">tax_ch_200</field>
-                        <field name="aggregation_formula">tax_ch_302a.balance + tax_ch_303a.balance + tax_ch_312a.balance + tax_ch_313a.balance + tax_ch_342a.balance + tax_ch_343a.balance + tax_ch_205.balance + tax_ch_289.balance</field>
+                        <field name="aggregation_formula">tax_ch_302a.balance + tax_ch_303a.balance +
+                            tax_ch_312a.balance + tax_ch_313a.balance + tax_ch_342a.balance + tax_ch_343a.balance +
+                            tax_ch_205.balance + tax_ch_289.balance
+                        </field>
                     </record>
                     <record id="account_tax_report_line_chtax_205" model="account.report.line">
-                        <field name="name">205 - Consideration reported in Ref. 200 from supplies exempt from the tax without credit (art. 21) where the option for their taxation according to art. 22 has been exercised</field>
+                        <field name="name">205 - Consideration reported in Ref. 200 from supplies exempt from the tax
+                            without credit (art. 21) where the option for their taxation according to art. 22 has been
+                            exercised
+                        </field>
                         <field name="code">tax_ch_205</field>
                         <field name="expression_ids">
                             <record id="account_tax_report_line_chtax_205_tag" model="account.report.expression">
@@ -33,8 +42,12 @@
                             </record>
                         </field>
                     </record>
-                    <record id="account_tax_report_line_chtax_220_289" model="account.report.line"> <!-- the xml is as it is for historical reasons but it does represent box 220 only -->
-                        <field name="name">220 - Supplies exempt from the tax (e.g. export, art. 23) and supplies provided to institutional and individual beneficiaries that are exempt from liability for tax (art. 107 para. 1 lit. a)</field>
+                    <record id="account_tax_report_line_chtax_220_289"
+                            model="account.report.line"> <!-- the xml is as it is for historical reasons but it does represent box 220 only -->
+                        <field name="name">220 - Supplies exempt from the tax (e.g. export, art. 23) and supplies
+                            provided to institutional and individual beneficiaries that are exempt from liability for
+                            tax (art. 107 para. 1 lit. a)
+                        </field>
                         <field name="code">tax_ch_220</field>
                         <field name="expression_ids">
                             <record id="account_tax_report_line_chtax_220_289_tag" model="account.report.expression">
@@ -56,7 +69,9 @@
                         </field>
                     </record>
                     <record id="account_tax_report_line_chtax_225" model="account.report.line">
-                        <field name="name">225 - Transfer of supplies according to the notification procedure (art. 38, please submit Form 764)</field>
+                        <field name="name">225 - Transfer of supplies according to the notification procedure (art. 38,
+                            please submit Form 764)
+                        </field>
                         <field name="code">tax_ch_225</field>
                         <field name="expression_ids">
                             <record id="account_tax_report_line_chtax_225_tag" model="account.report.expression">
@@ -67,7 +82,10 @@
                         </field>
                     </record>
                     <record id="account_tax_report_line_chtax_230" model="account.report.line">
-                        <field name="name">230 - Supplies provided on Swiss territory exempt from the tax without credit (art. 21) and where the option for their taxation according to art. 22 has not been exercised</field>
+                        <field name="name">230 - Supplies provided on Swiss territory exempt from the tax without credit
+                            (art. 21) and where the option for their taxation according to art. 22 has not been
+                            exercised
+                        </field>
                         <field name="code">tax_ch_230</field>
                         <field name="expression_ids">
                             <record id="account_tax_report_line_chtax_230_tag" model="account.report.expression">
@@ -89,7 +107,9 @@
                         </field>
                     </record>
                     <record id="account_tax_report_line_chtax_280" model="account.report.line">
-                        <field name="name">280 - Miscellaneous (e.g. land value, purchase prices in case of margin taxation)</field>
+                        <field name="name">280 - Miscellaneous (e.g. land value, purchase prices in case of margin
+                            taxation)
+                        </field>
                         <field name="code">tax_ch_280</field>
                         <field name="expression_ids">
                             <record id="account_tax_report_line_chtax_280_tag" model="account.report.expression">
@@ -102,7 +122,9 @@
                     <record id="account_tax_report_line_chtax_289" model="account.report.line">
                         <field name="name">289 - Deductions (Total Ref. 220 to 280)</field>
                         <field name="code">tax_ch_289</field>
-                        <field name="aggregation_formula">tax_ch_220.balance + tax_ch_221.balance + tax_ch_225.balance + tax_ch_230.balance + tax_ch_235.balance + tax_ch_280.balance</field>
+                        <field name="aggregation_formula">tax_ch_220.balance + tax_ch_221.balance + tax_ch_225.balance +
+                            tax_ch_230.balance + tax_ch_235.balance + tax_ch_280.balance
+                        </field>
                     </record>
                     <record id="account_tax_report_line_chtax_299" model="account.report.line">
                         <field name="name">299 - Taxable turnover (Ref. 200 minus Ref. 289)</field>
@@ -121,7 +143,8 @@
                                 <field name="name">303a - Standard rate (8,1%): Supplies CHF from 01.01.2024</field>
                                 <field name="code">tax_ch_303a</field>
                                 <field name="expression_ids">
-                                    <record id="account_tax_report_line_chtax_303a_tag" model="account.report.expression">
+                                    <record id="account_tax_report_line_chtax_303a_tag"
+                                            model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">303a</field>
@@ -132,7 +155,8 @@
                                 <field name="name">313a - Reduced rate (2,6%): Supplies CHF from 01.01.2024</field>
                                 <field name="code">tax_ch_313a</field>
                                 <field name="expression_ids">
-                                    <record id="account_tax_report_line_chtax_313a_tag" model="account.report.expression">
+                                    <record id="account_tax_report_line_chtax_313a_tag"
+                                            model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">313a</field>
@@ -140,10 +164,12 @@
                                 </field>
                             </record>
                             <record id="account_tax_report_line_chtax_343a" model="account.report.line">
-                                <field name="name">343a - Accommodation rate (3,8%): Supplies CHF from 01.01.2024</field>
+                                <field name="name">343a - Accommodation rate (3,8%): Supplies CHF from 01.01.2024
+                                </field>
                                 <field name="code">tax_ch_343a</field>
                                 <field name="expression_ids">
-                                    <record id="account_tax_report_line_chtax_343a_tag" model="account.report.expression">
+                                    <record id="account_tax_report_line_chtax_343a_tag"
+                                            model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">343a</field>
@@ -154,7 +180,8 @@
                                 <field name="name">383a - Acquisition tax: Supplies CHF from 01.01.2024</field>
                                 <field name="code">tax_ch_383a</field>
                                 <field name="expression_ids">
-                                    <record id="account_tax_report_line_chtax_383a_tag" model="account.report.expression">
+                                    <record id="account_tax_report_line_chtax_383a_tag"
+                                            model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">383a</field>
@@ -170,18 +197,20 @@
                                 <field name="name">302a - Standard rate (7,7%): Supplies CHF to 31.12.2023</field>
                                 <field name="code">tax_ch_302a</field>
                                 <field name="expression_ids">
-                                    <record id="account_tax_report_line_chtax_302a_tag" model="account.report.expression">
+                                    <record id="account_tax_report_line_chtax_302a_tag"
+                                            model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">302a</field>
                                     </record>
                                 </field>
                             </record>
-                             <record id="account_tax_report_line_chtax_312a" model="account.report.line">
+                            <record id="account_tax_report_line_chtax_312a" model="account.report.line">
                                 <field name="name">312a - Reduced rate (2,5%): Supplies CHF to 31.12.2023</field>
                                 <field name="code">tax_ch_312a</field>
                                 <field name="expression_ids">
-                                    <record id="account_tax_report_line_chtax_312a_tag" model="account.report.expression">
+                                    <record id="account_tax_report_line_chtax_312a_tag"
+                                            model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">312a</field>
@@ -192,7 +221,8 @@
                                 <field name="name">342a - Accommodation rate (3,7%): Supplies CHF to 31.12.2023</field>
                                 <field name="code">tax_ch_342a</field>
                                 <field name="expression_ids">
-                                    <record id="account_tax_report_line_chtax_342a_tag" model="account.report.expression">
+                                    <record id="account_tax_report_line_chtax_342a_tag"
+                                            model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">342a</field>
@@ -203,7 +233,8 @@
                                 <field name="name">382a - Acquisition tax: Supplies CHF to 31.12.2023</field>
                                 <field name="code">tax_ch_382a</field>
                                 <field name="expression_ids">
-                                    <record id="account_tax_report_line_chtax_382a_tag" model="account.report.expression">
+                                    <record id="account_tax_report_line_chtax_382a_tag"
+                                            model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">382a</field>
@@ -216,10 +247,12 @@
                         <field name="name">Tax amount CHF / cent. from 01.01.2024</field>
                         <field name="children_ids">
                             <record id="account_tax_report_line_chtax_303b" model="account.report.line">
-                                <field name="name">303b - Standard rate (8,1%): Tax amount CHF / cent. from 01.01.2024</field>
+                                <field name="name">303b - Standard rate (8,1%): Tax amount CHF / cent. from 01.01.2024
+                                </field>
                                 <field name="code">tax_ch_303b</field>
                                 <field name="expression_ids">
-                                    <record id="account_tax_report_line_chtax_303b_tag" model="account.report.expression">
+                                    <record id="account_tax_report_line_chtax_303b_tag"
+                                            model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">303b</field>
@@ -227,10 +260,12 @@
                                 </field>
                             </record>
                             <record id="account_tax_report_line_chtax_313b" model="account.report.line">
-                                <field name="name">313b - Reduced rate (2,6%): Tax amount CHF / cent. from 01.01.2024</field>
+                                <field name="name">313b - Reduced rate (2,6%): Tax amount CHF / cent. from 01.01.2024
+                                </field>
                                 <field name="code">tax_ch_313b</field>
                                 <field name="expression_ids">
-                                    <record id="account_tax_report_line_chtax_313b_tag" model="account.report.expression">
+                                    <record id="account_tax_report_line_chtax_313b_tag"
+                                            model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">313b</field>
@@ -238,10 +273,13 @@
                                 </field>
                             </record>
                             <record id="account_tax_report_line_chtax_343b" model="account.report.line">
-                                <field name="name">343b - Accommodation rate (3,8%): Tax amount CHF / cent. from 01.01.2024</field>
+                                <field name="name">343b - Accommodation rate (3,8%): Tax amount CHF / cent. from
+                                    01.01.2024
+                                </field>
                                 <field name="code">tax_ch_343b</field>
                                 <field name="expression_ids">
-                                    <record id="account_tax_report_line_chtax_343b_tag" model="account.report.expression">
+                                    <record id="account_tax_report_line_chtax_343b_tag"
+                                            model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">343b</field>
@@ -249,10 +287,12 @@
                                 </field>
                             </record>
                             <record id="account_tax_report_line_chtax_383b" model="account.report.line">
-                                <field name="name">383b - Acquisition tax: Tax amount CHF / cent. from 01.01.2024</field>
+                                <field name="name">383b - Acquisition tax: Tax amount CHF / cent. from 01.01.2024
+                                </field>
                                 <field name="code">tax_ch_383b</field>
                                 <field name="expression_ids">
-                                    <record id="account_tax_report_line_chtax_383b_tag" model="account.report.expression">
+                                    <record id="account_tax_report_line_chtax_383b_tag"
+                                            model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">383b</field>
@@ -265,10 +305,12 @@
                         <field name="name">Tax amount CHF / cent. to 31.12.2023</field>
                         <field name="children_ids">
                             <record id="account_tax_report_line_chtax_302b" model="account.report.line">
-                                <field name="name">302b - Standard rate (7,7%): Tax amount CHF / cent. to 31.12.2023</field>
+                                <field name="name">302b - Standard rate (7,7%): Tax amount CHF / cent. to 31.12.2023
+                                </field>
                                 <field name="code">tax_ch_302b</field>
                                 <field name="expression_ids">
-                                    <record id="account_tax_report_line_chtax_302b_tag" model="account.report.expression">
+                                    <record id="account_tax_report_line_chtax_302b_tag"
+                                            model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">302b</field>
@@ -276,10 +318,12 @@
                                 </field>
                             </record>
                             <record id="account_tax_report_line_chtax_312b" model="account.report.line">
-                                <field name="name">312b - Reduced rate (2,5%): Tax amount CHF / cent. to 31.12.2023</field>
+                                <field name="name">312b - Reduced rate (2,5%): Tax amount CHF / cent. to 31.12.2023
+                                </field>
                                 <field name="code">tax_ch_312b</field>
                                 <field name="expression_ids">
-                                    <record id="account_tax_report_line_chtax_312b_tag" model="account.report.expression">
+                                    <record id="account_tax_report_line_chtax_312b_tag"
+                                            model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">312b</field>
@@ -287,10 +331,13 @@
                                 </field>
                             </record>
                             <record id="account_tax_report_line_chtax_342b" model="account.report.line">
-                                <field name="name">342b - Accommodation rate (3,7%): Tax amount CHF / cent. to 31.12.2023</field>
+                                <field name="name">342b - Accommodation rate (3,7%): Tax amount CHF / cent. to
+                                    31.12.2023
+                                </field>
                                 <field name="code">tax_ch_342b</field>
                                 <field name="expression_ids">
-                                    <record id="account_tax_report_line_chtax_342b_tag" model="account.report.expression">
+                                    <record id="account_tax_report_line_chtax_342b_tag"
+                                            model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">342b</field>
@@ -301,7 +348,8 @@
                                 <field name="name">382b - Acquisition tax: Tax amount CHF / cent. to 31.12.2023</field>
                                 <field name="code">tax_ch_382b</field>
                                 <field name="expression_ids">
-                                    <record id="account_tax_report_line_chtax_382b_tag" model="account.report.expression">
+                                    <record id="account_tax_report_line_chtax_382b_tag"
+                                            model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">382b</field>
@@ -313,7 +361,10 @@
                     <record id="account_tax_report_line_chtax_399" model="account.report.line">
                         <field name="name">399 - Total amount of tax due</field>
                         <field name="code">tax_ch_399</field>
-                        <field name="aggregation_formula">tax_ch_302b.balance + tax_ch_303b.balance + tax_ch_312b.balance + tax_ch_313b.balance + tax_ch_342b.balance + tax_ch_343b.balance + tax_ch_382b.balance + tax_ch_383b.balance</field>
+                        <field name="aggregation_formula">tax_ch_302b.balance + tax_ch_303b.balance +
+                            tax_ch_312b.balance + tax_ch_313b.balance + tax_ch_342b.balance + tax_ch_343b.balance +
+                            tax_ch_382b.balance + tax_ch_383b.balance
+                        </field>
                     </record>
                     <record id="account_tax_report_line_chtax_400" model="account.report.line">
                         <field name="name">400 - Input tax on cost of materials and supplies of services</field>
@@ -349,7 +400,9 @@
                         </field>
                     </record>
                     <record id="account_tax_report_line_chtax_415" model="account.report.line">
-                        <field name="name">415 - Correction of the input tax deduction: mixed use (art. 30), own use (art. 31)</field>
+                        <field name="name">415 - Correction of the input tax deduction: mixed use (art. 30), own use
+                            (art. 31)
+                        </field>
                         <field name="code">tax_ch_415</field>
                         <field name="expression_ids">
                             <record id="account_tax_report_line_chtax_415_tag" model="account.report.expression">
@@ -360,7 +413,9 @@
                         </field>
                     </record>
                     <record id="account_tax_report_line_chtax_420" model="account.report.line">
-                        <field name="name">420 - Reduction of the input tax deduction: Flow of funds, which are not deemed to be consideration, such as subsidies, tourist charges (art. 33 para. 2)</field>
+                        <field name="name">420 - Reduction of the input tax deduction: Flow of funds, which are not
+                            deemed to be consideration, such as subsidies, tourist charges (art. 33 para. 2)
+                        </field>
                         <field name="code">tax_ch_420</field>
                         <field name="expression_ids">
                             <record id="account_tax_report_line_chtax_420_tag" model="account.report.expression">
@@ -373,7 +428,9 @@
                     <record id="account_tax_report_line_chtax_479" model="account.report.line">
                         <field name="name">479 - Total Ref. 400 to 420</field>
                         <field name="code">tax_ch_479</field>
-                        <field name="aggregation_formula">tax_ch_400.balance + tax_ch_405.balance + tax_ch_410.balance - tax_ch_415.balance - tax_ch_420.balance</field>
+                        <field name="aggregation_formula">tax_ch_400.balance + tax_ch_405.balance + tax_ch_410.balance -
+                            tax_ch_415.balance - tax_ch_420.balance
+                        </field>
                     </record>
                     <record id="account_tax_report_line_chtax_500" model="account.report.line">
                         <field name="name">500 - Amount payable</field>
@@ -405,7 +462,9 @@
                 <field name="aggregation_formula">tax_ch_900.balance + tax_ch_910.balance</field>
                 <field name="children_ids">
                     <record id="account_tax_report_line_chtax_900" model="account.report.line">
-                        <field name="name">900 - Subsidies, tourist funds collected by tourist offices, contributions from cantonal water, sewage or waste funds (art. 18 para. 2 lit. a to c)</field>
+                        <field name="name">900 - Subsidies, tourist funds collected by tourist offices, contributions
+                            from cantonal water, sewage or waste funds (art. 18 para. 2 lit. a to c)
+                        </field>
                         <field name="code">tax_ch_900</field>
                         <field name="expression_ids">
                             <record id="account_tax_report_line_chtax_900_tag" model="account.report.expression">
@@ -416,7 +475,9 @@
                         </field>
                     </record>
                     <record id="account_tax_report_line_chtax_910" model="account.report.line">
-                        <field name="name">910 - Donations, dividends, payments of damages etc. (art. 18 para. 2 lit. d to l)</field>
+                        <field name="name">910 - Donations, dividends, payments of damages etc. (art. 18 para. 2 lit. d
+                            to l)
+                        </field>
                         <field name="code">tax_ch_910</field>
                         <field name="expression_ids">
                             <record id="account_tax_report_line_chtax_910_tag" model="account.report.expression">

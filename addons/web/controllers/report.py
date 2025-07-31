@@ -11,15 +11,14 @@ from odoo.http import content_disposition, request
 from odoo.tools.misc import html_escape
 from odoo.tools.safe_eval import safe_eval, time
 
-
 _logger = logging.getLogger(__name__)
 
 
 class ReportController(http.Controller):
 
-    #------------------------------------------------------
+    # ------------------------------------------------------
     # Report controllers
-    #------------------------------------------------------
+    # ------------------------------------------------------
     @http.route([
         '/report/<converter>/<reportname>',
         '/report/<converter>/<reportname>/<docids>',
@@ -49,9 +48,9 @@ class ReportController(http.Controller):
         else:
             raise werkzeug.exceptions.HTTPException(description='Converter %s not implemented.' % converter)
 
-    #------------------------------------------------------
+    # ------------------------------------------------------
     # Misc. route utils
-    #------------------------------------------------------
+    # ------------------------------------------------------
     @http.route([
         '/report/barcode',
         '/report/barcode/<barcode_type>/<path:value>',

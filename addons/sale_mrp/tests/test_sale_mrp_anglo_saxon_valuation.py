@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.tests import Form, tagged
+from odoo.addons.stock_account.tests.test_anglo_saxon_valuation_reconciliation_common import \
+    ValuationReconciliationTestCommon
 
-from odoo.addons.stock_account.tests.test_anglo_saxon_valuation_reconciliation_common import ValuationReconciliationTestCommon
+from odoo.tests import Form, tagged
 
 
 @tagged('post_install', '-at_install')
@@ -19,7 +20,8 @@ class TestSaleMRPAngloSaxonValuation(ValuationReconciliationTestCommon):
     @classmethod
     def _create_product(cls, **kwargs):
         return super()._create_product(
-            categ_id=cls.stock_account_product_categ.id if kwargs.get('is_storable') else cls.env.ref('product.product_category_all').id,
+            categ_id=cls.stock_account_product_categ.id if kwargs.get('is_storable') else cls.env.ref(
+                'product.product_category_all').id,
             **kwargs
         )
 
@@ -119,8 +121,10 @@ class TestSaleMRPAngloSaxonValuation(ValuationReconciliationTestCommon):
 
         # Create variant attributes
         self.prod_att_1 = self.env['product.attribute'].create({'name': 'Color'})
-        self.prod_attr1_v1 = self.env['product.attribute.value'].create({'name': 'red', 'attribute_id': self.prod_att_1.id, 'sequence': 1})
-        self.prod_attr1_v2 = self.env['product.attribute.value'].create({'name': 'blue', 'attribute_id': self.prod_att_1.id, 'sequence': 2})
+        self.prod_attr1_v1 = self.env['product.attribute.value'].create(
+            {'name': 'red', 'attribute_id': self.prod_att_1.id, 'sequence': 1})
+        self.prod_attr1_v2 = self.env['product.attribute.value'].create(
+            {'name': 'blue', 'attribute_id': self.prod_att_1.id, 'sequence': 2})
 
         # Create Product template with variants
         self.product_template = self.env['product.template'].create({
@@ -204,8 +208,10 @@ class TestSaleMRPAngloSaxonValuation(ValuationReconciliationTestCommon):
             aml = invoice.line_ids
             aml_expense = aml.filtered(lambda l: l.display_type == 'cogs' and l.debit > 0)
             aml_output = aml.filtered(lambda l: l.display_type == 'cogs' and l.credit > 0)
-            self.assertEqual(aml_expense.debit, expected_value, "Cost of Good Sold entry missing or mismatching for variant")
-            self.assertEqual(aml_output.credit, expected_value, "Cost of Good Sold entry missing or mismatching for variant")
+            self.assertEqual(aml_expense.debit, expected_value,
+                             "Cost of Good Sold entry missing or mismatching for variant")
+            self.assertEqual(aml_output.credit, expected_value,
+                             "Cost of Good Sold entry missing or mismatching for variant")
 
         # Check that the cost of Good Sold entries for variant 1 are equal to 2 * 20 = 40
         check_cogs_entry_values(self.invoice_1, 40)
@@ -427,8 +433,10 @@ class TestSaleMRPAngloSaxonValuation(ValuationReconciliationTestCommon):
 
         (compo01 + compo02 + kit).invoice_policy = 'delivery'
 
-        self.env['stock.quant']._update_available_quantity(compo01, self.company_data['default_warehouse'].lot_stock_id, 1, owner_id=self.partner_b)
-        self.env['stock.quant']._update_available_quantity(compo02, self.company_data['default_warehouse'].lot_stock_id, 1, owner_id=self.partner_b)
+        self.env['stock.quant']._update_available_quantity(compo01, self.company_data['default_warehouse'].lot_stock_id,
+                                                           1, owner_id=self.partner_b)
+        self.env['stock.quant']._update_available_quantity(compo02, self.company_data['default_warehouse'].lot_stock_id,
+                                                           1, owner_id=self.partner_b)
 
         self.env['mrp.bom'].create({
             'product_id': kit.id,
@@ -465,8 +473,8 @@ class TestSaleMRPAngloSaxonValuation(ValuationReconciliationTestCommon):
         amls = invoice.line_ids
         self.assertRecordValues(amls, [
             # pylint: disable=bad-whitespace
-            {'account_id': self.company_data['default_account_revenue'].id,     'debit': 0,     'credit': 5},
-            {'account_id': self.company_data['default_account_receivable'].id,  'debit': 5,     'credit': 0},
+            {'account_id': self.company_data['default_account_revenue'].id, 'debit': 0, 'credit': 5},
+            {'account_id': self.company_data['default_account_receivable'].id, 'debit': 5, 'credit': 0},
         ])
 
     def test_kit_avco_partially_owned_and_delivered_invoice_post_delivery(self):
@@ -478,10 +486,14 @@ class TestSaleMRPAngloSaxonValuation(ValuationReconciliationTestCommon):
 
         (compo01 + compo02 + kit).invoice_policy = 'delivery'
 
-        self.env['stock.quant']._update_available_quantity(compo01, self.company_data['default_warehouse'].lot_stock_id, 1, owner_id=self.partner_b)
-        self.env['stock.quant']._update_available_quantity(compo01, self.company_data['default_warehouse'].lot_stock_id, 1)
-        self.env['stock.quant']._update_available_quantity(compo02, self.company_data['default_warehouse'].lot_stock_id, 1, owner_id=self.partner_b)
-        self.env['stock.quant']._update_available_quantity(compo02, self.company_data['default_warehouse'].lot_stock_id, 1)
+        self.env['stock.quant']._update_available_quantity(compo01, self.company_data['default_warehouse'].lot_stock_id,
+                                                           1, owner_id=self.partner_b)
+        self.env['stock.quant']._update_available_quantity(compo01, self.company_data['default_warehouse'].lot_stock_id,
+                                                           1)
+        self.env['stock.quant']._update_available_quantity(compo02, self.company_data['default_warehouse'].lot_stock_id,
+                                                           1, owner_id=self.partner_b)
+        self.env['stock.quant']._update_available_quantity(compo02, self.company_data['default_warehouse'].lot_stock_id,
+                                                           1)
 
         self.env['mrp.bom'].create({
             'product_id': kit.id,
@@ -519,10 +531,10 @@ class TestSaleMRPAngloSaxonValuation(ValuationReconciliationTestCommon):
         amls = invoice.line_ids
         self.assertRecordValues(amls, [
             # pylint: disable=bad-whitespace
-            {'account_id': self.company_data['default_account_revenue'].id,     'debit': 0,     'credit': 10},
-            {'account_id': self.company_data['default_account_receivable'].id,  'debit': 10,    'credit': 0},
-            {'account_id': self.company_data['default_account_stock_out'].id,   'debit': 0,     'credit': 30},
-            {'account_id': self.company_data['default_account_expense'].id,     'debit': 30,    'credit': 0},
+            {'account_id': self.company_data['default_account_revenue'].id, 'debit': 0, 'credit': 10},
+            {'account_id': self.company_data['default_account_receivable'].id, 'debit': 10, 'credit': 0},
+            {'account_id': self.company_data['default_account_stock_out'].id, 'debit': 0, 'credit': 30},
+            {'account_id': self.company_data['default_account_expense'].id, 'debit': 30, 'credit': 0},
         ])
 
     def test_anglo_saxo_kit_subkits(self):
@@ -618,7 +630,9 @@ class TestSaleMRPAngloSaxonValuation(ValuationReconciliationTestCommon):
         self.assertEqual(len(amls), 4)
         stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_stock_out'])
         self.assertEqual(stock_out_aml.debit, 0)
-        self.assertAlmostEqual(stock_out_aml.credit, 8.00, msg="Should include include the components from all subkits, with the price adapted for 1 Main kit")
+        self.assertAlmostEqual(stock_out_aml.credit, 8.00,
+                               msg="Should include include the components from all subkits, with the price adapted for 1 Main kit")
         cogs_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_expense'])
-        self.assertAlmostEqual(cogs_aml.debit, 8.00, msg="Should include include the components from all subkits, with the price adapted for 1 Main kit")
+        self.assertAlmostEqual(cogs_aml.debit, 8.00,
+                               msg="Should include include the components from all subkits, with the price adapted for 1 Main kit")
         self.assertEqual(cogs_aml.credit, 0)

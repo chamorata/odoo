@@ -6,7 +6,8 @@ class AccountFullReconcile(models.Model):
     _name = "account.full.reconcile"
     _description = "Full Reconcile"
 
-    partial_reconcile_ids = fields.One2many('account.partial.reconcile', 'full_reconcile_id', string='Reconciliation Parts')
+    partial_reconcile_ids = fields.One2many('account.partial.reconcile', 'full_reconcile_id',
+                                            string='Reconciliation Parts')
     reconciled_line_ids = fields.One2many('account.move.line', 'full_reconcile_id', string='Matched Journal Items')
     exchange_move_id = fields.Many2one('account.move', index="btree_not_null")
 
@@ -45,6 +46,7 @@ class AccountFullReconcile(models.Model):
                     yield from command[2]
                 else:
                     raise ValueError("Unexpected command: %s" % command)
+
         move_line_ids = [list(get_ids(vals.pop('reconciled_line_ids'))) for vals in vals_list]
         partial_ids = [list(get_ids(vals.pop('partial_reconcile_ids'))) for vals in vals_list]
         fulls = super(AccountFullReconcile, self.with_context(tracking_disable=True)).create(vals_list)

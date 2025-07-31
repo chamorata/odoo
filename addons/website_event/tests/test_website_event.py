@@ -2,16 +2,18 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import datetime, timedelta
+
 from dateutil.relativedelta import relativedelta
+from odoo.addons.mail.tests.common import mail_new_test_user
+from odoo.addons.website_event.tests.common import TestEventOnlineCommon, OnlineEventCase
 
 from odoo import fields, http
 from odoo.addons.base.tests.common import HttpCaseWithUserDemo, HttpCaseWithUserPortal
-from odoo.addons.mail.tests.common import mail_new_test_user
-from odoo.addons.website_event.tests.common import TestEventOnlineCommon, OnlineEventCase
 from odoo.exceptions import AccessError
 from odoo.tests import HttpCase, tagged
-from odoo.tools import mute_logger
 from odoo.tests.common import users
+from odoo.tools import mute_logger
+
 
 class TestEventRegisterUTM(HttpCase, TestEventOnlineCommon):
     def test_event_registration_utm_values(self):
@@ -278,7 +280,7 @@ class TestWebsiteAccess(HttpCaseWithUserDemo, OnlineEventCase):
     @users('user_portal')
     def test_check_search_in_address(self):
         ret = self.env['event.event']._search_get_detail(
-            self.website, order=None, options={'displayDescription':'', 'displayDetail':''}
+            self.website, order=None, options={'displayDescription': '', 'displayDetail': ''}
         )
         result = ret['search_extra'](self.env, 'Turlock')[0][-1].get_result_ids()
         self.assertEqual(*result, self.events[0].id, 'Event should exist for the searched term')

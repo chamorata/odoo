@@ -1,18 +1,17 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from markupsafe import Markup
-import re
-from werkzeug.exceptions import NotFound
 from urllib.parse import urlsplit
 
-from odoo import http, tools, _, release
+from markupsafe import Markup
+from odoo.addons.mail.models.discuss.mail_guest import add_guest_to_context
+from odoo.addons.mail.tools.discuss import Store
+from werkzeug.exceptions import NotFound
+
+from odoo import http, _
+from odoo.addons.base.models.ir_qweb_fields import nl2br
 from odoo.exceptions import UserError
 from odoo.http import request
 from odoo.tools import replace_exceptions
-from odoo.addons.base.models.assetsbundle import AssetsBundle
-from odoo.addons.base.models.ir_qweb_fields import nl2br
-from odoo.addons.mail.models.discuss.mail_guest import add_guest_to_context
-from odoo.addons.mail.tools.discuss import Store
 
 
 class LivechatController(http.Controller):
@@ -70,7 +69,8 @@ class LivechatController(http.Controller):
         username = kwargs.get("username", _("Visitor"))
         channel = request.env['im_livechat.channel'].sudo().browse(channel_id)
         info = channel.get_livechat_info(username=username)
-        return request.render('im_livechat.loader', {'info': info}, headers=[('Content-Type', 'application/javascript')])
+        return request.render('im_livechat.loader', {'info': info},
+                              headers=[('Content-Type', 'application/javascript')])
 
     @http.route('/im_livechat/init', type='json', auth="public")
     @add_guest_to_context
@@ -80,7 +80,8 @@ class LivechatController(http.Controller):
         # find the country from the request
         country_id = False
         if request.geoip.country_code:
-            country_id = request.env['res.country'].sudo().search([('code', '=', request.geoip.country_code)], limit=1).id
+            country_id = request.env['res.country'].sudo().search([('code', '=', request.geoip.country_code)],
+                                                                  limit=1).id
         # extract url
         url = request.httprequest.headers.get('Referer')
         # find the first matching rule for the given country and url
@@ -98,7 +99,7 @@ class LivechatController(http.Controller):
         request.env["res.users"]._init_store_data(store)
         return {
             'available_for_me': bool((rule and rule.get('chatbotScript'))
-                                or operator_available and (not rule or rule['action'] != 'hide_button')),
+                                     or operator_available and (not rule or rule['action'] != 'hide_button')),
             'rule': rule,
             'storeData': store.get_result(),
         }
@@ -108,7 +109,8 @@ class LivechatController(http.Controller):
 
     @http.route('/im_livechat/get_session', methods=["POST"], type="json", auth='public')
     @add_guest_to_context
-    def get_session(self, channel_id, anonymous_name, previous_operator_id=None, chatbot_script_id=None, persisted=True, **kwargs):
+    def get_session(self, channel_id, anonymous_name, previous_operator_id=None, chatbot_script_id=None, persisted=True,
+                    **kwargs):
         store = Store()
         user_id = None
         country_id = None
@@ -132,7 +134,8 @@ class LivechatController(http.Controller):
             chatbot_script = request.env['chatbot.script'].sudo().with_context(
                 lang=request.env["chatbot.script"]._get_chatbot_language()
             ).browse(chatbot_script_id)
-        channel_vals = request.env["im_livechat.channel"].with_context(lang=False).sudo().browse(channel_id)._get_livechat_discuss_channel_vals(
+        channel_vals = request.env["im_livechat.channel"].with_context(lang=False).sudo().browse(
+            channel_id)._get_livechat_discuss_channel_vals(
             anonymous_name,
             previous_operator_id=previous_operator_id,
             chatbot_script=chatbot_script,
@@ -199,10 +202,10 @@ class LivechatController(http.Controller):
             """%(rating)s: <img class="o_livechat_emoji_rating" src="%(rating_url)s" alt="rating"/>%(reason)s"""
             """</div>"""
         ) % {
-            "rating": _("Rating"),
-            "rating_url": rating.rating_image_url,
-            "reason": nl2br("\n" + reason) if reason else "",
-        }
+                   "rating": _("Rating"),
+                   "rating_url": rating.rating_image_url,
+                   "reason": nl2br("\n" + reason) if reason else "",
+               }
         # sudo: discuss.channel - not necessary for posting, but necessary to update related rating
         channel.sudo().message_post(
             body=body,

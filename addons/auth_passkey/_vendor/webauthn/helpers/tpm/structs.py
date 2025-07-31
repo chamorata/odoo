@@ -5,6 +5,7 @@ from typing import Mapping, Union
 from ..cose import COSECRV, COSEAlgorithmIdentifier
 from ..exceptions import InvalidTPMPubAreaStructure
 
+
 ################
 #
 # A whole lotta domain knowledge is captured here, with hazy connections to source
@@ -216,7 +217,7 @@ class TPMPubAreaUnique:
             As per 11.2.4.5 TPM2B_PUBLIC_KEY_RSA, extract `unique` of dynamic length
             """
             unique_length = int.from_bytes(unique[0:2], "big")
-            rsa_unique = unique[2 : 2 + unique_length]
+            rsa_unique = unique[2: 2 + unique_length]
             self.value = rsa_unique
         elif alg_type == TPM_ALG.ECC:
             """
@@ -246,11 +247,11 @@ class TPMPubAreaUnique:
             pointer = 0
             unique_x_len = int.from_bytes(unique[0:2], "big")
             pointer += 2
-            unique_x = unique[pointer : pointer + unique_x_len]
+            unique_x = unique[pointer: pointer + unique_x_len]
             pointer += unique_x_len
-            unique_y_len = int.from_bytes(unique[pointer : pointer + 2], "big")
+            unique_y_len = int.from_bytes(unique[pointer: pointer + 2], "big")
             pointer += 2
-            unique_y = unique[pointer : pointer + unique_y_len]
+            unique_y = unique[pointer: pointer + unique_y_len]
 
             self.value = b"".join([unique_x, unique_y])
         else:
@@ -302,7 +303,6 @@ TPM_ST_MAP: Mapping[bytes, TPM_ST] = {
     b"\x80\x29": TPM_ST.FU_MANIFEST,
 }
 
-
 """
 6.3 TPM_ALG_ID
 """
@@ -344,7 +344,6 @@ TPM_ALG_MAP: Mapping[bytes, TPM_ALG] = {
     b"\x00\x44": TPM_ALG.ECB,
 }
 
-
 """
 6.4 TPM_ECC_CURVE
 """
@@ -360,7 +359,6 @@ TPM_ECC_CURVE_MAP: Mapping[bytes, TPM_ECC_CURVE] = {
     b"\x00\x20": TPM_ECC_CURVE.SM2_P256,
 }
 
-
 # Intentionally omit curves we can't map so a KeyError gets thrown
 TPM_ECC_CURVE_COSE_CRV_MAP: Mapping[TPM_ECC_CURVE, COSECRV] = {
     TPM_ECC_CURVE.NIST_P256: COSECRV.P256,
@@ -370,7 +368,6 @@ TPM_ECC_CURVE_COSE_CRV_MAP: Mapping[TPM_ECC_CURVE, COSECRV] = {
     TPM_ECC_CURVE.SM2_P256: COSECRV.P256,
 }
 
-
 # Intentionally omit algs we can't map so a KeyError gets thrown
 TPM_ALG_COSE_ALG_MAP: Mapping[TPM_ALG, COSEAlgorithmIdentifier] = {
     TPM_ALG.SHA256: COSEAlgorithmIdentifier.RSASSA_PSS_SHA_256,
@@ -378,7 +375,6 @@ TPM_ALG_COSE_ALG_MAP: Mapping[TPM_ALG, COSEAlgorithmIdentifier] = {
     TPM_ALG.SHA512: COSEAlgorithmIdentifier.RSASSA_PKCS1_v1_5_SHA_512,
     TPM_ALG.SHA1: COSEAlgorithmIdentifier.RSASSA_PKCS1_v1_5_SHA_1,
 }
-
 
 # Sourced from https://trustedcomputinggroup.org/resource/vendor-id-registry/
 # Latest version: https://trustedcomputinggroup.org/wp-content/uploads/TCG-TPM-Vendor-ID-Registry-Version-1.02-Revision-1.00.pdf

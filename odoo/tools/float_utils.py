@@ -32,11 +32,11 @@ def round(f):
 
 def _float_check_precision(precision_digits=None, precision_rounding=None):
     if precision_rounding is not None and precision_digits is None:
-        assert precision_rounding > 0,\
+        assert precision_rounding > 0, \
             f"precision_rounding must be positive, got {precision_rounding}"
     elif precision_digits is not None and precision_rounding is None:
         # TODO: `int`s will also get the `is_integer` method starting from python 3.12
-        assert float(precision_digits).is_integer() and precision_digits >= 0,\
+        assert float(precision_digits).is_integer() and precision_digits >= 0, \
             f"precision_digits must be a non-negative integer, got {precision_digits}"
         precision_rounding = 10 ** -precision_digits
     else:
@@ -100,7 +100,7 @@ def float_round(value, precision_digits=None, precision_rounding=None, rounding_
     epsilon_magnitude = math.log2(abs(normalized_value))
     # `2**(epsilon_magnitude - 52)` would be the minimal size, but we increase it to be
     # more tolerant of inaccuracies accumulated after multiple floating point operations
-    epsilon = 2**(epsilon_magnitude - 50)
+    epsilon = 2 ** (epsilon_magnitude - 50)
 
     match rounding_method:
         case 'HALF-UP':  # 0.5 rounds away from 0
@@ -299,15 +299,17 @@ def float_invert(value):
     if result is None:
         coefficient, exponent = f'{value:.15e}'.split('e')
         # invert exponent by changing sign, and coefficient by dividing by its square
-        result = float(f'{coefficient}e{-int(exponent)}') / float(coefficient)**2
+        result = float(f'{coefficient}e{-int(exponent)}') / float(coefficient) ** 2
     return result
 
 
 if __name__ == "__main__":
 
     import time
+
     start = time.time()
     count = 0
+
 
     def try_round(amount, expected, precision_digits=3):
         result = float_repr(float_round(amount, precision_digits=precision_digits),
@@ -317,6 +319,7 @@ if __name__ == "__main__":
             return complex(1, 1)
         return 1
 
+
     # Extended float range test, inspired by Cloves Almeida's test on bug #882036.
     fractions = [.0, .015, .01499, .675, .67499, .4555, .4555, .45555]
     expecteds = ['.00', '.02', '.01', '.68', '.67', '.46', '.456', '.4556']
@@ -325,7 +328,7 @@ if __name__ == "__main__":
         for frac, exp, prec in zip(fractions, expecteds, precisions):
             for sign in [-1, 1]:
                 for x in range(0, 10000, 97):
-                    n = x * 10**magnitude
+                    n = x * 10 ** magnitude
                     f = sign * (n + frac)
                     f_exp = ('-' if f != 0 and sign == -1 else '') + str(n) + exp
                     count += try_round(f, f_exp, precision_digits=prec)
@@ -337,4 +340,4 @@ if __name__ == "__main__":
     # 47130 round calls in 0.422306060791 secs, with Python 2.6.7 on Core i3 x64
     # with decimal:
     # 47130 round calls in 6.612248100021 secs, with Python 2.6.7 on Core i3 x64
-    print(count, " round calls, ", errors, "errors, done in ", (stop-start), 'secs')
+    print(count, " round calls, ", errors, "errors, done in ", (stop - start), 'secs')

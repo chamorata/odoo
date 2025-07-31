@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.payment.controllers import portal as payment_portal
 from werkzeug.urls import url_encode
 
 from odoo import _, http, tools
-from odoo.http import request
 from odoo.exceptions import AccessError, ValidationError, UserError
-from odoo.addons.payment.controllers import portal as payment_portal
+from odoo.http import request
 
 
 class PaymentPortal(payment_portal.PaymentPortal):
@@ -56,7 +56,8 @@ class PaymentPortal(payment_portal.PaymentPortal):
             pos_order_sudo.company_id.id, partner_id, amount_to_pay, currency_id=pos_order_sudo.currency_id.id
         )  # In sudo mode to read the fields of providers and partner (if logged out).
         # Return the payment providers configured in the pos.payment.method that are compatible for the payment API
-        return compatible_providers_sudo & payment_method._get_online_payment_providers(pos_order_sudo.config_id.id, error_if_invalid=False)
+        return compatible_providers_sudo & payment_method._get_online_payment_providers(pos_order_sudo.config_id.id,
+                                                                                        error_if_invalid=False)
 
     @staticmethod
     def _new_url_params(access_token, exit_route=None):
@@ -108,10 +109,13 @@ class PaymentPortal(payment_portal.PaymentPortal):
         rendering_context = {
             **kwargs,
             'exit_route': exit_route,
-            'reference_prefix': request.env['payment.transaction'].sudo()._compute_reference_prefix(provider_code=None, separator='-', **kwargs),
+            'reference_prefix': request.env['payment.transaction'].sudo()._compute_reference_prefix(provider_code=None,
+                                                                                                    separator='-',
+                                                                                                    **kwargs),
             'partner_id': partner_sudo.id,
             'access_token': access_token,
-            'transaction_route': f'/pos/pay/transaction/{pos_order_sudo.id}?' + url_encode(PaymentPortal._new_url_params(access_token, exit_route)),
+            'transaction_route': f'/pos/pay/transaction/{pos_order_sudo.id}?' + url_encode(
+                PaymentPortal._new_url_params(access_token, exit_route)),
             'landing_route': self._get_landing_route(pos_order_sudo.id, access_token, exit_route=exit_route),
             **self._get_extra_payment_form_values(**kwargs),
         }
@@ -236,14 +240,17 @@ class PaymentPortal(payment_portal.PaymentPortal):
                 raise UserError(_("The payment provider is invalid."))
 
         kwargs['reference_prefix'] = None  # Computed with pos_order_id
-        kwargs.pop('pos_order_id', None) # _create_transaction kwargs keys must be different than custom_create_values keys
+        kwargs.pop('pos_order_id',
+                   None)  # _create_transaction kwargs keys must be different than custom_create_values keys
 
         tx_sudo = self._create_transaction(**kwargs)
-        tx_sudo.landing_route = PaymentPortal._get_landing_route(pos_order_sudo.id, access_token, exit_route=exit_route, tx_id=tx_sudo.id)
+        tx_sudo.landing_route = PaymentPortal._get_landing_route(pos_order_sudo.id, access_token, exit_route=exit_route,
+                                                                 tx_id=tx_sudo.id)
 
         return tx_sudo._get_processing_values()
 
-    @http.route('/pos/pay/confirmation/<int:pos_order_id>', type='http', methods=['GET'], auth='public', website=True, sitemap=False)
+    @http.route('/pos/pay/confirmation/<int:pos_order_id>', type='http', methods=['GET'], auth='public', website=True,
+                sitemap=False)
     def pos_order_pay_confirmation(self, pos_order_id, tx_id=None, access_token=None, exit_route=None, **kwargs):
         """ Behaves like payment.PaymentPortal.payment_confirm but for POS online payment.
 
@@ -279,7 +286,7 @@ class PaymentPortal(payment_portal.PaymentPortal):
             amount=tx_sudo.amount,
             currency=tx_sudo.currency_id,
             provider_name=tx_sudo.provider_id.name,
-            tx=tx_sudo, # for the payment.state_header template
+            tx=tx_sudo,  # for the payment.state_header template
         )
 
         if tx_sudo.state not in ('authorized', 'done'):

@@ -17,7 +17,8 @@ class AccountMoveSend(models.AbstractModel):
     def _get_all_extra_edis(self) -> dict:
         # EXTENDS 'account'
         res = super()._get_all_extra_edis()
-        res.update({'it_edi_send': {'label': _("Send to Tax Agency"), 'is_applicable': self._is_it_edi_applicable, 'help': _("Send the e-invoice XML to the Italian Tax Agency.")}})
+        res.update({'it_edi_send': {'label': _("Send to Tax Agency"), 'is_applicable': self._is_it_edi_applicable,
+                                    'help': _("Send the e-invoice XML to the Italian Tax Agency.")}})
         return res
 
     # -------------------------------------------------------------------------
@@ -27,7 +28,8 @@ class AccountMoveSend(models.AbstractModel):
     def _get_alerts(self, moves, moves_data):
         # EXTENDS 'account'
         alerts = super()._get_alerts(moves, moves_data)
-        if it_moves := moves.filtered(lambda m: 'it_edi_send' in moves_data[m]['extra_edis'] or moves_data[m]['invoice_edi_format'] == 'it_edi_xml'):
+        if it_moves := moves.filtered(lambda m: 'it_edi_send' in moves_data[m]['extra_edis'] or moves_data[m][
+            'invoice_edi_format'] == 'it_edi_xml'):
             if it_alerts := it_moves._l10n_it_edi_export_data_check():
                 alerts.update(**it_alerts)
         return alerts
@@ -57,11 +59,11 @@ class AccountMoveSend(models.AbstractModel):
         # EXTENDS 'account'
         super()._hook_invoice_document_after_pdf_report_render(invoice, invoice_data)
         if (
-            invoice_data.get('pdf_attachment_values')
-            and (
+                invoice_data.get('pdf_attachment_values')
+                and (
                 ('it_edi_send' in invoice_data['extra_edis'] and not invoice.l10n_it_edi_attachment_id)
                 or (invoice_data['invoice_edi_format'] == 'it_edi_xml' and invoice._l10n_it_edi_ready_for_xml_export())
-            )
+        )
         ):
             invoice_data['l10n_it_edi_values'] = invoice._l10n_it_edi_get_attachment_values(
                 pdf_values=invoice_data['pdf_attachment_values'])
@@ -93,4 +95,5 @@ class AccountMoveSend(models.AbstractModel):
         if attachments_vals:
             attachments = self.env['ir.attachment'].sudo().create(attachments_vals)
             res_ids = attachments.mapped('res_id')
-            self.env['account.move'].browse(res_ids).invalidate_recordset(fnames=['l10n_it_edi_attachment_id', 'l10n_it_edi_attachment_file'])
+            self.env['account.move'].browse(res_ids).invalidate_recordset(
+                fnames=['l10n_it_edi_attachment_id', 'l10n_it_edi_attachment_file'])

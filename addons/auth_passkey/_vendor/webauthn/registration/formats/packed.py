@@ -20,12 +20,12 @@ from ....webauthn.helpers.structs import AttestationStatement
 
 
 def verify_packed(
-    *,
-    attestation_statement: AttestationStatement,
-    attestation_object: bytes,
-    client_data_json: bytes,
-    credential_public_key: bytes,
-    pem_root_certs_bytes: List[bytes],
+        *,
+        attestation_statement: AttestationStatement,
+        attestation_object: bytes,
+        client_data_json: bytes,
+        credential_public_key: bytes,
+        pem_root_certs_bytes: List[bytes],
 ) -> bool:
     """Verify a "packed" attestation statement
 

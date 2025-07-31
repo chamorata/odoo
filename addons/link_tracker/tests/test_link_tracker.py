@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.link_tracker.tests.common import MockLinkTracker
+
 from odoo.exceptions import UserError
 from odoo.tests import common, tagged
 
@@ -177,12 +178,12 @@ class TestLinkTracker(common.TransactionCase, MockLinkTracker):
             })
 
         link_2 = self.env['link.tracker'].create({
-                'url': '2nd url',
-                'title': 'Odoo',
-                'campaign_id': campaign_id.id,
-                'medium_id': self.env['utm.medium'].search([], limit=1).id,
-                'label': ''
-            })
+            'url': '2nd url',
+            'title': 'Odoo',
+            'campaign_id': campaign_id.id,
+            'medium_id': self.env['utm.medium'].search([], limit=1).id,
+            'label': ''
+        })
 
         # test in batch
         with self.assertRaises(UserError):

@@ -4,6 +4,7 @@
 from odoo import api, fields, models
 from odoo.osv import expression
 
+
 class ProductTag(models.Model):
     _name = 'product.tag'
     _description = 'Product Tag'
@@ -51,5 +52,7 @@ class ProductTag(models.Model):
 
     def _search_product_ids(self, operator, operand):
         if operator in expression.NEGATIVE_TERM_OPERATORS:
-            return [('product_template_ids.product_variant_ids', operator, operand), ('product_product_ids', operator, operand)]
-        return ['|', ('product_template_ids.product_variant_ids', operator, operand), ('product_product_ids', operator, operand)]
+            return [('product_template_ids.product_variant_ids', operator, operand),
+                    ('product_product_ids', operator, operand)]
+        return ['|', ('product_template_ids.product_variant_ids', operator, operand),
+                ('product_product_ids', operator, operand)]

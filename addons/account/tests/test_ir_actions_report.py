@@ -4,10 +4,11 @@ import io
 import re
 
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
 from odoo.exceptions import RedirectWarning
-from odoo.tools import pdf
 from odoo.tests import tagged
 from odoo.tools import file_open
+from odoo.tools import pdf
 from odoo.tools.pdf import PdfFileReader, PdfFileWriter
 
 
@@ -41,7 +42,8 @@ class TestIrActionsReport(AccountTestInvoicingCommon):
             'res_model': 'account.move',
             'res_id': in_invoice_1.id,
         })
-        test_record_report = self.env['ir.actions.report'].with_context(force_report_rendering=True)._render_qweb_pdf('account.action_account_original_vendor_bill', res_ids=in_invoice_1.id)
+        test_record_report = self.env['ir.actions.report'].with_context(force_report_rendering=True)._render_qweb_pdf(
+            'account.action_account_original_vendor_bill', res_ids=in_invoice_1.id)
         self.assertTrue(test_record_report, "The PDF should have been generated")
 
     def test_download_with_encrypted_pdf(self):
@@ -85,7 +87,8 @@ class TestIrActionsReport(AccountTestInvoicingCommon):
             'res_model': 'account.move',
             'res_id': in_invoice_1.id,
         })
-        test_record_report = self.env['ir.actions.report'].with_context(force_report_rendering=True)._render_qweb_pdf('account.action_account_original_vendor_bill', res_ids=in_invoice_1.id)
+        test_record_report = self.env['ir.actions.report'].with_context(force_report_rendering=True)._render_qweb_pdf(
+            'account.action_account_original_vendor_bill', res_ids=in_invoice_1.id)
         self.assertTrue(test_record_report, "The PDF should have been generated")
 
         in_invoice_2 = in_invoice_1.copy()
@@ -99,4 +102,5 @@ class TestIrActionsReport(AccountTestInvoicingCommon):
         })
         # trying to merge with a corrupted attachment should not work
         with self.assertRaises(RedirectWarning):
-            self.env['ir.actions.report'].with_context(force_report_rendering=True)._render_qweb_pdf('account.action_account_original_vendor_bill', res_ids=[in_invoice_1.id, in_invoice_2.id])
+            self.env['ir.actions.report'].with_context(force_report_rendering=True)._render_qweb_pdf(
+                'account.action_account_original_vendor_bill', res_ids=[in_invoice_1.id, in_invoice_2.id])

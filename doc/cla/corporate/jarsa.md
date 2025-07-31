@@ -6,7 +6,7 @@ I declare that I am authorized and able to make this agreement and sign this dec
 
 Signed,
 
-Alan Ramos  alan.ramos@jarsa.com.mx https://github.com/alan196
+Alan Ramos alan.ramos@jarsa.com.mx https://github.com/alan196
 
 List of contributors:
 

@@ -2,12 +2,12 @@
 
 import json
 
-from odoo.exceptions import ValidationError
-from odoo.http import request, route
-
-from odoo.addons.base.models.ir_qweb_fields import nl2br_enclose
 from odoo.addons.website.controllers import main
 from odoo.addons.website.controllers.form import WebsiteForm
+
+from odoo.addons.base.models.ir_qweb_fields import nl2br_enclose
+from odoo.exceptions import ValidationError
+from odoo.http import request, route
 
 
 class WebsiteSaleForm(WebsiteForm):
@@ -58,7 +58,8 @@ class Website(main.Website):
     @route()
     def theme_customize_data(self, is_view_data, enable=None, disable=None, reset_view_arch=False):
         super().theme_customize_data(is_view_data, enable, disable, reset_view_arch)
-        if any(key in enable or key in disable for key in ['website_sale.products_list_view', 'website_sale.add_grid_or_list_option']):
+        if any(key in enable or key in disable for key in
+               ['website_sale.products_list_view', 'website_sale.add_grid_or_list_option']):
             request.session.pop('website_sale_shop_layout_mode', None)
 
     @route()

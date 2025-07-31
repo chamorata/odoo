@@ -1,4 +1,3 @@
-
 from itertools import accumulate
 
 from odoo import api, fields, models

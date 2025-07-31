@@ -6,7 +6,11 @@
             <t t-set="head">
                 <t t-call-assets="web.assets_frontend" t-js="false"/>
                 <title t-translation="off">
-                    <t t-if="additional_title"><t t-out="additional_title"/> | </t><t t-out="res_company.name"/>
+                    <t t-if="additional_title">
+                        <t t-out="additional_title"/>
+                        |
+                    </t>
+                    <t t-out="res_company.name"/>
                 </title>
             </t>
             <t t-out="0"/>
@@ -15,7 +19,8 @@
 
     <template id="mail.message_document_unfollowed">
         <t t-call="mail.public_layout">
-            <t t-set="additional_title">&quot;<t t-out="name"/>&quot; no longer followed</t>
+            <t t-set="additional_title">&quot;<t t-out="name"/>&quot; no longer followed
+            </t>
             <div class="h-100 d-flex align-items-center justify-content-center">
                 <div>
                     <h1 t-out="model_name"/>

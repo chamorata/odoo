@@ -1,8 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
 from odoo.exceptions import UserError
 from odoo.fields import Command
-from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.tests import tagged
 
 
@@ -60,7 +61,8 @@ class TestL10nSGEmvQrCode(AccountTestInvoicingCommon):
         # Without paynow infomation should fail
         self.company_data['company'].partner_id.city = 'Singapore'
         self.emv_qr_invoice.partner_bank_id = self.acc_emv_sg_without_paynow_info
-        with self.assertRaises(UserError, msg="The account receiving the payment must have a Proxy type and a Proxy value set."):
+        with self.assertRaises(UserError,
+                               msg="The account receiving the payment must have a Proxy type and a Proxy value set."):
             self.emv_qr_invoice._generate_qr_code()
 
     def test_emv_qr_vals(self):
@@ -76,4 +78,5 @@ class TestL10nSGEmvQrCode(AccountTestInvoicingCommon):
         )
 
         # Check the whole qr code string
-        self.assertEqual(emv_qr_vals, '00020101021226400009SG.PAYNOW010120213200002150HWCF0301052040000530370254031005802SG5914company_1_data6009Singapore62170113INV/TEST/0001630416C8')
+        self.assertEqual(emv_qr_vals,
+                         '00020101021226400009SG.PAYNOW010120213200002150HWCF0301052040000530370254031005802SG5914company_1_data6009Singapore62170113INV/TEST/0001630416C8')

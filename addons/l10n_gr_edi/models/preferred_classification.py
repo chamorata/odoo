@@ -1,6 +1,5 @@
 from odoo import api, fields, models
 
-
 CLASSIFICATION_MAP = {
     '1.1': {
         'category1_1': ('E3_561_001', 'E3_561_002', 'E3_561_007'),
@@ -518,7 +517,8 @@ INVOICE_TYPES_SELECTION = [
     ('1.2', '1.2 - Sales Invoice/Intra-community Supplies'),
     ('1.3', '1.3 - Sales Invoice/Third Country Supplies'),
     ('1.4', '1.4 - Sales Invoice/Sale on Behalf of Third Parties'),
-    ('1.5', '1.5 - Sales Invoice/Clearance of Sales on Behalf of Third Parties – Fees from Sales on Behalf of Third Parties'),
+    ('1.5',
+     '1.5 - Sales Invoice/Clearance of Sales on Behalf of Third Parties – Fees from Sales on Behalf of Third Parties'),
     ('1.6', '1.6 - Sales Invoice/Supplemental Accounting Source Document'),
     ('2.1', '2.1 - Service Rendered Invoice'),
     ('2.2', '2.2 - Intra-community Service Rendered Invoice'),
@@ -596,15 +596,21 @@ CLASSIFICATION_CATEGORY_SELECTION = [
 CLASSIFICATION_TYPE_SELECTION = [
     # Income classification types
     ('E3_106', 'E3_106 - Self-Production of Fixed Assets – Self-Deliveries – Destroying inventory/Commodities'),
-    ('E3_205', 'E3_205 - Self-Production of Fixed Assets – Self-Deliveries – Destroying inventory/Raw and other materials'),
-    ('E3_210', 'E3_210 - Self-Production of Fixed Assets – Self-Deliveries – Destroying inventory/Products and production in progress'),
-    ('E3_305', 'E3_305 - Self-Production of Fixed Assets – Self-Deliveries – Destroying inventory/Raw and other materials'),
-    ('E3_310', 'E3_310 - Self-Production of Fixed Assets – Self-Deliveries – Destroying inventory/Products and production in progress'),
+    ('E3_205',
+     'E3_205 - Self-Production of Fixed Assets – Self-Deliveries – Destroying inventory/Raw and other materials'),
+    ('E3_210',
+     'E3_210 - Self-Production of Fixed Assets – Self-Deliveries – Destroying inventory/Products and production in progress'),
+    ('E3_305',
+     'E3_305 - Self-Production of Fixed Assets – Self-Deliveries – Destroying inventory/Raw and other materials'),
+    ('E3_310',
+     'E3_310 - Self-Production of Fixed Assets – Self-Deliveries – Destroying inventory/Products and production in progress'),
     ('E3_318', 'E3_318 - Self-Production of Fixed Assets – Self-Deliveries – Destroying inventory/Production expenses'),
     ('E3_561_001', 'E3_561_001 - Wholesale Sales of Goods and Services – for Traders'),
-    ('E3_561_002', 'E3_561_002 - Wholesale Sales of Goods and Services pursuant to article 39a paragraph 5 of the VAT Code (Law 2859/2000)'),
+    ('E3_561_002',
+     'E3_561_002 - Wholesale Sales of Goods and Services pursuant to article 39a paragraph 5 of the VAT Code (Law 2859/2000)'),
     ('E3_561_003', 'E3_561_003 - Retail Sales of Goods and Services – Private Clientele'),
-    ('E3_561_004', 'E3_561_004 - Retail Sales of Goods and Services pursuant to article 39a paragraph 5 of the VAT Code (Law 2859/2000)'),
+    ('E3_561_004',
+     'E3_561_004 - Retail Sales of Goods and Services pursuant to article 39a paragraph 5 of the VAT Code (Law 2859/2000)'),
     ('E3_561_005', 'E3_561_005 - Intra-Community Foreign Sales of Goods and Services'),
     ('E3_561_006', 'E3_561_006 - Third Country Foreign Sales of Goods and Services'),
     ('E3_561_007', 'E3_561_007 - Other Sales of Goods and Services'),
@@ -634,7 +640,8 @@ CLASSIFICATION_TYPE_SELECTION = [
     ('E3_101', 'E3_101 - Commodities at Period Start'),
     ('E3_102_001', 'E3_102_001 - Fiscal Year Commodity Purchases (net amount)/Wholesale'),
     ('E3_102_002', 'E3_102_002 - Fiscal Year Commodity Purchases (net amount)/Retail'),
-    ('E3_102_003', 'E3_102_003 - Fiscal Year Commodity Purchases (net amount)/Goods under article 39a paragraph 5 of the VAT Code (Law 2859/2000)'),
+    ('E3_102_003',
+     'E3_102_003 - Fiscal Year Commodity Purchases (net amount)/Goods under article 39a paragraph 5 of the VAT Code (Law 2859/2000)'),
     ('E3_102_004', 'E3_102_004 - Fiscal Year Commodity Purchases (net amount)/Foreign, Intra-Community'),
     ('E3_102_005', 'E3_102_005 - Fiscal Year Commodity Purchases (net amount)/Foreign, Third Countries'),
     ('E3_102_006', 'E3_102_006 - Fiscal Year Commodity Purchases (net amount)/Others'),
@@ -822,7 +829,8 @@ TYPES_WITH_MANDATORY_COUNTERPART = ('7.1', '3.1')
 
 TYPES_WITH_FORBIDDEN_PAYMENT = ('17.3', '17.4')
 
-TYPES_WITH_MANDATORY_PAYMENT = tuple(inv_type for inv_type in ALL_INVOICE_TYPES if inv_type not in TYPES_WITH_FORBIDDEN_PAYMENT)
+TYPES_WITH_MANDATORY_PAYMENT = tuple(
+    inv_type for inv_type in ALL_INVOICE_TYPES if inv_type not in TYPES_WITH_FORBIDDEN_PAYMENT)
 
 TYPES_WITH_FORBIDDEN_QUANTITY = ('2.1', '2.2', '2.3', '7.1', '8.1', '8.2')
 
@@ -887,7 +895,8 @@ class PreferredClassification(models.Model):
     @api.depends('l10n_gr_edi_inv_type')
     def _compute_l10n_gr_edi_available_cls_category(self):
         for record in self:
-            record.l10n_gr_edi_available_cls_category = self._get_l10n_gr_edi_available_cls_category(record.l10n_gr_edi_inv_type)
+            record.l10n_gr_edi_available_cls_category = self._get_l10n_gr_edi_available_cls_category(
+                record.l10n_gr_edi_inv_type)
 
     @api.depends('l10n_gr_edi_inv_type', 'l10n_gr_edi_cls_category')
     def _compute_l10n_gr_edi_available_cls_type(self):

@@ -1,12 +1,13 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from datetime import timedelta
 import random
 import re
+from datetime import timedelta
+
+from odoo.addons.bus.websocket import WebsocketConnectionHandler
+from odoo.addons.mail.tools.discuss import Store
 
 from odoo import api, Command, fields, models, _
-from odoo.addons.mail.tools.discuss import Store
-from odoo.addons.bus.websocket import WebsocketConnectionHandler
 
 
 class ImLivechatChannel(models.Model):
@@ -33,28 +34,33 @@ class ImLivechatChannel(models.Model):
     # attribute fields
     name = fields.Char('Channel Name', required=True)
     button_text = fields.Char('Text of the Button', default=_default_button_text,
-        help="Default text displayed on the Livechat Support Button", translate=True)
+                              help="Default text displayed on the Livechat Support Button", translate=True)
     default_message = fields.Char('Welcome Message', default=_default_default_message,
-        help="This is an automated 'welcome' message that your visitor will see when they initiate a new conversation.", translate=True)
-    input_placeholder = fields.Char('Chat Input Placeholder', help='Text that prompts the user to initiate the chat.', translate=True)
-    header_background_color = fields.Char(default="#875A7B", help="Default background color of the channel header once open")
+                                  help="This is an automated 'welcome' message that your visitor will see when they initiate a new conversation.",
+                                  translate=True)
+    input_placeholder = fields.Char('Chat Input Placeholder', help='Text that prompts the user to initiate the chat.',
+                                    translate=True)
+    header_background_color = fields.Char(default="#875A7B",
+                                          help="Default background color of the channel header once open")
     title_color = fields.Char(default="#FFFFFF", help="Default title color of the channel once open")
     button_background_color = fields.Char(default="#875A7B", help="Default background color of the Livechat button")
     button_text_color = fields.Char(default="#FFFFFF", help="Default text color of the Livechat button")
 
     # computed fields
     web_page = fields.Char('Web Page', compute='_compute_web_page_link', store=False, readonly=True,
-        help="URL to a static page where you client can discuss with the operator of the channel.")
+                           help="URL to a static page where you client can discuss with the operator of the channel.")
     are_you_inside = fields.Boolean(string='Are you inside the matrix?',
-        compute='_are_you_inside', store=False, readonly=True)
+                                    compute='_are_you_inside', store=False, readonly=True)
     available_operator_ids = fields.Many2many('res.users', compute='_compute_available_operator_ids')
-    script_external = fields.Html('Script (external)', compute='_compute_script_external', store=False, readonly=True, sanitize=False)
+    script_external = fields.Html('Script (external)', compute='_compute_script_external', store=False, readonly=True,
+                                  sanitize=False)
     nbr_channel = fields.Integer('Number of conversation', compute='_compute_nbr_channel', store=False, readonly=True)
 
     image_128 = fields.Image("Image", max_width=128, max_height=128)
 
     # relationnal fields
-    user_ids = fields.Many2many('res.users', 'im_livechat_channel_im_user', 'channel_id', 'user_id', string='Operators', default=_default_user_ids)
+    user_ids = fields.Many2many('res.users', 'im_livechat_channel_im_user', 'channel_id', 'user_id', string='Operators',
+                                default=_default_user_ids)
     channel_ids = fields.One2many('discuss.channel', 'livechat_channel_id', 'Sessions')
     chatbot_script_count = fields.Integer(string='Number of Chatbot', compute='_compute_chatbot_script_count')
     rule_ids = fields.One2many('im_livechat.channel.rule', 'channel_id', 'Rules')
@@ -83,7 +89,8 @@ class ImLivechatChannel(models.Model):
         for record in self:
             values["channel_id"] = record.id
             values["url"] = record.get_base_url()
-            record.script_external = self.env['ir.qweb']._render('im_livechat.external_loader', values) if record.id else False
+            record.script_external = self.env['ir.qweb']._render('im_livechat.external_loader',
+                                                                 values) if record.id else False
 
     def _compute_web_page_link(self):
         for record in self:
@@ -137,14 +144,16 @@ class ImLivechatChannel(models.Model):
     # Channel Methods
     # --------------------------
     def _get_livechat_discuss_channel_vals(
-        self, anonymous_name, previous_operator_id=None, chatbot_script=None, user_id=None, country_id=None, lang=None
+            self, anonymous_name, previous_operator_id=None, chatbot_script=None, user_id=None, country_id=None,
+            lang=None
     ):
         user_operator = False
         if chatbot_script:
             if chatbot_script.id not in self.browse(self.ids).mapped('rule_ids.chatbot_script_id.id'):
                 return False
         else:
-            user_operator = self._get_operator(previous_operator_id=previous_operator_id, lang=lang, country_id=country_id)
+            user_operator = self._get_operator(previous_operator_id=previous_operator_id, lang=lang,
+                                               country_id=country_id)
             if not user_operator:
                 # no one available
                 return False
@@ -269,8 +278,8 @@ class ImLivechatChannel(models.Model):
             AND c.livechat_operator_id in %s
             GROUP BY c.livechat_operator_id, rtc.nbr
             ORDER BY COUNT(DISTINCT c.id) < 2 OR rtc.nbr IS NULL DESC, COUNT(DISTINCT c.id) ASC, rtc.nbr IS NULL DESC""",
-            (tuple(self.available_operator_ids.partner_id.ids),)
-        )
+                            (tuple(self.available_operator_ids.partner_id.ids),)
+                            )
         operator_statuses = self.env.cr.dictfetchall()
         operator = None
         # Try to match the previous operator
@@ -279,7 +288,8 @@ class ImLivechatChannel(models.Model):
                 (status for status in operator_statuses if status['livechat_operator_id'] == previous_operator_id),
                 None
             )
-            if not previous_operator_status or previous_operator_status['count'] < 2 or not previous_operator_status['in_call']:
+            if not previous_operator_status or previous_operator_status['count'] < 2 or not previous_operator_status[
+                'in_call']:
                 previous_operator_user = next(
                     available_user
                     for available_user in self.available_operator_ids
@@ -289,16 +299,19 @@ class ImLivechatChannel(models.Model):
         # Try to match an operator with the same main lang as the visitor
         # If no operator with the same lang, try to match an operator with the addition lang
         if lang:
-            same_lang_operator_ids = self.available_operator_ids.filtered(lambda operator: operator.partner_id.lang == lang)
+            same_lang_operator_ids = self.available_operator_ids.filtered(
+                lambda operator: operator.partner_id.lang == lang)
             if same_lang_operator_ids:
                 operator = self._get_less_active_operator(operator_statuses, same_lang_operator_ids)
             else:
-                addition_lang_operator_ids = self.available_operator_ids.filtered(lambda operator: lang in operator.res_users_settings_id.livechat_lang_ids.mapped('code'))
+                addition_lang_operator_ids = self.available_operator_ids.filtered(
+                    lambda operator: lang in operator.res_users_settings_id.livechat_lang_ids.mapped('code'))
                 if addition_lang_operator_ids:
                     operator = self._get_less_active_operator(operator_statuses, addition_lang_operator_ids)
         # Try to match an operator with the same country as the visitor
         if country_id and not operator:
-            same_country_operator_ids = self.available_operator_ids.filtered(lambda operator: operator.partner_id.country_id.id == country_id)
+            same_country_operator_ids = self.available_operator_ids.filtered(
+                lambda operator: operator.partner_id.country_id.id == country_id)
             if same_country_operator_ids:
                 operator = self._get_less_active_operator(operator_statuses, same_country_operator_ids)
         # Try to get a random operator, regardless of the lang or the country
@@ -352,27 +365,28 @@ class ImLivechatChannelRule(models.Model):
     _order = 'sequence asc'
 
     regex_url = fields.Char('URL Regex',
-        help="Regular expression specifying the web pages this rule will be applied on.")
+                            help="Regular expression specifying the web pages this rule will be applied on.")
     action = fields.Selection([
         ('display_button', 'Show'),
         ('display_button_and_text', 'Show with notification'),
         ('auto_popup', 'Open automatically'),
         ('hide_button', 'Hide')], string='Live Chat Button', required=True, default='display_button',
-        help="* 'Show' displays the chat button on the pages.\n"\
-             "* 'Show with notification' is 'Show' in addition to a floating text just next to the button.\n"\
-             "* 'Open automatically' displays the button and automatically opens the conversation pane.\n"\
+        help="* 'Show' displays the chat button on the pages.\n" \
+             "* 'Show with notification' is 'Show' in addition to a floating text just next to the button.\n" \
+             "* 'Open automatically' displays the button and automatically opens the conversation pane.\n" \
              "* 'Hide' hides the chat button on the pages.\n")
     auto_popup_timer = fields.Integer('Open automatically timer', default=0,
-        help="Delay (in seconds) to automatically open the conversation window. Note: the selected action must be 'Open automatically' otherwise this parameter will not be taken into account.")
+                                      help="Delay (in seconds) to automatically open the conversation window. Note: the selected action must be 'Open automatically' otherwise this parameter will not be taken into account.")
     chatbot_script_id = fields.Many2one('chatbot.script', string='Chatbot')
     chatbot_only_if_no_operator = fields.Boolean(
         string='Enabled only if no operator', help='Enable the bot only if there is no operator available')
     channel_id = fields.Many2one('im_livechat.channel', 'Channel',
-        help="The channel of the rule")
-    country_ids = fields.Many2many('res.country', 'im_livechat_channel_country_rel', 'channel_id', 'country_id', 'Country',
-        help="The rule will only be applied for these countries. Example: if you select 'Belgium' and 'United States' and that you set the action to 'Hide', the chat button will be hidden on the specified URL from the visitors located in these 2 countries. This feature requires GeoIP installed on your server.")
+                                 help="The channel of the rule")
+    country_ids = fields.Many2many('res.country', 'im_livechat_channel_country_rel', 'channel_id', 'country_id',
+                                   'Country',
+                                   help="The rule will only be applied for these countries. Example: if you select 'Belgium' and 'United States' and that you set the action to 'Hide', the chat button will be hidden on the specified URL from the visitors located in these 2 countries. This feature requires GeoIP installed on your server.")
     sequence = fields.Integer('Matching order', default=10,
-        help="Given the order to find a matching rule. If 2 rules are matching for the given url/country, the one with the lowest sequence will be chosen.")
+                              help="Given the order to find a matching rule. If 2 rules are matching for the given url/country, the one with the lowest sequence will be chosen.")
 
     def match_rule(self, channel_id, url, country_id=False):
         """ determine if a rule of the given channel matches with the given url
@@ -382,6 +396,7 @@ class ImLivechatChannelRule(models.Model):
             :returns the rule that matches the given condition. False otherwise.
             :rtype : im_livechat.channel.rule
         """
+
         def _match(rules):
             for rule in rules:
                 # url might not be set because it comes from referer, in that
@@ -389,15 +404,16 @@ class ImLivechatChannelRule(models.Model):
                 if not re.search(rule.regex_url or "", url or ""):
                     continue
                 if rule.chatbot_script_id and (
-                    not rule.chatbot_script_id.active or not rule.chatbot_script_id.script_step_ids
+                        not rule.chatbot_script_id.active or not rule.chatbot_script_id.script_step_ids
                 ):
                     continue
                 if rule.chatbot_only_if_no_operator and rule.channel_id.available_operator_ids:
                     continue
                 return rule
             return False
+
         # first, search the country specific rules (the first match is returned)
-        if country_id: # don't include the country in the research if geoIP is not installed
+        if country_id:  # don't include the country in the research if geoIP is not installed
             domain = [('country_ids', 'in', [country_id]), ('channel_id', '=', channel_id)]
             rule = _match(self.search(domain))
             if rule:

@@ -6,8 +6,8 @@ import re
 from base64 import b64encode
 
 from lxml import etree
-from odoo.tools.xml_utils import cleanup_xml_node
 
+from odoo.tools.xml_utils import cleanup_xml_node
 
 # Utility Methods for Basque Country's TicketBAI XML-related stuff.
 

@@ -115,7 +115,7 @@ class TestBarcodeNomenclature(common.TransactionCase):
         self.assertEqual(res['type'], 'product')
         self.assertEqual(res['encoding'], 'ean8')
         self.assertEqual(res['base_code'], '00000000',
-            "All the barcode should be consumed into the value")
+                         "All the barcode should be consumed into the value")
         self.assertEqual(res['value'], 12345670.0, "The barcode must be converted into value")
 
         # Must pass (right number of digits, right checksum).
@@ -124,7 +124,7 @@ class TestBarcodeNomenclature(common.TransactionCase):
         self.assertEqual(res['type'], 'product')
         self.assertEqual(res['encoding'], 'ean8')
         self.assertEqual(res['base_code'], '00000000',
-            "All the barcode should be consumed into the value")
+                         "All the barcode should be consumed into the value")
         self.assertEqual(res['value'], 2003405.0, "The barcode must be converted into value")
 
     def test_barcode_nomenclature_parse_barcode_ean8_04_multiple_rules(self):

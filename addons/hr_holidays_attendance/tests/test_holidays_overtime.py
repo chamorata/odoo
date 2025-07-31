@@ -1,14 +1,14 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+import time
 from datetime import datetime
 
+from freezegun import freeze_time
+
+from odoo.exceptions import AccessError, ValidationError
 from odoo.tests import new_test_user
 from odoo.tests.common import TransactionCase, tagged
 
-from odoo.exceptions import AccessError, ValidationError
-
-from freezegun import freeze_time
-import time
 
 @tagged('post_install', '-at_install', 'holidays_attendance')
 class TestHolidaysOvertime(TransactionCase):
@@ -19,8 +19,11 @@ class TestHolidaysOvertime(TransactionCase):
         cls.company = cls.env['res.company'].create({
             'name': 'SweatChipChop Inc.',
         })
-        cls.user = new_test_user(cls.env, login='user', groups='base.group_user', company_id=cls.company.id).with_company(cls.company)
-        cls.user_manager = new_test_user(cls.env, login='manager', groups='base.group_user,hr_holidays.group_hr_holidays_user,hr_attendance.group_hr_attendance_manager', company_id=cls.company.id).with_company(cls.company)
+        cls.user = new_test_user(cls.env, login='user', groups='base.group_user',
+                                 company_id=cls.company.id).with_company(cls.company)
+        cls.user_manager = new_test_user(cls.env, login='manager',
+                                         groups='base.group_user,hr_holidays.group_hr_holidays_user,hr_attendance.group_hr_attendance_manager',
+                                         company_id=cls.company.id).with_company(cls.company)
 
         cls.manager = cls.env['hr.employee'].create({
             'name': 'Dominique',
@@ -263,5 +266,6 @@ class TestHolidaysOvertime(TransactionCase):
                 'check_out': datetime(2022, 5, 5, 17),
             })
 
-        self.assertEqual(self.employee.total_overtime, 0, "Should have 0 hours of overtime as the public holiday doesn't impact his company")
+        self.assertEqual(self.employee.total_overtime, 0,
+                         "Should have 0 hours of overtime as the public holiday doesn't impact his company")
         self.assertEqual(self.manager.total_overtime, 8, 'Should have 8 hours of overtime (there is one hour of lunch)')

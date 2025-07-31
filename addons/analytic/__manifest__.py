@@ -2,10 +2,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 {
-    'name' : 'Analytic Accounting',
+    'name': 'Analytic Accounting',
     'version': '1.2',
     'category': 'Accounting/Accounting',
-    'depends' : ['base', 'mail', 'uom'],
+    'depends': ['base', 'mail', 'uom'],
     'description': """
 Module for defining analytic accounting object.
 ===============================================

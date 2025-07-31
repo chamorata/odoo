@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.test_mass_mailing.tests.common import TestMassMailCommon
+
 from odoo.tests import tagged
 
 
@@ -42,7 +43,8 @@ class TestSMSPost(TestMassMailCommon):
         self.env['link.tracker'].search([('url', '=', link)]).unlink()
         new_body = self.env['mail.render.mixin']._shorten_links_text('Welcome to %s !' % link, self.tracker_values)
         self.assertNotIn(link, new_body)
-        self.assertLinkShortenedText(new_body, (link, True), {'utm_campaign': self.utm_c.name, 'utm_medium': self.utm_m.name})
+        self.assertLinkShortenedText(new_body, (link, True),
+                                     {'utm_campaign': self.utm_c.name, 'utm_medium': self.utm_m.name})
         link = self.env['link.tracker'].search([('url', '=', link)])
         self.assertIn(link.short_url, new_body)
 

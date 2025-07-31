@@ -2,10 +2,10 @@
 
 import logging
 
+from odoo.addons.account_edi_proxy_client.models.account_edi_proxy_user import AccountEdiProxyError
 from werkzeug.urls import url_join
 
 from odoo import _, fields, models
-from odoo.addons.account_edi_proxy_client.models.account_edi_proxy_user import AccountEdiProxyError
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
@@ -31,7 +31,8 @@ class AccountEdiProxyClientUser(models.Model):
         urls['l10n_my_edi'] = {
             'demo': False,
             'prod': 'https://l10n-my-edi.api.odoo.com',
-            'test': self.env['ir.config_parameter'].sudo().get_param('l10n_my_edi_test_server_url', 'https://l10n-my-edi.test.odoo.com'),
+            'test': self.env['ir.config_parameter'].sudo().get_param('l10n_my_edi_test_server_url',
+                                                                     'https://l10n-my-edi.test.odoo.com'),
         }
         return urls
 
@@ -39,8 +40,9 @@ class AccountEdiProxyClientUser(models.Model):
         # EXTENDS 'account_edi_proxy_client'
         if proxy_type == 'l10n_my_edi':
             if not company.vat:
-                raise UserError(_('Please fill the TIN of company "%(company_name)s" before enabling the integration with MyInvois.',
-                                  company_name=company.display_name))
+                raise UserError(
+                    _('Please fill the TIN of company "%(company_name)s" before enabling the integration with MyInvois.',
+                      company_name=company.display_name))
             return company.vat
         return super()._get_proxy_identification(company, proxy_type)
 

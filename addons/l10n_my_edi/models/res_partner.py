@@ -40,7 +40,8 @@ class ResPartner(models.Model):
         help="The identification type and number used by the MyTax/MyInvois system to identify the user.\nNote: For MyPR and MyKAS to use NRIC scheme",
     )
     l10n_my_identification_number = fields.Char(string="ID Number")
-    l10n_my_identification_number_placeholder = fields.Char(compute="_compute_l10n_my_identification_number_placeholder")
+    l10n_my_identification_number_placeholder = fields.Char(
+        compute="_compute_l10n_my_identification_number_placeholder")
 
     # --------------------------------
     # Compute, inverse, search methods
@@ -105,10 +106,12 @@ class ResPartner(models.Model):
             ref = response['error']['reference']
             # No need to rollback, we don't want to be blocking on that.
             if ref == 'document_tin_not_found':
-                self._message_log(body=_('MyInvois was not able to match the TIN with the provided identification number.\nThis may happen when using generic TIN and will not prevent you from invoicing.'))
+                self._message_log(body=_(
+                    'MyInvois was not able to match the TIN with the provided identification number.\nThis may happen when using generic TIN and will not prevent you from invoicing.'))
                 self.l10n_my_tin_validation_state = 'invalid'
             else:
-                self._message_log(body=_('An unexpected error occurred while validating the TIN. Please try again later.'))
+                self._message_log(
+                    body=_('An unexpected error occurred while validating the TIN. Please try again later.'))
         else:
             self.l10n_my_tin_validation_state = 'valid' if response.get('success') else 'invalid'
 

@@ -9,7 +9,8 @@
                 <field name="email_normalized" invisible="1"/>
                 <field name="partner_phone_sanitized" invisible="1"/>
                 <header>
-                    <button string="Create Employee" name="create_employee_from_candidate" type="object" data-hotkey="q" groups="hr.group_hr_user"
+                    <button string="Create Employee" name="create_employee_from_candidate" type="object" data-hotkey="q"
+                            groups="hr.group_hr_user"
                             class="o_create_employee" invisible="employee_id or not active"/>
                 </header>
                 <sheet>
@@ -21,7 +22,9 @@
                                 groups="hr.group_hr_user"
                                 invisible="not (employee_id or emp_is_active)">
                             <div class="o_field_widget o_stat_info">
-                                <span class="o_stat_value"><field name="employee_name" readonly="1"/></span>
+                                <span class="o_stat_value">
+                                    <field name="employee_name" readonly="1"/>
+                                </span>
                                 <span class="o_stat_text">Employee</span>
                             </div>
                         </button>
@@ -41,10 +44,15 @@
                                 invisible="similar_candidates_count == 0">
                             <field name="similar_candidates_count" widget="statinfo" string="Similar Candidates"/>
                         </button>
-                        <button name="action_create_meeting" class="oe_stat_button" icon="fa-calendar" type="object" invisible="not id">
+                        <button name="action_create_meeting" class="oe_stat_button" icon="fa-calendar" type="object"
+                                invisible="not id">
                             <div class="o_field_widget o_stat_info">
-                                <span class="o_stat_text"><field name="meeting_display_text"/></span>
-                                <span class="o_stat_value"><field name="meeting_display_date" readonly="1"/></span>
+                                <span class="o_stat_text">
+                                    <field name="meeting_display_text"/>
+                                </span>
+                                <span class="o_stat_value">
+                                    <field name="meeting_display_date" readonly="1"/>
+                                </span>
                             </div>
                         </button>
                     </div>
@@ -56,7 +64,7 @@
                                     <widget name="hr_employee_chat" invisible="not context.get('chat_icon')"/>
                                 </div>
                                 <field name="partner_name" placeholder="Candidate's Name"
-                                    required="True" style="font-size: min(4vw, 2.6rem);"/>
+                                       required="True" style="font-size: min(4vw, 2.6rem);"/>
                             </h1>
                         </div>
                     </div>
@@ -110,7 +118,7 @@
         </field>
     </record>
 
-    <record id="hr_candidate_view_kanban" model="ir.ui.view" >
+    <record id="hr_candidate_view_kanban" model="ir.ui.view">
         <field name="name">hr.candidate.view.kanban</field>
         <field name="model">hr.candidate</field>
         <field name="arch" type="xml">
@@ -120,10 +128,17 @@
                 <field name="company_id"/>
                 <templates>
                     <t t-name="menu">
-                        <a role="menuitem" name="action_create_meeting" type="object" class="dropdown-item">Schedule Interview</a>
-                        <a t-if="record.active.raw_value" role="menuitem" type="archive" class="dropdown-item">Archive</a>
-                        <a t-if="!record.active.raw_value" role="menuitem" type="unarchive" class="dropdown-item">Unarchive</a>
-                        <t t-if="widget.deletable"><a role="menuitem" type="delete" class="dropdown-item">Delete</a></t>
+                        <a role="menuitem" name="action_create_meeting" type="object" class="dropdown-item">Schedule
+                            Interview
+                        </a>
+                        <a t-if="record.active.raw_value" role="menuitem" type="archive" class="dropdown-item">Archive
+                        </a>
+                        <a t-if="!record.active.raw_value" role="menuitem" type="unarchive" class="dropdown-item">
+                            Unarchive
+                        </a>
+                        <t t-if="widget.deletable">
+                            <a role="menuitem" type="delete" class="dropdown-item">Delete</a>
+                        </t>
                         <div role="separator" class="dropdown-divider"></div>
                         <field name="color" widget="kanban_color_picker"/>
                     </t>
@@ -153,14 +168,14 @@
         <field name="name">hr.candidate.view.calendar</field>
         <field name="model">hr.candidate</field>
         <field name="arch" type="xml">
-            <calendar 
-                string="Candidates"
-                mode="month"
-                date_start="activity_date_deadline"
-                color="user_id"
-                event_limit="5"
-                hide_time="true"
-                quick_create="0"
+            <calendar
+                    string="Candidates"
+                    mode="month"
+                    date_start="activity_date_deadline"
+                    color="user_id"
+                    event_limit="5"
+                    hide_time="true"
+                    quick_create="0"
             >
                 <field name="partner_name"/>
                 <field name="priority" widget="priority"/>
@@ -183,12 +198,13 @@
                 <filter string="My Candidates" name="my_candidates" domain="[('user_id', '=', uid)]"/>
                 <filter string="Unassigned" name="unassigned" domain="[('user_id', '=', False)]"/>
                 <separator/>
-                <filter string="Application in Progress" name="application_in_progress" domain="[('applicant_ids.application_status', '=', 'ongoing')]"/>
+                <filter string="Application in Progress" name="application_in_progress"
+                        domain="[('applicant_ids.application_status', '=', 'ongoing')]"/>
                 <filter string="Waiting" name="waiting" domain="[('applicant_ids', '=', False)]"/>
                 <filter string="Hired" name="hired" domain="[('applicant_ids.application_status', '=', 'hired')]"/>
                 <separator/>
                 <filter string="Directly Available" name="directly_available"
-                    domain="
+                        domain="
                 [
                     '&amp;',
                         '|',
@@ -204,11 +220,12 @@
                                         ('availability', '=', False),
                                 ]
                             )
-                ]" />
+                ]"/>
                 <separator/>
                 <filter string="Creation Date" name="filter_create" date="create_date"/>
                 <separator/>
-                <filter string="Refused" name="refused" context="{'active_test': False}" domain="[('applicant_ids.application_status', '=', 'refused')]"/>
+                <filter string="Refused" name="refused" context="{'active_test': False}"
+                        domain="[('applicant_ids.application_status', '=', 'refused')]"/>
                 <filter string="Archived" name="archived" domain="[('active', '=', False)]"/>
                 <group expand="0" string="Group By">
                     <filter string="Manager" name="group_by_manager" domain="[]" context="{'group_by': 'user_id'}"/>

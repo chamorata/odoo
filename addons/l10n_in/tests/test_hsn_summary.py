@@ -1,5 +1,6 @@
-from odoo import Command
 from odoo.addons.account.tests.common import TestTaxCommon
+
+from odoo import Command
 from odoo.tests import tagged
 
 
@@ -81,10 +82,10 @@ class TestL10nInHSNSummary(TestTaxCommon):
         }
 
     def assert_l10n_in_hsn_summary(
-        self,
-        document,
-        expected_values,
-        display_uom=False,
+            self,
+            document,
+            expected_values,
+            display_uom=False,
     ):
         self._create_assert_test(
             expected_values,
@@ -125,12 +126,18 @@ class TestL10nInHSNSummary(TestTaxCommon):
     def _test_l10n_in_hsn_summary_1(self):
         """ Test GST/IGST taxes. """
         document = self.populate_document(self.init_document([
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 2.0,    'price_unit': 100.0,    'product_uom_id': self.uom_unit,    'tax_ids': self.gst_5},
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 1.0,    'price_unit': 600.0,    'product_uom_id': self.uom_unit,    'tax_ids': self.gst_5},
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 5.0,    'price_unit': 300.0,    'product_uom_id': self.uom_unit,    'tax_ids': self.gst_5},
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 2.0,    'price_unit': 100.0,    'product_uom_id': self.uom_unit,    'tax_ids': self.gst_18},
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 1.0,    'price_unit': 600.0,    'product_uom_id': self.uom_unit,    'tax_ids': self.gst_18},
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 5.0,    'price_unit': 300.0,    'product_uom_id': self.uom_unit,    'tax_ids': self.gst_18},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 2.0, 'price_unit': 100.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.gst_5},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 1.0, 'price_unit': 600.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.gst_5},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 5.0, 'price_unit': 300.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.gst_5},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 2.0, 'price_unit': 100.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.gst_18},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 1.0, 'price_unit': 600.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.gst_18},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 5.0, 'price_unit': 300.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.gst_18},
         ]))
         expected_values = {
             'has_igst': False,
@@ -167,12 +174,18 @@ class TestL10nInHSNSummary(TestTaxCommon):
 
         # Another UOM on the second line.
         document = self.populate_document(self.init_document([
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 2.0,    'price_unit': 100.0,    'product_uom_id': self.uom_unit,    'tax_ids': self.gst_5},
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 1.0,    'price_unit': 12000.0,  'product_uom_id': self.uom_dozen,   'tax_ids': self.gst_5},
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 5.0,    'price_unit': 300.0,    'product_uom_id': self.uom_unit,    'tax_ids': self.gst_5},
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 2.0,    'price_unit': 100.0,    'product_uom_id': self.uom_unit,    'tax_ids': self.gst_18},
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 1.0,    'price_unit': 600.0,    'product_uom_id': self.uom_unit,    'tax_ids': self.gst_18},
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 5.0,    'price_unit': 300.0,    'product_uom_id': self.uom_unit,    'tax_ids': self.gst_18},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 2.0, 'price_unit': 100.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.gst_5},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 1.0, 'price_unit': 12000.0,
+             'product_uom_id': self.uom_dozen, 'tax_ids': self.gst_5},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 5.0, 'price_unit': 300.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.gst_5},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 2.0, 'price_unit': 100.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.gst_18},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 1.0, 'price_unit': 600.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.gst_18},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 5.0, 'price_unit': 300.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.gst_18},
         ]))
         expected_values = {
             'has_igst': False,
@@ -220,12 +233,18 @@ class TestL10nInHSNSummary(TestTaxCommon):
 
         # Change GST 5% taxes to IGST.
         document = self.populate_document(self.init_document([
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 2.0,    'price_unit': 100.0,    'product_uom_id': self.uom_unit,    'tax_ids': self.igst_5},
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 1.0,    'price_unit': 12000.0,  'product_uom_id': self.uom_dozen,   'tax_ids': self.igst_5},
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 5.0,    'price_unit': 300.0,    'product_uom_id': self.uom_unit,    'tax_ids': self.igst_5},
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 2.0,    'price_unit': 100.0,    'product_uom_id': self.uom_unit,    'tax_ids': self.gst_18},
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 1.0,    'price_unit': 600.0,    'product_uom_id': self.uom_unit,    'tax_ids': self.gst_18},
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 5.0,    'price_unit': 300.0,    'product_uom_id': self.uom_unit,    'tax_ids': self.gst_18},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 2.0, 'price_unit': 100.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.igst_5},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 1.0, 'price_unit': 12000.0,
+             'product_uom_id': self.uom_dozen, 'tax_ids': self.igst_5},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 5.0, 'price_unit': 300.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.igst_5},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 2.0, 'price_unit': 100.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.gst_18},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 1.0, 'price_unit': 600.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.gst_18},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 5.0, 'price_unit': 300.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.gst_18},
         ]))
         expected_values = {
             'has_igst': True,
@@ -273,12 +292,18 @@ class TestL10nInHSNSummary(TestTaxCommon):
 
         # Put back the UOM of the second line to unit.
         document = self.populate_document(self.init_document([
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 2.0,    'price_unit': 100.0,    'product_uom_id': self.uom_unit,    'tax_ids': self.igst_5},
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 1.0,    'price_unit': 600.0,    'product_uom_id': self.uom_unit,    'tax_ids': self.igst_5},
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 5.0,    'price_unit': 300.0,    'product_uom_id': self.uom_unit,    'tax_ids': self.igst_5},
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 2.0,    'price_unit': 100.0,    'product_uom_id': self.uom_unit,    'tax_ids': self.gst_18},
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 1.0,    'price_unit': 600.0,    'product_uom_id': self.uom_unit,    'tax_ids': self.gst_18},
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 5.0,    'price_unit': 300.0,    'product_uom_id': self.uom_unit,    'tax_ids': self.gst_18},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 2.0, 'price_unit': 100.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.igst_5},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 1.0, 'price_unit': 600.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.igst_5},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 5.0, 'price_unit': 300.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.igst_5},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 2.0, 'price_unit': 100.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.gst_18},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 1.0, 'price_unit': 600.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.gst_18},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 5.0, 'price_unit': 300.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.gst_18},
         ]))
         expected_values = {
             'has_igst': True,
@@ -315,12 +340,18 @@ class TestL10nInHSNSummary(TestTaxCommon):
 
         # Change GST 18% taxes to IGST.
         document = self.populate_document(self.init_document([
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 2.0,    'price_unit': 100.0,    'product_uom_id': self.uom_unit,    'tax_ids': self.igst_5},
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 1.0,    'price_unit': 600.0,    'product_uom_id': self.uom_unit,    'tax_ids': self.igst_5},
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 5.0,    'price_unit': 300.0,    'product_uom_id': self.uom_unit,    'tax_ids': self.igst_5},
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 2.0,    'price_unit': 100.0,    'product_uom_id': self.uom_unit,    'tax_ids': self.igst_18},
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 1.0,    'price_unit': 600.0,    'product_uom_id': self.uom_unit,    'tax_ids': self.igst_18},
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 5.0,    'price_unit': 300.0,    'product_uom_id': self.uom_unit,    'tax_ids': self.igst_18},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 2.0, 'price_unit': 100.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.igst_5},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 1.0, 'price_unit': 600.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.igst_5},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 5.0, 'price_unit': 300.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.igst_5},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 2.0, 'price_unit': 100.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.igst_18},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 1.0, 'price_unit': 600.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.igst_18},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 5.0, 'price_unit': 300.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.igst_18},
         ]))
         expected_values = {
             'has_igst': True,
@@ -373,7 +404,8 @@ class TestL10nInHSNSummary(TestTaxCommon):
         self.cess_5_plus_1591.sequence = 100
 
         document = self.populate_document(self.init_document([
-            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 1.0, 'price_unit': 15.80, 'product_uom_id': self.uom_unit, 'tax_ids': self.gst_18 + self.cess_5_plus_1591},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 1.0, 'price_unit': 15.80,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.gst_18 + self.cess_5_plus_1591},
         ]))
         expected_values = {
             'has_igst': False,
@@ -399,7 +431,8 @@ class TestL10nInHSNSummary(TestTaxCommon):
 
         # Change GST 18% taxes to IGST.
         document = self.populate_document(self.init_document([
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 1.0,    'price_unit': 15.80,    'product_uom_id': self.uom_unit,    'tax_ids': self.igst_18 + self.cess_5_plus_1591},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 1.0, 'price_unit': 15.80,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.igst_18 + self.cess_5_plus_1591},
         ]))
         expected_values = {
             'has_igst': True,
@@ -438,10 +471,14 @@ class TestL10nInHSNSummary(TestTaxCommon):
     def _test_l10n_in_hsn_summary_3(self):
         """ Test with mixed HSN codes. """
         document = self.populate_document(self.init_document([
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 1.0,    'price_unit': 100.0,    'product_uom_id': self.uom_unit,    'tax_ids': self.gst_18},
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 2.0,    'price_unit': 50.0,     'product_uom_id': self.uom_unit,    'tax_ids': self.gst_18},
-            {'l10n_in_hsn_code': self.test_hsn_code_2,  'quantity': 1.0,    'price_unit': 100.0,    'product_uom_id': self.uom_unit,    'tax_ids': self.gst_18},
-            {'l10n_in_hsn_code': self.test_hsn_code_2,  'quantity': 2.0,    'price_unit': 50.0,     'product_uom_id': self.uom_unit,    'tax_ids': self.gst_18},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 1.0, 'price_unit': 100.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.gst_18},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 2.0, 'price_unit': 50.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.gst_18},
+            {'l10n_in_hsn_code': self.test_hsn_code_2, 'quantity': 1.0, 'price_unit': 100.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.gst_18},
+            {'l10n_in_hsn_code': self.test_hsn_code_2, 'quantity': 2.0, 'price_unit': 50.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.gst_18},
         ]))
         expected_values = {
             'has_igst': False,
@@ -478,10 +515,14 @@ class TestL10nInHSNSummary(TestTaxCommon):
 
         # Change GST 18% taxes to IGST.
         document = self.populate_document(self.init_document([
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 1.0,    'price_unit': 100.0,    'product_uom_id': self.uom_unit,    'tax_ids': self.igst_18},
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 2.0,    'price_unit': 50.0,     'product_uom_id': self.uom_unit,    'tax_ids': self.igst_18},
-            {'l10n_in_hsn_code': self.test_hsn_code_2,  'quantity': 1.0,    'price_unit': 100.0,    'product_uom_id': self.uom_unit,    'tax_ids': self.igst_18},
-            {'l10n_in_hsn_code': self.test_hsn_code_2,  'quantity': 2.0,    'price_unit': 50.0,     'product_uom_id': self.uom_unit,    'tax_ids': self.igst_18},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 1.0, 'price_unit': 100.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.igst_18},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 2.0, 'price_unit': 50.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.igst_18},
+            {'l10n_in_hsn_code': self.test_hsn_code_2, 'quantity': 1.0, 'price_unit': 100.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.igst_18},
+            {'l10n_in_hsn_code': self.test_hsn_code_2, 'quantity': 2.0, 'price_unit': 50.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.igst_18},
         ]))
         expected_values = {
             'has_igst': True,
@@ -531,8 +572,10 @@ class TestL10nInHSNSummary(TestTaxCommon):
     def _test_l10n_in_hsn_summary_4(self):
         """ Zero rated GST or no taxes at all."""
         document = self.populate_document(self.init_document([
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 1.0,    'price_unit': 350.0,    'product_uom_id': self.uom_unit},
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 1.0,    'price_unit': 350.0,    'product_uom_id': self.uom_unit},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 1.0, 'price_unit': 350.0,
+             'product_uom_id': self.uom_unit},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 1.0, 'price_unit': 350.0,
+             'product_uom_id': self.uom_unit},
         ]))
         expected_values = {
             'has_igst': False,
@@ -558,8 +601,10 @@ class TestL10nInHSNSummary(TestTaxCommon):
 
         # No tax to IGST 0%/exempt.
         document = self.populate_document(self.init_document([
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 1.0,    'price_unit': 350.0,    'product_uom_id': self.uom_unit,    'tax_ids': self.igst_0},
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 1.0,    'price_unit': 350.0,    'product_uom_id': self.uom_unit,    'tax_ids': self.exempt_0},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 1.0, 'price_unit': 350.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.igst_0},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 1.0, 'price_unit': 350.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.exempt_0},
         ]))
         expected_values = {
             'has_igst': False,
@@ -585,8 +630,10 @@ class TestL10nInHSNSummary(TestTaxCommon):
 
         # Put one IGST 18% to get a value on the IGST column.
         document = self.populate_document(self.init_document([
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 1.0,    'price_unit': 350.0,    'product_uom_id': self.uom_unit,    'tax_ids': self.igst_18},
-            {'l10n_in_hsn_code': self.test_hsn_code_1,  'quantity': 1.0,    'price_unit': 350.0,    'product_uom_id': self.uom_unit,    'tax_ids': self.exempt_0},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 1.0, 'price_unit': 350.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.igst_18},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 1.0, 'price_unit': 350.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.exempt_0},
         ]))
         expected_values = {
             'has_igst': True,
@@ -636,7 +683,8 @@ class TestL10nInHSNSummary(TestTaxCommon):
     def _test_l10n_in_hsn_summary_5(self):
         """ Test with discount. """
         document = self.populate_document(self.init_document([
-            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 1.0, 'price_unit': 100.0, 'discount': 10.0, 'product_uom_id': self.uom_unit},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 1.0, 'price_unit': 100.0, 'discount': 10.0,
+             'product_uom_id': self.uom_unit},
         ]))
         expected_values = {
             'has_igst': False,
@@ -675,7 +723,8 @@ class TestL10nInHSNSummary(TestTaxCommon):
     def _test_l10n_in_hsn_summary_6(self):
         """ Test with Sale RC tax. """
         document = self.populate_document(self.init_document([
-            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 1.0, 'price_unit': 100.0, 'product_uom_id': self.uom_unit, 'tax_ids': self.igst_18_rc},
+            {'l10n_in_hsn_code': self.test_hsn_code_1, 'quantity': 1.0, 'price_unit': 100.0,
+             'product_uom_id': self.uom_unit, 'tax_ids': self.igst_18_rc},
         ]))
         expected_values = {
             'has_igst': True,

@@ -4,8 +4,8 @@
 import json
 import logging
 import time
-import requests
 
+import requests
 from werkzeug.urls import url_encode, url_join
 
 from odoo import _, api, fields, models, tools
@@ -21,7 +21,6 @@ _logger = logging.getLogger(__name__)
 
 
 class GoogleGmailMixin(models.AbstractModel):
-
     _name = 'google.gmail.mixin'
     _description = 'Google Gmail Mixin'
 
@@ -30,8 +29,11 @@ class GoogleGmailMixin(models.AbstractModel):
     google_gmail_authorization_code = fields.Char(string='Authorization Code', groups='base.group_system', copy=False)
     google_gmail_refresh_token = fields.Char(string='Refresh Token', groups='base.group_system', copy=False)
     google_gmail_access_token = fields.Char(string='Access Token', groups='base.group_system', copy=False)
-    google_gmail_access_token_expiration = fields.Integer(string='Access Token Expiration Timestamp', groups='base.group_system', copy=False)
-    google_gmail_uri = fields.Char(compute='_compute_gmail_uri', string='URI', help='The URL to generate the authorization code from Google', groups='base.group_system')
+    google_gmail_access_token_expiration = fields.Integer(string='Access Token Expiration Timestamp',
+                                                          groups='base.group_system', copy=False)
+    google_gmail_uri = fields.Char(compute='_compute_gmail_uri', string='URI',
+                                   help='The URL to generate the authorization code from Google',
+                                   groups='base.group_system')
 
     @api.depends('google_gmail_authorization_code')
     def _compute_gmail_uri(self):
@@ -151,8 +153,8 @@ class GoogleGmailMixin(models.AbstractModel):
         self.ensure_one()
         now_timestamp = int(time.time())
         if not self.google_gmail_access_token \
-           or not self.google_gmail_access_token_expiration \
-           or self.google_gmail_access_token_expiration - GMAIL_TOKEN_VALIDITY_THRESHOLD < now_timestamp:
+                or not self.google_gmail_access_token_expiration \
+                or self.google_gmail_access_token_expiration - GMAIL_TOKEN_VALIDITY_THRESHOLD < now_timestamp:
 
             access_token, expiration = self._fetch_gmail_access_token(self.google_gmail_refresh_token)
 

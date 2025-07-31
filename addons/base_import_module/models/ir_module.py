@@ -3,15 +3,16 @@ import ast
 import base64
 import json
 import logging
-import lxml
 import os
 import pathlib
-import requests
 import sys
 import zipfile
 from collections import defaultdict
 from io import BytesIO
 from os.path import join as opj
+
+import lxml
+import requests
 
 from odoo import api, fields, models, _
 from odoo.exceptions import AccessDenied, AccessError, UserError
@@ -175,7 +176,8 @@ class IrModule(models.Model):
                     if 'public' in IrAttachment._fields:
                         # Static data is public and not website-specific.
                         values['public'] = True
-                    attachment = IrAttachment.sudo().search([('url', '=', url_path), ('type', '=', 'binary'), ('res_model', '=', 'ir.ui.view')])
+                    attachment = IrAttachment.sudo().search(
+                        [('url', '=', url_path), ('type', '=', 'binary'), ('res_model', '=', 'ir.ui.view')])
                     if attachment:
                         attachment.write(values)
                     else:
@@ -201,7 +203,7 @@ class IrModule(models.Model):
         for bundle, commands in terp.get('assets', {}).items():
             for command in commands:
                 directive, target, path = IrAsset._process_command(command)
-                path = path if path.startswith('/') else '/' + path # Ensures a '/' at the start
+                path = path if path.startswith('/') else '/' + path  # Ensures a '/' at the start
                 assets_vals.append({
                     'name': f'{module}.{bundle}.{path}',
                     'directive': directive,
@@ -241,9 +243,9 @@ class IrModule(models.Model):
         )
 
         if ('knowledge.article' in self.env
-            and (article_record := self.env.ref(f"{module}.welcome_article", raise_if_not_found=False))
-            and article_record._name == 'knowledge.article'
-            and self.env.ref(f"{module}.welcome_article_body", raise_if_not_found=False)
+                and (article_record := self.env.ref(f"{module}.welcome_article", raise_if_not_found=False))
+                and article_record._name == 'knowledge.article'
+                and self.env.ref(f"{module}.welcome_article_body", raise_if_not_found=False)
         ):
             body = self.env['ir.qweb']._render(f"{module}.welcome_article_body", lang=self.env.user.lang)
             article_record.write({'body': body})
@@ -277,7 +279,7 @@ class IrModule(models.Model):
                     file
                     for file in z.filelist
                     if file.filename.count('/') == 1
-                    and file.filename.split('/')[1] in MANIFEST_NAMES
+                       and file.filename.split('/')[1] in MANIFEST_NAMES
                 ]
                 module_data_files = defaultdict(list)
                 for manifest in manifest_files:
@@ -345,13 +347,15 @@ class IrModule(models.Model):
     def web_search_read(self, domain, specification, offset=0, limit=None, order=None, count_limit=None):
         if _domain_asks_for_industries(domain):
             fields_name = list(specification.keys())
-            modules_list = self._get_modules_from_apps(fields_name, 'industries', False, domain, offset=offset, limit=limit)
+            modules_list = self._get_modules_from_apps(fields_name, 'industries', False, domain, offset=offset,
+                                                       limit=limit)
             return {
                 'length': len(modules_list),
                 'records': modules_list,
             }
         else:
-            return super().web_search_read(domain, specification, offset=offset, limit=limit, order=order, count_limit=count_limit)
+            return super().web_search_read(domain, specification, offset=offset, limit=limit, order=order,
+                                           count_limit=count_limit)
 
     def more_info(self):
         return {
@@ -417,11 +421,11 @@ class IrModule(models.Model):
     def _call_apps(self, payload):
         headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
         return requests.post(
-                f"{APPS_URL}/loempia/listdatamodules",
-                data=payload,
-                headers=headers,
-                timeout=5.0,
-            )
+            f"{APPS_URL}/loempia/listdatamodules",
+            data=payload,
+            headers=headers,
+            timeout=5.0,
+        )
 
     @api.model
     @ormcache()
@@ -469,7 +473,8 @@ class IrModule(models.Model):
         except requests.exceptions.HTTPError:
             raise UserError(_('The module %s cannot be downloaded') % module_name)
         except requests.exceptions.ConnectionError:
-            raise UserError(_('Connection to %(url)s failed, the module %(module)s cannot be downloaded.', url=APPS_URL, module=module_name))
+            raise UserError(_('Connection to %(url)s failed, the module %(module)s cannot be downloaded.', url=APPS_URL,
+                              module=module_name))
 
     @api.model
     def _get_missing_dependencies(self, zip_data):
@@ -504,7 +509,7 @@ class IrModule(models.Model):
                 file
                 for file in z.filelist
                 if file.filename.count('/') == 1
-                and file.filename.split('/')[1] in MANIFEST_NAMES
+                   and file.filename.split('/')[1] in MANIFEST_NAMES
             ]
             for manifest_file in manifest_files:
                 if manifest_file.file_size > MAX_FILE_SIZE:

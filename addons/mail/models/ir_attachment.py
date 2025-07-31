@@ -2,10 +2,11 @@
 
 import contextlib
 
+from odoo.addons.mail.tools.discuss import Store
+
 from odoo import _, models, SUPERUSER_ID
 from odoo.exceptions import AccessError, MissingError, UserError
 from odoo.tools import consteq
-from odoo.addons.mail.tools.discuss import Store
 
 
 class IrAttachment(models.Model):
@@ -25,12 +26,15 @@ class IrAttachment(models.Model):
                 try:
                     attachment.check('write')
                 except AccessError:
-                    if not access_token or not attachment_sudo.access_token or not consteq(attachment_sudo.access_token, access_token):
-                        message_sudo = self.env['mail.message'].sudo().search([('attachment_ids', 'in', attachment_sudo.ids)], limit=1)
+                    if not access_token or not attachment_sudo.access_token or not consteq(attachment_sudo.access_token,
+                                                                                           access_token):
+                        message_sudo = self.env['mail.message'].sudo().search(
+                            [('attachment_ids', 'in', attachment_sudo.ids)], limit=1)
                         if not message_sudo or not message_sudo.is_current_user_or_guest_author:
                             raise
             except (AccessError, MissingError):
-                raise UserError(_("The attachment %s does not exist or you do not have the rights to access it.", attachment.id))
+                raise UserError(
+                    _("The attachment %s does not exist or you do not have the rights to access it.", attachment.id))
 
     def _post_add_create(self, **kwargs):
         """ Overrides behaviour when the attachment is created through the controller

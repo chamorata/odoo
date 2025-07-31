@@ -23,7 +23,7 @@ class RecruitmentStage(models.Model):
         "Folded in Kanban",
         help="This stage is folded in the kanban view when there are no records in that stage to display.")
     hired_stage = fields.Boolean('Hired Stage',
-        help="If checked, this stage is used to determine the hire date of an applicant")
+                                 help="If checked, this stage is used to determine the hire date of an applicant")
     legend_blocked = fields.Char(
         'Red Kanban Label', default=lambda self: _('Blocked'), translate=True, required=True)
     legend_done = fields.Char(
@@ -34,7 +34,8 @@ class RecruitmentStage(models.Model):
 
     @api.model
     def default_get(self, fields):
-        if self._context and self._context.get('default_job_id') and not self._context.get('hr_recruitment_stage_mono', False):
+        if self._context and self._context.get('default_job_id') and not self._context.get('hr_recruitment_stage_mono',
+                                                                                           False):
             context = dict(self._context)
             context.pop('default_job_id')
             self = self.with_context(context)

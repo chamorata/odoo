@@ -1,9 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from markupsafe import Markup
-
 from odoo.addons.mail.tests.common import mail_new_test_user, MailCommon
 from odoo.addons.mail.tools.discuss import Store
+
 from odoo.exceptions import UserError
 from odoo.tests.common import tagged, users, HttpCase
 from odoo.tools import is_html_empty, mute_logger, formataddr
@@ -176,7 +176,8 @@ class TestMessageValues(MailCommon):
         self.assertEqual(
             msg.body,
             '<p>taratata <img src="/web/image/{attachment.id}?access_token={attachment.access_token}" alt="image0" width="2"> '
-            '<img src="/web/image/{attachment.id}?access_token={attachment.access_token}" alt="image0" width="2"></p>'.format(attachment=msg.attachment_ids[0])
+            '<img src="/web/image/{attachment.id}?access_token={attachment.access_token}" alt="image0" width="2"></p>'.format(
+                attachment=msg.attachment_ids[0])
         )
 
     @mute_logger('odoo.models.unlink', 'odoo.addons.mail.models.models')
@@ -219,7 +220,8 @@ class TestMessageValues(MailCommon):
                          'Reply-To: use company as name in format when no record name and still < 68 chars')
 
         # no record_name and company_name make it blow up: keep only email
-        self.env.user.company_id.write({'name': 'Super Long Name That People May Enter "Even with an internal quoting of stuff"'})
+        self.env.user.company_id.write(
+            {'name': 'Super Long Name That People May Enter "Even with an internal quoting of stuff"'})
         msg = self.env['mail.message'].create({
             'model': test_record._name,
             'res_id': test_record.id
@@ -247,14 +249,16 @@ class TestMessageValues(MailCommon):
             'reply_to': 'test.reply@example.com',
             'email_from': 'test.from@example.com',
         })
-        self.assertIn('-private', msg.message_id.split('@')[0], 'mail_message: message_id for a void message should be a "private" one')
+        self.assertIn('-private', msg.message_id.split('@')[0],
+                      'mail_message: message_id for a void message should be a "private" one')
         self.assertEqual(msg.reply_to, 'test.reply@example.com')
         self.assertEqual(msg.email_from, 'test.from@example.com')
 
     @mute_logger('odoo.models.unlink')
     def test_mail_message_values_fromto_no_document(self):
         msg = self.Message.create({})
-        self.assertIn('-private', msg.message_id.split('@')[0], 'mail_message: message_id for a void message should be a "private" one')
+        self.assertIn('-private', msg.message_id.split('@')[0],
+                      'mail_message: message_id for a void message should be a "private" one')
         reply_to_name = self.env.user.company_id.name
         reply_to_email = '%s@%s' % (self.alias_catchall, self.alias_domain)
         self.assertEqual(msg.reply_to, formataddr((reply_to_name, reply_to_email)))
@@ -265,7 +269,8 @@ class TestMessageValues(MailCommon):
         self.assertFalse(self.env.company.catchall_email)
 
         msg = self.Message.create({})
-        self.assertIn('-private', msg.message_id.split('@')[0], 'mail_message: message_id for a void message should be a "private" one')
+        self.assertIn('-private', msg.message_id.split('@')[0],
+                      'mail_message: message_id for a void message should be a "private" one')
         self.assertEqual(msg.reply_to, formataddr((self.user_employee.name, self.user_employee.email)))
         self.assertEqual(msg.email_from, formataddr((self.user_employee.name, self.user_employee.email)))
 
@@ -374,12 +379,14 @@ class TestMessageLinks(MailCommon, HttpCase):
         with self.subTest(deleted_message=deleted_message):
             res = self.url_open(f'/mail/message/{deleted_message.id}')
 
+
 @tagged("mail_message", "mail_store", "post_install", "-at_install")
 class TestMessageStore(MailCommon, HttpCase):
 
     def test_store_data_use_display_name(self):
         test_record = self.env['mail.test.simple.unnamed'].create({'description': 'Some description'})
-        user_invalid = mail_new_test_user(self.env, login='invalid', groups='base.group_portal', name='Invalid User', email='invalid email', notification_type='email')
+        user_invalid = mail_new_test_user(self.env, login='invalid', groups='base.group_portal', name='Invalid User',
+                                          email='invalid email', notification_type='email')
         test_record.message_subscribe(partner_ids=user_invalid.partner_id.ids)
         self.authenticate(self.user_employee.login, self.user_employee.password)
         msg = test_record.message_post(body='Some body', author_id=self.partner_employee.id)

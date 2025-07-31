@@ -2,11 +2,12 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import datetime
+
 from freezegun import freeze_time
 
 from odoo import tests
-from odoo.tests import Form, new_test_user, TransactionCase
 from odoo.exceptions import ValidationError
+from odoo.tests import Form, new_test_user, TransactionCase
 
 
 @tests.tagged('access_rights', 'post_install', '-at_install')
@@ -24,8 +25,11 @@ class TestHrLeaveMandatoryDays(TransactionCase):
             'resource_calendar_id': cls.default_calendar.id,
         })
 
-        cls.employee_user = new_test_user(cls.env, login='user', groups='base.group_user', company_ids=[(6, 0, cls.company.ids)], company_id=cls.company.id)
-        cls.manager_user = new_test_user(cls.env, login='manager', groups='base.group_user,hr_holidays.group_hr_holidays_manager', company_ids=[(6, 0, cls.company.ids)], company_id=cls.company.id)
+        cls.employee_user = new_test_user(cls.env, login='user', groups='base.group_user',
+                                          company_ids=[(6, 0, cls.company.ids)], company_id=cls.company.id)
+        cls.manager_user = new_test_user(cls.env, login='manager',
+                                         groups='base.group_user,hr_holidays.group_hr_holidays_manager',
+                                         company_ids=[(6, 0, cls.company.ids)], company_id=cls.company.id)
 
         cls.employee_emp = cls.env['hr.employee'].create({
             'name': 'Toto Employee',
@@ -107,14 +111,17 @@ class TestHrLeaveMandatoryDays(TransactionCase):
         mandatory_days = self.employee_emp.get_mandatory_days('2021-11-01', '2021-11-30')
 
         # Mandatory Days spanning multiple days should be split in single days
-        expected_data = {'2021-11-02': 1, '2021-11-08': 2, '2021-11-09': 2, '2021-11-10': 2, '2021-11-11': 2, '2021-11-12': 2}
+        expected_data = {'2021-11-02': 1, '2021-11-08': 2, '2021-11-09': 2, '2021-11-10': 2, '2021-11-11': 2,
+                         '2021-11-12': 2}
 
         self.assertEqual(len(mandatory_days), len(expected_data))
         for day, color in expected_data.items():
             self.assertTrue(day in mandatory_days)
             self.assertEqual(color, mandatory_days[day])
 
-        with self.assertRaises(ValidationError), Form(self.env['hr.leave'].with_user(self.employee_user.id).with_context(default_employee_id=self.employee_emp.id)) as leave_form:
+        with self.assertRaises(ValidationError), Form(
+                self.env['hr.leave'].with_user(self.employee_user.id).with_context(
+                        default_employee_id=self.employee_emp.id)) as leave_form:
             leave_form.holiday_status_id = self.leave_type
             leave_form.request_date_from = datetime(2021, 11, 1)
             leave_form.request_date_to = datetime(2021, 11, 1)

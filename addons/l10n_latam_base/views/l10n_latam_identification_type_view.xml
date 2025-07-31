@@ -23,8 +23,10 @@
                 <field name="name"/>
                 <field name="description"/>
                 <field name="country_id"/>
-                <filter name="active" string="Active" domain="[('active','=',True)]" help="Show active identification types"/>
-                <filter name="inactive" string="Archived" domain="[('active','=',False)]" help="Show archived identification types"/>
+                <filter name="active" string="Active" domain="[('active','=',True)]"
+                        help="Show active identification types"/>
+                <filter name="inactive" string="Archived" domain="[('active','=',False)]"
+                        help="Show archived identification types"/>
             </search>
         </field>
     </record>
@@ -39,7 +41,7 @@
     </record>
 
     <menuitem action="action_l10n_latam_identification_type"
-            id="menu_l10n_latam_identification_type"
-            parent="contacts.res_partner_menu_config"/>
+              id="menu_l10n_latam_identification_type"
+              parent="contacts.res_partner_menu_config"/>
 
 </odoo>

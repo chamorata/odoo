@@ -1,8 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.exceptions import ValidationError
-from odoo.tests.common import TransactionCase
 from odoo.tests import Form
+from odoo.tests.common import TransactionCase
 
 
 class TestMrpAnalyticAccount(TransactionCase):
@@ -13,8 +13,8 @@ class TestMrpAnalyticAccount(TransactionCase):
         # 'workorder_ids' visible in the view of 'mrp.production'. The subviews
         #  of `workorder_ids` must be present in many tests to create records.
         cls.env.user.groups_id += (
-            cls.env.ref('analytic.group_analytic_accounting')
-            + cls.env.ref('mrp.group_mrp_routings')
+                cls.env.ref('analytic.group_analytic_accounting')
+                + cls.env.ref('mrp.group_mrp_routings')
         )
         cls.analytic_plan = cls.env['account.analytic.plan'].create({
             'name': 'Plan',
@@ -132,7 +132,8 @@ class TestAnalyticAccount(TestMrpAnalyticAccount):
         self.env.user.groups_id += self.env.ref('mrp.group_mrp_routings')
         # set wc analytic account to be different from the one on the bom
         analytic_plan = self.env['account.analytic.plan'].create({'name': 'Plan Test'})
-        wc_analytic_account = self.env['account.analytic.account'].create({'name': 'wc_analytic_account', 'plan_id': analytic_plan.id})
+        wc_analytic_account = self.env['account.analytic.account'].create(
+            {'name': 'wc_analytic_account', 'plan_id': analytic_plan.id})
         self.workcenter.analytic_distribution = {str(wc_analytic_account.id): 100.0}
 
         # create a mo
@@ -151,18 +152,22 @@ class TestAnalyticAccount(TestMrpAnalyticAccount):
             line_edit.duration = 60.0
         mo_form.save()
         self.assertEqual(mo.workorder_ids.mo_analytic_account_line_ids.amount, -10.0)
-        self.assertEqual(mo.workorder_ids.mo_analytic_account_line_ids[self.analytic_plan._column_name()], self.analytic_account)
+        self.assertEqual(mo.workorder_ids.mo_analytic_account_line_ids[self.analytic_plan._column_name()],
+                         self.analytic_account)
         self.assertEqual(mo.workorder_ids.wc_analytic_account_line_ids.amount, -10.0)
-        self.assertEqual(mo.workorder_ids.wc_analytic_account_line_ids[analytic_plan._column_name()], wc_analytic_account)
+        self.assertEqual(mo.workorder_ids.wc_analytic_account_line_ids[analytic_plan._column_name()],
+                         wc_analytic_account)
 
         # change duration to 120
         with mo_form.workorder_ids.edit(0) as line_edit:
             line_edit.duration = 120.0
         mo_form.save()
         self.assertEqual(mo.workorder_ids.mo_analytic_account_line_ids.amount, -20.0)
-        self.assertEqual(mo.workorder_ids.mo_analytic_account_line_ids[self.analytic_plan._column_name()], self.analytic_account)
+        self.assertEqual(mo.workorder_ids.mo_analytic_account_line_ids[self.analytic_plan._column_name()],
+                         self.analytic_account)
         self.assertEqual(mo.workorder_ids.wc_analytic_account_line_ids.amount, -20.0)
-        self.assertEqual(mo.workorder_ids.wc_analytic_account_line_ids[analytic_plan._column_name()], wc_analytic_account)
+        self.assertEqual(mo.workorder_ids.wc_analytic_account_line_ids[analytic_plan._column_name()],
+                         wc_analytic_account)
 
         # mark as done
         mo_form.qty_producing = 10.0
@@ -170,9 +175,11 @@ class TestAnalyticAccount(TestMrpAnalyticAccount):
         mo.button_mark_done()
         self.assertEqual(mo.state, 'done')
         self.assertEqual(mo.workorder_ids.mo_analytic_account_line_ids.amount, -20.0)
-        self.assertEqual(mo.workorder_ids.mo_analytic_account_line_ids[self.analytic_plan._column_name()], self.analytic_account)
+        self.assertEqual(mo.workorder_ids.mo_analytic_account_line_ids[self.analytic_plan._column_name()],
+                         self.analytic_account)
         self.assertEqual(mo.workorder_ids.wc_analytic_account_line_ids.amount, -20.0)
-        self.assertEqual(mo.workorder_ids.wc_analytic_account_line_ids[analytic_plan._column_name()], wc_analytic_account)
+        self.assertEqual(mo.workorder_ids.wc_analytic_account_line_ids[analytic_plan._column_name()],
+                         wc_analytic_account)
 
     def test_changing_mo_analytic_account(self):
         """ Check if the MO account analytic lines are correctly updated
@@ -197,7 +204,8 @@ class TestAnalyticAccount(TestMrpAnalyticAccount):
         with mo_form.workorder_ids.edit(0) as line_edit:
             line_edit.duration = 60.0
         mo_form.save()
-        self.assertEqual(mo.workorder_ids.mo_analytic_account_line_ids[self.analytic_plan._column_name()], self.analytic_account)
+        self.assertEqual(mo.workorder_ids.mo_analytic_account_line_ids[self.analytic_plan._column_name()],
+                         self.analytic_account)
 
         # Mark as done
         mo.button_mark_done()
@@ -206,7 +214,8 @@ class TestAnalyticAccount(TestMrpAnalyticAccount):
 
         # Create a new analytic account
         analytic_plan = self.env['account.analytic.plan'].create({'name': 'Plan Test'})
-        new_analytic_account = self.env['account.analytic.account'].create({'name': 'test_analytic_account_2', 'plan_id': analytic_plan.id})
+        new_analytic_account = self.env['account.analytic.account'].create(
+            {'name': 'test_analytic_account_2', 'plan_id': analytic_plan.id})
         new_project = self.env['project.project'].create({
             'name': 'New Project',
             f'{analytic_plan._column_name()}': new_analytic_account.id,
@@ -216,7 +225,8 @@ class TestAnalyticAccount(TestMrpAnalyticAccount):
         # Change the MO analytic account by changing its project_id
         mo.project_id = new_project
         self.assertEqual(mo.move_raw_ids.analytic_account_line_ids[analytic_plan._column_name()], new_analytic_account)
-        self.assertEqual(mo.workorder_ids.mo_analytic_account_line_ids[analytic_plan._column_name()], new_analytic_account)
+        self.assertEqual(mo.workorder_ids.mo_analytic_account_line_ids[analytic_plan._column_name()],
+                         new_analytic_account)
 
         # Get the MO analytic account lines
         mo_analytic_account_raw_lines = mo.move_raw_ids.analytic_account_line_ids
@@ -286,15 +296,15 @@ class TestAnalyticAccount(TestMrpAnalyticAccount):
             'is_storable': True,
         })
         bom = self.env['mrp.bom'].create({
-                'product_tmpl_id': product.product_tmpl_id.id,
+            'product_tmpl_id': product.product_tmpl_id.id,
+            'product_qty': 1,
+            'product_uom_id': product.uom_id.id,
+            'type': 'normal',
+            'bom_line_ids': [(0, 0, {
+                'product_id': component.id,
                 'product_qty': 1,
-                'product_uom_id': product.uom_id.id,
-                'type': 'normal',
-                'bom_line_ids': [(0, 0, {
-                    'product_id': component.id,
-                    'product_qty': 1,
-                    'product_uom_id': component.uom_id.id,
-                })],
+                'product_uom_id': component.uom_id.id,
+            })],
         })
         analytic_account = self.env['account.analytic.account'].create({
             'name': "Test Account",
@@ -441,7 +451,8 @@ class TestAnalyticAccount(TestMrpAnalyticAccount):
         """
         self.env.user.groups_id += self.env.ref('mrp.group_mrp_routings')
         self.applicability.business_domain = 'manufacturing_order'
-        self.project[f'{self.analytic_plan._column_name()}'] = False  # Remove the AA from the mandatory plan of the project
+        self.project[
+            f'{self.analytic_plan._column_name()}'] = False  # Remove the AA from the mandatory plan of the project
         new_analytic_plan = self.env['account.analytic.plan'].create({
             'name': 'New Plan',
         })
@@ -449,7 +460,8 @@ class TestAnalyticAccount(TestMrpAnalyticAccount):
             'name': 'New Analytic Account',
             'plan_id': new_analytic_plan.id,
         })
-        self.project[f'{new_analytic_plan._column_name()}'] = new_analytic_account  # Create a new AA and link it to another plan of the project
+        self.project[
+            f'{new_analytic_plan._column_name()}'] = new_analytic_account  # Create a new AA and link it to another plan of the project
 
         mo_form = Form(self.env['mrp.production'])
         mo_form.product_id = self.product

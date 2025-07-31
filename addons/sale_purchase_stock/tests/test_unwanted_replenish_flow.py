@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
+
 from odoo import Command
 from odoo.tests import common, Form, tagged
+
 
 @tagged('post_install', '-at_install')
 class TestWarnUnwantedReplenish(common.TransactionCase):
@@ -16,17 +18,17 @@ class TestWarnUnwantedReplenish(common.TransactionCase):
         cls.customer = cls.env['res.partner'].create(dict(name='Customer'))
 
         cls.supplier_A = cls.env['product.supplierinfo'].create({
-            'partner_id' : cls.vendor.id,
-            'min_qty' : 0.0,
-            'price' : 10.0,
-            'delay' : 0
+            'partner_id': cls.vendor.id,
+            'min_qty': 0.0,
+            'price': 10.0,
+            'delay': 0
         })
 
         cls.supplier_B = cls.env['product.supplierinfo'].create({
-            'partner_id' : cls.vendor.id,
-            'min_qty' : 0.0,
-            'price' : 12.0,
-            'delay' : 0
+            'partner_id': cls.vendor.id,
+            'min_qty': 0.0,
+            'price': 12.0,
+            'delay': 0
         })
 
         # Create a "A" and a "B" Product :
@@ -44,7 +46,7 @@ class TestWarnUnwantedReplenish(common.TransactionCase):
             'list_price': 10.0,
             'seller_ids': [Command.link(cls.supplier_A.id)],
             'route_ids': [Command.link(cls.buy_route.id)],
-            'sale_delay' : 0,
+            'sale_delay': 0,
         })
 
         cls.product_B = cls.env['product.product'].create({
@@ -59,7 +61,6 @@ class TestWarnUnwantedReplenish(common.TransactionCase):
             'route_ids': [Command.link(cls.buy_route.id)],
             'sale_delay': 0,
         })
-
 
         orderpoint_form = Form(cls.env['stock.warehouse.orderpoint'])
         orderpoint_form.product_id = cls.product_A
@@ -130,6 +131,6 @@ class TestWarnUnwantedReplenish(common.TransactionCase):
         """
         self.assertTrue(self.orderpoint_A.unwanted_replenish, 'Orderpoint A not set to unwanted_replenish')
         self.assertFalse(self.orderpoint_B.unwanted_replenish, 'Orderpoint B is set to unwanted_replenish')
-        #Update Orderpoint A
+        # Update Orderpoint A
         self.orderpoint_A.visibility_days = 10
         self.assertFalse(self.orderpoint_A.unwanted_replenish, 'Orderpoint A shall not be set to unwanted_replenish')

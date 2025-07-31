@@ -1,22 +1,20 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from base64 import b64decode
-from datetime import datetime
 import json
 import logging
 import os
-import subprocess
-from socket import gethostname
 import time
-from werkzeug.exceptions import InternalServerError
+from datetime import datetime
+from socket import gethostname
 from zlib import adler32
-
-from odoo import http, tools
 
 from odoo.addons.hw_drivers.event_manager import event_manager
 from odoo.addons.hw_drivers.main import iot_devices, manager
 from odoo.addons.hw_drivers.tools import helpers
+from werkzeug.exceptions import InternalServerError
+
+from odoo import http, tools
 
 _logger = logging.getLogger(__name__)
 
@@ -93,13 +91,13 @@ class DriverController(http.Controller):
         # intentionally don't use Stream.from_path as the path used is not in the addons path
         # for instance, for the iot-box it will be in /var/log/odoo
         return http.Stream(
-                type='path',
-                path=log_path,
-                download_name=log_file_name,
-                etag=f'{int(stat.st_mtime)}-{stat.st_size}-{check}',
-                last_modified=stat.st_mtime,
-                size=stat.st_size,
-                mimetype='text/plain',
-            ).get_response(
+            type='path',
+            path=log_path,
+            download_name=log_file_name,
+            etag=f'{int(stat.st_mtime)}-{stat.st_size}-{check}',
+            last_modified=stat.st_mtime,
+            size=stat.st_size,
+            mimetype='text/plain',
+        ).get_response(
             mimetype='text/plain', as_attachment=True
         )

@@ -1,5 +1,6 @@
-from odoo import Command
 from odoo.addons.account.tests.common import TestAccountMergeCommon
+
+from odoo import Command
 from odoo.tests import tagged
 
 
@@ -147,14 +148,16 @@ class TestAccountMergeWizard(TestAccountMergeCommon):
                     'name': 'My First Account',
                     'code': '100234',
                     'tax_ids': [self.company_data['default_tax_sale'].id, self.company_data_2['default_tax_sale'].id],
-                    'tag_ids': [self.env.ref('account.account_tag_operating').id, self.env.ref('account.account_tag_investing').id],
+                    'tag_ids': [self.env.ref('account.account_tag_operating').id,
+                                self.env.ref('account.account_tag_investing').id],
                 },
                 {
                     'company_ids': [self.company_1.id, self.company_2.id],
                     'name': 'My Second Account',
                     'code': '100235',
                     'tax_ids': [self.company_data['default_tax_sale'].id, self.company_data_2['default_tax_sale'].id],
-                    'tag_ids': [self.env.ref('account.account_tag_operating').id, self.env.ref('account.account_tag_investing').id],
+                    'tag_ids': [self.env.ref('account.account_tag_operating').id,
+                                self.env.ref('account.account_tag_investing').id],
                 }
             ]
         )
@@ -173,14 +176,17 @@ class TestAccountMergeWizard(TestAccountMergeCommon):
         for account, referencing_records_for_account in referencing_records.items():
             expected_account = merged_account_by_account[account]
             for referencing_record, fname in referencing_records_for_account.items():
-                expected_field_value = expected_account.ids if referencing_record._fields[fname].type == 'many2many' else expected_account.id
+                expected_field_value = expected_account.ids if referencing_record._fields[
+                                                                   fname].type == 'many2many' else expected_account.id
                 self.assertRecordValues(referencing_record, [{fname: expected_field_value}])
 
         # 7. Check that the xmlids are preserved
         self.assertEqual(self.env['account.chart.template'].ref('test_account_1'), self.accounts[0])
         self.assertEqual(self.env['account.chart.template'].ref('test_account_2'), self.accounts[1])
-        self.assertEqual(self.env['account.chart.template'].with_company(self.company_2).ref('test_account_3'), self.accounts[0])
-        self.assertEqual(self.env['account.chart.template'].with_company(self.company_2).ref('test_account_4'), self.accounts[1])
+        self.assertEqual(self.env['account.chart.template'].with_company(self.company_2).ref('test_account_3'),
+                         self.accounts[0])
+        self.assertEqual(self.env['account.chart.template'].with_company(self.company_2).ref('test_account_4'),
+                         self.accounts[1])
 
         # 8. Check that the name translations are merged correctly
         self.assertRecordValues(self.accounts[0].with_context({'lang': 'fr_FR'}), [{'name': "Mon premier compte"}])

@@ -4,10 +4,10 @@ import base64
 import json
 import logging
 
+from odoo.addons.sale_pdf_quote_builder import utils
+
 from odoo import _
 from odoo.http import Controller, request, route
-
-from odoo.addons.sale_pdf_quote_builder import utils
 
 logger = logging.getLogger(__name__)
 

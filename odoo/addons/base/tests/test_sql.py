@@ -161,6 +161,7 @@ class TestSQL(BaseCase):
             """SQL('SELECT "id" FROM "table" WHERE "table"."foo"=%s AND "table"."bar"=%s', 1, 2)"""
         )
 
+
 class TestSqlTools(TransactionCase):
 
     def test_add_constraint(self):

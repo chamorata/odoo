@@ -63,14 +63,16 @@ class PortalShare(models.TransientModel):
         if partners is None:
             partners = self.partner_ids
         for partner in partners:
-            share_link = self.resource_ref.get_base_url() + self.resource_ref._get_share_url(redirect=True, pid=partner.id)
+            share_link = self.resource_ref.get_base_url() + self.resource_ref._get_share_url(redirect=True,
+                                                                                             pid=partner.id)
             saved_lang = self.env.lang
             self = self.with_context(lang=partner.lang)
             self.resource_ref.message_post_with_source(
                 'portal.portal_share_template',
                 render_values={'partner': partner, 'note': self.note, 'record': self.resource_ref,
-                        'share_link': share_link,
-                        'model_description': self.env['ir.model']._get(self.resource_ref._name).display_name.lower()},
+                               'share_link': share_link,
+                               'model_description': self.env['ir.model']._get(
+                                   self.resource_ref._name).display_name.lower()},
                 subject=_("Invitation to access %s", self.resource_ref.display_name),
                 subtype_xmlid='mail.mt_note',
                 email_layout_xmlid='mail.mail_notification_light',
@@ -83,14 +85,17 @@ class PortalShare(models.TransientModel):
         for partner in partners:
             #  prepare partner for signup and send singup url with redirect url
             partner.signup_get_auth_param()
-            share_link = partner._get_signup_url_for_action(action='/mail/view', res_id=self.res_id, model=self.res_model)[partner.id]
+            share_link = \
+            partner._get_signup_url_for_action(action='/mail/view', res_id=self.res_id, model=self.res_model)[
+                partner.id]
             saved_lang = self.env.lang
             self = self.with_context(lang=partner.lang)
             self.resource_ref.message_post_with_source(
                 'portal.portal_share_template',
                 render_values={'partner': partner, 'note': self.note, 'record': self.resource_ref,
-                        'share_link': share_link,
-                        'model_description': self.env['ir.model']._get(self.resource_ref._name).display_name.lower()},
+                               'share_link': share_link,
+                               'model_description': self.env['ir.model']._get(
+                                   self.resource_ref._name).display_name.lower()},
                 subject=_("Invitation to access %s", self.resource_ref.display_name),
                 subtype_xmlid='mail.mt_note',
                 email_layout_xmlid='mail.mail_notification_light',

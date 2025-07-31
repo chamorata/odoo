@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from datetime import datetime
-from markupsafe import Markup
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
-from odoo.osv import expression
 
 
 class ApplicantGetRefuseReason(models.TransientModel):
@@ -16,14 +14,15 @@ class ApplicantGetRefuseReason(models.TransientModel):
     applicant_ids = fields.Many2many('hr.applicant')
     send_mail = fields.Boolean("Send Email", compute='_compute_send_mail', store=True, readonly=False)
     template_id = fields.Many2one('mail.template', string='Email Template',
-        compute='_compute_send_mail', store=True, readonly=False,
-        domain="[('model', '=', 'hr.applicant')]")
+                                  compute='_compute_send_mail', store=True, readonly=False,
+                                  domain="[('model', '=', 'hr.applicant')]")
     applicant_without_email = fields.Text(compute='_compute_applicant_without_email',
-        string='Applicant(s) not having email')
+                                          string='Applicant(s) not having email')
     applicant_emails = fields.Text(compute='_compute_applicant_emails')
     duplicates = fields.Boolean('Duplicates')
     duplicates_count = fields.Integer('Duplicates Count', compute='_compute_duplicates_count')
-    single_applicant_email = fields.Char(compute='_compute_single_applicant_email', inverse="_inverse_single_applicant_email")
+    single_applicant_email = fields.Char(compute='_compute_single_applicant_email',
+                                         inverse="_inverse_single_applicant_email")
 
     @api.depends('refuse_reason_id')
     def _compute_send_mail(self):
@@ -49,8 +48,8 @@ class ApplicantGetRefuseReason(models.TransientModel):
         for wizard in self:
             if len(wizard.applicant_ids) == 1:
                 wizard.single_applicant_email = (
-                    wizard.applicant_ids.email_from
-                    or wizard.applicant_ids.partner_id.email
+                        wizard.applicant_ids.email_from
+                        or wizard.applicant_ids.partner_id.email
                 )
 
     def _inverse_single_applicant_email(self):
@@ -61,7 +60,8 @@ class ApplicantGetRefuseReason(models.TransientModel):
     @api.depends('applicant_ids.email_from')
     def _compute_applicant_emails(self):
         for wizard in self:
-            wizard.applicant_emails = ', '.join(a.email_from or a.partner_id.email for a in wizard.applicant_ids if a.email_from or a.partner_id.email)
+            wizard.applicant_emails = ', '.join(
+                a.email_from or a.partner_id.email for a in wizard.applicant_ids if a.email_from or a.partner_id.email)
 
     def action_refuse_reason_apply(self):
         if self.send_mail:
@@ -82,12 +82,13 @@ class ApplicantGetRefuseReason(models.TransientModel):
                 "Refused automatically because this application has been identified as a duplicate of %(link)s",
                 link=url)
             duplicates._message_log_batch(bodies={duplicate.id: message for duplicate in duplicates})
-        refused_applications.write({'refuse_reason_id': self.refuse_reason_id.id, 'active': False, 'refuse_date': datetime.now()})
+        refused_applications.write(
+            {'refuse_reason_id': self.refuse_reason_id.id, 'active': False, 'refuse_date': datetime.now()})
 
         if self.send_mail:
             # TDE note: keeping 16.0 behavior, clean me please
             message_values = {
-                'email_layout_xmlid' : 'hr_recruitment.mail_notification_light_without_background',
+                'email_layout_xmlid': 'hr_recruitment.mail_notification_light_without_background',
             }
             if len(self.applicant_ids) > 1:
                 self.applicant_ids.with_context(active_test=True).message_mail_with_source(

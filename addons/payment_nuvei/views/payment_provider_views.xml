@@ -9,20 +9,20 @@
             <group name="provider_credentials" position='inside'>
                 <group invisible="code != 'nuvei'">
                     <field
-                        name="nuvei_merchant_identifier"
-                        string="Merchant Identifier"
-                        required="code == 'nuvei' and state != 'disabled'"
+                            name="nuvei_merchant_identifier"
+                            string="Merchant Identifier"
+                            required="code == 'nuvei' and state != 'disabled'"
                     />
                     <field
-                        name="nuvei_site_identifier"
-                        string="Site Identifier"
-                        required="code == 'nuvei' and state != 'disabled'"
+                            name="nuvei_site_identifier"
+                            string="Site Identifier"
+                            required="code == 'nuvei' and state != 'disabled'"
                     />
                     <field
-                        name="nuvei_secret_key"
-                        string="Secret Key"
-                        required="code == 'nuvei' and state != 'disabled'"
-                        password="True"
+                            name="nuvei_secret_key"
+                            string="Secret Key"
+                            required="code == 'nuvei' and state != 'disabled'"
+                            password="True"
                     />
                 </group>
             </group>

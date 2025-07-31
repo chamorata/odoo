@@ -37,12 +37,12 @@ class StockGenerateCommon(TransactionCase):
     def get_new_move(self, nbre_of_lines=0, product=False):
         product = product or self.product_serial
         move_lines_vals = [Command.create({
-                'product_id': product.id,
-                'product_uom_id': self.uom_unit.id,
-                'quantity': 1,
-                'location_id': self.location.id,
-                'location_dest_id': self.location_dest.id,
-            }) for i in range(nbre_of_lines)]
+            'product_id': product.id,
+            'product_uom_id': self.uom_unit.id,
+            'quantity': 1,
+            'location_id': self.location.id,
+            'location_dest_id': self.location_dest.id,
+        }) for i in range(nbre_of_lines)]
         return self.env['stock.move'].create({
             'name': 'Move Test',
             'product_id': product.id,

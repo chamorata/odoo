@@ -2,9 +2,10 @@
 
 from unittest.mock import patch
 
+from odoo.addons.account_payment.tests.common import AccountPaymentCommon
+
 from odoo import Command
 from odoo.exceptions import UserError, ValidationError
-from odoo.addons.account_payment.tests.common import AccountPaymentCommon
 from odoo.tests import tagged
 
 
@@ -112,7 +113,7 @@ class TestAccountPayment(AccountPaymentCommon):
         tx = self._create_transaction('redirect', state='done')
         tx._post_process()  # Create the payment
         for reference_index, operation in enumerate(
-            ('online_redirect', 'online_direct', 'online_token', 'validation', 'refund')
+                ('online_redirect', 'online_direct', 'online_token', 'validation', 'refund')
         ):
             self._create_transaction(
                 'dummy',
@@ -144,8 +145,8 @@ class TestAccountPayment(AccountPaymentCommon):
         payment_with_token.payment_token_id = payment_token.id
 
         with patch(
-            'odoo.addons.payment.models.payment_transaction.PaymentTransaction'
-            '._send_payment_request'
+                'odoo.addons.payment.models.payment_transaction.PaymentTransaction'
+                '._send_payment_request'
         ) as patched:
             payment_without_token.action_post()
             patched.assert_not_called()
@@ -197,6 +198,7 @@ class TestAccountPayment(AccountPaymentCommon):
 
     def test_provider_journal_assignation(self):
         """ Test the computation of the 'journal_id' field and so, the link with the accounting side. """
+
         def get_payment_method_line(provider):
             return self.env['account.payment.method.line'].search([('payment_provider_id', '=', provider.id)])
 
@@ -235,7 +237,8 @@ class TestAccountPayment(AccountPaymentCommon):
             # You can't have twice the same acquirer on the same journal.
             copy_provider_pml = get_payment_method_line(copy_provider)
             with self.assertRaises(ValidationError):
-                journal.inbound_payment_method_line_ids = [Command.update(copy_provider_pml.id, {'payment_provider_id': provider.id})]
+                journal.inbound_payment_method_line_ids = [
+                    Command.update(copy_provider_pml.id, {'payment_provider_id': provider.id})]
 
     def test_generate_payment_link_with_no_invoice_line(self):
         invoice = self.invoice
@@ -281,7 +284,8 @@ class TestAccountPayment(AccountPaymentCommon):
             ],
         })
 
-        self.partner.property_account_receivable_id = self.env['account.account'].search([('name', '=', 'Account Payable')], limit=1)
+        self.partner.property_account_receivable_id = self.env['account.account'].search(
+            [('name', '=', 'Account Payable')], limit=1)
         payment = self._create_transaction(
             reference='payment_3',
             flow='direct',

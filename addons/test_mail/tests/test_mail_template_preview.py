@@ -2,7 +2,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.test_mail.tests.test_mail_template import TestMailTemplateCommon
+
 from odoo.tests import Form, tagged, users
+
 
 @tagged('mail_template', 'multi_lang')
 class TestMailTemplateTools(TestMailTemplateCommon):
@@ -37,11 +39,11 @@ class TestMailTemplateTools(TestMailTemplateCommon):
         """Check behaviour with templates that use reports."""
         test_record = self.env['mail.test.lang'].browse(self.test_record.ids)
         test_report = self.env['ir.actions.report'].sudo().create({
-                'name': 'Test Report',
-                'model': test_record._name,
-                'print_report_name': "'TestReport for %s' % object.name",
-                'report_type': 'qweb-pdf',
-                'report_name': 'test_mail.mail_test_ticket_test_template',
+            'name': 'Test Report',
+            'model': test_record._name,
+            'print_report_name': "'TestReport for %s' % object.name",
+            'report_type': 'qweb-pdf',
+            'report_name': 'test_mail.mail_test_ticket_test_template',
         })
         self.test_template.write({
             'report_template_ids': test_report.ids,
@@ -49,8 +51,8 @@ class TestMailTemplateTools(TestMailTemplateCommon):
         })
 
         preview = self.env['mail.template.preview'].with_context({
-            'force_report_rendering': False, # this also invalidates the test records...
-            }).create({
+            'force_report_rendering': False,  # this also invalidates the test records...
+        }).create({
             'mail_template_id': self.test_template.id,
             'resource_ref': test_record,
         })

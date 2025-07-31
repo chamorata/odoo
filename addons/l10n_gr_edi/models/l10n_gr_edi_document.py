@@ -1,5 +1,4 @@
 import requests
-
 from lxml import etree
 from requests import RequestException
 
@@ -30,7 +29,7 @@ def _make_mydata_request(company, endpoint, xml_content) -> dict[str, str] | dic
              }
     """
     url = f"https://mydataapidev.aade.gr/{endpoint}" if company.l10n_gr_edi_test_env else \
-          f"https://mydatapi.aade.gr/myDATA/{endpoint}"
+        f"https://mydatapi.aade.gr/myDATA/{endpoint}"
 
     try:
         response = requests.post(

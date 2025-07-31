@@ -5,6 +5,7 @@ from odoo.exceptions import ValidationError
 from odoo.fields import Command
 from odoo.tests import common, Form
 
+
 @common.tagged('post_install', '-at_install')
 class TestLoyaltyDeliveryCost(common.TransactionCase):
 
@@ -158,7 +159,7 @@ class TestLoyaltyDeliveryCost(common.TransactionCase):
 
         delivery_wizard = Form(self.env['choose.delivery.carrier'].with_context({
             'default_order_id': order.id, 'default_carrier_id': self.delivery_carrier.id,
-            }))
+        }))
         delivery_wizard.save().button_confirm()
 
         self.assertEqual(

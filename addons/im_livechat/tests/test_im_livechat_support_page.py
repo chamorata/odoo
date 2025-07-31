@@ -4,6 +4,7 @@
 import odoo
 from odoo.tests import HttpCase
 
+
 @odoo.tests.tagged('-at_install', 'post_install')
 class TestImLivechatSupportPage(HttpCase):
     def test_load_modules(self):

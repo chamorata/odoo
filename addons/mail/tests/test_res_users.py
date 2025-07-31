@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from psycopg2 import IntegrityError
 from unittest.mock import patch
 
-from odoo.addons.base.models.res_users import Users
 from odoo.addons.mail.tests.common import MailCommon, mail_new_test_user
+from psycopg2 import IntegrityError
+
+from odoo.addons.base.models.res_users import Users
 from odoo.addons.base.tests.common import HttpCaseWithUserDemo
 from odoo.tests import RecordCapturer, tagged, users
 from odoo.tools import mute_logger
@@ -109,7 +110,7 @@ class TestUser(MailCommon):
             '"Jean Poilvache" <POILVACHE@test.example.com>',
         ]
         with self.mock_mail_gateway(), \
-             RecordCapturer(self.env['res.users'], []) as capture:
+                RecordCapturer(self.env['res.users'], []) as capture:
             self.env['res.users'].web_create_users(src)
 
         exp_emails = ['poiluchette@test.example.com', 'poilvache@test.example.com']

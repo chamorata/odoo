@@ -10,6 +10,7 @@ try:
 except ImportError:
     an2cn = None
 
+
 class AccountMove(models.Model):
     _inherit = 'account.move'
 

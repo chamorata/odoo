@@ -1,8 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
+from odoo.addons.website_sale.controllers.main import WebsiteSale
+
 from odoo import _lt
 from odoo.http import request
-
-from odoo.addons.website_sale.controllers.main import WebsiteSale
 
 
 class L10nBRWebsiteSale(WebsiteSale):
@@ -10,8 +10,8 @@ class L10nBRWebsiteSale(WebsiteSale):
     def _get_mandatory_delivery_address_fields(self, country_sudo):
         mandatory_fields = super()._get_mandatory_delivery_address_fields(country_sudo)
         if (
-            country_sudo.code == 'BR'
-            and request.website.sudo().company_id.account_fiscal_country_id.code == 'BR'
+                country_sudo.code == 'BR'
+                and request.website.sudo().company_id.account_fiscal_country_id.code == 'BR'
         ):
             mandatory_fields |= {
                 'street_name', 'street2', 'street_number', 'zip', 'city_id', 'state_id', 'country_id'
@@ -25,11 +25,12 @@ class L10nBRWebsiteSale(WebsiteSale):
         mandatory_fields = super()._get_mandatory_billing_address_fields(country_sudo)
 
         if (
-            country_sudo.code == 'BR'
-            and request.website.sudo().company_id.account_fiscal_country_id.code == 'BR'
+                country_sudo.code == 'BR'
+                and request.website.sudo().company_id.account_fiscal_country_id.code == 'BR'
         ):
             mandatory_fields |= {
-                'vat', 'l10n_latam_identification_type_id', 'street_name', 'street2', 'street_number', 'zip', 'city_id', 'state_id', 'country_id'
+                'vat', 'l10n_latam_identification_type_id', 'street_name', 'street2', 'street_number', 'zip', 'city_id',
+                'state_id', 'country_id'
             }
             mandatory_fields -= {'street', 'city'}  # Brazil uses the base_extended_address fields added above
 

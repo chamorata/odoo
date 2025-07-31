@@ -4,6 +4,7 @@
 import datetime
 
 from odoo.addons.survey.tests import common
+
 from odoo.exceptions import AccessError, ValidationError
 from odoo.tests import tagged
 from odoo.tests.common import users, HttpCase
@@ -27,7 +28,9 @@ class TestAccess(common.TestSurveyCommon):
         with self.assertRaises(AccessError):
             self.env['survey.survey'].create({'title': 'Test Survey 2'})
         with self.assertRaises(AccessError):
-            self.env['survey.question'].create({'title': 'My Page', 'sequence': 0, 'is_page': True, 'question_type': False, 'survey_id': self.survey.id})
+            self.env['survey.question'].create(
+                {'title': 'My Page', 'sequence': 0, 'is_page': True, 'question_type': False,
+                 'survey_id': self.survey.id})
         with self.assertRaises(AccessError):
             self.env['survey.question'].create({'title': 'My Question', 'sequence': 1, 'page_id': self.page_0.id})
 
@@ -60,7 +63,9 @@ class TestAccess(common.TestSurveyCommon):
         with self.assertRaises(AccessError):
             self.env['survey.survey'].create({'title': 'Test Survey 2'})
         with self.assertRaises(AccessError):
-            self.env['survey.question'].create({'title': 'My Page', 'sequence': 0, 'is_page': True, 'question_type': False, 'survey_id': self.survey.id})
+            self.env['survey.question'].create(
+                {'title': 'My Page', 'sequence': 0, 'is_page': True, 'question_type': False,
+                 'survey_id': self.survey.id})
         with self.assertRaises(AccessError):
             self.env['survey.question'].create({'title': 'My Question', 'sequence': 1, 'page_id': self.page_0.id})
 
@@ -93,7 +98,9 @@ class TestAccess(common.TestSurveyCommon):
         with self.assertRaises(AccessError):
             self.env['survey.survey'].create({'title': 'Test Survey 2'})
         with self.assertRaises(AccessError):
-            self.env['survey.question'].create({'title': 'My Page', 'sequence': 0, 'is_page': True, 'question_type': False, 'survey_id': self.survey.id})
+            self.env['survey.question'].create(
+                {'title': 'My Page', 'sequence': 0, 'is_page': True, 'question_type': False,
+                 'survey_id': self.survey.id})
         with self.assertRaises(AccessError):
             self.env['survey.question'].create({'title': 'My Question', 'sequence': 1, 'page_id': self.page_0.id})
 
@@ -123,7 +130,8 @@ class TestAccess(common.TestSurveyCommon):
     def test_access_survey_survey_manager(self):
         # Create: all
         survey = self.env['survey.survey'].create({'title': 'Test Survey 2'})
-        self.env['survey.question'].create({'title': 'My Page', 'sequence': 0, 'is_page': True, 'question_type': False, 'survey_id': survey.id})
+        self.env['survey.question'].create(
+            {'title': 'My Page', 'sequence': 0, 'is_page': True, 'question_type': False, 'survey_id': survey.id})
         self.env['survey.question'].create({'title': 'My Question', 'sequence': 1, 'survey_id': survey.id})
 
         # Read: all
@@ -147,12 +155,15 @@ class TestAccess(common.TestSurveyCommon):
 
         # Create: restricted to self or no one
         unrestricted_survey = self.env['survey.survey'].create({'title': 'Test Survey Unrestricted'})
-        self.env['survey.question'].create({'title': 'My Page', 'sequence': 0, 'is_page': True, 'question_type': False, 'survey_id': unrestricted_survey.id})
+        self.env['survey.question'].create({'title': 'My Page', 'sequence': 0, 'is_page': True, 'question_type': False,
+                                            'survey_id': unrestricted_survey.id})
         self.env['survey.question'].create({'title': 'My Question', 'sequence': 1, 'survey_id': unrestricted_survey.id})
-        restricted_to_self_survey = self.env['survey.survey'].create({'title': 'Test Survey Restricted to Self', 'restrict_user_ids': [[4, self.env.user.id]]})
+        restricted_to_self_survey = self.env['survey.survey'].create(
+            {'title': 'Test Survey Restricted to Self', 'restrict_user_ids': [[4, self.env.user.id]]})
         with self.assertRaises(ValidationError):
             self.env['survey.survey'].with_user(self.env.user).create({
-                'title': 'Test Survey Restricted to Other', 'restrict_user_ids': [[4, restricted_to_other_survey.user_id.id]]})
+                'title': 'Test Survey Restricted to Other',
+                'restrict_user_ids': [[4, restricted_to_other_survey.user_id.id]]})
 
         # Read: restricted to self or no one
         surveys = self.env['survey.survey'].search([('title', 'ilike', 'Test')])
@@ -176,7 +187,9 @@ class TestAccess(common.TestSurveyCommon):
         with self.assertRaises(AccessError):
             self.env['survey.user_input'].create({'survey_id': self.survey.id})
         with self.assertRaises(AccessError):
-            self.env['survey.user_input.line'].create({'question_id': self.question_num.id, 'answer_type': 'numerical_box', 'value_numerical_box': 3, 'user_input_id': self.answer_0.id})
+            self.env['survey.user_input.line'].create(
+                {'question_id': self.question_num.id, 'answer_type': 'numerical_box', 'value_numerical_box': 3,
+                 'user_input_id': self.answer_0.id})
 
         # Read: nope
         with self.assertRaises(AccessError):
@@ -205,7 +218,9 @@ class TestAccess(common.TestSurveyCommon):
         with self.assertRaises(AccessError):
             self.env['survey.user_input'].create({'survey_id': self.survey.id})
         with self.assertRaises(AccessError):
-            self.env['survey.user_input.line'].create({'question_id': self.question_num.id, 'answer_type': 'numerical_box', 'value_numerical_box': 3, 'user_input_id': self.answer_0.id})
+            self.env['survey.user_input.line'].create(
+                {'question_id': self.question_num.id, 'answer_type': 'numerical_box', 'value_numerical_box': 3,
+                 'user_input_id': self.answer_0.id})
 
         # Read: nope
         with self.assertRaises(AccessError):
@@ -234,7 +249,9 @@ class TestAccess(common.TestSurveyCommon):
         with self.assertRaises(AccessError):
             self.env['survey.user_input'].create({'survey_id': self.survey.id})
         with self.assertRaises(AccessError):
-            self.env['survey.user_input.line'].create({'question_id': self.question_num.id, 'answer_type': 'numerical_box', 'value_numerical_box': 3, 'user_input_id': self.answer_0.id})
+            self.env['survey.user_input.line'].create(
+                {'question_id': self.question_num.id, 'answer_type': 'numerical_box', 'value_numerical_box': 3,
+                 'user_input_id': self.answer_0.id})
 
         # Read: nope
         with self.assertRaises(AccessError):
@@ -260,13 +277,17 @@ class TestAccess(common.TestSurveyCommon):
     @users('survey_user')
     def test_access_answers_survey_user(self):
         survey_own = self.env['survey.survey'].create({'title': 'Other'})
-        self.env['survey.question'].create({'title': 'Other', 'sequence': 0, 'is_page': True, 'question_type': False, 'survey_id': survey_own.id})
-        question_own = self.env['survey.question'].create({'title': 'Other Question', 'sequence': 1, 'survey_id': survey_own.id})
+        self.env['survey.question'].create(
+            {'title': 'Other', 'sequence': 0, 'is_page': True, 'question_type': False, 'survey_id': survey_own.id})
+        question_own = self.env['survey.question'].create(
+            {'title': 'Other Question', 'sequence': 1, 'survey_id': survey_own.id})
 
         # Create: unrestricted survey
         answer_own = self.env['survey.user_input'].create({'survey_id': survey_own.id})
         with self.assertRaises(AccessError):
-            self.env['survey.user_input.line'].create({'question_id': question_own.id, 'answer_type': 'numerical_box', 'value_numerical_box': 3, 'user_input_id': answer_own.id})
+            self.env['survey.user_input.line'].create(
+                {'question_id': question_own.id, 'answer_type': 'numerical_box', 'value_numerical_box': 3,
+                 'user_input_id': answer_own.id})
 
         # Read: restricted to self or no one
         answers = self.env['survey.user_input'].search([('survey_id', 'in', [survey_own.id, self.survey.id])])
@@ -290,7 +311,9 @@ class TestAccess(common.TestSurveyCommon):
         with self.assertRaises(AccessError):
             answer_other = self.env['survey.user_input'].create({'survey_id': self.survey.id})
         with self.assertRaises(AccessError):
-            answer_line_other = self.env['survey.user_input.line'].create({'question_id': self.question_num.id, 'answer_type': 'numerical_box', 'value_numerical_box': 3, 'user_input_id': self.answer_0.id})
+            answer_line_other = self.env['survey.user_input.line'].create(
+                {'question_id': self.question_num.id, 'answer_type': 'numerical_box', 'value_numerical_box': 3,
+                 'user_input_id': self.answer_0.id})
 
         # Write: unrestricted survey or in restricted users
         answer_own.write({'state': 'done'})
@@ -309,22 +332,30 @@ class TestAccess(common.TestSurveyCommon):
         admin = self.env.ref('base.user_admin')
         with self.with_user(admin.login):
             survey_other = self.env['survey.survey'].create({'title': 'Other'})
-            self.env['survey.question'].create({'title': 'Other', 'sequence': 0, 'is_page': True, 'question_type': False, 'survey_id': survey_other.id})
-            question_other = self.env['survey.question'].create({'title': 'Other Question', 'sequence': 1, 'survey_id': survey_other.id})
+            self.env['survey.question'].create(
+                {'title': 'Other', 'sequence': 0, 'is_page': True, 'question_type': False,
+                 'survey_id': survey_other.id})
+            question_other = self.env['survey.question'].create(
+                {'title': 'Other Question', 'sequence': 1, 'survey_id': survey_other.id})
             self.assertEqual(survey_other.create_uid, admin)
             self.assertEqual(question_other.create_uid, admin)
 
         # Create: always
         answer_own = self.env['survey.user_input'].create({'survey_id': self.survey.id})
         answer_other = self.env['survey.user_input'].create({'survey_id': survey_other.id})
-        answer_line_own = self.env['survey.user_input.line'].create({'question_id': self.question_num.id, 'answer_type': 'numerical_box', 'value_numerical_box': 3, 'user_input_id': answer_own.id})
-        answer_line_other = self.env['survey.user_input.line'].create({'question_id': question_other.id, 'answer_type': 'numerical_box', 'value_numerical_box': 3, 'user_input_id': answer_other.id})
+        answer_line_own = self.env['survey.user_input.line'].create(
+            {'question_id': self.question_num.id, 'answer_type': 'numerical_box', 'value_numerical_box': 3,
+             'user_input_id': answer_own.id})
+        answer_line_other = self.env['survey.user_input.line'].create(
+            {'question_id': question_other.id, 'answer_type': 'numerical_box', 'value_numerical_box': 3,
+             'user_input_id': answer_other.id})
 
         # Read: always
         answers = self.env['survey.user_input'].search([('survey_id', 'in', [survey_other.id, self.survey.id])])
         self.assertEqual(answers, answer_own | answer_other | self.answer_0)
 
-        answer_lines = self.env['survey.user_input.line'].search([('survey_id', 'in', [survey_other.id, self.survey.id])])
+        answer_lines = self.env['survey.user_input.line'].search(
+            [('survey_id', 'in', [survey_other.id, self.survey.id])])
         self.assertEqual(answer_lines, answer_line_own | answer_line_other | self.answer_0_0 | self.answer_0_1)
 
         self.env['survey.user_input'].browse(answer_own.ids).read(['state'])

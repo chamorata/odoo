@@ -106,7 +106,8 @@
                 </field>
             </record>
             <record id="tax_report_tax_purchase_construct_service" model="account.report.line">
-                <field name="name">Tax on purchases of construction services and scrap metal (inverted tax liability)</field>
+                <field name="name">Tax on purchases of construction services and scrap metal (inverted tax liability)
+                </field>
                 <field name="code">construct</field>
                 <field name="expression_ids">
                     <record id="tax_report_tax_purchase_construct_service_tag" model="account.report.expression">
@@ -140,7 +141,9 @@
             <record id="tax_report_tax_payable" model="account.report.line">
                 <field name="name">Payable tax / Refundable tax (-)</field>
                 <!-- "sale_25_5_and_24" refers to both 24% and 25.5% taxes. Will only be 25.5 on 01/01/2025.-->
-                <field name="aggregation_formula">sale_25_5_and_24.balance + sale_14.balance + sale_10.balance + goods_eu.balance + service_eu.balance + goods_no_eu.balance + construct.balance - deductible.balance</field>
+                <field name="aggregation_formula">sale_25_5_and_24.balance + sale_14.balance + sale_10.balance +
+                    goods_eu.balance + service_eu.balance + goods_no_eu.balance + construct.balance - deductible.balance
+                </field>
             </record>
             <record id="tax_report_base_turnover_0_vat" model="account.report.line">
                 <field name="name">0-Turnover subject to zero tax rate</field>

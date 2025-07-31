@@ -3,10 +3,11 @@
 from contextlib import contextmanager
 from unittest.mock import patch
 
-from odoo import exceptions
 from odoo.addons.crm.models.crm_lead import Lead
 from odoo.addons.iap.tests.common import MockIAPEnrich
 from odoo.addons.website_crm_iap_reveal.models.crm_reveal_rule import CRMRevealRule
+
+from odoo import exceptions
 
 
 class MockIAPReveal(MockIAPEnrich):
@@ -52,7 +53,8 @@ class MockIAPReveal(MockIAPEnrich):
                     'not_found': False,
                     'rule_id': rule.id,
                 }
-                company_data = self._get_iap_company_data(base_name, service='reveal', add_values={'ip': ip, 'rule': rule})
+                company_data = self._get_iap_company_data(base_name, service='reveal',
+                                                          add_values={'ip': ip, 'rule': rule})
                 if default_data:
                     company_data.update(default_data)
                 iap_payload['clearbit_id'] = company_data['clearbit_id']
@@ -72,11 +74,12 @@ class MockIAPReveal(MockIAPEnrich):
             }
 
         with patch.object(CRMRevealRule, '_iap_contact_reveal', side_effect=_iap_contact_reveal), \
-             patch.object(Lead, 'create', autospec=True, wraps=Lead, side_effect=_crm_lead_create):
+                patch.object(Lead, 'create', autospec=True, wraps=Lead, side_effect=_crm_lead_create):
             yield
 
     def _get_iap_company_data(self, base_name, service=None, add_values=None):
-        company_data = super(MockIAPReveal, self)._get_iap_company_data(base_name, service=service, add_values=add_values)
+        company_data = super(MockIAPReveal, self)._get_iap_company_data(base_name, service=service,
+                                                                        add_values=add_values)
         if service == 'reveal':
             company_data['phone'] = company_data['phone_numbers'][0]
             company_data['sector'] = 'Sector Info'

@@ -16,7 +16,10 @@
             <record id="account_tax_report_line_sales_group" model="account.report.line">
                 <field name="name">VAT due</field>
                 <field name="code">DUE_VAT</field>
-                <field name="aggregation_formula">DK_SALES_VAT.balance + REVERSE_CHARGE_MERCHANDISES_PURCHASED_OUT_DK.balance + REVERSE_CHARGE_SERVICES_PURCHASED_OUT_DK.balance</field>
+                <field name="aggregation_formula">DK_SALES_VAT.balance +
+                    REVERSE_CHARGE_MERCHANDISES_PURCHASED_OUT_DK.balance +
+                    REVERSE_CHARGE_SERVICES_PURCHASED_OUT_DK.balance
+                </field>
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
                     <record id="account_tax_report_line_sales_tax" model="account.report.line">
@@ -34,7 +37,8 @@
                         <field name="name">VAT on purchases of goods abroad (both EU and non-EU)</field>
                         <field name="code">REVERSE_CHARGE_MERCHANDISES_PURCHASED_OUT_DK</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_international_purchase_products_tag" model="account.report.expression">
+                            <record id="account_tax_report_line_international_purchase_products_tag"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">MVU</field>
@@ -45,7 +49,8 @@
                         <field name="name">VAT on purchases of services abroad with reverse charge</field>
                         <field name="code">REVERSE_CHARGE_SERVICES_PURCHASED_OUT_DK</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_international_purchase_services_tag" model="account.report.expression">
+                            <record id="account_tax_report_line_international_purchase_services_tag"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">MYUOB</field>
@@ -57,14 +62,18 @@
             <record id="account_tax_report_line_deduction_group" model="account.report.line">
                 <field name="name">Deductions</field>
                 <field name="code">VAT_TO_DEDUCED</field>
-                <field name="aggregation_formula">PURCHASE_VAT.balance + OIL_AND_BOTTLED_GAS_TAX.balance + ELECTRICITY_TAX.balance + NATURAL_AND_CITY_GAS_TAX.balance + COAL_TAX.balance + CO2_TAX.balance + WATER_TAX.balance</field>
+                <field name="aggregation_formula">PURCHASE_VAT.balance + OIL_AND_BOTTLED_GAS_TAX.balance +
+                    ELECTRICITY_TAX.balance + NATURAL_AND_CITY_GAS_TAX.balance + COAL_TAX.balance + CO2_TAX.balance +
+                    WATER_TAX.balance
+                </field>
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
                     <record id="account_tax_report_line_deduction_purchase_tax" model="account.report.line">
                         <field name="name">Purchase VAT (input VAT)</field>
                         <field name="code">PURCHASE_VAT</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_deduction_purchase_tax_tag" model="account.report.expression">
+                            <record id="account_tax_report_line_deduction_purchase_tax_tag"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">KM</field>
@@ -75,7 +84,8 @@
                         <field name="name">Oil and cylinder gas tax</field>
                         <field name="code">OIL_AND_BOTTLED_GAS_TAX</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_deduction_oil_bottle_tax_tag" model="account.report.expression">
+                            <record id="account_tax_report_line_deduction_oil_bottle_tax_tag"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">OFA</field>
@@ -86,7 +96,8 @@
                         <field name="name">Electricity Tax</field>
                         <field name="code">ELECTRICITY_TAX</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_deduction_electrical_tax_tag" model="account.report.expression">
+                            <record id="account_tax_report_line_deduction_electrical_tax_tag"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">EA</field>
@@ -97,7 +108,8 @@
                         <field name="name">Natural gas and town gas tax</field>
                         <field name="code">NATURAL_AND_CITY_GAS_TAX</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_deduction_gas_tax_tag" model="account.report.expression">
+                            <record id="account_tax_report_line_deduction_gas_tax_tag"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">NOBA</field>
@@ -108,7 +120,8 @@
                         <field name="name">Coal Tax</field>
                         <field name="code">COAL_TAX</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_deduction_coal_tax_tag" model="account.report.expression">
+                            <record id="account_tax_report_line_deduction_coal_tax_tag"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">KA</field>
@@ -119,7 +132,8 @@
                         <field name="name">CO-2 tax</field>
                         <field name="code">CO2_TAX</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_deduction_co2_tax_tag" model="account.report.expression">
+                            <record id="account_tax_report_line_deduction_co2_tax_tag"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">CO2A</field>
@@ -130,7 +144,8 @@
                         <field name="name">Water tax</field>
                         <field name="code">WATER_TAX</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_deduction_water_tax_tag" model="account.report.expression">
+                            <record id="account_tax_report_line_deduction_water_tax_tag"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">VA</field>
@@ -151,7 +166,8 @@
                     <record id="account_tax_report_line_section_a_products" model="account.report.line">
                         <field name="name">Category A: goods (EU)</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_section_a_products_tag" model="account.report.expression">
+                            <record id="account_tax_report_line_section_a_products_tag"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">R-A-V</field>
@@ -161,7 +177,8 @@
                     <record id="account_tax_report_line_section_a_services" model="account.report.line">
                         <field name="name">Category A = benefits (EU)</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_section_a_services_tag" model="account.report.expression">
+                            <record id="account_tax_report_line_section_a_services_tag"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">R-A-Y</field>
@@ -171,7 +188,8 @@
                     <record id="account_tax_report_line_section_b_product_eu" model="account.report.line">
                         <field name="name">Category B = Goods (To be declared for EU sales without VAT)</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_section_b_product_eu_tag" model="account.report.expression">
+                            <record id="account_tax_report_line_section_b_product_eu_tag"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">R-B-MR</field>
@@ -181,7 +199,8 @@
                     <record id="account_tax_report_line_section_b_products_non_eu" model="account.report.line">
                         <field name="name">Category B = Goods (Not to be reported for EU sales without VAT)</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_section_b_products_non_eu_tag" model="account.report.expression">
+                            <record id="account_tax_report_line_section_b_products_non_eu_tag"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">R-B-UR</field>
@@ -191,7 +210,8 @@
                     <record id="account_tax_report_line_section_b_services" model="account.report.line">
                         <field name="name">Category B = services - (EU sales excluding VAT)</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_section_b_services_tag" model="account.report.expression">
+                            <record id="account_tax_report_line_section_b_services_tag"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">R-C-MR</field>
@@ -201,7 +221,8 @@
                     <record id="account_tax_report_line_section_b_triangular" model="account.report.line">
                         <field name="name">Category B = triangular - (EU sales excluding VAT)</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_section_b_triangular_tag" model="account.report.expression">
+                            <record id="account_tax_report_line_section_b_triangular_tag"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">R-D-MR</field>

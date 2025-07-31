@@ -1,16 +1,17 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.mail.controllers.webclient import WebclientController
+from odoo.addons.mail.models.discuss.mail_guest import add_guest_to_context
+from odoo.addons.mail.tools.discuss import Store
 from werkzeug.exceptions import NotFound
 
 from odoo import http
 from odoo.http import request
-from odoo.addons.mail.controllers.webclient import WebclientController
-from odoo.addons.mail.models.discuss.mail_guest import add_guest_to_context
-from odoo.addons.mail.tools.discuss import Store
 
 
 class DiscussChannelWebclientController(WebclientController):
     """Override to add discuss channel specific features."""
+
     def _process_request_for_all(self, store, **kwargs):
         """Override to return channel as member and last messages."""
         super()._process_request_for_all(store, **kwargs)

@@ -17,4 +17,5 @@ class Picking(models.Model):
         # Override for when the batch picking calls this function to validate the carriers
         validate_carrier = self.env.context.get('l10n_ro_edi_stock_validate_carrier', False)
 
-        return picking.company_id.account_fiscal_country_id.code == 'RO' and (picking.l10n_ro_edi_stock_enable or validate_carrier)
+        return picking.company_id.account_fiscal_country_id.code == 'RO' and (
+                    picking.l10n_ro_edi_stock_enable or validate_carrier)

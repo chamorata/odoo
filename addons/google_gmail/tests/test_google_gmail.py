@@ -1,7 +1,9 @@
-from odoo.tests.common import TransactionCase
-from unittest import mock
 from datetime import datetime
+from unittest import mock
+
 from freezegun import freeze_time
+
+from odoo.tests.common import TransactionCase
 
 
 class TestIrMailServer(TransactionCase):
@@ -45,18 +47,18 @@ class TestIrMailServer(TransactionCase):
         ]
 
         for (
-            current_datetime,
-            assert_new_token_generation_called,
-            expected_token,
-            expected_log,
+                current_datetime,
+                assert_new_token_generation_called,
+                expected_token,
+                expected_log,
         ) in cases:
             with self.subTest(currenct_datetime=current_datetime), \
-                freeze_time(current_datetime), \
-                mock.patch("odoo.addons.google_gmail.models.google_gmail_mixin._logger.info") as mock_logger, \
-                mock.patch(
-                    "odoo.addons.google_gmail.models.google_gmail_mixin.GoogleGmailMixin._fetch_gmail_access_token",
-                    return_value=("new-access-token", new_token_expiry),
-                ) as mock_fetch_gmail_access_token:
+                    freeze_time(current_datetime), \
+                    mock.patch("odoo.addons.google_gmail.models.google_gmail_mixin._logger.info") as mock_logger, \
+                    mock.patch(
+                        "odoo.addons.google_gmail.models.google_gmail_mixin.GoogleGmailMixin._fetch_gmail_access_token",
+                        return_value=("new-access-token", new_token_expiry),
+                    ) as mock_fetch_gmail_access_token:
                 self.mail_server.google_gmail_access_token_expiration = current_token_expiry
                 oauth2_string = self.mail_server._generate_oauth2_string(
                     "user-account", "refresh-token"

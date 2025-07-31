@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, fields, models
+from odoo import api, models
 
 
 class ReportAccountHashIntegrity(models.AbstractModel):
@@ -15,8 +15,8 @@ class ReportAccountHashIntegrity(models.AbstractModel):
         else:
             data = self.env.company._check_hash_integrity()
         return {
-            'doc_ids' : docids,
-            'doc_model' : self.env['res.company'],
-            'data' : data,
-            'docs' : self.env['res.company'].browse(self.env.company.id),
+            'doc_ids': docids,
+            'doc_model': self.env['res.company'],
+            'data': data,
+            'docs': self.env['res.company'].browse(self.env.company.id),
         }

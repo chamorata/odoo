@@ -95,7 +95,7 @@ class ResPartner(models.Model):
             ('state', '=', 'sale'),
         ])
         for (partner, currency), orders in sale_orders.grouped(
-            lambda so: (so.partner_invoice_id, so.currency_id),
+                lambda so: (so.partner_invoice_id, so.currency_id),
         ).items():
             amount_to_invoice_sum = sum(orders.mapped('amount_to_invoice'))
             credit_company_currency = currency._convert(

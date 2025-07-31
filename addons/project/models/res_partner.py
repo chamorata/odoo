@@ -45,14 +45,15 @@ class ResPartner(models.Model):
                     partner.task_count += count
                 partner = partner.parent_id
 
-# Deprecated: remove me in MASTER
+    # Deprecated: remove me in MASTER
     def _create_portal_users(self):
         partners_without_user = self.filtered(lambda partner: not partner.user_ids)
         if not partners_without_user:
             return self.env['res.users']
         created_users = self.env['res.users']
         for partner in partners_without_user:
-            created_users += self.env['res.users'].with_context(no_reset_password=True).sudo()._create_user_from_template({
+            created_users += self.env['res.users'].with_context(
+                no_reset_password=True).sudo()._create_user_from_template({
                 'email': email_normalize(partner.email),
                 'login': email_normalize(partner.email),
                 'partner_id': partner.id,

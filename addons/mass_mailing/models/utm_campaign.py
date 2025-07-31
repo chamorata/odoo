@@ -2,10 +2,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from collections import defaultdict
+
 from dateutil.relativedelta import relativedelta
 
-from odoo import api, fields, models, _
-from odoo.exceptions import ValidationError
+from odoo import api, fields, models
 from odoo.tools.float_utils import float_round
 
 
@@ -18,8 +18,8 @@ class UtmCampaign(models.Model):
         string='Mass Mailings',
         groups="mass_mailing.group_mass_mailing_user")
     mailing_mail_count = fields.Integer('Number of Mass Mailing',
-        compute="_compute_mailing_mail_count",
-        groups="mass_mailing.group_mass_mailing_user")
+                                        compute="_compute_mailing_mail_count",
+                                        groups="mass_mailing.group_mass_mailing_user")
     is_mailing_campaign_activated = fields.Boolean(compute="_compute_is_mailing_campaign_activated")
 
     # A/B Testing
@@ -28,8 +28,8 @@ class UtmCampaign(models.Model):
                                           copy=False, readonly=True, store=True)
     ab_testing_winner_mailing_id = fields.Many2one("mailing.mailing", "A/B Campaign Winner Mailing", copy=False)
     ab_testing_schedule_datetime = fields.Datetime('Send Final On',
-        default=lambda self: fields.Datetime.now() + relativedelta(days=1),
-        help="Date that will be used to know when to determine and send the winner mailing")
+                                                   default=lambda self: fields.Datetime.now() + relativedelta(days=1),
+                                                   help="Date that will be used to know when to determine and send the winner mailing")
     ab_testing_winner_selection = fields.Selection([
         ('manual', 'Manual'),
         ('opened_ratio', 'Highest Open Rate'),
@@ -95,7 +95,7 @@ class UtmCampaign(models.Model):
                 c.id IN %s
             GROUP BY
                 c.id
-        """, (tuple(self.ids), ))
+        """, (tuple(self.ids),))
 
         all_stats = self.env.cr.dictfetchall()
         stats_per_campaign = {

@@ -22,7 +22,9 @@
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
                     <record id="tax_report_line_I_1" model="account.report.line">
-                        <field name="name">Exempt IC Supplies of Goods and Supplies of Services where customer is liable for the tax</field>
+                        <field name="name">Exempt IC Supplies of Goods and Supplies of Services where customer is liable
+                            for the tax
+                        </field>
                         <field name="code">mt_I_1</field>
                         <field name="expression_ids">
                             <record id="tax_report_line_I_1_tag_column1" model="account.report.expression">
@@ -33,7 +35,9 @@
                         </field>
                     </record>
                     <record id="tax_report_line_I_2" model="account.report.line">
-                        <field name="name">Supplies of Goods and Services where place of supply is outside Malta - EU and non EU</field>
+                        <field name="name">Supplies of Goods and Services where place of supply is outside Malta - EU
+                            and non EU
+                        </field>
                         <field name="code">mt_I_2</field>
                         <field name="expression_ids">
                             <record id="tax_report_line_I_2_tag_column1" model="account.report.expression">
@@ -44,7 +48,8 @@
                         </field>
                     </record>
                     <record id="tax_report_line_I_3" model="account.report.line">
-                        <field name="name">IC Acquisition of Goods and Services received from other EU member states</field>
+                        <field name="name">IC Acquisition of Goods and Services received from other EU member states
+                        </field>
                         <field name="code">mt_I_3</field>
                         <field name="expression_ids">
                             <record id="tax_report_line_I_3_tag_column1" model="account.report.expression">
@@ -60,7 +65,9 @@
                         </field>
                     </record>
                     <record id="tax_report_line_I_4" model="account.report.line">
-                        <field name="name">Goods and Services received where place of supply is Malta other than those reported in "Box 3"</field>
+                        <field name="name">Goods and Services received where place of supply is Malta other than those
+                            reported in "Box 3"
+                        </field>
                         <field name="code">mt_I_4</field>
                         <field name="expression_ids">
                             <record id="tax_report_line_I_4_tag_column1" model="account.report.expression">
@@ -82,7 +89,9 @@
                             <record id="tax_report_line_I_5_tag_column1" model="account.report.expression">
                                 <field name="label">tax_base</field>
                                 <field name="engine">aggregation</field>
-                                <field name="formula">mt_I_1.tax_base + mt_I_2.tax_base + mt_I_3.tax_base + mt_I_4.tax_base</field>
+                                <field name="formula">mt_I_1.tax_base + mt_I_2.tax_base + mt_I_3.tax_base +
+                                    mt_I_4.tax_base
+                                </field>
                             </record>
                             <record id="tax_report_line_I_5_tag_column1" model="account.report.expression">
                                 <field name="label">tax_amount</field>
@@ -114,7 +123,9 @@
                         </field>
                     </record>
                     <record id="tax_report_line_II_2" model="account.report.line">
-                        <field name="name">Services received from EU member stated where the purchaser is liable for vat</field>
+                        <field name="name">Services received from EU member stated where the purchaser is liable for
+                            vat
+                        </field>
                         <field name="code">mt_II_2</field>
                         <field name="expression_ids">
                             <record id="tax_report_line_II_2_tag_column1" model="account.report.expression">
@@ -168,12 +179,16 @@
                             <record id="tax_report_line_II_5_tag_column1" model="account.report.expression">
                                 <field name="label">tax_base</field>
                                 <field name="engine">aggregation</field>
-                                <field name="formula">mt_II_1.tax_base + mt_II_2.tax_base + mt_II_3.tax_base + mt_II_4.tax_base</field>
+                                <field name="formula">mt_II_1.tax_base + mt_II_2.tax_base + mt_II_3.tax_base +
+                                    mt_II_4.tax_base
+                                </field>
                             </record>
                             <record id="tax_report_line_II_5_tag_column2" model="account.report.expression">
                                 <field name="label">tax_amount</field>
                                 <field name="engine">aggregation</field>
-                                <field name="formula">mt_II_1.tax_amount + mt_II_2.tax_amount + mt_II_3.tax_amount + mt_II_4.tax_amount</field>
+                                <field name="formula">mt_II_1.tax_amount + mt_II_2.tax_amount + mt_II_3.tax_amount +
+                                    mt_II_4.tax_amount
+                                </field>
                             </record>
                         </field>
                     </record>
@@ -260,12 +275,15 @@
                             <record id="tax_report_line_III_6_tag_column1" model="account.report.expression">
                                 <field name="label">tax_base</field>
                                 <field name="engine">aggregation</field>
-                                <field name="formula">mt_III_1.tax_base + mt_III_2.tax_base + mt_III_3.tax_base + mt_III_4.tax_base + mt_III_5.tax_base</field>
+                                <field name="formula">mt_III_1.tax_base + mt_III_2.tax_base + mt_III_3.tax_base +
+                                    mt_III_4.tax_base + mt_III_5.tax_base
+                                </field>
                             </record>
                             <record id="tax_report_line_III_6_tag_column2" model="account.report.expression">
                                 <field name="label">tax_amount</field>
                                 <field name="engine">aggregation</field>
-                                <field name="formula">mt_III_1.tax_amount + mt_III_2.tax_amount + mt_III_3.tax_amount</field>
+                                <field name="formula">mt_III_1.tax_amount + mt_III_2.tax_amount + mt_III_3.tax_amount
+                                </field>
                             </record>
                         </field>
                     </record>
@@ -389,12 +407,16 @@
                             <record id="tax_report_line_IV_8_tag_column1" model="account.report.expression">
                                 <field name="label">tax_base</field>
                                 <field name="engine">aggregation</field>
-                                <field name="formula">mt_IV_1.tax_base + mt_IV_2.tax_base + mt_IV_3.tax_base + mt_IV_4.tax_base + mt_IV_5.tax_base + mt_IV_6.tax_base + mt_IV_7.tax_base</field>
+                                <field name="formula">mt_IV_1.tax_base + mt_IV_2.tax_base + mt_IV_3.tax_base +
+                                    mt_IV_4.tax_base + mt_IV_5.tax_base + mt_IV_6.tax_base + mt_IV_7.tax_base
+                                </field>
                             </record>
                             <record id="tax_report_line_IV_8_tag_column2" model="account.report.expression">
                                 <field name="label">tax_amount</field>
                                 <field name="engine">aggregation</field>
-                                <field name="formula">mt_IV_1.tax_amount + mt_IV_2.tax_amount + mt_IV_4.tax_amount + mt_IV_5.tax_amount + mt_IV_6.tax_amount + mt_IV_7.tax_amount</field>
+                                <field name="formula">mt_IV_1.tax_amount + mt_IV_2.tax_amount + mt_IV_4.tax_amount +
+                                    mt_IV_5.tax_amount + mt_IV_6.tax_amount + mt_IV_7.tax_amount
+                                </field>
                             </record>
                         </field>
                     </record>
@@ -432,17 +454,19 @@
                     <record id="tax_report_line_excess_credit_tag_column1_subexp_1" model="account.report.expression">
                         <field name="label">BOX17</field>
                         <field name="engine">aggregation</field>
-                        <field name="formula">mt_I_subtotal.tax_amount - mt_II_subtotal.tax_amount </field>
+                        <field name="formula">mt_I_subtotal.tax_amount - mt_II_subtotal.tax_amount</field>
                     </record>
                     <record id="tax_report_line_excess_credit_tag_column1_subexp_2" model="account.report.expression">
                         <field name="label">BOX26</field>
                         <field name="engine">aggregation</field>
-                        <field name="formula">mt_excess_credit.BOX17 + mt_III_subtotal.tax_amount </field>
+                        <field name="formula">mt_excess_credit.BOX17 + mt_III_subtotal.tax_amount</field>
                     </record>
                     <record id="tax_report_line_excess_credit_tag_column1" model="account.report.expression">
                         <field name="label">tax_base</field>
                         <field name="engine">aggregation</field>
-                        <field name="formula">(mt_IV_subtotal.tax_amount - mt_excess_credit.BOX26) + (mt_adjustment_2.tax_base - mt_adjustment_1.tax_base)</field>
+                        <field name="formula">(mt_IV_subtotal.tax_amount - mt_excess_credit.BOX26) +
+                            (mt_adjustment_2.tax_base - mt_adjustment_1.tax_base)
+                        </field>
                         <field name="subformula">if_above(EUR(0))</field>
                     </record>
                 </field>
@@ -468,7 +492,9 @@
                     <record id="tax_report_line_tax_payable_tag_column1_subexp_1" model="account.report.expression">
                         <field name="label">BOX43</field>
                         <field name="engine">aggregation</field>
-                        <field name="formula">(mt_excess_credit.BOX26 - mt_IV_subtotal.tax_amount) + (mt_adjustment_1.tax_base - mt_adjustment_2.tax_base)</field>
+                        <field name="formula">(mt_excess_credit.BOX26 - mt_IV_subtotal.tax_amount) +
+                            (mt_adjustment_1.tax_base - mt_adjustment_2.tax_base)
+                        </field>
                     </record>
                     <record id="tax_report_line_excess_tax_payable_column1" model="account.report.expression">
                         <field name="label">tax_base</field>

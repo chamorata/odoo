@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.tests import HttpCase, tagged, Form
-from odoo.addons.sale.tests.common import TestSaleCommon
 from odoo.addons.mail.tests.common import mail_new_test_user
+from odoo.addons.sale.tests.common import TestSaleCommon
+
+from odoo.tests import HttpCase, tagged, Form
 
 
 @tagged('post_install', '-at_install')
@@ -42,9 +43,11 @@ class TestControllersAccessRights(HttpCase, TestSaleCommon):
                 url=so_url,
                 allow_redirects=False,
             )
-            self.assertEqual(response.status_code, 200, 'Should be correct %s' % ('with a connected user' if login else 'using access token'))
+            self.assertEqual(response.status_code, 200,
+                             'Should be correct %s' % ('with a connected user' if login else 'using access token'))
             response = self.url_open(
                 url=picking_url,
                 allow_redirects=False,
             )
-            self.assertEqual(response.status_code, 200, 'Should be correct %s' % ('with a connected user' if login else 'using access token'))
+            self.assertEqual(response.status_code, 200,
+                             'Should be correct %s' % ('with a connected user' if login else 'using access token'))

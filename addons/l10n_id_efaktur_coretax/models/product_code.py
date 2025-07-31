@@ -2,6 +2,7 @@
 
 from odoo import api, fields, models
 
+
 class EfakturProductCode(models.Model):
     _name = "l10n_id_efaktur_coretax.product.code"
     _description = "Product categorization according to E-Faktur"

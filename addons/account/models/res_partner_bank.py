@@ -4,9 +4,10 @@ from collections import defaultdict
 
 import werkzeug
 import werkzeug.exceptions
+
 from odoo import _, api, fields, models
-from odoo.fields import SQL
 from odoo.exceptions import UserError, ValidationError
+from odoo.fields import SQL
 from odoo.tools.image import image_data_uri
 
 
@@ -131,7 +132,8 @@ class ResPartnerBank(models.Model):
             elif bank._origin and bank.allow_out_payment:
                 bank.lock_trust_fields = True
 
-    def _build_qr_code_vals(self, amount, free_communication, structured_communication, currency, debtor_partner, qr_method=None, silent_errors=True):
+    def _build_qr_code_vals(self, amount, free_communication, structured_communication, currency, debtor_partner,
+                            qr_method=None, silent_errors=True):
         """ Returns the QR-code vals needed to generate the QR-code report link to pay this account with the given parameters,
         or None if no QR-code could be generated.
 
@@ -155,7 +157,8 @@ class ResPartnerBank(models.Model):
         for candidate_method, candidate_name in candidate_methods:
             error_message = self._get_error_messages_for_qr(candidate_method, debtor_partner, currency)
             if not error_message:
-                error_message = self._check_for_qr_code_errors(candidate_method, amount, currency, debtor_partner, free_communication, structured_communication)
+                error_message = self._check_for_qr_code_errors(candidate_method, amount, currency, debtor_partner,
+                                                               free_communication, structured_communication)
 
                 if not error_message:
                     return {
@@ -168,19 +171,25 @@ class ResPartnerBank(models.Model):
                     }
 
             if not silent_errors:
-                error_header = _("The following error prevented '%s' QR-code to be generated though it was detected as eligible: ", candidate_name)
+                error_header = _(
+                    "The following error prevented '%s' QR-code to be generated though it was detected as eligible: ",
+                    candidate_name)
                 raise UserError(error_header + error_message)
 
         return None
 
-    def build_qr_code_url(self, amount, free_communication, structured_communication, currency, debtor_partner, qr_method=None, silent_errors=True):
-        vals = self._build_qr_code_vals(amount, free_communication, structured_communication, currency, debtor_partner, qr_method, silent_errors)
+    def build_qr_code_url(self, amount, free_communication, structured_communication, currency, debtor_partner,
+                          qr_method=None, silent_errors=True):
+        vals = self._build_qr_code_vals(amount, free_communication, structured_communication, currency, debtor_partner,
+                                        qr_method, silent_errors)
         if vals:
             return self._get_qr_code_url(**vals)
         return None
 
-    def build_qr_code_base64(self, amount, free_communication, structured_communication, currency, debtor_partner, qr_method=None, silent_errors=True):
-        vals = self._build_qr_code_vals(amount, free_communication, structured_communication, currency, debtor_partner, qr_method, silent_errors)
+    def build_qr_code_base64(self, amount, free_communication, structured_communication, currency, debtor_partner,
+                             qr_method=None, silent_errors=True):
+        vals = self._build_qr_code_vals(amount, free_communication, structured_communication, currency, debtor_partner,
+                                        qr_method, silent_errors)
         if vals:
             return self._get_qr_code_base64(**vals)
         return None
@@ -188,10 +197,12 @@ class ResPartnerBank(models.Model):
     def _get_qr_vals(self, qr_method, amount, currency, debtor_partner, free_communication, structured_communication):
         return None
 
-    def _get_qr_code_generation_params(self, qr_method, amount, currency, debtor_partner, free_communication, structured_communication):
+    def _get_qr_code_generation_params(self, qr_method, amount, currency, debtor_partner, free_communication,
+                                       structured_communication):
         raise NotImplementedError()
 
-    def _get_qr_code_url(self, qr_method, amount, currency, debtor_partner, free_communication, structured_communication):
+    def _get_qr_code_url(self, qr_method, amount, currency, debtor_partner, free_communication,
+                         structured_communication):
         """ Hook for extension, to support the different QR generation methods.
         This function uses the provided qr_method to try generation a QR-code for
         the given data. It it succeeds, it returns the report URL to make this
@@ -204,10 +215,12 @@ class ResPartnerBank(models.Model):
         :param free_communication: Free communication to add to the payment when generating one with the QR-code
         :param structured_communication: Structured communication to add to the payment when generating one with the QR-code
         """
-        params = self._get_qr_code_generation_params(qr_method, amount, currency, debtor_partner, free_communication, structured_communication)
+        params = self._get_qr_code_generation_params(qr_method, amount, currency, debtor_partner, free_communication,
+                                                     structured_communication)
         return '/report/barcode/?' + werkzeug.urls.url_encode(params) if params else None
 
-    def _get_qr_code_base64(self, qr_method, amount, currency, debtor_partner, free_communication, structured_communication):
+    def _get_qr_code_base64(self, qr_method, amount, currency, debtor_partner, free_communication,
+                            structured_communication):
         """ Hook for extension, to support the different QR generation methods.
         This function uses the provided qr_method to try generation a QR-code for
         the given data. It it succeeds, it returns QR code in base64 url; else None.
@@ -219,7 +232,8 @@ class ResPartnerBank(models.Model):
         :param free_communication: Free communication to add to the payment when generating one with the QR-code
         :param structured_communication: Structured communication to add to the payment when generating one with the QR-code
         """
-        params = self._get_qr_code_generation_params(qr_method, amount, currency, debtor_partner, free_communication, structured_communication)
+        params = self._get_qr_code_generation_params(qr_method, amount, currency, debtor_partner, free_communication,
+                                                     structured_communication)
         if params:
             try:
                 barcode = self.env['ir.actions.report'].barcode(**params)
@@ -259,7 +273,8 @@ class ResPartnerBank(models.Model):
         """
         return None
 
-    def _check_for_qr_code_errors(self, qr_method, amount, currency, debtor_partner, free_communication, structured_communication):
+    def _check_for_qr_code_errors(self, qr_method, amount, currency, debtor_partner, free_communication,
+                                  structured_communication):
         """ Checks the data before generating a QR-code for the specified qr_method
         (this method must have been checked for eligbility by _get_error_messages_for_qr() first).
 
@@ -279,9 +294,12 @@ class ResPartnerBank(models.Model):
 
         for vals in vals_list:
             if (partner_id := vals.get('partner_id')) and (acc_number := vals.get('acc_number')):
-                archived_res_partner_bank = self.env['res.partner.bank'].search([('active', '=', False), ('partner_id', '=', partner_id), ('acc_number', '=', acc_number)])
+                archived_res_partner_bank = self.env['res.partner.bank'].search(
+                    [('active', '=', False), ('partner_id', '=', partner_id), ('acc_number', '=', acc_number)])
                 if archived_res_partner_bank:
-                    raise UserError(_("A bank account with Account Number %(number)s already exists for Partner %(partner)s, but is archived. Please unarchive it instead.", number=acc_number, partner=archived_res_partner_bank.partner_id.name))
+                    raise UserError(
+                        _("A bank account with Account Number %(number)s already exists for Partner %(partner)s, but is archived. Please unarchive it instead.",
+                          number=acc_number, partner=archived_res_partner_bank.partner_id.name))
 
         res = super().create(vals_list)
         for account in res:
@@ -339,7 +357,8 @@ class ResPartnerBank(models.Model):
     def unlink(self):
         # EXTENDS base res.partner.bank
         for account in self:
-            msg = _("Bank Account %(link)s with number %(number)s archived", link=account._get_html_link(title=f"#{account.id}"), number=account.acc_number)
+            msg = _("Bank Account %(link)s with number %(number)s archived",
+                    link=account._get_html_link(title=f"#{account.id}"), number=account.acc_number)
             account.partner_id._message_log(body=msg)
         return super().unlink()
 

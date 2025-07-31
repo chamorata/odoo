@@ -42,12 +42,12 @@ from ....webauthn.helpers.tpm.structs import (
 
 
 def verify_tpm(
-    *,
-    attestation_statement: AttestationStatement,
-    attestation_object: bytes,
-    client_data_json: bytes,
-    credential_public_key: bytes,
-    pem_root_certs_bytes: List[bytes],
+        *,
+        attestation_statement: AttestationStatement,
+        attestation_object: bytes,
+        client_data_json: bytes,
+        credential_public_key: bytes,
+        pem_root_certs_bytes: List[bytes],
 ) -> bool:
     """Verify a "tpm" attestation statement
 
@@ -236,7 +236,8 @@ def verify_tpm(
         )
 
     # `type(tcg_at_tpm_values)` return "<class 'cryptography.x509.name.Name'>" so ignore mypy
-    tcg_at_tpm_values: Name = ext_subject_alt_name.get_values_for_type(GeneralName)[0]  # type: ignore[arg-type, assignment]
+    tcg_at_tpm_values: Name = ext_subject_alt_name.get_values_for_type(GeneralName)[
+        0]  # type: ignore[arg-type, assignment]
     tcg_at_tpm_manufacturer = None
     tcg_at_tpm_model = None
     tcg_at_tpm_version = None

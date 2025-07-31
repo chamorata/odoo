@@ -2,10 +2,12 @@
 <templates xml:space="preserve">
 
     <t t-name="web.CogMenu">
-        <div t-if="hasItems" class="o_cp_action_menus d-flex align-items-center gap-1" t-att-class="{'pe-2': !env.isSmall}">
+        <div t-if="hasItems" class="o_cp_action_menus d-flex align-items-center gap-1"
+             t-att-class="{'pe-2': !env.isSmall}">
             <div class="lh-1">
                 <Dropdown menuClass="'lh-base'" beforeOpen.bind="loadPrintItems">
-                    <button class="d-print-none btn" t-att-class="env.isSmall ? 'btn-secondary' : 'lh-sm p-0 border-0'" data-hotkey="u" data-tooltip="Actions">
+                    <button class="d-print-none btn" t-att-class="env.isSmall ? 'btn-secondary' : 'lh-sm p-0 border-0'"
+                            data-hotkey="u" data-tooltip="Actions">
                         <i class="fa fa-fw fa-cog"/>
                     </button>
 
@@ -13,23 +15,26 @@
                         <t t-if="state.printItems.length">
                             <Dropdown t-if="state.printItems.length > 1">
                                 <button>
-                                    <i class="fa fa-print me-1"/> <t t-out="props.printDropdownTitle"/>
+                                    <i class="fa fa-print me-1"/>
+                                    <t t-out="props.printDropdownTitle"/>
                                 </button>
                                 <t t-set-slot="content">
                                     <DropdownItem
-                                        t-foreach="state.printItems"
-                                        t-as="item"
-                                        t-key="item.key"
-                                        class="'o_menu_item'"
-                                        onSelected="() => this.onItemSelected(item)"
+                                            t-foreach="state.printItems"
+                                            t-as="item"
+                                            t-key="item.key"
+                                            class="'o_menu_item'"
+                                            onSelected="() => this.onItemSelected(item)"
                                     >
                                         <t t-esc="item.description"/>
                                     </DropdownItem>
                                 </t>
                             </Dropdown>
 
-                            <DropdownItem t-else="" class="'o_menu_item'" onSelected="() => this.onItemSelected(state.printItems[0])">
-                                <i class="fa fa-print me-1"/> <t t-out="state.printItems[0].description"/>
+                            <DropdownItem t-else="" class="'o_menu_item'"
+                                          onSelected="() => this.onItemSelected(state.printItems[0])">
+                                <i class="fa fa-print me-1"/>
+                                <t t-out="state.printItems[0].description"/>
                             </DropdownItem>
                         </t>
 

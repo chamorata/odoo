@@ -6,15 +6,16 @@
         <field name="arch" type="xml">
             <form string="Privacy Lookup">
                 <header>
-                    <button string="Lookup" name="action_lookup" type="object" class="oe_highlight" data-hotkey="q" invisible="line_ids"/>
+                    <button string="Lookup" name="action_lookup" type="object" class="oe_highlight" data-hotkey="q"
+                            invisible="line_ids"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button
-                            name="action_open_lines"
-                            type="object"
-                            class="oe_stat_button"
-                            icon="fa-file-text-o">
+                                name="action_open_lines"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-file-text-o">
                             <field name="line_count" string="References" widget="statinfo"/>
                         </button>
                     </div>
@@ -29,7 +30,7 @@
                         <field name="line_ids" options="{'no_open': True, 'no_create': True}" invisible="1"/>
                     </group>
                 </sheet>
-           </form>
+            </form>
         </field>
     </record>
 
@@ -49,14 +50,17 @@
                 <field name="res_model_id"/>
                 <field name="res_name" column_invisible="True"/>
                 <field name="res_model" column_invisible="True"/>
-                <field name="resource_ref" options="{'model_field': 'res_model_id', 'no_create': True}" invisible="not resource_ref"/>
-                <button name="action_open_record" type="object" icon="fa-external-link" invisible="not resource_ref" title="Open Record"/>
+                <field name="resource_ref" options="{'model_field': 'res_model_id', 'no_create': True}"
+                       invisible="not resource_ref"/>
+                <button name="action_open_record" type="object" icon="fa-external-link" invisible="not resource_ref"
+                        title="Open Record"/>
                 <field name="res_id" string="ID"/>
                 <field name="has_active" column_invisible="True"/>
                 <field name="execution_details" column_invisible="True"/>
                 <field name="is_active" widget="boolean_toggle" invisible="is_unlinked or not has_active"/>
                 <field name="is_unlinked" column_invisible="True"/>
-                <button name="action_unlink" string="Delete" type="object" icon="fa-trash" invisible="is_unlinked" confirm="This operation is irreversible. Do you wish to proceed to the record deletion?"/>
+                <button name="action_unlink" string="Delete" type="object" icon="fa-trash" invisible="is_unlinked"
+                        confirm="This operation is irreversible. Do you wish to proceed to the record deletion?"/>
             </list>
         </field>
     </record>
@@ -72,7 +76,8 @@
                 <filter string="Can be archived" name="can_be_archived" domain="[('has_active', '=', True)]"/>
                 <filter string="Archived" name="archived" domain="[('is_active', '=', False)]"/>
                 <group expand="0" string="Group By">
-                    <filter string="Model" name="group_by_res_model_id" domain="[]" context="{'group_by': 'res_model_id'}"/>
+                    <filter string="Model" name="group_by_res_model_id" domain="[]"
+                            context="{'group_by': 'res_model_id'}"/>
                 </group>
             </search>
         </field>
@@ -92,10 +97,10 @@
         <field name="model_id" ref="base.model_res_partner"/>
         <field name="binding_model_id" ref="base.model_res_partner"/>
         <field name="binding_view_types">form</field>
-        <field name="groups_id" eval="[Command.link(ref('base.group_system'))]" />
+        <field name="groups_id" eval="[Command.link(ref('base.group_system'))]"/>
         <field name="state">code</field>
         <field name="code">
-action = record.action_privacy_lookup()
+            action = record.action_privacy_lookup()
         </field>
     </record>
 
@@ -104,10 +109,10 @@ action = record.action_privacy_lookup()
         <field name="model_id" ref="base.model_res_users"/>
         <field name="binding_model_id" ref="base.model_res_users"/>
         <field name="binding_view_types">form</field>
-        <field name="groups_id" eval="[Command.link(ref('base.group_system'))]" />
+        <field name="groups_id" eval="[Command.link(ref('base.group_system'))]"/>
         <field name="state">code</field>
         <field name="code">
-action = record.partner_id.action_privacy_lookup()
+            action = record.partner_id.action_privacy_lookup()
         </field>
     </record>
 </odoo>

@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo.tests import HttpCase, tagged, new_test_user
 from odoo.addons.base.tests.common import HttpCaseWithUserDemo, HttpCaseWithUserPortal
+from odoo.tests import tagged, new_test_user
+
 
 @tagged('post_install', '-at_install')
 class TestControllersRoute(HttpCaseWithUserDemo, HttpCaseWithUserPortal):
@@ -15,7 +16,7 @@ class TestControllersRoute(HttpCaseWithUserDemo, HttpCaseWithUserPortal):
             'email': "testcompany@example.com",
             'is_company': True,
             'child_ids': [
-                (0, 0, {'name': 'Test child_1', 'type': 'contact', 'email': "testchild_1@example.com",}),
+                (0, 0, {'name': 'Test child_1', 'type': 'contact', 'email': "testchild_1@example.com", }),
             ]
         })
 
@@ -44,7 +45,8 @@ class TestControllersRoute(HttpCaseWithUserDemo, HttpCaseWithUserPortal):
         ]
 
         for login, rating_test, access_token, expected_consume in details:
-            with self.subTest(login=login, access_token=access_token, rating_test=rating_test, expected_consume=expected_consume):
+            with self.subTest(login=login, access_token=access_token, rating_test=rating_test,
+                              expected_consume=expected_consume):
                 if login == self.user_portal.login:
                     rating_test.partner_id = self.rated_partner.child_ids.id
                     self.partner_portal.parent_id = self.rated_partner.id

@@ -7,9 +7,10 @@
             <search string="On-time Delivery">
                 <field name="partner_id"/>
                 <field name="product_id"/>
-                <filter string="Effective Date Last Year" name="later_than_a_year_ago"  domain="[('date', '&gt;=', ((context_today()-relativedelta(years=1)).strftime('%Y-%m-%d')))]"/>
+                <filter string="Effective Date Last Year" name="later_than_a_year_ago"
+                        domain="[('date', '&gt;=', ((context_today()-relativedelta(years=1)).strftime('%Y-%m-%d')))]"/>
             </search>
-            </field>
+        </field>
     </record>
 
     <record id="vendor_delay_report_view_graph" model="ir.ui.view">

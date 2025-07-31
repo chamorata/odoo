@@ -15,7 +15,8 @@ class EmployeeBase(models.AbstractModel):
         user = self.env.user
         employee = user.employee_id
         if user.has_groups('hr_expense.group_hr_expense_user') or user.has_groups('account.group_account_user'):
-            res = ['|', ('company_id', '=', False), ('company_id', 'child_of', self.env.company.root_id.id)]  # Then, domain accepts everything
+            res = ['|', ('company_id', '=', False),
+                   ('company_id', 'child_of', self.env.company.root_id.id)]  # Then, domain accepts everything
         elif user.has_groups('hr_expense.group_hr_expense_team_approver') and user.employee_ids:
             res = [
                 '|', '|', '|',
@@ -26,7 +27,8 @@ class EmployeeBase(models.AbstractModel):
                 '|', ('company_id', '=', False), ('company_id', '=', employee.company_id.id),
             ]
         elif user.employee_id:
-            res = [('id', '=', employee.id), '|', ('company_id', '=', False), ('company_id', '=', employee.company_id.id)]
+            res = [('id', '=', employee.id), '|', ('company_id', '=', False),
+                   ('company_id', '=', employee.company_id.id)]
         return res
 
 

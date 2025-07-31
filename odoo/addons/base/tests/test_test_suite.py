@@ -95,7 +95,8 @@ class TestRunnerLoggingCommon(TransactionCase):
             expected_first_frame_method = self.expected_first_frame_methods.pop(0)
         first_frame_method = tb.tb_frame.f_code.co_name
         if first_frame_method != expected_first_frame_method:
-            self._log_error(f"Checking first tb frame: {first_frame_method} is not equal to {expected_first_frame_method}")
+            self._log_error(
+                f"Checking first tb frame: {first_frame_method} is not equal to {expected_first_frame_method}")
 
     def _check_log_records(self, log_records):
         """ Check that what was logged is what was expected. """
@@ -158,14 +159,16 @@ class TestRunnerLogging(TestRunnerLoggingCommon):
         """
         with subtest, we expect to have multiple errors, one per subtest
         """
+
         def make_message(message):
             return (
-f'''ERROR: Subtest TestRunnerLogging.test_raise_subtest (<subtest>)
+                f'''ERROR: Subtest TestRunnerLogging.test_raise_subtest (<subtest>)
 Traceback (most recent call last):
   File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in test_raise_subtest
     raise Exception('{message}')
 Exception: {message}
 ''')
+
         self.expected_logs = [
             (logging.INFO, '=' * 70),
             (logging.ERROR, make_message('This is an error')),
@@ -191,18 +194,18 @@ Exception: {message}
         # note, this test may be broken with a decorator in decorator=5.0.5 since the behaviour changed
         # but decoratorx was not introduced yet.
         message = (
-'''ERROR: Subtest TestRunnerLogging.test_with_decorators (login='__system__')
-Traceback (most recent call last):
-  File "<decorator-gen-xxx>", line $line, in test_with_decorators
-  File "/root_path/odoo/odoo/tests/common.py", line $line, in _users
-    func(*args, **kwargs)
-  File "<decorator-gen-xxx>", line $line, in test_with_decorators
-  File "/root_path/odoo/odoo/tests/common.py", line $line, in warmup
-    func(*args, **kwargs)
-  File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in test_with_decorators
-    raise Exception('This is an error')
-Exception: This is an error
-''')
+            '''ERROR: Subtest TestRunnerLogging.test_with_decorators (login='__system__')
+            Traceback (most recent call last):
+              File "<decorator-gen-xxx>", line $line, in test_with_decorators
+              File "/root_path/odoo/odoo/tests/common.py", line $line, in _users
+                func(*args, **kwargs)
+              File "<decorator-gen-xxx>", line $line, in test_with_decorators
+              File "/root_path/odoo/odoo/tests/common.py", line $line, in warmup
+                func(*args, **kwargs)
+              File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in test_with_decorators
+                raise Exception('This is an error')
+            Exception: This is an error
+            ''')
         self.expected_logs = [
             (logging.INFO, '=' * 70),
             (logging.ERROR, message),
@@ -227,18 +230,18 @@ Exception: This is an error
 
     def test_call_stack(self):
         message = (
-'''ERROR: TestRunnerLogging.test_call_stack
-Traceback (most recent call last):
-  File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in test_call_stack
-    alpha()
-  File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in alpha
-    beta()
-  File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in beta
-    gamma()
-  File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in gamma
-    raise Exception('This is an error')
-Exception: This is an error
-''')
+            '''ERROR: TestRunnerLogging.test_call_stack
+            Traceback (most recent call last):
+              File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in test_call_stack
+                alpha()
+              File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in alpha
+                beta()
+              File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in beta
+                gamma()
+              File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in gamma
+                raise Exception('This is an error')
+            Exception: This is an error
+            ''')
         self.expected_logs = [
             (logging.INFO, '=' * 70),
             (logging.ERROR, message),
@@ -257,18 +260,18 @@ Exception: This is an error
 
     def test_call_stack_context_manager(self):
         message = (
-'''ERROR: TestRunnerLogging.test_call_stack_context_manager
-Traceback (most recent call last):
-  File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in test_call_stack_context_manager
-    alpha()
-  File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in alpha
-    beta()
-  File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in beta
-    gamma()
-  File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in gamma
-    raise Exception('This is an error')
-Exception: This is an error
-''')
+            '''ERROR: TestRunnerLogging.test_call_stack_context_manager
+            Traceback (most recent call last):
+              File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in test_call_stack_context_manager
+                alpha()
+              File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in alpha
+                beta()
+              File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in beta
+                gamma()
+              File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in gamma
+                raise Exception('This is an error')
+            Exception: This is an error
+            ''')
         self.expected_logs = [
             (logging.INFO, '=' * 70),
             (logging.ERROR, message),
@@ -289,18 +292,18 @@ Exception: This is an error
 
     def test_call_stack_subtest(self):
         message = (
-'''ERROR: Subtest TestRunnerLogging.test_call_stack_subtest (<subtest>)
-Traceback (most recent call last):
-  File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in test_call_stack_subtest
-    alpha()
-  File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in alpha
-    beta()
-  File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in beta
-    gamma()
-  File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in gamma
-    raise Exception('This is an error')
-Exception: This is an error
-''')
+            '''ERROR: Subtest TestRunnerLogging.test_call_stack_subtest (<subtest>)
+            Traceback (most recent call last):
+              File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in test_call_stack_subtest
+                alpha()
+              File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in alpha
+                beta()
+              File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in beta
+                gamma()
+              File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in gamma
+                raise Exception('This is an error')
+            Exception: This is an error
+            ''')
         self.expected_logs = [
             (logging.INFO, '=' * 70),
             (logging.ERROR, message),
@@ -320,16 +323,16 @@ Exception: This is an error
 
     def test_assertQueryCount(self):
         message = (
-'''FAIL: Subtest TestRunnerLogging.test_assertQueryCount (<subtest>)
-Traceback (most recent call last):
-  File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in test_assertQueryCount
-    with self.assertQueryCount(system=0):
-  File "/usr/lib/python/contextlib.py", line $line, in __exit__
-    next(self.gen)
-  File "/root_path/odoo/odoo/tests/common.py", line $line, in assertQueryCount
-    self.fail(msg % (login, count, expected, funcname, filename, linenum))
-AssertionError: Query count more than expected for user __system__: 1 > 0 in test_assertQueryCount at base/tests/test_test_suite.py:$line
-''')
+            '''FAIL: Subtest TestRunnerLogging.test_assertQueryCount (<subtest>)
+            Traceback (most recent call last):
+              File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in test_assertQueryCount
+                with self.assertQueryCount(system=0):
+              File "/usr/lib/python/contextlib.py", line $line, in __exit__
+                next(self.gen)
+              File "/root_path/odoo/odoo/tests/common.py", line $line, in assertQueryCount
+                self.fail(msg % (login, count, expected, funcname, filename, linenum))
+            AssertionError: Query count more than expected for user __system__: 1 > 0 in test_assertQueryCount at base/tests/test_test_suite.py:$line
+            ''')
         self.expected_logs = [
             (logging.INFO, '=' * 70),
             (logging.ERROR, message),
@@ -345,16 +348,16 @@ AssertionError: Query count more than expected for user __system__: 1 > 0 in tes
 
     def test_reraise(self):
         message = (
-'''ERROR: TestRunnerLogging.test_reraise
-Traceback (most recent call last):
-  File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in test_reraise
-    alpha()
-  File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in alpha
-    beta()
-  File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in beta
-    raise Exception('This is an error')
-Exception: This is an error
-''')
+            '''ERROR: TestRunnerLogging.test_reraise
+            Traceback (most recent call last):
+              File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in test_reraise
+                alpha()
+              File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in alpha
+                beta()
+              File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in beta
+                raise Exception('This is an error')
+            Exception: This is an error
+            ''')
         self.expected_logs = [
             (logging.INFO, '=' * 70),
             (logging.ERROR, message),
@@ -374,23 +377,23 @@ Exception: This is an error
 
     def test_handle_error(self):
         message = (
-'''ERROR: TestRunnerLogging.test_handle_error
-Traceback (most recent call last):
-  File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in alpha
-    beta()
-  File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in beta
-    raise Exception('This is an error')
-Exception: This is an error
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in test_handle_error
-    alpha()
-  File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in alpha
-    raise Exception('This is an error2')
-Exception: This is an error2
-''')
+            '''ERROR: TestRunnerLogging.test_handle_error
+            Traceback (most recent call last):
+              File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in alpha
+                beta()
+              File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in beta
+                raise Exception('This is an error')
+            Exception: This is an error
+            
+            During handling of the above exception, another exception occurred:
+            
+            Traceback (most recent call last):
+              File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in test_handle_error
+                alpha()
+              File "/root_path/odoo/odoo/addons/base/tests/test_test_suite.py", line $line, in alpha
+                raise Exception('This is an error2')
+            Exception: This is an error2
+            ''')
         self.expected_logs = [
             (logging.INFO, '=' * 70),
             (logging.ERROR, message),
@@ -420,10 +423,12 @@ class TestRunnerLoggingSetup(TestRunnerLoggingCommon):
 
         def cleanupError():
             raise Exception("This is a cleanup error")
+
         self.addCleanup(cleanupError)
 
         def cleanupError2():
             raise Exception("This is a second cleanup error")
+
         self.addCleanup(cleanupError2)
 
         raise Exception('This is a setup error')
@@ -449,10 +454,12 @@ class TestRunnerLoggingTeardown(TestRunnerLoggingCommon):
 
         def cleanupError():
             raise Exception("This is a cleanup error")
+
         self.addCleanup(cleanupError)
 
         def cleanupError2():
             raise Exception("This is a second cleanup error")
+
         self.addCleanup(cleanupError2)
 
     def tearDown(self):
@@ -511,6 +518,7 @@ class Test01ClassCleanups(BaseCase):
 
         def doCleanup():
             cls.cleanup = True
+
         cls.addClassCleanup(doCleanup)
 
     def test_dummy(self):
@@ -519,7 +527,8 @@ class Test01ClassCleanups(BaseCase):
 
 class Test02ClassCleanupsCheck(BaseCase):
     def test_classcleanups(self):
-        self.assertTrue(Test01ClassCleanups.executed, "This test only makes sence when executed after Test01ClassCleanups")
+        self.assertTrue(Test01ClassCleanups.executed,
+                        "This test only makes sence when executed after Test01ClassCleanups")
         self.assertTrue(Test01ClassCleanups.cleanup, "TestClassCleanup shoudl have been cleanuped")
 
 

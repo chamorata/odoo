@@ -2,16 +2,15 @@
 
 from unittest.mock import patch
 
+from odoo.addons.payment import utils as payment_utils
+from odoo.addons.payment.tests.http_common import PaymentHttpCommon
+from odoo.addons.payment_xendit.controllers.main import XenditController
+from odoo.addons.payment_xendit.tests.common import XenditCommon
 from werkzeug.exceptions import Forbidden
 from werkzeug.urls import url_encode
 
 from odoo.tests import tagged
 from odoo.tools import mute_logger
-
-from odoo.addons.payment import utils as payment_utils
-from odoo.addons.payment.tests.http_common import PaymentHttpCommon
-from odoo.addons.payment_xendit.controllers.main import XenditController
-from odoo.addons.payment_xendit.tests.common import XenditCommon
 
 
 @tagged('post_install', '-at_install')
@@ -24,8 +23,8 @@ class TestProcessingFlow(XenditCommon, PaymentHttpCommon):
         self._create_transaction('redirect')
         url = self._build_url(XenditController._webhook_url)
         with patch(
-            'odoo.addons.payment_xendit.controllers.main.XenditController'
-            '._verify_notification_token'
+                'odoo.addons.payment_xendit.controllers.main.XenditController'
+                '._verify_notification_token'
         ), patch(
             'odoo.addons.payment.models.payment_transaction.PaymentTransaction'
             '._handle_notification_data'
@@ -39,8 +38,8 @@ class TestProcessingFlow(XenditCommon, PaymentHttpCommon):
         self._create_transaction('redirect')
         url = self._build_url(XenditController._webhook_url)
         with patch(
-            'odoo.addons.payment_xendit.controllers.main.XenditController.'
-            '_verify_notification_token'
+                'odoo.addons.payment_xendit.controllers.main.XenditController.'
+                '_verify_notification_token'
         ) as signature_check_mock:
             self._make_json_request(url, data=self.webhook_notification_data)
             self.assertEqual(signature_check_mock.call_count, 1)

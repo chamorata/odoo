@@ -27,7 +27,7 @@ class TestPackingNeg(TransactionCase):
             'seller_ids': [(0, 0, {
                 'delay': 1,
                 'partner_id': res_partner_2.id,
-                'min_qty': 2.0,})],
+                'min_qty': 2.0, })],
             'uom_id': self.ref('uom.product_uom_unit'),
             'uom_po_id': self.ref('uom.product_uom_unit'),
         })
@@ -124,8 +124,8 @@ class TestPackingNeg(TransactionCase):
                 rec.result_package_id = False
             elif rec.package_id.name == 'Palneg 2' and rec.lot_id.name == 'Lot neg':
                 rec.write({
-                  'quantity': 140,
-                  'result_package_id': False,
+                    'quantity': 140,
+                    'result_package_id': False,
                 })
             elif rec.package_id.name == 'Palneg 3':
                 rec.quantity = 10
@@ -141,12 +141,14 @@ class TestPackingNeg(TransactionCase):
         pallet_3_stock_qty = 0
         for rec in records:
             if rec.package_id.name == 'Palneg 2' and rec.location_id.id == self.ref('stock.stock_location_stock'):
-                self.assertTrue(rec.quantity == -20, "Should have -20 pieces in stock on pallet 2. Got " + str(rec.quantity))
+                self.assertTrue(rec.quantity == -20,
+                                "Should have -20 pieces in stock on pallet 2. Got " + str(rec.quantity))
                 self.assertTrue(rec.lot_id.name == 'Lot neg', "It should have kept its Lot")
             elif rec.package_id.name == 'Palneg 3' and rec.location_id.id == self.ref('stock.stock_location_stock'):
                 pallet_3_stock_qty += rec.quantity
             else:
-                self.assertTrue(rec.location_id.id != self.ref('stock.stock_location_stock'), "Unrecognized quant in stock")
+                self.assertTrue(rec.location_id.id != self.ref('stock.stock_location_stock'),
+                                "Unrecognized quant in stock")
         self.assertEqual(pallet_3_stock_qty, 50, "Should have 50 pieces in stock on pallet 3")
 
         # Create a picking for reconciling the negative quant

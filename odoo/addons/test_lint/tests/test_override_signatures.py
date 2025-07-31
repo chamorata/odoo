@@ -1,12 +1,10 @@
 import collections
 import inspect
-import itertools
 
 import odoo
 from odoo.modules.registry import Registry
 from odoo.tests.common import get_db_name, tagged
 from .lint_case import LintCase
-
 
 POSITIONAL_ONLY = inspect.Parameter.POSITIONAL_ONLY
 POSITIONAL_OR_KEYWORD = inspect.Parameter.POSITIONAL_OR_KEYWORD
@@ -14,7 +12,6 @@ VAR_POSITIONAL = inspect.Parameter.VAR_POSITIONAL
 KEYWORD_ONLY = inspect.Parameter.KEYWORD_ONLY
 VAR_KEYWORD = inspect.Parameter.VAR_KEYWORD
 EMPTY = inspect.Parameter.empty
-
 
 failure_message = """\
 Invalid override of {model}.{method} in {child_module}, {message}.
@@ -25,24 +22,26 @@ Original definition in {parent_module}:
 Incompatible definition in {child_module}:
     def {method}{override_signature}"""
 
-
 methods_to_sanitize = {
-    method_name
-    for method_name in dir(odoo.models.BaseModel)
-    if not method_name.startswith('_')
-} - {
-    # Not yet sanitized...
-    'write', 'create', 'default_get', 'init'
-}
+                          method_name
+                          for method_name in dir(odoo.models.BaseModel)
+                          if not method_name.startswith('_')
+                      } - {
+                          # Not yet sanitized...
+                          'write', 'create', 'default_get', 'init'
+                      }
 
 
 class HitMiss:
     def __init__(self):
         self.hit = 0
         self.miss = 0
+
     @property
     def ratio(self):
         return self.hit / (self.hit + self.miss)
+
+
 counter = collections.defaultdict(HitMiss)
 
 
@@ -157,7 +156,7 @@ class TestLintOverrideSignatures(LintCase):
                             )
                             raise TypeError(msg) from None
 
-        #with open('/tmp/odoo-override-signatures.md', 'w') as f:
+        # with open('/tmp/odoo-override-signatures.md', 'w') as f:
         #    f.write('method|hit|miss|ratio\n')
         #    f.write('------|---|----|-----\n')
         #    for method_name, hm in sorted(counter.items(), key=lambda x: x[1].miss):

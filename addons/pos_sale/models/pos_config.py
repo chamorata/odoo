@@ -11,8 +11,8 @@ class PosConfig(models.Model):
         'crm.team', string="Sales Team", ondelete="set null",
         help="This Point of sale's sales will be related to this Sales Team.")
     down_payment_product_id = fields.Many2one('product.product',
-        string="Down Payment Product",
-        help="This product will be used as down payment on a sale order.")
+                                              string="Down Payment Product",
+                                              help="This product will be used as down payment on a sale order.")
 
     def _get_special_products(self):
         res = super()._get_special_products()

@@ -14,7 +14,6 @@ from . import Command
 
 _logger = logging.getLogger(__name__)
 
-
 """
     Shell exit behaviors
     ====================

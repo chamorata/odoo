@@ -50,7 +50,7 @@ class IrMailServer(models.Model):
             matching = next(
                 (alias_domain for alias_domain in alias_domains
                  if self._match_from_filter(alias_domain.default_from_email, self.from_filter)
-                ), False
+                 ), False
             )
             if matching:
                 return matching.default_from_email

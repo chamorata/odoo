@@ -45,13 +45,18 @@ class PosOrder(models.Model):
         to_invoice = order.get('to_invoice')
 
         for refunded_order in refunded_orders:
-            submitted = ((refunded_order.is_invoiced and refunded_order.account_move.l10n_my_edi_state in ["in_progress", "valid", "rejected"])
-                         or (refunded_order._get_active_consolidated_invoice() and refunded_order._get_active_consolidated_invoice().myinvois_state in ["in_progress", "valid", "rejected"]))
+            submitted = ((refunded_order.is_invoiced and refunded_order.account_move.l10n_my_edi_state in [
+                "in_progress", "valid", "rejected"])
+                         or (
+                                     refunded_order._get_active_consolidated_invoice() and refunded_order._get_active_consolidated_invoice().myinvois_state in [
+                                 "in_progress", "valid", "rejected"]))
 
             if submitted and not to_invoice:
-                raise UserError(refunded_order.env._('You must invoice a refund for an order that has been submitted to MyInvois.'))
+                raise UserError(
+                    refunded_order.env._('You must invoice a refund for an order that has been submitted to MyInvois.'))
             if not submitted and to_invoice:
-                raise UserError(refunded_order.env._('You cannot invoice a refund for an order that has not been submitted to MyInvois yet.'))
+                raise UserError(refunded_order.env._(
+                    'You cannot invoice a refund for an order that has not been submitted to MyInvois yet.'))
 
             if refunded_order._get_active_consolidated_invoice():
                 if not to_invoice:
@@ -73,18 +78,21 @@ class PosOrder(models.Model):
         if self.company_id._l10n_my_edi_enabled():
             for order in self:
                 if order._get_active_consolidated_invoice():
-                    raise UserError(order.env._("This order has been included in a consolidated invoice and cannot be invoiced separately."))
+                    raise UserError(order.env._(
+                        "This order has been included in a consolidated invoice and cannot be invoiced separately."))
 
                 refunded_consolidated_invoice = order.refunded_order_id and order.refunded_order_id._get_active_consolidated_invoice()
-                refunding_consolidated_invoice = refunded_consolidated_invoice and refunded_consolidated_invoice.myinvois_state in ["in_progress", "valid", "rejected"]
+                refunding_consolidated_invoice = refunded_consolidated_invoice and refunded_consolidated_invoice.myinvois_state in [
+                    "in_progress", "valid", "rejected"]
                 # We can skip this check when refunding a consolidated invoice, since the customer in the XML is fixed.
                 if not refunding_consolidated_invoice:
                     partner = order.partner_id
                     if (
-                        not partner.l10n_my_identification_type
-                        or not partner.l10n_my_identification_number
+                            not partner.l10n_my_identification_type
+                            or not partner.l10n_my_identification_number
                     ):
-                        raise UserError(order.env._("You must set the identification information on the commercial partner."))
+                        raise UserError(
+                            order.env._("You must set the identification information on the commercial partner."))
                     if not partner._l10n_my_edi_get_tin_for_myinvois():
                         raise UserError(order.env._("You must set a TIN number on the commercial partner."))
 
@@ -121,7 +129,8 @@ class PosOrder(models.Model):
                 'type': 'ir.actions.act_window',
                 'res_model': 'myinvois.document',
                 'view_mode': 'list,form',
-                'views': [(self.env.ref('l10n_my_edi_pos.myinvois_document_pos_list_view').id, 'list'), (self.env.ref('l10n_my_edi_pos.myinvois_document_pos_form_view').id, 'form')],
+                'views': [(self.env.ref('l10n_my_edi_pos.myinvois_document_pos_list_view').id, 'list'),
+                          (self.env.ref('l10n_my_edi_pos.myinvois_document_pos_form_view').id, 'form')],
                 'domain': [('id', 'in', self._get_active_consolidated_invoice().ids)],
             }
         return action_vals
@@ -132,4 +141,5 @@ class PosOrder(models.Model):
 
     def _get_active_consolidated_invoice(self):
         """ Small helper to get the currently active consolidated invoice if more that one is linked to an order. """
-        return self.env['myinvois.document'].union(*[order.consolidated_invoice_ids.filtered(lambda i: i.myinvois_state != 'cancelled')[:1] for order in self])
+        return self.env['myinvois.document'].union(
+            *[order.consolidated_invoice_ids.filtered(lambda i: i.myinvois_state != 'cancelled')[:1] for order in self])

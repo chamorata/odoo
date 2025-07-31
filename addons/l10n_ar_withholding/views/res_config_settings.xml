@@ -6,7 +6,8 @@
         <field name="inherit_id" ref="l10n_ar.res_config_settings_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="//block[@id='argentina_localization']" position="inside">
-                <setting id="withholding_tax" string="Withholding"  company_dependent="1" title="Account that will be set on lines created to represent the tax base amounts.">
+                <setting id="withholding_tax" string="Withholding" company_dependent="1"
+                         title="Account that will be set on lines created to represent the tax base amounts.">
                     <div class="content-group" invisible="country_code != 'AR'">
                         <div class="row mt16">
                             <label for="l10n_ar_tax_base_account_id" class="col-lg-3 o_light_label"/>

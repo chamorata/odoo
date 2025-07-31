@@ -11,7 +11,8 @@
                     <div class="input-group">
                         <input type="text" class="form-control text-center" t-att-value="this.props.url"
                                readonly="readonly" onClick="this.select();"/>
-                        <CopyButton content="this.props.url" copyText="copyUrlText" className="'btn-primary'" successText="successText"/>
+                        <CopyButton content="this.props.url" copyText="copyUrlText" className="'btn-primary'"
+                                    successText="successText"/>
                     </div>
                 </div>
                 <div class="col-12 mt-4">
@@ -54,7 +55,8 @@
                         <CopyButton content="this.props.embedCode" copyText="copyEmbedCodeText"
                                     successText="successText"/>
                     </div>
-                    <div t-if="this.props.category == 'document' and this.props.documentMaxPage > 1" class="input-group mt-4">
+                    <div t-if="this.props.category == 'document' and this.props.documentMaxPage > 1"
+                         class="input-group mt-4">
                         <span class="input-group-text">Start at Page</span>
                         <input type="number" class="form-control" t-on-change="onPageChange"
                                value="1" min="1" t-att-max="this.props.documentMaxPage"/>

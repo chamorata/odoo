@@ -11,7 +11,8 @@ class AccountMoveSend(models.AbstractModel):
     def _get_all_extra_edis(self) -> dict:
         # EXTENDS 'account'
         res = super()._get_all_extra_edis()
-        res.update({'es_tbai': {'label': _("TicketBAI"), 'is_applicable': self._is_tbai_applicable, 'help': _('Send the e-invoice to the Basque Government.')}})
+        res.update({'es_tbai': {'label': _("TicketBAI"), 'is_applicable': self._is_tbai_applicable,
+                                'help': _('Send the e-invoice to the Basque Government.')}})
         return res
 
     # -------------------------------------------------------------------------
@@ -24,11 +25,12 @@ class AccountMoveSend(models.AbstractModel):
 
     def _get_placeholder_mail_attachments_data(self, move, invoice_edi_format=None, extra_edis=None):
         # EXTENDS 'account'
-        results = super()._get_placeholder_mail_attachments_data(move, invoice_edi_format=invoice_edi_format, extra_edis=extra_edis)
+        results = super()._get_placeholder_mail_attachments_data(move, invoice_edi_format=invoice_edi_format,
+                                                                 extra_edis=extra_edis)
 
         if (
-            not move.l10n_es_tbai_post_document_id.xml_attachment_id
-            and 'es_tbai' in extra_edis
+                not move.l10n_es_tbai_post_document_id.xml_attachment_id
+                and 'es_tbai' in extra_edis
         ):
             filename = move._l10n_es_tbai_get_attachment_name()
             results.append({

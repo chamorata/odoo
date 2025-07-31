@@ -21,7 +21,9 @@
                             <t t-esc="state.error"/>
                         </div>
                         <div class="text-end my-3">
-                            <button type="submit" class="o_portal_sign_submit btn btn-primary" t-on-click.prevent="onClickSubmit" t-att-disabled="signature.isSignatureEmpty ? 'disabled' : ''">
+                            <button type="submit" class="o_portal_sign_submit btn btn-primary"
+                                    t-on-click.prevent="onClickSubmit"
+                                    t-att-disabled="signature.isSignatureEmpty ? 'disabled' : ''">
                                 <i class="fa fa-check me-1"/>
                                 <t t-esc="sendLabel"/>
                             </button>

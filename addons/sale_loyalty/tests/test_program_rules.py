@@ -1,12 +1,12 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import date, timedelta
+
 from freezegun import freeze_time
+from odoo.addons.sale_loyalty.tests.common import TestSaleCouponCommon
 
 from odoo import Command
 from odoo.exceptions import ValidationError
-
-from odoo.addons.sale_loyalty.tests.common import TestSaleCouponCommon
 
 
 class TestProgramRules(TestSaleCouponCommon):
@@ -39,7 +39,8 @@ class TestProgramRules(TestSaleCouponCommon):
         ]})
         order._update_programs_and_rewards()
         self._claim_reward(order, self.immediate_promotion_program)
-        self.assertEqual(len(order.order_line.ids), 2, "The promo offer shouldn't have been applied as the purchased amount is not enough")
+        self.assertEqual(len(order.order_line.ids), 2,
+                         "The promo offer shouldn't have been applied as the purchased amount is not enough")
 
         order = self.env['sale.order'].create({'partner_id': self.partner.id})
         order.write({'order_line': [
@@ -59,19 +60,22 @@ class TestProgramRules(TestSaleCouponCommon):
         order._update_programs_and_rewards()
         self._claim_reward(order, self.immediate_promotion_program)
         # 10*100 + 5 = 1005
-        self.assertEqual(len(order.order_line.ids), 2, "The promo offer should not be applied as the purchased amount is not enough")
+        self.assertEqual(len(order.order_line.ids), 2,
+                         "The promo offer should not be applied as the purchased amount is not enough")
 
         self.immediate_promotion_program.rule_ids.minimum_amount = 1005
         order._update_programs_and_rewards()
         self._claim_reward(order, self.immediate_promotion_program)
-        self.assertEqual(len(order.order_line.ids), 3, "The promo offer should be applied as the purchased amount is now enough")
+        self.assertEqual(len(order.order_line.ids), 3,
+                         "The promo offer should be applied as the purchased amount is now enough")
 
         # 10*(100*1.15) + (5*1.15) = 10*115 + 5.75 = 1155.75
         self.immediate_promotion_program.rule_ids.minimum_amount = 1006
         self.immediate_promotion_program.rule_ids.minimum_amount_tax_mode = 'incl'
         order._update_programs_and_rewards()
         self._claim_reward(order, self.immediate_promotion_program)
-        self.assertEqual(len(order.order_line.ids), 3, "The promo offer should be applied as the initial amount required is now tax included")
+        self.assertEqual(len(order.order_line.ids), 3,
+                         "The promo offer should be applied as the initial amount required is now tax included")
 
     def test_program_rules_min_amount_not_reached_and_specific_product(self):
         """
@@ -200,7 +204,8 @@ class TestProgramRules(TestSaleCouponCommon):
         })
 
         # Default value for coupon generate wizard is generate by quantity and generate only one coupon
-        self.env['loyalty.generate.wizard'].with_context(active_id=program.id).create({'coupon_qty': 1, 'points_granted': 1}).generate_coupons()
+        self.env['loyalty.generate.wizard'].with_context(active_id=program.id).create(
+            {'coupon_qty': 1, 'points_granted': 1}).generate_coupons()
         coupon = program.coupon_ids[0]
 
         # Not enough amount since we only have 220 (100*2 + 5*4)
@@ -218,12 +223,14 @@ class TestProgramRules(TestSaleCouponCommon):
         self._apply_promo_code(order, coupon.code)
         self._claim_reward(order, program, coupon)
 
-        self.assertEqual(len(order.order_line.ids), 3, "The order should contain the Product A line, the Product B line and the discount line")
+        self.assertEqual(len(order.order_line.ids), 3,
+                         "The order should contain the Product A line, the Product B line and the discount line")
 
         sol1.product_uom_qty = 2
         order._update_programs_and_rewards()
 
-        self.assertEqual(len(order.order_line.ids), 2, "The discount line should have been removed as we don't meet the program requirements")
+        self.assertEqual(len(order.order_line.ids), 2,
+                         "The discount line should have been removed as we don't meet the program requirements")
 
     def test_program_rules_promotion_use_best(self):
         ''' This test verifies that only the best global discount is applied.

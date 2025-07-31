@@ -1,14 +1,14 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from pytz import UTC, timezone
-from datetime import datetime
 from collections import defaultdict
+from datetime import datetime
 from functools import reduce
 
-from odoo import api, models
-
-from odoo.osv import expression
 from odoo.addons.resource.models.utils import Intervals
+from pytz import UTC, timezone
+
+from odoo import api, models
+from odoo.osv import expression
 
 
 class Partner(models.Model):
@@ -24,7 +24,8 @@ class Partner(models.Model):
                 domain,
                 [('work_contact_id', 'in', self.ids)]
             ])
-        return dict(self.env['hr.employee'].sudo()._read_group(domain, groupby=['work_contact_id'], aggregates=['id:recordset']))
+        return dict(self.env['hr.employee'].sudo()._read_group(domain, groupby=['work_contact_id'],
+                                                               aggregates=['id:recordset']))
 
     def _get_schedule(self, start_period, stop_period, everybody=False, merge=True):
         """
@@ -57,7 +58,8 @@ class Partner(models.Model):
 
         # Compute all work intervals per calendar
         for calendar, resources in resources_by_calendar.items():
-            work_intervals = calendar._work_intervals_batch(start_period, stop_period, resources=resources, tz=timezone(calendar.tz))
+            work_intervals = calendar._work_intervals_batch(start_period, stop_period, resources=resources,
+                                                            tz=timezone(calendar.tz))
             del work_intervals[False]
             # Merge all employees intervals to avoid to compute it multiples times
             if merge:
@@ -70,7 +72,7 @@ class Partner(models.Model):
         for employee, calendar_periods in calendar_periods_by_employee.items():
             employee_interval = Intervals([])
             for (start, stop, calendar) in calendar_periods:
-                calendar = calendar or self.env.company.resource_calendar_id # No calendar if fully flexible
+                calendar = calendar or self.env.company.resource_calendar_id  # No calendar if fully flexible
                 interval = Intervals([(start, stop, self.env['resource.calendar'])])
                 if merge:
                     calendar_interval = interval_by_calendar[calendar]
@@ -95,7 +97,8 @@ class Partner(models.Model):
         start_period = datetime.fromisoformat(date_from).replace(hour=0, minute=0, second=0, tzinfo=UTC)
         stop_period = datetime.fromisoformat(date_to).replace(hour=23, minute=59, second=59, tzinfo=UTC)
 
-        schedule_by_partner = self.env['res.partner'].browse(attendee_ids)._get_schedule(start_period, stop_period, everybody)
+        schedule_by_partner = self.env['res.partner'].browse(attendee_ids)._get_schedule(start_period, stop_period,
+                                                                                         everybody)
         if not schedule_by_partner:
             return []
         return self._interval_to_business_hours(reduce(Intervals.__and__, schedule_by_partner.values()))
@@ -104,12 +107,12 @@ class Partner(models.Model):
         # This is the format expected by the fullcalendar library to do the overlay
         return [{
             "daysOfWeek": [(interval[0].weekday() + 1) % 7],
-            "startTime":  interval[0].astimezone(timezone(self.env.user.tz or 'UTC')).strftime("%H:%M"),
+            "startTime": interval[0].astimezone(timezone(self.env.user.tz or 'UTC')).strftime("%H:%M"),
             "endTime": interval[1].astimezone(timezone(self.env.user.tz or 'UTC')).strftime("%H:%M"),
         } for interval in working_intervals] if working_intervals else [{
             # 7 is used a dummy value to gray the full week
             # Returning an empty list would leave the week uncolored
             "daysOfWeek": [7],
-            "startTime":  datetime.today().strftime("00:00"),
+            "startTime": datetime.today().strftime("00:00"),
             "endTime": datetime.today().strftime("00:00"),
         }]

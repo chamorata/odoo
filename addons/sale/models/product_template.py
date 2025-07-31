@@ -3,10 +3,9 @@
 from collections import defaultdict
 
 from odoo import _, api, fields, models
+from odoo.addons.base.models.res_partner import WARNING_HELP, WARNING_MESSAGE
 from odoo.exceptions import ValidationError
 from odoo.tools import float_round, format_list
-
-from odoo.addons.base.models.res_partner import WARNING_HELP, WARNING_MESSAGE
 
 
 class ProductTemplate(models.Model):
@@ -111,7 +110,9 @@ class ProductTemplate(models.Model):
     @api.depends('product_variant_ids.sales_count')
     def _compute_sales_count(self):
         for product in self:
-            product.sales_count = float_round(sum([p.sales_count for p in product.with_context(active_test=False).product_variant_ids]), precision_rounding=product.uom_id.rounding)
+            product.sales_count = float_round(
+                sum([p.sales_count for p in product.with_context(active_test=False).product_variant_ids]),
+                precision_rounding=product.uom_id.rounding)
 
     @api.constrains('company_id')
     def _check_sale_product_company(self):
@@ -126,7 +127,8 @@ class ProductTemplate(models.Model):
             products_by_compagny[product.company_id] |= product
 
         for target_company, products in products_by_compagny.items():
-            subquery_products = self.env['product.product'].sudo().with_context(active_test=False)._search([('product_tmpl_id', 'in', products.ids)])
+            subquery_products = self.env['product.product'].sudo().with_context(active_test=False)._search(
+                [('product_tmpl_id', 'in', products.ids)])
             so_lines = self.env['sale.order.line'].sudo().search_read(
                 [('product_id', 'in', subquery_products), '!', ('company_id', 'child_of', target_company.id)],
                 fields=['id', 'product_id'])
@@ -137,7 +139,8 @@ class ProductTemplate(models.Model):
                                         'sales orders in another company:\n%(used_products)s\n'
                                         'You can archive these products and recreate them '
                                         'with your company restriction instead, or leave them as '
-                                        'shared product.', company=target_company.name, used_products=', '.join(used_products)))
+                                        'shared product.', company=target_company.name,
+                                        used_products=', '.join(used_products)))
 
     def action_view_sales(self):
         action = self.env['ir.actions.actions']._for_xml_id('sale.report_all_channels_sales_action')
@@ -219,7 +222,7 @@ class ProductTemplate(models.Model):
             has_optional_products = False
             for optional_product in self.product_variant_id.optional_product_ids:
                 if optional_product.has_dynamic_attributes() or optional_product._get_possible_variants(
-                    self.product_variant_id.product_template_attribute_value_ids
+                        self.product_variant_id.product_template_attribute_value_ids
                 ):
                     has_optional_products = True
                     break
@@ -254,7 +257,7 @@ class ProductTemplate(models.Model):
 
     @api.model
     def _get_configurator_display_price(
-        self, product_or_template, quantity, date, currency, pricelist, **kwargs
+            self, product_or_template, quantity, date, currency, pricelist, **kwargs
     ):
         """ Return the specified product's display price, to be used by the product and combo
         configurators.
@@ -277,7 +280,7 @@ class ProductTemplate(models.Model):
 
     @api.model
     def _get_configurator_price(
-        self, product_or_template, quantity, date, currency, pricelist, **kwargs
+            self, product_or_template, quantity, date, currency, pricelist, **kwargs
     ):
         """ Return the specified product's price, to be used by the product and combo configurators.
 
@@ -310,7 +313,7 @@ class ProductTemplate(models.Model):
 
     @api.model
     def _get_additional_configurator_data(
-        self, product_or_template, date, currency, pricelist, **kwargs
+            self, product_or_template, date, currency, pricelist, **kwargs
     ):
         """ Return additional data about the specified product, to be used by the product and combo
         configurators.

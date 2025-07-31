@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.mail.tests.common import MailCommon, mail_new_test_user
+
 from odoo.exceptions import UserError, AccessError
 from odoo.tests.common import users
 
@@ -43,7 +44,8 @@ class TestPortalWizard(MailCommon):
         portal_wizard = self.env['portal.wizard'].with_context(active_ids=[self.partner.id]).create({})
 
         with self.assertRaises(AccessError, msg='Standard users should not be able to open the portal wizard'):
-            self.env['portal.wizard'].with_context(active_ids=[self.partner.id]).with_user(self.user_employee).create({})
+            self.env['portal.wizard'].with_context(active_ids=[self.partner.id]).with_user(self.user_employee).create(
+                {})
 
         with self.assertRaises(AccessError, msg='Standard users should not be able to open the portal wizard'):
             portal_wizard.with_user(self.user_employee).welcome_message
@@ -108,7 +110,8 @@ class TestPortalWizard(MailCommon):
             portal_user.action_revoke_access()
 
         self.assertEqual(portal_user.user_id, self.public_user, 'Must keep the user even if it is archived')
-        self.assertEqual(group_public, portal_user.user_id.groups_id, 'Must add the group public after removing the portal group')
+        self.assertEqual(group_public, portal_user.user_id.groups_id,
+                         'Must add the group public after removing the portal group')
         self.assertFalse(portal_user.user_id.active, 'Must have archived the user')
         self.assertFalse(portal_user.is_portal)
         self.assertFalse(portal_user.is_internal)
@@ -172,4 +175,5 @@ class TestPortalWizard(MailCommon):
 
         portal_user.with_company(company_1).action_grant_access()
 
-        self.assertEqual(portal_user.user_id.company_id, company_2, 'Must create the user in the same company as the partner.')
+        self.assertEqual(portal_user.user_id.company_id, company_2,
+                         'Must create the user in the same company as the partner.')

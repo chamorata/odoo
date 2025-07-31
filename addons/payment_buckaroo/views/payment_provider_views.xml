@@ -9,7 +9,8 @@
             <group name="provider_credentials" position='inside'>
                 <group invisible="code != 'buckaroo'">
                     <field name="buckaroo_website_key" required="code == 'buckaroo' and state != 'disabled'"/>
-                    <field name="buckaroo_secret_key" string="Secret Key" required="code == 'buckaroo' and state != 'disabled'" password="True"/>
+                    <field name="buckaroo_secret_key" string="Secret Key"
+                           required="code == 'buckaroo' and state != 'disabled'" password="True"/>
                 </group>
             </group>
         </field>

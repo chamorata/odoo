@@ -14,39 +14,41 @@ class ProductProduct(models.Model):
     date_from = fields.Date(compute='_compute_product_margin_fields_values', string='Margin Date From')
     date_to = fields.Date(compute='_compute_product_margin_fields_values', string='Margin Date To')
     invoice_state = fields.Selection(compute='_compute_product_margin_fields_values',
-        selection=[
-            ('paid', 'Paid'),
-            ('open_paid', 'Open and Paid'),
-            ('draft_open_paid', 'Draft, Open and Paid')
-        ], string='Invoice State', readonly=True)
+                                     selection=[
+                                         ('paid', 'Paid'),
+                                         ('open_paid', 'Open and Paid'),
+                                         ('draft_open_paid', 'Draft, Open and Paid')
+                                     ], string='Invoice State', readonly=True)
     sale_avg_price = fields.Float(compute='_compute_product_margin_fields_values', string='Avg. Sale Unit Price',
-        help="Avg. Price in Customer Invoices.")
-    purchase_avg_price = fields.Float(compute='_compute_product_margin_fields_values', string='Avg. Purchase Unit Price',
-        help="Avg. Price in Vendor Bills")
+                                  help="Avg. Price in Customer Invoices.")
+    purchase_avg_price = fields.Float(compute='_compute_product_margin_fields_values',
+                                      string='Avg. Purchase Unit Price',
+                                      help="Avg. Price in Vendor Bills")
     sale_num_invoiced = fields.Float(compute='_compute_product_margin_fields_values', string='# Invoiced in Sale',
-        help="Sum of Quantity in Customer Invoices")
-    purchase_num_invoiced = fields.Float(compute='_compute_product_margin_fields_values', string='# Invoiced in Purchase',
-        help="Sum of Quantity in Vendor Bills")
+                                     help="Sum of Quantity in Customer Invoices")
+    purchase_num_invoiced = fields.Float(compute='_compute_product_margin_fields_values',
+                                         string='# Invoiced in Purchase',
+                                         help="Sum of Quantity in Vendor Bills")
     sales_gap = fields.Float(compute='_compute_product_margin_fields_values', string='Sales Gap',
-        help="Expected Sale - Turn Over")
+                             help="Expected Sale - Turn Over")
     purchase_gap = fields.Float(compute='_compute_product_margin_fields_values', string='Purchase Gap',
-        help="Normal Cost - Total Cost")
+                                help="Normal Cost - Total Cost")
     turnover = fields.Float(compute='_compute_product_margin_fields_values', string='Turnover',
-        help="Sum of Multiplication of Invoice price and quantity of Customer Invoices")
+                            help="Sum of Multiplication of Invoice price and quantity of Customer Invoices")
     total_cost = fields.Float(compute='_compute_product_margin_fields_values', string='Total Cost',
-        help="Sum of Multiplication of Invoice price and quantity of Vendor Bills ")
+                              help="Sum of Multiplication of Invoice price and quantity of Vendor Bills ")
     sale_expected = fields.Float(compute='_compute_product_margin_fields_values', string='Expected Sale',
-        help="Sum of Multiplication of Sale Catalog price and quantity of Customer Invoices")
+                                 help="Sum of Multiplication of Sale Catalog price and quantity of Customer Invoices")
     normal_cost = fields.Float(compute='_compute_product_margin_fields_values', string='Normal Cost',
-        help="Sum of Multiplication of Cost price and quantity of Vendor Bills")
+                               help="Sum of Multiplication of Cost price and quantity of Vendor Bills")
     total_margin = fields.Float(compute='_compute_product_margin_fields_values', string='Total Margin',
-        help="Turnover - Total cost")
+                                help="Turnover - Total cost")
     expected_margin = fields.Float(compute='_compute_product_margin_fields_values', string='Expected Margin',
-        help="Expected Sale - Normal Cost")
+                                   help="Expected Sale - Normal Cost")
     total_margin_rate = fields.Float(compute='_compute_product_margin_fields_values', string='Total Margin Rate(%)',
-        help="Total margin * 100 / Turnover")
+                                     help="Total margin * 100 / Turnover")
     expected_margin_rate = fields.Float(compute='_compute_product_margin_fields_values', string='Expected Margin (%)',
-        help="Expected margin * 100 / Expected Sale")
+                                        help="Expected margin * 100 / Expected Sale")
 
     _SPECIAL_SUM_AGGREGATES = {f"{name}:sum" for name in (
         'turnover', 'sale_avg_price', 'sale_num_invoiced', 'purchase_num_invoiced',
@@ -95,9 +97,11 @@ class ProductProduct(models.Model):
         invoice_state = self.env.context.get('invoice_state', 'open_paid')
         res = {
             product_id: {'date_from': date_from, 'date_to': date_to, 'invoice_state': invoice_state, 'turnover': 0.0,
-                'sale_avg_price': 0.0, 'purchase_avg_price': 0.0, 'sale_num_invoiced': 0.0, 'purchase_num_invoiced': 0.0,
-                'sales_gap': 0.0, 'purchase_gap': 0.0, 'total_cost': 0.0, 'sale_expected': 0.0, 'normal_cost': 0.0, 'total_margin': 0.0,
-                'expected_margin': 0.0, 'total_margin_rate': 0.0, 'expected_margin_rate': 0.0}
+                         'sale_avg_price': 0.0, 'purchase_avg_price': 0.0, 'sale_num_invoiced': 0.0,
+                         'purchase_num_invoiced': 0.0,
+                         'sales_gap': 0.0, 'purchase_gap': 0.0, 'total_cost': 0.0, 'sale_expected': 0.0,
+                         'normal_cost': 0.0, 'total_margin': 0.0,
+                         'expected_margin': 0.0, 'total_margin_rate': 0.0, 'expected_margin_rate': 0.0}
             for product_id in self.ids
         }
         states = ()
@@ -148,7 +152,8 @@ class ProductProduct(models.Model):
                 GROUP BY l.product_id
                 """.format(self.env['res.currency']._select_companies_rates())
         invoice_types = ('out_invoice', 'out_refund')
-        self.env.cr.execute(sqlstr, (tuple(self.ids), states, payment_states, invoice_types, date_from, date_to, company_id))
+        self.env.cr.execute(sqlstr,
+                            (tuple(self.ids), states, payment_states, invoice_types, date_from, date_to, company_id))
         for product_id, avg, qty, total, sale in self.env.cr.fetchall():
             res[product_id]['sale_avg_price'] = avg and avg or 0.0
             res[product_id]['sale_num_invoiced'] = qty and qty or 0.0
@@ -157,23 +162,29 @@ class ProductProduct(models.Model):
             res[product_id]['sales_gap'] = res[product_id]['sale_expected'] - res[product_id]['turnover']
             res[product_id]['total_margin'] = res[product_id]['turnover']
             res[product_id]['expected_margin'] = res[product_id]['sale_expected']
-            res[product_id]['total_margin_rate'] = res[product_id]['turnover'] and res[product_id]['total_margin'] * 100 / res[product_id]['turnover'] or 0.0
-            res[product_id]['expected_margin_rate'] = res[product_id]['sale_expected'] and res[product_id]['expected_margin'] * 100 / res[product_id]['sale_expected'] or 0.0
+            res[product_id]['total_margin_rate'] = res[product_id]['turnover'] and res[product_id][
+                'total_margin'] * 100 / res[product_id]['turnover'] or 0.0
+            res[product_id]['expected_margin_rate'] = res[product_id]['sale_expected'] and res[product_id][
+                'expected_margin'] * 100 / res[product_id]['sale_expected'] or 0.0
 
         ctx = self.env.context.copy()
         ctx['force_company'] = company_id
         invoice_types = ('in_invoice', 'in_refund')
-        self.env.cr.execute(sqlstr, (tuple(self.ids), states, payment_states, invoice_types, date_from, date_to, company_id))
+        self.env.cr.execute(sqlstr,
+                            (tuple(self.ids), states, payment_states, invoice_types, date_from, date_to, company_id))
         for product_id, avg, qty, total, dummy in self.env.cr.fetchall():
             res[product_id]['purchase_avg_price'] = avg and avg or 0.0
             res[product_id]['purchase_num_invoiced'] = qty and qty or 0.0
             res[product_id]['total_cost'] = total and total or 0.0
             res[product_id]['total_margin'] = res[product_id].get('turnover', 0.0) - res[product_id]['total_cost']
-            res[product_id]['total_margin_rate'] = res[product_id].get('turnover', 0.0) and res[product_id]['total_margin'] * 100 / res[product_id].get('turnover', 0.0) or 0.0
+            res[product_id]['total_margin_rate'] = res[product_id].get('turnover', 0.0) and res[product_id][
+                'total_margin'] * 100 / res[product_id].get('turnover', 0.0) or 0.0
         for product in self:
             res[product.id]['normal_cost'] = product.standard_price * res[product.id]['purchase_num_invoiced']
             res[product.id]['purchase_gap'] = res[product.id]['normal_cost'] - res[product.id]['total_cost']
-            res[product.id]['expected_margin'] = res[product.id].get('sale_expected', 0.0) - res[product.id]['normal_cost']
-            res[product.id]['expected_margin_rate'] = res[product.id].get('sale_expected', 0.0) and res[product.id]['expected_margin'] * 100 / res[product.id].get('sale_expected', 0.0) or 0.0
+            res[product.id]['expected_margin'] = res[product.id].get('sale_expected', 0.0) - res[product.id][
+                'normal_cost']
+            res[product.id]['expected_margin_rate'] = res[product.id].get('sale_expected', 0.0) and res[product.id][
+                'expected_margin'] * 100 / res[product.id].get('sale_expected', 0.0) or 0.0
             product.update(res[product.id])
         return res

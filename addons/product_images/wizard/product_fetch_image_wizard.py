@@ -257,9 +257,9 @@ class ProductFetchImageWizard(models.TransientModel):
                             product.image_1920 = image
                             break  # Stop at the first valid image
                     except (
-                        RequestConnectionError,
-                        RequestTimeout,
-                        UserError,  # Raised when the image couldn't be decoded as base64
+                            RequestConnectionError,
+                            RequestTimeout,
+                            UserError,  # Raised when the image couldn't be decoded as base64
                     ):
                         pass  # Move on to the next image
 
@@ -308,7 +308,7 @@ class ProductFetchImageWizard(models.TransientModel):
         if 'x-raw-image:///' not in url:  # Ignore images with incorrect link
             response = self._session.get(url, timeout=5)
             if response.status_code == requests.codes.ok \
-                and 'image/' in response.headers.get('Content-Type', ''):  # Ignore non-image results
+                    and 'image/' in response.headers.get('Content-Type', ''):  # Ignore non-image results
                 image = base64.b64encode(response.content)
         return image
 

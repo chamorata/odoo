@@ -6,16 +6,16 @@ from hashlib import sha1
 
 from lxml import etree
 from markupsafe import Markup
-
-from odoo import Command, _, api, fields, models
-from odoo.exceptions import UserError
-from odoo.tools import float_round, float_repr, date_utils, SQL
-from odoo.tools.xml_utils import cleanup_xml_node, find_xml_value
 from odoo.addons.l10n_es_edi_facturae.xml_utils import (
     NS_MAP,
     _canonicalize_node,
     _reference_digests,
 )
+
+from odoo import Command, _, fields, models
+from odoo.exceptions import UserError
+from odoo.tools import float_round, float_repr, date_utils, SQL
+from odoo.tools.xml_utils import cleanup_xml_node, find_xml_value
 
 PHONE_CLEAN_TABLE = str.maketrans({" ": None, "-": None, "(": None, ")": None, "+": None})
 COUNTRY_CODE_MAP = {
@@ -50,13 +50,15 @@ COUNTRY_CODE_MAP = {
 }
 REVERSED_COUNTRY_CODE = {v: k for k, v in COUNTRY_CODE_MAP.items()}
 
+
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
     l10n_es_edi_facturae_xml_id = fields.Many2one(
         comodel_name='ir.attachment',
         string="Facturae Attachment",
-        compute=lambda self: self._compute_linked_attachment_id('l10n_es_edi_facturae_xml_id', 'l10n_es_edi_facturae_xml_file'),
+        compute=lambda self: self._compute_linked_attachment_id('l10n_es_edi_facturae_xml_id',
+                                                                'l10n_es_edi_facturae_xml_file'),
         depends=['l10n_es_edi_facturae_xml_file']
     )
     l10n_es_edi_facturae_xml_file = fields.Binary(
@@ -87,7 +89,8 @@ class AccountMove(models.Model):
             ('82', "Taxable Base modified due to return of packages and packaging materials"),
             ('83', "Taxable Base modified due to discounts and rebates"),
             ('84', "Taxable Base modified due to firm court ruling or administrative decision"),
-            ('85', "Taxable Base modified due to unpaid outputs where there is a judgement opening insolvency proceedings"),
+            ('85',
+             "Taxable Base modified due to unpaid outputs where there is a judgement opening insolvency proceedings"),
         ], string='Spanish Facturae EDI Reason Code', default='10')
     l10n_es_invoicing_period_start_date = fields.Date(string="Invoice Period Start Date")
     l10n_es_invoicing_period_end_date = fields.Date(string="Invoice Period End Date")
@@ -138,12 +141,13 @@ class AccountMove(models.Model):
     def _l10n_es_edi_facturae_get_tax_period(self):
         self.ensure_one()
         if self.env['res.company'].fields_get(['account_tax_periodicity']):
-            period_start, period_end = self.company_id._get_tax_closing_period_boundaries(self.date, self.env.ref('l10n_es.mod_303'))
+            period_start, period_end = self.company_id._get_tax_closing_period_boundaries(self.date, self.env.ref(
+                'l10n_es.mod_303'))
         else:
             period_start = date_utils.start_of(self.date, 'month')
             period_end = date_utils.end_of(self.date, 'month')
 
-        return {'start':period_start, 'end':period_end}
+        return {'start': period_start, 'end': period_end}
 
     def _l10n_es_edi_facturae_get_refunded_invoices(self):
         self.env['account.partial.reconcile'].flush_model()
@@ -152,8 +156,8 @@ class AccountMove(models.Model):
         stored_ids = tuple(self.ids)
         queries = []
         for source_field, counterpart_field in (
-            ('debit_move_id', 'credit_move_id'),
-            ('credit_move_id', 'debit_move_id'),
+                ('debit_move_id', 'credit_move_id'),
+                ('credit_move_id', 'debit_move_id'),
         ):
             queries.append(SQL('''
                 SELECT
@@ -186,7 +190,8 @@ class AccountMove(models.Model):
                                   "generating a Facturae document, it's necessary that the credit note/refund is created "
                                   "directly from the associated invoice/bill."))
 
-            refunded_invoice = self.env['account.move'].browse(self._l10n_es_edi_facturae_get_refunded_invoices()[self.id])
+            refunded_invoice = self.env['account.move'].browse(
+                self._l10n_es_edi_facturae_get_refunded_invoices()[self.id])
             tax_period = refunded_invoice._l10n_es_edi_facturae_get_tax_period()
 
             reason_code = self.l10n_es_edi_facturae_reason_code or '10'
@@ -248,7 +253,8 @@ class AccountMove(models.Model):
         self.ensure_one()
         installments = []
         if self.is_inbound() and self.partner_bank_id:
-            for payment_term in self.line_ids.filtered(lambda l: l.display_type == 'payment_term').sorted('date_maturity'):
+            for payment_term in self.line_ids.filtered(lambda l: l.display_type == 'payment_term').sorted(
+                    'date_maturity'):
                 installments.append({
                     'InstallmentDueDate': payment_term.date_maturity,
                     'InstallmentAmount': payment_term.amount_residual_currency,
@@ -298,7 +304,8 @@ class AccountMove(models.Model):
         xml_values['TotalCost'] = line.currency_id.round(raw_total_cost)
 
         if line.quantity:
-            xml_values['UnitPriceWithoutTax'] = float_round(raw_total_cost / line.quantity, precision_digits=extended_dp)
+            xml_values['UnitPriceWithoutTax'] = float_round(raw_total_cost / line.quantity,
+                                                            precision_digits=extended_dp)
         else:
             xml_values['UnitPriceWithoutTax'] = 0.0
 
@@ -338,6 +345,7 @@ class AccountMove(models.Model):
 
         :return: (data needed to render the full template, data needed to render the signature template)
         """
+
         def extract_party_name(party):
             name = {'firstname': 'UNKNOWN', 'surname': 'UNKNOWN', 'surname2': ''}
             if not party.is_company:
@@ -443,16 +451,17 @@ class AccountMove(models.Model):
                     invoice_values['TotalTaxOutputs'] += tax_data['TaxAmount']['TotalAmount']
 
         invoice_values['TotalGrossAmountBeforeTaxes'] = (
-            invoice_values['TotalGrossAmount']
-            - invoice_values['TotalGeneralDiscounts']
-            + invoice_values['TotalGeneralSurcharges']
+                invoice_values['TotalGrossAmount']
+                - invoice_values['TotalGeneralDiscounts']
+                + invoice_values['TotalGeneralSurcharges']
         )
 
         template_values = {
             'self_party': company.partner_id,
             'self_party_country_code': COUNTRY_CODE_MAP[company.country_id.code],
             'self_party_name': extract_party_name(company.partner_id),
-            'self_party_administrative_centers': self._l10n_es_edi_facturae_get_administrative_centers(company.partner_id),
+            'self_party_administrative_centers': self._l10n_es_edi_facturae_get_administrative_centers(
+                company.partner_id),
             'other_party': partner,
             'other_party_country_code': COUNTRY_CODE_MAP[partner.country_id.code],
             'other_party_phone': partner.phone.translate(PHONE_CLEAN_TABLE) if partner.phone else False,
@@ -503,7 +512,8 @@ class AccountMove(models.Model):
         self.ensure_one()
         company = self.company_id
         template_values, signature_values = self._l10n_es_edi_facturae_export_facturae()
-        xml_content = cleanup_xml_node(self.env['ir.qweb']._render('l10n_es_edi_facturae.account_invoice_facturae_export', template_values))
+        xml_content = cleanup_xml_node(
+            self.env['ir.qweb']._render('l10n_es_edi_facturae.account_invoice_facturae_export', template_values))
 
         errors = []
         try:
@@ -607,7 +617,8 @@ class AccountMove(models.Model):
         if partner:
             invoice.partner_id = partner
         else:
-            logs.append(_("Customer/Vendor could not be found and could not be created due to missing data in the XML."))
+            logs.append(
+                _("Customer/Vendor could not be found and could not be created due to missing data in the XML."))
 
         # ==== currency_id ====
         invoice_currency_code = find_xml_value('.//InvoiceCurrencyCode', tree)
@@ -693,8 +704,10 @@ class AccountMove(models.Model):
             taxes_outputs_nodes = line.xpath('.//TaxesOutputs/Tax')
             is_purchase = invoice.move_type.startswith('in')
             tax_ids = []
-            logs += self._import_fill_invoice_line_taxes(invoice, line_vals, tax_ids, taxes_outputs_nodes, False, is_purchase)
-            logs += self._import_fill_invoice_line_taxes(invoice, line_vals, tax_ids, taxes_withheld_nodes, True, is_purchase)
+            logs += self._import_fill_invoice_line_taxes(invoice, line_vals, tax_ids, taxes_outputs_nodes, False,
+                                                         is_purchase)
+            logs += self._import_fill_invoice_line_taxes(invoice, line_vals, tax_ids, taxes_withheld_nodes, True,
+                                                         is_purchase)
             line_vals['tax_ids'] = [Command.set(tax_ids)]
             vals_list.append(line_vals)
 
@@ -713,18 +726,22 @@ class AccountMove(models.Model):
                 tax_amount = find_xml_value('.//TaxAmount/TotalAmount', tax_node)
                 is_fixed = False
 
-                if taxable_base and tax_amount and invoice.currency_id.compare_amounts(float(taxable_base) * (float(tax_rate) / 100), float(tax_amount)) != 0:
+                if taxable_base and tax_amount and invoice.currency_id.compare_amounts(
+                        float(taxable_base) * (float(tax_rate) / 100), float(tax_amount)) != 0:
                     is_fixed = True
 
-                tax_excl = self._search_tax_for_import(invoice.company_id, float(tax_rate), is_fixed, is_withheld, is_purchase, price_included=False)
+                tax_excl = self._search_tax_for_import(invoice.company_id, float(tax_rate), is_fixed, is_withheld,
+                                                       is_purchase, price_included=False)
 
                 if tax_excl:
                     tax_ids.append(tax_excl.id)
-                elif tax_incl := self._search_tax_for_import(invoice.company_id, float(tax_rate), is_fixed, is_withheld, is_purchase, price_included=True):
+                elif tax_incl := self._search_tax_for_import(invoice.company_id, float(tax_rate), is_fixed, is_withheld,
+                                                             is_purchase, price_included=True):
                     tax_ids.append(tax_incl)
                     line_vals['price_unit'] *= (1.0 + float(tax_rate) / 100.0)
                 else:
-                    logs.append(_("Could not retrieve the tax: %(tax_rate)s %% for line '%(line)s'.", tax_rate=tax_rate, line=line_vals.get('name', "")))
+                    logs.append(_("Could not retrieve the tax: %(tax_rate)s %% for line '%(line)s'.", tax_rate=tax_rate,
+                                  line=line_vals.get('name', "")))
 
         return logs
 
@@ -777,7 +794,8 @@ class AccountMove(models.Model):
 
         signature_data.update({
             'document_id': document_id,
-            'x509_certificate': base64.encodebytes(base64.b64decode(certificate_sudo._get_der_certificate_bytes())).decode(),
+            'x509_certificate': base64.encodebytes(
+                base64.b64decode(certificate_sudo._get_der_certificate_bytes())).decode(),
             'public_modulus': n.decode(),
             'public_exponent': e.decode(),
             'iso_now': fields.datetime.now().isoformat(),
@@ -797,6 +815,7 @@ class AccountMove(models.Model):
         _reference_digests(signature.find("ds:SignedInfo", namespaces=NS_MAP))
 
         signed_info_xml = signature.find("ds:SignedInfo", namespaces=NS_MAP)
-        signature.find("ds:SignatureValue", namespaces=NS_MAP).text = certificate_sudo._sign(_canonicalize_node(signed_info_xml)).decode()
+        signature.find("ds:SignatureValue", namespaces=NS_MAP).text = certificate_sudo._sign(
+            _canonicalize_node(signed_info_xml)).decode()
 
         return etree.tostring(root, xml_declaration=True, encoding='UTF-8', standalone=True)

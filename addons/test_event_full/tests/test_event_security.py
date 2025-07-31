@@ -4,6 +4,7 @@
 from datetime import datetime, timedelta
 
 from odoo.addons.test_event_full.tests.common import TestEventFullCommon
+
 from odoo.exceptions import AccessError
 from odoo.tests import tagged
 from odoo.tests.common import users
@@ -95,7 +96,8 @@ class TestEventSecurity(TestEventFullCommon):
                 'name': 'ManagerEventType',
                 'event_type_mail_ids': [(5, 0), (0, 0, {
                     'interval_nbr': 1, 'interval_unit': 'days', 'interval_type': 'before_event',
-                    'template_ref': 'mail.template,%i' % self.env['ir.model.data']._xmlid_to_res_id('event.event_reminder')})]
+                    'template_ref': 'mail.template,%i' % self.env['ir.model.data']._xmlid_to_res_id(
+                        'event.event_reminder')})]
             })
 
     @users('user_eventmanager')
@@ -106,7 +108,8 @@ class TestEventSecurity(TestEventFullCommon):
             'name': 'ManagerEventType',
             'event_type_mail_ids': [(5, 0), (0, 0, {
                 'interval_nbr': 1, 'interval_unit': 'days', 'interval_type': 'before_event',
-                'template_ref': 'mail.template,%i' % self.env['ir.model.data']._xmlid_to_res_id('event.event_reminder')})]
+                'template_ref': 'mail.template,%i' % self.env['ir.model.data']._xmlid_to_res_id(
+                    'event.event_reminder')})]
         })
         event_type.write({'name': 'New Name'})
 
@@ -210,4 +213,5 @@ class TestEventSecurity(TestEventFullCommon):
 
         result = self.env['event.registration'].with_user(user_company_1).search([])
         self.assertIn(registration_company_1, result, 'You must be able to read the registrations in your company')
-        self.assertNotIn(registration_company_2, result, 'You must not be able to read registrations outside of your company')
+        self.assertNotIn(registration_company_2, result,
+                         'You must not be able to read registrations outside of your company')

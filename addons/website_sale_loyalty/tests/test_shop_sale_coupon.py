@@ -1,16 +1,16 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from datetime import timedelta
 
-from odoo import fields, http
-from odoo.exceptions import ValidationError
-from odoo.fields import Command
-from odoo.tests import HttpCase, tagged
-
 from odoo.addons.sale.tests.test_sale_product_attribute_value_config import (
     TestSaleProductAttributeValueCommon,
 )
 from odoo.addons.website.tools import MockRequest
 from odoo.addons.website_sale_loyalty.controllers.main import WebsiteSale
+
+from odoo import fields, http
+from odoo.exceptions import ValidationError
+from odoo.fields import Command
+from odoo.tests import HttpCase, tagged
 
 
 @tagged('post_install', '-at_install')
@@ -214,8 +214,10 @@ class WebsiteSaleLoyaltyTestUi(TestSaleProductAttributeValueCommon, HttpCase):
         self.env.ref("website_sale.reduction_code").write({"active": True})
         self.start_tour('/', 'shop_sale_gift_card', login='admin')
 
-        self.assertEqual(len(gift_card_program.coupon_ids), 2, 'There should be two coupons, one with points, one without')
-        self.assertEqual(len(gift_card_program.coupon_ids.filtered('points')), 1, 'There should be two coupons, one with points, one without')
+        self.assertEqual(len(gift_card_program.coupon_ids), 2,
+                         'There should be two coupons, one with points, one without')
+        self.assertEqual(len(gift_card_program.coupon_ids.filtered('points')), 1,
+                         'There should be two coupons, one with points, one without')
 
     def test_03_admin_shop_ewallet_tour(self):
         public_category = self.env['product.public.category'].create({'name': 'Public Category'})
@@ -323,23 +325,27 @@ class TestWebsiteSaleCoupon(HttpCase):
         # 3. Test recent order -> Should not be removed
         order._gc_abandoned_coupons()
 
-        self.assertEqual(len(order.applied_coupon_ids), 1, "The coupon shouldn't have been removed from the order no more than 4 days")
+        self.assertEqual(len(order.applied_coupon_ids), 1,
+                         "The coupon shouldn't have been removed from the order no more than 4 days")
 
         # 4. Test order not older than ICP validity -> Should not be removed
         ICP = self.env['ir.config_parameter']
         icp_validity = ICP.create({'key': 'website_sale_coupon.abandonned_coupon_validity', 'value': 5})
         self.env.flush_all()
         query = """UPDATE %s SET write_date = %%s WHERE id = %%s""" % (order._table,)
-        self.env.cr.execute(query, (fields.Datetime.to_string(fields.datetime.now() - timedelta(days=4, hours=2)), order.id))
+        self.env.cr.execute(query,
+                            (fields.Datetime.to_string(fields.datetime.now() - timedelta(days=4, hours=2)), order.id))
         order._gc_abandoned_coupons()
 
-        self.assertEqual(len(order.applied_coupon_ids), 1, "The coupon shouldn't have been removed from the order the order is 4 days old but icp validity is 5 days")
+        self.assertEqual(len(order.applied_coupon_ids), 1,
+                         "The coupon shouldn't have been removed from the order the order is 4 days old but icp validity is 5 days")
 
         # 5. Test order with no ICP and older then 4 default days -> Should be removed
         icp_validity.unlink()
         order._gc_abandoned_coupons()
 
-        self.assertEqual(len(order.applied_coupon_ids), 0, "The coupon should've been removed from the order as more than 4 days")
+        self.assertEqual(len(order.applied_coupon_ids), 0,
+                         "The coupon should've been removed from the order as more than 4 days")
 
     def test_02_apply_discount_code_program_multi_rewards(self):
         """

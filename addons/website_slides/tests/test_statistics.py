@@ -4,9 +4,9 @@
 import math
 
 from dateutil.relativedelta import relativedelta
+from odoo.addons.website_slides.tests import common
 
 from odoo import fields
-from odoo.addons.website_slides.tests import common
 from odoo.exceptions import UserError
 from odoo.tests import HttpCase, tagged
 from odoo.tests.common import users
@@ -41,11 +41,15 @@ class TestChannelStatistics(common.SlidesCase):
         channel_publisher = self.channel.with_user(self.user_officer)
         # slide category computation
         self.assertEqual(channel_publisher.total_slides, len(channel_publisher.slide_content_ids))
-        self.assertEqual(channel_publisher.nbr_infographic, len(channel_publisher.slide_content_ids.filtered(lambda s: s.slide_category == 'infographic')))
-        self.assertEqual(channel_publisher.nbr_document, len(channel_publisher.slide_content_ids.filtered(lambda s: s.slide_category == 'document')))
-        self.assertEqual(channel_publisher.nbr_video, len(channel_publisher.slide_content_ids.filtered(lambda s: s.slide_category == 'video')))
+        self.assertEqual(channel_publisher.nbr_infographic,
+                         len(channel_publisher.slide_content_ids.filtered(lambda s: s.slide_category == 'infographic')))
+        self.assertEqual(channel_publisher.nbr_document,
+                         len(channel_publisher.slide_content_ids.filtered(lambda s: s.slide_category == 'document')))
+        self.assertEqual(channel_publisher.nbr_video,
+                         len(channel_publisher.slide_content_ids.filtered(lambda s: s.slide_category == 'video')))
         # slide statistics computation
-        self.assertEqual(float_compare(channel_publisher.total_time, sum(s.completion_time for s in channel_publisher.slide_content_ids), 3), 0)
+        self.assertEqual(float_compare(channel_publisher.total_time,
+                                       sum(s.completion_time for s in channel_publisher.slide_content_ids), 3), 0)
         # members computation
         self.assertEqual(channel_publisher.members_all_count, 1)
         channel_publisher._action_add_members(self.user_officer.partner_id)
@@ -226,7 +230,8 @@ class TestSlideStatistics(common.SlidesCase):
         category = self.category.with_user(self.env.user)
         self.assertEqual(
             category.nbr_document,
-            len(category.channel_id.slide_ids.filtered(lambda s: s.category_id == category and s.slide_category == 'document')))
+            len(category.channel_id.slide_ids.filtered(
+                lambda s: s.category_id == category and s.slide_category == 'document')))
 
         self.assertEqual(self.channel.total_slides, 3, 'The channel should contain 3 slides')
         self.assertEqual(category.total_slides, 2, 'The first category should contain 2 slides')
@@ -245,6 +250,7 @@ class TestSlideStatistics(common.SlidesCase):
         self.assertEqual(category.total_slides, 1, 'The first category should contain 1 slide')
         self.assertEqual(other_category.total_slides, 1, 'The other category should contain 1 slide')
         self.assertEqual(self.channel.total_slides, 3, 'The channel should still contain 3 slides')
+
 
 @tagged('functional')
 class TestHttpSlideStatistics(HttpCase, common.SlidesCase):

@@ -2,12 +2,13 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from lxml import html
-
 from odoo.addons.mail.tests.common import mail_new_test_user
 from odoo.addons.test_mass_mailing.tests.common import TestMassSMSCommon
-from odoo.tests.common import users
+
 from odoo.tests import tagged
+from odoo.tests.common import users
 from odoo.tools import mute_logger
+
 
 @tagged('digest', 'mass_mailing', 'mass_mailing_sms')
 class TestMailingStatistics(TestMassSMSCommon):
@@ -28,7 +29,8 @@ class TestMailingStatistics(TestMassSMSCommon):
         cls.records = cls._reset_mail_context(cls.records)
 
     @users('user_marketing')
-    @mute_logger('odoo.addons.mass_mailing_sms.models.mailing_mailing', 'odoo.addons.mail.models.mail_mail', 'odoo.addons.mail.models.mail_thread')
+    @mute_logger('odoo.addons.mass_mailing_sms.models.mailing_mailing', 'odoo.addons.mail.models.mail_mail',
+                 'odoo.addons.mail.models.mail_thread')
     def test_mailing_statistics_sms(self):
         mailing = self.env['mailing.mailing'].browse(self.mailing_sms.ids)
         target_records = self.env['mail.test.sms'].browse(self.records.ids)
@@ -82,12 +84,14 @@ class TestMailingStatistics(TestMassSMSCommon):
             ['25.0', str(float(mailing.clicks_ratio)), str(float(mailing.bounced_ratio))]
         )
         # test body content: clicks (a bit hackish but hey we are in stable)
-        kpi_click_values = body_html.xpath('//table//tr[contains(@style,"color: #888888")]/td[contains(@style,"width: 30%")]/text()')
+        kpi_click_values = body_html.xpath(
+            '//table//tr[contains(@style,"color: #888888")]/td[contains(@style,"width: 30%")]/text()')
         first_link_value = int(kpi_click_values[0].strip().split()[1].strip('()'))
         self.assertEqual(first_link_value, mailing.clicked)
 
     @users('user_marketing')
-    @mute_logger('odoo.addons.mass_mailing_sms.models.mailing_mailing', 'odoo.addons.mail.models.mail_mail', 'odoo.addons.mail.models.mail_thread')
+    @mute_logger('odoo.addons.mass_mailing_sms.models.mailing_mailing', 'odoo.addons.mail.models.mail_mail',
+                 'odoo.addons.mail.models.mail_thread')
     def test_sent_delivered_sms(self):
         """ Test that if we get delivered trace status first instead of sent from
             providers for some reasons, the statistics for sent SMS will be correct. """

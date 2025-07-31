@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from odoo.addons.event.tests.common import EventCase
 from odoo.addons.phone_validation.tools import phone_validation
 from odoo.addons.sms.tests.common import SMSCase
+
 from odoo.tests import tagged, users
 
 
@@ -65,9 +66,11 @@ class TestSMSSchedule(EventCase, SMSCase):
             self._create_registrations(test_event, 3)
 
         # check subscription scheduler
-        sub_scheduler = self.env['event.mail'].search([('event_id', '=', test_event.id), ('interval_type', '=', 'after_sub')])
+        sub_scheduler = self.env['event.mail'].search(
+            [('event_id', '=', test_event.id), ('interval_type', '=', 'after_sub')])
         self.assertEqual(len(sub_scheduler), 1)
-        self.assertEqual(sub_scheduler.scheduled_date, test_event.create_date.replace(microsecond=0), 'event: incorrect scheduled date for checking controller')
+        self.assertEqual(sub_scheduler.scheduled_date, test_event.create_date.replace(microsecond=0),
+                         'event: incorrect scheduled date for checking controller')
 
         # verify that subscription scheduler was auto-executed after each registration
         self.assertEqual(len(sub_scheduler.mail_registration_ids), 3)
@@ -88,7 +91,8 @@ class TestSMSSchedule(EventCase, SMSCase):
         self.env['sms.sms'].sudo().search([('number', 'in', sanitized_numbers)]).unlink()
 
         # check before event scheduler
-        before_scheduler = self.env['event.mail'].search([('event_id', '=', test_event.id), ('interval_type', '=', 'before_event')])
+        before_scheduler = self.env['event.mail'].search(
+            [('event_id', '=', test_event.id), ('interval_type', '=', 'before_event')])
         self.assertEqual(len(before_scheduler), 1, 'event: wrong scheduler creation')
         self.assertEqual(before_scheduler.scheduled_date, test_event.date_begin + timedelta(days=-3))
 

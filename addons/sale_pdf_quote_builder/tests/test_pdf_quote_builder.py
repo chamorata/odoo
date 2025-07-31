@@ -5,17 +5,16 @@ from base64 import b64encode
 from functools import partial
 from unittest.mock import patch
 
-from werkzeug.datastructures import FileStorage
-
-from odoo import Command
-from odoo.tests import Form, tagged
-from odoo.tools.misc import file_open
-
-from odoo.addons.base.tests.common import BaseUsersCommon
 from odoo.addons.sale_management.tests.common import SaleManagementCommon
 from odoo.addons.sale_pdf_quote_builder.controllers.quotation_document import (
     QuotationDocumentController
 )
+from werkzeug.datastructures import FileStorage
+
+from odoo import Command
+from odoo.addons.base.tests.common import BaseUsersCommon
+from odoo.tests import Form, tagged
+from odoo.tools.misc import file_open
 from .files import forms_pdf, plain_pdf
 
 

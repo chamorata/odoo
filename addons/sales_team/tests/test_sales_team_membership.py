@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import exceptions
 from odoo.addons.sales_team.tests.common import TestSalesCommon
+
+from odoo import exceptions
 from odoo.tests.common import users
 from odoo.tools import mute_logger
 
@@ -69,7 +70,8 @@ class TestMembership(TestSalesCommon):
         self.user_sales_manager.write({'groups_id': [(3, self.env.ref('base.group_system').id)]})
 
         self.env.flush_all()
-        memberships = self.env['crm.team.member'].with_context(active_test=False).search([('user_id', '=', self.user_sales_leads.id)])
+        memberships = self.env['crm.team.member'].with_context(active_test=False).search(
+            [('user_id', '=', self.user_sales_leads.id)])
         self.assertEqual(len(memberships), 3)  # subscribed twice to new_team + subscribed to sales_team_1
         self.assertEqual(memberships.crm_team_id, sales_team_1 | new_team)
         self.assertFalse(memberships.filtered(lambda m: m.crm_team_id == sales_team_1).active)
@@ -135,14 +137,16 @@ class TestMembership(TestSalesCommon):
         self.assertEqual(sales_team_1.member_ids, self.user_admin)
         self.env.flush_all()
 
-        memberships = self.env['crm.team.member'].with_context(active_test=False).search([('user_id', '=', self.user_sales_leads.id)])
+        memberships = self.env['crm.team.member'].with_context(active_test=False).search(
+            [('user_id', '=', self.user_sales_leads.id)])
         self.assertEqual(memberships.crm_team_id, sales_team_1 | new_team)
         self.assertFalse(memberships.filtered(lambda m: m.crm_team_id == sales_team_1).active)
         self.assertTrue(memberships.filtered(lambda m: m.crm_team_id == new_team).active)
 
         # subscribe user_sales_leads on old team -> old membership still archived and kept
         sales_team_1.write({'crm_team_member_ids': [(0, 0, {'user_id': self.user_sales_leads.id})]})
-        memberships_new = self.env['crm.team.member'].with_context(active_test=False).search([('user_id', '=', self.user_sales_leads.id)])
+        memberships_new = self.env['crm.team.member'].with_context(active_test=False).search(
+            [('user_id', '=', self.user_sales_leads.id)])
         self.assertTrue(memberships < memberships_new)
         self.assertEqual(memberships.crm_team_id, sales_team_1 | new_team)
 
@@ -190,7 +194,8 @@ class TestMembership(TestSalesCommon):
         self.assertEqual(sales_team_1.member_ids, self.user_sales_leads | self.user_admin)
         self.env.flush_all()
 
-        memberships = self.env['crm.team.member'].with_context(active_test=False).search([('user_id', '=', self.user_sales_leads.id)])
+        memberships = self.env['crm.team.member'].with_context(active_test=False).search(
+            [('user_id', '=', self.user_sales_leads.id)])
         self.assertEqual(memberships.crm_team_id, sales_team_1 | new_team)
         self.assertTrue(memberships.filtered(lambda m: m.crm_team_id == sales_team_1).active)
         self.assertTrue(memberships.filtered(lambda m: m.crm_team_id == new_team).active)
@@ -199,7 +204,8 @@ class TestMembership(TestSalesCommon):
         memberships.filtered(lambda m: m.crm_team_id == sales_team_1).write({'active': False})
         # subscribe user_sales_leads on old team -> old membership still archived and kept
         sales_team_1.write({'crm_team_member_ids': [(0, 0, {'user_id': self.user_sales_leads.id})]})
-        memberships_new = self.env['crm.team.member'].with_context(active_test=False).search([('user_id', '=', self.user_sales_leads.id)])
+        memberships_new = self.env['crm.team.member'].with_context(active_test=False).search(
+            [('user_id', '=', self.user_sales_leads.id)])
         self.assertTrue(memberships < memberships_new)
         self.assertEqual(memberships.crm_team_id, sales_team_1 | new_team)
 
@@ -241,7 +247,8 @@ class TestMembership(TestSalesCommon):
         new_team.write({
             'member_ids': [(4, self.user_sales_leads.id)]
         })
-        added = self.env['crm.team.member'].search([('crm_team_id', '=', new_team.id), ('user_id', '=', self.user_sales_leads.id)])
+        added = self.env['crm.team.member'].search(
+            [('crm_team_id', '=', new_team.id), ('user_id', '=', self.user_sales_leads.id)])
         self.assertEqual(new_team.crm_team_member_ids, new_member + added)
         self.assertEqual(new_team.crm_team_member_all_ids, new_member + added)
         self.assertEqual(new_team.member_ids, self.env.user | self.user_sales_leads)

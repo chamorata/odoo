@@ -4,7 +4,7 @@
         <xpath expr="//t[@t-slot='toggler']" position="replace">
             <t t-if="props.togglerTemplate" t-call="{{ props.togglerTemplate }}"/>
             <t t-else="" t-slot="toggler"/>
-         </xpath>
+        </xpath>
     </t>
 
     <t t-name="account.AccountViewUploadButton">

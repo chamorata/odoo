@@ -2,10 +2,10 @@
 
 from collections import defaultdict
 
+from odoo.addons.sale.tests.common import SaleCommon
+
 from odoo.exceptions import ValidationError
 from odoo.fields import Command
-
-from odoo.addons.sale.tests.common import SaleCommon
 
 
 class TestSaleCouponCommon(SaleCommon):
@@ -72,7 +72,7 @@ class TestSaleCouponCommon(SaleCommon):
             'tax_group_id': tax_group_group.id,
         })
 
-        #products
+        # products
         cls.product_A = cls.env['product.product'].create({
             'name': 'Product A',
             'list_price': 100,
@@ -239,6 +239,7 @@ class TestSaleCouponCommon(SaleCommon):
             'coupon_qty': coupon_qty,
         }).generate_coupons()
         return loyality_program.coupon_ids
+
 
 class TestSaleCouponNumbersCommon(TestSaleCouponCommon):
     @classmethod

@@ -87,7 +87,7 @@ class SupplierInfo(models.Model):
     def _sanitize_vals(self, vals):
         """Sanitize vals to sync product variant & template on read/write."""
         # add product's product_tmpl_id if none present in vals
-        if  vals.get('product_id') and not vals.get('product_tmpl_id'):
+        if vals.get('product_id') and not vals.get('product_tmpl_id'):
             product = self.env['product.product'].browse(vals['product_id'])
             vals['product_tmpl_id'] = product.product_tmpl_id.id
 
@@ -102,4 +102,5 @@ class SupplierInfo(models.Model):
         return super().write(vals)
 
     def _get_filtered_supplier(self, company_id, product_id, params=False):
-        return self.filtered(lambda s: (not s.company_id or s.company_id.id == company_id.id) and (s.partner_id.active and (not s.product_id or s.product_id == product_id)))
+        return self.filtered(lambda s: (not s.company_id or s.company_id.id == company_id.id) and (
+                    s.partner_id.active and (not s.product_id or s.product_id == product_id)))

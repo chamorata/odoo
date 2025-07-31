@@ -1,16 +1,16 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import base64
+
 from lxml import etree
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 
 from odoo import tools
 from odoo.tests import tagged
 from odoo.tools.misc import file_open
-from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 
 
 @tagged('post_install_l10n', 'post_install', '-at_install')
 class TestItEdi(AccountTestInvoicingCommon):
-
     class RepartitionLine:
         def __init__(self, factor_percent, repartition_type, tag_ids):
             self.factor_percent = factor_percent
@@ -139,7 +139,7 @@ class TestItEdi(AccountTestInvoicingCommon):
         try:
             self.assertXmlTreeEqual(invoice_etree, expected_tree)
         except AssertionError as ae:
-            ae.args = (ae.args[0] + f"\nFile used for comparison: {filename}", )
+            ae.args = (ae.args[0] + f"\nFile used for comparison: {filename}",)
             raise
 
     def _assert_import_invoice(self, filename, expected_values_list, xml_to_apply=None):
@@ -177,7 +177,7 @@ class TestItEdi(AccountTestInvoicingCommon):
             if expected_invoice_line_ids_values_list:
                 self.assertRecordValues(invoices.invoice_line_ids, expected_invoice_line_ids_values_list)
         except AssertionError as ae:
-            ae.args = (ae.args[0] + f"\nFile used for comparison: {filename}", )
+            ae.args = (ae.args[0] + f"\nFile used for comparison: {filename}",)
             raise
 
         return invoices

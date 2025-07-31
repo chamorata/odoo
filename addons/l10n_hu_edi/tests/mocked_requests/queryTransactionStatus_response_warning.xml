@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns2:QueryTransactionStatusResponse xmlns="http://schemas.nav.gov.hu/NTCA/1.0/common"
-    xmlns:ns2="http://schemas.nav.gov.hu/OSA/3.0/api"
-    xmlns:ns3="http://schemas.nav.gov.hu/OSA/3.0/base"
-    xmlns:ns4="http://schemas.nav.gov.hu/OSA/3.0/data">
+                                    xmlns:ns2="http://schemas.nav.gov.hu/OSA/3.0/api"
+>
     <header>
         <requestId>ODOO3a15385713c6410b90531e2701</requestId>
         <timestamp>2023-10-02T09:28:25.689Z</timestamp>
@@ -32,7 +31,8 @@
                 <ns2:message>Eredeti (CREATE) számla nettó összege nem lehet negatív.</ns2:message>
                 <ns2:pointer>
                     <ns2:tag>
-                        InvoiceData/invoiceMain/invoice/invoiceSummary/summaryNormal/invoiceNetAmount</ns2:tag>
+                        InvoiceData/invoiceMain/invoice/invoiceSummary/summaryNormal/invoiceNetAmount
+                    </ns2:tag>
                     <ns2:value>-36.91</ns2:value>
                 </ns2:pointer>
             </ns2:businessValidationMessages>
@@ -40,10 +40,12 @@
                 <ns2:validationResultCode>WARN</ns2:validationResultCode>
                 <ns2:validationErrorCode>INCORRECT_SUMMARY_DATA_VAT_OUT_OF_SCOPE</ns2:validationErrorCode>
                 <ns2:message>Az Áfa törvény hatályán kívüli jelölés a tételsorok és az összesítő
-                    közül csak az egyikben fordul elő, a másikból hiányzik.</ns2:message>
+                    közül csak az egyikben fordul elő, a másikból hiányzik.
+                </ns2:message>
                 <ns2:pointer>
                     <ns2:tag>
-                        InvoiceData/invoiceMain/invoice/invoiceSummary/summaryNormal/summaryByVatRate/vatRate/vatOutOfScope/case</ns2:tag>
+                        InvoiceData/invoiceMain/invoice/invoiceSummary/summaryNormal/summaryByVatRate/vatRate/vatOutOfScope/case
+                    </ns2:tag>
                     <ns2:value>ATK</ns2:value>
                 </ns2:pointer>
             </ns2:businessValidationMessages>

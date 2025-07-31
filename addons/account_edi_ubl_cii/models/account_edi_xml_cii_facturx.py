@@ -1,10 +1,10 @@
-from odoo import _, models, Command
-from odoo.tools import float_repr, is_html_empty, html2plaintext, cleanup_xml_node
-from lxml import etree
-
+import logging
 from datetime import datetime
 
-import logging
+from lxml import etree
+
+from odoo import _, models, Command
+from odoo.tools import float_repr, is_html_empty, html2plaintext, cleanup_xml_node
 
 _logger = logging.getLogger(__name__)
 
@@ -72,14 +72,16 @@ class AccountEdiXmlCII(models.AbstractModel):
             # [BR-IC-02]-An Invoice that contains an Invoice line (BG-25) where the Invoiced item VAT category code (BT-151)
             # is "Intra-community supply" shall contain the Seller VAT Identifier (BT-31) or the Seller tax representative
             # VAT identifier (BT-63) and the Buyer VAT identifier (BT-48).
-            'intracom_seller_vat': self._check_required_fields(vals['record']['company_id'], 'vat') if vals['intracom_delivery'] else None,
-            'intracom_buyer_vat': self._check_required_fields(vals['record']['commercial_partner_id'], 'vat') if vals['intracom_delivery'] else None,
+            'intracom_seller_vat': self._check_required_fields(vals['record']['company_id'], 'vat') if vals[
+                'intracom_delivery'] else None,
+            'intracom_buyer_vat': self._check_required_fields(vals['record']['commercial_partner_id'], 'vat') if vals[
+                'intracom_delivery'] else None,
             # [BR-IG-05]-In an Invoice line (BG-25) where the Invoiced item VAT category code (BT-151) is "IGIC" the
             # invoiced item VAT rate (BT-152) shall be greater than 0 (zero).
             'igic_tax_rate': self._check_non_0_rate_tax(vals)
-                if vals['record']['partner_id']['country_id']['code'] == 'ES'
-                    and vals['record']['partner_id']['zip']
-                    and vals['record']['partner_id']['zip'][:2] in ['35', '38'] else None,
+            if vals['record']['partner_id']['country_id']['code'] == 'ES'
+               and vals['record']['partner_id']['zip']
+               and vals['record']['partner_id']['zip'][:2] in ['35', '38'] else None,
         })
         return constraints
 
@@ -179,12 +181,12 @@ class AccountEdiXmlCII(models.AbstractModel):
             'seller_specified_legal_organization': seller_siret,
             'buyer_specified_legal_organization': buyer_siret,
             'ship_to_trade_party': invoice.partner_shipping_id if 'partner_shipping_id' in invoice._fields and invoice.partner_shipping_id
-                else invoice.commercial_partner_id,
+            else invoice.commercial_partner_id,
             # Chorus Pro fields
             'buyer_reference': invoice.buyer_reference if 'buyer_reference' in invoice._fields
-                and invoice.buyer_reference else invoice.commercial_partner_id.ref,
+                                                          and invoice.buyer_reference else invoice.commercial_partner_id.ref,
             'purchase_order_reference': invoice.purchase_order_reference if 'purchase_order_reference' in invoice._fields
-                and invoice.purchase_order_reference else invoice.ref or invoice.name,
+                                                                            and invoice.purchase_order_reference else invoice.ref or invoice.name,
             'contract_reference': invoice.contract_reference if 'contract_reference' in invoice._fields and invoice.contract_reference else '',
             'document_context_id': "urn:cen.eu:en16931:2017#conformant#urn:factur-x.eu:1p0:extended",
         }
@@ -201,9 +203,11 @@ class AccountEdiXmlCII(models.AbstractModel):
         # [BR - IC - 11] - In an Invoice with a VAT breakdown (BG-23) where the VAT category code (BT-118) is
         # "Intra-community supply" the Actual delivery date (BT-72) or the Invoicing period (BG-14) shall not be blank.
         billing_start_dates = [invoice.invoice_date] if invoice.invoice_date else []
-        billing_start_dates += [line_vals['billing_start'] for line_vals in template_values['invoice_line_vals_list'] if line_vals.get('billing_start')]
+        billing_start_dates += [line_vals['billing_start'] for line_vals in template_values['invoice_line_vals_list'] if
+                                line_vals.get('billing_start')]
         billing_end_dates = [invoice.invoice_date_due] if invoice.invoice_date_due else []
-        billing_end_dates += [line_vals['billing_end'] for line_vals in template_values['invoice_line_vals_list'] if line_vals.get('billing_end')]
+        billing_end_dates += [line_vals['billing_end'] for line_vals in template_values['invoice_line_vals_list'] if
+                              line_vals.get('billing_end')]
         if billing_start_dates:
             template_values['billing_start'] = min(billing_start_dates)
         if billing_end_dates:
@@ -214,7 +218,8 @@ class AccountEdiXmlCII(models.AbstractModel):
             # /!\ -0.0 == 0.0 in python but not in XSLT, so it can raise a fatal error when validating the XML
             # if 0.0 is expected and -0.0 is given.
             amount_currency = tax_detail_vals['tax_amount_currency']
-            tax_detail_vals['calculated_amount'] = amount_currency if not invoice.currency_id.is_zero(amount_currency) else 0
+            tax_detail_vals['calculated_amount'] = amount_currency if not invoice.currency_id.is_zero(
+                amount_currency) else 0
 
             if tax_detail_vals.get('tax_category_code') == 'K':
                 template_values['intracom_delivery'] = True
@@ -222,7 +227,8 @@ class AccountEdiXmlCII(models.AbstractModel):
         # Fixed taxes: add them as charges on the invoice lines
         for line_vals in template_values['invoice_line_vals_list']:
             line_vals['allowance_charge_vals_list'] = []
-            for grouping_key, tax_detail in tax_details['tax_details_per_record'][line_vals['line']]['tax_details'].items():
+            for grouping_key, tax_detail in tax_details['tax_details_per_record'][line_vals['line']][
+                'tax_details'].items():
                 if grouping_key['amount_type'] == 'fixed':
                     line_vals['allowance_charge_vals_list'].append({
                         'indicator': 'true',
@@ -260,9 +266,11 @@ class AccountEdiXmlCII(models.AbstractModel):
 
     def _import_retrieve_partner_vals(self, tree, role):
         return {
-            'vat': self._find_value(f".//ram:{role}/ram:SpecifiedTaxRegistration/ram:ID[string-length(text()) > 5]", tree),
+            'vat': self._find_value(f".//ram:{role}/ram:SpecifiedTaxRegistration/ram:ID[string-length(text()) > 5]",
+                                    tree),
             'name': self._find_value(f".//ram:{role}/ram:Name", tree),
-            'phone': self._find_value(f".//ram:{role}/ram:DefinedTradeContact/ram:TelephoneUniversalCommunication/ram:CompleteNumber", tree),
+            'phone': self._find_value(
+                f".//ram:{role}/ram:DefinedTradeContact/ram:TelephoneUniversalCommunication/ram:CompleteNumber", tree),
             'email': self._find_value(f".//ram:{role}//ram:EmailURIUniversalCommunication/ram:URIID", tree),
             'country_code': self._find_value(f'.//ram:{role}/ram:PostalTradeAddress//ram:CountryID', tree),
         }
@@ -273,7 +281,8 @@ class AccountEdiXmlCII(models.AbstractModel):
         if qty_factor == -1:
             logs.append(_("The invoice has been converted into a credit note and the quantities have been reverted."))
         role = 'SellerTradeParty' if invoice.journal_id.type == 'purchase' else 'BuyerTradeParty'
-        partner, partner_logs = self._import_partner(invoice.company_id, **self._import_retrieve_partner_vals(tree, role))
+        partner, partner_logs = self._import_partner(invoice.company_id,
+                                                     **self._import_retrieve_partner_vals(tree, role))
         # Need to set partner before to compute bank and lines properly
         invoice.partner_id = partner.id
         invoice_values['currency_id'], currency_logs = self._import_currency(tree, './/{*}InvoiceCurrencyCode')
@@ -313,8 +322,12 @@ class AccountEdiXmlCII(models.AbstractModel):
         allowance_charges_line_vals, allowance_charges_logs = self._import_document_allowance_charges(
             tree, invoice, invoice.journal_id.type, qty_factor,
         )
-        logs += self._import_prepaid_amount(invoice, tree, './/{*}ApplicableHeaderTradeSettlement/{*}SpecifiedTradeSettlementHeaderMonetarySummation/{*}TotalPrepaidAmount', qty_factor)
-        invoice_line_vals, line_logs = self._import_invoice_lines(invoice, tree, './{*}SupplyChainTradeTransaction/{*}IncludedSupplyChainTradeLineItem', qty_factor)
+        logs += self._import_prepaid_amount(invoice, tree,
+                                            './/{*}ApplicableHeaderTradeSettlement/{*}SpecifiedTradeSettlementHeaderMonetarySummation/{*}TotalPrepaidAmount',
+                                            qty_factor)
+        invoice_line_vals, line_logs = self._import_invoice_lines(invoice, tree,
+                                                                  './{*}SupplyChainTradeTransaction/{*}IncludedSupplyChainTradeLineItem',
+                                                                  qty_factor)
         line_vals = allowance_charges_line_vals + invoice_line_vals
 
         invoice_values = {

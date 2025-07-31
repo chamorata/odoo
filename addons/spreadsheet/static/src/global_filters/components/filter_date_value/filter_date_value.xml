@@ -13,12 +13,12 @@
             </t>
         </select>
         <DateTimeInput
-            value="date"
-            format="'yyyy'"
-            minPrecision="'years'"
-            type="'date'"
-            placeholder.translate="Select year..."
-            onChange.bind="onYearChanged"
+                value="date"
+                format="'yyyy'"
+                minPrecision="'years'"
+                type="'date'"
+                placeholder.translate="Select year..."
+                onChange.bind="onYearChanged"
         />
     </div>
 </templates>

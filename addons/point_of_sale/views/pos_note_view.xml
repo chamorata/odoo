@@ -5,8 +5,8 @@
         <field name="model">pos.note</field>
         <field name="arch" type="xml">
             <list string="Note Models" editable="bottom">
-                <field name="sequence" widget="handle" />
-                <field name="name" />
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
             </list>
         </field>
     </record>
@@ -18,7 +18,7 @@
     </record>
 
     <menuitem id="menu_pos_note_model"
-             parent="menu_point_config_product"
-             action="action_pos_note_model"
-             sequence="11"/>
+              parent="menu_point_config_product"
+              action="action_pos_note_model"
+              sequence="11"/>
 </odoo>

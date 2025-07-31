@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.addons.base.tests.common import TransactionCaseWithUserDemo
-from odoo import Command
-
 import odoo.tests
+from odoo import Command
+from odoo.addons.base.tests.common import TransactionCaseWithUserDemo
 
 
 @odoo.tests.tagged('post_install', '-at_install')
@@ -66,7 +65,7 @@ class TestAutomation(TransactionCaseWithUserDemo):
                 "trg_date_range_type": "minutes",
                 "trg_date_id": self.env.ref("base.field_res_partner__write_date").id,
             }
-            ])
+        ])
 
         cron = self.env.ref('base_automation.ir_cron_data_base_automation_check', raise_if_not_found=False)
         self.assertEqual(cron.interval_number, 6)
@@ -197,4 +196,5 @@ class TestAutomation(TransactionCaseWithUserDemo):
         domain = model_field.domain
 
         allowed_models = self.env['ir.model'].search(domain)
-        self.assertTrue(base_model._name not in allowed_models.mapped('model'), "The base model should not be in the allowed models")
+        self.assertTrue(base_model._name not in allowed_models.mapped('model'),
+                        "The base model should not be in the allowed models")

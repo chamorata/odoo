@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.mail.tests.common import MailCommon
+
 from odoo.tests import tagged, users
 
 
@@ -88,7 +89,7 @@ class TestMailTools(MailCommon):
         test_partner = self.test_partner.with_env(self.env)
 
         # standard test, no multi-email, to assert base behavior
-        sources = [(self._test_email, True), (self._test_email, False),]
+        sources = [(self._test_email, True), (self._test_email, False), ]
         expected = [follower_partner, test_partner]
         for (source, follower_check), expected in zip(sources, expected):
             with self.subTest(source=source, follower_check=follower_check):
@@ -118,7 +119,7 @@ class TestMailTools(MailCommon):
                     [source], records=linked_record if follower_check else None
                 )[0]
                 self.assertEqual(partner, expected,
-                                'Mail: formatted email is recognized through usage of normalized email')
+                                 'Mail: formatted email is recognized through usage of normalized email')
 
         # multi-email
         _test_email_2 = '"Robert Astaire" <not.alfredoastaire@test.example.com>'
@@ -143,7 +144,7 @@ class TestMailTools(MailCommon):
                     [source], records=linked_record if follower_check else None
                 )[0]
                 self.assertEqual(partner, expected,
-                                'Mail (FIXME): partial recognition of multi email through email_normalize')
+                                 'Mail (FIXME): partial recognition of multi email through email_normalize')
 
         # test users with same email, priority given to current user
         # --------------------------------------------------------------

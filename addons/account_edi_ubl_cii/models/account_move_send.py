@@ -1,9 +1,9 @@
 import base64
-import logging
 import io
+import logging
+from xml.sax.saxutils import escape, quoteattr
 
 from lxml import etree
-from xml.sax.saxutils import escape, quoteattr
 
 from odoo import _, api, fields, models, tools, SUPERUSER_ID
 from odoo.tools import cleanup_xml_node
@@ -30,7 +30,8 @@ class AccountMoveSend(models.AbstractModel):
             )
             if not_configured_company_partners:
                 alerts['account_edi_ubl_cii_configure_company'] = {
-                    'message': _("Please fill in your company's VAT or Peppol Address to generate a complete XML file."),
+                    'message': _(
+                        "Please fill in your company's VAT or Peppol Address to generate a complete XML file."),
                     'level': 'info',
                     'action_text': _("Configure"),
                     'action': not_configured_company_partners._get_records_action(),
@@ -57,7 +58,8 @@ class AccountMoveSend(models.AbstractModel):
 
     def _get_placeholder_mail_attachments_data(self, move, invoice_edi_format=None, extra_edis=None):
         # EXTENDS 'account'
-        results = super()._get_placeholder_mail_attachments_data(move, invoice_edi_format=invoice_edi_format, extra_edis=extra_edis)
+        results = super()._get_placeholder_mail_attachments_data(move, invoice_edi_format=invoice_edi_format,
+                                                                 extra_edis=extra_edis)
         if move._need_ubl_cii_xml(invoice_edi_format):
             builder = move.partner_id.commercial_partner_id._get_edi_builder(invoice_edi_format)
             filename = builder._export_invoice_filename(move)
@@ -85,7 +87,8 @@ class AccountMoveSend(models.AbstractModel):
             # Failed.
             if errors:
                 invoice_data['error'] = {
-                    'error_title': _("Errors occurred while creating the EDI document (format: %s):", builder._description),
+                    'error_title': _("Errors occurred while creating the EDI document (format: %s):",
+                                     builder._description),
                     'errors': errors,
                 }
                 invoice_data['error_but_continue'] = True
@@ -129,7 +132,7 @@ class AccountMoveSend(models.AbstractModel):
 
         # Read pdf content.
         pdf_values = (not self.env.context.get('custom_template_facturx') and invoice.invoice_pdf_report_id) or \
-            invoice_data.get('pdf_attachment_values') or invoice_data['proforma_pdf_attachment_values']
+                     invoice_data.get('pdf_attachment_values') or invoice_data['proforma_pdf_attachment_values']
         reader_buffer = io.BytesIO(pdf_values['raw'])
         reader = OdooPdfFileReader(reader_buffer, strict=False)
 
@@ -173,7 +176,8 @@ class AccountMoveSend(models.AbstractModel):
             return
 
         xmlns_move_type = 'Invoice' if invoice.move_type == 'out_invoice' else 'CreditNote'
-        pdf_values = invoice.invoice_pdf_report_id or invoice_data.get('pdf_attachment_values') or invoice_data['proforma_pdf_attachment_values']
+        pdf_values = invoice.invoice_pdf_report_id or invoice_data.get('pdf_attachment_values') or invoice_data[
+            'proforma_pdf_attachment_values']
         filename = pdf_values['name']
         content = pdf_values['raw']
 

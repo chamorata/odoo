@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import itertools
 from odoo import api, fields, models, _
 from odoo.tools.float_utils import float_is_zero
 from odoo.tools.misc import groupby
@@ -36,9 +35,9 @@ class StockQuant(models.Model):
         self.value = 0
         for quant in self:
             quant.currency_id = quant.company_id.currency_id
-            if not quant.location_id or not quant.product_id or\
-                    not quant.location_id._should_be_valued() or\
-                    quant._should_exclude_for_valuation() or\
+            if not quant.location_id or not quant.product_id or \
+                    not quant.location_id._should_be_valued() or \
+                    quant._should_exclude_for_valuation() or \
                     float_is_zero(quant.quantity, precision_rounding=quant.product_id.uom_id.rounding):
                 continue
             if quant.product_id.lot_valuated:

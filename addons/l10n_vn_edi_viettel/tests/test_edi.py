@@ -4,9 +4,9 @@ from unittest import mock
 from unittest.mock import patch
 
 from freezegun import freeze_time
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 
 from odoo import fields
-from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.tests import tagged
 
 
@@ -173,7 +173,8 @@ class TestVNEDI(AccountTestInvoicingCommon):
             'l10n_vn_edi_issue_date': fields.Datetime.now(),
             'l10n_vn_edi_invoice_state': 'sent',
         })
-        move_reversal = self.env['account.move.reversal'].with_context(active_model="account.move", active_ids=invoice.ids).create({
+        move_reversal = self.env['account.move.reversal'].with_context(active_model="account.move",
+                                                                       active_ids=invoice.ids).create({
             'reason': 'Correcting price',
             'journal_id': invoice.journal_id.id,
             'l10n_vn_edi_adjustment_type': '1',
@@ -225,7 +226,8 @@ class TestVNEDI(AccountTestInvoicingCommon):
             'l10n_vn_edi_issue_date': fields.Datetime.now(),
             'l10n_vn_edi_invoice_state': 'sent',
         })
-        move_reversal = self.env['account.move.reversal'].with_context(active_model="account.move", active_ids=invoice.ids).create({
+        move_reversal = self.env['account.move.reversal'].with_context(active_model="account.move",
+                                                                       active_ids=invoice.ids).create({
             'reason': 'Correcting price',
             'journal_id': invoice.journal_id.id,
             'l10n_vn_edi_adjustment_type': '1',
@@ -314,7 +316,8 @@ class TestVNEDI(AccountTestInvoicingCommon):
         # Trying to cancel a sent invoice should result in an action to open the cancellation wizard.
         action = invoice.button_request_cancel()
         self.assertEqual(action['res_model'], 'l10n_vn_edi_viettel.cancellation')
-        with patch('odoo.addons.l10n_vn_edi_viettel.models.account_move._l10n_vn_edi_send_request', return_value=(None, None)):
+        with patch('odoo.addons.l10n_vn_edi_viettel.models.account_move._l10n_vn_edi_send_request',
+                   return_value=(None, None)):
             self.env['l10n_vn_edi_viettel.cancellation'].create({
                 'invoice_id': invoice.id,
                 'reason': 'Unwanted',
@@ -336,27 +339,32 @@ class TestVNEDI(AccountTestInvoicingCommon):
             currency=self.other_currency,
         )
         request_response = {
-            'access_token': '123',  # In reality, it wouldn't be set here, but for convenience in the tests we'll "cheat"
+            'access_token': '123',
+            # In reality, it wouldn't be set here, but for convenience in the tests we'll "cheat"
             'expires_in': '600',  # 10m
         }
 
         # Do a few tests to ensure that the access token is handled correctly.
-        with patch('odoo.addons.l10n_vn_edi_viettel.models.account_move._l10n_vn_edi_send_request', return_value=(request_response, None)):
+        with patch('odoo.addons.l10n_vn_edi_viettel.models.account_move._l10n_vn_edi_send_request',
+                   return_value=(request_response, None)):
             # First ensure that fetching the token will set the value correctly on the company.
             with freeze_time('2024-01-01 02:00:00'):
                 invoice._l10n_vn_edi_get_access_token()
                 self.assertEqual(invoice.company_id.l10n_vn_edi_token, '123')
-                self.assertEqual(invoice.company_id.l10n_vn_edi_token_expiry, datetime.strptime('2024-01-01 02:10:00', '%Y-%m-%d %H:%M:%S'))
+                self.assertEqual(invoice.company_id.l10n_vn_edi_token_expiry,
+                                 datetime.strptime('2024-01-01 02:10:00', '%Y-%m-%d %H:%M:%S'))
             # Second fetch should not set anything as the token isn't expired.
             with freeze_time('2024-01-01 02:05:00'):
                 invoice._l10n_vn_edi_get_access_token()
                 self.assertEqual(invoice.company_id.l10n_vn_edi_token, '123')
-                self.assertEqual(invoice.company_id.l10n_vn_edi_token_expiry, datetime.strptime('2024-01-01 02:10:00', '%Y-%m-%d %H:%M:%S'))
+                self.assertEqual(invoice.company_id.l10n_vn_edi_token_expiry,
+                                 datetime.strptime('2024-01-01 02:10:00', '%Y-%m-%d %H:%M:%S'))
             # Third fetch will get a new token due as it expired
             with freeze_time('2024-01-01 02:15:00'):
                 invoice._l10n_vn_edi_get_access_token()
                 self.assertEqual(invoice.company_id.l10n_vn_edi_token, '123')
-                self.assertEqual(invoice.company_id.l10n_vn_edi_token_expiry, datetime.strptime('2024-01-01 02:25:00', '%Y-%m-%d %H:%M:%S'))
+                self.assertEqual(invoice.company_id.l10n_vn_edi_token_expiry,
+                                 datetime.strptime('2024-01-01 02:25:00', '%Y-%m-%d %H:%M:%S'))
 
     def _send_invoice(self, invoice):
         pdf_response = {
@@ -376,11 +384,18 @@ class TestVNEDI(AccountTestInvoicingCommon):
                 'reservationCode': '123456',
                 'invoiceNo': 'K24TUT01',
             },
-            'access_token': '123',  # In reality, it wouldn't be set here, but for convenience in the tests we'll "cheat"
+            'access_token': '123',
+            # In reality, it wouldn't be set here, but for convenience in the tests we'll "cheat"
             'expires_in': '60',
         }
 
-        with patch('odoo.addons.l10n_vn_edi_viettel.models.account_move.AccountMove._l10n_vn_edi_fetch_invoice_pdf_file_data', return_value=pdf_response), \
-             patch('odoo.addons.l10n_vn_edi_viettel.models.account_move.AccountMove._l10n_vn_edi_fetch_invoice_xml_file_data', return_value=xml_response), \
-             patch('odoo.addons.l10n_vn_edi_viettel.models.account_move._l10n_vn_edi_send_request', return_value=(request_response, None)):
-            self.env['account.move.send.wizard'].with_context(active_model=invoice._name, active_ids=invoice.ids).create({}).action_send_and_print()
+        with patch(
+                'odoo.addons.l10n_vn_edi_viettel.models.account_move.AccountMove._l10n_vn_edi_fetch_invoice_pdf_file_data',
+                return_value=pdf_response), \
+                patch(
+                    'odoo.addons.l10n_vn_edi_viettel.models.account_move.AccountMove._l10n_vn_edi_fetch_invoice_xml_file_data',
+                    return_value=xml_response), \
+                patch('odoo.addons.l10n_vn_edi_viettel.models.account_move._l10n_vn_edi_send_request',
+                      return_value=(request_response, None)):
+            self.env['account.move.send.wizard'].with_context(active_model=invoice._name,
+                                                              active_ids=invoice.ids).create({}).action_send_and_print()

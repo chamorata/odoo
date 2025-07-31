@@ -60,7 +60,6 @@ EDI_LIKE_HTML_SOURCE = u"""<div style="font-family: 'Lucida Grande', Ubuntu, Ari
     </div>
 </div></body></html>"""
 
-
 # QUOTES
 
 QUOTE_BLOCKQUOTE = u"""<html>
@@ -103,12 +102,12 @@ web: <a class="moz-txt-link-freetext" href="https://opener.am">https://opener.am
   </body>
 </html>"""
 
-QUOTE_BLOCKQUOTE_IN = [u"""<blockquote cite="mid:CAEJSRZvWvud8c6Qp=wfNG6O1+wK3i_jb33qVrF7XyrgPNjnyUA@mail.gmail.com" type="cite" data-o-mail-quote-node="1" data-o-mail-quote="1">"""]
+QUOTE_BLOCKQUOTE_IN = [
+    u"""<blockquote cite="mid:CAEJSRZvWvud8c6Qp=wfNG6O1+wK3i_jb33qVrF7XyrgPNjnyUA@mail.gmail.com" type="cite" data-o-mail-quote-node="1" data-o-mail-quote="1">"""]
 QUOTE_BLOCKQUOTE_OUT = [u"""-- 
 Opener B.V. - Business solutions driven by open source collaboration
 
 Stefan Rijnhart - Consultant/developer"""]
-
 
 QUOTE_THUNDERBIRD_HTML = u"""<html>
   <head>
@@ -136,12 +135,11 @@ Raoul Poilvache
   </body>
 </html>"""
 
-
-QUOTE_THUNDERBIRD_HTML_IN = [u"""<blockquote cite="mid:CAP76m_WWFH2KVrbjOxbaozvkmbzZYLWJnQ0n0sy9XpGaCWRf1g@mail.gmail.com" type="cite" data-o-mail-quote-node="1" data-o-mail-quote="1">"""]
+QUOTE_THUNDERBIRD_HTML_IN = [
+    u"""<blockquote cite="mid:CAP76m_WWFH2KVrbjOxbaozvkmbzZYLWJnQ0n0sy9XpGaCWRf1g@mail.gmail.com" type="cite" data-o-mail-quote-node="1" data-o-mail-quote="1">"""]
 QUOTE_THUNDERBIRD_HTML_OUT = [u"""<pre class="moz-signature" cols="72"><span data-o-mail-quote="1">-- 
 Raoul Poilvache
 </span></pre>"""]
-
 
 QUOTE_HOTMAIL_HTML = u"""
 <html>
@@ -174,7 +172,6 @@ QUOTE_HOTMAIL_HTML_IN = [u"""I don't like that.<br><br>"""]
 QUOTE_HOTMAIL_HTML_OUT = [
     u"""<hr id="stopSpelling" data-o-mail-quote="1">""",
     u"""<div dir="ltr" data-o-mail-quote="1"><b data-o-mail-quote="1"><i data-o-mail-quote="1">Test reply. The suite.</i></b>"""]
-
 
 QUOTE_OUTLOOK_HTML = """
 <html>
@@ -219,14 +216,14 @@ QUOTE_OUTLOOK_HTML_IN = [
 ]
 QUOTE_OUTLOOK_HTML_OUT = [
     """<div class="elementToProof" id="Signature" data-o-mail-quote-container="1" data-o-mail-quote="1">John</div>""",
-    """<div id="appendonsend" data-o-mail-quote-container="1" data-o-mail-quote="1"></div>""",  # quoted when empty in case there's a signature before
+    """<div id="appendonsend" data-o-mail-quote-container="1" data-o-mail-quote="1"></div>""",
+    # quoted when empty in case there's a signature before
     """<hr tabindex="-1" style="display:inline-block; width:98%" data-o-mail-quote="1">""",
     """<div data-o-mail-quote-container="1" data-o-mail-quote="1">
             <div dir="ltr" data-o-mail-quote="1">Parent email body</div>
          </div>""",
     """<div id="divRplyFwdMsg" dir="ltr" data-o-mail-quote-container="1" data-o-mail-quote="1">""",
 ]
-
 
 QUOTE_THUNDERBIRD_1 = u"""<div>On 11/08/2012 05:29 PM,
       <a href="mailto:dummy@example.com">dummy@example.com</a> wrote:<br></div>
@@ -299,7 +296,6 @@ QUOTE_YAHOO_HTML_OUT = [
     """<div id="yahoo_quoted_8820595126" class="yahoo_quoted" data-o-mail-quote="1">""",
 ]
 
-
 TEXT_1 = u"""I contact you about our meeting tomorrow. Here is the schedule I propose:
 9 AM: brainstorming about our new amazing business app
 9.45 AM: summary
@@ -345,19 +341,19 @@ bert.tartopoils@miam.miam
 TEXT_2_IN = [u"Salut Raoul!", "Of course. This seems viable."]
 TEXT_2_OUT = [u"""
 > I contact you about our meeting tomorrow. Here is the schedule I propose: (quote)""",
-"""
-> 2012/10/27 Bert Tartopoils :
->> blahblahblah (quote)?
->> 
->> blahblahblah (quote)
->> 
->> Bert TARTOPOILS
->> bert.tartopoils@miam.miam
->> 
-> 
-> 
-> -- 
-> RaoulSignature"""]
+              """
+              > 2012/10/27 Bert Tartopoils :
+              >> blahblahblah (quote)?
+              >> 
+              >> blahblahblah (quote)
+              >> 
+              >> Bert TARTOPOILS
+              >> bert.tartopoils@miam.miam
+              >> 
+              > 
+              > 
+              > -- 
+              > RaoulSignature"""]
 
 # MISC
 
@@ -534,9 +530,10 @@ MSOFFICE_1 = u"""
     </div>
 </div>"""
 
-MSOFFICE_1_IN = [u'Our requirements are simple. Just looking to replace some spreadsheets for tracking quotes and possibly using the timecard module.']
-MSOFFICE_1_OUT = [u'I noticed you recently downloaded OpenERP.', 'Uou mentioned you wish to use OpenERP in your own company.', 'Belgium: +32.81.81.37.00']
-
+MSOFFICE_1_IN = [
+    u'Our requirements are simple. Just looking to replace some spreadsheets for tracking quotes and possibly using the timecard module.']
+MSOFFICE_1_OUT = [u'I noticed you recently downloaded OpenERP.',
+                  'Uou mentioned you wish to use OpenERP in your own company.', 'Belgium: +32.81.81.37.00']
 
 # ------------------------------------------------------------
 # Test cases coming from bugs
@@ -595,7 +592,6 @@ Chaussée de Namur, 40
 B-1367 Gérompont
 Tel: +32.81.81.37.00
 Web: http://www.openerp.com"""]
-
 
 REMOVE_CLASS = u"""
 <div style="FONT-SIZE: 12pt; FONT-FAMILY: 'Times New Roman'; COLOR: #000000">

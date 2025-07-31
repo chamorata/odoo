@@ -8,6 +8,7 @@ from odoo import api, models
 from odoo.osv.expression import AND
 from odoo.tools import float_is_zero, format_date, float_round, float_compare
 
+
 class StockForecasted(models.AbstractModel):
     _name = 'stock.forecasted_product_product'
     _description = "Stock Replenishment Report"
@@ -64,22 +65,22 @@ class StockForecasted(models.AbstractModel):
         if product_template_ids:
             products = self.env['product.template'].browse(product_template_ids)
             res.update({
-                'product_templates' : products.read(fields=['id', 'display_name']),
-                'product_templates_ids' : products.ids,
-                'product_variants' : [{
-                        'id' : pv.id,
-                        'combination_name' : pv.product_template_attribute_value_ids._get_combination_name(),
-                    } for pv in products.product_variant_ids],
-                'product_variants_ids' : products.product_variant_ids.ids,
-                'multiple_product' : len(products.product_variant_ids) > 1,
+                'product_templates': products.read(fields=['id', 'display_name']),
+                'product_templates_ids': products.ids,
+                'product_variants': [{
+                    'id': pv.id,
+                    'combination_name': pv.product_template_attribute_value_ids._get_combination_name(),
+                } for pv in products.product_variant_ids],
+                'product_variants_ids': products.product_variant_ids.ids,
+                'multiple_product': len(products.product_variant_ids) > 1,
             })
         elif product_ids:
             products = self.env['product.product'].browse(product_ids)
             res.update({
-                'product_templates' : False,
-                'product_variants' : products.read(fields=['id', 'display_name']),
-                'product_variants_ids' : products.ids,
-                'multiple_product' : len(products) > 1,
+                'product_templates': False,
+                'product_variants': products.read(fields=['id', 'display_name']),
+                'product_variants_ids': products.ids,
+                'multiple_product': len(products) > 1,
             })
 
         res['uom'] = products[:1].uom_id.display_name
@@ -115,7 +116,8 @@ class StockForecasted(models.AbstractModel):
         assert product_template_ids or product_ids
         res = {}
 
-        warehouse = self.env['stock.warehouse'].browse(self.env['stock.warehouse']._get_warehouse_id_from_context()) or self.env['stock.warehouse'].search([['active', '=', True]])[0]
+        warehouse = self.env['stock.warehouse'].browse(self.env['stock.warehouse']._get_warehouse_id_from_context()) or \
+                    self.env['stock.warehouse'].search([['active', '=', True]])[0]
         wh_location_ids = [loc['id'] for loc in self.env['stock.location'].search_read(
             [('id', 'child_of', warehouse.view_location_id.id)],
             ['id'],
@@ -129,7 +131,8 @@ class StockForecasted(models.AbstractModel):
         res['user_can_edit_pickings'] = self.env.user.has_group('stock.group_stock_user')
         return res
 
-    def _prepare_report_line(self, quantity, move_out=None, move_in=None, replenishment_filled=True, product=False, reserved_move=False, in_transit=False, read=True):
+    def _prepare_report_line(self, quantity, move_out=None, move_in=None, replenishment_filled=True, product=False,
+                             reserved_move=False, in_transit=False, read=True):
         product = product or (move_out.product_id if move_out else move_in.product_id)
         is_late = move_out.date < move_in.date if (move_out and move_in) else False
 
@@ -153,16 +156,16 @@ class StockForecasted(models.AbstractModel):
             'reservation': self._get_reservation_data(reserved_move) if reserved_move else False,
             'in_transit': in_transit,
             'is_matched': any(move_id in [move_in_id, move_out_id] for move_id in move_to_match_ids),
-            'uom_id' : product.uom_id.read()[0] if read else product.uom_id,
+            'uom_id': product.uom_id.read()[0] if read else product.uom_id,
         }
         if move_in:
             document_in = move_in.sudo()._get_source_document()
             line.update({
                 'move_in': move_in.read(fields=self._get_report_moves_fields())[0] if read else move_in,
-                'document_in' : {
-                    '_name' : document_in._name,
-                    'id' : document_in.id,
-                    'name' : document_in.display_name,
+                'document_in': {
+                    '_name': document_in._name,
+                    'id': document_in.id,
+                    'name': document_in.display_name,
                 } if document_in else False,
                 'receipt_date': format_date(self.env, move_in.date),
             })
@@ -171,10 +174,10 @@ class StockForecasted(models.AbstractModel):
             document_out = move_out.sudo()._get_source_document()
             line.update({
                 'move_out': move_out.read(fields=self._get_report_moves_fields())[0] if read else move_out,
-                'document_out' : {
-                    '_name' : document_out._name,
-                    'id' : document_out.id,
-                    'name' : document_out.display_name,
+                'document_out': {
+                    '_name': document_out._name,
+                    'id': document_out.id,
+                    'name': document_out.display_name,
                 } if document_out else False,
                 'delivery_date': format_date(self.env, move_out.date),
             })
@@ -206,7 +209,8 @@ class StockForecasted(models.AbstractModel):
                 reserved_out += reserved
                 used_reserved_moves[move] += reserved
                 currents[(out.product_id.id, move.location_id.id)] -= reserved
-                if float_compare(reserved_out, out.product_qty, precision_rounding=move.product_id.uom_id.rounding) >= 0:
+                if float_compare(reserved_out, out.product_qty,
+                                 precision_rounding=move.product_id.uom_id.rounding) >= 0:
                     break
 
             return {
@@ -275,7 +279,8 @@ class StockForecasted(models.AbstractModel):
         future_domain = ['|', ('reservation_date', '>', date.today()), ('reservation_date', '=', False)]
 
         past_outs = self.env['stock.move'].search(AND([out_domain, past_domain]), order='priority desc, date, id')
-        future_outs = self.env['stock.move'].search(AND([out_domain, future_domain]), order='reservation_date, priority desc, date, id')
+        future_outs = self.env['stock.move'].search(AND([out_domain, future_domain]),
+                                                    order='reservation_date, priority desc, date, id')
 
         outs = past_outs | future_outs
 
@@ -319,8 +324,9 @@ class StockForecasted(models.AbstractModel):
                 'move_dests': in_._rollup_move_dests()
             })
 
-        qties = self.env['stock.quant']._read_group([('location_id', 'in', wh_location_ids), ('quantity', '>', 0), ('product_id', 'in', outs.product_id.ids)],
-                                                    ['product_id', 'location_id'], ['quantity:sum'])
+        qties = self.env['stock.quant']._read_group(
+            [('location_id', 'in', wh_location_ids), ('quantity', '>', 0), ('product_id', 'in', outs.product_id.ids)],
+            ['product_id', 'location_id'], ['quantity:sum'])
         wh_stock_sub_location_ids = set(
             wh_stock_location.search([('id', 'child_of', wh_stock_location.id)])._ids
         )
@@ -364,7 +370,8 @@ class StockForecasted(models.AbstractModel):
                 if reserved_out > 0:
                     demand_out = max(demand_out - reserved_out, 0)
                     in_transit = bool(reserved_move.move_orig_ids)
-                    lines.append(self._prepare_report_line(reserved_out, move_out=out, reserved_move=reserved_move, in_transit=in_transit, read=read))
+                    lines.append(self._prepare_report_line(reserved_out, move_out=out, reserved_move=reserved_move,
+                                                           in_transit=in_transit, read=read))
 
                 if float_is_zero(demand_out, precision_rounding=product_rounding):
                     continue
@@ -389,13 +396,15 @@ class StockForecasted(models.AbstractModel):
 
                 # Reconcile with the ins.
                 if not float_is_zero(demand_out, precision_rounding=product_rounding):
-                    demand_out = _reconcile_out_with_ins(lines, out, ins_per_product[product.id], demand_out, product_rounding, only_matching_move_dest=True, read=read)
+                    demand_out = _reconcile_out_with_ins(lines, out, ins_per_product[product.id], demand_out,
+                                                         product_rounding, only_matching_move_dest=True, read=read)
                 if not float_is_zero(demand_out, precision_rounding=product_rounding):
                     unreconciled_outs.append((demand_out, out))
 
             # Another pass, in case there are some ins linked to a dest move but that still have some quantity available
             for (demand, out) in unreconciled_outs:
-                demand = _reconcile_out_with_ins(lines, out, ins_per_product[product.id], demand, product_rounding, only_matching_move_dest=False, read=read)
+                demand = _reconcile_out_with_ins(lines, out, ins_per_product[product.id], demand, product_rounding,
+                                                 only_matching_move_dest=False, read=read)
                 if not float_is_zero(demand, precision_rounding=product_rounding):
                     # Not reconciled
                     lines.append(self._prepare_report_line(demand, move_out=out, replenishment_filled=False, read=read))
@@ -416,7 +425,8 @@ class StockForecasted(models.AbstractModel):
     @api.model
     def action_reserve_linked_picks(self, move_id):
         move_id = self.env['stock.move'].browse(move_id)
-        move_ids = move_id.browse(move_id._rollup_move_origs()).filtered(lambda m: m.state not in ['draft', 'cancel', 'assigned', 'done'])
+        move_ids = move_id.browse(move_id._rollup_move_origs()).filtered(
+            lambda m: m.state not in ['draft', 'cancel', 'assigned', 'done'])
         if move_ids:
             move_ids._action_assign()
         return move_ids
@@ -424,7 +434,8 @@ class StockForecasted(models.AbstractModel):
     @api.model
     def action_unreserve_linked_picks(self, move_id):
         move_id = self.env['stock.move'].browse(move_id)
-        move_ids = move_id.browse(move_id._rollup_move_origs()).filtered(lambda m: m.state not in ['draft', 'cancel', 'done'])
+        move_ids = move_id.browse(move_id._rollup_move_origs()).filtered(
+            lambda m: m.state not in ['draft', 'cancel', 'done'])
         if move_ids:
             move_ids._do_unreserve()
             move_ids.picking_id.package_level_ids.filtered(lambda p: not p.move_ids).unlink()

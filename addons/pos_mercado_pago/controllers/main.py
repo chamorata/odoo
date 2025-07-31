@@ -53,7 +53,8 @@ class PosMercadoPagoWebhook(http.Controller):
         mercado_pago_pattern = r'(\d+)_(\d+)_([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})'
 
         if not external_reference or not (match := re.fullmatch(mercado_pago_pattern, external_reference)):
-            _logger.warning('POST message received with no or malformed "external_reference" key: %s', external_reference)
+            _logger.warning('POST message received with no or malformed "external_reference" key: %s',
+                            external_reference)
             return http.Response(status=400)
 
         session_id, payment_method_id, _ = match.groups()
@@ -64,7 +65,8 @@ class PosMercadoPagoWebhook(http.Controller):
             # This error is not related with Mercado Pago, simply acknowledge Mercado Pago message
             return http.Response('OK', status=200)
 
-        payment_method_sudo = pos_session_sudo.config_id.payment_method_ids.filtered(lambda p: p.id == int(payment_method_id))
+        payment_method_sudo = pos_session_sudo.config_id.payment_method_ids.filtered(
+            lambda p: p.id == int(payment_method_id))
         if not payment_method_sudo or payment_method_sudo.use_payment_terminal != 'mercado_pago':
             _logger.error("Invalid payment method id: %s", payment_method_id)
             # This error is not related with Mercado Pago, simply acknowledge Mercado Pago message

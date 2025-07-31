@@ -53,7 +53,7 @@ class TestResPartner(TransactionCase):
                       'partner_ids': [(6, 0, [test_partner_5.id,
                                               test_partner_7.id])]})
 
-        #Test rule to see if ir.rules are applied
+        # Test rule to see if ir.rules are applied
         calendar_event_model_id = self.env['ir.model']._get('calendar.event').id
         self.env['ir.rule'].create({'name': 'test_rule',
                                     'model_id': calendar_event_model_id,
@@ -63,11 +63,11 @@ class TestResPartner(TransactionCase):
                                     'perm_write': False})
         # create generally requires read -> prevented by above test rule
         Event.sudo().create({'name': 'event_9',
-                      'partner_ids': [(6, 0, [test_partner_2.id,
-                                              test_partner_3.id])]})
+                             'partner_ids': [(6, 0, [test_partner_2.id,
+                                                     test_partner_3.id])]})
 
         Event.sudo().create({'name': 'event_10',
-                      'partner_ids': [(6, 0, [test_partner_5.id])]})
+                             'partner_ids': [(6, 0, [test_partner_5.id])]})
 
         self.assertEqual(test_partner_1.meeting_count, 7)
         self.assertEqual(test_partner_2.meeting_count, 2)

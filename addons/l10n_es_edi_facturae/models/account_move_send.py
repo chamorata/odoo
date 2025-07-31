@@ -19,7 +19,8 @@ class AccountMoveSend(models.AbstractModel):
 
     def _get_placeholder_mail_attachments_data(self, move, invoice_edi_format=None, extra_edis=None):
         # EXTENDS 'account'
-        results = super()._get_placeholder_mail_attachments_data(move, invoice_edi_format=invoice_edi_format, extra_edis=extra_edis)
+        results = super()._get_placeholder_mail_attachments_data(move, invoice_edi_format=invoice_edi_format,
+                                                                 extra_edis=extra_edis)
 
         if invoice_edi_format == 'es_facturae' and move._l10n_es_edi_facturae_get_default_enable():
             filename = f'{move.name.replace("/", "_")}_facturae_signed.xml'
@@ -79,4 +80,5 @@ class AccountMoveSend(models.AbstractModel):
         if attachments_vals:
             attachments = self.env['ir.attachment'].with_user(SUPERUSER_ID).create(attachments_vals)
             res_ids = attachments.mapped('res_id')
-            self.env['account.move'].browse(res_ids).invalidate_recordset(fnames=['l10n_es_edi_facturae_xml_id', 'l10n_es_edi_facturae_xml_file'])
+            self.env['account.move'].browse(res_ids).invalidate_recordset(
+                fnames=['l10n_es_edi_facturae_xml_id', 'l10n_es_edi_facturae_xml_file'])

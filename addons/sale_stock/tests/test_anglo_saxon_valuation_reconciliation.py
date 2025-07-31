@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo.addons.stock_account.tests.test_anglo_saxon_valuation_reconciliation_common import ValuationReconciliationTestCommon
+from odoo.addons.stock_account.tests.test_anglo_saxon_valuation_reconciliation_common import \
+    ValuationReconciliationTestCommon
+
 from odoo.tests import Form, tagged
 
 
@@ -106,7 +108,7 @@ class TestValuationReconciliation(TestValuationReconciliationCommon):
         the goods to our customer.
         """
         test_product = self.test_product_delivery
-        #since the invoice come first, the COGS will use the standard price on product
+        # since the invoice come first, the COGS will use the standard price on product
         self.test_product_delivery.standard_price = 13
         self._set_initial_stock_for_product(test_product)
 
@@ -120,10 +122,10 @@ class TestValuationReconciliation(TestValuationReconciliationCommon):
         picking = self.env['stock.picking'].search([('sale_id', '=', sale_order.id)])
         self.check_reconciliation(invoice, picking, operation='sale')
 
-        #return the goods and refund the invoice
+        # return the goods and refund the invoice
         stock_return_picking_form = Form(self.env['stock.return.picking']
-            .with_context(active_ids=picking.ids, active_id=picking.ids[0],
-            active_model='stock.picking'))
+                                         .with_context(active_ids=picking.ids, active_id=picking.ids[0],
+                                                       active_model='stock.picking'))
         stock_return_picking = stock_return_picking_form.save()
         stock_return_picking.product_return_moves.quantity = 1.0
         stock_return_picking_action = stock_return_picking.action_create_returns()
@@ -131,7 +133,8 @@ class TestValuationReconciliation(TestValuationReconciliationCommon):
         return_pick.action_assign()
         return_pick.move_ids.write({'quantity': 1, 'picked': True})
         return_pick._action_done()
-        refund_invoice_wiz = self.env['account.move.reversal'].with_context(active_model='account.move', active_ids=[invoice.id]).create({
+        refund_invoice_wiz = self.env['account.move.reversal'].with_context(active_model='account.move',
+                                                                            active_ids=[invoice.id]).create({
             'reason': 'test_invoice_shipment_refund',
             'journal_id': invoice.journal_id.id,
         })
@@ -391,7 +394,8 @@ class TestValuationReconciliation(TestValuationReconciliationCommon):
         }
 
         invoice_2.stock_valuation_layer_ids |= self.env['stock.valuation.layer'].create(svl_vals)
-        invoice_2.stock_valuation_layer_ids.stock_valuation_layer_id |= self.env['stock.valuation.layer'].create(svl_vals)
+        invoice_2.stock_valuation_layer_ids.stock_valuation_layer_id |= self.env['stock.valuation.layer'].create(
+            svl_vals)
 
         invoice_1.action_post()
         self.assertEqual(invoice_1.state, 'posted')

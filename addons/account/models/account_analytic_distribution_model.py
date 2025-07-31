@@ -40,7 +40,8 @@ class AccountAnalyticDistributionModel(models.Model):
         return applicable_models.filtered(
             lambda model:
             not model.account_prefix or
-            any((vals.get('account_prefix') or '').startswith(prefix) for prefix in delimiter_pattern.split(model.account_prefix))
+            any((vals.get('account_prefix') or '').startswith(prefix) for prefix in
+                delimiter_pattern.split(model.account_prefix))
         )
 
     def _create_domain(self, fname, value):

@@ -2,12 +2,12 @@
 
 from unittest.mock import patch
 
-from odoo.tests import tagged
-from odoo.tools import mute_logger
-
 from odoo.addons.payment.tests.http_common import PaymentHttpCommon
 from odoo.addons.payment_mercado_pago.controllers.main import MercadoPagoController
 from odoo.addons.payment_mercado_pago.tests.common import MercadoPagoCommon
+
+from odoo.tests import tagged
+from odoo.tools import mute_logger
 
 
 @tagged('post_install', '-at_install')
@@ -20,8 +20,8 @@ class TestProcessingFlows(MercadoPagoCommon, PaymentHttpCommon):
         self._create_transaction(flow='redirect')
         url = self._build_url(MercadoPagoController._return_url)
         with patch(
-            'odoo.addons.payment.models.payment_transaction.PaymentTransaction'
-            '._handle_notification_data'
+                'odoo.addons.payment.models.payment_transaction.PaymentTransaction'
+                '._handle_notification_data'
         ) as handle_notification_data_mock:
             self._make_http_get_request(url, params=self.redirect_notification_data)
         self.assertEqual(handle_notification_data_mock.call_count, 1)
@@ -33,8 +33,8 @@ class TestProcessingFlows(MercadoPagoCommon, PaymentHttpCommon):
         tx = self._create_transaction(flow='redirect')
         url = self._build_url(f'{MercadoPagoController._webhook_url}/{tx.reference}')
         with patch(
-            'odoo.addons.payment.models.payment_transaction.PaymentTransaction'
-            '._handle_notification_data'
+                'odoo.addons.payment.models.payment_transaction.PaymentTransaction'
+                '._handle_notification_data'
         ) as handle_notification_data_mock:
             self._make_json_request(url, data=self.webhook_notification_data)
         self.assertEqual(handle_notification_data_mock.call_count, 1)

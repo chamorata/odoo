@@ -5,8 +5,6 @@ from freezegun import freeze_time
 
 from odoo import Command
 from odoo.tests import tagged
-from odoo import Command
-
 from .common import TestEGEdiCommon
 
 ETA_TEST_RESPONSE = {
@@ -43,6 +41,7 @@ COMMON_REQUEST_DICT = {
     'signatures': ETA_TEST_SIGNATURES,
 }
 
+
 def mocked_action_post_sign_invoices(self):
     for invoice in self:
         eta_invoice = self.env['account.edi.format']._l10n_eg_eta_prepare_eta_invoice(self)
@@ -74,8 +73,8 @@ class TestEdiJson(TestEGEdiCommon):
 
     def test_1_simple_test_local_parter_no_tax(self):
         with freeze_time(self.frozen_today), patch(
-            'odoo.addons.l10n_eg_edi_eta.models.account_move.AccountMove.action_post_sign_invoices',
-            new=mocked_action_post_sign_invoices,
+                'odoo.addons.l10n_eg_edi_eta.models.account_move.AccountMove.action_post_sign_invoices',
+                new=mocked_action_post_sign_invoices,
         ), patch(
             'odoo.addons.l10n_eg_edi_eta.models.account_edi_format.AccountEdiFormat._l10n_eg_edi_post_invoice_web_service',
             new=mocked_l10n_eg_edi_post_invoice_web_service,
@@ -167,8 +166,8 @@ class TestEdiJson(TestEGEdiCommon):
 
     def test_2_simple_test_local_parter_vat_14(self):
         with freeze_time(self.frozen_today), patch(
-            'odoo.addons.l10n_eg_edi_eta.models.account_move.AccountMove.action_post_sign_invoices',
-            new=mocked_action_post_sign_invoices,
+                'odoo.addons.l10n_eg_edi_eta.models.account_move.AccountMove.action_post_sign_invoices',
+                new=mocked_action_post_sign_invoices,
         ), patch(
             'odoo.addons.l10n_eg_edi_eta.models.account_edi_format.AccountEdiFormat._l10n_eg_edi_post_invoice_web_service',
             new=mocked_l10n_eg_edi_post_invoice_web_service,
@@ -262,8 +261,8 @@ class TestEdiJson(TestEGEdiCommon):
 
     def test_3_simple_test_local_parter_vat_14_discount_credit_note(self):
         with freeze_time(self.frozen_today), patch(
-            'odoo.addons.l10n_eg_edi_eta.models.account_move.AccountMove.action_post_sign_invoices',
-            new=mocked_action_post_sign_invoices,
+                'odoo.addons.l10n_eg_edi_eta.models.account_move.AccountMove.action_post_sign_invoices',
+                new=mocked_action_post_sign_invoices,
         ), patch(
             'odoo.addons.l10n_eg_edi_eta.models.account_edi_format.AccountEdiFormat._l10n_eg_edi_post_invoice_web_service',
             new=mocked_l10n_eg_edi_post_invoice_web_service,
@@ -363,8 +362,8 @@ class TestEdiJson(TestEGEdiCommon):
 
     def test_4_simple_test_local_parter_vat_14_discount_multiple_tax(self):
         with freeze_time(self.frozen_today), patch(
-            'odoo.addons.l10n_eg_edi_eta.models.account_move.AccountMove.action_post_sign_invoices',
-            new=mocked_action_post_sign_invoices,
+                'odoo.addons.l10n_eg_edi_eta.models.account_move.AccountMove.action_post_sign_invoices',
+                new=mocked_action_post_sign_invoices,
         ), patch(
             'odoo.addons.l10n_eg_edi_eta.models.account_edi_format.AccountEdiFormat._l10n_eg_edi_post_invoice_web_service',
             new=mocked_l10n_eg_edi_post_invoice_web_service,
@@ -478,7 +477,8 @@ class TestEdiJson(TestEGEdiCommon):
                                 'itemsDiscount': 0.0,
                                 'unitValue': {'currencySold': 'EGP', 'amountEGP': 100.0},
                                 'discount': {'rate': 10.0, 'amount': 10.0},
-                                'taxableItems': [{'taxType': 'T1', 'amount': 12.6, 'subType': 'V009', 'rate': 14.0}, {'taxType': 'T3', 'amount': 10.0, 'subType': 'TBL02', 'rate': 0}],
+                                'taxableItems': [{'taxType': 'T1', 'amount': 12.6, 'subType': 'V009', 'rate': 14.0},
+                                                 {'taxType': 'T3', 'amount': 10.0, 'subType': 'TBL02', 'rate': 0}],
                                 'salesTotal': 100.0,
                                 'netTotal': 90.0,
                                 'total': 112.6,
@@ -496,8 +496,8 @@ class TestEdiJson(TestEGEdiCommon):
 
     def test_5_simple_test_foreign_partner_exempt_discount(self):
         with freeze_time(self.frozen_today), patch(
-            'odoo.addons.l10n_eg_edi_eta.models.account_move.AccountMove.action_post_sign_invoices',
-            new=mocked_action_post_sign_invoices,
+                'odoo.addons.l10n_eg_edi_eta.models.account_move.AccountMove.action_post_sign_invoices',
+                new=mocked_action_post_sign_invoices,
         ), patch(
             'odoo.addons.l10n_eg_edi_eta.models.account_edi_format.AccountEdiFormat._l10n_eg_edi_post_invoice_web_service',
             new=mocked_l10n_eg_edi_post_invoice_web_service,
@@ -595,8 +595,8 @@ class TestEdiJson(TestEGEdiCommon):
 
     def test_6_simple_test_foreign_parter_exempt_discount_foreign_currency(self):
         with freeze_time(self.frozen_today), patch(
-            'odoo.addons.l10n_eg_edi_eta.models.account_move.AccountMove.action_post_sign_invoices',
-            new=mocked_action_post_sign_invoices,
+                'odoo.addons.l10n_eg_edi_eta.models.account_move.AccountMove.action_post_sign_invoices',
+                new=mocked_action_post_sign_invoices,
         ), patch(
             'odoo.addons.l10n_eg_edi_eta.models.account_edi_format.AccountEdiFormat._l10n_eg_edi_post_invoice_web_service',
             new=mocked_l10n_eg_edi_post_invoice_web_service,
@@ -704,8 +704,8 @@ class TestEdiJson(TestEGEdiCommon):
 
     def test_7_simple_test_foreign_parter_exempt_discount_foreign_currency_credit_note(self):
         with freeze_time(self.frozen_today), patch(
-            'odoo.addons.l10n_eg_edi_eta.models.account_move.AccountMove.action_post_sign_invoices',
-            new=mocked_action_post_sign_invoices,
+                'odoo.addons.l10n_eg_edi_eta.models.account_move.AccountMove.action_post_sign_invoices',
+                new=mocked_action_post_sign_invoices,
         ), patch(
             'odoo.addons.l10n_eg_edi_eta.models.account_edi_format.AccountEdiFormat._l10n_eg_edi_post_invoice_web_service',
             new=mocked_l10n_eg_edi_post_invoice_web_service,
@@ -814,8 +814,8 @@ class TestEdiJson(TestEGEdiCommon):
 
     def test_8_test_serialization_function(self):
         with freeze_time(self.frozen_today), patch(
-            'odoo.addons.l10n_eg_edi_eta.models.account_move.AccountMove.action_post_sign_invoices',
-            new=mocked_action_post_sign_invoices,
+                'odoo.addons.l10n_eg_edi_eta.models.account_move.AccountMove.action_post_sign_invoices',
+                new=mocked_action_post_sign_invoices,
         ), patch(
             'odoo.addons.l10n_eg_edi_eta.models.account_edi_format.AccountEdiFormat._l10n_eg_edi_post_invoice_web_service',
             new=mocked_l10n_eg_edi_post_invoice_web_service,
@@ -850,17 +850,19 @@ class TestEdiJson(TestEGEdiCommon):
             self.assertTrue(generated_files)
             json_file = json.loads(generated_files[0])
             serialized_string = self.env['l10n_eg_edi.thumb.drive']._serialize_for_signing(json_file['request'])
-            self.assertEqual(serialized_string, '"ISSUER""ADDRESS""COUNTRY""EG""GOVERNATE""Cairo""REGIONCITY""Iswan""STREET""12th dec. street""BUILDINGNUMBER""10""POSTALCODE""""BRANCHID""0""NAME""branch partner""TYPE""B""ID""456-789-123""RECEIVER""ADDRESS""COUNTRY""EG""GOVERNATE""Cairo""REGIONCITY""Iswan""STREET""12th dec. street""BUILDINGNUMBER""12""POSTALCODE""""NAME""عميل 1""TYPE""B""ID""123-456-789""DOCUMENTTYPE""i""DOCUMENTTYPEVERSION""1.0""DATETIMEISSUED""2022-03-15T00:00:00Z""TAXPAYERACTIVITYCODE""8121""INTERNALID""INV/2022/00001""INVOICELINES""INVOICELINES""DESCRIPTION""product_a""ITEMTYPE""GS1""ITEMCODE""1KGS1TEST""UNITTYPE""C62""QUANTITY""1.0""INTERNALCODE""""VALUEDIFFERENCE""0.0""TOTALTAXABLEFEES""0.0""ITEMSDISCOUNT""0.0""UNITVALUE""CURRENCYSOLD""AED""AMOUNTEGP""504.75556""CURRENCYEXCHANGERATE""5.04756""AMOUNTSOLD""100.0""DISCOUNT""RATE""10.0""AMOUNT""50.47556""TAXABLEITEMS""TAXABLEITEMS""TAXTYPE""T1""AMOUNT""0.0""SUBTYPE""V003""RATE""0.0""SALESTOTAL""504.75556""NETTOTAL""454.28""TOTAL""454.28""INVOICELINES""DESCRIPTION""product_b""ITEMTYPE""EGS""ITEMCODE""EG-EGS-TEST""UNITTYPE""CMT""QUANTITY""5.0""INTERNALCODE""""VALUEDIFFERENCE""0.0""TOTALTAXABLEFEES""0.0""ITEMSDISCOUNT""0.0""UNITVALUE""CURRENCYSOLD""AED""AMOUNTEGP""506.51494""CURRENCYEXCHANGERATE""5.04756""AMOUNTSOLD""100.35""DISCOUNT""RATE""13.0""AMOUNT""329.23471""TAXABLEITEMS""TAXABLEITEMS""TAXTYPE""T1""AMOUNT""0.0""SUBTYPE""V003""RATE""0.0""SALESTOTAL""2532.57471""NETTOTAL""2203.34""TOTAL""2203.34""TAXTOTALS""TAXTOTALS""TAXTYPE""T1""AMOUNT""0.0""TOTALDISCOUNTAMOUNT""379.71027""TOTALSALESAMOUNT""3037.33027""NETAMOUNT""2657.62""TOTALAMOUNT""2657.62""EXTRADISCOUNTAMOUNT""0.0""TOTALITEMSDISCOUNTAMOUNT""0.0""SIGNATURES""SIGNATURES""1""1"')
+            self.assertEqual(serialized_string,
+                             '"ISSUER""ADDRESS""COUNTRY""EG""GOVERNATE""Cairo""REGIONCITY""Iswan""STREET""12th dec. street""BUILDINGNUMBER""10""POSTALCODE""""BRANCHID""0""NAME""branch partner""TYPE""B""ID""456-789-123""RECEIVER""ADDRESS""COUNTRY""EG""GOVERNATE""Cairo""REGIONCITY""Iswan""STREET""12th dec. street""BUILDINGNUMBER""12""POSTALCODE""""NAME""عميل 1""TYPE""B""ID""123-456-789""DOCUMENTTYPE""i""DOCUMENTTYPEVERSION""1.0""DATETIMEISSUED""2022-03-15T00:00:00Z""TAXPAYERACTIVITYCODE""8121""INTERNALID""INV/2022/00001""INVOICELINES""INVOICELINES""DESCRIPTION""product_a""ITEMTYPE""GS1""ITEMCODE""1KGS1TEST""UNITTYPE""C62""QUANTITY""1.0""INTERNALCODE""""VALUEDIFFERENCE""0.0""TOTALTAXABLEFEES""0.0""ITEMSDISCOUNT""0.0""UNITVALUE""CURRENCYSOLD""AED""AMOUNTEGP""504.75556""CURRENCYEXCHANGERATE""5.04756""AMOUNTSOLD""100.0""DISCOUNT""RATE""10.0""AMOUNT""50.47556""TAXABLEITEMS""TAXABLEITEMS""TAXTYPE""T1""AMOUNT""0.0""SUBTYPE""V003""RATE""0.0""SALESTOTAL""504.75556""NETTOTAL""454.28""TOTAL""454.28""INVOICELINES""DESCRIPTION""product_b""ITEMTYPE""EGS""ITEMCODE""EG-EGS-TEST""UNITTYPE""CMT""QUANTITY""5.0""INTERNALCODE""""VALUEDIFFERENCE""0.0""TOTALTAXABLEFEES""0.0""ITEMSDISCOUNT""0.0""UNITVALUE""CURRENCYSOLD""AED""AMOUNTEGP""506.51494""CURRENCYEXCHANGERATE""5.04756""AMOUNTSOLD""100.35""DISCOUNT""RATE""13.0""AMOUNT""329.23471""TAXABLEITEMS""TAXABLEITEMS""TAXTYPE""T1""AMOUNT""0.0""SUBTYPE""V003""RATE""0.0""SALESTOTAL""2532.57471""NETTOTAL""2203.34""TOTAL""2203.34""TAXTOTALS""TAXTOTALS""TAXTYPE""T1""AMOUNT""0.0""TOTALDISCOUNTAMOUNT""379.71027""TOTALSALESAMOUNT""3037.33027""NETAMOUNT""2657.62""TOTALAMOUNT""2657.62""EXTRADISCOUNTAMOUNT""0.0""TOTALITEMSDISCOUNTAMOUNT""0.0""SIGNATURES""SIGNATURES""1""1"')
 
     def test_9_test_withholding_tax(self):
         with freeze_time(self.frozen_today), patch(
-            'odoo.addons.l10n_eg_edi_eta.models.account_move.AccountMove.action_post_sign_invoices',
-            new=mocked_action_post_sign_invoices,
+                'odoo.addons.l10n_eg_edi_eta.models.account_move.AccountMove.action_post_sign_invoices',
+                new=mocked_action_post_sign_invoices,
         ), patch(
             'odoo.addons.l10n_eg_edi_eta.models.account_edi_format.AccountEdiFormat._l10n_eg_edi_post_invoice_web_service',
             new=mocked_l10n_eg_edi_post_invoice_web_service,
         ):
-            taxes = self.env.ref(f'account.{self.env.company.id}_eg_standard_sale_14').ids + self.env.ref(f'account.{self.env.company.id}_eg_withholding_3_sale').ids
+            taxes = self.env.ref(f'account.{self.env.company.id}_eg_standard_sale_14').ids + self.env.ref(
+                f'account.{self.env.company.id}_eg_withholding_3_sale').ids
             invoice = self.create_invoice(
                 move_type='out_invoice',
                 partner_id=self.partner_a.id,
@@ -911,7 +913,8 @@ class TestEdiJson(TestEGEdiCommon):
                                 'itemsDiscount': 0.0,
                                 'unitValue': {'currencySold': 'EGP', 'amountEGP': 100.0},
                                 'discount': {'rate': 0.0, 'amount': -0.0},
-                                'taxableItems': [{'taxType': 'T1', 'amount': 14.0, 'subType': 'V009', 'rate': 14.0}, {'taxType': 'T4', 'amount': 3.0, 'subType': 'W004', 'rate': 3.0}],
+                                'taxableItems': [{'taxType': 'T1', 'amount': 14.0, 'subType': 'V009', 'rate': 14.0},
+                                                 {'taxType': 'T4', 'amount': 3.0, 'subType': 'W004', 'rate': 3.0}],
                                 'salesTotal': 100.0,
                                 'netTotal': 100.0,
                                 'total': 111.00,

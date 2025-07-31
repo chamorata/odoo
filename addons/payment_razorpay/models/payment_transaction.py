@@ -7,13 +7,11 @@ import time
 from datetime import datetime
 
 from dateutil.relativedelta import relativedelta
-
-from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
-
 from odoo.addons.payment import utils as payment_utils
 from odoo.addons.payment_razorpay import const
 
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -159,7 +157,7 @@ class PaymentTransaction(models.Model):
         :rtype: float
         """
         pm_code = (
-            self.payment_method_id.primary_payment_method_id or self.payment_method_id
+                self.payment_method_id.primary_payment_method_id or self.payment_method_id
         ).code
         pm_max_amount_INR = const.MANDATE_MAX_AMOUNT.get(pm_code, 100000)
         pm_max_amount = self._razorpay_convert_inr_to_currency(pm_max_amount_INR, self.currency_id)
@@ -452,9 +450,9 @@ class PaymentTransaction(models.Model):
                 self._set_authorized()
         elif entity_status in const.PAYMENT_STATUS_MAPPING['done']:
             if (
-                not self.token_id
-                and entity_data.get('token_id')
-                and self.provider_id.allow_tokenization
+                    not self.token_id
+                    and entity_data.get('token_id')
+                    and self.provider_id.allow_tokenization
             ):
                 self._razorpay_tokenize_from_notification_data(entity_data)
             self._set_done()

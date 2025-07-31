@@ -36,7 +36,7 @@
                 <sheet>
                     <h1>
                         <field name="name" default_focus="1"
-                            placeholder="e.g. Test your Knowledge"/>
+                               placeholder="e.g. Test your Knowledge"/>
                     </h1>
                     <group>
                         <group>
@@ -49,7 +49,7 @@
                     </group>
                     <group name="questions">
                         <field name="question_ids" nolabel="1"
-                            context="{
+                               context="{
                                 'list_view_ref': 'website_event_track_quiz.event_quiz_question_view_tree_from_quiz',
                                 'form_view_ref': 'website_event_track_quiz.event_quiz_question_view_form_from_quiz'
                             }"/>
@@ -66,9 +66,10 @@
         <field name="context">{'create': False}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-              No Quiz added yet!
-            </p><p>
-              From here you will be able to overview all quizzes you have linked to Tracks.
+                No Quiz added yet!
+            </p>
+            <p>
+                From here you will be able to overview all quizzes you have linked to Tracks.
             </p>
         </field>
     </record>

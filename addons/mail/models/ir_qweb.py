@@ -25,8 +25,8 @@ class IrQweb(models.AbstractModel):
 
     def _compile_directive(self, el, compile_context, directive, level):
         if (
-            "raise_on_forbidden_code_for_model" in compile_context
-            and directive not in self.allowed_directives
+                "raise_on_forbidden_code_for_model" in compile_context
+                and directive not in self.allowed_directives
         ):
             raise PermissionError("This directive is not allowed for this rendering mode.")
         return super()._compile_directive(el, compile_context, directive, level)

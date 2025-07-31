@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 import re
-from datetime import timedelta
-from odoo import http, fields, _
-from odoo.http import request
-from odoo.tools import float_round
-from odoo.osv import expression
+
 from werkzeug.exceptions import NotFound, BadRequest, Unauthorized
+
+from odoo import http, fields, _
 from odoo.exceptions import MissingError
+from odoo.http import request
+from odoo.osv import expression
 from odoo.tools import consteq
+from odoo.tools import float_round
+
 
 class PosSelfOrderController(http.Controller):
     @http.route("/pos-self-order/process-order/<device_type>/", auth="public", type="json", website=True)
@@ -21,7 +23,8 @@ class PosSelfOrderController(http.Controller):
         pos_session = pos_config.current_session_id
 
         # Create the order
-        ir_sequence_session = pos_config.env['ir.sequence'].with_context(company_id=pos_config.company_id.id).next_by_code(f'pos.order_{pos_session.id}')
+        ir_sequence_session = pos_config.env['ir.sequence'].with_context(
+            company_id=pos_config.company_id.id).next_by_code(f'pos.order_{pos_session.id}')
         sequence_number = order.get('sequence_number')
         if not sequence_number:
             sequence_number = re.findall(r'\d+', ir_sequence_session)[0]
@@ -62,9 +65,12 @@ class PosSelfOrderController(http.Controller):
         return {
             'pos.order': order.read(order._load_pos_data_fields(config_id.id), load=False),
             'pos.order.line': order.lines.read(order._load_pos_data_fields(config_id.id), load=False),
-            'pos.payment': order.payment_ids.read(order.payment_ids._load_pos_data_fields(order.config_id.id), load=False),
-            'pos.payment.method': order.payment_ids.mapped('payment_method_id').read(order.env['pos.payment.method']._load_pos_data_fields(order.config_id.id), load=False),
-            'product.attribute.custom.value':  order.lines.custom_attribute_value_ids.read(order.lines.custom_attribute_value_ids._load_pos_data_fields(config_id.id), load=False),
+            'pos.payment': order.payment_ids.read(order.payment_ids._load_pos_data_fields(order.config_id.id),
+                                                  load=False),
+            'pos.payment.method': order.payment_ids.mapped('payment_method_id').read(
+                order.env['pos.payment.method']._load_pos_data_fields(order.config_id.id), load=False),
+            'product.attribute.custom.value': order.lines.custom_attribute_value_ids.read(
+                order.lines.custom_attribute_value_ids._load_pos_data_fields(config_id.id), load=False),
         }
 
     def _verify_line_price(self, lines, pos_config, takeaway=False):
@@ -90,7 +96,8 @@ class PosSelfOrderController(http.Controller):
 
                 for i, pos_order_line in enumerate(line.combo_line_ids):
                     child_product = pos_order_line.product_id
-                    price_unit = float_round(pos_order_line.combo_item_id.combo_id.base_price * factor, precision_digits=sale_price_digits)
+                    price_unit = float_round(pos_order_line.combo_item_id.combo_id.base_price * factor,
+                                             precision_digits=sale_price_digits)
                     remaining_total -= price_unit
 
                     if i == len(line.combo_line_ids) - 1:
@@ -136,16 +143,16 @@ class PosSelfOrderController(http.Controller):
             domain = [(False, '=', True)]
         else:
             domain = ['&', '&',
-                ('table_id', '=', table.id),
-                ('state', '=', 'draft'),
-                ('access_token', 'not in', [data.get('access_token') for data in order_access_tokens])
-            ]
+                      ('table_id', '=', table.id),
+                      ('state', '=', 'draft'),
+                      ('access_token', 'not in', [data.get('access_token') for data in order_access_tokens])
+                      ]
 
         for data in order_access_tokens:
             domain = expression.OR([domain, ['&',
-                ('access_token', '=', data.get('access_token')),
-                ('write_date', '>', data.get('write_date'))
-            ]])
+                                             ('access_token', '=', data.get('access_token')),
+                                             ('write_date', '>', data.get('write_date'))
+                                             ]])
 
         orders = session.order_ids.filtered_domain(domain)
         if not orders:
@@ -181,14 +188,14 @@ class PosSelfOrderController(http.Controller):
         if not status:
             raise BadRequest("Something went wrong")
 
-        return {'order': order_sudo.read(order_sudo._load_pos_data_fields(pos_config.id), load=False), 'payment_status': status}
+        return {'order': order_sudo.read(order_sudo._load_pos_data_fields(pos_config.id), load=False),
+                'payment_status': status}
 
     @http.route('/pos-self-order/change-printer-status', auth='public', type='json', website=True)
     def change_printer_status(self, access_token, has_paper):
         pos_config = self._verify_pos_config(access_token)
         if has_paper != pos_config.has_paper:
             pos_config.write({'has_paper': has_paper})
-
 
     def _get_order_prices(self, lines):
         amount_untaxed = sum(lines.mapped('price_subtotal'))
@@ -214,11 +221,13 @@ class PosSelfOrderController(http.Controller):
         The record is has no sudo access and is in the context of the record's company and current pos.session's user.
         """
         pos_config_sudo = request.env['pos.config'].sudo().search([('access_token', '=', access_token)], limit=1)
-        if not pos_config_sudo or (not pos_config_sudo.self_ordering_mode == 'mobile' and not pos_config_sudo.self_ordering_mode == 'kiosk') or not pos_config_sudo.has_active_session:
+        if not pos_config_sudo or (
+                not pos_config_sudo.self_ordering_mode == 'mobile' and not pos_config_sudo.self_ordering_mode == 'kiosk') or not pos_config_sudo.has_active_session:
             raise Unauthorized("Invalid access token")
         company = pos_config_sudo.company_id
         user = pos_config_sudo.self_ordering_default_user_id
-        return pos_config_sudo.sudo(False).with_company(company).with_user(user).with_context(allowed_company_ids=company.ids)
+        return pos_config_sudo.sudo(False).with_company(company).with_user(user).with_context(
+            allowed_company_ids=company.ids)
 
     def _verify_authorization(self, access_token, table_identifier, takeaway):
         """
@@ -233,5 +242,6 @@ class PosSelfOrderController(http.Controller):
 
         company = pos_config.company_id
         user = pos_config.self_ordering_default_user_id
-        table = table_sudo.sudo(False).with_company(company).with_user(user).with_context(allowed_company_ids=company.ids)
+        table = table_sudo.sudo(False).with_company(company).with_user(user).with_context(
+            allowed_company_ids=company.ids)
         return pos_config, table

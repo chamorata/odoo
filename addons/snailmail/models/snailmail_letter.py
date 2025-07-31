@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-import re
 import base64
 import io
+import re
 
-from reportlab.platypus import Frame, Paragraph, KeepInFrame
-from reportlab.lib.units import mm
+from odoo.addons.iap.tools import iap_tools
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.units import mm
 from reportlab.pdfgen.canvas import Canvas
+from reportlab.platypus import Frame, Paragraph, KeepInFrame
 
 from odoo import fields, models, api, _
-from odoo.addons.iap.tools import iap_tools
 from odoo.exceptions import AccessError, UserError
 from odoo.tools.pdf import PdfFileReader, PdfFileWriter
 from odoo.tools.safe_eval import safe_eval
@@ -40,7 +40,7 @@ class SnailmailLetter(models.Model):
     res_id = fields.Integer('Document ID', required=True)
     partner_id = fields.Many2one('res.partner', string='Recipient', required=True)
     company_id = fields.Many2one('res.company', string='Company', required=True, readonly=True,
-        default=lambda self: self.env.company.id)
+                                 default=lambda self: self.env.company.id)
     report_template = fields.Many2one('ir.actions.report', 'Optional report to print and attach')
 
     attachment_id = fields.Many2one('ir.attachment', string='Attachment', ondelete='cascade', index='btree_not_null')
@@ -54,7 +54,7 @@ class SnailmailLetter(models.Model):
         ('sent', 'Sent'),
         ('error', 'Error'),
         ('canceled', 'Cancelled')
-        ], 'Status', readonly=True, copy=False, default='pending', required=True,
+    ], 'Status', readonly=True, copy=False, default='pending', required=True,
         help="When a letter is created, the status is 'Pending'.\n"
              "If the letter is correctly sent, the status goes in 'Sent',\n"
              "If not, it will got in state 'Error' and the error message will be displayed in the field 'Error Message'.")
@@ -153,7 +153,8 @@ class SnailmailLetter(models.Model):
                 report_name = 'Document'
             filename = "%s.%s" % (report_name, "pdf")
             paperformat = report.get_paperformat()
-            if (paperformat.format == 'custom' and paperformat.page_width != 210 and paperformat.page_height != 297) or paperformat.format != 'A4':
+            if (
+                    paperformat.format == 'custom' and paperformat.page_width != 210 and paperformat.page_height != 297) or paperformat.format != 'A4':
                 raise UserError(_("Please use an A4 Paper format."))
             # The external_report_layout_id is changed just for the snailmail pdf generation if the layout is not supported
             prev = self.company_id.external_report_layout_id
@@ -162,7 +163,9 @@ class SnailmailLetter(models.Model):
                 for layout in ('bubble', 'wave', 'folder')
             }:
                 self.company_id.external_report_layout_id = self.env.ref('web.external_layout_standard')
-            pdf_bin, unused_filetype = self.env['ir.actions.report'].with_context(snailmail_layout=not self.cover, lang='en_US')._render_qweb_pdf(report, self.res_id)
+            pdf_bin, unused_filetype = self.env['ir.actions.report'].with_context(snailmail_layout=not self.cover,
+                                                                                  lang='en_US')._render_qweb_pdf(report,
+                                                                                                                 self.res_id)
             self.company_id.external_report_layout_id = prev
             pdf_bin = self._overwrite_margins(pdf_bin)
             if self.cover:
@@ -236,14 +239,15 @@ class SnailmailLetter(models.Model):
                     'info_msg': _('Invalid recipient name.'),
                     'state': 'error',
                     'error_code': 'MISSING_REQUIRED_FIELDS'
-                    })
+                })
                 continue
             document = {
                 # generic informations to send
                 'letter_id': letter.id,
                 'res_model': letter.model,
                 'res_id': letter.res_id,
-                'contact_address': letter.partner_id.with_context(snailmail_layout=True, show_address=True).display_name,
+                'contact_address': letter.partner_id.with_context(snailmail_layout=True,
+                                                                  show_address=True).display_name,
                 'address': {
                     'name': recipient_name,
                     'street': letter.partner_id.street,
@@ -286,7 +290,8 @@ class SnailmailLetter(models.Model):
                         'error_code': 'ATTACHMENT_ERROR'
                     })
                     continue
-                if letter.company_id.external_report_layout_id == self.env.ref('l10n_de.external_layout_din5008', False):
+                if letter.company_id.external_report_layout_id == self.env.ref('l10n_de.external_layout_din5008',
+                                                                               False):
                     document.update({
                         'rightaddress': 0,
                     })
@@ -309,16 +314,21 @@ class SnailmailLetter(models.Model):
     def _get_error_message(self, error):
         if error == 'CREDIT_ERROR':
             link = self.env['iap.account'].get_credits_url(service_name='snailmail')
-            return _('You don\'t have enough credits to perform this operation.<br>Please go to your <a href=%s target="new">iap account</a>.', link)
+            return _(
+                'You don\'t have enough credits to perform this operation.<br>Please go to your <a href=%s target="new">iap account</a>.',
+                link)
         if error == 'TRIAL_ERROR':
             link = self.env['iap.account'].get_credits_url(service_name='snailmail', trial=True)
-            return _('You don\'t have an IAP account registered for this service.<br>Please go to <a href=%s target="new">iap.odoo.com</a> to claim your free credits.', link)
+            return _(
+                'You don\'t have an IAP account registered for this service.<br>Please go to <a href=%s target="new">iap.odoo.com</a> to claim your free credits.',
+                link)
         if error == 'NO_PRICE_AVAILABLE':
             return _('The country of the partner is not covered by Snailmail.')
         if error == 'MISSING_REQUIRED_FIELDS':
             return _('One or more required fields are empty.')
         if error == 'FORMAT_ERROR':
-            return _('The attachment of the letter could not be sent. Please check its content and contact the support if the problem persists.')
+            return _(
+                'The attachment of the letter could not be sent. Please check its content and contact the support if the problem persists.')
         else:
             return _('An unknown error happened. Please contact the support.')
         return error
@@ -404,7 +414,8 @@ class SnailmailLetter(models.Model):
                     self.env['iap.account']._send_no_credit_notification(
                         service_name='snailmail',
                         title=_("Not enough credits for Snail Mail"))
-                note = _('An error occurred when sending the document by post.<br>Error: %s', self._get_error_message(error))
+                note = _('An error occurred when sending the document by post.<br>Error: %s',
+                         self._get_error_message(error))
                 letter_data = {
                     'info_msg': note,
                     'state': 'error',
@@ -474,7 +485,8 @@ class SnailmailLetter(models.Model):
     def _append_cover_page(self, invoice_bin: bytes):
         out_writer = PdfFileWriter()
         address_split = self._get_cover_address_split()
-        address_split[0] = self.partner_id.name or self.partner_id.parent_id and self.partner_id.parent_id.name or address_split[0]
+        address_split[0] = self.partner_id.name or self.partner_id.parent_id and self.partner_id.parent_id.name or \
+                           address_split[0]
         address = '<br/>'.join(address_split)
         address_x = 118 * mm
         address_y = 60 * mm

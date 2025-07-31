@@ -3,18 +3,17 @@
 import uuid
 from unittest.mock import patch
 
-from odoo import Command, fields
-from odoo.tools import mute_logger
-from odoo.addons.account.tests.common import AccountTestInvoicingCommon
-from odoo.addons.point_of_sale.tests.test_frontend import TestPointOfSaleHttpCommon
-from odoo.addons.mail.tests.common import mail_new_test_user
-from odoo.addons.pos_online_payment.tests.online_payment_common import OnlinePaymentCommon
 from odoo.addons.account.models.account_payment_method import AccountPaymentMethod
-from odoo.osv.expression import AND
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+from odoo.addons.mail.tests.common import mail_new_test_user
 from odoo.addons.point_of_sale.tests.common import archive_products
-from odoo.exceptions import UserError
+from odoo.addons.point_of_sale.tests.test_frontend import TestPointOfSaleHttpCommon
+from odoo.addons.pos_online_payment.tests.online_payment_common import OnlinePaymentCommon
 
 import odoo.tests
+from odoo import Command, fields
+from odoo.exceptions import UserError
+from odoo.tools import mute_logger
 
 
 @odoo.tests.tagged('post_install', '-at_install', 'is_tour')
@@ -64,7 +63,8 @@ class TestUi(TestPointOfSaleHttpCommon, OnlinePaymentCommon):
             'reconcile': True,
         })
         cls.company.account_default_pos_receivable_account_id = cls.account_default_pos_receivable_account_id
-        cls.receivable_cash_account = cls.copy_account(cls.company.account_default_pos_receivable_account_id, {'name': 'POS OP Test Receivable Cash'})
+        cls.receivable_cash_account = cls.copy_account(cls.company.account_default_pos_receivable_account_id,
+                                                       {'name': 'POS OP Test Receivable Cash'})
 
         cls.cash_payment_method = cls.env['pos.payment.method'].create({
             'name': 'Cash',
@@ -74,7 +74,7 @@ class TestUi(TestPointOfSaleHttpCommon, OnlinePaymentCommon):
         })
         # End of code inspired by addons/point_of_sale/tests/common.py
 
-        cls.payment_provider = cls.provider # The dummy_provider used by the tests of the 'payment' module.
+        cls.payment_provider = cls.provider  # The dummy_provider used by the tests of the 'payment' module.
 
         cls.payment_provider_old_company_id = cls.payment_provider.company_id.id
         cls.payment_provider_old_journal_id = cls.payment_provider.journal_id.id
@@ -101,7 +101,8 @@ class TestUi(TestPointOfSaleHttpCommon, OnlinePaymentCommon):
             'module_pos_restaurant': False,
             'invoice_journal_id': cls.sales_journal.id,
             'journal_id': cls.sales_journal.id,
-            'payment_method_ids': [Command.link(cls.cash_payment_method.id), Command.link(cls.online_payment_method.id)],
+            'payment_method_ids': [Command.link(cls.cash_payment_method.id),
+                                   Command.link(cls.online_payment_method.id)],
         })
 
         # Code from addons/point_of_sale/tests/test_frontend.py:
@@ -152,6 +153,7 @@ class TestUi(TestPointOfSaleHttpCommon, OnlinePaymentCommon):
                 limit=1,
             )
         return provider
+
     # End of code from addons/account_payment/tests/common.py
 
     def setUp(self):
@@ -212,7 +214,8 @@ class TestUi(TestPointOfSaleHttpCommon, OnlinePaymentCommon):
 
         create_result = self.env['pos.order'].with_user(self.pos_user).sync_from_ui([order_data])
         self.assertEqual(len(current_session.order_ids), 1)
-        order_id = next(result_order_data for result_order_data in create_result['pos.order'] if result_order_data['pos_reference'] == order_pos_reference)['id']
+        order_id = next(result_order_data for result_order_data in create_result['pos.order'] if
+                        result_order_data['pos_reference'] == order_pos_reference)['id']
 
         order = self.env['pos.order'].search([('id', '=', order_id)])
         self.assertEqual(order.state, 'draft')
@@ -239,14 +242,17 @@ class TestUi(TestPointOfSaleHttpCommon, OnlinePaymentCommon):
         self.assertTrue('paid_order' in op_data)
 
         # Simulate the cashier closing the session (to detect eventual accounting issues)
-        total_cash_payment = sum(current_session.order_ids.filtered(lambda o: o.state != 'cancel').payment_ids.filtered(lambda payment: payment.payment_method_id.type == 'cash').mapped('amount'))
+        total_cash_payment = sum(current_session.order_ids.filtered(lambda o: o.state != 'cancel').payment_ids.filtered(
+            lambda payment: payment.payment_method_id.type == 'cash').mapped('amount'))
         current_session.post_closing_cash_details(total_cash_payment)
         close_result = current_session.close_session_from_ui()
 
         self.assertTrue(close_result['successful'])
         self.assertEqual(current_session.state, 'closed', 'Session was not properly closed')
 
-        self.assertEqual(order.state, 'done', "Validated order has payment of " + str(order.amount_paid) + " and total of " + str(order.amount_total))
+        self.assertEqual(order.state, 'done',
+                         "Validated order has payment of " + str(order.amount_paid) + " and total of " + str(
+                             order.amount_total))
 
     # Code from addons/point_of_sale/tests/test_point_of_sale_flow.py
     def compute_tax(self, product, price, qty=1, taxes=None):
@@ -256,6 +262,7 @@ class TestUi(TestPointOfSaleHttpCommon, OnlinePaymentCommon):
         res = taxes.compute_all(price, currency, qty, product=product)
         untax = res['total_excluded']
         return untax, sum(tax.get('amount', 0.0) for tax in res['taxes'])
+
     # End of code from addons/point_of_sale/tests/test_point_of_sale_flow.py
 
     def test_1_online_payment_with_cashier(self):
@@ -270,11 +277,13 @@ class TestUi(TestPointOfSaleHttpCommon, OnlinePaymentCommon):
     def test_invalid_access_token(self):
         order = self._open_session_fake_cashier_unpaid_order()
 
-        with mute_logger('odoo.http'): # Mutes "The provided order or access token is invalid." online payment portal error.
+        with mute_logger(
+                'odoo.http'):  # Mutes "The provided order or access token is invalid." online payment portal error.
             self.assertRaises(AssertionError, self._fake_open_pos_order_pay_page, order.id, order.access_token[:-1])
             self.assertRaises(AssertionError, self._fake_open_pos_order_pay_page, order.id, '')
 
-            self.assertRaises(AssertionError, self._fake_open_pos_order_pay_confirmation_page, order.id, order.access_token[:-1], 1)
+            self.assertRaises(AssertionError, self._fake_open_pos_order_pay_confirmation_page, order.id,
+                              order.access_token[:-1], 1)
             self.assertRaises(AssertionError, self._fake_open_pos_order_pay_confirmation_page, order.id, '', 1)
 
         self.assertEqual(order.state, 'draft')

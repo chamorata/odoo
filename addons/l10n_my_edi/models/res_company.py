@@ -23,7 +23,8 @@ class ResCompany(models.Model):
     )
     l10n_my_identification_type = fields.Selection(related='partner_id.l10n_my_identification_type', readonly=False)
     l10n_my_identification_number = fields.Char(related='partner_id.l10n_my_identification_number', readonly=False)
-    l10n_my_identification_number_placeholder = fields.Char(compute="_compute_l10n_my_identification_number_placeholder")
+    l10n_my_identification_number_placeholder = fields.Char(
+        compute="_compute_l10n_my_identification_number_placeholder")
     l10n_my_edi_industrial_classification = fields.Many2one(
         comodel_name='l10n_my_edi.industry_classification',
         string="Ind. Classification",

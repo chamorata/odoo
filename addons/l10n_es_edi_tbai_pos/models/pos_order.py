@@ -1,5 +1,6 @@
-from odoo import api, fields, models
 from odoo.addons.l10n_es_edi_tbai.models.account_move import TBAI_REFUND_REASONS
+
+from odoo import api, fields, models
 from odoo.exceptions import UserError
 
 
@@ -7,9 +8,9 @@ class PosOrder(models.Model):
     _inherit = 'pos.order'
 
     l10n_es_tbai_state = fields.Selection([
-            ('to_send', 'To Send'),
-            ('sent', 'Sent'),
-        ],
+        ('to_send', 'To Send'),
+        ('sent', 'Sent'),
+    ],
         string='TicketBAI status',
         compute='_compute_l10n_es_tbai_state',
     )
@@ -42,7 +43,7 @@ class PosOrder(models.Model):
         selection=TBAI_REFUND_REASONS,
         string="Invoice Refund Reason Code (TicketBai)",
         help="BOE-A-1992-28740. Ley 37/1992, de 28 de diciembre, del Impuesto sobre el "
-        "Valor Añadido. Artículo 80. Modificación de la base imponible.",
+             "Valor Añadido. Artículo 80. Modificación de la base imponible.",
         copy=False,
     )
 
@@ -70,7 +71,8 @@ class PosOrder(models.Model):
         self.ensure_one()
 
         if not self.to_invoice and self.amount_total > self.company_id.l10n_es_simplified_invoice_limit:
-            raise UserError(self.env._("Please create an invoice for an amount over %s.", self.company_id.l10n_es_simplified_invoice_limit))
+            raise UserError(self.env._("Please create an invoice for an amount over %s.",
+                                       self.company_id.l10n_es_simplified_invoice_limit))
 
         if self.refunded_order_id:
             if self.to_invoice and self.refunded_order_id.state != 'invoiced':

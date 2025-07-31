@@ -8,21 +8,21 @@ import inspect
 import json
 import logging
 import re
-import requests
 import threading
 import uuid
-
 from datetime import datetime
-from lxml import etree, html
 from urllib.parse import urlparse
+
+import requests
+from lxml import etree, html
+from odoo.addons.iap.tools import iap_tools
+from odoo.addons.portal.controllers.portal import pager
+from odoo.addons.website.models.ir_http import sitemap_qs2dom
+from odoo.addons.website.tools import similarity_score, text_from_html, get_base_domain
 from werkzeug import urls
 from werkzeug.exceptions import NotFound
 
 from odoo import api, fields, models, tools, release
-from odoo.addons.website.models.ir_http import sitemap_qs2dom
-from odoo.addons.website.tools import similarity_score, text_from_html, get_base_domain
-from odoo.addons.portal.controllers.portal import pager
-from odoo.addons.iap.tools import iap_tools
 from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.http import request
 from odoo.modules.module import get_manifest
@@ -31,7 +31,6 @@ from odoo.tools import SQL, Query, sql as sqltools
 from odoo.tools.translate import _, xml_translate
 
 logger = logging.getLogger(__name__)
-
 
 DEFAULT_CDN_FILTERS = [
     "^/[^/]+/static/",
@@ -94,7 +93,6 @@ DEFAULT_BLOCKED_THIRD_PARTY_DOMAINS = '\n'.join([  # noqa: FLY002
 
 
 class Website(models.Model):
-
     _name = "website"
     _description = "Website"
     _order = "sequence, id"
@@ -125,7 +123,8 @@ class Website(models.Model):
         default=_active_languages, required=True)
     language_count = fields.Integer('Number of languages', compute='_compute_language_count')
     default_lang_id = fields.Many2one('res.lang', string="Default Language", default=_default_language, required=True)
-    auto_redirect_lang = fields.Boolean('Autoredirect Language', default=True, help="Should users be redirected to their browser's language")
+    auto_redirect_lang = fields.Boolean('Autoredirect Language', default=True,
+                                        help="Should users be redirected to their browser's language")
     cookies_bar = fields.Boolean('Cookies Bar', help="Display a customizable cookies bar on your website.")
     configurator_done = fields.Boolean(help='True if configurator has been completed or ignored')
     block_third_party_domains = fields.Boolean(
@@ -173,7 +172,8 @@ class Website(models.Model):
     social_youtube = fields.Char('Youtube Account', default=_default_social_youtube)
     social_instagram = fields.Char('Instagram Account', default=_default_social_instagram)
     social_tiktok = fields.Char('TikTok Account', default=_default_social_tiktok)
-    social_default_image = fields.Binary(string="Default Social Share Image", help="If set, replaces the website logo as the default social share image.")
+    social_default_image = fields.Binary(string="Default Social Share Image",
+                                         help="If set, replaces the website logo as the default social share image.")
     has_social_default_image = fields.Boolean(compute='_compute_has_social_default_image', store=True)
 
     google_analytics_key = fields.Char('Google Analytics Key')
@@ -187,7 +187,8 @@ class Website(models.Model):
     user_id = fields.Many2one('res.users', string='Public User', required=True)
     cdn_activated = fields.Boolean('Content Delivery Network (CDN)')
     cdn_url = fields.Char('CDN Base URL', default='')
-    cdn_filters = fields.Text('CDN Filters', default=lambda s: '\n'.join(DEFAULT_CDN_FILTERS), help="URL matching those filters will be rewritten using the CDN Base URL")
+    cdn_filters = fields.Text('CDN Filters', default=lambda s: '\n'.join(DEFAULT_CDN_FILTERS),
+                              help="URL matching those filters will be rewritten using the CDN Base URL")
     partner_id = fields.Many2one(related='user_id.partner_id', string='Public Partner', readonly=False)
     menu_id = fields.Many2one('website.menu', compute='_compute_menu', string='Main Menu')
     homepage_url = fields.Char(help='E.g. /contactus or /shop')
@@ -200,10 +201,13 @@ class Website(models.Model):
         with tools.file_open('web/static/img/favicon.ico', 'rb') as f:
             return base64.b64encode(f.read())
 
-    favicon = fields.Binary(string="Website Favicon", help="This field holds the image used to display a favicon on the website.", default=_default_favicon)
+    favicon = fields.Binary(string="Website Favicon",
+                            help="This field holds the image used to display a favicon on the website.",
+                            default=_default_favicon)
     theme_id = fields.Many2one('ir.module.module', help='Installed theme')
 
-    specific_user_account = fields.Boolean('Specific User Account', help='If True, new accounts will be associated to the current website')
+    specific_user_account = fields.Boolean('Specific User Account',
+                                           help='If True, new accounts will be associated to the current website')
     auth_signup_uninvited = fields.Selection([
         ('b2b', 'On invitation'),
         ('b2c', 'Free sign up'),
@@ -330,10 +334,12 @@ class Website(models.Model):
         self.env.registry.clear_cache()
 
         if 'company_id' in values and 'user_id' not in values:
-            public_user_to_change_websites = self.filtered(lambda w: w.sudo().user_id.company_id.id != values['company_id'])
+            public_user_to_change_websites = self.filtered(
+                lambda w: w.sudo().user_id.company_id.id != values['company_id'])
             if public_user_to_change_websites:
                 company = self.env['res.company'].browse(values['company_id'])
-                super(Website, public_user_to_change_websites).write(dict(values, user_id=company and company._get_public_user().id))
+                super(Website, public_user_to_change_websites).write(
+                    dict(values, user_id=company and company._get_public_user().id))
 
         result = super(Website, self - public_user_to_change_websites).write(values)
 
@@ -376,7 +382,9 @@ class Website(models.Model):
     @api.model
     def _handle_favicon(self, vals):
         if vals.get('favicon'):
-            vals['favicon'] = base64.b64encode(tools.image_process(base64.b64decode(vals['favicon']), size=(256, 256), crop='center', output_format='ICO'))
+            vals['favicon'] = base64.b64encode(
+                tools.image_process(base64.b64decode(vals['favicon']), size=(256, 256), crop='center',
+                                    output_format='ICO'))
 
     @api.model
     def _handle_domain(self, vals):
@@ -411,7 +419,8 @@ class Website(models.Model):
     def _unlink_except_default_website(self):
         default_website = self.env.ref('website.default_website', raise_if_not_found=False)
         if default_website and default_website in self:
-            raise UserError(_("You cannot delete default website %s. Try to change its settings instead", default_website.name))
+            raise UserError(
+                _("You cannot delete default website %s. Try to change its settings instead", default_website.name))
 
     def unlink(self):
         self._remove_attachments_on_website_unlink()
@@ -514,7 +523,8 @@ class Website(models.Model):
         if current_website.configurator_done:
             r['redirect_url'] = theme.button_choose_theme()
         try:
-            result = self._website_api_rpc('/api/website/1/configurator/industries', {'lang': self.env.context.get('lang')})
+            result = self._website_api_rpc('/api/website/1/configurator/industries',
+                                           {'lang': self.env.context.get('lang')})
             r['industries'] = result['industries']
         except AccessError as e:
             logger.warning(e.args[0])
@@ -527,7 +537,8 @@ class Website(models.Model):
         domain = Module.get_themes_domain()
         domain = AND([[('name', '!=', 'theme_default')], domain])
         client_themes = Module.search(domain).mapped('name')
-        client_themes_img = {t: get_manifest(t).get('images_preview_theme', {}) for t in client_themes if get_manifest(t)}
+        client_themes_img = {t: get_manifest(t).get('images_preview_theme', {}) for t in client_themes if
+                             get_manifest(t)}
         themes_suggested = self._website_api_rpc(
             '/api/website/2/configurator/recommended_themes/%s' % (industry_id if industry_id > 0 else ''),
             {
@@ -845,7 +856,8 @@ class Website(models.Model):
             nb_terms_translated = len(generated_content)
             nb_terms_total = len(generated_content)
         translated_ratio = nb_terms_translated / nb_terms_total
-        logger.debug("Ratio of translated content: %s%% (%s/%s)", translated_ratio * 100, nb_terms_translated, nb_terms_total)
+        logger.debug("Ratio of translated content: %s%% (%s/%s)", translated_ratio * 100, nb_terms_translated,
+                     nb_terms_total)
 
         if translated_ratio > 0.8:
             try:
@@ -864,7 +876,8 @@ class Website(models.Model):
                 # If IAP is broken continue normally (without generating text)
                 pass
         else:
-            logger.info("Skip AI text generation because translation coverage is too low (%s%%)", translated_ratio * 100)
+            logger.info("Skip AI text generation because translation coverage is too low (%s%%)",
+                        translated_ratio * 100)
 
         def _format_replacement(html_string):
             """
@@ -1003,8 +1016,8 @@ class Website(models.Model):
             """
             image_name = f'website.{image_name}'
             if (
-                image_name not in images.keys()
-                and f'website.{fallback_img_name}' in images.keys()
+                    image_name not in images.keys()
+                    and f'website.{fallback_img_name}' in images.keys()
             ):
                 extn_identifier = 'configurator_%s_%s' % (website.id, image_name.split('.')[1])
                 if extn_identifier not in names:
@@ -1037,7 +1050,8 @@ class Website(models.Model):
             fallback_create_missing_industry_image('s_image_hexagonal_default_image', 's_cover_default_image')
             fallback_create_missing_industry_image('s_image_hexagonal_default_image_1', 's_company_team_image_1')
             fallback_create_missing_industry_image('s_accordion_image_default_image', 's_image_text_default_image')
-            fallback_create_missing_industry_image('s_pricelist_boxed_default_background', 's_product_catalog_default_image')
+            fallback_create_missing_industry_image('s_pricelist_boxed_default_background',
+                                                   's_product_catalog_default_image')
             fallback_create_missing_industry_image('s_image_title_default_image', 's_cover_default_image')
             fallback_create_missing_industry_image('s_key_images_default_image_1', 's_media_list_default_image_1')
             fallback_create_missing_industry_image('s_key_images_default_image_2', 's_image_text_default_image')
@@ -1115,6 +1129,7 @@ class Website(models.Model):
             })
             for submenu in menu.child_id:
                 copy_menu(submenu, new_menu)
+
         for website in self:
             new_top_menu = top_menu.copy({
                 'name': _('Top Menu for Website %s', website.id),
@@ -1124,7 +1139,8 @@ class Website(models.Model):
                 copy_menu(submenu, new_top_menu)
 
     @api.model
-    def new_page(self, name=False, add_menu=False, template='website.default_page', ispage=True, namespace=None, page_values=None, menu_values=None, sections_arch=None):
+    def new_page(self, name=False, add_menu=False, template='website.default_page', ispage=True, namespace=None,
+                 page_values=None, menu_values=None, sections_arch=None):
         """ Create a new website page, and assign it a xmlid based on the given one
             :param name: the name of the page
             :param add_menu: if True, add a menu for that page
@@ -1205,7 +1221,8 @@ class Website(models.Model):
         website_id = self.env.context.get('website_id', False) or self.get_current_website().id
         domain_static = [('website_id', '=', website_id)]  # .website_domain()
         page_temp = page_url
-        while self.env['website.page'].with_context(active_test=False).sudo().search([('url', '=', page_temp)] + domain_static):
+        while self.env['website.page'].with_context(active_test=False).sudo().search(
+                [('url', '=', page_temp)] + domain_static):
             inc += 1
             page_temp = page_url + (inc and "-%s" % inc or "")
         return page_temp
@@ -1245,7 +1262,8 @@ class Website(models.Model):
         website_id = self.env.context.get('website_id', False)
         if website_id:
             domain_static = [('website_id', 'in', (False, website_id))]
-        while self.env['ir.ui.view'].with_context(active_test=False).sudo().search([('key', '=', key_copy)] + domain_static):
+        while self.env['ir.ui.view'].with_context(active_test=False).sudo().search(
+                [('key', '=', key_copy)] + domain_static):
             inc += 1
             key_copy = string + (inc and "-%s" % inc or "")
         return key_copy
@@ -1359,9 +1377,9 @@ class Website(models.Model):
 
         # The format of `httprequest.host` is `domain:port`
         domain_name = (
-            request and request.httprequest.host
-            or hasattr(threading.current_thread(), 'url') and threading.current_thread().url
-            or '')
+                request and request.httprequest.host
+                or hasattr(threading.current_thread(), 'url') and threading.current_thread().url
+                or '')
         website_id = self.sudo()._get_current_website_id(domain_name, fallback=fallback)
         return self.browse(website_id)
 
@@ -1393,6 +1411,7 @@ class Website(models.Model):
 
         :raises: if `fallback` is True but no website at all is found
         """
+
         def _remove_port(domain_name):
             return (domain_name or '').split(':')[0]
 
@@ -1582,7 +1601,7 @@ class Website(models.Model):
         for rule in router.iter_rules():
             if 'sitemap' in rule.endpoint.routing and rule.endpoint.routing['sitemap'] is not True:
                 endpoint_func = rule.endpoint.func
-                if isinstance(endpoint_func, functools.partial): # follow partial in case of redirect
+                if isinstance(endpoint_func, functools.partial):  # follow partial in case of redirect
                     endpoint_func = endpoint_func.func
                 if endpoint_func.__func__ in sitemap_endpoint_done:
                     continue
@@ -1613,7 +1632,8 @@ class Website(models.Model):
                 key=lambda x: (hasattr(x[1], 'domain') and (x[1].domain != '[]'), rule._trace.index((True, x[0]))))
 
             for (i, (name, converter)) in enumerate(convitems):
-                if 'website_id' in self.env[converter.model]._fields and (not converter.domain or converter.domain == '[]'):
+                if 'website_id' in self.env[converter.model]._fields and (
+                        not converter.domain or converter.domain == '[]'):
                     converter.domain = "[('website_id', 'in', (False, current_website_id))]"
 
                 newval = []
@@ -1745,7 +1765,8 @@ class Website(models.Model):
         # the language in the path. It is important to also test the domain of
         # the current URL.
         current_url = request.httprequest.url_root[:-1] + request.httprequest.environ['REQUEST_URI']
-        canonical_url = self.env['ir.http']._url_localized(lang_code=request.lang.code, canonical_domain=self.get_base_url())
+        canonical_url = self.env['ir.http']._url_localized(lang_code=request.lang.code,
+                                                           canonical_domain=self.get_base_url())
         # A request path with quotable characters (such as ",") is never
         # canonical because request.httprequest.base_url is always unquoted,
         # and canonical url is always quoted, so it is never possible to tell
@@ -1831,7 +1852,7 @@ class Website(models.Model):
                 model._field_to_sql(model._table, field_name),
                 f'<([^>]*data-snippet="{snippet_id}"[^>]*)>',
                 SQL.identifier(model._table)
-            )
+                )
             for model, field_name in html_fields
         ))
 
@@ -1872,9 +1893,11 @@ class Website(models.Model):
             (snippet_module, snippet_id, asset_version, asset_type) = match.groups()
             if asset_type == 'scss':
                 asset_type = 'css'
-            key = (snippet_id, asset_version, asset_type)  # module is not relevant, we want the first one in the asset id order to filter module extension
+            key = (snippet_id, asset_version,
+                   asset_type)  # module is not relevant, we want the first one in the asset id order to filter module extension
             if key not in snippet_used:
-                snippet_used[key] = self._is_snippet_used(snippet_module, snippet_id, asset_version, asset_type, html_fields)
+                snippet_used[key] = self._is_snippet_used(snippet_module, snippet_id, asset_version, asset_type,
+                                                          html_fields)
             is_snippet_used = snippet_used[key]
             if is_snippet_used != snippet_asset.active:
                 snippet_asset.active = is_snippet_used
@@ -1883,7 +1906,8 @@ class Website(models.Model):
                     old_blockquote_key = ('s_blockquote', '000', 'css')
                     if not snippet_used.get(old_blockquote_key):
                         snippet_used[old_blockquote_key] = True
-                        old_blockquote_asset = snippet_assets.filtered(lambda asset: asset.path == 'website/static/src/snippets/s_blockquote/000.scss')
+                        old_blockquote_asset = snippet_assets.filtered(
+                            lambda asset: asset.path == 'website/static/src/snippets/s_blockquote/000.scss')
                         if old_blockquote_asset and not old_blockquote_asset.active:
                             old_blockquote_asset.active = True
         self.env['ir.asset'].flush_model()
@@ -2127,26 +2151,30 @@ class Website(models.Model):
                 if cofield:
                     # One2many's comodel references the model's id.
                     query.add_join('LEFT JOIN', coalias, comodel._table, SQL("%s = %s",
-                        SQL.identifier(model._table, 'id'),
-                        SQL.identifier(coalias, cofield),
-                    ))
+                                                                             SQL.identifier(model._table, 'id'),
+                                                                             SQL.identifier(coalias, cofield),
+                                                                             ))
                 elif 'relation' in dir(direct_field):
                     # Many2many's relation holds the model's id in column1 and
                     # the comodel's record id in column2.
                     rel_alias = coalias
                     query.add_join('LEFT JOIN', rel_alias, direct_field.relation, SQL("%s = %s",
-                        SQL.identifier(model._table, 'id'),
-                        SQL.identifier(rel_alias, direct_field.column1),
-                    ))
+                                                                                      SQL.identifier(model._table,
+                                                                                                     'id'),
+                                                                                      SQL.identifier(rel_alias,
+                                                                                                     direct_field.column1),
+                                                                                      ))
                     coalias = query.make_alias(coalias, direct_field.column2)
                     query.add_join('LEFT JOIN', coalias, comodel._table, SQL("%s = %s",
-                        SQL.identifier(rel_alias, direct_field.column2),
-                        SQL.identifier(coalias, 'id'),
-                    ))
+                                                                             SQL.identifier(rel_alias,
+                                                                                            direct_field.column2),
+                                                                             SQL.identifier(coalias, 'id'),
+                                                                             ))
                 indirect_similarities.append(SQL("word_similarity(%(search)s, %(field)s)",
-                    search=unaccent(SQL('%s', search)),
-                    field=unaccent(comodel._field_to_sql(coalias, field_info['indirect'], query)),
-                ))
+                                                 search=unaccent(SQL('%s', search)),
+                                                 field=unaccent(
+                                                     comodel._field_to_sql(coalias, field_info['indirect'], query)),
+                                                 ))
             similarities.extend(indirect_similarities)
             best_similarity = SQL('GREATEST(%(similarities)s)', similarities=SQL(', ').join(similarities))
 
@@ -2154,9 +2182,9 @@ class Website(models.Model):
             # performance.
             # TODO: Same for `active` field?
             filter_is_published = (
-                'is_published' in model._fields
-                and model._fields['is_published'].base_field.model_name == model_name
-                and not self.env.user._is_internal()
+                    'is_published' in model._fields
+                    and model._fields['is_published'].base_field.model_name == model_name
+                    and not self.env.user._is_internal()
             )
             if filter_is_published:
                 query.add_where('is_published')

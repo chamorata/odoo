@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import pytz
 from datetime import datetime
 from unittest.mock import patch
+
+import pytz
 
 from odoo import fields
 from odoo.tests import new_test_user
@@ -51,7 +52,8 @@ class TestHrAttendance(TransactionCase):
         employee = self.env['hr.employee'].create({'name': 'Cunégonde', 'tz': 'Europe/Brussels'})
         self.env['hr.attendance'].create({
             'employee_id': employee.id,
-            'check_in': tz_datetime(2019, 3, 1, 22, 0),  # should count from midnight in the employee's timezone (=the previous day in utc!)
+            'check_in': tz_datetime(2019, 3, 1, 22, 0),
+            # should count from midnight in the employee's timezone (=the previous day in utc!)
             'check_out': tz_datetime(2019, 3, 2, 2, 0),
         })
         self.env['hr.attendance'].create({
@@ -60,5 +62,6 @@ class TestHrAttendance(TransactionCase):
         })
 
         # now = 2019/3/2 14:00 in the employee's timezone
-        with patch.object(fields.Datetime, 'now', lambda: tz_datetime(2019, 3, 2, 14, 0).astimezone(pytz.utc).replace(tzinfo=None)):
+        with patch.object(fields.Datetime, 'now',
+                          lambda: tz_datetime(2019, 3, 2, 14, 0).astimezone(pytz.utc).replace(tzinfo=None)):
             self.assertEqual(employee.hours_today, 5, "It should have counted 5 hours")

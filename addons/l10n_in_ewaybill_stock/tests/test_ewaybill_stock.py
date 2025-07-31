@@ -1,10 +1,9 @@
 from freezegun import freeze_time
+from odoo.addons.l10n_in.tests.common import L10nInTestInvoicingCommon
 
 from odoo import _
 from odoo.fields import Command
 from odoo.tests import tagged
-
-from odoo.addons.l10n_in.tests.common import L10nInTestInvoicingCommon
 
 
 @tagged('post_install', '-at_install', 'post_install_l10n')
@@ -120,51 +119,51 @@ class TestStockEwaybill(L10nInTestInvoicingCommon):
             'type_description': "Other reasons"
         })
         expected_json = {
-          'supplyType': 'O',
-          'subSupplyType': '8',
-          'subSupplyDesc': 'Other reasons',
-          'docType': 'CHL',
-          'transactionType': 1,
-          'transDistance': '0',
-          'docNo': 'compa/OUT/00002',
-          'docDate': '26/04/2024',
-          'fromGstin': '24AAGCC7144L6ZE',
-          'toGstin': '27DJMPM8965E1ZE',
-          'fromTrdName': 'Default Company',
-          'toTrdName': 'Partner Intra State',
-          'fromStateCode': 24,
-          'toStateCode': 27,
-          'fromAddr1': 'Khodiyar Chowk',
-          'toAddr1': 'Karansinhji Rd',
-          'fromAddr2': 'Sala Number 3',
-          'toAddr2': 'Karanpara',
-          'fromPlace': 'Amreli',
-          'toPlace': 'Rajkot',
-          'fromPincode': 365220,
-          'toPincode': 431122,
-          'actToStateCode': 27,
-          'actFromStateCode': 24,
-          'transporterId': '27DJMPM8965E1ZE',
-          'transporterName': 'Partner Intra State',
-          'itemList': [
-            {
-              'productName': 'product_a',
-              'hsnCode': '111111',
-              'productDesc': 'product_a',
-              'quantity': 5.0,
-              'qtyUnit': 'UNT',
-              'taxableAmount': 2500.0,
-              'igstRate': 5.0
-            }
-          ],
-          'totalValue': 2500.0,
-          'cgstValue': 0.0,
-          'sgstValue': 0.0,
-          'igstValue': 125.0,
-          'cessValue': 0.0,
-          'cessNonAdvolValue': 0.0,
-          'otherValue': 0.0,
-          'totInvValue': 2625.0
+            'supplyType': 'O',
+            'subSupplyType': '8',
+            'subSupplyDesc': 'Other reasons',
+            'docType': 'CHL',
+            'transactionType': 1,
+            'transDistance': '0',
+            'docNo': 'compa/OUT/00002',
+            'docDate': '26/04/2024',
+            'fromGstin': '24AAGCC7144L6ZE',
+            'toGstin': '27DJMPM8965E1ZE',
+            'fromTrdName': 'Default Company',
+            'toTrdName': 'Partner Intra State',
+            'fromStateCode': 24,
+            'toStateCode': 27,
+            'fromAddr1': 'Khodiyar Chowk',
+            'toAddr1': 'Karansinhji Rd',
+            'fromAddr2': 'Sala Number 3',
+            'toAddr2': 'Karanpara',
+            'fromPlace': 'Amreli',
+            'toPlace': 'Rajkot',
+            'fromPincode': 365220,
+            'toPincode': 431122,
+            'actToStateCode': 27,
+            'actFromStateCode': 24,
+            'transporterId': '27DJMPM8965E1ZE',
+            'transporterName': 'Partner Intra State',
+            'itemList': [
+                {
+                    'productName': 'product_a',
+                    'hsnCode': '111111',
+                    'productDesc': 'product_a',
+                    'quantity': 5.0,
+                    'qtyUnit': 'UNT',
+                    'taxableAmount': 2500.0,
+                    'igstRate': 5.0
+                }
+            ],
+            'totalValue': 2500.0,
+            'cgstValue': 0.0,
+            'sgstValue': 0.0,
+            'igstValue': 125.0,
+            'cessValue': 0.0,
+            'cessNonAdvolValue': 0.0,
+            'otherValue': 0.0,
+            'totInvValue': 2625.0
         }
         self.assertDictEqual(ewaybill._ewaybill_generate_direct_json(), expected_json)
 

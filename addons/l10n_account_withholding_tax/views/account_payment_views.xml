@@ -13,13 +13,20 @@
                     <group>
                         <field name="withholding_line_ids" nolabel="1" colspan="2" readonly="state != 'draft'">
                             <list editable="bottom" no_open="1">
-                                <field name="source_base_amount_currency" column_invisible="True"/> <!-- Needed for taxes computation -->
-                                <field name="source_base_amount" column_invisible="True"/> <!-- Needed for taxes computation -->
-                                <field name="source_tax_amount_currency" column_invisible="True"/> <!-- Needed for taxes computation -->
-                                <field name="source_tax_amount" column_invisible="True"/> <!-- Needed for taxes computation -->
-                                <field name="source_currency_id" column_invisible="True"/> <!-- Needed for taxes computation -->
-                                <field name="comodel_currency_id" column_invisible="True"/> <!-- Needed for taxes computation -->
-                                <field name="placeholder_value" column_invisible="True"/> <!-- Needed for the placeholder widget -->
+                                <field name="source_base_amount_currency"
+                                       column_invisible="True"/> <!-- Needed for taxes computation -->
+                                <field name="source_base_amount"
+                                       column_invisible="True"/> <!-- Needed for taxes computation -->
+                                <field name="source_tax_amount_currency"
+                                       column_invisible="True"/> <!-- Needed for taxes computation -->
+                                <field name="source_tax_amount"
+                                       column_invisible="True"/> <!-- Needed for taxes computation -->
+                                <field name="source_currency_id"
+                                       column_invisible="True"/> <!-- Needed for taxes computation -->
+                                <field name="comodel_currency_id"
+                                       column_invisible="True"/> <!-- Needed for taxes computation -->
+                                <field name="placeholder_value"
+                                       column_invisible="True"/> <!-- Needed for the placeholder widget -->
                                 <field name="name"
                                        string="Sequence Number"
                                        required="not withholding_sequence_id"

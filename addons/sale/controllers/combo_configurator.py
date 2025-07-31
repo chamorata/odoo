@@ -10,15 +10,15 @@ class SaleComboConfiguratorController(Controller):
 
     @route(route='/sale/combo_configurator/get_data', type='json', auth='user')
     def sale_combo_configurator_get_data(
-        self,
-        product_tmpl_id,
-        quantity,
-        date,
-        currency_id=None,
-        company_id=None,
-        pricelist_id=None,
-        selected_combo_items=None,
-        **kwargs,
+            self,
+            product_tmpl_id,
+            quantity,
+            date,
+            currency_id=None,
+            company_id=None,
+            pricelist_id=None,
+            selected_combo_items=None,
+            **kwargs,
     ):
         """ Return data about the specified combo product.
 
@@ -62,15 +62,15 @@ class SaleComboConfiguratorController(Controller):
                 'id': combo.id,
                 'name': combo.name,
                 'combo_items': [
-                   self. _get_combo_item_data(
-                       combo,
-                       combo_item,
-                       selected_combo_item_dict.get(combo_item.id, {}),
-                       date,
-                       currency,
-                       pricelist,
-                       **kwargs,
-                   ) for combo_item in combo.combo_item_ids if combo_item.product_id.active
+                    self._get_combo_item_data(
+                        combo,
+                        combo_item,
+                        selected_combo_item_dict.get(combo_item.id, {}),
+                        date,
+                        currency,
+                        pricelist,
+                        **kwargs,
+                    ) for combo_item in combo.combo_item_ids if combo_item.product_id.active
                 ],
             } for combo in product_template.combo_ids.sudo()],
             'currency_id': currency_id,
@@ -81,14 +81,14 @@ class SaleComboConfiguratorController(Controller):
 
     @route(route='/sale/combo_configurator/get_price', type='json', auth='user')
     def sale_combo_configurator_get_price(
-        self,
-        product_tmpl_id,
-        quantity,
-        date,
-        currency_id=None,
-        company_id=None,
-        pricelist_id=None,
-        **kwargs,
+            self,
+            product_tmpl_id,
+            quantity,
+            date,
+            currency_id=None,
+            company_id=None,
+            pricelist_id=None,
+            **kwargs,
     ):
         """ Return the price of the specified combo product.
 
@@ -117,7 +117,7 @@ class SaleComboConfiguratorController(Controller):
         )[0]
 
     def _get_combo_item_data(
-        self, combo, combo_item, selected_combo_item, date, currency, pricelist, **kwargs
+            self, combo, combo_item, selected_combo_item, date, currency, pricelist, **kwargs
     ):
         """ Return the price of the specified combo product.
 

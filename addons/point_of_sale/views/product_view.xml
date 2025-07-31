@@ -6,10 +6,12 @@
         <field name="inherit_id" ref="product.product_template_search_view"/>
         <field name="arch" type="xml">
             <field name="categ_id" position="after">
-                <field string="POS Product Category" name="pos_categ_ids" filter_domain="[('pos_categ_ids', 'child_of', raw_value)]"/>
+                <field string="POS Product Category" name="pos_categ_ids"
+                       filter_domain="[('pos_categ_ids', 'child_of', raw_value)]"/>
             </field>
             <filter name="filter_to_sell" position="before">
-               <filter name="filter_to_availabe_pos" string="Available in POS" domain="[('available_in_pos', '=', True)]"/>
+                <filter name="filter_to_availabe_pos" string="Available in POS"
+                        domain="[('available_in_pos', '=', True)]"/>
             </filter>
             <filter name="categ_id" position="after">
                 <filter string="POS Product Category" name="pos_categ_ids" context="{'group_by':'pos_categ_ids'}"/>
@@ -21,11 +23,14 @@
         <field name="name">Products</field>
         <field name="res_model">product.template</field>
         <field name="view_mode">kanban,list,form,activity</field>
-        <field name="context">{'search_default_filter_to_availabe_pos': 1, 'default_available_in_pos': True, 'create_variant_never': 'no_variant', '_pos_self_order': True}</field>
+        <field name="context">{'search_default_filter_to_availabe_pos': 1, 'default_available_in_pos': True,
+            'create_variant_never': 'no_variant', '_pos_self_order': True}
+        </field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create new product
-            </p><p>
+            </p>
+            <p>
                 Define products and categories for POS retail and restaurant
             </p>
         </field>
@@ -40,7 +45,8 @@
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create a new product variant
-            </p><p>
+            </p>
+            <p>
                 You must define a product for everything you sell through
                 the point of sale interface.
             </p>
@@ -73,13 +79,13 @@
                                    string="Category"
                                    options="{'color_field': 'color'}"/>
                             <field name="color"
-                                   widget="color_picker" string="Color" />
+                                   widget="color_picker" string="Color"/>
                         </group>
                         <group string="Public Description" name="public_description" invisible="1">
                             <field name="public_description"
-                                placeholder="Information about your product."
-                                nolabel="1"
-                                colspan="2"/>
+                                   placeholder="Information about your product."
+                                   nolabel="1"
+                                   colspan="2"/>
                         </group>
                     </group>
                 </page>
@@ -99,35 +105,36 @@
         <field name="inherit_id" ref="product.product_template_only_form_view"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='attribute_line_ids']//field[@name='attribute_id']" position="attributes">
-                <attribute name="context">{'default_create_variant': context.get('create_variant_never', 'always')}</attribute>
+                <attribute name="context">{'default_create_variant': context.get('create_variant_never', 'always')}
+                </attribute>
             </xpath>
         </field>
     </record>
 
     <!-- Product Catalog menus and sub menus -->
     <menuitem id="pos_config_menu_catalog"
-        name="Products"
-        parent="point_of_sale.menu_point_root"/>
+              name="Products"
+              parent="point_of_sale.menu_point_root"/>
     <menuitem id="menu_pos_products"
-        action="product_template_action_pos_product"
-        parent="point_of_sale.pos_config_menu_catalog"
-        sequence="5"/>
+              action="product_template_action_pos_product"
+              parent="point_of_sale.pos_config_menu_catalog"
+              sequence="5"/>
     <menuitem id="pos_config_menu_action_product_product"
-        name="Product Variants"
-        parent="point_of_sale.pos_config_menu_catalog"
-        action="product_product_action"
-        groups="product.group_product_variant"
-        sequence="10"/>
+              name="Product Variants"
+              parent="point_of_sale.pos_config_menu_catalog"
+              action="product_product_action"
+              groups="product.group_product_variant"
+              sequence="10"/>
     <menuitem id="point_of_sale.menu_product_combo"
-        name="Combo Choices"
-        parent="point_of_sale.pos_config_menu_catalog"
-        action="product.product_combo_action"
-        sequence="15"/>
+              name="Combo Choices"
+              parent="point_of_sale.pos_config_menu_catalog"
+              action="product.product_combo_action"
+              sequence="15"/>
     <menuitem id="pos_config_menu_action_product_pricelist"
-        parent="point_of_sale.pos_config_menu_catalog"
-        action="product.product_pricelist_action2"
-        groups="product.group_product_pricelist"
-        sequence="20"/>
+              parent="point_of_sale.pos_config_menu_catalog"
+              action="product.product_pricelist_action2"
+              groups="product.group_product_pricelist"
+              sequence="20"/>
 
     <record id="product_uom_categ_form_view" model="ir.ui.view">
         <field name="name">uom.category.form.inherit</field>
@@ -157,7 +164,8 @@
         <field name="inherit_id" ref="product.product_template_tree_view"/>
         <field name="arch" type="xml">
             <field name="categ_id" position="before">
-                <field name="pos_categ_ids" widget="many2many_tags" groups="point_of_sale.group_pos_user" optional="hide" string="POS Product Category"/>
+                <field name="pos_categ_ids" widget="many2many_tags" groups="point_of_sale.group_pos_user"
+                       optional="hide" string="POS Product Category"/>
             </field>
             <field name="pos_categ_ids" position="after">
                 <field name="available_in_pos" groups="point_of_sale.group_pos_user" optional="hide"/>
@@ -171,7 +179,8 @@
         <field name="inherit_id" ref="product.product_product_tree_view"/>
         <field name="arch" type="xml">
             <field name="categ_id" position="before">
-                <field name="pos_categ_ids" widget="many2many_tags" groups="point_of_sale.group_pos_user" optional="hide" string="POS Product Category"/>
+                <field name="pos_categ_ids" widget="many2many_tags" groups="point_of_sale.group_pos_user"
+                       optional="hide" string="POS Product Category"/>
             </field>
         </field>
     </record>
@@ -189,8 +198,9 @@
                 </div>
             </xpath>
             <div name="tax_info" position="after">
-                <field name="pos_categ_ids" string="POS Category" class="oe_inline" widget="many2many_tags" placeholder="Unsaleable"/>
-                <field name="color" widget="color_picker" string="Color" />
+                <field name="pos_categ_ids" string="POS Category" class="oe_inline" widget="many2many_tags"
+                       placeholder="Unsaleable"/>
+                <field name="color" widget="color_picker" string="Color"/>
             </div>
         </field>
     </record>
@@ -200,7 +210,8 @@
         <field name="res_model">product.product</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
-        <field name="context" eval="{'default_available_in_pos': True, 'create_variant_never': 'no_variant', 'dialog_size': 'medium', 'can_be_sold': True, 'default_is_storable': True}"/>
+        <field name="context"
+               eval="{'default_available_in_pos': True, 'create_variant_never': 'no_variant', 'dialog_size': 'medium', 'can_be_sold': True, 'default_is_storable': True}"/>
         <field name="view_id" ref="product_product_view_form_normalized_pos"/>
     </record>
     <record id="product_product_action_edit_pos" model="ir.actions.act_window">

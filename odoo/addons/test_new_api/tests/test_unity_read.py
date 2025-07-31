@@ -81,8 +81,8 @@ class TestUnityRead(TransactionCase):
         ])
 
     def test_many2one_query_count(self):
-        with self.assertQueryCount(1        # 1 query for the search of the domain and read course fields
-                                   + 1):    # 1 query to read the data of the author
+        with self.assertQueryCount(1  # 1 query for the search of the domain and read course fields
+                                   + 1):  # 1 query to read the data of the author
             self.course.web_search_read(domain=(),
                                         specification={'display_name': {}, 'author_id': {'fields': {'write_date': {}}}})
 
@@ -237,11 +237,11 @@ class TestUnityRead(TransactionCase):
             'teacher_id': teacher2.id
         })
         self.env.invalidate_all()
-        with self.assertQueryCount(1        # read the course with author id
-                                   + 1      # read the lessons of the course
-                                   + 1      # read the author name of course
-                                   + 1      # ids of the teachers of each lesson
-                                   + 1):    # read the teacher name of each lessons in one query
+        with self.assertQueryCount(1  # read the course with author id
+                                   + 1  # read the lessons of the course
+                                   + 1  # read the author name of course
+                                   + 1  # ids of the teachers of each lesson
+                                   + 1):  # read the teacher name of each lessons in one query
             course.web_read(
                 {
                     'display_name': {},
@@ -392,9 +392,9 @@ class TestUnityRead(TransactionCase):
         }])
 
     def test_read_many2many_gives_ids(self):
-        with self.assertQueryCount(1        # 1 query for course
-                                   + 1      # 1 query for the lessons
-                                   + 1):    # 1 query for the attendees ids
+        with self.assertQueryCount(1  # 1 query for course
+                                   + 1  # 1 query for the lessons
+                                   + 1):  # 1 query for the attendees ids
             read = self.course.web_read({'display_name': {},
                                          'lesson_ids': {
                                              'fields': {

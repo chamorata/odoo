@@ -8,7 +8,8 @@ class FetchmailServer(models.Model):
     _name = 'fetchmail.server'
     _inherit = ['fetchmail.server', 'google.gmail.mixin']
 
-    server_type = fields.Selection(selection_add=[('gmail', 'Gmail OAuth Authentication')], ondelete={'gmail': 'set default'})
+    server_type = fields.Selection(selection_add=[('gmail', 'Gmail OAuth Authentication')],
+                                   ondelete={'gmail': 'set default'})
 
     def _compute_server_type_info(self):
         gmail_servers = self.filtered(lambda server: server.server_type == 'gmail')

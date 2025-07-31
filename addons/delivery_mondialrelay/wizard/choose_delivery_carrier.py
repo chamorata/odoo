@@ -2,8 +2,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import fields, models, api, _
-from odoo.tools.json import scriptsafe as json_safe
 from odoo.exceptions import ValidationError
+from odoo.tools.json import scriptsafe as json_safe
 
 
 class ChooseDeliveryCarrier(models.TransientModel):

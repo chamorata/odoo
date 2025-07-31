@@ -29,12 +29,14 @@
                                 <field name="name">I. With the issuance of invoices</field>
                                 <field name="code">L10N_KZ_300_00_001_1</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_kz_tr_expression_300_00_001_1_net" model="account.report.expression">
+                                    <record id="l10n_kz_tr_expression_300_00_001_1_net"
+                                            model="account.report.expression">
                                         <field name="label">net</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">I. With the issuance of invoices net</field>
                                     </record>
-                                    <record id="l10n_kz_tr_expression_300_00_001_1_tax" model="account.report.expression">
+                                    <record id="l10n_kz_tr_expression_300_00_001_1_tax"
+                                            model="account.report.expression">
                                         <field name="label">tax</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">I. With the issuance of invoices tax</field>
@@ -45,13 +47,15 @@
                                 <field name="name">II. Without the issuance of invoices</field>
                                 <field name="code">L10N_KZ_300_00_001_2</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_kz_tr_expression_300_00_001_2_net" model="account.report.expression">
+                                    <record id="l10n_kz_tr_expression_300_00_001_2_net"
+                                            model="account.report.expression">
                                         <field name="label">net</field>
                                         <field name="engine">external</field>
                                         <field name="formula">sum</field>
                                         <field name="subformula">editable;rounding=2</field>
                                     </record>
-                                    <record id="l10n_kz_tr_expression_300_00_001_2_tax" model="account.report.expression">
+                                    <record id="l10n_kz_tr_expression_300_00_001_2_tax"
+                                            model="account.report.expression">
                                         <field name="label">tax</field>
                                         <field name="engine">external</field>
                                         <field name="formula">sum</field>
@@ -103,7 +107,9 @@
                         </field>
                     </record>
                     <record id="l10n_kz_tr_line_300_00_004" model="account.report.line">
-                        <field name="name">300.00.004. Turnover on sale of goods, works, services, the place of sale of which is not the Republic of Kazakhstan</field>
+                        <field name="name">300.00.004. Turnover on sale of goods, works, services, the place of sale of
+                            which is not the Republic of Kazakhstan
+                        </field>
                         <field name="code">L10N_KZ_300_00_004</field>
                         <field name="expression_ids">
                             <record id="l10n_kz_tr_expression_300_00_004_net" model="account.report.expression">
@@ -132,10 +138,13 @@
                                 <field name="name">I. Amount of taxable turnover</field>
                                 <field name="code">L10N_KZ_300_00_006_1</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_kz_tr_expression_300_00_006_1_net" model="account.report.expression">
+                                    <record id="l10n_kz_tr_expression_300_00_006_1_net"
+                                            model="account.report.expression">
                                         <field name="label">net</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">L10N_KZ_300_00_001.net + L10N_KZ_300_00_002.net + L10N_KZ_300_00_003.net</field>
+                                        <field name="formula">L10N_KZ_300_00_001.net + L10N_KZ_300_00_002.net +
+                                            L10N_KZ_300_00_003.net
+                                        </field>
                                     </record>
                                 </field>
                             </record>
@@ -144,7 +153,9 @@
                             <record id="l10n_kz_tr_expression_300_00_006_net" model="account.report.expression">
                                 <field name="label">net</field>
                                 <field name="engine">aggregation</field>
-                                <field name="formula">L10N_KZ_300_00_006_1.net + L10N_KZ_300_00_004.net + L10N_KZ_300_00_005.net</field>
+                                <field name="formula">L10N_KZ_300_00_006_1.net + L10N_KZ_300_00_004.net +
+                                    L10N_KZ_300_00_005.net
+                                </field>
                             </record>
                         </field>
                     </record>
@@ -162,19 +173,26 @@
                         </field>
                     </record>
                     <record id="l10n_kz_tr_line_300_00_008" model="account.report.line">
-                        <field name="name">300.00.008. Share of taxable turnover at zero rate in the total taxable turnover</field>
+                        <field name="name">300.00.008. Share of taxable turnover at zero rate in the total taxable
+                            turnover
+                        </field>
                         <field name="code">L10N_KZ_300_00_008</field>
                         <field name="expression_ids">
                             <record id="l10n_kz_tr_expression_300_00_008_net" model="account.report.expression">
                                 <field name="label">net</field>
                                 <field name="engine">aggregation</field>
-                                <field name="formula">(L10N_KZ_300_00_002.net / (L10N_KZ_300_00_001.net + L10N_KZ_300_00_002.net + L10N_KZ_300_00_003.net)) * 100</field>
+                                <field name="formula">(L10N_KZ_300_00_002.net / (L10N_KZ_300_00_001.net +
+                                    L10N_KZ_300_00_002.net + L10N_KZ_300_00_003.net)) * 100
+                                </field>
                                 <field name="subformula">ignore_zero_division</field>
                             </record>
                         </field>
                     </record>
                     <record id="l10n_kz_tr_line_300_00_009" model="account.report.line">
-                        <field name="name">300.00.009. Share of taxable turnover in total turnover, calculated without taking into account turnovers, for which the proportional with the right to separate accounting for individual turnovers is applied</field>
+                        <field name="name">300.00.009. Share of taxable turnover in total turnover, calculated without
+                            taking into account turnovers, for which the proportional with the right to separate
+                            accounting for individual turnovers is applied
+                        </field>
                         <field name="code">L10N_KZ_300_00_009</field>
                         <field name="expression_ids">
                             <record id="l10n_kz_tr_expression_300_00_009_net" model="account.report.expression">
@@ -186,7 +204,9 @@
                         </field>
                     </record>
                     <record id="l10n_kz_tr_line_300_00_010" model="account.report.line">
-                        <field name="name">300.00.010. VAT accrued on import of goods by offset method in accordance with the terms of the subsoil use contract</field>
+                        <field name="name">300.00.010. VAT accrued on import of goods by offset method in accordance
+                            with the terms of the subsoil use contract
+                        </field>
                         <field name="code">L10N_KZ_300_00_010</field>
                         <field name="expression_ids">
                             <record id="l10n_kz_tr_expression_300_00_010_tax" model="account.report.expression">
@@ -198,7 +218,9 @@
                         </field>
                     </record>
                     <record id="l10n_kz_tr_line_300_00_011" model="account.report.line">
-                        <field name="name">300.00.011. VAT accrued on import of goods by offset method, except for line 300.00.010 (300.04.001 B)</field>
+                        <field name="name">300.00.011. VAT accrued on import of goods by offset method, except for line
+                            300.00.010 (300.04.001 B)
+                        </field>
                         <field name="code">L10N_KZ_300_00_011</field>
                         <field name="expression_ids">
                             <record id="l10n_kz_tr_expression_300_00_011_tax" model="account.report.expression">
@@ -216,7 +238,9 @@
                             <record id="l10n_kz_tr_expression_300_00_012_tax" model="account.report.expression">
                                 <field name="label">tax</field>
                                 <field name="engine">aggregation</field>
-                                <field name="formula">L10N_KZ_300_00_001.tax + L10N_KZ_300_00_003.tax + L10N_KZ_300_00_010.tax + L10N_KZ_300_00_011.tax</field>
+                                <field name="formula">L10N_KZ_300_00_001.tax + L10N_KZ_300_00_003.tax +
+                                    L10N_KZ_300_00_010.tax + L10N_KZ_300_00_011.tax
+                                </field>
                             </record>
                         </field>
                     </record>
@@ -227,19 +251,23 @@
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
                     <record id="l10n_kz_tr_line_300_00_013" model="account.report.line">
-                        <field name="name">300.00.013. Goods, works, services purchased with VAT in the Republic of Kazakhstan, including:</field>
+                        <field name="name">300.00.013. Goods, works, services purchased with VAT in the Republic of
+                            Kazakhstan, including:
+                        </field>
                         <field name="code">L10N_KZ_300_00_013</field>
                         <field name="children_ids">
                             <record id="l10n_kz_tr_line_300_00_013_1" model="account.report.line">
                                 <field name="name">I. On invoices</field>
                                 <field name="code">L10N_KZ_300_00_013_1</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_kz_tr_expression_300_00_013_1_net" model="account.report.expression">
+                                    <record id="l10n_kz_tr_expression_300_00_013_1_net"
+                                            model="account.report.expression">
                                         <field name="label">net</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">On invoices net</field>
                                     </record>
-                                    <record id="l10n_kz_tr_expression_300_00_013_1_tax" model="account.report.expression">
+                                    <record id="l10n_kz_tr_expression_300_00_013_1_tax"
+                                            model="account.report.expression">
                                         <field name="label">tax</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">On invoices tax</field>
@@ -250,13 +278,15 @@
                                 <field name="name">II. On other documents</field>
                                 <field name="code">L10N_KZ_300_00_013_2</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_kz_tr_expression_300_00_013_2_net" model="account.report.expression">
+                                    <record id="l10n_kz_tr_expression_300_00_013_2_net"
+                                            model="account.report.expression">
                                         <field name="label">net</field>
                                         <field name="engine">external</field>
                                         <field name="formula">sum</field>
                                         <field name="subformula">editable;rounding=2</field>
                                     </record>
-                                    <record id="l10n_kz_tr_expression_300_00_013_2_tax" model="account.report.expression">
+                                    <record id="l10n_kz_tr_expression_300_00_013_2_tax"
+                                            model="account.report.expression">
                                         <field name="label">tax</field>
                                         <field name="engine">external</field>
                                         <field name="formula">sum</field>
@@ -295,7 +325,9 @@
                         </field>
                     </record>
                     <record id="l10n_kz_tr_line_300_00_015" model="account.report.line">
-                        <field name="name">300.00.015. Goods, works, services purchased without VAT and for which set-off is not allowed</field>
+                        <field name="name">300.00.015. Goods, works, services purchased without VAT and for which
+                            set-off is not allowed
+                        </field>
                         <field name="code">L10N_KZ_300_00_015</field>
                         <field name="expression_ids">
                             <record id="l10n_kz_tr_expression_300_00_015_net" model="account.report.expression">
@@ -306,19 +338,25 @@
                         </field>
                     </record>
                     <record id="l10n_kz_tr_line_300_00_016" model="account.report.line">
-                        <field name="name">300.00.016. Imports with payment of VAT (on the basis of the declaration of goods, on the basis of the declaration form 320.00), including:</field>
+                        <field name="name">300.00.016. Imports with payment of VAT (on the basis of the declaration of
+                            goods, on the basis of the declaration form 320.00), including:
+                        </field>
                         <field name="code">L10N_KZ_300_00_016</field>
                         <field name="children_ids">
                             <record id="l10n_kz_tr_line_300_00_016_1" model="account.report.line">
-                                <field name="name">I. Imports from states that are not members of the Eurasian Economic Union</field>
+                                <field name="name">I. Imports from states that are not members of the Eurasian Economic
+                                    Union
+                                </field>
                                 <field name="code">L10N_KZ_300_00_016_1</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_kz_tr_expression_300_00_016_1_net" model="account.report.expression">
+                                    <record id="l10n_kz_tr_expression_300_00_016_1_net"
+                                            model="account.report.expression">
                                         <field name="label">net</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">Imports from non-EEU states net</field>
                                     </record>
-                                    <record id="l10n_kz_tr_expression_300_00_016_1_tax" model="account.report.expression">
+                                    <record id="l10n_kz_tr_expression_300_00_016_1_tax"
+                                            model="account.report.expression">
                                         <field name="label">tax</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">Imports from non-EEU states tax</field>
@@ -329,12 +367,14 @@
                                 <field name="name">II. Imports from member states of the Eurasian Economic Union</field>
                                 <field name="code">L10N_KZ_300_00_016_2</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_kz_tr_expression_300_00_016_2_net" model="account.report.expression">
+                                    <record id="l10n_kz_tr_expression_300_00_016_2_net"
+                                            model="account.report.expression">
                                         <field name="label">net</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">Imports from member states of the EEU net</field>
                                     </record>
-                                    <record id="l10n_kz_tr_expression_300_00_016_2_tax" model="account.report.expression">
+                                    <record id="l10n_kz_tr_expression_300_00_016_2_tax"
+                                            model="account.report.expression">
                                         <field name="label">tax</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">Imports from member states of the EEU tax</field>
@@ -355,7 +395,9 @@
                         </field>
                     </record>
                     <record id="l10n_kz_tr_line_300_00_018" model="account.report.line">
-                        <field name="name">300.00.018. Import of goods for which the deadline for payment of VAT has been changed (on the basis of the declaration of goods)</field>
+                        <field name="name">300.00.018. Import of goods for which the deadline for payment of VAT has
+                            been changed (on the basis of the declaration of goods)
+                        </field>
                         <field name="code">L10N_KZ_300_00_018</field>
                         <field name="expression_ids">
                             <record id="l10n_kz_tr_expression_300_00_018_tax" model="account.report.expression">
@@ -367,7 +409,9 @@
                         </field>
                     </record>
                     <record id="l10n_kz_tr_line_300_00_019" model="account.report.line">
-                        <field name="name">300.00.019. VAT paid on imported goods, for which the deadline for VAT payment was changed</field>
+                        <field name="name">300.00.019. VAT paid on imported goods, for which the deadline for VAT
+                            payment was changed
+                        </field>
                         <field name="code">L10N_KZ_300_00_019</field>
                         <field name="expression_ids">
                             <record id="l10n_kz_tr_expression_300_00_019_tax" model="account.report.expression">
@@ -379,7 +423,9 @@
                         </field>
                     </record>
                     <record id="l10n_kz_tr_line_300_00_020" model="account.report.line">
-                        <field name="name">300.00.020. Imports of goods for which VAT was paid by the offset method in accordance with the terms of the subsoil use contract</field>
+                        <field name="name">300.00.020. Imports of goods for which VAT was paid by the offset method in
+                            accordance with the terms of the subsoil use contract
+                        </field>
                         <field name="code">L10N_KZ_300_00_020</field>
                         <field name="expression_ids">
                             <record id="l10n_kz_tr_expression_300_00_020_net" model="account.report.expression">
@@ -403,7 +449,10 @@
                             <record id="l10n_kz_tr_expression_300_00_021_net" model="account.report.expression">
                                 <field name="label">net</field>
                                 <field name="engine">aggregation</field>
-                                <field name="formula">L10N_KZ_300_00_013.net + L10N_KZ_300_00_014.net + L10N_KZ_300_00_015.net + L10N_KZ_300_00_016_1.net + L10N_KZ_300_00_016_2.net + L10N_KZ_300_00_017.net + L10N_KZ_300_00_020.net + L10N_KZ_300_00_029.net</field>
+                                <field name="formula">L10N_KZ_300_00_013.net + L10N_KZ_300_00_014.net +
+                                    L10N_KZ_300_00_015.net + L10N_KZ_300_00_016_1.net + L10N_KZ_300_00_016_2.net +
+                                    L10N_KZ_300_00_017.net + L10N_KZ_300_00_020.net + L10N_KZ_300_00_029.net
+                                </field>
                             </record>
                         </field>
                     </record>
@@ -426,19 +475,27 @@
                             <record id="l10n_kz_tr_expression_300_00_023_tax" model="account.report.expression">
                                 <field name="label">tax</field>
                                 <field name="engine">aggregation</field>
-                                <field name="formula">L10N_KZ_300_00_013.tax + L10N_KZ_300_00_014.tax + L10N_KZ_300_00_016_1.tax + L10N_KZ_300_00_016_2.tax + L10N_KZ_300_00_019.tax + L10N_KZ_300_00_020.tax + L10N_KZ_300_00_022.tax</field>
+                                <field name="formula">L10N_KZ_300_00_013.tax + L10N_KZ_300_00_014.tax +
+                                    L10N_KZ_300_00_016_1.tax + L10N_KZ_300_00_016_2.tax + L10N_KZ_300_00_019.tax +
+                                    L10N_KZ_300_00_020.tax + L10N_KZ_300_00_022.tax
+                                </field>
                             </record>
                         </field>
                     </record>
                     <record id="l10n_kz_tr_line_300_00_024" model="account.report.line">
-                        <field name="name">300.00.024. The total amount of VAT to be credited when applying the proportional method with the right to separate accounting for certain turnovers, including:</field>
+                        <field name="name">300.00.024. The total amount of VAT to be credited when applying the
+                            proportional method with the right to separate accounting for certain turnovers, including:
+                        </field>
                         <field name="code">L10N_KZ_300_00_024</field>
                         <field name="children_ids">
                             <record id="l10n_kz_tr_line_300_00_024_1" model="account.report.line">
-                                <field name="name">I. For goods, works, services for which the proportional method of offsetting is applied</field>
+                                <field name="name">I. For goods, works, services for which the proportional method of
+                                    offsetting is applied
+                                </field>
                                 <field name="code">L10N_KZ_300_00_024_1</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_kz_tr_expression_300_00_024_1_tax" model="account.report.expression">
+                                    <record id="l10n_kz_tr_expression_300_00_024_1_tax"
+                                            model="account.report.expression">
                                         <field name="label">tax</field>
                                         <field name="engine">external</field>
                                         <field name="formula">sum</field>
@@ -447,10 +504,13 @@
                                 </field>
                             </record>
                             <record id="l10n_kz_tr_line_300_00_024_2" model="account.report.line">
-                                <field name="name">II. For goods, works, services, for which the method of separate accounting is applied</field>
+                                <field name="name">II. For goods, works, services, for which the method of separate
+                                    accounting is applied
+                                </field>
                                 <field name="code">L10N_KZ_300_00_024_2</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_kz_tr_expression_300_00_024_2_tax" model="account.report.expression">
+                                    <record id="l10n_kz_tr_expression_300_00_024_2_tax"
+                                            model="account.report.expression">
                                         <field name="label">tax</field>
                                         <field name="engine">external</field>
                                         <field name="formula">sum</field>
@@ -459,10 +519,13 @@
                                 </field>
                             </record>
                             <record id="l10n_kz_tr_line_300_00_024_3" model="account.report.line">
-                                <field name="name">III. For goods, works, services used simultaneously for the purposes of taxable and non-taxable turnover</field>
+                                <field name="name">III. For goods, works, services used simultaneously for the purposes
+                                    of taxable and non-taxable turnover
+                                </field>
                                 <field name="code">L10N_KZ_300_00_024_3</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_kz_tr_expression_300_00_024_3_tax" model="account.report.expression">
+                                    <record id="l10n_kz_tr_expression_300_00_024_3_tax"
+                                            model="account.report.expression">
                                         <field name="label">tax</field>
                                         <field name="engine">external</field>
                                         <field name="formula">sum</field>
@@ -475,7 +538,9 @@
                             <record id="l10n_kz_tr_expression_300_00_024_tax" model="account.report.expression">
                                 <field name="label">tax</field>
                                 <field name="engine">aggregation</field>
-                                <field name="formula">L10N_KZ_300_00_024_1.tax + L10N_KZ_300_00_024_2.tax + L10N_KZ_300_00_024_3.tax</field>
+                                <field name="formula">L10N_KZ_300_00_024_1.tax + L10N_KZ_300_00_024_2.tax +
+                                    L10N_KZ_300_00_024_3.tax
+                                </field>
                             </record>
                         </field>
                     </record>
@@ -487,7 +552,8 @@
                                 <field name="name">I. With the proportional method</field>
                                 <field name="code">L10N_KZ_300_00_025_1</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_kz_tr_expression_300_00_025_1_tax" model="account.report.expression">
+                                    <record id="l10n_kz_tr_expression_300_00_025_1_tax"
+                                            model="account.report.expression">
                                         <field name="label">tax</field>
                                         <field name="engine">external</field>
                                         <field name="formula">sum</field>
@@ -499,7 +565,8 @@
                                 <field name="name">II. With the split method</field>
                                 <field name="code">L10N_KZ_300_00_025_2</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_kz_tr_expression_300_00_025_1_tax" model="account.report.expression">
+                                    <record id="l10n_kz_tr_expression_300_00_025_1_tax"
+                                            model="account.report.expression">
                                         <field name="label">tax</field>
                                         <field name="engine">external</field>
                                         <field name="formula">sum</field>
@@ -508,10 +575,13 @@
                                 </field>
                             </record>
                             <record id="l10n_kz_tr_line_300_00_025_3" model="account.report.line">
-                                <field name="name">III. At the proportional method with separate accounting on separate turnovers</field>
+                                <field name="name">III. At the proportional method with separate accounting on separate
+                                    turnovers
+                                </field>
                                 <field name="code">L10N_KZ_300_00_025_3</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_kz_tr_expression_300_00_025_3_tax" model="account.report.expression">
+                                    <record id="l10n_kz_tr_expression_300_00_025_3_tax"
+                                            model="account.report.expression">
                                         <field name="label">tax</field>
                                         <field name="engine">external</field>
                                         <field name="formula">sum</field>
@@ -520,10 +590,13 @@
                                 </field>
                             </record>
                             <record id="l10n_kz_tr_line_300_00_025_4" model="account.report.line">
-                                <field name="name">IV. When applying the provisions of Article 411 of the Tax Code (additional VAT credit)</field>
+                                <field name="name">IV. When applying the provisions of Article 411 of the Tax Code
+                                    (additional VAT credit)
+                                </field>
                                 <field name="code">L10N_KZ_300_00_025_4</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_kz_tr_expression_300_00_025_4_tax" model="account.report.expression">
+                                    <record id="l10n_kz_tr_expression_300_00_025_4_tax"
+                                            model="account.report.expression">
                                         <field name="label">tax</field>
                                         <field name="engine">external</field>
                                         <field name="formula">sum</field>
@@ -541,7 +614,8 @@
                                 <field name="name">I. With the proportional method</field>
                                 <field name="code">L10N_KZ_300_00_026_1</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_kz_tr_expression_300_00_026_1_tax" model="account.report.expression">
+                                    <record id="l10n_kz_tr_expression_300_00_026_1_tax"
+                                            model="account.report.expression">
                                         <field name="label">tax</field>
                                         <field name="engine">external</field>
                                         <field name="formula">sum</field>
@@ -553,7 +627,8 @@
                                 <field name="name">II. Through separate accounting</field>
                                 <field name="code">L10N_KZ_300_00_026_2</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_kz_tr_expression_300_00_026_2_tax" model="account.report.expression">
+                                    <record id="l10n_kz_tr_expression_300_00_026_2_tax"
+                                            model="account.report.expression">
                                         <field name="label">tax</field>
                                         <field name="engine">external</field>
                                         <field name="formula">sum</field>
@@ -562,10 +637,13 @@
                                 </field>
                             </record>
                             <record id="l10n_kz_tr_line_300_00_026_3" model="account.report.line">
-                                <field name="name">III. At proportional and separate method with separate accounting on separate turnovers</field>
+                                <field name="name">III. At proportional and separate method with separate accounting on
+                                    separate turnovers
+                                </field>
                                 <field name="code">L10N_KZ_300_00_026_3</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_kz_tr_expression_300_00_026_3_tax" model="account.report.expression">
+                                    <record id="l10n_kz_tr_expression_300_00_026_3_tax"
+                                            model="account.report.expression">
                                         <field name="label">tax</field>
                                         <field name="engine">external</field>
                                         <field name="formula">sum</field>
@@ -576,14 +654,19 @@
                         </field>
                     </record>
                     <record id="l10n_kz_tr_line_300_00_027" model="account.report.line">
-                        <field name="name">300.00.027. The amount of excess VAT, attributable to offset, over the amount of accrued tax</field>
+                        <field name="name">300.00.027. The amount of excess VAT, attributable to offset, over the amount
+                            of accrued tax
+                        </field>
                         <field name="code">L10N_KZ_300_00_027</field>
                         <field name="children_ids">
                             <record id="l10n_kz_tr_line_300_00_027_1" model="account.report.line">
-                                <field name="name">I. Accrued at the beginning of the reporting tax period on an accrual basis for the activities provided for by Article 411 of the Tax Code</field>
+                                <field name="name">I. Accrued at the beginning of the reporting tax period on an accrual
+                                    basis for the activities provided for by Article 411 of the Tax Code
+                                </field>
                                 <field name="code">L10N_KZ_300_00_027_1</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_kz_tr_expression_300_00_027_1_tax" model="account.report.expression">
+                                    <record id="l10n_kz_tr_expression_300_00_027_1_tax"
+                                            model="account.report.expression">
                                         <field name="label">tax</field>
                                         <field name="engine">external</field>
                                         <field name="formula">sum</field>
@@ -592,10 +675,13 @@
                                 </field>
                             </record>
                             <record id="l10n_kz_tr_line_300_00_027_2" model="account.report.line">
-                                <field name="name">II. Cumulative total on the declaration at the end of the reporting tax period</field>
+                                <field name="name">II. Cumulative total on the declaration at the end of the reporting
+                                    tax period
+                                </field>
                                 <field name="code">L10N_KZ_300_00_027_2</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_kz_tr_expression_300_00_027_2_tax" model="account.report.expression">
+                                    <record id="l10n_kz_tr_expression_300_00_027_2_tax"
+                                            model="account.report.expression">
                                         <field name="label">tax</field>
                                         <field name="engine">external</field>
                                         <field name="formula">sum</field>
@@ -606,7 +692,9 @@
                         </field>
                     </record>
                     <record id="l10n_kz_tr_line_300_00_028" model="account.report.line">
-                        <field name="name">300.00.028. Amount of VAT on goods, works, services used for the purposes of turnovers taxed at zero rate</field>
+                        <field name="name">300.00.028. Amount of VAT on goods, works, services used for the purposes of
+                            turnovers taxed at zero rate
+                        </field>
                         <field name="code">L10N_KZ_300_00_028</field>
                         <field name="expression_ids">
                             <record id="l10n_kz_tr_expression_300_00_028_tax" model="account.report.expression">
@@ -649,7 +737,8 @@
                                 <field name="name">I. Amount of VAT payable to the budget</field>
                                 <field name="code">L10N_KZ_300_00_030_1</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_kz_tr_expression_300_00_030_1_tax" model="account.report.expression">
+                                    <record id="l10n_kz_tr_expression_300_00_030_1_tax"
+                                            model="account.report.expression">
                                         <field name="label">tax</field>
                                         <field name="engine">external</field>
                                         <field name="formula">sum</field>
@@ -658,10 +747,13 @@
                                 </field>
                             </record>
                             <record id="l10n_kz_tr_line_300_00_030_2" model="account.report.line">
-                                <field name="name">II. Excess of the amount of VAT credited over the amount of accrued tax</field>
+                                <field name="name">II. Excess of the amount of VAT credited over the amount of accrued
+                                    tax
+                                </field>
                                 <field name="code">L10N_KZ_300_00_030_2</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_kz_tr_expression_300_00_030_2_tax" model="account.report.expression">
+                                    <record id="l10n_kz_tr_expression_300_00_030_2_tax"
+                                            model="account.report.expression">
                                         <field name="label">tax</field>
                                         <field name="engine">external</field>
                                         <field name="formula">sum</field>
@@ -672,7 +764,9 @@
                         </field>
                     </record>
                     <record id="l10n_kz_tr_line_300_00_031" model="account.report.line">
-                        <field name="name">300.00.031. Reducing the amount of excess VAT generated after meeting the requirements specified in subparagraph 3) of paragraph 1 of Article 369 of the Tax Code</field>
+                        <field name="name">300.00.031. Reducing the amount of excess VAT generated after meeting the
+                            requirements specified in subparagraph 3) of paragraph 1 of Article 369 of the Tax Code
+                        </field>
                         <field name="code">L10N_KZ_300_00_031</field>
                         <field name="expression_ids">
                             <record id="l10n_kz_tr_expression_300_00_031_tax" model="account.report.expression">

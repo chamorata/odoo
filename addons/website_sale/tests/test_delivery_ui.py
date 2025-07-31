@@ -49,7 +49,7 @@ class TestUi(odoo.tests.HttpCase):
         })
         self.carrier = self.env['delivery.carrier'].create({
             'name': 'The Poste',
-            'sequence': 9999, # ensure last to load price async
+            'sequence': 9999,  # ensure last to load price async
             'fixed_price': 20.0,
             'delivery_type': 'base_on_rule',
             'product_id': self.product_delivery_poste.id,

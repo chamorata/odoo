@@ -1,7 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
+from odoo.addons.account.models.chart_template import template
+
 from odoo import models
 
-from odoo.addons.account.models.chart_template import template
 
 class AccountChartTemplate(models.AbstractModel):
     _inherit = 'account.chart.template'
@@ -12,6 +13,7 @@ class AccountChartTemplate(models.AbstractModel):
         existing_taxes = self.env['account.tax'].search([('company_id', 'child_of', self.env.company.root_id.id)])
         # Filter out taxes that already exist
         existing_tax_names = set(existing_taxes.mapped('name'))
-        taxes_to_create = {name: tax for name, tax in be_restaurant_tax.items() if tax['name'] not in existing_tax_names}
+        taxes_to_create = {name: tax for name, tax in be_restaurant_tax.items() if
+                           tax['name'] not in existing_tax_names}
         self._deref_account_tags('be_comp', be_restaurant_tax)
         return taxes_to_create

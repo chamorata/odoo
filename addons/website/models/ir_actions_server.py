@@ -14,7 +14,8 @@ class ServerAction(models.Model):
 
     xml_id = fields.Char('External ID', compute='_compute_xml_id', help="ID of the action if defined in a XML file")
     website_path = fields.Char('Website Path')
-    website_url = fields.Char('Website Url', compute='_get_website_url', help='The full URL to access the server action through the website.')
+    website_url = fields.Char('Website Url', compute='_get_website_url',
+                              help='The full URL to access the server action through the website.')
     website_published = fields.Boolean('Available on the Website', copy=False,
                                        help='A code server action can be executed from the website, using a dedicated '
                                             'controller. The address is <base>/website/action/<website_path>. '

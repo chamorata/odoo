@@ -12,9 +12,10 @@
                         icon="fa-sun-o"
                         class="oe_stat_button"
                         invisible="not consolidated_invoice_ids">
-                    <span>Consolidated<br/>Invoice</span>
+                    <span>Consolidated<br/>Invoice
+                    </span>
                 </button>
-           </xpath>
+            </xpath>
         </field>
     </record>
 </odoo>

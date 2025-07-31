@@ -1,11 +1,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.website_sale_collect import utils
+
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 from odoo.http import request
 from odoo.tools.misc import format_duration
-
-from odoo.addons.website_sale_collect import utils
 
 
 class DeliveryCarrier(models.Model):
@@ -19,9 +19,9 @@ class DeliveryCarrier(models.Model):
     @api.constrains('delivery_type', 'is_published', 'warehouse_ids')
     def _check_in_store_dm_has_warehouses_when_published(self):
         if any(self.filtered(
-            lambda dm: dm.delivery_type == 'in_store'
-            and dm.is_published
-            and not dm.warehouse_ids
+                lambda dm: dm.delivery_type == 'in_store'
+                           and dm.is_published
+                           and not dm.warehouse_ids
         )):
             raise ValidationError(
                 _("The delivery method must have at least one warehouse to be published.")
@@ -31,7 +31,7 @@ class DeliveryCarrier(models.Model):
     def _check_warehouses_have_same_company(self):
         for dm in self:
             if dm.delivery_type == 'in_store' and dm.company_id and any(
-                wh.company_id and dm.company_id != wh.company_id for wh in dm.warehouse_ids
+                    wh.company_id and dm.company_id != wh.company_id for wh in dm.warehouse_ids
             ):
                 raise ValidationError(
                     _("The delivery method and a warehouse must share the same company")

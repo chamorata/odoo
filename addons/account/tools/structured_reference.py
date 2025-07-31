@@ -1,6 +1,6 @@
 import re
-
 from itertools import zip_longest
+
 from stdnum import iso11649, luhn
 from stdnum.iso7064 import mod_97_10
 
@@ -17,6 +17,7 @@ def sanitize_structured_reference(reference):
         return re.sub(r'[+*/]', '', ref)
     return ref
 
+
 def format_structured_reference_iso(number):
     """Format a string into a Structured Creditor Reference.
 
@@ -26,8 +27,9 @@ def format_structured_reference_iso(number):
     check_digits = mod_97_10.calc_check_digits('{}RF'.format(number))
     return 'RF{} {}'.format(
         check_digits,
-        ' '.join(''.join(x) for x in zip_longest(*[iter(str(number))]*4, fillvalue=''))
+        ' '.join(''.join(x) for x in zip_longest(*[iter(str(number))] * 4, fillvalue=''))
     )
+
 
 def is_valid_structured_reference_iso(reference):
     """Check whether the provided reference is a valid Structured Creditor Reference (ISO).
@@ -37,6 +39,7 @@ def is_valid_structured_reference_iso(reference):
     ref = sanitize_structured_reference(reference)
     return iso11649.is_valid(ref)
 
+
 def is_valid_structured_reference_be(reference):
     """Check whether the provided reference is a valid structured reference for Belgium.
 
@@ -45,6 +48,7 @@ def is_valid_structured_reference_be(reference):
     ref = sanitize_structured_reference(reference)
     be_ref = re.fullmatch(r'(\d{10})(\d{2})', ref)
     return be_ref and int(be_ref.group(1)) % 97 == int(be_ref.group(2)) % 97
+
 
 def is_valid_structured_reference_fi(reference):
     """Check whether the provided reference is a valid structured reference for Finland.
@@ -59,6 +63,7 @@ def is_valid_structured_reference_fi(reference):
     check_digit = (10 - (total % 10)) % 10
     return check_digit == int(fi_ref.group(2))
 
+
 def is_valid_structured_reference_no_se(reference):
     """Check whether the provided reference is a valid structured reference for Norway or Sweden.
 
@@ -67,6 +72,7 @@ def is_valid_structured_reference_no_se(reference):
     ref = sanitize_structured_reference(reference)
     no_se_ref = re.fullmatch(r'\d+', ref)
     return no_se_ref and luhn.is_valid(ref)
+
 
 def is_valid_structured_reference_nl(reference):
     """ Generates a valid Dutch structured payment reference (betalingskenmerk)
@@ -152,6 +158,7 @@ def is_valid_structured_reference_si(reference):
 
     return given_check_digit == str(expected_check_digit)
 
+
 def is_valid_structured_reference(reference):
     """Check whether the provided reference is a valid structured reference.
     This is currently supporting SEPA enabled countries. More specifically countries covered by functions in this file.
@@ -161,10 +168,10 @@ def is_valid_structured_reference(reference):
     reference = sanitize_structured_reference(reference or '')
 
     return (
-        is_valid_structured_reference_be(reference) or
-        is_valid_structured_reference_fi(reference) or
-        is_valid_structured_reference_no_se(reference) or
-        is_valid_structured_reference_nl(reference) or
-        is_valid_structured_reference_si(reference) or
-        is_valid_structured_reference_iso(reference)
+            is_valid_structured_reference_be(reference) or
+            is_valid_structured_reference_fi(reference) or
+            is_valid_structured_reference_no_se(reference) or
+            is_valid_structured_reference_nl(reference) or
+            is_valid_structured_reference_si(reference) or
+            is_valid_structured_reference_iso(reference)
     )

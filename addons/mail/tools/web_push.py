@@ -6,6 +6,7 @@ import logging as logger
 import os
 import struct
 import textwrap
+from urllib.parse import urlsplit
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
@@ -13,7 +14,6 @@ from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
-from urllib.parse import urlsplit
 
 from . import jwt
 
@@ -41,6 +41,7 @@ _logger = logger.getLogger(__name__)
 class DeviceUnreachableError(Exception):
     pass
 
+
 # ------------------------------------------------------------
 # Web Push
 # ------------------------------------------------------------
@@ -48,6 +49,7 @@ class DeviceUnreachableError(Exception):
 def _iv(base, counter):
     mask = int.from_bytes(base[4:], 'big')
     return base[:4] + (counter ^ mask).to_bytes(8, 'big')
+
 
 def _derive_key(salt, private_key, device):
     # browser keys
@@ -90,6 +92,7 @@ def _derive_key(salt, private_key, device):
     secret = hkdf_auth.derive(private_key.exchange(ec.ECDH(), pub_key))
     return hkdf_key.derive(secret), hkdf_nonce.derive(secret)
 
+
 def _encrypt_payload(content, device, record_size=MAX_PAYLOAD_SIZE):
     """
     Encrypt a payload for Push Notification Endpoint using AES128GCM
@@ -129,6 +132,7 @@ def _encrypt_payload(content, device, record_size=MAX_PAYLOAD_SIZE):
     header = struct.pack("!16sLB", salt, record_size, len(sender_public_key))
     header += sender_public_key
     return header + body
+
 
 def push_to_end_point(base_url, device, payload, vapid_private_key, vapid_public_key, session):
     """

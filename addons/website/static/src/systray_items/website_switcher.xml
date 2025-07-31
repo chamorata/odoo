@@ -5,7 +5,8 @@
         <Dropdown menuClass="{'mw-100': false}">
             <button data-hotkey="w" class="mx-1 border-0">
                 <div class="d-none d-md-flex align-items-md-center">
-                    <span t-esc="websiteService.currentWebsite.name" class="me-2 text-truncate" style="max-width: 200px"/>
+                    <span t-esc="websiteService.currentWebsite.name" class="me-2 text-truncate"
+                          style="max-width: 200px"/>
                     <i class="fa fa-caret-down"/>
                 </div>
                 <div class="d-md-none">
@@ -16,9 +17,9 @@
                 <t t-set="tooltipValue">This website does not have a domain configured.</t>
                 <t t-foreach="getElements()" t-as="element" t-key="element_index">
                     <DropdownItem
-                        onSelected="element.callback"
-                        class="element.class"
-                        attrs="element.dataset">
+                            onSelected="element.callback"
+                            class="element.class"
+                            attrs="element.dataset">
                         <t t-if="!element.domain">
                             <span class="fa fa-warning me-2 text-warning"/>
                         </t>

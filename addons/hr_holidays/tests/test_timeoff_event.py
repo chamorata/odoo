@@ -1,8 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
 
+from dateutil.relativedelta import relativedelta
 from odoo.addons.hr_holidays.tests.common import TestHrHolidaysCommon
 
 
@@ -15,7 +15,8 @@ class TestTimeoffEvent(TestHrHolidaysCommon):
             'name': 'Time Off Type',
             'requires_allocation': 'no',
         })
-        self.holiday = self.env['hr.leave'].with_context(mail_create_nolog=True, mail_notrack=True).with_user(self.user_employee).create({
+        self.holiday = self.env['hr.leave'].with_context(mail_create_nolog=True, mail_notrack=True).with_user(
+            self.user_employee).create({
             'name': 'Time Off 1 sura',
             'employee_id': self.employee_emp.id,
             'holiday_status_id': self.hr_leave_type.id,

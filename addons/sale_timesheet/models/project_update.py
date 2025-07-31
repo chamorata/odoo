@@ -13,7 +13,8 @@ class ProjectUpdate(models.Model):
     def _get_template_values(self, project):
         template_values = super(ProjectUpdate, self)._get_template_values(project)
         profitability_values = self._get_profitability_values(project)
-        show_profitability = bool(profitability_values and profitability_values.get('account_id') and (profitability_values.get('costs') or profitability_values.get('revenues')))
+        show_profitability = bool(profitability_values and profitability_values.get('account_id') and (
+                    profitability_values.get('costs') or profitability_values.get('revenues')))
         return {
             **template_values,
             'show_profitability': show_profitability,
@@ -29,20 +30,26 @@ class ProjectUpdate(models.Model):
             return {}
         profitability_items = project._get_profitability_items(False)
         if project._get_profitability_sequence_per_invoice_type() and profitability_items and 'revenues' in profitability_items and 'costs' in profitability_items:  # sort the data values
-            profitability_items['revenues']['data'] = sorted(profitability_items['revenues']['data'], key=lambda k: k['sequence'])
-            profitability_items['costs']['data'] = sorted(profitability_items['costs']['data'], key=lambda k: k['sequence'])
+            profitability_items['revenues']['data'] = sorted(profitability_items['revenues']['data'],
+                                                             key=lambda k: k['sequence'])
+            profitability_items['costs']['data'] = sorted(profitability_items['costs']['data'],
+                                                          key=lambda k: k['sequence'])
         costs = sum(profitability_items['costs']['total'].values())
         revenues = sum(profitability_items['revenues']['total'].values())
         margin = revenues + costs
-        to_bill_to_invoice = profitability_items['costs']['total']['to_bill'] + profitability_items['revenues']['total']['to_invoice']
-        billed_invoiced = profitability_items['costs']['total']['billed'] + profitability_items['revenues']['total']['invoiced']
+        to_bill_to_invoice = profitability_items['costs']['total']['to_bill'] + \
+                             profitability_items['revenues']['total']['to_invoice']
+        billed_invoiced = profitability_items['costs']['total']['billed'] + profitability_items['revenues']['total'][
+            'invoiced']
         expected_percentage, to_bill_to_invoice_percentage, billed_invoiced_percentage = 0, 0, 0
         if revenues:
             expected_percentage = formatLang(self.env, (margin / revenues) * 100, digits=0)
         if profitability_items['revenues']['total']['to_invoice']:
-            to_bill_to_invoice_percentage = formatLang(self.env, (to_bill_to_invoice / profitability_items['revenues']['total']['to_invoice']) * 100, digits=0)
+            to_bill_to_invoice_percentage = formatLang(self.env, (
+                        to_bill_to_invoice / profitability_items['revenues']['total']['to_invoice']) * 100, digits=0)
         if profitability_items['revenues']['total']['invoiced']:
-            billed_invoiced_percentage = formatLang(self.env, (billed_invoiced / profitability_items['revenues']['total']['invoiced']) * 100, digits=0)
+            billed_invoiced_percentage = formatLang(self.env, (
+                        billed_invoiced / profitability_items['revenues']['total']['invoiced']) * 100, digits=0)
         return {
             'account_id': project.account_id,
             'costs': profitability_items['costs'],
@@ -55,7 +62,8 @@ class ProjectUpdate(models.Model):
                 'revenues': revenues,
                 'margin': margin,
                 'margin_percentage': formatLang(self.env,
-                                                not float_utils.float_is_zero(costs, precision_digits=2) and (margin / -costs) * 100 or 0.0,
+                                                not float_utils.float_is_zero(costs, precision_digits=2) and (
+                                                            margin / -costs) * 100 or 0.0,
                                                 digits=0),
             },
             'labels': project._get_profitability_labels(),

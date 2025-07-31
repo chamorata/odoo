@@ -11,7 +11,10 @@
                 </header>
                 <sheet>
                     <div class="oe_title">
-                        <h1><field class="text-break" options="{'line_breaks': False}" widget="text" name="name" placeholder="e.g. My_Tour"/></h1>
+                        <h1>
+                            <field class="text-break" options="{'line_breaks': False}" widget="text" name="name"
+                                   placeholder="e.g. My_Tour"/>
+                        </h1>
                     </div>
                     <group>
                         <group>
@@ -81,8 +84,8 @@
         <field name="binding_view_types">form</field>
         <field name="state">code</field>
         <field name="code">
-if records:
-    action = records.export_js_file()
+            if records:
+            action = records.export_js_file()
         </field>
     </record>
 </odoo>

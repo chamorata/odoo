@@ -9,7 +9,6 @@ from odoo.http import request, DEFAULT_MAX_CONTENT_LENGTH
 from odoo.tools import ormcache, config
 from odoo.tools.misc import str2bool
 
-
 """
 Debug mode is stored in session and should always be a string.
 It can be activated with an URL query string `debug=<mode>` where mode
@@ -30,7 +29,8 @@ ALLOWED_DEBUG_MODES = ['', '1', 'assets', 'tests', 'disable-t-cache']
 class Http(models.AbstractModel):
     _inherit = 'ir.http'
 
-    bots = ["bot", "crawl", "slurp", "spider", "curl", "wget", "facebookexternalhit", "whatsapp", "trendsmapresolver", "pinterest", "instagram", "google-pagerenderer", "preview"]
+    bots = ["bot", "crawl", "slurp", "spider", "curl", "wget", "facebookexternalhit", "whatsapp", "trendsmapresolver",
+            "pinterest", "instagram", "google-pagerenderer", "preview"]
 
     @classmethod
     def is_a_bot(cls):
@@ -50,7 +50,7 @@ class Http(models.AbstractModel):
         debug = request.httprequest.args.get('debug')
         if debug is not None:
             request.session.debug = ','.join(
-                     mode if mode in ALLOWED_DEBUG_MODES
+                mode if mode in ALLOWED_DEBUG_MODES
                 else '1' if str2bool(mode, mode)
                 else ''
                 for mode in (debug or '').split(',')
@@ -137,11 +137,12 @@ class Http(models.AbstractModel):
             # but is still included in some other calls (e.g. '/web/session/authenticate')
             # to avoid access errors and unnecessary information, it is only included for users
             # with access to the backend ('internal'-type users)
-            menus = self.env['ir.ui.menu'].with_context(lang=request.session.context['lang']).load_menus(request.session.debug)
+            menus = self.env['ir.ui.menu'].with_context(lang=request.session.context['lang']).load_menus(
+                request.session.debug)
             ordered_menus = {str(k): v for k, v in menus.items()}
             menu_json_utf8 = json.dumps(ordered_menus, sort_keys=True).encode()
             session_info['cache_hashes'].update({
-                "load_menus": hashlib.sha512(menu_json_utf8).hexdigest()[:64], # sha512/256
+                "load_menus": hashlib.sha512(menu_json_utf8).hexdigest()[:64],  # sha512/256
             })
             # We need sudo since a user may not have access to ancestor companies
             disallowed_ancestor_companies_sudo = user.company_ids.sudo().parent_ids - user.company_ids
@@ -191,7 +192,8 @@ class Http(models.AbstractModel):
             'profile_params': request.session.profile_params,
             'show_effect': bool(request.env['ir.config_parameter'].sudo().get_param('base_setup.show_effect')),
             'currencies': self.get_currencies(),
-            'quick_login': str2bool(request.env['ir.config_parameter'].sudo().get_param('web.quick_login', default=True), True),
+            'quick_login': str2bool(
+                request.env['ir.config_parameter'].sudo().get_param('web.quick_login', default=True), True),
             'bundle_params': {
                 'lang': request.session.context['lang'],
             },

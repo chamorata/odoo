@@ -2,13 +2,13 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from markupsafe import Markup
+from odoo.addons.mail.tools.parser import parse_res_ids
 
 from odoo import api, fields, models, _
-from odoo.addons.mail.tools.parser import parse_res_ids
 from odoo.exceptions import ValidationError
+from odoo.osv import expression
 from odoo.tools import html2plaintext
 from odoo.tools.misc import clean_context, format_date
-from odoo.osv import expression
 
 
 class MailActivitySchedule(models.TransientModel):
@@ -115,7 +115,8 @@ class MailActivitySchedule(models.TransientModel):
                 errors |= set(scheduler._check_plan_templates_error(applied_on))
             if errors:
                 error_header = (
-                    _('The plan "%(plan_name)s" cannot be launched:', plan_name=scheduler.plan_id.name) if scheduler.plan_id
+                    _('The plan "%(plan_name)s" cannot be launched:',
+                      plan_name=scheduler.plan_id.name) if scheduler.plan_id
                     else _('The activity cannot be launched:')
                 )
                 error_body = Markup('<ul>%s</ul>') % (
@@ -135,7 +136,8 @@ class MailActivitySchedule(models.TransientModel):
     @api.depends('company_id', 'res_model_id')
     def _compute_plan_available_ids(self):
         for scheduler in self:
-            scheduler.plan_available_ids = self.env['mail.activity.plan'].search(scheduler._get_plan_available_base_domain())
+            scheduler.plan_available_ids = self.env['mail.activity.plan'].search(
+                scheduler._get_plan_available_base_domain())
 
     @api.depends_context('plan_mode')
     @api.depends('plan_available_ids')
@@ -163,7 +165,8 @@ class MailActivitySchedule(models.TransientModel):
     def _compute_activity_type_id(self):
         for scheduler in self:
             if not scheduler.activity_type_id:
-                scheduler.activity_type_id = scheduler.env['mail.activity']._default_activity_type_for_model(scheduler.res_model)
+                scheduler.activity_type_id = scheduler.env['mail.activity']._default_activity_type_for_model(
+                    scheduler.res_model)
 
     @api.depends('activity_type_id')
     def _compute_date_deadline(self):

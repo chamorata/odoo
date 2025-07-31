@@ -17,10 +17,10 @@ class TestMailPluginProjectController(TestMailPluginControllerCommon):
         self.assertEqual(project.name, "Test Mail Plugin")
 
         for lang, expected in (
-            (False, "Test Mail Plugin"),
-            ("en_US", "Test Mail Plugin"),
-            ("fr_BE", "[FR] Test Mail Plugin"),
-            ("es_ES", "Test Mail Plugin"),  # no translation
+                (False, "Test Mail Plugin"),
+                ("en_US", "Test Mail Plugin"),
+                ("fr_BE", "[FR] Test Mail Plugin"),
+                ("es_ES", "Test Mail Plugin"),  # no translation
         ):
             self.user_test.lang = lang
 
@@ -32,9 +32,9 @@ class TestMailPluginProjectController(TestMailPluginControllerCommon):
             }
 
             with patch.object(
-                type(self.env["res.users.apikeys"]),
-                "_check_credentials",
-                new=lambda *args, **kwargs: self.user_test.id,
+                    type(self.env["res.users.apikeys"]),
+                    "_check_credentials",
+                    new=lambda *args, **kwargs: self.user_test.id,
             ):
                 result = self.url_open(
                     "/mail_plugin/project/search",

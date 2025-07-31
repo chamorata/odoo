@@ -11,7 +11,7 @@ _lt = LazyTranslate(__name__)
 class Website(models.Model):
     _inherit = 'website'
 
-    #=== DEFAULT METHODS ===#
+    # === DEFAULT METHODS ===#
 
     def _default_salesteam_id(self):
         team = self.env.ref('sales_team.salesteam_website_sales', raise_if_not_found=False)
@@ -25,7 +25,7 @@ class Website(models.Model):
         except ValueError:
             return False
 
-    #=== FIELDS ===#
+    # === FIELDS ===#
 
     enabled_portal_reorder_button = fields.Boolean(string="Re-order From Portal")
     salesperson_id = fields.Many2one(
@@ -168,7 +168,7 @@ class Website(models.Model):
         inverse_name='website_id',
     )
 
-    #=== COMPUTE METHODS ===#
+    # === COMPUTE METHODS ===#
 
     @api.depends('all_pricelist_ids')
     def _compute_pricelist_ids(self):
@@ -192,7 +192,7 @@ class Website(models.Model):
         for website in self:
             website.currency_id = website.pricelist_id.currency_id or website.company_id.currency_id
 
-    #=== SELECTION METHODS ===#
+    # === SELECTION METHODS ===#
 
     @staticmethod
     def _get_product_sort_mapping():
@@ -204,7 +204,7 @@ class Website(models.Model):
             ('list_price desc', _("Price - High to Low")),
         ]
 
-    #=== BUSINESS METHODS ===#
+    # === BUSINESS METHODS ===#
 
     # This method is cached, must not return records! See also #8795
     @tools.ormcache(
@@ -213,8 +213,8 @@ class Website(models.Model):
         'partner_pl_id', 'order_pl_id',
     )
     def _get_pl_partner_order(
-        self, country_code, show_visible, current_pl_id, website_pricelist_ids,
-        partner_pl_id=False, order_pl_id=False
+            self, country_code, show_visible, current_pl_id, website_pricelist_ids,
+            partner_pl_id=False, order_pl_id=False
     ):
         """ Return the list of pricelists that can be used on website for the current user.
 
@@ -261,9 +261,9 @@ class Website(models.Model):
             # keep partner_pricelist only if website compliant
             partner_pricelist = pricelists.browse(partner_pl_id).filtered(
                 lambda pl:
-                    pl._is_available_on_website(self)
-                    and check_pricelist(pl)
-                    and pl._is_available_in_country(country_code)
+                pl._is_available_on_website(self)
+                and check_pricelist(pl)
+                and pl._is_available_in_country(country_code)
             )
             pricelists |= partner_pricelist
 
@@ -335,7 +335,8 @@ class Website(models.Model):
             #  - Either, he entered a coupon code
             pricelist = ProductPricelist.browse(request.session['website_sale_current_pl']).exists().sudo()
             country_code = self._get_geoip_country_code()
-            if not pricelist or not pricelist._is_available_on_website(self) or not pricelist._is_available_in_country(country_code):
+            if not pricelist or not pricelist._is_available_on_website(self) or not pricelist._is_available_in_country(
+                    country_code):
                 request.session.pop('website_sale_current_pl')
                 pricelist = ProductPricelist
 
@@ -418,7 +419,7 @@ class Website(models.Model):
         # Ignore the current order if a payment has been initiated. We don't want to retrieve the
         # cart and allow the user to update it when the payment is about to confirm it.
         if sale_order_sudo and sale_order_sudo.get_portal_last_transaction().state in (
-            'pending', 'authorized', 'done'
+                'pending', 'authorized', 'done'
         ):
             sale_order_sudo = None
 
@@ -600,14 +601,14 @@ class Website(models.Model):
             'current_href': '/shop/cart',
             'main_button': _lt("Sign In") if redirect_to_sign_in else _lt("Checkout"),
             'main_button_href': f'{"/web/login?redirect=" if redirect_to_sign_in else ""}/shop/checkout?try_skip_step=true',
-            'back_button':  _lt("Continue shopping"),
+            'back_button': _lt("Continue shopping"),
             'back_button_href': '/shop',
         }), (['website_sale.checkout', 'website_sale.address'], {
             'name': _lt("Delivery"),
             'current_href': '/shop/checkout',
             'main_button': _lt("Confirm"),
             'main_button_href': f'{"/shop/extra_info" if is_extra_step_active else "/shop/confirm_order"}',
-            'back_button':  _lt("Back to cart"),
+            'back_button': _lt("Back to cart"),
             'back_button_href': '/shop/cart',
         })]
         if is_extra_step_active:
@@ -616,13 +617,13 @@ class Website(models.Model):
                 'current_href': '/shop/extra_info',
                 'main_button': _lt("Continue checkout"),
                 'main_button_href': '/shop/confirm_order',
-                'back_button':  _lt("Back to delivery"),
+                'back_button': _lt("Back to delivery"),
                 'back_button_href': '/shop/checkout',
             }))
         steps.append((['website_sale.payment'], {
             'name': _lt("Payment"),
             'current_href': '/shop/payment',
-            'back_button':  _lt("Back to delivery"),
+            'back_button': _lt("Back to delivery"),
             'back_button_href': '/shop/checkout',
         }))
         return steps
@@ -646,5 +647,3 @@ class Website(models.Model):
     def has_ecommerce_access(self):
         """ Return whether the current user is allowed to access eCommerce-related content. """
         return not (self.env.user._is_public() and self.ecommerce_access == 'logged_in')
-
-

@@ -12,7 +12,9 @@
         <field name="arch" type="xml">
             <form string="IAP Partner">
                 <sheet>
-                    <h1><field name="partner_id"/></h1>
+                    <h1>
+                        <field name="partner_id"/>
+                    </h1>
                     <group>
                         <field name="iap_search_domain"/>
                         <field name="iap_enrich_info"/>
@@ -34,9 +36,9 @@
     </record>
 
     <menuitem
-        id="res_partner_iap_menu"
-        name="IAP Partners"
-        parent="iap.iap_root_menu"
-        action="res_partner_iap_action"
-        sequence="50"/>
+            id="res_partner_iap_menu"
+            name="IAP Partners"
+            parent="iap.iap_root_menu"
+            action="res_partner_iap_action"
+            sequence="50"/>
 </odoo>

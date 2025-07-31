@@ -1,9 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import odoo.tests
-
-from odoo import Command
 from odoo.addons.account.tests.common import AccountTestInvoicingHttpCommon
+
+import odoo.tests
+from odoo import Command
 
 
 @odoo.tests.tagged('post_install_l10n', 'post_install', '-at_install')
@@ -23,8 +23,8 @@ class TestUi(AccountTestInvoicingHttpCommon):
 
         # In case of latam impacting multiple countries, disable the required fields manually.
         if 'l10n_latam_use_documents' in cls.env['account.journal']._fields:
-            cls.env['account.journal']\
-                .search([('company_id', '=', cls.env.company.id), ('type', '=', 'purchase')])\
+            cls.env['account.journal'] \
+                .search([('company_id', '=', cls.env.company.id), ('type', '=', 'purchase')]) \
                 .write({'l10n_latam_use_documents': False})
 
     def test_01_account_tour(self):
@@ -37,19 +37,21 @@ class TestUi(AccountTestInvoicingHttpCommon):
             'company_ids': [(4, self.env.company.id)],
         })
         self.env.company.write({
-            'country_id': None, # Also resets account_fiscal_country_id
+            'country_id': None,  # Also resets account_fiscal_country_id
             'account_sale_tax_id': None,
             'account_purchase_tax_id': None,
             'external_report_layout_id': self.env.ref('web.external_layout_standard').id,
         })
 
-        account_with_taxes = self.env['account.account'].search([('tax_ids', '!=', False), ('company_ids', '=', self.env.company.id)])
+        account_with_taxes = self.env['account.account'].search(
+            [('tax_ids', '!=', False), ('company_ids', '=', self.env.company.id)])
         account_with_taxes.write({
             'tax_ids': [Command.clear()],
         })
 
         # Remove all posted invoices to enable 'create first invoice' button
-        invoices = self.env['account.move'].search([('company_id', '=', self.env.company.id), ('move_type', '=', 'out_invoice')])
+        invoices = self.env['account.move'].search(
+            [('company_id', '=', self.env.company.id), ('move_type', '=', 'out_invoice')])
         for invoice in invoices:
             if invoice.state in ('cancel', 'posted'):
                 invoice.button_draft()

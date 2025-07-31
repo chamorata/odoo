@@ -8,6 +8,7 @@ class ResCompany(models.Model):
 
     trade_registry = fields.Char()
 
+
 class BaseDocumentLayout(models.TransientModel):
     _inherit = 'base.document.layout'
 

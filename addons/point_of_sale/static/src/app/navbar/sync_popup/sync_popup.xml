@@ -31,7 +31,8 @@
                             </div>
                             <div class="col p-2 d-flex flex-column">
                                 <span class="fw-bolder">Delete</span>
-                                <i class="fa fa-trash cursor-pointer" aria-hidden="true" t-on-click="() => this.delete(data.uuid)"></i>
+                                <i class="fa fa-trash cursor-pointer" aria-hidden="true"
+                                   t-on-click="() => this.delete(data.uuid)"></i>
                             </div>
                         </div>
                     </t>
@@ -40,7 +41,8 @@
             <t t-set-slot="footer">
                 <div class="modal-footer-left d-flex gap-2">
                     <div class="modal-footer-left d-flex gap-2">
-                        <button class="button highlight btn btn-lg btn-primary" t-on-click="confirm">Synchronize</button>
+                        <button class="button highlight btn btn-lg btn-primary"
+                                t-on-click="confirm">Synchronize</button>
                         <button class="button btn btn-lg btn-secondary" t-on-click="props.close">Close</button>
                     </div>
                 </div>

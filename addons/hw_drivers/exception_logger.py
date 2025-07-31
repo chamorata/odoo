@@ -1,8 +1,6 @@
-
-from io import StringIO
-
 import logging
 import sys
+from io import StringIO
 
 _logger = logging.getLogger(__name__)
 
@@ -11,6 +9,7 @@ class ExceptionLogger:
     """
     Redirect any unhandled python exception to the logger to keep track of them in the log file.
     """
+
     def __init__(self):
         self._buffer = StringIO()
 
@@ -30,5 +29,6 @@ class ExceptionLogger:
 
     def close(self):
         self.flush()
+
 
 sys.stderr = ExceptionLogger()

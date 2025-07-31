@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.sale_loyalty.tests.common import TestSaleCouponNumbersCommon
+
 from odoo.exceptions import ValidationError
 from odoo.fields import Command
 from odoo.tests import tagged
@@ -23,11 +24,13 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
 
         # Check we correctly get a free product
         self._auto_rewards(order, self.all_programs)
-        self.assertEqual(len(order.order_line.ids), 2, "We should have 2 lines as we now have one 'Free Large Cabinet' line as we bought 3 of them")
+        self.assertEqual(len(order.order_line.ids), 2,
+                         "We should have 2 lines as we now have one 'Free Large Cabinet' line as we bought 3 of them")
 
         # Check free product's price is not added to total when applying reduction (Or the discount will also be applied on the free product's price)
         self._apply_promo_code(order, 'test_10pc')
-        self.assertEqual(len(order.order_line.ids), 3, "We should have 3 lines as we should have a new line for promo code reduction")
+        self.assertEqual(len(order.order_line.ids), 3,
+                         "We should have 3 lines as we should have a new line for promo code reduction")
         self.assertEqual(order.amount_total, 864, "Only paid product should have their price discounted")
         order.order_line.filtered(lambda x: 'Discount' in x.name).unlink()  # Remove Discount
         order._remove_program_from_points(self.p1)
@@ -41,10 +44,12 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
         # 75 Large Cabinet in cart, 25 free, set quantity to 6 Large Cabinet, you should have 2 free Large Cabinet but you get 8 because it add the 25 initial free Large Cabinet to the total paid Large Cabinet when computing (25+10 > 35 > /4 = 8 free Large Cabinet)
         sol1.product_uom_qty = 75
         self._auto_rewards(order, self.all_programs)
-        self.assertEqual(sum(order.order_line.filtered(lambda x: x.is_reward_line).mapped('product_uom_qty')), 25, "We should have 25 Free Large Cabinet")
+        self.assertEqual(sum(order.order_line.filtered(lambda x: x.is_reward_line).mapped('product_uom_qty')), 25,
+                         "We should have 25 Free Large Cabinet")
         sol1.product_uom_qty = 6
         self._auto_rewards(order, self.all_programs)
-        self.assertEqual(sum(order.order_line.filtered(lambda x: x.is_reward_line).mapped('product_uom_qty')), 2, "We should have 2 Free Large Cabinet")
+        self.assertEqual(sum(order.order_line.filtered(lambda x: x.is_reward_line).mapped('product_uom_qty')), 2,
+                         "We should have 2 Free Large Cabinet")
 
     def test_program_numbers_check_eligibility(self):
         # These tests will focus on numbers (free product qty, SO total, reduction total..)
@@ -66,7 +71,8 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
         })
         self._auto_rewards(order, self.all_programs)
         self.assertEqual(len(order.order_line.ids), 3, "We should have a 'Free Large Meeting Table' promotion line")
-        self.assertEqual(sum(order.order_line.filtered(lambda x: x.is_reward_line).mapped('product_uom_qty')), 1, "We should receive one and only one free Large Meeting Table")
+        self.assertEqual(sum(order.order_line.filtered(lambda x: x.is_reward_line).mapped('product_uom_qty')), 1,
+                         "We should receive one and only one free Large Meeting Table")
 
         # Check the required value amount to be eligible for the program is correctly computed (eg: it does not add negative value (from free product) to total)
         # A = free b | Have your cart with A 2B b | cart value should be A + 1B but in code it is only A (free b value is subsstract 2 times)
@@ -76,7 +82,8 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
         self.p1.rule_ids.minimum_amount = 5000
         self._auto_rewards(order, self.all_programs)
         self._apply_promo_code(order, 'test_10pc')
-        self.assertEqual(len(order.order_line.ids), 4, "We should have 4 lines as we should have a new line for promo code reduction")
+        self.assertEqual(len(order.order_line.ids), 4,
+                         "We should have 4 lines as we should have a new line for promo code reduction")
 
         # Check you can still have auto applied promotion if you have a promo code set to the order
         self.env['sale.order.line'].create({
@@ -86,7 +93,8 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
             'order_id': order.id,
         })
         self._auto_rewards(order, self.all_programs)
-        self.assertEqual(len(order.order_line.ids), 6, "We should have 2 more lines as we now have one 'Free Large Cabinet' line since we bought 4 of them")
+        self.assertEqual(len(order.order_line.ids), 6,
+                         "We should have 2 more lines as we now have one 'Free Large Cabinet' line since we bought 4 of them")
 
     def test_program_numbers_taxes_and_rules(self):
         percent_tax = self.env['account.tax'].create({
@@ -125,12 +133,14 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
         })
 
         self._auto_rewards(order, self.all_programs)
-        self.assertEqual(len(order.order_line.ids), 1, "We should not get the reduction line since we dont have 320$ tax excluded (cabinet is 320$ tax included)")
+        self.assertEqual(len(order.order_line.ids), 1,
+                         "We should not get the reduction line since we dont have 320$ tax excluded (cabinet is 320$ tax included)")
         sol1.tax_id.price_include_override = 'tax_excluded'
         sol1._compute_tax_id()
         self.env.flush_all()
         self._auto_rewards(order, self.all_programs)
-        self.assertEqual(len(order.order_line.ids), 2, "We should now get the reduction line since we have 320$ tax included (cabinet is 320$ tax included)")
+        self.assertEqual(len(order.order_line.ids), 2,
+                         "We should now get the reduction line since we have 320$ tax included (cabinet is 320$ tax included)")
         # Name                 | Qty | price_unit |  Tax     |  HTVA   |   TVAC  |  TVA  |
         # --------------------------------------------------------------------------------
         # Conference Chair     |  1  |    320.00  | 15% excl |  320.00 |  368.00 |   48.00
@@ -138,7 +148,8 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
         #        large cabinet |
         # --------------------------------------------------------------------------------
         # TOTAL                                              |  256.00 |  294.40 |   38.40
-        self.assertAlmostEqual(order.amount_total, 294.4, 2, "Check discount has been applied correctly (eg: on taxes aswell)")
+        self.assertAlmostEqual(order.amount_total, 294.4, 2,
+                               "Check discount has been applied correctly (eg: on taxes aswell)")
 
         # test coupon with code works the same as auto applied_programs
         p_specific_product.write({'trigger': 'with_code'})
@@ -146,11 +157,13 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
         order.order_line.filtered(lambda l: l.is_reward_line).unlink()
         order._remove_program_from_points(p_specific_product)
         self._auto_rewards(order, self.all_programs)
-        self.assertEqual(len(order.order_line.ids), 1, "Reduction should be removed since we deleted it and it is now a promo code usage, it shouldn't be automatically reapplied")
+        self.assertEqual(len(order.order_line.ids), 1,
+                         "Reduction should be removed since we deleted it and it is now a promo code usage, it shouldn't be automatically reapplied")
 
         self._apply_promo_code(order, '20pc')
         self._auto_rewards(order, self.all_programs)
-        self.assertEqual(len(order.order_line.ids), 2, "We should now get the reduction line since we have 320$ tax included (cabinet is 320$ tax included)")
+        self.assertEqual(len(order.order_line.ids), 2,
+                         "We should now get the reduction line since we have 320$ tax included (cabinet is 320$ tax included)")
 
         # check discount applied only on Large Cabinet
         self.env['sale.order.line'].create({
@@ -181,7 +194,8 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
         #        large cabinet |
         # --------------------------------------------------------------------------------
         # TOTAL                                              | 2298.00 | 2605.20 |  305.20
-        self.assertAlmostEqual(order.amount_total, 2605.20, 2, "Changing cabinet quantity should change discount amount correctly")
+        self.assertAlmostEqual(order.amount_total, 2605.20, 2,
+                               "Changing cabinet quantity should change discount amount correctly")
 
         p_specific_product.reward_ids.discount_max_amount = 200
         self._auto_rewards(order, self.all_programs)
@@ -220,7 +234,8 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
         })
 
         # Set tax and prices on products as neeed for the test
-        (self.product_A + self.largeCabinet + self.conferenceChair + self.pedalBin + self.drawerBlack).write({'list_price': 100})
+        (self.product_A + self.largeCabinet + self.conferenceChair + self.pedalBin + self.drawerBlack).write(
+            {'list_price': 100})
         (self.largeCabinet + self.drawerBlack).write({'taxes_id': [(4, self.tax_15pc_excl.id, False)]})
         self.conferenceChair.taxes_id = self.tax_10pc_incl
         self.pedalBin.taxes_id = None
@@ -350,7 +365,8 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
             'amount_total': 1901.11,
             'amount_untaxed': 1594.95,
         }])
-        self.assertEqual(len(order.order_line.ids), 8, "Order should contains 5 regular product lines and 3 free product lines")
+        self.assertEqual(len(order.order_line.ids), 8,
+                         "Order should contains 5 regular product lines and 3 free product lines")
 
         # Apply 10% on top of everything
         self._apply_promo_code(order, 'test_10pc')
@@ -369,7 +385,8 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
             'amount_total': 1711.0,
             'amount_untaxed': 1435.46,
         }])
-        self.assertEqual(len(order.order_line.ids), 12, "Order should contains 5 regular product lines, 3 free product lines and 4 discount lines (one for every tax)")
+        self.assertEqual(len(order.order_line.ids), 12,
+                         "Order should contains 5 regular product lines, 3 free product lines and 4 discount lines (one for every tax)")
 
         # -- This is a test inside the test
         order.order_line._compute_tax_id()
@@ -377,13 +394,15 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
             'amount_total': 1711.0,
             'amount_untaxed': 1435.46,
         }])
-        self.assertEqual(len(order.order_line.ids), 12, "Recomputing tax on sale order lines should not change number of order line")
+        self.assertEqual(len(order.order_line.ids), 12,
+                         "Recomputing tax on sale order lines should not change number of order line")
         self._auto_rewards(order, self.all_programs)
         self.assertRecordValues(order, [{
             'amount_total': 1711.0,
             'amount_untaxed': 1435.46,
         }])
-        self.assertEqual(len(order.order_line.ids), 12, "Recomputing tax on sale order lines should not change number of order line")
+        self.assertEqual(len(order.order_line.ids), 12,
+                         "Recomputing tax on sale order lines should not change number of order line")
         # -- End test inside the test
 
         # Now we want to apply a 20% discount only on Large Cabinet
@@ -415,7 +434,8 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
             'amount_total': 1628.2,
             'amount_untaxed': 1363.46,
         }])
-        self.assertEqual(len(order.order_line.ids), 13, "Order should have a new discount line for 20% on Large Cabinet")
+        self.assertEqual(len(order.order_line.ids), 13,
+                         "Order should have a new discount line for 20% on Large Cabinet")
 
         # Check that if you delete one of the discount tax line, the others tax lines from the same promotion got deleted as well.
         order.order_line.filtered(lambda l: '10%' in l.name)[0].unlink()
@@ -453,7 +473,8 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
         # --------------------------------------------------------------------------------
         # TOTAL                                              | 1445.28 | 1718.20 |  272.92
 
-        self.assertEqual(order.amount_untaxed, 1445.28, "The order should have one more paid Conference Chair with 10% incl tax and discounted by 10%")
+        self.assertEqual(order.amount_untaxed, 1445.28,
+                         "The order should have one more paid Conference Chair with 10% incl tax and discounted by 10%")
 
         # Check that if you remove a product, his reward lines got removed, especially the discount per tax one
         sol2.unlink()
@@ -479,11 +500,13 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
             'amount_total': 1358.2,
             'amount_untaxed': 1118.0,
         }])
-        self.assertEqual(len(order.order_line.ids), 10, "Order should contains 10 lines: 4 products lines, 2 free products lines and 4 discount lines")
+        self.assertEqual(len(order.order_line.ids), 10,
+                         "Order should contains 10 lines: 4 products lines, 2 free products lines and 4 discount lines")
 
     def test_program_numbers_extras(self):
         # Check that you can't apply a global discount promo code if there is already an auto applied global discount
-        p1_copy = self.p1.copy({'trigger': 'auto', 'name': 'Auto applied 10% global discount', 'rule_ids': [(0, 0, {})]})
+        p1_copy = self.p1.copy(
+            {'trigger': 'auto', 'name': 'Auto applied 10% global discount', 'rule_ids': [(0, 0, {})]})
         self.all_programs |= p1_copy
         order = self.empty_order
         self.env['sale.order.line'].create({
@@ -493,7 +516,8 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
             'order_id': order.id,
         })
         self._auto_rewards(order, self.all_programs)
-        self.assertEqual(len(order.order_line.ids), 2, "We should get 1 Large Cabinet line and 1 10% auto applied global discount line")
+        self.assertEqual(len(order.order_line.ids), 2,
+                         "We should get 1 Large Cabinet line and 1 10% auto applied global discount line")
         self.assertEqual(order.amount_total, 288, "320$ - 10%")
         with self.assertRaises(ValidationError):
             # Can't apply a second global discount
@@ -535,12 +559,14 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
             'tax_id': [(4, self.tax_0pc_excl.id)]
         })
         self._auto_rewards(order, self.all_programs)
-        self.assertEqual(order.amount_total, 0, "Total should be null. The fixed amount discount is higher than the SO total, it should be reduced to the SO total")
+        self.assertEqual(order.amount_total, 0,
+                         "Total should be null. The fixed amount discount is higher than the SO total, it should be reduced to the SO total")
         self.assertEqual(len(order.order_line.ids), 2, "There should be the product line and the reward line")
         sol1.product_uom_qty = 17
         self._auto_rewards(order, self.all_programs)
         self.assertEqual(order.amount_total, 176, "Fixed amount discount should be totally deduced")
-        self.assertEqual(len(order.order_line.ids), 2, "Number of lines should be unchanged as we just recompute the reward line")
+        self.assertEqual(len(order.order_line.ids), 2,
+                         "Number of lines should be unchanged as we just recompute the reward line")
         fixed_amount_program.write({'active': False})  # Check archived product will remove discount lines on recompute
         self._auto_rewards(order, self.all_programs)
         self.assertEqual(len(order.order_line.ids), 1, "Archiving the program should remove the program reward line")
@@ -583,12 +609,14 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
         self._auto_rewards(order, self.all_programs)
         generated_coupon = order._get_reward_coupons()
         self.assertEqual(len(order.order_line.ids), 1, "Nothing should be added to the cart (3)")
-        self.assertEqual(len(generated_coupon), 0, "No more coupon should have been generated and the existing one should not have been deleted")
+        self.assertEqual(len(generated_coupon), 0,
+                         "No more coupon should have been generated and the existing one should not have been deleted")
 
         sol1.product_uom_qty = 2
         self._auto_rewards(order, self.all_programs)
         generated_coupon = order._get_reward_coupons()
-        self.assertEqual(len(generated_coupon), 1, "We should still have only 1 coupon as we now benefit again from the program but no need to create a new one (see next assert)")
+        self.assertEqual(len(generated_coupon), 1,
+                         "We should still have only 1 coupon as we now benefit again from the program but no need to create a new one (see next assert)")
         self.assertEqual(generated_coupon.points, 0, "The coupon should not have it's points already.")
 
     def test_coupon_rule_minimum_amount(self):
@@ -662,7 +690,8 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
 
         orderline.write({'product_uom_qty': 5})
         self._auto_rewards(order, self.all_programs)
-        self.assertEqual(order.amount_total, 82.5, "The promotion programs should have been removed from the order to avoid negative amount")
+        self.assertEqual(order.amount_total, 82.5,
+                         "The promotion programs should have been removed from the order to avoid negative amount")
 
     def test_coupon_and_coupon_discount_fixed_amount_tax_excl(self):
         """ Ensure multiple coupon can cohexists without making
@@ -691,30 +720,30 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
 
         order = self.empty_order
         self.env['sale.order.line'].create([
-        {
-            'product_id': self.conferenceChair.id,
-            'name': 'Conference Chair',
-            'product_uom_qty': 1.0,
-            'price_unit': 100.0,
-            'order_id': order.id,
-            'tax_id': [(6, 0, (self.tax_15pc_excl.id,))],
-        },
-        {
-            'product_id': self.pedalBin.id,
-            'name': 'Computer Case',
-            'product_uom_qty': 1.0,
-            'price_unit': 100.0,
-            'order_id': order.id,
-            'tax_id': [(6, 0, [])],
-        },
-        {
-            'product_id': self.product_A.id,
-            'name': 'Computer Case',
-            'product_uom_qty': 1.0,
-            'price_unit': 100.0,
-            'order_id': order.id,
-            'tax_id': [(6, 0, [])],
-        },
+            {
+                'product_id': self.conferenceChair.id,
+                'name': 'Conference Chair',
+                'product_uom_qty': 1.0,
+                'price_unit': 100.0,
+                'order_id': order.id,
+                'tax_id': [(6, 0, (self.tax_15pc_excl.id,))],
+            },
+            {
+                'product_id': self.pedalBin.id,
+                'name': 'Computer Case',
+                'product_uom_qty': 1.0,
+                'price_unit': 100.0,
+                'order_id': order.id,
+                'tax_id': [(6, 0, [])],
+            },
+            {
+                'product_id': self.product_A.id,
+                'name': 'Computer Case',
+                'product_uom_qty': 1.0,
+                'price_unit': 100.0,
+                'order_id': order.id,
+                'tax_id': [(6, 0, [])],
+            },
         ])
 
         self._apply_promo_code(order, 'test_10pc')
@@ -731,7 +760,7 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
         self.assertEqual(order.amount_untaxed, 0.0, "The untaxed amount should not go below 0")
         self.assertEqual(order.amount_total, 0.0, "The promotion program should not make the order total go below 0")
 
-        order.order_line[3:].unlink() #remove all coupon
+        order.order_line[3:].unlink()  # remove all coupon
         order._remove_program_from_points(coupon_program)
         order._remove_program_from_points(self.p1)
 
@@ -744,12 +773,14 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
         self._auto_rewards(order, self.all_programs)
         self.assertAlmostEqual(order.amount_tax, 1.13, 2)
         self.assertEqual(order.amount_untaxed, 22.72)
-        self.assertEqual(order.amount_total, 23.85, "The promotion program should not make the order total go below 0be altered after recomputation")
+        self.assertEqual(order.amount_total, 23.85,
+                         "The promotion program should not make the order total go below 0be altered after recomputation")
         # It should stay the same after a recompute, order matters
         self._auto_rewards(order, self.all_programs)
         self.assertAlmostEqual(order.amount_tax, 1.13, 2)
         self.assertEqual(order.amount_untaxed, 22.72)
-        self.assertEqual(order.amount_total, 23.85, "The promotion program should not make the order total go below 0be altered after recomputation")
+        self.assertEqual(order.amount_total, 23.85,
+                         "The promotion program should not make the order total go below 0be altered after recomputation")
 
     def test_coupon_and_coupon_discount_fixed_amount_tax_incl(self):
         """ Ensure multiple coupon can cohexists without making
@@ -778,30 +809,30 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
 
         order = self.empty_order
         self.env['sale.order.line'].create([
-        {
-            'product_id': self.conferenceChair.id,
-            'name': 'Conference Chair',
-            'product_uom_qty': 1.0,
-            'price_unit': 100.0,
-            'order_id': order.id,
-            'tax_id': [(6, 0, (self.tax_10pc_incl.id,))],
-        },
-        {
-            'product_id': self.pedalBin.id,
-            'name': 'Computer Case',
-            'product_uom_qty': 1.0,
-            'price_unit': 100.0,
-            'order_id': order.id,
-            'tax_id': [(6, 0, [])],
-        },
-        {
-            'product_id': self.product_A.id,
-            'name': 'Computer Case',
-            'product_uom_qty': 1.0,
-            'price_unit': 100.0,
-            'order_id': order.id,
-            'tax_id': [(6, 0, [])],
-        },
+            {
+                'product_id': self.conferenceChair.id,
+                'name': 'Conference Chair',
+                'product_uom_qty': 1.0,
+                'price_unit': 100.0,
+                'order_id': order.id,
+                'tax_id': [(6, 0, (self.tax_10pc_incl.id,))],
+            },
+            {
+                'product_id': self.pedalBin.id,
+                'name': 'Computer Case',
+                'product_uom_qty': 1.0,
+                'price_unit': 100.0,
+                'order_id': order.id,
+                'tax_id': [(6, 0, [])],
+            },
+            {
+                'product_id': self.product_A.id,
+                'name': 'Computer Case',
+                'product_uom_qty': 1.0,
+                'price_unit': 100.0,
+                'order_id': order.id,
+                'tax_id': [(6, 0, [])],
+            },
         ])
 
         self._apply_promo_code(order, 'test_10pc')
@@ -819,7 +850,7 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
         self.assertEqual(order.amount_total, 0, "The promotion program should not be altered after recomputation")
         self.assertEqual(order.amount_tax, 0)
 
-        order.order_line[3:].unlink() #remove all coupon
+        order.order_line[3:].unlink()  # remove all coupon
         order._remove_program_from_points(coupon_program)
         order._remove_program_from_points(self.p1)
 
@@ -889,7 +920,8 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
         # remove Drawer Black case from promotion
         p_specific_products.reward_ids.discount_product_ids = [(6, 0, [self.conferenceChair.id])]
         self._auto_rewards(order, self.all_programs)
-        self.assertEqual(len(order.order_line.ids), 3, "Should still be Conference Chair + Drawer Black + 20% discount line")
+        self.assertEqual(len(order.order_line.ids), 3,
+                         "Should still be Conference Chair + Drawer Black + 20% discount line")
         # Name                 | Qty | price_unit |  Tax     |  HTVA   |   TVAC  |  TVA  |
         # --------------------------------------------------------------------------------
         # Conference Chair     |  4  |     16.50  |       /  |   66.00 |   66.00 |   0.00
@@ -913,7 +945,8 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
         sol2.tax_id = percent_tax
 
         self._auto_rewards(order, self.all_programs)
-        self.assertEqual(len(order.order_line.ids), 4, "Conference Chair + Drawer Black + 20% on no TVA product (Conference Chair) + 20% on 15% tva product (Drawer Black)")
+        self.assertEqual(len(order.order_line.ids), 4,
+                         "Conference Chair + Drawer Black + 20% on no TVA product (Conference Chair) + 20% on 15% tva product (Drawer Black)")
         # Name                 | Qty | price_unit |  Tax     |  HTVA   |   TVAC  |  TVA  |
         # --------------------------------------------------------------------------------
         # Conference Chair     |  4  |     16.50  |       /  |   66.00 |   66.00 |   0.00
@@ -961,18 +994,21 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
             'name': 'Drawer',
             'product_uom_qty': 1.0,
             'order_id': order.id,
-        }) # dummy line
+        })  # dummy line
 
         self._auto_rewards(order, self.all_programs)
         self.assertEqual(len(order.order_line.ids), 2, "The promotion lines should not be applied")
         sol1.write({'product_uom_qty': 2.0})
         self._auto_rewards(order, self.all_programs)
         self.assertEqual(len(order.order_line.ids), 3, "The promotion lines should have been added")
-        self.assertEqual(order.amount_total, self.conferenceChair.lst_price * (sol1.product_uom_qty) + self.drawerBlack.lst_price * sol2.product_uom_qty, "The promotion line was not applied to the amount total")
+        self.assertEqual(order.amount_total, self.conferenceChair.lst_price * (
+            sol1.product_uom_qty) + self.drawerBlack.lst_price * sol2.product_uom_qty,
+                         "The promotion line was not applied to the amount total")
         sol2.unlink()
         self._auto_rewards(order, self.all_programs)
         self.assertEqual(len(order.order_line.ids), 2, "The other product should not affect the promotion")
-        self.assertEqual(order.amount_total, self.conferenceChair.lst_price * (sol1.product_uom_qty), "The promotion line was not applied to the amount total")
+        self.assertEqual(order.amount_total, self.conferenceChair.lst_price * (sol1.product_uom_qty),
+                         "The promotion line was not applied to the amount total")
         sol1.write({'product_uom_qty': 1.0})
         self._auto_rewards(order, self.all_programs)
         self.assertEqual(len(order.order_line.ids), 1, "The promotion lines should have been removed")
@@ -1057,7 +1093,7 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
             })],
         })
 
-        #apply 10%
+        # apply 10%
         order = self.empty_order
         order_line = self.env['sale.order.line'].create({
             'product_id': testprod.id,
@@ -1071,24 +1107,24 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
         self.assertEqual(order.amount_total, 1486.80, "10% discount should be applied")
         self.assertEqual(len(order.order_line.ids), 2, "discount should be applied")
 
-        #switch to 15%
+        # switch to 15%
         order_line.write({'product_uom_qty': 15})
         self.assertEqual(order.amount_total, 1604.8, "Discount improperly applied")
         self.assertEqual(len(order.order_line.ids), 2, "No discount applied while it should")
 
-        #switch to 20%
+        # switch to 20%
         order_line.write({'product_uom_qty': 17})
         self._auto_rewards(order, self.all_programs)
         self.assertEqual(order.amount_total, 1604.8, "Discount improperly applied")
         self.assertEqual(len(order.order_line.ids), 2, "No discount applied while it should")
 
-        #still 20%
+        # still 20%
         order_line.write({'product_uom_qty': 20})
         self._auto_rewards(order, self.all_programs)
         self.assertEqual(order.amount_total, 1888.0, "Discount improperly applied")
         self.assertEqual(len(order.order_line.ids), 2, "No discount applied while it should")
 
-        #back to 10%
+        # back to 10%
         order_line.write({'product_uom_qty': 14})
         self._auto_rewards(order, self.all_programs)
         self.assertEqual(order.amount_total, 1486.80, "Discount improperly applied")
@@ -1117,7 +1153,7 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
             })],
         })
         # set large cabinet and conference chair prices
-        self.largeCabinet.write({'list_price': 500, 'sale_ok': True,})
+        self.largeCabinet.write({'list_price': 500, 'sale_ok': True, })
         self.conferenceChair.write({'list_price': 100, 'sale_ok': True})
 
         # create SOL
@@ -1134,7 +1170,8 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
             'order_id': order.id,
         })
 
-        self.assertEqual(len(order.order_line), 2, 'The order must contain 2 order lines since the coupon is not yet applied')
+        self.assertEqual(len(order.order_line), 2,
+                         'The order must contain 2 order lines since the coupon is not yet applied')
         self.assertEqual(order.amount_total, 700.0, 'The price must be 500.0 since the coupon is not yet applied')
 
         # generate and apply coupon
@@ -1154,9 +1191,11 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
         # --------------------------------------------------------------------------------
         # TOTAL                                               |  500.00 |  500.00 |       /
 
-        self.assertEqual(len(order.order_line), 3, 'The order must contain 3 order lines including one for free conference chair')
+        self.assertEqual(len(order.order_line), 3,
+                         'The order must contain 3 order lines including one for free conference chair')
         self.assertEqual(order.amount_total, 500.0, 'The price must be 500.0 since two conference chairs are free')
-        self.assertEqual(order.order_line[2].price_total, -200.0, 'The last order line should apply a reduction of 200.0 since there are two conference chairs that cost 100.0 each')
+        self.assertEqual(order.order_line[2].price_total, -200.0,
+                         'The last order line should apply a reduction of 200.0 since there are two conference chairs that cost 100.0 each')
 
         # prevent user to get illicite discount by decreasing the to 1 the reward product qty after applying the coupon
         sol2.product_uom_qty = 1.0
@@ -1172,7 +1211,6 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
         # --------------------------------------------------------------------------------
         # TOTAL                                               |  400.00 |  400.00 |       /
 
-
         # he should rather have this one
         # Name                  | Qty | price_unit |  Tax     |  HTVA   |   TVAC  |  TVA  |
         # --------------------------------------------------------------------------------
@@ -1183,8 +1221,10 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
         # --------------------------------------------------------------------------------
         # TOTAL                                               |  500.00 |  500.00 |       /
 
-        self.assertEqual(order.amount_total, 500.0, 'The price must be 500.0 since two conference chairs are free and the user only bought one')
-        self.assertEqual(order.order_line[2].price_total, -100.0, 'The last order line should apply a reduction of 100.0 since there is one conference chair that cost 100.0')
+        self.assertEqual(order.amount_total, 500.0,
+                         'The price must be 500.0 since two conference chairs are free and the user only bought one')
+        self.assertEqual(order.order_line[2].price_total, -100.0,
+                         'The last order line should apply a reduction of 100.0 since there is one conference chair that cost 100.0')
 
     def test_program_free_product_different_than_rule_product_with_multiple_application(self):
         order = self.empty_order
@@ -1223,15 +1263,19 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
 
         self._auto_rewards(order, self.all_programs)
 
-        self.assertEqual(len(order.order_line), 3, 'The order must contain 3 order lines: 1x for Black Drawer, 1x for Large Meeting Table and 1x for free Large Meeting Table')
-        self.assertEqual(order.amount_total, self.drawerBlack.list_price * 2, 'The price must be 50.0 since the Large Meeting Table is free: 2*25.00 (Black Drawer) + 1*40000.00 (Large Meeting Table) - 1*40000.00 (free Large Meeting Table)')
+        self.assertEqual(len(order.order_line), 3,
+                         'The order must contain 3 order lines: 1x for Black Drawer, 1x for Large Meeting Table and 1x for free Large Meeting Table')
+        self.assertEqual(order.amount_total, self.drawerBlack.list_price * 2,
+                         'The price must be 50.0 since the Large Meeting Table is free: 2*25.00 (Black Drawer) + 1*40000.00 (Large Meeting Table) - 1*40000.00 (free Large Meeting Table)')
 
         sol_B.product_uom_qty = 2
 
         self._auto_rewards(order, self.all_programs)
 
-        self.assertEqual(len(order.order_line), 3, 'The order must contain 3 order lines: 1x for Black Drawer, 1x for Large Meeting Table and 1x for free Large Meeting Table')
-        self.assertEqual(order.amount_total, self.drawerBlack.list_price * 2, 'The price must be 50.0 since the 2 Large Meeting Table are free: 2*25.00 (Black Drawer) + 2*40000.00 (Large Meeting Table) - 2*40000.00 (free Large Meeting Table)')
+        self.assertEqual(len(order.order_line), 3,
+                         'The order must contain 3 order lines: 1x for Black Drawer, 1x for Large Meeting Table and 1x for free Large Meeting Table')
+        self.assertEqual(order.amount_total, self.drawerBlack.list_price * 2,
+                         'The price must be 50.0 since the 2 Large Meeting Table are free: 2*25.00 (Black Drawer) + 2*40000.00 (Large Meeting Table) - 2*40000.00 (free Large Meeting Table)')
 
     def test_program_modify_reward_line_qty(self):
         order = self.empty_order
@@ -1267,15 +1311,21 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
 
         self._auto_rewards(order, self.all_programs)
 
-        self.assertEqual(len(order.order_line), 2, 'The order must contain 2 order lines: 1x Product F and 1x 5$ discount')
-        self.assertEqual(order.amount_total, 195.0, 'The price must be 195.0 since there is a 5$ discount and 2x Product F')
-        self.assertEqual(sum(order.order_line.filtered(lambda x: x.is_reward_line).mapped('product_uom_qty')), 1, 'The reward line should have a quantity of 1 since Fixed Amount discounts apply only once per Sale Order')
+        self.assertEqual(len(order.order_line), 2,
+                         'The order must contain 2 order lines: 1x Product F and 1x 5$ discount')
+        self.assertEqual(order.amount_total, 195.0,
+                         'The price must be 195.0 since there is a 5$ discount and 2x Product F')
+        self.assertEqual(sum(order.order_line.filtered(lambda x: x.is_reward_line).mapped('product_uom_qty')), 1,
+                         'The reward line should have a quantity of 1 since Fixed Amount discounts apply only once per Sale Order')
 
         order.order_line[1].product_uom_qty = 2
 
-        self.assertEqual(len(order.order_line), 2, 'The order must contain 2 order lines: 1x Product F and 1x 5$ discount')
-        self.assertEqual(order.amount_total, 190.0, 'The price must be 190.0 since there is now 2x 5$ discount and 2x Product F')
-        self.assertEqual(order.order_line.filtered(lambda x: x.is_reward_line).price_unit, -5, 'The discount unit price should still be -5 after the quantity was manually changed')
+        self.assertEqual(len(order.order_line), 2,
+                         'The order must contain 2 order lines: 1x Product F and 1x 5$ discount')
+        self.assertEqual(order.amount_total, 190.0,
+                         'The price must be 190.0 since there is now 2x 5$ discount and 2x Product F')
+        self.assertEqual(order.order_line.filtered(lambda x: x.is_reward_line).price_unit, -5,
+                         'The discount unit price should still be -5 after the quantity was manually changed')
 
     def test_specific_discount_product_group(self):
         # Tests the following:
@@ -1514,7 +1564,6 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
         self.assertEqual(float_compare(order.amount_tax, 6 / 12, precision_rounding=3), 0, '20% Tax included on 6$')
 
     def test_fixed_amount_taxes_attribution_multiline(self):
-
         program = self.env['loyalty.program'].create({
             'name': '-5 USD',
             'trigger': 'auto',

@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.addons.stock_account.tests.test_anglo_saxon_valuation_reconciliation_common import ValuationReconciliationTestCommon
 from datetime import timedelta
+
+from odoo.addons.stock_account.tests.test_anglo_saxon_valuation_reconciliation_common import \
+    ValuationReconciliationTestCommon
+
 from odoo import fields
-from odoo.tests import common, tagged
+from odoo.tests import tagged
 
 
 @tagged('post_install', '-at_install')
@@ -33,17 +36,23 @@ class TestSaleExpectedDate(ValuationReconciliationTestCommon):
             'uom_id': 1,
         })
 
-        self.env['stock.quant']._update_available_quantity(product_A, self.company_data['default_warehouse'].lot_stock_id, 10)
-        self.env['stock.quant']._update_available_quantity(product_B, self.company_data['default_warehouse'].lot_stock_id, 10)
-        self.env['stock.quant']._update_available_quantity(product_C, self.company_data['default_warehouse'].lot_stock_id, 10)
+        self.env['stock.quant']._update_available_quantity(product_A,
+                                                           self.company_data['default_warehouse'].lot_stock_id, 10)
+        self.env['stock.quant']._update_available_quantity(product_B,
+                                                           self.company_data['default_warehouse'].lot_stock_id, 10)
+        self.env['stock.quant']._update_available_quantity(product_C,
+                                                           self.company_data['default_warehouse'].lot_stock_id, 10)
 
         sale_order = self.env['sale.order'].create({
             'partner_id': self.env['res.partner'].create({'name': 'A Customer'}).id,
             'picking_policy': 'direct',
             'order_line': [
-                (0, 0, {'name': product_A.name, 'product_id': product_A.id, 'customer_lead': product_A.sale_delay, 'product_uom_qty': 5}),
-                (0, 0, {'name': product_B.name, 'product_id': product_B.id, 'customer_lead': product_B.sale_delay, 'product_uom_qty': 5}),
-                (0, 0, {'name': product_C.name, 'product_id': product_C.id, 'customer_lead': product_C.sale_delay, 'product_uom_qty': 5})
+                (0, 0, {'name': product_A.name, 'product_id': product_A.id, 'customer_lead': product_A.sale_delay,
+                        'product_uom_qty': 5}),
+                (0, 0, {'name': product_B.name, 'product_id': product_B.id, 'customer_lead': product_B.sale_delay,
+                        'product_uom_qty': 5}),
+                (0, 0, {'name': product_C.name, 'product_id': product_C.id, 'customer_lead': product_C.sale_delay,
+                        'product_uom_qty': 5})
             ],
         })
 
@@ -51,14 +60,14 @@ class TestSaleExpectedDate(ValuationReconciliationTestCommon):
         # current date + shortest lead time from all of it's order lines
         expected_date = fields.Datetime.now() + timedelta(days=5)
         self.assertAlmostEqual(expected_date, sale_order.expected_date,
-            msg="Wrong expected date on sale order!", delta=timedelta(seconds=1))
+                               msg="Wrong expected date on sale order!", delta=timedelta(seconds=1))
 
         # if Shipping Policy is set to `one`(when SO is in draft state) then expected date should be
         # current date + longest lead time from all of it's order lines
         sale_order.write({'picking_policy': 'one'})
         expected_date = fields.Datetime.now() + timedelta(days=15)
         self.assertAlmostEqual(expected_date, sale_order.expected_date,
-            msg="Wrong expected date on sale order!", delta=timedelta(seconds=1))
+                               msg="Wrong expected date on sale order!", delta=timedelta(seconds=1))
 
         sale_order.action_confirm()
 
@@ -71,14 +80,14 @@ class TestSaleExpectedDate(ValuationReconciliationTestCommon):
         # SO confirmation date + longest lead time from all of it's order lines
         expected_date = confirm_date + timedelta(days=15)
         self.assertAlmostEqual(expected_date, sale_order.expected_date,
-            msg="Wrong expected date on sale order!", delta=timedelta(seconds=1))
+                               msg="Wrong expected date on sale order!", delta=timedelta(seconds=1))
 
         # if Shipping Policy is set to `direct`(when SO is confirmed) then expected date should be
         # SO confirmation date + shortest lead time from all of it's order lines
         sale_order.write({'picking_policy': 'direct'})
         expected_date = confirm_date + timedelta(days=5)
         self.assertAlmostEqual(expected_date, sale_order.expected_date,
-            msg="Wrong expected date on sale order!", delta=timedelta(seconds=1))
+                               msg="Wrong expected date on sale order!", delta=timedelta(seconds=1))
 
         # Check effective date, it should be date on which the first shipment successfully delivered to customer
         picking = sale_order.picking_ids[0]
@@ -88,7 +97,6 @@ class TestSaleExpectedDate(ValuationReconciliationTestCommon):
         self.assertEqual(fields.Date.today(), sale_order.effective_date.date(), "Wrong effective date on sale order!")
 
     def test_sale_order_commitment_date(self):
-
         # In order to test the Commitment Date feature in Sales Orders in Odoo,
         # I copy a demo Sales Order with committed Date on 2010-07-12
         new_order = self.env['sale.order'].create({

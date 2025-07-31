@@ -10,7 +10,8 @@
         </xpath>
 
         <xpath expr="//t[@t-foreach='creates']" position="after">
-            <a t-if="ShowX2MRecords" role="button" class="ml16 o_toggle_closed_task_button" href="#" t-on-click="() => this.toggleHideClosed()">
+            <a t-if="ShowX2MRecords" role="button" class="ml16 o_toggle_closed_task_button" href="#"
+               t-on-click="() => this.toggleHideClosed()">
                 <t t-esc="toggleListHideLabel"/>
             </a>
         </xpath>

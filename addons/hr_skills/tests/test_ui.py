@@ -2,6 +2,7 @@
 
 import odoo.tests
 
+
 @odoo.tests.tagged('-at_install', 'post_install')
 class SkillsTestUI(odoo.tests.HttpCase):
     def test_ui(self):

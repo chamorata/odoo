@@ -3,10 +3,8 @@
 
 import inspect
 import logging
-import warnings
-import traceback
 
-from odoo import api, models
+from odoo import models
 from odoo.exceptions import AccessDenied
 
 _logger = logging.getLogger(__name__)

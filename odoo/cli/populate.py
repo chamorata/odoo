@@ -5,11 +5,11 @@ import sys
 import time
 from pathlib import Path
 
-from . import Command
 import odoo
+from odoo.api import Environment
 from odoo.modules.registry import Registry
 from odoo.tools.populate import populate_models
-from odoo.api import Environment
+from . import Command
 
 DEFAULT_FACTOR = '10000'
 DEFAULT_SEPARATOR = '_'

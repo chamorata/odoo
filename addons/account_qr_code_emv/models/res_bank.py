@@ -2,9 +2,10 @@
 
 import re
 
+from odoo.addons.account_qr_code_emv.const import CURRENCY_MAPPING
+
 from odoo import _, api, fields, models
 from odoo.tools.misc import remove_accents
-from odoo.addons.account_qr_code_emv.const import CURRENCY_MAPPING
 
 
 class ResPartnerBank(models.Model):
@@ -48,7 +49,8 @@ class ResPartnerBank(models.Model):
     def _get_additional_data_field(self, comment):
         return None
 
-    def _get_qr_code_vals_list(self, qr_method, amount, currency, debtor_partner, free_communication, structured_communication):
+    def _get_qr_code_vals_list(self, qr_method, amount, currency, debtor_partner, free_communication,
+                               structured_communication):
         tag, merchant_account_info = self._get_merchant_account_info()
         currency_code = CURRENCY_MAPPING[currency.name]
         if not currency.is_zero(amount):
@@ -61,41 +63,47 @@ class ResPartnerBank(models.Model):
         comment = re.sub(r'[^ A-Za-z0-9_@.\\/#&+-]+', '', self._remove_accents(comment))
         additional_data_field = self._get_additional_data_field(comment) if self.include_reference else None
         return [
-            (0, '01'),                                                              # Payload Format Indicator
-            (1, '12'),                                                              # Dynamic QR Codes
-            (tag, merchant_account_info),                                           # Merchant Account Information
-            (52, '0000'),                                                           # Merchant Category Code
-            (53, currency_code),                                                    # Transaction Currency
-            (54, amount),                                                           # Transaction Amount
-            (58, self.country_code),                                                # Country Code
-            (59, merchant_name),                                                    # Merchant Name
-            (60, merchant_city),                                                    # Merchant City
-            (62, additional_data_field),                                            # Additional Data Field
+            (0, '01'),  # Payload Format Indicator
+            (1, '12'),  # Dynamic QR Codes
+            (tag, merchant_account_info),  # Merchant Account Information
+            (52, '0000'),  # Merchant Category Code
+            (53, currency_code),  # Transaction Currency
+            (54, amount),  # Transaction Amount
+            (58, self.country_code),  # Country Code
+            (59, merchant_name),  # Merchant Name
+            (60, merchant_city),  # Merchant City
+            (62, additional_data_field),  # Additional Data Field
         ]
 
     def _get_qr_vals(self, qr_method, amount, currency, debtor_partner, free_communication, structured_communication):
         if qr_method == 'emv_qr':
-            qr_code_vals = self._get_qr_code_vals_list(qr_method, amount, currency, debtor_partner, free_communication, structured_communication)
+            qr_code_vals = self._get_qr_code_vals_list(qr_method, amount, currency, debtor_partner, free_communication,
+                                                       structured_communication)
             qr_code_str = ''.join([self._serialize(*val) for val in qr_code_vals])
-            qr_code_str += '6304'                                                   # CRC16
+            qr_code_str += '6304'  # CRC16
             crc = self._get_crc16(bytes(qr_code_str, 'utf-8'))
             qr_code_str += format(crc, '04x').upper()
             return qr_code_str
 
-        return super()._get_qr_vals(qr_method, amount, currency, debtor_partner, free_communication, structured_communication)
+        return super()._get_qr_vals(qr_method, amount, currency, debtor_partner, free_communication,
+                                    structured_communication)
 
-    def _get_qr_code_generation_params(self, qr_method, amount, currency, debtor_partner, free_communication, structured_communication):
+    def _get_qr_code_generation_params(self, qr_method, amount, currency, debtor_partner, free_communication,
+                                       structured_communication):
         if qr_method == 'emv_qr':
             return {
                 'barcode_type': 'QR',
                 'width': 128,
                 'height': 128,
                 'humanreadable': 1,
-                'value': self._get_qr_vals(qr_method, amount, currency, debtor_partner, free_communication, structured_communication),
+                'value': self._get_qr_vals(qr_method, amount, currency, debtor_partner, free_communication,
+                                           structured_communication),
             }
-        return super()._get_qr_code_generation_params(qr_method, amount, currency, debtor_partner, free_communication, structured_communication)
+        return super()._get_qr_code_generation_params(qr_method, amount, currency, debtor_partner, free_communication,
+                                                      structured_communication)
 
-    def _check_for_qr_code_errors(self, qr_method, amount, currency, debtor_partner, free_communication, structured_communication):
+    def _check_for_qr_code_errors(self, qr_method, amount, currency, debtor_partner, free_communication,
+                                  structured_communication):
         if qr_method == 'emv_qr':
             if not self._get_merchant_account_info():
                 return _("Missing Merchant Account Information.")
@@ -105,7 +113,8 @@ class ResPartnerBank(models.Model):
                 return _("Missing Proxy Type.")
             if not self.proxy_value:
                 return _("Missing Proxy Value.")
-        return super()._check_for_qr_code_errors(qr_method, amount, currency, debtor_partner, free_communication, structured_communication)
+        return super()._check_for_qr_code_errors(qr_method, amount, currency, debtor_partner, free_communication,
+                                                 structured_communication)
 
     @api.model
     def _get_available_qr_methods(self):
@@ -118,6 +127,7 @@ class ResPartnerBank(models.Model):
         if qr_method == 'emv_qr':
             if not self:
                 return _("A bank account is required for EMV QR Code generation.")
-            return _("No EMV QR Code is available for the country of the account %(account_number)s.", account_number=self.acc_number)
+            return _("No EMV QR Code is available for the country of the account %(account_number)s.",
+                     account_number=self.acc_number)
 
         return super()._get_error_messages_for_qr(qr_method, debtor_partner, currency)

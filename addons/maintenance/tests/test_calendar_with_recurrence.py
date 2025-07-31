@@ -1,6 +1,8 @@
-from odoo.tests import HttpCase, tagged
 from datetime import datetime, time
+
 from dateutil.relativedelta import relativedelta
+
+from odoo.tests import HttpCase, tagged
 
 
 @tagged('post_install', '-at_install')
@@ -55,7 +57,8 @@ class TestCalendarWithRecurrence(HttpCase):
             'schedule_date': datetime.now() + relativedelta(months=+1),
         }, {
             'name': 'clean the room',
-            'schedule_date': datetime.combine(datetime.now().replace(day=6), time.min.replace(hour=10)),  # 6th of the month at 10 AM
+            'schedule_date': datetime.combine(datetime.now().replace(day=6), time.min.replace(hour=10)),
+            # 6th of the month at 10 AM
             'maintenance_type': 'preventive',
             'recurring_maintenance': True,
             'repeat_interval': 1,
@@ -68,5 +71,6 @@ class TestCalendarWithRecurrence(HttpCase):
         url = '/odoo/action-maintenance.hr_equipment_request_action_cal'
         self.start_tour(url, 'test_drag_and_drop_event_in_calendar', login='admin')
 
-        target_datetime = datetime.combine(datetime.now().replace(day=15), time.min.replace(hour=10))  # 15h of the month at 10 AM
+        target_datetime = datetime.combine(datetime.now().replace(day=15),
+                                           time.min.replace(hour=10))  # 15h of the month at 10 AM
         self.assertEqual(request.schedule_date, target_datetime, "The event modification should update the request")

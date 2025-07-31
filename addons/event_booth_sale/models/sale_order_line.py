@@ -71,7 +71,8 @@ class SaleOrderLine(models.Model):
     @api.onchange('event_id')
     def _onchange_event_id_booth(self):
         """We reset the pending booths when the event changes to avoid inconsistent state."""
-        if self.event_booth_pending_ids and (not self.event_id or self.event_id != self.event_booth_pending_ids.event_id):
+        if self.event_booth_pending_ids and (
+                not self.event_id or self.event_id != self.event_booth_pending_ids.event_id):
             self.event_booth_pending_ids = None
 
     @api.depends('event_booth_pending_ids')

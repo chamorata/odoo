@@ -1,18 +1,17 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import json
-
 from collections import OrderedDict
 from operator import itemgetter
+
 from markupsafe import Markup
+from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager
 
 from odoo import conf, http, _
 from odoo.exceptions import AccessError, MissingError, UserError
 from odoo.http import request
-from odoo.osv.expression import AND, FALSE_DOMAIN
+from odoo.osv.expression import AND
 from odoo.tools import groupby as groupbyelem
-
-from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager
 
 
 class ProjectCustomerPortal(CustomerPortal):
@@ -23,19 +22,22 @@ class ProjectCustomerPortal(CustomerPortal):
             values['project_count'] = request.env['project.project'].search_count([]) \
                 if request.env['project.project'].has_access('read') else 0
         if 'task_count' in counters:
-            values['task_count'] = request.env['project.task'].search_count([('project_id', '!=', False)])\
+            values['task_count'] = request.env['project.task'].search_count([('project_id', '!=', False)]) \
                 if request.env['project.task'].has_access('read') else 0
         return values
 
     # ------------------------------------------------------------
     # My Project
     # ------------------------------------------------------------
-    def _project_get_page_view_values(self, project, access_token, page=1, date_begin=None, date_end=None, sortby=None, search=None, search_in='content', groupby=None, **kwargs):
+    def _project_get_page_view_values(self, project, access_token, page=1, date_begin=None, date_end=None, sortby=None,
+                                      search=None, search_in='content', groupby=None, **kwargs):
         # default filter by value
         domain = [('project_id', '=', project.id)]
         # pager
         url = "/my/projects/%s" % project.id
-        values = self._prepare_tasks_values(page, date_begin, date_end, sortby, search, search_in, groupby, url, domain, su=bool(access_token) and request.env.user.has_group('base.group_public'), project=project)
+        values = self._prepare_tasks_values(page, date_begin, date_end, sortby, search, search_in, groupby, url, domain,
+                                            su=bool(access_token) and request.env.user.has_group('base.group_public'),
+                                            project=project)
         # adding the access_token to the pager's url args,
         # so we are not prompted for loging when switching pages
         # if access_token is None, the arg is not present in the URL
@@ -122,8 +124,10 @@ class ProjectCustomerPortal(CustomerPortal):
         """ Redirect the outdated routes to the new routes. """
         return request.redirect(request.httprequest.full_path.replace('/my/task', '/my/tasks'))
 
-    @http.route(['/my/projects/<int:project_id>', '/my/projects/<int:project_id>/page/<int:page>'], type='http', auth="public", website=True)
-    def portal_my_project(self, project_id=None, access_token=None, page=1, date_begin=None, date_end=None, sortby=None, search=None, search_in='content', groupby=None, task_id=None, **kw):
+    @http.route(['/my/projects/<int:project_id>', '/my/projects/<int:project_id>/page/<int:page>'], type='http',
+                auth="public", website=True)
+    def portal_my_project(self, project_id=None, access_token=None, page=1, date_begin=None, date_end=None, sortby=None,
+                          search=None, search_in='content', groupby=None, task_id=None, **kw):
         try:
             project_sudo = self._document_check_access('project.project', project_id, access_token)
         except (AccessError, MissingError):
@@ -136,7 +140,8 @@ class ProjectCustomerPortal(CustomerPortal):
         project_sudo = project_sudo if access_token else project_sudo.with_user(request.env.user)
         if not groupby:
             groupby = 'stage_id'
-        values = self._project_get_page_view_values(project_sudo, access_token, page, date_begin, date_end, sortby, search, search_in, groupby, **kw)
+        values = self._project_get_page_view_values(project_sudo, access_token, page, date_begin, date_end, sortby,
+                                                    search, search_in, groupby, **kw)
         return request.render("project.portal_my_project", values)
 
     def _get_project_sharing_company(self, project):
@@ -209,19 +214,25 @@ class ProjectCustomerPortal(CustomerPortal):
         values['project'] = project_sudo
         return request.render("project.portal_my_task", values)
 
-    @http.route('/my/projects/<int:project_id>/task/<int:task_id>/subtasks', type='http', auth='user', methods=['GET'], website=True)
-    def portal_my_project_subtasks(self, project_id, task_id, page=1, date_begin=None, date_end=None, sortby=None, filterby=None, search=None, search_in='content', groupby=None, **kw):
+    @http.route('/my/projects/<int:project_id>/task/<int:task_id>/subtasks', type='http', auth='user', methods=['GET'],
+                website=True)
+    def portal_my_project_subtasks(self, project_id, task_id, page=1, date_begin=None, date_end=None, sortby=None,
+                                   filterby=None, search=None, search_in='content', groupby=None, **kw):
         try:
             project_sudo = self._document_check_access('project.project', project_id)
-            task_sudo = request.env['project.task'].search([('project_id', '=', project_id), ('id', '=', task_id)]).sudo()
+            task_sudo = request.env['project.task'].search(
+                [('project_id', '=', project_id), ('id', '=', task_id)]).sudo()
             task_domain = [('id', 'child_of', task_id), ('id', '!=', task_id)]
-            searchbar_filters = self._get_my_tasks_searchbar_filters([('id', '=', task_sudo.project_id.id)], task_domain)
+            searchbar_filters = self._get_my_tasks_searchbar_filters([('id', '=', task_sudo.project_id.id)],
+                                                                     task_domain)
 
             if not filterby:
                 filterby = 'all'
             domain = searchbar_filters.get(filterby, searchbar_filters.get('all'))['domain']
 
-            values = self._prepare_tasks_values(page, date_begin, date_end, sortby, search, search_in, groupby, url=f'/my/projects/{project_id}/task/{task_id}/subtasks', domain=AND([task_domain, domain]))
+            values = self._prepare_tasks_values(page, date_begin, date_end, sortby, search, search_in, groupby,
+                                                url=f'/my/projects/{project_id}/task/{task_id}/subtasks',
+                                                domain=AND([task_domain, domain]))
             values['page_name'] = 'project_subtasks'
 
             # pager
@@ -242,11 +253,15 @@ class ProjectCustomerPortal(CustomerPortal):
         except (AccessError, MissingError):
             return request.not_found()
 
-    @http.route('/my/projects/<int:project_id>/task/<int:task_id>/recurrent_tasks', type='http', auth='user', methods=['GET'], website=True)
-    def portal_my_project_recurrent_tasks(self, project_id, task_id, page=1, date_begin=None, date_end=None, sortby=None, filterby=None, search=None, search_in='content', groupby=None, **kw):
+    @http.route('/my/projects/<int:project_id>/task/<int:task_id>/recurrent_tasks', type='http', auth='user',
+                methods=['GET'], website=True)
+    def portal_my_project_recurrent_tasks(self, project_id, task_id, page=1, date_begin=None, date_end=None,
+                                          sortby=None, filterby=None, search=None, search_in='content', groupby=None,
+                                          **kw):
         try:
             project_sudo = self._document_check_access('project.project', project_id)
-            task_sudo = request.env['project.task'].search([('project_id', '=', project_id), ('id', '=', task_id)], limit=1).sudo()
+            task_sudo = request.env['project.task'].search([('project_id', '=', project_id), ('id', '=', task_id)],
+                                                           limit=1).sudo()
             task_domain = [('id', 'in', task_sudo.recurrence_id.task_ids.ids)]
             searchbar_filters = self._get_my_tasks_searchbar_filters([('id', '=', project_id)], task_domain)
 
@@ -287,7 +302,8 @@ class ProjectCustomerPortal(CustomerPortal):
             page_name = 'task'
             history = 'my_tasks_history'
             try:
-                project_accessible = bool(task.project_id.id and self._document_check_access('project.project', task.project_id.id))
+                project_accessible = bool(
+                    task.project_id.id and self._document_check_access('project.project', task.project_id.id))
             except (AccessError, MissingError):
                 project_accessible = False
         values = {
@@ -324,7 +340,8 @@ class ProjectCustomerPortal(CustomerPortal):
             'state': {'label': _('Status'), 'order': 'state', 'sequence': 60},
             'priority desc': {'label': _('Priority'), 'order': 'priority desc', 'sequence': 80},
             'date_deadline asc': {'label': _('Deadline'), 'order': 'date_deadline asc', 'sequence': 90},
-            'date_last_stage_update desc': {'label': _('Last Stage Update'), 'order': 'date_last_stage_update desc', 'sequence': 110},
+            'date_last_stage_update desc': {'label': _('Last Stage Update'), 'order': 'date_last_stage_update desc',
+                                            'sequence': 110},
         }
         if not project:
             values['project_id, stage_id'] = {'label': _('Project'), 'order': 'project_id, stage_id', 'sequence': 30}
@@ -375,14 +392,16 @@ class ProjectCustomerPortal(CustomerPortal):
         elif search_in == 'priority':
             return [('priority', 'ilike', '0' if search == 'normal' else '1')]
         elif search_in == 'status':
-            state_dict = dict(map(reversed, request.env['project.task']._fields['state']._description_selection(request.env)))
+            state_dict = dict(
+                map(reversed, request.env['project.task']._fields['state']._description_selection(request.env)))
             return [('state', 'ilike', state_dict.get(search, search))]
         elif search_in in self._task_get_searchbar_inputs(milestones_allowed, project):
             return [(search_in, 'ilike', search)]
         else:
             return ['|', ('name', 'ilike', search), ('id', 'ilike', search)]
 
-    def _prepare_tasks_values(self, page, date_begin, date_end, sortby, search, search_in, groupby, url="/my/tasks", domain=None, su=False, project=False):
+    def _prepare_tasks_values(self, page, date_begin, date_end, sortby, search, search_in, groupby, url="/my/tasks",
+                              domain=None, su=False, project=False):
         values = self._prepare_portal_layout_values()
 
         Task = request.env['project.task']
@@ -396,8 +415,10 @@ class ProjectCustomerPortal(CustomerPortal):
         milestones_allowed = Task_sudo.search_count(milestone_domain, limit=1) == 1
         searchbar_sortings = dict(sorted(self._task_get_searchbar_sortings(milestones_allowed, project).items(),
                                          key=lambda item: item[1]["sequence"]))
-        searchbar_inputs = dict(sorted(self._task_get_searchbar_inputs(milestones_allowed, project).items(), key=lambda item: item[1]['sequence']))
-        searchbar_groupby = dict(sorted(self._task_get_searchbar_groupby(milestones_allowed, project).items(), key=lambda item: item[1]['sequence']))
+        searchbar_inputs = dict(sorted(self._task_get_searchbar_inputs(milestones_allowed, project).items(),
+                                       key=lambda item: item[1]['sequence']))
+        searchbar_groupby = dict(sorted(self._task_get_searchbar_groupby(milestones_allowed, project).items(),
+                                        key=lambda item: item[1]['sequence']))
 
         # default sort by value
         if not sortby or (sortby == 'milestone_id' and not milestones_allowed):
@@ -428,14 +449,16 @@ class ProjectCustomerPortal(CustomerPortal):
 
         def get_grouped_tasks(pager_offset):
             tasks = Task_sudo.search(domain, order=order, limit=self._items_per_page, offset=pager_offset)
-            request.session['my_project_tasks_history' if url.startswith('/my/projects') else 'my_tasks_history'] = tasks.ids[:100]
+            request.session[
+                'my_project_tasks_history' if url.startswith('/my/projects') else 'my_tasks_history'] = tasks.ids[:100]
 
             tasks_project_allow_milestone = tasks.filtered(lambda t: t.allow_milestones)
             tasks_no_milestone = tasks - tasks_project_allow_milestone
 
             if groupby != 'none':
                 if groupby == 'milestone_id':
-                    grouped_tasks = [Task_sudo.concat(*g) for k, g in groupbyelem(tasks_project_allow_milestone, itemgetter(groupby))]
+                    grouped_tasks = [Task_sudo.concat(*g) for k, g in
+                                     groupbyelem(tasks_project_allow_milestone, itemgetter(groupby))]
 
                     if not grouped_tasks:
                         if tasks_no_milestone:
@@ -450,7 +473,6 @@ class ProjectCustomerPortal(CustomerPortal):
                     grouped_tasks = [Task_sudo.concat(*g) for k, g in groupbyelem(tasks, itemgetter(groupby))]
             else:
                 grouped_tasks = [tasks] if tasks else []
-
 
             task_states = dict(Task_sudo._fields['state']._description_selection(request.env))
             if sortby == 'state':
@@ -471,7 +493,8 @@ class ProjectCustomerPortal(CustomerPortal):
             'task_url': 'tasks',
             'pager': {
                 "url": url,
-                "url_args": {'date_begin': date_begin, 'date_end': date_end, 'sortby': sortby, 'groupby': groupby, 'search_in': search_in, 'search': search},
+                "url_args": {'date_begin': date_begin, 'date_end': date_end, 'sortby': sortby, 'groupby': groupby,
+                             'search_in': search_in, 'search': search},
                 "total": Task_sudo.search_count(domain),
                 "page": page,
                 "step": self._items_per_page
@@ -500,8 +523,9 @@ class ProjectCustomerPortal(CustomerPortal):
 
         # extends filterby criteria with project (criteria name is the project id)
         # Note: portal users can't view projects they don't follow
-        project_groups = request.env['project.task']._read_group(AND([[('project_id', 'not in', projects.ids)], task_domain or []]),
-                                                                ['project_id'])
+        project_groups = request.env['project.task']._read_group(
+            AND([[('project_id', 'not in', projects.ids)], task_domain or []]),
+            ['project_id'])
         for [project] in project_groups:
             proj_name = project.sudo().display_name if project else _('Others')
             searchbar_filters.update({
@@ -510,14 +534,16 @@ class ProjectCustomerPortal(CustomerPortal):
         return searchbar_filters
 
     @http.route(['/my/tasks', '/my/tasks/page/<int:page>'], type='http', auth="user", website=True)
-    def portal_my_tasks(self, page=1, date_begin=None, date_end=None, sortby=None, filterby=None, search=None, search_in='name', groupby=None, **kw):
+    def portal_my_tasks(self, page=1, date_begin=None, date_end=None, sortby=None, filterby=None, search=None,
+                        search_in='name', groupby=None, **kw):
         searchbar_filters = self._get_my_tasks_searchbar_filters()
 
         if not filterby:
             filterby = 'all'
         domain = searchbar_filters.get(filterby, searchbar_filters.get('all'))['domain']
 
-        values = self._prepare_tasks_values(page, date_begin, date_end, sortby, search, search_in, groupby, domain=domain)
+        values = self._prepare_tasks_values(page, date_begin, date_end, sortby, search, search_in, groupby,
+                                            domain=domain)
 
         # pager
         pager_vals = values['pager']

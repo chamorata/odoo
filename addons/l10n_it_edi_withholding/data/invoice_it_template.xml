@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <template id="account_invoice_it_FatturaPA_export_withholding" inherit_id="l10n_it_edi.account_invoice_it_FatturaPA_export">
+    <template id="account_invoice_it_FatturaPA_export_withholding"
+              inherit_id="l10n_it_edi.account_invoice_it_FatturaPA_export">
         <xpath expr="//DatiGeneraliDocumento/Numero" position="after">
             <t t-foreach="withholding_values" t-as="withholding">
                 <DatiRitenuta>

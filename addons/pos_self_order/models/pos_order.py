@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import models, fields, api, _
-from odoo.exceptions import UserError
+from odoo import models, fields, api
 
 
 class PosOrderLine(models.Model):
@@ -29,6 +28,7 @@ class PosOrderLine(models.Model):
         if 'combo_parent_uuid' in vals:
             del vals['combo_parent_uuid']
         return super().write(vals)
+
 
 class PosOrder(models.Model):
     _inherit = "pos.order"

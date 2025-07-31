@@ -6,11 +6,12 @@ import base64
 import datetime
 import json
 
+from odoo.addons.mail.tools.parser import parse_res_ids
+
 from odoo import _, api, fields, models, Command, tools
 from odoo.exceptions import UserError, ValidationError
 from odoo.osv import expression
 from odoo.tools.mail import is_html_empty, email_normalize, email_split_and_format
-from odoo.addons.mail.tools.parser import parse_res_ids
 
 
 def _reopen(self, res_id, model, context=None):
@@ -215,8 +216,8 @@ class MailComposer(models.TransientModel):
             if not composer.template_id or not composer.subject:
                 subject = composer.parent_id.subject
                 if (not subject and composer.model and
-                    composer.composition_mode == 'comment' and
-                    not composer.composition_batch):
+                        composer.composition_mode == 'comment' and
+                        not composer.composition_batch):
                     if composer.model_is_thread:
                         res_ids = composer._evaluate_res_ids()
                         subject = self.env[composer.model].browse(res_ids)._message_compute_subject()
@@ -253,7 +254,7 @@ class MailComposer(models.TransientModel):
         for composer in self:
             res_ids = composer._evaluate_res_ids() or [0]
             if (composer.template_id.attachment_ids and
-                (composer.composition_mode == 'mass_mail' or composer.composition_batch)):
+                    (composer.composition_mode == 'mass_mail' or composer.composition_batch)):
                 composer.attachment_ids = composer.template_id.attachment_ids
             elif composer.template_id and composer.composition_mode == 'comment' and len(res_ids) == 1:
                 rendered_values = composer._generate_template_for_composer(
@@ -270,8 +271,8 @@ class MailComposer(models.TransientModel):
                          'datas': attach_datas,
                          'res_model': 'mail.compose.message',
                          'res_id': 0,
-                         'type': 'binary',    # override default_type from context, possibly meant for another model!
-                        } for attach_fname, attach_datas in rendered_values.pop('attachments')
+                         'type': 'binary',  # override default_type from context, possibly meant for another model!
+                         } for attach_fname, attach_datas in rendered_values.pop('attachments')
                     ]).ids
                 if attachment_ids:
                     composer.attachment_ids = attachment_ids
@@ -439,15 +440,15 @@ class MailComposer(models.TransientModel):
         email mode it is not used anyway. """
         toreset = self.filtered(
             lambda comp: comp.record_name
-                and (comp.composition_mode != 'comment' or comp.composition_batch)
+                         and (comp.composition_mode != 'comment' or comp.composition_batch)
         )
         if toreset:
             toreset.record_name = False
 
         toupdate = self.filtered(
             lambda comp: not comp.record_name
-                            and comp.composition_mode == 'comment'
-                            and not comp.composition_batch
+                         and comp.composition_mode == 'comment'
+                         and not comp.composition_batch
         )
         for composer in toupdate:
             if composer.parent_id.record_name:
@@ -521,7 +522,7 @@ class MailComposer(models.TransientModel):
         comment mode, to be sure to notify the same people. """
         for composer in self:
             if (composer.template_id and composer.composition_mode == 'comment'
-                and not composer.composition_batch):
+                    and not composer.composition_batch):
                 res_ids = composer._evaluate_res_ids() or [0]
                 rendered_values = composer._generate_template_for_composer(
                     res_ids,
@@ -555,7 +556,7 @@ class MailComposer(models.TransientModel):
         can be set to False. When auto_delete is turned off it has no usage. """
         toreset = self.filtered(
             lambda comp: comp.composition_mode != 'mass_mail' or
-                            not comp.auto_delete
+                         not comp.auto_delete
         )
         toreset.auto_delete_keep_log = False
         (self - toreset).auto_delete_keep_log = True
@@ -575,7 +576,8 @@ class MailComposer(models.TransientModel):
             elif composer.composition_mode == 'comment' or composer.res_domain:
                 composer.force_send = False
             else:
-                force_send_limit = int(self.env['ir.config_parameter'].sudo().get_param('mail.mail.force.send.limit', 100))
+                force_send_limit = int(
+                    self.env['ir.config_parameter'].sudo().get_param('mail.mail.force.send.limit', 100))
                 res_ids = composer._evaluate_res_ids()
                 composer.force_send = len(res_ids) <= force_send_limit
 
@@ -725,7 +727,8 @@ class MailComposer(models.TransientModel):
         implementation of it if not available (as message_notify). """
         self.ensure_one()
         post_values_all = self._prepare_mail_values(res_ids)
-        ActiveModel = self.env[self.model] if self.model and hasattr(self.env[self.model], 'message_post') else self.env['mail.thread']
+        ActiveModel = self.env[self.model] if self.model and hasattr(self.env[self.model], 'message_post') else \
+        self.env['mail.thread']
         if self.composition_batch:
             # add context key to avoid subscribing the author
             ActiveModel = ActiveModel.with_context(
@@ -767,7 +770,8 @@ class MailComposer(models.TransientModel):
             iter_mails_sudo = self.env['mail.mail'].sudo().create(res_ids_values)
             mails_sudo += iter_mails_sudo
 
-            records = self.env[self.model].browse(res_ids_iter) if self.model and hasattr(self.env[self.model], 'message_post') else False
+            records = self.env[self.model].browse(res_ids_iter) if self.model and hasattr(self.env[self.model],
+                                                                                          'message_post') else False
             if records:
                 records._message_mail_after_hook(iter_mails_sudo)
 
@@ -776,8 +780,8 @@ class MailComposer(models.TransientModel):
                 # does) we need to do it manually
                 iter_mails_sudo_tosend = iter_mails_sudo.filtered(
                     lambda mail: (
-                        not mail.scheduled_date or
-                        mail.scheduled_date <= datetime.datetime.utcnow()
+                            not mail.scheduled_date or
+                            mail.scheduled_date <= datetime.datetime.utcnow()
                     )
                 )
                 if iter_mails_sudo_tosend:
@@ -789,7 +793,7 @@ class MailComposer(models.TransientModel):
             if auto_commit is True:
                 counter_mails_done += len(res_ids_values)
                 self.env['ir.cron']._notify_progress(done=counter_mails_done,
-                                                      remaining=len(res_ids) - counter_mails_done)
+                                                     remaining=len(res_ids) - counter_mails_done)
                 self._cr.commit()
             self.env.invalidate_all()
 
@@ -1054,7 +1058,7 @@ class MailComposer(models.TransientModel):
                  'partner_ids',
                  'report_template_ids',
                  'scheduled_date',
-                ],
+                 ],
                 find_or_create_partners=self.env.context.get("mail_composer_force_partners", True),
             )
             for res_id in res_ids:
@@ -1095,7 +1099,8 @@ class MailComposer(models.TransientModel):
             ]
             # email_mode: prepare processed attachments as commands for mail.mail
             if email_mode:
-                process_record = record if hasattr(record, "_process_attachments_for_post") else record.env["mail.thread"]
+                process_record = record if hasattr(record, "_process_attachments_for_post") else record.env[
+                    "mail.thread"]
                 mail_values['attachment_ids'] = process_record._process_attachments_for_post(
                     decoded_attachments,
                     attachment_ids,
@@ -1137,19 +1142,19 @@ class MailComposer(models.TransientModel):
                     'body': mail_values['body'],
                 })
                 for _lang, render_values, recipients_group_data in record._notify_get_classified_recipients_iterator(
-                    message_inmem,
-                    [{
-                        'active': True,
-                        'id': pid,
-                        'lang': lang,
-                        'notif': 'email',
-                        'share': True,
-                        'type': 'customer',
-                        'ushare': False,
-                    } for pid in recipient_ids],
-                    msg_vals=msg_vals,
-                    model_description=False,  # force dynamic computation
-                    force_email_lang=lang,
+                        message_inmem,
+                        [{
+                            'active': True,
+                            'id': pid,
+                            'lang': lang,
+                            'notif': 'email',
+                            'share': True,
+                            'type': 'customer',
+                            'ushare': False,
+                        } for pid in recipient_ids],
+                        msg_vals=msg_vals,
+                        model_description=False,  # force dynamic computation
+                        force_email_lang=lang,
                 ):
                     mail_body = record._notify_by_email_render_layout(
                         message_inmem,
@@ -1243,12 +1248,12 @@ class MailComposer(models.TransientModel):
                 mail_values['state'] = 'cancel'
                 mail_values['failure_type'] = 'mail_email_invalid'
             elif optout_emails and all(
-                mail_to in optout_emails for mail_to in recipients['mail_to_normalized']
+                    mail_to in optout_emails for mail_to in recipients['mail_to_normalized']
             ):
                 mail_values['state'] = 'cancel'
                 mail_values['failure_type'] = 'mail_optout'
             elif done_emails and all(
-                mail_to in done_emails for mail_to in recipients['mail_to_normalized']
+                    mail_to in done_emails for mail_to in recipients['mail_to_normalized']
             ):
                 mail_values['state'] = 'cancel'
                 mail_values['failure_type'] = 'mail_dup'
@@ -1416,8 +1421,8 @@ class MailComposer(models.TransientModel):
         except (ValueError, AssertionError) as e:
             raise ValidationError(
                 _("Invalid domain “%(domain)s” (type “%(domain_type)s”)",
-                    domain=self.res_domain,
-                    domain_type=type(self.res_domain))
+                  domain=self.res_domain,
+                  domain_type=type(self.res_domain))
             ) from e
 
         return domain

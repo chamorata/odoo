@@ -26,7 +26,8 @@ class MailTestTLead(models.Model):
 
     def _creation_message(self):
         self.ensure_one()
-        return _('A new lead has been created and is assigned to %(user_name)s.', user_name=self.user_id.name or _('nobody'))
+        return _('A new lead has been created and is assigned to %(user_name)s.',
+                 user_name=self.user_id.name or _('nobody'))
 
     def _get_customer_information(self):
         email_normalized_to_values = super()._get_customer_information()
@@ -35,7 +36,8 @@ class MailTestTLead(models.Model):
             email_key = lead.email_normalized or lead.email
             values = email_normalized_to_values.setdefault(email_key, {})
             values['lang'] = values.get('lang') or lead.lang_code
-            values['name'] = values.get('name') or lead.customer_name or parse_contact_from_email(lead.email_from)[0] or lead.email_from
+            values['name'] = values.get('name') or lead.customer_name or parse_contact_from_email(lead.email_from)[
+                0] or lead.email_from
             values['mobile'] = values.get('mobile') or lead.mobile
             values['phone'] = values.get('phone') or lead.phone
         return email_normalized_to_values
@@ -58,7 +60,8 @@ class MailTestTLead(models.Model):
             # on a document without customer means that it was created through the chatter using
             # suggested recipients. This heuristic allows to avoid ugly hacks in JS.
             new_partner = message.partner_ids.filtered(
-                lambda partner: partner.email == self.email_from or (self.email_normalized and partner.email_normalized == self.email_normalized)
+                lambda partner: partner.email == self.email_from or (
+                            self.email_normalized and partner.email_normalized == self.email_normalized)
             )
             if new_partner:
                 if new_partner[0].email_normalized:

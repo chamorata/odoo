@@ -3,8 +3,8 @@
 
 import json
 import logging
-import werkzeug
 
+import werkzeug
 from werkzeug.exceptions import Forbidden
 
 from odoo import http

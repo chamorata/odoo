@@ -11,7 +11,8 @@
                 <field name="description"/>
                 <field name="status"/>
                 <filter string="My Updates" name="my_updates" domain="[('user_id', '=', uid)]"/>
-                <filter string="Followed Updates" name="followed_updates" domain="[('message_is_follower', '=', True)]"/>
+                <filter string="Followed Updates" name="followed_updates"
+                        domain="[('message_is_follower', '=', True)]"/>
                 <separator/>
                 <filter string="On Track" name="on_track" domain="[('status', '=', 'on_track')]"/>
                 <filter string="At Risk" name="at_risk" domain="[('status', '=', 'at_risk')]"/>
@@ -49,7 +50,8 @@
                     <separator/>
                     <notebook>
                         <page string="Description" name="description">
-                            <field name="description" nolabel="1" class="o_project_update_description" options="{'resizable': false, 'collaborative': true}"/>
+                            <field name="description" nolabel="1" class="o_project_update_description"
+                                   options="{'resizable': false, 'collaborative': true}"/>
                         </page>
                     </notebook>
                 </sheet>
@@ -84,7 +86,12 @@
                         </div>
                         <div class="mr8 o_pupdate_kanban_width">
                             <b id="tasks_stats">
-                                <field name="closed_task_count"/> / <field name="task_count"/> Tasks<span invisible="not task_count"> (<field name="closed_task_percentage"/>%)</span>
+                                <field name="closed_task_count"/>
+                                /
+                                <field name="task_count"/>
+                                Tasks
+                                <span invisible="not task_count">(<field name="closed_task_percentage"/>%)
+                                </span>
                             </b>
                         </div>
                         <div class="mr8 o_pupdate_kanban_width">
@@ -121,9 +128,10 @@
         <field name="search_view_id" ref="project_update_view_search"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-            No updates found. Let's create one!
-            </p><p>
-            Get a snapshot of the status of your project and share its progress with key stakeholders.
+                No updates found. Let's create one!
+            </p>
+            <p>
+                Get a snapshot of the status of your project and share its progress with key stakeholders.
             </p>
         </field>
     </record>

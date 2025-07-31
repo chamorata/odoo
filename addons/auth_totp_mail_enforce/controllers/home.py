@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+
 import odoo.addons.auth_totp.controllers.home
 
 from odoo import http

@@ -2,8 +2,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import _, api, models
-from odoo.tools import float_compare, float_is_zero
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools import float_is_zero
 
 
 class StockMoveLine(models.Model):
@@ -55,9 +55,10 @@ class StockMoveLine(models.Model):
                 new_dest_loc = self.env['stock.location'].browse(new_dest_loc_id)
                 if move_line.location_id._should_be_valued() != new_loc._should_be_valued() \
                         or move_line.location_dest_id._should_be_valued() != new_dest_loc._should_be_valued():
-                    raise ValidationError(_("The stock valuation of a move is based on the type of the source and destination locations. "
-                                            "As the move is already processed, you cannot modify the locations in a way that changes the "
-                                            "valuation logic defined during the initial processing."))
+                    raise ValidationError(
+                        _("The stock valuation of a move is based on the type of the source and destination locations. "
+                          "As the move is already processed, you cannot modify the locations in a way that changes the "
+                          "valuation logic defined during the initial processing."))
         res = super().write(vals)
         if new_lot:
             # add quantity of new lot

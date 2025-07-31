@@ -8,12 +8,12 @@ import os
 from PIL import Image
 
 import odoo
-from odoo.exceptions import AccessError
 from odoo.addons.base.tests.common import TransactionCaseWithUserDemo
+from odoo.exceptions import AccessError
 from odoo.tools import mute_logger
 from odoo.tools.image import image_to_base64
 
-HASH_SPLIT = 2      # FIXME: testing implementations detail is not a good idea
+HASH_SPLIT = 2  # FIXME: testing implementations detail is not a good idea
 
 
 class TestIrAttachment(TransactionCaseWithUserDemo):
@@ -39,7 +39,7 @@ class TestIrAttachment(TransactionCaseWithUserDemo):
             value = base64.b64decode(value.decode())
         except UnicodeDecodeError:
             pass
-        size = len(value) / 1024 # kb
+        size = len(value) / 1024  # kb
 
         self.assertAlmostEqual(size, expectedSize, delta=delta)
 
@@ -95,10 +95,14 @@ class TestIrAttachment(TransactionCaseWithUserDemo):
         Attachment = self.Attachment.with_user(self.user_demo.id)
         a2 = Attachment.create({'name': 'a2', 'datas': self.blob1_b64, 'mimetype': 'image/png'})
         self.assertEqual(a2.mimetype, 'image/png', "the new mimetype should be the one given on write")
-        a3 = Attachment.create({'name': 'a3', 'datas': self.blob1_b64, 'mimetype': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'})
-        self.assertEqual(a3.mimetype, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', "should preserve office mime type")
-        a4 = Attachment.create({'name': 'a4', 'datas': self.blob1_b64, 'mimetype': 'Application/VND.OpenXMLformats-officedocument.wordprocessingml.document'})
-        self.assertEqual(a4.mimetype, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', "should preserve office mime type (lowercase)")
+        a3 = Attachment.create({'name': 'a3', 'datas': self.blob1_b64,
+                                'mimetype': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'})
+        self.assertEqual(a3.mimetype, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                         "should preserve office mime type")
+        a4 = Attachment.create({'name': 'a4', 'datas': self.blob1_b64,
+                                'mimetype': 'Application/VND.OpenXMLformats-officedocument.wordprocessingml.document'})
+        self.assertEqual(a4.mimetype, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                         "should preserve office mime type (lowercase)")
 
     def test_08_neuter_xml_mimetype(self):
         """

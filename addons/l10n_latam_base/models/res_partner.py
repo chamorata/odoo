@@ -7,9 +7,11 @@ class ResPartner(models.Model):
     _inherit = 'res.partner'
 
     l10n_latam_identification_type_id = fields.Many2one('l10n_latam.identification.type',
-        string="Identification Type", index='btree_not_null', auto_join=True,
-        default=lambda self: self.env.ref('l10n_latam_base.it_vat', raise_if_not_found=False),
-        help="The type of identification")
+                                                        string="Identification Type", index='btree_not_null',
+                                                        auto_join=True,
+                                                        default=lambda self: self.env.ref('l10n_latam_base.it_vat',
+                                                                                          raise_if_not_found=False),
+                                                        help="The type of identification")
     vat = fields.Char(string='Identification Number', help="Identification Number for selected type")
 
     @api.model
@@ -28,4 +30,4 @@ class ResPartner(models.Model):
         if not identification_type or (identification_type.country_id != country):
             self.l10n_latam_identification_type_id = self.env['l10n_latam.identification.type'].search(
                 [('country_id', '=', country.id), ('is_vat', '=', True)], limit=1) or self.env.ref(
-                    'l10n_latam_base.it_vat', raise_if_not_found=False)
+                'l10n_latam_base.it_vat', raise_if_not_found=False)

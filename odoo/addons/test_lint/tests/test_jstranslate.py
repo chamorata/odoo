@@ -7,7 +7,6 @@ import re
 
 from odoo import tools
 from odoo.modules import get_resource_from_path
-
 from . import lint_case
 
 _logger = logging.getLogger(__name__)
@@ -15,6 +14,7 @@ _logger = logging.getLogger(__name__)
 TSTRING_RE = re.compile(r'_t\(\s*`.*?\s*`\s*\)', re.DOTALL)
 EXPRESSION_RE = re.compile(r'\$\{.+?\}')
 UNDERSCORE_RE = re.compile(r'\b_\(\s*[\'"]')
+
 
 class TestJsTranslations(lint_case.LintCase):
 

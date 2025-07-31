@@ -2,7 +2,9 @@
 <odoo noupdate="1">
 
     <record model="ir.module.category" id="base.module_category_human_resources_recruitment">
-        <field name="description">Interviewer right will give access to all job position/applications where the employee is defined. It will allow to refuse, plan meetings.</field>
+        <field name="description">Interviewer right will give access to all job position/applications where the employee
+            is defined. It will allow to refuse, plan meetings.
+        </field>
         <field name="sequence">11</field>
     </record>
 
@@ -58,9 +60,10 @@
         <field name="model_id" ref="model_hr_applicant"/>
         <field name="domain_force">[
             '|',
-                ('job_id.interviewer_ids', 'in', user.id),
-                ('interviewer_ids', 'in', user.id),
-        ]</field>
+            ('job_id.interviewer_ids', 'in', user.id),
+            ('interviewer_ids', 'in', user.id),
+            ]
+        </field>
         <field name="perm_create" eval="False"/>
         <field name="perm_unlink" eval="False"/>
         <field name="groups" eval="[(4, ref('hr_recruitment.group_hr_recruitment_interviewer'))]"/>
@@ -71,9 +74,10 @@
         <field name="model_id" ref="model_hr_candidate"/>
         <field name="domain_force">[
             '|',
-                ('applicant_ids.job_id.interviewer_ids', 'in', user.id),
-                ('applicant_ids.interviewer_ids', 'in', user.id),
-        ]</field>
+            ('applicant_ids.job_id.interviewer_ids', 'in', user.id),
+            ('applicant_ids.interviewer_ids', 'in', user.id),
+            ]
+        </field>
         <field name="perm_create" eval="False"/>
         <field name="perm_unlink" eval="False"/>
         <field name="groups" eval="[(4, ref('hr_recruitment.group_hr_recruitment_interviewer'))]"/>

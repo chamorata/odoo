@@ -41,7 +41,9 @@
             <field name="model">discuss.channel</field>
             <field name="res_id" ref="im_livechat.livechat_channel_session_7"/>
             <field name="author_id" ref="base.partner_admin"/>
-            <field name="body">Joel Willis, you'll need our Inventory and Sales application to do so. You can try them for 15 days, FOR FREE :)</field>
+            <field name="body">Joel Willis, you'll need our Inventory and Sales application to do so. You can try them
+                for 15 days, FOR FREE :)
+            </field>
             <field name="message_type">comment</field>
             <field name="subtype_id" ref="mail.mt_comment"/>
             <field eval="DateTime.today() + relativedelta(months=-3, days=-6, minutes=28)" name="date"/>
@@ -73,6 +75,6 @@
             <field eval="True" name="consumed"/>
         </record>
         <function model="discuss.channel" name="rating_apply"
-            eval="([ref('im_livechat.livechat_channel_session_7')], 5, 'LIVECHAT_7', None, 'Super Job')"/>
+                  eval="([ref('im_livechat.livechat_channel_session_7')], 5, 'LIVECHAT_7', None, 'Super Job')"/>
     </data>
 </odoo>

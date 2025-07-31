@@ -37,7 +37,8 @@
             <field name="author_guest_id" ref="im_livechat.livechat_channel_session_6_guest"/>
             <field name="author_id"/>
             <field name="email_from">Visitor</field>
-            <field name="body">Hello, I'm a bit lost in the Invetory module, is there some documentation I could find?</field>
+            <field name="body">Hello, I'm a bit lost in the Invetory module, is there some documentation I could find?
+            </field>
             <field name="message_type">comment</field>
             <field name="subtype_id" ref="mail.mt_comment"/>
             <field eval="DateTime.today() + relativedelta(months=-3, days=-5, minutes=23)" name="date"/>
@@ -81,6 +82,6 @@
             <field eval="True" name="consumed"/>
         </record>
         <function model="discuss.channel" name="rating_apply"
-            eval="([ref('im_livechat.livechat_channel_session_6')], 5, 'LIVECHAT_6', None, 'Good Job')"/>
+                  eval="([ref('im_livechat.livechat_channel_session_6')], 5, 'LIVECHAT_6', None, 'Good Job')"/>
     </data>
 </odoo>

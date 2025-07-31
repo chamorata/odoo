@@ -37,7 +37,7 @@
             </search>
         </field>
     </record>
-    
+
     <record id="utm_medium_action" model="ir.actions.act_window">
         <field name="name">Mediums</field>
         <field name="res_model">utm.medium</field>
@@ -46,7 +46,8 @@
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create a Medium
-            </p><p>
+            </p>
+            <p>
                 UTM Mediums track the mean that was used to attract traffic (e.g. "Website", "X", ...).
             </p>
         </field>

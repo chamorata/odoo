@@ -2,7 +2,6 @@
 import contextlib
 import functools
 import logging
-from lxml import etree
 import os
 import unittest
 
@@ -10,18 +9,19 @@ import pytz
 import werkzeug
 import werkzeug.routing
 import werkzeug.utils
-
-import odoo
-from odoo import api, models, tools
-from odoo import SUPERUSER_ID
-from odoo.exceptions import AccessError
-from odoo.http import request
-from odoo.tools.json import scriptsafe as json_scriptsafe
-from odoo.tools.safe_eval import safe_eval
-from odoo.osv.expression import FALSE_DOMAIN
-from odoo.addons.base.models.ir_http import EXTENSION_TO_WEB_MIMETYPES
+from lxml import etree
 from odoo.addons.http_routing.models import ir_http
 from odoo.addons.portal.controllers.portal import _build_url_w_params
+
+import odoo
+from odoo import SUPERUSER_ID
+from odoo import api, models, tools
+from odoo.addons.base.models.ir_http import EXTENSION_TO_WEB_MIMETYPES
+from odoo.exceptions import AccessError
+from odoo.http import request
+from odoo.osv.expression import FALSE_DOMAIN
+from odoo.tools.json import scriptsafe as json_scriptsafe
+from odoo.tools.safe_eval import safe_eval
 
 logger = logging.getLogger(__name__)
 
@@ -98,15 +98,15 @@ class Http(models.AbstractModel):
             path, sep, qs = (url_from or '').partition('#')
 
         if (
-            path
-            # don't try to match route if we know that no rewrite has been loaded.
-            and request.env['ir.http']._rewrite_len(request.website_routing)
-            and (
+                path
+                # don't try to match route if we know that no rewrite has been loaded.
+                and request.env['ir.http']._rewrite_len(request.website_routing)
+                and (
                 len(path) > 1
                 and path.startswith('/')
                 and '/static/' not in path
                 and not path.startswith('/web/')
-            )
+        )
         ):
             url_from, _ = request.env['ir.http'].url_rewrite(path)
             url_from = url_from if not qs else f"{url_from}{sep}{qs}"
@@ -119,8 +119,9 @@ class Http(models.AbstractModel):
         return len(rewrites)
 
     def _get_rewrites(self, website_id):
-        domain = [('redirect_type', 'in', ('308', '404')), '|', ('website_id', '=', False), ('website_id', '=', website_id)]
-        return  {x.url_from: x for x in self.env['website.rewrite'].sudo().search(domain)}
+        domain = [('redirect_type', 'in', ('308', '404')), '|', ('website_id', '=', False),
+                  ('website_id', '=', website_id)]
+        return {x.url_from: x for x in self.env['website.rewrite'].sudo().search(domain)}
 
     def _generate_routing_rules(self, modules, converters):
         if not request:
@@ -327,15 +328,15 @@ class Http(models.AbstractModel):
             return request.redirect(path, code=301)
 
         if (
-            page
-            and (request.env.user.has_group('website.group_website_designer') or page.is_visible)
-            and (
+                page
+                and (request.env.user.has_group('website.group_website_designer') or page.is_visible)
+                and (
                 # If a generic page (niche case) has been COWed and that COWed
                 # page received a URL change, it should not let you access the
                 # generic page anymore, despite having a different URL.
                 page.website_id
                 or not page.view_id._get_specific_views().filtered(lambda view: view.website_id == request.website)
-            )
+        )
         ):
             _, ext = os.path.splitext(req_page)
             response = request.render(page.view_id.id, {
@@ -384,11 +385,12 @@ class Http(models.AbstractModel):
     @classmethod
     def _get_exception_code_values(cls, exception):
         code, values = super()._get_exception_code_values(exception)
-        if isinstance(exception, werkzeug.exceptions.NotFound) and request.env.user.has_group('website.group_website_designer'):
+        if isinstance(exception, werkzeug.exceptions.NotFound) and request.env.user.has_group(
+                'website.group_website_designer'):
             code = 'page_404'
             values['path'] = request.httprequest.path[1:]
         if isinstance(exception, werkzeug.exceptions.Forbidden) and \
-           exception.description == "website_visibility_password_required":
+                exception.description == "website_visibility_password_required":
             code = 'protected_403'
             values['path'] = request.httprequest.path
         return (code, values)
@@ -432,7 +434,8 @@ class Http(models.AbstractModel):
     def get_frontend_session_info(self):
         session_info = super(Http, self).get_frontend_session_info()
         geoip_country_code = request.geoip.country_code
-        geoip_phone_code = request.env['res.country']._phone_code_for(geoip_country_code) if geoip_country_code else None
+        geoip_phone_code = request.env['res.country']._phone_code_for(
+            geoip_country_code) if geoip_country_code else None
         session_info.update({
             'is_website_user': request.env.user.id == request.website.user_id.id,
             'geoip_country_code': geoip_country_code,

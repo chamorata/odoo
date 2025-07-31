@@ -6,7 +6,8 @@
             <field name="model">mail.compose.message</field>
             <field name="groups_id" eval="[Command.link(ref('base.group_user'))]"/>
             <field name="arch" type="xml">
-                <form string="Compose Email" class="pt-0 pb-0 o_mail_composer_form" disable_autofocus="1" js_class="mail_composer_form">
+                <form string="Compose Email" class="pt-0 pb-0 o_mail_composer_form" disable_autofocus="1"
+                      js_class="mail_composer_form">
                     <group>
                         <!-- truly invisible fields for control and options -->
                         <field name="author_id" invisible="1"/>
@@ -34,28 +35,34 @@
                         <field name="use_exclusion_list" invisible="1"/>
                         <!-- visible wizard -->
                         <field name="email_from"
-                            invisible="composition_mode != 'mass_mail'"/>
-                        <label for="partner_ids" string="To" invisible="composition_mode != 'comment' or subtype_is_log"/>
+                               invisible="composition_mode != 'mass_mail'"/>
+                        <label for="partner_ids" string="To"
+                               invisible="composition_mode != 'comment' or subtype_is_log"/>
                         <div groups="base.group_user" invisible="composition_mode != 'comment' or subtype_is_log">
-                            <widget invisible="not model or composition_mode == 'mass_mail'" name="mail_composer_recipient_list" thread_model_field="model" thread_id_field="res_ids"/>
-                            <field name="partner_ids" widget="many2many_tags_email" placeholder="Add contacts to notify..."
-                                options="{'no_quick_create': True}" context="{'show_email':True, 'form_view_ref': 'base.view_partner_simple_form'}"/>
+                            <widget invisible="not model or composition_mode == 'mass_mail'"
+                                    name="mail_composer_recipient_list" thread_model_field="model"
+                                    thread_id_field="res_ids"/>
+                            <field name="partner_ids" widget="many2many_tags_email"
+                                   placeholder="Add contacts to notify..."
+                                   options="{'no_quick_create': True}"
+                                   context="{'show_email':True, 'form_view_ref': 'base.view_partner_simple_form'}"/>
                         </div>
                         <field name="subject" placeholder="Welcome to MyCompany!" required="True"/>
                     </group>
                     <field name="can_edit_body" invisible="1"/>
                     <div invisible="composition_mode == 'mass_mail'">
                         <field name="body" widget="html_composer_message" class="oe-bordered-editor"
-                            placeholder="Write your message here..." readonly="not can_edit_body" force_save="1"
-                            options="{'dynamic_placeholder': true, 'dynamic_placeholder_model_reference_field': 'render_model'}"/>
+                               placeholder="Write your message here..." readonly="not can_edit_body" force_save="1"
+                               options="{'dynamic_placeholder': true, 'dynamic_placeholder_model_reference_field': 'render_model'}"/>
                         <field name="attachment_ids" widget="mail_composer_attachment_list"/>
                     </div>
                     <notebook invisible="composition_mode != 'mass_mail'">
                         <page string="Content" name="page_content">
                             <div>
                                 <field name="body" widget="html_composer_message" class="oe-bordered-editor"
-                                    placeholder="Write your message here..." readonly="not can_edit_body" force_save="1"
-                                    options="{'dynamic_placeholder': true, 'dynamic_placeholder_model_reference_field': 'render_model'}"/>
+                                       placeholder="Write your message here..." readonly="not can_edit_body"
+                                       force_save="1"
+                                       options="{'dynamic_placeholder': true, 'dynamic_placeholder_model_reference_field': 'render_model'}"/>
                                 <field name="attachment_ids" widget="mail_composer_attachment_list"/>
                             </div>
                         </page>
@@ -64,9 +71,10 @@
                             <field name="reply_to_force_new" invisible="1"/>
                             <field name="reply_to_mode" invisible="composition_mode != 'mass_mail'" widget="radio"/>
                             <group>
-                                <field name="reply_to" string="Reply-to Address" placeholder='e.g: "info@mycompany.odoo.com"'
-                                    invisible="reply_to_mode == 'update' or composition_mode != 'mass_mail'"
-                                    required="reply_to_mode != 'update' and composition_mode == 'mass_mail'"/>
+                                <field name="reply_to" string="Reply-to Address"
+                                       placeholder='e.g: "info@mycompany.odoo.com"'
+                                       invisible="reply_to_mode == 'update' or composition_mode != 'mass_mail'"
+                                       required="reply_to_mode != 'update' and composition_mode == 'mass_mail'"/>
                             </group>
                         </page>
                     </notebook>
@@ -77,9 +85,11 @@
                         <button string="Log" name="action_send_mail"
                                 type="object" class="btn-primary" data-hotkey="q"
                                 invisible="not subtype_is_log or composition_mode =='comment' and not composition_batch"/>
-                        <widget name="mail_composer_send_dropdown" invisible="composition_batch or composition_mode != 'comment'"/>
-                        <button string="Discard" class="btn-secondary w-auto" special="cancel" data-hotkey="x" />
-                        <field name="attachment_ids" widget="mail_composer_attachment_selector" invisible="not can_edit_body"/>
+                        <widget name="mail_composer_send_dropdown"
+                                invisible="composition_batch or composition_mode != 'comment'"/>
+                        <button string="Discard" class="btn-secondary w-auto" special="cancel" data-hotkey="x"/>
+                        <field name="attachment_ids" widget="mail_composer_attachment_selector"
+                               invisible="not can_edit_body"/>
                         <field name="template_id" widget="mail_composer_template_selector"/>
                         <field name="body" widget="mail_composer_chatgpt" invisible="not can_edit_body"/>
                     </footer>

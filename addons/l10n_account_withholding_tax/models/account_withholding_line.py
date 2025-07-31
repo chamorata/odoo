@@ -266,8 +266,8 @@ class AccountWithholdingLine(models.AbstractModel):
 
     def _update_placeholders(self):
         """ Update the placeholders for the lines in self; updating them sequentially so that the placeholders make sense. """
-        lines_per_sequence = self\
-            .sorted()\
+        lines_per_sequence = self \
+            .sorted() \
             .grouped(lambda l: l.placeholder_type == 'given_by_sequence' and l.withholding_sequence_id)
         for sequence, lines in lines_per_sequence.items():
             if sequence:
@@ -299,7 +299,8 @@ class AccountWithholdingLine(models.AbstractModel):
         """ The account on the line cannot be one deemed as liquidity account, otherwise it will cause issues with the final entry. """
         for line in self:
             if line.account_id in line._get_valid_liquidity_accounts():
-                raise UserError(line.env._('The account "%(account_name)s" is not valid to use on withholding lines.', account_name=line.account_id.display_name))
+                raise UserError(line.env._('The account "%(account_name)s" is not valid to use on withholding lines.',
+                                           account_name=line.account_id.display_name))
 
     # ----------------
     # Business methods
@@ -314,7 +315,8 @@ class AccountWithholdingLine(models.AbstractModel):
         company = self.company_id
         currency = self.comodel_currency_id
         conversion_date = self.comodel_date
-        conversion_rate = self.env['res.currency']._get_conversion_rate(company.currency_id, currency, company, conversion_date)
+        conversion_rate = self.env['res.currency']._get_conversion_rate(company.currency_id, currency, company,
+                                                                        conversion_date)
         payment_type = self.comodel_payment_type
         sign = 1 if payment_type == 'inbound' else -1
         # We need to make sure that we use the actual amounts set on the line; in case of manual adjustment.
@@ -358,7 +360,8 @@ class AccountWithholdingLine(models.AbstractModel):
         # Check names first to not consume sequences if any is missing
         for line in self:
             if not line.name and not line.withholding_sequence_id:
-                raise UserError(self.env._('Please enter the withholding number for the tax %(tax_name)s', tax_name=line.tax_id.name))
+                raise UserError(self.env._('Please enter the withholding number for the tax %(tax_name)s',
+                                           tax_name=line.tax_id.name))
 
         # Convert them to base lines to compute the taxes.
         base_lines = []
@@ -424,7 +427,8 @@ class AccountWithholdingLine(models.AbstractModel):
         """ Construct and return a domain that will filter withholding taxes available for this company and payment type. """
         filter_domain = models.check_company_domain_parent_of(self, company)
         payment_type = 'purchase' if payment_type == 'outbound' else 'sale'
-        return expression.AND([filter_domain, [('type_tax_use', '=', payment_type), ('is_withholding_tax_on_payment', '=', True)]])
+        return expression.AND(
+            [filter_domain, [('type_tax_use', '=', payment_type), ('is_withholding_tax_on_payment', '=', True)]])
 
     def _need_update_withholding_lines_placeholder(self):
         """ Determines if the lines' placeholders needs update or not. """

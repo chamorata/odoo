@@ -1,37 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<odoo><data noupdate="0">
+<odoo>
+    <data noupdate="0">
 
-    <record id="survey_demo_burger_quiz" model="survey.survey">
-        <field name="title">Burger Quiz</field>
-        <field name="access_token">burger00-quiz-1234-abcd-344ca2tgb31e</field>
-        <field name="user_id" ref="base.user_demo"/>
-        <field name="access_mode">public</field>
-        <field name="users_can_go_back" eval="True"/>
-        <field name="scoring_type">scoring_with_answers</field>
-        <field name="scoring_success_min">55</field>
-        <field name="is_time_limited" >limited</field>
-        <field name="time_limit" >10.0</field>
-        <field name="questions_layout">page_per_question</field>
-        <field name="description" type="html">
-            <p>Choose your favourite subject and show how good you are. Ready?</p></field>
-        <field name="background_image" type="base64" file="survey/static/src/img/burger_quiz_background.webp"/>
-    </record>
+        <record id="survey_demo_burger_quiz" model="survey.survey">
+            <field name="title">Burger Quiz</field>
+            <field name="access_token">burger00-quiz-1234-abcd-344ca2tgb31e</field>
+            <field name="user_id" ref="base.user_demo"/>
+            <field name="access_mode">public</field>
+            <field name="users_can_go_back" eval="True"/>
+            <field name="scoring_type">scoring_with_answers</field>
+            <field name="scoring_success_min">55</field>
+            <field name="is_time_limited">limited</field>
+            <field name="time_limit">10.0</field>
+            <field name="questions_layout">page_per_question</field>
+            <field name="description" type="html">
+                <p>Choose your favourite subject and show how good you are. Ready?</p>
+            </field>
+            <field name="background_image" type="base64" file="survey/static/src/img/burger_quiz_background.webp"/>
+        </record>
 
-    <!-- Page 1: Start -->
-    <record id="survey_demo_burger_quiz_p1" model="survey.question">
-        <field name="title">Start</field>
-        <field name="survey_id" ref="survey_demo_burger_quiz"/>
-        <field name="sequence">1</field>
-        <field name="question_type" eval="False"/>
-        <field name="is_page" eval="True"/>
-    </record>
-    <record id="survey_demo_burger_quiz_p1_q1" model="survey.question">
-        <field name="survey_id" ref="survey_demo_burger_quiz"/>
-        <field name="sequence">2</field>
-        <field name="title">Pick a subject</field>
-        <field name="question_type">multiple_choice</field>
-        <field name="constr_mandatory" eval="True"/>
-    </record>
+        <!-- Page 1: Start -->
+        <record id="survey_demo_burger_quiz_p1" model="survey.question">
+            <field name="title">Start</field>
+            <field name="survey_id" ref="survey_demo_burger_quiz"/>
+            <field name="sequence">1</field>
+            <field name="question_type" eval="False"/>
+            <field name="is_page" eval="True"/>
+        </record>
+        <record id="survey_demo_burger_quiz_p1_q1" model="survey.question">
+            <field name="survey_id" ref="survey_demo_burger_quiz"/>
+            <field name="sequence">2</field>
+            <field name="title">Pick a subject</field>
+            <field name="question_type">multiple_choice</field>
+            <field name="constr_mandatory" eval="True"/>
+        </record>
         <record id="survey_demo_burger_quiz_p1_q1_sug1" model="survey.question.answer">
             <field name="question_id" ref="survey_demo_burger_quiz_p1_q1"/>
             <field name="sequence">1</field>
@@ -53,22 +55,23 @@
             <field name="value">Art &amp; Culture</field>
         </record>
 
-    <!-- Page 2 : Geography -->
-    <record id="survey_demo_burger_quiz_p2" model="survey.question">
-        <field name="title">Geography</field>
-        <field name="survey_id" ref="survey_demo_burger_quiz"/>
-        <field name="sequence">100</field>
-        <field name="question_type" eval="False"/>
-        <field name="is_page" eval="True"/>
-    </record>
-    <record id="survey_demo_burger_quiz_p2_q1" model="survey.question">
-        <field name="survey_id" ref="survey_demo_burger_quiz"/>
-        <field name="sequence">110</field>
-        <field name="title">How long is the White Nile river?</field>
-        <field name="question_type">simple_choice</field>
-        <field name="constr_mandatory" eval="True"/>
-        <field name="triggering_answer_ids" eval="[Command.link(ref('survey.survey_demo_burger_quiz_p1_q1_sug1'))]"/>
-    </record>
+        <!-- Page 2 : Geography -->
+        <record id="survey_demo_burger_quiz_p2" model="survey.question">
+            <field name="title">Geography</field>
+            <field name="survey_id" ref="survey_demo_burger_quiz"/>
+            <field name="sequence">100</field>
+            <field name="question_type" eval="False"/>
+            <field name="is_page" eval="True"/>
+        </record>
+        <record id="survey_demo_burger_quiz_p2_q1" model="survey.question">
+            <field name="survey_id" ref="survey_demo_burger_quiz"/>
+            <field name="sequence">110</field>
+            <field name="title">How long is the White Nile river?</field>
+            <field name="question_type">simple_choice</field>
+            <field name="constr_mandatory" eval="True"/>
+            <field name="triggering_answer_ids"
+                   eval="[Command.link(ref('survey.survey_demo_burger_quiz_p1_q1_sug1'))]"/>
+        </record>
         <record id="survey_demo_burger_quiz_p2_q1_sug1" model="survey.question.answer">
             <field name="question_id" ref="survey_demo_burger_quiz_p2_q1"/>
             <field name="sequence">1</field>
@@ -88,14 +91,15 @@
         </record>
         <!-- TODO DBE: Add free text pages with corrections. 1450 km is Blue Nile, 6500 km is the total Nile lenght. -->
 
-    <record id="survey_demo_burger_quiz_p2_q2" model="survey.question">
-        <field name="survey_id" ref="survey_demo_burger_quiz"/>
-        <field name="sequence">120</field>
-        <field name="title">What is the biggest city in the world?</field>
-        <field name="question_type">simple_choice</field>
-        <field name="constr_mandatory" eval="True"/>
-        <field name="triggering_answer_ids" eval="[Command.link(ref('survey.survey_demo_burger_quiz_p1_q1_sug1'))]"/>
-    </record>
+        <record id="survey_demo_burger_quiz_p2_q2" model="survey.question">
+            <field name="survey_id" ref="survey_demo_burger_quiz"/>
+            <field name="sequence">120</field>
+            <field name="title">What is the biggest city in the world?</field>
+            <field name="question_type">simple_choice</field>
+            <field name="constr_mandatory" eval="True"/>
+            <field name="triggering_answer_ids"
+                   eval="[Command.link(ref('survey.survey_demo_burger_quiz_p1_q1_sug1'))]"/>
+        </record>
         <record id="survey_demo_burger_quiz_p2_q2_sug1" model="survey.question.answer">
             <field name="question_id" ref="survey_demo_burger_quiz_p2_q2"/>
             <field name="sequence">1</field>
@@ -119,14 +123,15 @@
             <field name="value">Istanbul</field>
         </record>
 
-    <record id="survey_demo_burger_quiz_p2_q3" model="survey.question">
-        <field name="survey_id" ref="survey_demo_burger_quiz"/>
-        <field name="sequence">130</field>
-        <field name="title">Which is the highest volcano in Europe?</field>
-        <field name="question_type">simple_choice</field>
-        <field name="constr_mandatory" eval="True"/>
-        <field name="triggering_answer_ids" eval="[Command.link(ref('survey.survey_demo_burger_quiz_p1_q1_sug1'))]"/>
-    </record>
+        <record id="survey_demo_burger_quiz_p2_q3" model="survey.question">
+            <field name="survey_id" ref="survey_demo_burger_quiz"/>
+            <field name="sequence">130</field>
+            <field name="title">Which is the highest volcano in Europe?</field>
+            <field name="question_type">simple_choice</field>
+            <field name="constr_mandatory" eval="True"/>
+            <field name="triggering_answer_ids"
+                   eval="[Command.link(ref('survey.survey_demo_burger_quiz_p1_q1_sug1'))]"/>
+        </record>
         <record id="survey_demo_burger_quiz_p2_q3_sug1" model="survey.question.answer">
             <field name="question_id" ref="survey_demo_burger_quiz_p2_q3"/>
             <field name="sequence">1</field>
@@ -150,22 +155,23 @@
             <field name="answer_score">10</field>
         </record>
 
-    <!-- Page 3 : History -->
-    <record id="survey_demo_burger_quiz_p3" model="survey.question">
-        <field name="title">History</field>
-        <field name="survey_id" ref="survey_demo_burger_quiz"/>
-        <field name="sequence">200</field>
-        <field name="question_type" eval="False"/>
-        <field name="is_page" eval="True"/>
-    </record>
-    <record id="survey_demo_burger_quiz_p3_q1" model="survey.question">
-        <field name="survey_id" ref="survey_demo_burger_quiz"/>
-        <field name="sequence">210</field>
-        <field name="title">When did Genghis Khan die?</field>
-        <field name="question_type">simple_choice</field>
-        <field name="constr_mandatory" eval="True"/>
-        <field name="triggering_answer_ids" eval="[Command.link(ref('survey.survey_demo_burger_quiz_p1_q1_sug2'))]"/>
-    </record>
+        <!-- Page 3 : History -->
+        <record id="survey_demo_burger_quiz_p3" model="survey.question">
+            <field name="title">History</field>
+            <field name="survey_id" ref="survey_demo_burger_quiz"/>
+            <field name="sequence">200</field>
+            <field name="question_type" eval="False"/>
+            <field name="is_page" eval="True"/>
+        </record>
+        <record id="survey_demo_burger_quiz_p3_q1" model="survey.question">
+            <field name="survey_id" ref="survey_demo_burger_quiz"/>
+            <field name="sequence">210</field>
+            <field name="title">When did Genghis Khan die?</field>
+            <field name="question_type">simple_choice</field>
+            <field name="constr_mandatory" eval="True"/>
+            <field name="triggering_answer_ids"
+                   eval="[Command.link(ref('survey.survey_demo_burger_quiz_p1_q1_sug2'))]"/>
+        </record>
         <record id="survey_demo_burger_quiz_p3_q1_sug1" model="survey.question.answer">
             <field name="question_id" ref="survey_demo_burger_quiz_p3_q1"/>
             <field name="sequence">1</field>
@@ -184,14 +190,15 @@
             <field name="value">1055</field> <!-- Emperor Xingzong (Liao Dynasty) -->
         </record>
 
-    <record id="survey_demo_burger_quiz_p3_q2" model="survey.question">
-        <field name="survey_id" ref="survey_demo_burger_quiz"/>
-        <field name="sequence">220</field>
-        <field name="title">Who is the architect of the Great Pyramid of Giza?</field>
-        <field name="question_type">simple_choice</field>
-        <field name="constr_mandatory" eval="True"/>
-        <field name="triggering_answer_ids" eval="[Command.link(ref('survey.survey_demo_burger_quiz_p1_q1_sug2'))]"/>
-    </record>
+        <record id="survey_demo_burger_quiz_p3_q2" model="survey.question">
+            <field name="survey_id" ref="survey_demo_burger_quiz"/>
+            <field name="sequence">220</field>
+            <field name="title">Who is the architect of the Great Pyramid of Giza?</field>
+            <field name="question_type">simple_choice</field>
+            <field name="constr_mandatory" eval="True"/>
+            <field name="triggering_answer_ids"
+                   eval="[Command.link(ref('survey.survey_demo_burger_quiz_p1_q1_sug2'))]"/>
+        </record>
         <record id="survey_demo_burger_quiz_p3_q2_sug1" model="survey.question.answer">
             <field name="question_id" ref="survey_demo_burger_quiz_p3_q2"/>
             <field name="sequence">1</field>
@@ -215,14 +222,15 @@
             <field name="value">Papyrus</field>
         </record>
 
-    <record id="survey_demo_burger_quiz_p3_q3" model="survey.question">
-        <field name="survey_id" ref="survey_demo_burger_quiz"/>
-        <field name="sequence">230</field>
-        <field name="title">How many years did the 100 years war last?</field>
-        <field name="question_type">simple_choice</field>
-        <field name="constr_mandatory" eval="True"/>
-        <field name="triggering_answer_ids" eval="[Command.link(ref('survey.survey_demo_burger_quiz_p1_q1_sug2'))]"/>
-    </record>
+        <record id="survey_demo_burger_quiz_p3_q3" model="survey.question">
+            <field name="survey_id" ref="survey_demo_burger_quiz"/>
+            <field name="sequence">230</field>
+            <field name="title">How many years did the 100 years war last?</field>
+            <field name="question_type">simple_choice</field>
+            <field name="constr_mandatory" eval="True"/>
+            <field name="triggering_answer_ids"
+                   eval="[Command.link(ref('survey.survey_demo_burger_quiz_p1_q1_sug2'))]"/>
+        </record>
         <record id="survey_demo_burger_quiz_p3_q3_sug1" model="survey.question.answer">
             <field name="question_id" ref="survey_demo_burger_quiz_p3_q3"/>
             <field name="sequence">1</field>
@@ -246,22 +254,25 @@
             <field name="value">127 years</field>
         </record>
 
-    <!-- Page 4 : Sciences -->
-    <record id="survey_demo_burger_quiz_p4" model="survey.question">
-        <field name="title">Sciences</field>
-        <field name="survey_id" ref="survey_demo_burger_quiz"/>
-        <field name="sequence">300</field>
-        <field name="question_type" eval="False"/>
-        <field name="is_page" eval="True"/>
-    </record>
-    <record id="survey_demo_burger_quiz_p4_q1" model="survey.question">
-        <field name="survey_id" ref="survey_demo_burger_quiz"/>
-        <field name="sequence">310</field>
-        <field name="title">Who received a Nobel prize in Physics for the discovery of neutrino oscillations, which shows that neutrinos have mass?</field>
-        <field name="question_type">multiple_choice</field>
-        <field name="constr_mandatory" eval="True"/>
-        <field name="triggering_answer_ids" eval="[Command.link(ref('survey.survey_demo_burger_quiz_p1_q1_sug3'))]"/>
-    </record>
+        <!-- Page 4 : Sciences -->
+        <record id="survey_demo_burger_quiz_p4" model="survey.question">
+            <field name="title">Sciences</field>
+            <field name="survey_id" ref="survey_demo_burger_quiz"/>
+            <field name="sequence">300</field>
+            <field name="question_type" eval="False"/>
+            <field name="is_page" eval="True"/>
+        </record>
+        <record id="survey_demo_burger_quiz_p4_q1" model="survey.question">
+            <field name="survey_id" ref="survey_demo_burger_quiz"/>
+            <field name="sequence">310</field>
+            <field name="title">Who received a Nobel prize in Physics for the discovery of neutrino oscillations, which
+                shows that neutrinos have mass?
+            </field>
+            <field name="question_type">multiple_choice</field>
+            <field name="constr_mandatory" eval="True"/>
+            <field name="triggering_answer_ids"
+                   eval="[Command.link(ref('survey.survey_demo_burger_quiz_p1_q1_sug3'))]"/>
+        </record>
         <record id="survey_demo_burger_quiz_p4_q1_sug1" model="survey.question.answer">
             <field name="question_id" ref="survey_demo_burger_quiz_p4_q1"/>
             <field name="sequence">1</field>
@@ -287,14 +298,15 @@
             <field name="value">Willard S. Boyle</field>
         </record>
 
-    <record id="survey_demo_burger_quiz_p4_q2" model="survey.question">
-        <field name="survey_id" ref="survey_demo_burger_quiz"/>
-        <field name="sequence">320</field>
-        <field name="title">What is, approximately, the critical mass of plutonium-239?</field>
-        <field name="question_type">simple_choice</field>
-        <field name="constr_mandatory" eval="True"/>
-        <field name="triggering_answer_ids" eval="[Command.link(ref('survey.survey_demo_burger_quiz_p1_q1_sug3'))]"/>
-    </record>
+        <record id="survey_demo_burger_quiz_p4_q2" model="survey.question">
+            <field name="survey_id" ref="survey_demo_burger_quiz"/>
+            <field name="sequence">320</field>
+            <field name="title">What is, approximately, the critical mass of plutonium-239?</field>
+            <field name="question_type">simple_choice</field>
+            <field name="constr_mandatory" eval="True"/>
+            <field name="triggering_answer_ids"
+                   eval="[Command.link(ref('survey.survey_demo_burger_quiz_p1_q1_sug3'))]"/>
+        </record>
         <record id="survey_demo_burger_quiz_p4_q2_sug1" model="survey.question.answer">
             <field name="question_id" ref="survey_demo_burger_quiz_p4_q2"/>
             <field name="sequence">1</field>
@@ -318,14 +330,15 @@
             <field name="value">47 kg</field>
         </record>
 
-    <record id="survey_demo_burger_quiz_p4_q3" model="survey.question">
-        <field name="survey_id" ref="survey_demo_burger_quiz"/>
-        <field name="sequence">330</field>
-        <field name="title">Can Humans ever directly see a photon?</field>
-        <field name="question_type">simple_choice</field>
-        <field name="constr_mandatory" eval="True"/>
-        <field name="triggering_answer_ids" eval="[Command.link(ref('survey.survey_demo_burger_quiz_p1_q1_sug3'))]"/>
-    </record>
+        <record id="survey_demo_burger_quiz_p4_q3" model="survey.question">
+            <field name="survey_id" ref="survey_demo_burger_quiz"/>
+            <field name="sequence">330</field>
+            <field name="title">Can Humans ever directly see a photon?</field>
+            <field name="question_type">simple_choice</field>
+            <field name="constr_mandatory" eval="True"/>
+            <field name="triggering_answer_ids"
+                   eval="[Command.link(ref('survey.survey_demo_burger_quiz_p1_q1_sug3'))]"/>
+        </record>
         <record id="survey_demo_burger_quiz_p4_q3_sug1" model="survey.question.answer">
             <field name="question_id" ref="survey_demo_burger_quiz_p4_q3"/>
             <field name="sequence">1</field>
@@ -339,22 +352,23 @@
             <field name="value">No, it's too small for the human eye.</field>
         </record>
 
-    <!-- Page 5 : Art & Culture -->
-    <record id="survey_demo_burger_quiz_p5" model="survey.question">
-        <field name="title">Art &amp; Culture</field>
-        <field name="survey_id" ref="survey_demo_burger_quiz"/>
-        <field name="sequence">400</field>
-        <field name="question_type" eval="False"/>
-        <field name="is_page" eval="True"/>
-    </record>
-    <record id="survey_demo_burger_quiz_p5_q1" model="survey.question">
-        <field name="survey_id" ref="survey_demo_burger_quiz"/>
-        <field name="sequence">410</field>
-        <field name="title">Which Musician is not in the 27th Club?</field>
-        <field name="question_type">multiple_choice</field>
-        <field name="constr_mandatory" eval="True"/>
-        <field name="triggering_answer_ids" eval="[Command.link(ref('survey.survey_demo_burger_quiz_p1_q1_sug4'))]"/>
-    </record>
+        <!-- Page 5 : Art & Culture -->
+        <record id="survey_demo_burger_quiz_p5" model="survey.question">
+            <field name="title">Art &amp; Culture</field>
+            <field name="survey_id" ref="survey_demo_burger_quiz"/>
+            <field name="sequence">400</field>
+            <field name="question_type" eval="False"/>
+            <field name="is_page" eval="True"/>
+        </record>
+        <record id="survey_demo_burger_quiz_p5_q1" model="survey.question">
+            <field name="survey_id" ref="survey_demo_burger_quiz"/>
+            <field name="sequence">410</field>
+            <field name="title">Which Musician is not in the 27th Club?</field>
+            <field name="question_type">multiple_choice</field>
+            <field name="constr_mandatory" eval="True"/>
+            <field name="triggering_answer_ids"
+                   eval="[Command.link(ref('survey.survey_demo_burger_quiz_p1_q1_sug4'))]"/>
+        </record>
         <record id="survey_demo_burger_quiz_p5_q1_sug1" model="survey.question.answer">
             <field name="question_id" ref="survey_demo_burger_quiz_p5_q1"/>
             <field name="sequence">1</field>
@@ -380,24 +394,25 @@
             <field name="answer_score">5</field>
         </record>
 
-    <record id="survey_demo_burger_quiz_p5_q2" model="survey.question">
-        <field name="survey_id" ref="survey_demo_burger_quiz"/>
-        <field name="sequence">420</field>
-        <field name="title">Which painting/drawing was not made by Pablo Picasso?</field>
-        <field name="question_type">simple_choice</field>
-        <field name="constr_mandatory" eval="True"/>
-        <field name="triggering_answer_ids" eval="[Command.link(ref('survey.survey_demo_burger_quiz_p1_q1_sug4'))]"/>
-    </record>
+        <record id="survey_demo_burger_quiz_p5_q2" model="survey.question">
+            <field name="survey_id" ref="survey_demo_burger_quiz"/>
+            <field name="sequence">420</field>
+            <field name="title">Which painting/drawing was not made by Pablo Picasso?</field>
+            <field name="question_type">simple_choice</field>
+            <field name="constr_mandatory" eval="True"/>
+            <field name="triggering_answer_ids"
+                   eval="[Command.link(ref('survey.survey_demo_burger_quiz_p1_q1_sug4'))]"/>
+        </record>
         <record id="survey_demo_burger_quiz_p5_q2_sug1" model="survey.question.answer">
             <field name="question_id" ref="survey_demo_burger_quiz_p5_q2"/>
             <field name="sequence">1</field>
-            <field name="value"> </field>
+            <field name="value"></field>
             <field name="value_image" type="base64" file="survey/static/src/img/burger_quiz_guernica.jpg"/>
         </record>
         <record id="survey_demo_burger_quiz_p5_q2_sug2" model="survey.question.answer">
             <field name="question_id" ref="survey_demo_burger_quiz_p5_q2"/>
             <field name="sequence">2</field>
-            <field name="value"> </field>
+            <field name="value"></field>
             <field name="value_image" type="base64" file="survey/static/src/img/burger_quiz_cubism_klein.jpg"/>
             <field name="is_correct" eval="True"/>
             <field name="answer_score">10</field>
@@ -405,33 +420,38 @@
         <record id="survey_demo_burger_quiz_p5_q2_sug3" model="survey.question.answer">
             <field name="question_id" ref="survey_demo_burger_quiz_p5_q2"/>
             <field name="sequence">3</field>
-            <field name="value"> </field>
+            <field name="value"></field>
             <field name="value_image" type="base64" file="survey/static/src/img/burger_quiz_don_quixote.jpg"/>
         </record>
         <record id="survey_demo_burger_quiz_p5_q2_sug4" model="survey.question.answer">
             <field name="question_id" ref="survey_demo_burger_quiz_p5_q2"/>
             <field name="sequence">4</field>
-            <field name="value"> </field>
+            <field name="value"></field>
             <field name="value_image" type="base64" file="survey/static/src/img/burger_quiz_self_portrait.jpg"/>
         </record>
 
-    <record id="survey_demo_burger_quiz_p5_q3" model="survey.question">
-        <field name="survey_id" ref="survey_demo_burger_quiz"/>
-        <field name="sequence">430</field>
-        <field name="title">Which quote is from Jean-Claude Van Damme</field>
-        <field name="question_type">simple_choice</field>
-        <field name="constr_mandatory" eval="True"/>
-        <field name="triggering_answer_ids" eval="[Command.link(ref('survey.survey_demo_burger_quiz_p1_q1_sug4'))]"/>
-    </record>
+        <record id="survey_demo_burger_quiz_p5_q3" model="survey.question">
+            <field name="survey_id" ref="survey_demo_burger_quiz"/>
+            <field name="sequence">430</field>
+            <field name="title">Which quote is from Jean-Claude Van Damme</field>
+            <field name="question_type">simple_choice</field>
+            <field name="constr_mandatory" eval="True"/>
+            <field name="triggering_answer_ids"
+                   eval="[Command.link(ref('survey.survey_demo_burger_quiz_p1_q1_sug4'))]"/>
+        </record>
         <record id="survey_demo_burger_quiz_p5_q3_sug1" model="survey.question.answer">
             <field name="question_id" ref="survey_demo_burger_quiz_p5_q3"/>
             <field name="sequence">1</field>
-            <field name="value">I’ve never really wanted to go to Japan. Simply because I don’t like eating fish. And I know that’s very popular out there in Africa.</field> <!-- Britney Spears -->
+            <field name="value">I’ve never really wanted to go to Japan. Simply because I don’t like eating fish. And I
+                know that’s very popular out there in Africa.
+            </field> <!-- Britney Spears -->
         </record>
         <record id="survey_demo_burger_quiz_p5_q3_sug2" model="survey.question.answer">
             <field name="question_id" ref="survey_demo_burger_quiz_p5_q3"/>
             <field name="sequence">2</field>
-            <field name="value">I am fascinated by air. If you remove the air from the sky, all the birds would fall to the ground. And all the planes, too.</field>
+            <field name="value">I am fascinated by air. If you remove the air from the sky, all the birds would fall to
+                the ground. And all the planes, too.
+            </field>
             <field name="is_correct" eval="True"/>
             <field name="answer_score">10</field>
         </record>
@@ -443,33 +463,35 @@
         <record id="survey_demo_burger_quiz_p5_q3_sug4" model="survey.question.answer">
             <field name="question_id" ref="survey_demo_burger_quiz_p5_q3"/>
             <field name="sequence">4</field>
-            <field name="value">I actually don't like thinking. I think people think I like to think a lot. And I don't. I do not like to think at all.</field> <!-- Kanye West -->
+            <field name="value">I actually don't like thinking. I think people think I like to think a lot. And I don't.
+                I do not like to think at all.
+            </field> <!-- Kanye West -->
         </record>
 
-    <!-- Multiple triggers -->
-    <record id="survey_demo_food_preferences" model="survey.survey">
-        <field name="title">Food Preferences</field>
-        <field name="survey_type">survey</field>
-        <field name="access_token">foodpref-eren-ces1-abcd-344ca2tgb31e</field>
-        <field name="user_id" ref="base.user_demo"/>
-        <field name="access_mode">public</field>
-        <field name="questions_layout">one_page</field>
-        <field name="description" type="html">
-            <p>Please give us your preferences for this event's dinner!</p>
-        </field>
-        <field name="description_done" type="html">
-            <p>Got it!</p>
-            <p>See you soon!</p>
-        </field>
-    </record>
+        <!-- Multiple triggers -->
+        <record id="survey_demo_food_preferences" model="survey.survey">
+            <field name="title">Food Preferences</field>
+            <field name="survey_type">survey</field>
+            <field name="access_token">foodpref-eren-ces1-abcd-344ca2tgb31e</field>
+            <field name="user_id" ref="base.user_demo"/>
+            <field name="access_mode">public</field>
+            <field name="questions_layout">one_page</field>
+            <field name="description" type="html">
+                <p>Please give us your preferences for this event's dinner!</p>
+            </field>
+            <field name="description_done" type="html">
+                <p>Got it!</p>
+                <p>See you soon!</p>
+            </field>
+        </record>
 
-    <record id="survey_demo_food_preferences_q1" model="survey.question">
-        <field name="survey_id" ref="survey_demo_food_preferences"/>
-        <field name="sequence">1</field>
-        <field name="title">Are you vegetarian?</field>
-        <field name="question_type">simple_choice</field>
-        <field name="constr_mandatory" eval="True"/>
-    </record>
+        <record id="survey_demo_food_preferences_q1" model="survey.question">
+            <field name="survey_id" ref="survey_demo_food_preferences"/>
+            <field name="sequence">1</field>
+            <field name="title">Are you vegetarian?</field>
+            <field name="question_type">simple_choice</field>
+            <field name="constr_mandatory" eval="True"/>
+        </record>
         <record id="survey_demo_food_preferences_q1_sug1" model="survey.question.answer">
             <field name="question_id" ref="survey_demo_food_preferences_q1"/>
             <field name="sequence">1</field>
@@ -486,17 +508,17 @@
             <field name="value">It depends</field>
         </record>
 
-    <record id="survey_demo_food_preferences_q2" model="survey.question">
-        <field name="survey_id" ref="survey_demo_food_preferences"/>
-        <field name="sequence">2</field>
-        <field name="title">Would you prefer a veggie meal if possible?</field>
-        <field name="question_type">simple_choice</field>
-        <field name="constr_mandatory" eval="True"/>
-        <field name="triggering_answer_ids" eval="[
+        <record id="survey_demo_food_preferences_q2" model="survey.question">
+            <field name="survey_id" ref="survey_demo_food_preferences"/>
+            <field name="sequence">2</field>
+            <field name="title">Would you prefer a veggie meal if possible?</field>
+            <field name="question_type">simple_choice</field>
+            <field name="constr_mandatory" eval="True"/>
+            <field name="triggering_answer_ids" eval="[
             Command.link(ref('survey.survey_demo_food_preferences_q1_sug3')),
         ]"/>
 
-    </record>
+        </record>
         <record id="survey_demo_food_preferences_q2_sug1" model="survey.question.answer">
             <field name="question_id" ref="survey_demo_food_preferences_q2"/>
             <field name="sequence">1</field>
@@ -508,17 +530,17 @@
             <field name="value">No</field>
         </record>
 
-    <record id="survey_demo_food_preferences_q3" model="survey.question">
-        <field name="survey_id" ref="survey_demo_food_preferences"/>
-        <field name="sequence">3</field>
-        <field name="title">Choose your green meal</field>
-        <field name="question_type">simple_choice</field>
-        <field name="constr_mandatory" eval="True"/>
-        <field name="triggering_answer_ids" eval="[
+        <record id="survey_demo_food_preferences_q3" model="survey.question">
+            <field name="survey_id" ref="survey_demo_food_preferences"/>
+            <field name="sequence">3</field>
+            <field name="title">Choose your green meal</field>
+            <field name="question_type">simple_choice</field>
+            <field name="constr_mandatory" eval="True"/>
+            <field name="triggering_answer_ids" eval="[
             Command.link(ref('survey.survey_demo_food_preferences_q1_sug1')),
             Command.link(ref('survey.survey_demo_food_preferences_q2_sug1')),
         ]"/>
-    </record>
+        </record>
         <record id="survey_demo_food_preferences_q3_sug1" model="survey.question.answer">
             <field name="question_id" ref="survey_demo_food_preferences_q3"/>
             <field name="sequence">1</field>
@@ -530,17 +552,17 @@
             <field name="value">Vegetarian burger</field>
         </record>
 
-    <record id="survey_demo_food_preferences_q4" model="survey.question">
-        <field name="survey_id" ref="survey_demo_food_preferences"/>
-        <field name="sequence">4</field>
-        <field name="title">Choose your meal</field>
-        <field name="question_type">simple_choice</field>
-        <field name="constr_mandatory" eval="True"/>
-        <field name="triggering_answer_ids" eval="[
+        <record id="survey_demo_food_preferences_q4" model="survey.question">
+            <field name="survey_id" ref="survey_demo_food_preferences"/>
+            <field name="sequence">4</field>
+            <field name="title">Choose your meal</field>
+            <field name="question_type">simple_choice</field>
+            <field name="constr_mandatory" eval="True"/>
+            <field name="triggering_answer_ids" eval="[
             Command.link(ref('survey.survey_demo_food_preferences_q1_sug2')),
             Command.link(ref('survey.survey_demo_food_preferences_q2_sug2')),
         ]"/>
-    </record>
+        </record>
         <record id="survey_demo_food_preferences_q4_sug1" model="survey.question.answer">
             <field name="question_id" ref="survey_demo_food_preferences_q4"/>
             <field name="sequence">1</field>
@@ -552,4 +574,5 @@
             <field name="value">Fish</field>
         </record>
 
-</data></odoo>
+    </data>
+</odoo>

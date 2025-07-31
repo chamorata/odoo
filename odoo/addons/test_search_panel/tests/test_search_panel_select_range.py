@@ -59,13 +59,13 @@ class TestSelectRange(odoo.tests.TransactionCase):
             result['values'],
             [
                 {'__count': 2, 'display_name': 'Folder 1',
-                    'id': f1_id, 'parent_name_id': False, },
+                 'id': f1_id, 'parent_name_id': False, },
                 {'__count': 1, 'display_name': 'Folder 2',
-                    'id': f2_id, 'parent_name_id': False, },
+                 'id': f2_id, 'parent_name_id': False, },
                 {'__count': 1, 'display_name': 'Folder 3',
-                    'id': f3_id, 'parent_name_id': f1_id, },
+                 'id': f3_id, 'parent_name_id': f1_id, },
                 {'__count': 1, 'display_name': 'Folder 4',
-                    'id': f4_id, 'parent_name_id': f2_id, },
+                 'id': f4_id, 'parent_name_id': f2_id, },
             ]
         )
 
@@ -80,13 +80,13 @@ class TestSelectRange(odoo.tests.TransactionCase):
             result['values'],
             [
                 {'__count': 1, 'display_name': 'Folder 1',
-                    'id': f1_id, 'parent_name_id': False, },
+                 'id': f1_id, 'parent_name_id': False, },
                 {'__count': 1, 'display_name': 'Folder 2',
-                    'id': f2_id, 'parent_name_id': False, },
+                 'id': f2_id, 'parent_name_id': False, },
                 {'__count': 0, 'display_name': 'Folder 3',
-                    'id': f3_id, 'parent_name_id': f1_id, },
+                 'id': f3_id, 'parent_name_id': f1_id, },
                 {'__count': 1, 'display_name': 'Folder 4',
-                    'id': f4_id, 'parent_name_id': f2_id, },
+                 'id': f4_id, 'parent_name_id': f2_id, },
             ]
         )
 
@@ -112,13 +112,13 @@ class TestSelectRange(odoo.tests.TransactionCase):
                 'parent_field': 'parent_name_id',
                 'values': [
                     {'__count': 2, 'display_name': 'Folder 1',
-                        'id': f1_id, 'parent_name_id': False, },
+                     'id': f1_id, 'parent_name_id': False, },
                     {'__count': 1, 'display_name': 'Folder 2',
-                        'id': f2_id, 'parent_name_id': False, },
+                     'id': f2_id, 'parent_name_id': False, },
                     {'__count': 1, 'display_name': 'Folder 3',
-                        'id': f3_id, 'parent_name_id': f1_id, },
+                     'id': f3_id, 'parent_name_id': f1_id, },
                     {'__count': 1, 'display_name': 'Folder 4',
-                        'id': f4_id, 'parent_name_id': f2_id, },
+                     'id': f4_id, 'parent_name_id': f2_id, },
                 ],
             }
         )
@@ -153,13 +153,13 @@ class TestSelectRange(odoo.tests.TransactionCase):
             result['values'],
             [
                 {'display_name': 'Folder 1',
-                    'id': f1_id, 'parent_name_id': False, },
+                 'id': f1_id, 'parent_name_id': False, },
                 {'display_name': 'Folder 2',
-                    'id': f2_id, 'parent_name_id': False, },
+                 'id': f2_id, 'parent_name_id': False, },
                 {'display_name': 'Folder 3',
-                    'id': f3_id, 'parent_name_id': f1_id, },
+                 'id': f3_id, 'parent_name_id': f1_id, },
                 {'display_name': 'Folder 4',
-                    'id': f4_id, 'parent_name_id': f2_id, },
+                 'id': f4_id, 'parent_name_id': f2_id, },
             ]
         )
 
@@ -173,13 +173,13 @@ class TestSelectRange(odoo.tests.TransactionCase):
             result['values'],
             [
                 {'display_name': 'Folder 1',
-                    'id': f1_id, 'parent_name_id': False, },
+                 'id': f1_id, 'parent_name_id': False, },
                 {'display_name': 'Folder 2',
-                    'id': f2_id, 'parent_name_id': False, },
+                 'id': f2_id, 'parent_name_id': False, },
                 {'display_name': 'Folder 3',
-                    'id': f3_id, 'parent_name_id': f1_id, },
+                 'id': f3_id, 'parent_name_id': f1_id, },
                 {'display_name': 'Folder 4',
-                    'id': f4_id, 'parent_name_id': f2_id, },
+                 'id': f4_id, 'parent_name_id': f2_id, },
             ]
         )
 
@@ -193,13 +193,13 @@ class TestSelectRange(odoo.tests.TransactionCase):
             result['values'],
             [
                 {'display_name': 'Folder 1',
-                    'id': f1_id, },
+                 'id': f1_id, },
                 {'display_name': 'Folder 2',
-                    'id': f2_id, },
+                 'id': f2_id, },
                 {'display_name': 'Folder 3',
-                    'id': f3_id, },
+                 'id': f3_id, },
                 {'display_name': 'Folder 4',
-                    'id': f4_id, },
+                 'id': f4_id, },
             ]
         )
 
@@ -212,13 +212,13 @@ class TestSelectRange(odoo.tests.TransactionCase):
             result['values'],
             [
                 {'__count': 2, 'display_name': 'Folder 1',
-                    'id': f1_id, 'parent_name_id': False, },
+                 'id': f1_id, 'parent_name_id': False, },
                 {'__count': 1, 'display_name': 'Folder 2',
-                    'id': f2_id, 'parent_name_id': False, },
+                 'id': f2_id, 'parent_name_id': False, },
                 {'__count': 1, 'display_name': 'Folder 3',
-                    'id': f3_id, 'parent_name_id': f1_id, },
+                 'id': f3_id, 'parent_name_id': f1_id, },
                 {'__count': 1, 'display_name': 'Folder 4',
-                    'id': f4_id, 'parent_name_id': f2_id, },
+                 'id': f4_id, 'parent_name_id': f2_id, },
             ]
         )
         self.assertEqual(
@@ -283,13 +283,13 @@ class TestSelectRange(odoo.tests.TransactionCase):
             result['values'],
             [
                 {'display_name': 'Folder 1',
-                    'id': f1_id, 'parent_name_id': False, },
+                 'id': f1_id, 'parent_name_id': False, },
                 {'display_name': 'Folder 2',
-                    'id': f2_id, 'parent_name_id': False, },
+                 'id': f2_id, 'parent_name_id': False, },
                 {'display_name': 'Folder 3',
-                    'id': f3_id, 'parent_name_id': f1_id, },
+                 'id': f3_id, 'parent_name_id': f1_id, },
                 {'display_name': 'Folder 4',
-                    'id': f4_id, 'parent_name_id': f2_id, },
+                 'id': f4_id, 'parent_name_id': f2_id, },
             ]
         )
         self.assertEqual(
@@ -304,7 +304,7 @@ class TestSelectRange(odoo.tests.TransactionCase):
         )
         self.assertEqual(
             result,
-            {'parent_field': 'parent_name_id', 'values': [], } # should not be a SEARCH_PANEL_ERROR
+            {'parent_field': 'parent_name_id', 'values': [], }  # should not be a SEARCH_PANEL_ERROR
         )
 
         # no counters, no expand, and no hierarchization
@@ -362,7 +362,6 @@ class TestSelectRange(odoo.tests.TransactionCase):
             result['parent_field'],
             False
         )
-
 
     def test_many2one_deep_hierarchy(self):
         folders_level_0 = self.TargetModel.create([
@@ -426,25 +425,25 @@ class TestSelectRange(odoo.tests.TransactionCase):
             result['values'],
             [
                 {'__count': 3, 'display_name': 'Folder 1',
-                    'id': f1_id, 'parent_name_id': False, },
+                 'id': f1_id, 'parent_name_id': False, },
                 {'__count': 1, 'display_name': 'Folder 10',
-                    'id': f10_id, 'parent_name_id': f8_id, },
+                 'id': f10_id, 'parent_name_id': f8_id, },
                 {'__count': 3, 'display_name': 'Folder 2',
-                    'id': f2_id, 'parent_name_id': False, },
+                 'id': f2_id, 'parent_name_id': False, },
                 {'__count': 0, 'display_name': 'Folder 3',
-                    'id': f3_id, 'parent_name_id': False, },
+                 'id': f3_id, 'parent_name_id': False, },
                 {'__count': 2, 'display_name': 'Folder 4',
-                    'id': f4_id, 'parent_name_id': f1_id, },
+                 'id': f4_id, 'parent_name_id': f1_id, },
                 {'__count': 0, 'display_name': 'Folder 5',
-                    'id': f5_id, 'parent_name_id': f2_id, },
+                 'id': f5_id, 'parent_name_id': f2_id, },
                 {'__count': 3, 'display_name': 'Folder 6',
-                    'id': f6_id, 'parent_name_id': f2_id, },
+                 'id': f6_id, 'parent_name_id': f2_id, },
                 {'__count': 2, 'display_name': 'Folder 7',
-                    'id': f7_id, 'parent_name_id': f4_id, },
+                 'id': f7_id, 'parent_name_id': f4_id, },
                 {'__count': 2, 'display_name': 'Folder 8',
-                    'id': f8_id, 'parent_name_id': f6_id, },
+                 'id': f8_id, 'parent_name_id': f6_id, },
                 {'__count': 1, 'display_name': 'Folder 9',
-                    'id': f9_id, 'parent_name_id': f8_id, },
+                 'id': f9_id, 'parent_name_id': f8_id, },
             ]
         )
 

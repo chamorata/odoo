@@ -19,7 +19,6 @@ from odoo.http import request
 from odoo.models import regex_object_name
 from odoo.osv import expression
 from odoo.tools.safe_eval import safe_eval
-
 from .utils import get_action_triples
 
 _logger = logging.getLogger(__name__)

@@ -1,19 +1,18 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from base64 import b64encode
 import hashlib
 import hmac
 import json
+from base64 import b64encode
 from unittest.mock import patch
-
-from werkzeug.exceptions import Forbidden
-
-from odoo.tests import tagged
-from odoo.tools import mute_logger
 
 from odoo.addons.payment.tests.http_common import PaymentHttpCommon
 from odoo.addons.payment_worldline.controllers.main import WorldlineController
 from odoo.addons.payment_worldline.tests.common import WorldlineCommon
+from werkzeug.exceptions import Forbidden
+
+from odoo.tests import tagged
+from odoo.tools import mute_logger
 
 
 @tagged('post_install', '-at_install')
@@ -24,8 +23,8 @@ class WorldlineTest(WorldlineCommon, PaymentHttpCommon):
         """ Send a notification to the webhook, ignore the signature, and check the response. """
         url = self._build_url(WorldlineController._webhook_url)
         with patch(
-            'odoo.addons.payment_worldline.controllers.main.WorldlineController'
-            '._verify_notification_signature'
+                'odoo.addons.payment_worldline.controllers.main.WorldlineController'
+                '._verify_notification_signature'
         ):
             response = self._make_json_request(url, data=payload)
         self.assertEqual(
@@ -109,8 +108,8 @@ class WorldlineTest(WorldlineCommon, PaymentHttpCommon):
         self._create_transaction('redirect')
         url = self._build_url(WorldlineController._webhook_url)
         with patch(
-            'odoo.addons.payment_worldline.controllers.main.WorldlineController'
-            '._verify_notification_signature'
+                'odoo.addons.payment_worldline.controllers.main.WorldlineController'
+                '._verify_notification_signature'
         ) as signature_check_mock, patch(
             'odoo.addons.payment.models.payment_transaction.PaymentTransaction'
             '._handle_notification_data'

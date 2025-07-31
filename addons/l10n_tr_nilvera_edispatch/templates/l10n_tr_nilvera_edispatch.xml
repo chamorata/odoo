@@ -2,9 +2,9 @@
 <odoo>
 
     <template id="nilvera_party_details"
-        xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
-        xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">
-        <cbc:WebsiteURI t-out="partner.website" />
+              xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+              xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">
+        <cbc:WebsiteURI t-out="partner.website"/>
         <cac:PartyIdentification>
             <t t-if="partner.country_id.code != 'TR'">
                 <cbc:ID schemeID="TCKN" t-out="default_tckn"/>
@@ -45,15 +45,15 @@
     </template>
 
     <template id="nilvera_party_template"
-        xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2">
+              xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2">
         <cac:Party>
             <t t-call="l10n_tr_nilvera_edispatch.nilvera_party_details"/>
         </cac:Party>
     </template>
 
     <template id="nilvera_dispatch_line"
-        xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
-        xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">
+              xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+              xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">
         <cac:DespatchLine>
             <cbc:ID t-out="line_id"/>
             <cbc:DeliveredQuantity t-att-unitCode="line.product_uom._get_unece_code()" t-out="line.quantity"/>
@@ -83,13 +83,11 @@
     </template>
 
     <template id="l10n_tr_edispatch_format" name="Turkiye e-Dispatch XML">
-        <DespatchAdvice xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
-            xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2"
-            xmlns:xades="http://uri.etsi.org/01903/v1.3.2#"
-            xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
-            xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
-            xmlns="urn:oasis:names:specification:ubl:schema:xsd:DespatchAdvice-2">
+        <DespatchAdvice
+                xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+                xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
+                xmlns="urn:oasis:names:specification:ubl:schema:xsd:DespatchAdvice-2">
             <cbc:UBLVersionID t-out="ubl_version_id"/>
             <cbc:CustomizationID t-out="customization_id"/>
             <cbc:ProfileID t-out="dispatch_scenario"/>
@@ -121,19 +119,22 @@
             <cac:BuyerCustomerParty t-if="picking.l10n_tr_nilvera_buyer_id">
                 <t t-call="l10n_tr_nilvera_edispatch.nilvera_party_template">
                     <t t-set="partner" t-value="picking.l10n_tr_nilvera_buyer_id"/>
-                    <t t-set="zipcode" t-value="partner.country_id.code == 'TR' and partner.zip or partner.l10n_tr_nilvera_edispatch_customs_zip"/>
+                    <t t-set="zipcode"
+                       t-value="partner.country_id.code == 'TR' and partner.zip or partner.l10n_tr_nilvera_edispatch_customs_zip"/>
                 </t>
             </cac:BuyerCustomerParty>
             <cac:SellerSupplierParty t-if="picking.l10n_tr_nilvera_seller_supplier_id">
                 <t t-call="l10n_tr_nilvera_edispatch.nilvera_party_template">
                     <t t-set="partner" t-value="picking.l10n_tr_nilvera_seller_supplier_id"/>
-                    <t t-set="zipcode" t-value="partner.country_id.code == 'TR' and partner.zip or partner.l10n_tr_nilvera_edispatch_customs_zip"/>
+                    <t t-set="zipcode"
+                       t-value="partner.country_id.code == 'TR' and partner.zip or partner.l10n_tr_nilvera_edispatch_customs_zip"/>
                 </t>
             </cac:SellerSupplierParty>
             <cac:OriginatorCustomerParty t-if="picking.l10n_tr_nilvera_buyer_originator_id">
                 <t t-call="l10n_tr_nilvera_edispatch.nilvera_party_template">
                     <t t-set="partner" t-value="picking.l10n_tr_nilvera_buyer_originator_id"/>
-                    <t t-set="zipcode" t-value="partner.country_id.code == 'TR' and partner.zip or partner.l10n_tr_nilvera_edispatch_customs_zip"/>
+                    <t t-set="zipcode"
+                       t-value="partner.country_id.code == 'TR' and partner.zip or partner.l10n_tr_nilvera_edispatch_customs_zip"/>
                 </t>
             </cac:OriginatorCustomerParty>
             <cac:Shipment>
@@ -147,7 +148,7 @@
                             <cbc:LicensePlateID schemeID="PLAKA" t-out="picking.l10n_tr_vehicle_plate.name"/>
                         </cac:RoadTransport>
                     </cac:TransportMeans>
-                    <t t-foreach="drivers" t-as="driver">    
+                    <t t-foreach="drivers" t-as="driver">
                         <cac:DriverPerson>
                             <cbc:FirstName t-out="driver['name']"/>
                             <cbc:FamilyName t-out="driver['fname']"/>
@@ -162,7 +163,7 @@
                         <cbc:CitySubdivisionName t-out="picking.partner_id.city"/>
                         <cbc:CityName t-out="picking.partner_id.state_id.name"/>
                         <cbc:PostalZone
-                            t-out="picking.partner_id.country_id.code == 'TR' and picking.partner_id.zip or picking.partner_id.l10n_tr_nilvera_edispatch_customs_zip" />
+                                t-out="picking.partner_id.country_id.code == 'TR' and picking.partner_id.zip or picking.partner_id.l10n_tr_nilvera_edispatch_customs_zip"/>
                         <t t-set="tr_country" t-value="picking.partner_id.country_id.with_context(lang='tr_TR')"/>
                         <cac:Country>
                             <cbc:IdentificationCode t-out="tr_country.code"/>

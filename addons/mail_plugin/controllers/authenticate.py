@@ -6,19 +6,21 @@ import datetime
 import hmac
 import json
 import logging
-import odoo
-import werkzeug
 
+import werkzeug
+from werkzeug.exceptions import NotFound
+
+import odoo
 from odoo import _, http
 from odoo.http import request
-from werkzeug.exceptions import NotFound
 
 _logger = logging.getLogger(__name__)
 
 
 class Authenticate(http.Controller):
 
-    @http.route(['/mail_client_extension/auth', '/mail_plugin/auth'], type='http', auth="user", methods=['GET'], website=True)
+    @http.route(['/mail_client_extension/auth', '/mail_plugin/auth'], type='http', auth="user", methods=['GET'],
+                website=True)
     def auth(self, **values):
         """
          Once authenticated this route renders the view that shows an app wants to access Odoo.
@@ -28,10 +30,12 @@ class Authenticate(http.Controller):
          versions of the mail plugin but necessary for supporting older versions
          """
         if not request.env.user._is_internal():
-            return request.render('mail_plugin.app_error', {'error': _('Access Error: Only Internal Users can link their inboxes to this database.')})
+            return request.render('mail_plugin.app_error', {
+                'error': _('Access Error: Only Internal Users can link their inboxes to this database.')})
         return request.render('mail_plugin.app_auth', values)
 
-    @http.route(['/mail_client_extension/auth/confirm', '/mail_plugin/auth/confirm'], type='http', auth="user", methods=['POST'])
+    @http.route(['/mail_client_extension/auth/confirm', '/mail_plugin/auth/confirm'], type='http', auth="user",
+                methods=['POST'])
     def auth_confirm(self, scope, friendlyname, redirect, info=None, do=None, **kw):
         """
         Called by the `app_auth` template. If the user decided to allow the app to access Odoo, a temporary auth code
@@ -56,7 +60,8 @@ class Authenticate(http.Controller):
         return request.redirect(updated_redirect.to_url(), local=False)
 
     # In this case, an exception will be thrown in case of preflight request if only POST is allowed.
-    @http.route(['/mail_client_extension/auth/access_token', '/mail_plugin/auth/access_token'], type='json', auth="none", cors="*",
+    @http.route(['/mail_client_extension/auth/access_token', '/mail_plugin/auth/access_token'], type='json',
+                auth="none", cors="*",
                 methods=['POST', 'OPTIONS'])
     def auth_access_token(self, auth_code='', **kw):
         """

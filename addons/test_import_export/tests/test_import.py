@@ -6,11 +6,11 @@ import pprint
 import unittest
 
 from PIL import Image
+from odoo.addons.base_import.models.base_import import ImportValidationError
 
 from odoo.tests.common import TransactionCase, can_import, RecordCapturer
 from odoo.tools import mute_logger
 from odoo.tools.misc import file_open
-from odoo.addons.base_import.models.base_import import ImportValidationError
 
 
 def get_id_field(model_name):
@@ -25,7 +25,8 @@ def get_id_field(model_name):
     }
 
 
-def make_field(name='value', string='Value', required=False, fields=None, field_type='id', model_name=None, comodel_name=None):
+def make_field(name='value', string='Value', required=False, fields=None, field_type='id', model_name=None,
+               comodel_name=None):
     if fields is None:
         fields = []
     field = {'id': name, 'name': name, 'string': string, 'required': required, 'fields': fields, 'type': field_type}
@@ -67,7 +68,8 @@ class TestBasicFields(BaseImportCase):
 
     def test_required(self):
         """ Required fields should be flagged (so they can be fill-required) """
-        self.assertEqualFields(self.get_fields('char.required'), make_field(required=True, field_type='char', model_name='import.char.required'))
+        self.assertEqualFields(self.get_fields('char.required'),
+                               make_field(required=True, field_type='char', model_name='import.char.required'))
 
     def test_readonly(self):
         """ Readonly fields should be filtered out"""
@@ -89,9 +91,11 @@ class TestBasicFields(BaseImportCase):
         self.assertEqualFields(self.get_fields('m2o'), make_field(
             field_type='many2one', comodel_name='import.m2o.related', model_name='import.m2o',
             fields=[
-                {'id': 'value', 'name': 'id', 'string': 'External ID', 'required': False, 'fields': [], 'type': 'id', 'model_name': 'import.m2o.related'},
-                {'id': 'value', 'name': '.id', 'string': 'Database ID', 'required': False, 'fields': [], 'type': 'id', 'model_name': 'import.m2o.related'},
-        ]))
+                {'id': 'value', 'name': 'id', 'string': 'External ID', 'required': False, 'fields': [], 'type': 'id',
+                 'model_name': 'import.m2o.related'},
+                {'id': 'value', 'name': '.id', 'string': 'Database ID', 'required': False, 'fields': [], 'type': 'id',
+                 'model_name': 'import.m2o.related'},
+            ]))
 
     def test_m2o_required(self):
         """ If an m2o field is required, its three sub-fields are
@@ -99,21 +103,25 @@ class TestBasicFields(BaseImportCase):
         is id-based)
         """
         self.assertEqualFields(self.get_fields('m2o.required'), make_field(
-            field_type='many2one', required=True, comodel_name='import.m2o.required.related', model_name='import.m2o.required',
+            field_type='many2one', required=True, comodel_name='import.m2o.required.related',
+            model_name='import.m2o.required',
             fields=[
-                {'id': 'value', 'name': 'id', 'string': 'External ID', 'required': True, 'fields': [], 'type': 'id', 'model_name': 'import.m2o.required.related'},
-                {'id': 'value', 'name': '.id', 'string': 'Database ID', 'required': True, 'fields': [], 'type': 'id', 'model_name': 'import.m2o.required.related'},
-        ]))
+                {'id': 'value', 'name': 'id', 'string': 'External ID', 'required': True, 'fields': [], 'type': 'id',
+                 'model_name': 'import.m2o.required.related'},
+                {'id': 'value', 'name': '.id', 'string': 'Database ID', 'required': True, 'fields': [], 'type': 'id',
+                 'model_name': 'import.m2o.required.related'},
+            ]))
 
 
 class TestO2M(BaseImportCase):
 
     def test_shallow(self):
         self.assertEqualFields(
-            self.env['base_import.import'].get_fields_tree("import.o2m"), 
+            self.env['base_import.import'].get_fields_tree("import.o2m"),
             [
                 get_id_field("import.o2m"),
-                {'id': 'name', 'name': 'name', 'string': "Name", 'required': False, 'fields': [], 'type': 'char', 'model_name': 'import.o2m'},
+                {'id': 'name', 'name': 'name', 'string': "Name", 'required': False, 'fields': [], 'type': 'char',
+                 'model_name': 'import.o2m'},
                 {
                     'id': 'value', 'name': 'value', 'string': 'Value', 'model_name': 'import.o2m',
                     'required': False, 'type': 'one2many', 'comodel_name': 'import.o2m.child',
@@ -123,17 +131,17 @@ class TestO2M(BaseImportCase):
                             'id': 'parent_id', 'name': 'parent_id', 'model_name': 'import.o2m.child',
                             'string': 'Parent', 'type': 'many2one', 'comodel_name': 'import.o2m',
                             'required': False, 'fields': [
-                                {'id': 'parent_id', 'name': 'id', 'model_name': 'import.o2m',
-                                 'string': 'External ID', 'required': False,
-                                 'fields': [], 'type': 'id'},
-                                {'id': 'parent_id', 'name': '.id', 'model_name': 'import.o2m',
-                                 'string': 'Database ID', 'required': False,
-                                 'fields': [], 'type': 'id'},
-                            ]
+                            {'id': 'parent_id', 'name': 'id', 'model_name': 'import.o2m',
+                             'string': 'External ID', 'required': False,
+                             'fields': [], 'type': 'id'},
+                            {'id': 'parent_id', 'name': '.id', 'model_name': 'import.o2m',
+                             'string': 'Database ID', 'required': False,
+                             'fields': [], 'type': 'id'},
+                        ]
                         },
                         {'id': 'value', 'name': 'value', 'string': 'Value',
                          'required': False, 'fields': [], 'type': 'integer', 'model_name': 'import.o2m.child',
-                        },
+                         },
                     ]
                 }
             ]
@@ -145,7 +153,8 @@ class TestO2M(BaseImportCase):
                 self.env['base_import.import'].get_fields_tree("import.o2m"),
                 [
                     get_id_field("import.o2m"),
-                    {'id': 'name', 'name': 'name', 'string': "Name", 'required': False, 'fields': [], 'type': 'char', 'model_name': 'import.o2m'},
+                    {'id': 'name', 'name': 'name', 'string': "Name", 'required': False, 'fields': [], 'type': 'char',
+                     'model_name': 'import.o2m'},
                     {
                         'id': 'value', 'name': 'value', 'string': 'Value', 'model_name': 'import.o2m',
                         'required': False, 'type': 'one2many', 'comodel_name': 'import.o2m.child',
@@ -155,18 +164,19 @@ class TestO2M(BaseImportCase):
                                 'id': 'parent_id', 'name': 'parent_id', 'model_name': 'import.o2m.child',
                                 'string': 'Parent', 'type': 'many2one', 'comodel_name': 'import.o2m',
                                 'required': False, 'fields': [
-                                    {'id': 'parent_id', 'name': 'id', 'model_name': 'import.o2m',
-                                    'string': 'External ID', 'required': False,
-                                    'fields': [], 'type': 'id'},
-                                    {'id': 'parent_id', 'name': '.id', 'model_name': 'import.o2m',
-                                    'string': 'Database ID', 'required': False,
-                                    'fields': [], 'type': 'id'},
-                                ]
+                                {'id': 'parent_id', 'name': 'id', 'model_name': 'import.o2m',
+                                 'string': 'External ID', 'required': False,
+                                 'fields': [], 'type': 'id'},
+                                {'id': 'parent_id', 'name': '.id', 'model_name': 'import.o2m',
+                                 'string': 'Database ID', 'required': False,
+                                 'fields': [], 'type': 'id'},
+                            ]
                             },
                             {'id': 'value', 'name': 'value', 'string': 'Value',
-                            'required': False, 'fields': [], 'type': 'integer', 'model_name': 'import.o2m.child',
-                            },
-                            {'id': 'value', 'name': '.id', 'string': 'Database ID', 'required': False, 'fields': [], 'type': 'id', 'model_name': 'import.o2m.child'}
+                             'required': False, 'fields': [], 'type': 'integer', 'model_name': 'import.o2m.child',
+                             },
+                            {'id': 'value', 'name': '.id', 'string': 'Database ID', 'required': False, 'fields': [],
+                             'type': 'id', 'model_name': 'import.o2m.child'}
                         ]
                     }
                 ]
@@ -180,21 +190,29 @@ class TestMatchHeadersSingle(TransactionCase):
         self.assertEqual(match, {'field_path': ['f0'], 'distance': 0})
 
     def test_match_by_string(self):
-        match = self.env['base_import.import']._get_mapping_suggestion('some field', [{'name': 'bob', 'string': "Some Field"}], [], {})
+        match = self.env['base_import.import']._get_mapping_suggestion('some field',
+                                                                       [{'name': 'bob', 'string': "Some Field"}], [],
+                                                                       {})
         self.assertEqual(match, {'field_path': ['bob'], 'distance': 0})
 
     def test_nomatch(self):
-        match = self.env['base_import.import']._get_mapping_suggestion('should not be', [{'name': 'bob', 'string': "wheee", 'model_name': 'base_import.import'}], [], {})
+        match = self.env['base_import.import']._get_mapping_suggestion('should not be',
+                                                                       [{'name': 'bob', 'string': "wheee",
+                                                                         'model_name': 'base_import.import'}], [], {})
         self.assertEqual(match, {})
 
     def test_close_match(self):
-        match = self.env['base_import.import']._get_mapping_suggestion('bobe', [{'name': 'bob', 'type': 'char', 'string': "wheee", 'model_name': 'base_import.import'}], ['char'], {})
+        match = self.env['base_import.import']._get_mapping_suggestion('bobe', [{'name': 'bob', 'type': 'char',
+                                                                                 'string': "wheee",
+                                                                                 'model_name': 'base_import.import'}],
+                                                                       ['char'], {})
         self.assertEqual(match, {'field_path': ['bob'], 'distance': 0.1428571428571429})
 
     def test_distant_match(self):
         Import = self.env['base_import.import']
         header, field_string = 'same Folding', 'Some Field'
-        match = Import._get_mapping_suggestion(header, [{'name': 'bob', 'string': field_string, 'type': 'char', 'model_name': 'base_import.import'}], ['char'], {})
+        match = Import._get_mapping_suggestion(header, [{'name': 'bob', 'string': field_string, 'type': 'char',
+                                                         'model_name': 'base_import.import'}], ['char'], {})
         string_field_dist = Import._get_distance(header.lower(), field_string.lower())
         self.assertEqual(string_field_dist, 0.36363636363636365)
         self.assertEqual(match, {})  # if distance >= 0.2, no match returned
@@ -267,7 +285,7 @@ class TestMatchHeadersMultiple(TransactionCase):
                     {'name': 'bob', 'string': 'Baz', 'type': 'text', 'model_name': 'base_import.import'},
                     {'name': 'qux', 'string': 'Qux', 'type': 'many2one', 'fields': [
                         {'name': 'corge', 'type': 'text', 'fields': [], 'model_name': 'base_import.import'},
-                     ], 'model_name': 'base_import.import'}
+                    ], 'model_name': 'base_import.import'}
                 ]),
             {
                 (0, 'foo'): None,
@@ -318,7 +336,8 @@ class TestColumnMapping(TransactionCase):
         max_distance = 0.2  # see FUZZY_MATCH_DISTANCE. We don't use it here to avoid making test work after modifying this constant.
         for value in values_to_test:
             distance = Import._get_distance(value[0].lower(), value[1].lower())
-            model_fields_info = [{'name': value[0], 'string': value[0], 'type': 'char', 'model_name': 'base_import.import'}]
+            model_fields_info = [
+                {'name': value[0], 'string': value[0], 'type': 'char', 'model_name': 'base_import.import'}]
             match = self.env['base_import.import']._get_mapping_suggestion(value[1], model_fields_info, ['char'], {})
 
             self.assertEqual(
@@ -383,9 +402,12 @@ class TestPreview(TransactionCase):
         # Order depends on iteration order of fields_get
         self.assertItemsEqual(result['fields'], [
             get_id_field('import.preview'),
-            {'id': 'name', 'name': 'name', 'string': 'Name', 'required': False, 'fields': [], 'type': 'char', 'model_name': 'import.preview'},
-            {'id': 'somevalue', 'name': 'somevalue', 'string': 'Some Value', 'required': True, 'fields': [], 'type': 'integer', 'model_name': 'import.preview'},
-            {'id': 'othervalue', 'name': 'othervalue', 'string': 'Other Variable', 'required': False, 'fields': [], 'type': 'integer', 'model_name': 'import.preview'},
+            {'id': 'name', 'name': 'name', 'string': 'Name', 'required': False, 'fields': [], 'type': 'char',
+             'model_name': 'import.preview'},
+            {'id': 'somevalue', 'name': 'somevalue', 'string': 'Some Value', 'required': True, 'fields': [],
+             'type': 'integer', 'model_name': 'import.preview'},
+            {'id': 'othervalue', 'name': 'othervalue', 'string': 'Other Variable', 'required': False, 'fields': [],
+             'type': 'integer', 'model_name': 'import.preview'},
         ])
         self.assertEqual(result['preview'], [['foo', 'bar', 'qux'], ['5'], ['4', '6']])
 
@@ -406,9 +428,12 @@ class TestPreview(TransactionCase):
         self.assertEqual(result['headers'], ['name', 'Some Value', 'Counter'])
         self.assertItemsEqual(result['fields'], [
             get_id_field('import.preview'),
-            {'id': 'name', 'name': 'name', 'string': 'Name', 'required': False, 'fields': [], 'type': 'char', 'model_name': 'import.preview'},
-            {'id': 'somevalue', 'name': 'somevalue', 'string': 'Some Value', 'required': True, 'fields': [], 'type': 'integer', 'model_name': 'import.preview'},
-            {'id': 'othervalue', 'name': 'othervalue', 'string': 'Other Variable', 'required': False, 'fields': [], 'type': 'integer', 'model_name': 'import.preview'},
+            {'id': 'name', 'name': 'name', 'string': 'Name', 'required': False, 'fields': [], 'type': 'char',
+             'model_name': 'import.preview'},
+            {'id': 'somevalue', 'name': 'somevalue', 'string': 'Some Value', 'required': True, 'fields': [],
+             'type': 'integer', 'model_name': 'import.preview'},
+            {'id': 'othervalue', 'name': 'othervalue', 'string': 'Other Variable', 'required': False, 'fields': [],
+             'type': 'integer', 'model_name': 'import.preview'},
         ])
         self.assertEqual(result['preview'], [['foo', 'bar', 'qux'], ['1', '3', '5'], ['2', '4', '6']])
 
@@ -429,9 +454,12 @@ class TestPreview(TransactionCase):
         self.assertEqual(result['headers'], ['name', 'Some Value', 'Counter'])
         self.assertItemsEqual(result['fields'], [
             get_id_field('import.preview'),
-            {'id': 'name', 'name': 'name', 'string': 'Name', 'required': False, 'fields': [], 'type': 'char', 'model_name': 'import.preview'},
-            {'id': 'somevalue', 'name': 'somevalue', 'string': 'Some Value', 'required': True, 'fields': [], 'type': 'integer', 'model_name': 'import.preview'},
-            {'id': 'othervalue', 'name': 'othervalue', 'string': 'Other Variable', 'required': False, 'fields': [], 'type': 'integer', 'model_name': 'import.preview'},
+            {'id': 'name', 'name': 'name', 'string': 'Name', 'required': False, 'fields': [], 'type': 'char',
+             'model_name': 'import.preview'},
+            {'id': 'somevalue', 'name': 'somevalue', 'string': 'Some Value', 'required': True, 'fields': [],
+             'type': 'integer', 'model_name': 'import.preview'},
+            {'id': 'othervalue', 'name': 'othervalue', 'string': 'Other Variable', 'required': False, 'fields': [],
+             'type': 'integer', 'model_name': 'import.preview'},
         ])
         self.assertEqual(result['preview'], [['foo', 'bar', 'qux'], ['1', '3', '5'], ['2', '4', '6']])
 
@@ -452,9 +480,12 @@ class TestPreview(TransactionCase):
         self.assertEqual(result['headers'], ['name', 'Some Value', 'Counter'])
         self.assertItemsEqual(result['fields'], [
             get_id_field('import.preview'),
-            {'id': 'name', 'name': 'name', 'string': 'Name', 'required': False, 'fields': [], 'type': 'char', 'model_name': 'import.preview'},
-            {'id': 'somevalue', 'name': 'somevalue', 'string': 'Some Value', 'required': True, 'fields': [], 'type': 'integer', 'model_name': 'import.preview'},
-            {'id': 'othervalue', 'name': 'othervalue', 'string': 'Other Variable', 'required': False, 'fields': [], 'type': 'integer', 'model_name': 'import.preview'},
+            {'id': 'name', 'name': 'name', 'string': 'Name', 'required': False, 'fields': [], 'type': 'char',
+             'model_name': 'import.preview'},
+            {'id': 'somevalue', 'name': 'somevalue', 'string': 'Some Value', 'required': True, 'fields': [],
+             'type': 'integer', 'model_name': 'import.preview'},
+            {'id': 'othervalue', 'name': 'othervalue', 'string': 'Other Variable', 'required': False, 'fields': [],
+             'type': 'integer', 'model_name': 'import.preview'},
         ])
         self.assertEqual(result['preview'], [['foo', 'bar', 'aux'], ['1', '3', '5'], ['2', '4', '6']])
 
@@ -463,6 +494,7 @@ class test_convert_import_data(TransactionCase):
     """ Tests conversion of base_import.import input into data which
     can be fed to Model.load
     """
+
     def test_all(self):
         import_wizard = self.env['base_import.import'].create({
             'res_model': 'import.preview',
@@ -665,7 +697,8 @@ class test_convert_import_data(TransactionCase):
             'file_type': 'text/csv'
 
         })
-        self.assertRaises(ImportValidationError, import_wizard._convert_import_data, [], {'quoting': '"', 'separator': ',', 'has_headers': True})
+        self.assertRaises(ImportValidationError, import_wizard._convert_import_data, [],
+                          {'quoting': '"', 'separator': ',', 'has_headers': True})
 
     def test_falsefields(self):
         import_wizard = self.env['base_import.import'].create({
@@ -725,10 +758,12 @@ foo2,US,persons\n""",
             }
         )
         partners_now = self.env['res.partner'].search([]) - partners_before
-        self.assertEqual(len(results['ids']), 3, "should have imported the first 3 records in full, got %s" % results['ids'])
+        self.assertEqual(len(results['ids']), 3,
+                         "should have imported the first 3 records in full, got %s" % results['ids'])
 
         self.assertEqual(partners_now[0].name, 'foo', "New partner's name should be foo")
-        self.assertEqual(partners_now[0].country_id.id, self.env.ref('base.us').id, "Foo partner's country should be US")
+        self.assertEqual(partners_now[0].country_id.id, self.env.ref('base.us').id,
+                         "Foo partner's country should be US")
         self.assertEqual(partners_now[0].company_type, 'person', "Foo partner's country should be person")
 
         self.assertEqual(partners_now[1].country_id.id, False, "foo1 partner's country should be False")
@@ -759,7 +794,8 @@ foo3,US,0,persons\n""",
         )
         partners_now = self.env['res.partner'].search([]) - partners_before
 
-        self.assertEqual(len(results['ids']), 1, "should have imported the first record in full, got %s" % results['ids'])
+        self.assertEqual(len(results['ids']), 1,
+                         "should have imported the first record in full, got %s" % results['ids'])
         self.assertEqual(partners_now.name, 'foo', "New partner's name should be foo")
         # if results empty, no errors
         self.assertItemsEqual(results['messages'], [])
@@ -887,7 +923,8 @@ class TestBatching(TransactionCase):
             {**opts, 'limit': 5}
         )
         self.assertFalse(results['messages'])
-        self.assertEqual(len(results['ids']), 1, "should have imported the first record in full, got %s" % results['ids'])
+        self.assertEqual(len(results['ids']), 1,
+                         "should have imported the first record in full, got %s" % results['ids'])
         self.assertEqual(results['nextrow'], 10)
 
         results = import_wizard.execute_import(

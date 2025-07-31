@@ -6,7 +6,8 @@
         <field name="inherit_id" ref="account.res_config_settings_view_form"/>
         <field name="arch" type="xml">
             <block id="invoicing_settings" position="inside">
-                <setting help="Use this if setup with Reseller(E-Commerce)." name="ecommerce_reseller_setting" title="Manage Reseller(E-Commerce)" invisible="country_code != 'IN'">
+                <setting help="Use this if setup with Reseller(E-Commerce)." name="ecommerce_reseller_setting"
+                         title="Manage Reseller(E-Commerce)" invisible="country_code != 'IN'">
                     <field name="group_l10n_in_reseller"/>
                 </setting>
             </block>
@@ -57,14 +58,16 @@
             </xpath>
             <app name="account" position="inside">
                 <block title="Product" name="l10n_in_product_setting_container" invisible="country_code != 'IN'">
-                    <setting string="HSN/SAC Validation" help="HSN/SAC Digit Validation for GST Compliance based on your Aggregate Annual Turnover (AATO).">
+                    <setting string="HSN/SAC Validation"
+                             help="HSN/SAC Digit Validation for GST Compliance based on your Aggregate Annual Turnover (AATO).">
                         <field name="l10n_in_hsn_code_digit"/>
                     </setting>
                 </block>
             </app>
             <block id="print_vendor_checks_setting_container" position="inside">
                 <setting id="vendor_payment_order_file" company_dependent="1"
-                    help="Generate Vendor Payment Order file(csv file), upload to your bank to make the payments" invisible="country_code != 'IN'">
+                         help="Generate Vendor Payment Order file(csv file), upload to your bank to make the payments"
+                         invisible="country_code != 'IN'">
                     <field name="module_l10n_in_enet_batch_payment" widget="upgrade_boolean"/>
                 </setting>
             </block>

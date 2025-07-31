@@ -28,7 +28,8 @@ class MailingFilter(models.Model):
         for mailing_filter in self:
             if mailing_filter.mailing_domain != "[]":
                 try:
-                    self.env[mailing_filter.mailing_model_id.model].search_count(literal_eval(mailing_filter.mailing_domain))
+                    self.env[mailing_filter.mailing_model_id.model].search_count(
+                        literal_eval(mailing_filter.mailing_domain))
                 except:
                     raise ValidationError(
                         _("The filter domain is not valid for this recipients.")

@@ -2,12 +2,13 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import datetime, timedelta
-from markupsafe import Markup
 
+from markupsafe import Markup
 from odoo.addons.mail.tests.common import mail_new_test_user
 from odoo.addons.test_mail.tests.test_performance import BaseMailPerformance
-from odoo.tests.common import users, warmup
+
 from odoo.tests import tagged
+from odoo.tests.common import users, warmup
 from odoo.tools import mute_logger
 
 
@@ -70,7 +71,8 @@ class FullBaseMailPerformance(BaseMailPerformance):
             'name': 'Test Ticket',
             'user_id': cls.user_emp_email.id,
         })
-        cls.record_ticket.message_subscribe(cls.customers.ids + cls.user_admin.partner_id.ids + cls.user_portal.partner_id.ids)
+        cls.record_ticket.message_subscribe(
+            cls.customers.ids + cls.user_admin.partner_id.ids + cls.user_portal.partner_id.ids)
 
 
 @tagged('mail_performance', 'post_install', '-at_install')
@@ -261,20 +263,21 @@ class TestPortalFormatPerformance(FullBaseMailPerformance):
                         'res_id': record.id,
                         'res_model': record._name,
                     }, {
-                        'access_token': message.attachment_ids[1].access_token,
-                        'checksum': message.attachment_ids[1].checksum,
-                        'filename': 'Test file 0',
-                        'id': message.attachment_ids[1].id,
-                        'mimetype': 'application/octet-stream',
-                        'name': 'Test file 0',
-                        'res_id': record.id,
-                        'res_model': record._name,
-                    }
+                    'access_token': message.attachment_ids[1].access_token,
+                    'checksum': message.attachment_ids[1].checksum,
+                    'filename': 'Test file 0',
+                    'id': message.attachment_ids[1].id,
+                    'mimetype': 'application/octet-stream',
+                    'name': 'Test file 0',
+                    'res_id': record.id,
+                    'res_model': record._name,
+                }
                 ]
             )
             self.assertEqual(format_res["author"]["id"], record.customer_id.id)
             self.assertEqual(format_res["author"]["name"], record.customer_id.display_name)
-            self.assertEqual(format_res['author_avatar_url'], f'/web/image/mail.message/{message.id}/author_avatar/50x50')
+            self.assertEqual(format_res['author_avatar_url'],
+                             f'/web/image/mail.message/{message.id}/author_avatar/50x50')
             self.assertEqual(format_res['date'], datetime(2023, 5, 15, 10, 30, 5))
             self.assertEqual(' '.join(format_res['published_date_str'].split()), 'May 15, 2023, 10:30:05 AM')
             self.assertEqual(format_res['id'], message.id)
@@ -297,7 +300,8 @@ class TestPortalFormatPerformance(FullBaseMailPerformance):
 
         self.assertEqual(len(res), len(messages_all))
         for format_res, _message, _record in zip(res, messages_all, self.messages_records):
-            self.assertEqual(format_res['rating']['publisher_avatar'], f'/web/image/res.partner/{self.partner_admin.id}/avatar_128/50x50')
+            self.assertEqual(format_res['rating']['publisher_avatar'],
+                             f'/web/image/res.partner/{self.partner_admin.id}/avatar_128/50x50')
             self.assertEqual(format_res['rating']['publisher_comment'], 'Comment')
             self.assertEqual(format_res['rating']['publisher_id'], self.partner_admin.id)
             self.assertEqual(" ".join(format_res['rating']['publisher_datetime'].split()), 'May 13, 2023, 10:30:05 AM')

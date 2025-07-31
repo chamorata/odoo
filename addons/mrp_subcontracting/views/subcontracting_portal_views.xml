@@ -15,8 +15,13 @@
                     </div>
                     <group>
                         <field name="state" invisible='1'/>
-                        <field name="scheduled_date" readonly="state in ['cancel', 'done']" required="id" decoration-warning="state not in ('done', 'cancel') and scheduled_date &lt; now" decoration-danger="state not in ('done', 'cancel') and scheduled_date &lt; current_date" decoration-bf="state not in ('done', 'cancel') and (scheduled_date &lt; current_date or scheduled_date &lt; now)"/>
-                        <field name="date_deadline" invisible="state in ('done', 'cancel') or not date_deadline" decoration-danger="date_deadline and date_deadline &lt; current_date" decoration-bf="date_deadline and date_deadline &lt; current_date"/>
+                        <field name="scheduled_date" readonly="state in ['cancel', 'done']" required="id"
+                               decoration-warning="state not in ('done', 'cancel') and scheduled_date &lt; now"
+                               decoration-danger="state not in ('done', 'cancel') and scheduled_date &lt; current_date"
+                               decoration-bf="state not in ('done', 'cancel') and (scheduled_date &lt; current_date or scheduled_date &lt; now)"/>
+                        <field name="date_deadline" invisible="state in ('done', 'cancel') or not date_deadline"
+                               decoration-danger="date_deadline and date_deadline &lt; current_date"
+                               decoration-bf="date_deadline and date_deadline &lt; current_date"/>
                         <field name="origin" placeholder="e.g. PO0032" readonly="state in ['cancel', 'done']"/>
                     </group>
                     <notebook>
@@ -35,10 +40,13 @@
                                     <field name="quantity" string="Done"/>
                                     <field name="product_uom" groups="uom.group_uom"/>
                                     <button name="action_show_details" type="object" icon="fa-list" title="Details"
-                                                invisible="not show_details_visible" context="{'is_subcontracting_portal': 1}"/>
+                                            invisible="not show_details_visible"
+                                            context="{'is_subcontracting_portal': 1}"/>
                                     <field name="show_subcontracting_details_visible" column_invisible="True"/>
-                                    <button name="action_show_subcontract_details" string="Register components for subcontracted product" type="object" icon="fa-sitemap"
-                                        invisible="not show_subcontracting_details_visible"/>
+                                    <button name="action_show_subcontract_details"
+                                            string="Register components for subcontracted product" type="object"
+                                            icon="fa-sitemap"
+                                            invisible="not show_subcontracting_details_visible"/>
                                 </list>
                             </field>
                         </page>

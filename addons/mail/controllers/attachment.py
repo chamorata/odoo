@@ -4,15 +4,14 @@ import io
 import logging
 import zipfile
 
+from odoo.addons.mail.tools.discuss import Store
 from werkzeug.exceptions import NotFound
 
 from odoo import _, http
 from odoo.exceptions import AccessError
 from odoo.http import request, content_disposition
-
 from odoo.tools import consteq
 from ..models.discuss.mail_guest import add_guest_to_context
-from odoo.addons.mail.tools.discuss import Store
 
 logger = logging.getLogger(__name__)
 
@@ -107,9 +106,9 @@ class AttachmentController(http.Controller):
                 raise NotFound()
         else:
             if (
-                not access_token
-                or not attachment_sudo.access_token
-                or not consteq(access_token, attachment_sudo.access_token)
+                    not access_token
+                    or not attachment_sudo.access_token
+                    or not consteq(access_token, attachment_sudo.access_token)
             ):
                 raise NotFound()
             if attachment_sudo.res_model != "mail.compose.message" or attachment_sudo.res_id != 0:

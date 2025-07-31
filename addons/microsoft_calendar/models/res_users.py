@@ -2,15 +2,16 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import logging
-import requests
-from odoo.addons.microsoft_calendar.models.microsoft_sync import microsoft_calendar_token
 from datetime import timedelta
 
-from odoo import api, fields, models, _, Command
+import requests
+from odoo.addons.microsoft_account.models import microsoft_service
+from odoo.addons.microsoft_calendar.models.microsoft_sync import microsoft_calendar_token
+from odoo.addons.microsoft_calendar.utils.microsoft_calendar import InvalidSyncToken
+
+from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 from odoo.loglevels import exception_to_unicode
-from odoo.addons.microsoft_account.models import microsoft_service
-from odoo.addons.microsoft_calendar.utils.microsoft_calendar import InvalidSyncToken
 from odoo.tools import str2bool
 
 _logger = logging.getLogger(__name__)
@@ -19,9 +20,12 @@ _logger = logging.getLogger(__name__)
 class User(models.Model):
     _inherit = 'res.users'
 
-    microsoft_calendar_sync_token = fields.Char(related='res_users_settings_id.microsoft_calendar_sync_token', groups='base.group_system')
-    microsoft_synchronization_stopped = fields.Boolean(related='res_users_settings_id.microsoft_synchronization_stopped', readonly=False, groups='base.group_system')
-    microsoft_last_sync_date = fields.Datetime(related='res_users_settings_id.microsoft_last_sync_date', readonly=False, groups='base.group_system')
+    microsoft_calendar_sync_token = fields.Char(related='res_users_settings_id.microsoft_calendar_sync_token',
+                                                groups='base.group_system')
+    microsoft_synchronization_stopped = fields.Boolean(
+        related='res_users_settings_id.microsoft_synchronization_stopped', readonly=False, groups='base.group_system')
+    microsoft_last_sync_date = fields.Datetime(related='res_users_settings_id.microsoft_last_sync_date', readonly=False,
+                                               groups='base.group_system')
 
     def _microsoft_calendar_authenticated(self):
         return bool(self.sudo().microsoft_calendar_rtoken)
@@ -36,12 +40,14 @@ class User(models.Model):
         return self.sudo().microsoft_calendar_token
 
     def _is_microsoft_calendar_valid(self):
-        return self.sudo().microsoft_calendar_token_validity and self.sudo().microsoft_calendar_token_validity >= (fields.Datetime.now() + timedelta(minutes=1))
+        return self.sudo().microsoft_calendar_token_validity and self.sudo().microsoft_calendar_token_validity >= (
+                    fields.Datetime.now() + timedelta(minutes=1))
 
     def _refresh_microsoft_calendar_token(self, service='calendar'):
         self.ensure_one()
         try:
-            access_token, ttl = self.env['microsoft.service']._refresh_microsoft_token('calendar', self.sudo().microsoft_calendar_rtoken)
+            access_token, ttl = self.env['microsoft.service']._refresh_microsoft_token('calendar',
+                                                                                       self.sudo().microsoft_calendar_rtoken)
             self.sudo().write({
                 'microsoft_calendar_token': access_token,
                 'microsoft_calendar_token_validity': fields.Datetime.now() + timedelta(seconds=ttl),
@@ -91,14 +97,16 @@ class User(models.Model):
         full_sync = not bool(self.sudo().microsoft_calendar_sync_token)
         with microsoft_calendar_token(self) as token:
             try:
-                events, next_sync_token = calendar_service.get_events(self.sudo().microsoft_calendar_sync_token, token=token)
+                events, next_sync_token = calendar_service.get_events(self.sudo().microsoft_calendar_sync_token,
+                                                                      token=token)
             except InvalidSyncToken:
                 events, next_sync_token = calendar_service.get_events(token=token)
                 full_sync = True
         self.res_users_settings_id.sudo().microsoft_calendar_sync_token = next_sync_token
 
         # Microsoft -> Odoo
-        synced_events, synced_recurrences = self.env['calendar.event']._sync_microsoft2odoo(events) if events else (self.env['calendar.event'], self.env['calendar.recurrence'])
+        synced_events, synced_recurrences = self.env['calendar.event']._sync_microsoft2odoo(events) if events else (
+            self.env['calendar.event'], self.env['calendar.recurrence'])
 
         # Odoo -> Microsoft
         recurrences = self.env['calendar.recurrence']._get_microsoft_records_to_sync(full_sync=full_sync)
@@ -115,7 +123,8 @@ class User(models.Model):
     @api.model
     def _sync_all_microsoft_calendar(self):
         """ Cron job """
-        users = self.env['res.users'].sudo().search([('microsoft_calendar_rtoken', '!=', False), ('microsoft_synchronization_stopped', '=', False)])
+        users = self.env['res.users'].sudo().search(
+            [('microsoft_calendar_rtoken', '!=', False), ('microsoft_synchronization_stopped', '=', False)])
         for user in users:
             _logger.info("Calendar Synchro - Starting synchronization for %s", user)
             try:

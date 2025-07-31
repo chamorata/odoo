@@ -54,13 +54,15 @@
                         <field name="partner_id" filter_domain="[('partner_id','child_of',self)]"/>
                     </xpath>
                     <xpath expr="//filter[@name='month']" position="after">
-                        <filter name="fiscal_date" string="From last fiscal year" domain="[('date', '>=', 'fiscal_start_year')]" invisible="1"/>
+                        <filter name="fiscal_date" string="From last fiscal year"
+                                domain="[('date', '>=', 'fiscal_start_year')]" invisible="1"/>
                     </xpath>
                     <xpath expr="//group[@name='groupby']" position="inside">
                         <separator/>
                         <filter name="account_id" context="{'group_by': 'account_id'}"/>
                         <separator/>
-                        <filter string="Financial Account" name="group_by_financial_account" context="{'group_by':'general_account_id'}"/>
+                        <filter string="Financial Account" name="group_by_financial_account"
+                                context="{'group_by':'general_account_id'}"/>
                         <filter string="Category" name='category' context="{'group_by': 'category'}"/>
                         <filter string="Product" name="product" context="{'group_by':'product_id'}"/>
                         <filter string="Partner" name="partner" context="{'group_by':'partner_id'}"/>
@@ -85,7 +87,8 @@
             <field name="context">{
                 'search_default_group_by_analytic_account': 1,
                 'search_default_fiscal_date': 1,
-            }</field>
+                }
+            </field>
         </record>
 
         <record id="action_analytic_reporting" model="ir.actions.act_window">
@@ -95,7 +98,8 @@
             <field name="context">{
                 'search_default_group_by_analytic_account': 1,
                 'search_default_fiscal_date': 1,
-            }</field>
+                }
+            </field>
         </record>
 
     </data>

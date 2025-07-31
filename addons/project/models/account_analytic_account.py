@@ -14,7 +14,8 @@ class AccountAnalyticAccount(models.Model):
 
     @api.depends('project_ids')
     def _compute_project_count(self):
-        project_data = self.env['project.project']._read_group([('account_id', 'in', self.ids)], ['account_id'], ['__count'])
+        project_data = self.env['project.project']._read_group([('account_id', 'in', self.ids)], ['account_id'],
+                                                               ['__count'])
         mapping = {analytic_account.id: count for analytic_account, count in project_data}
         for account in self:
             account.project_count = mapping.get(account.id, 0)

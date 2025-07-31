@@ -40,16 +40,16 @@ class TestDomain(TransactionExpressionCase):
             neq_2 = self._search(model, [(f, '!=', False)])
             self.assertEqual(eq_2, neq_2, '`= True` (%s) <> `!= False` (%s) ' % (len(eq_2), len(neq_2)))
 
-            self.assertEqual(eq_1+eq_2, all_bool, 'True + False != all')
-            self.assertEqual(neq_1+neq_2, all_bool, 'not True + not False != all')
+            self.assertEqual(eq_1 + eq_2, all_bool, 'True + False != all')
+            self.assertEqual(neq_1 + neq_2, all_bool, 'not True + not False != all')
 
     def test_empty_int(self):
         EmptyInt = self.env['test_new_api.empty_int']
         records = EmptyInt.create([
-            {'number': 42},     # stored as 42
-            {'number': 0},      # stored as 0
+            {'number': 42},  # stored as 42
+            {'number': 0},  # stored as 0
             {'number': False},  # stored as 0
-            {},                 # stored as NULL
+            {},  # stored as NULL
         ])
         # check read (NULL is returned as 0)
         self.assertListEqual(records.mapped('number'), [42, 0, 0, 0])
@@ -96,9 +96,9 @@ class TestDomain(TransactionExpressionCase):
         EmptyChar = self.env['test_new_api.empty_char']
         records = EmptyChar.create([
             {'name': 'name'},
-            {'name': ''},      # stored as ''
-            {'name': False},   # stored as null (explicitly asked)
-            {},                # stored as null
+            {'name': ''},  # stored as ''
+            {'name': False},  # stored as null (explicitly asked)
+            {},  # stored as null
         ])
         # check read
         self.assertListEqual(records.mapped('name'), ['name', '', False, False])
@@ -113,16 +113,19 @@ class TestDomain(TransactionExpressionCase):
         self.assertListEqual(self._search(EmptyChar, [('name', '=', 'name')]).mapped('name'), ['name'])
         self.assertListEqual(self._search(EmptyChar, [('name', '!=', 'name')]).mapped('name'), ['', False, False])
         self.assertListEqual(self._search(EmptyChar, [('name', 'ilike', 'name')]).mapped('name'), ['name'])
-        self.assertListEqual(self._search(EmptyChar, [('name', 'not ilike', 'name')]).mapped('name'), ['', False, False])
+        self.assertListEqual(self._search(EmptyChar, [('name', 'not ilike', 'name')]).mapped('name'),
+                             ['', False, False])
 
         self.assertListEqual(self._search(EmptyChar, [('name', '=', '')]).mapped('name'), ['', False, False])
         self.assertListEqual(self._search(EmptyChar, [('name', '!=', '')]).mapped('name'), ['name'])
-        self.assertListEqual(self._search(EmptyChar, [('name', 'ilike', '')]).mapped('name'), ['name', '', False, False])
+        self.assertListEqual(self._search(EmptyChar, [('name', 'ilike', '')]).mapped('name'),
+                             ['name', '', False, False])
         self.assertListEqual(self._search(EmptyChar, [('name', 'not ilike', '')]).mapped('name'), [])
 
         self.assertListEqual(self._search(EmptyChar, [('name', '=', False)]).mapped('name'), ['', False, False])
         self.assertListEqual(self._search(EmptyChar, [('name', '!=', False)]).mapped('name'), ['name'])
-        self.assertListEqual(self._search(EmptyChar, [('name', 'ilike', False)]).mapped('name'), ['name', '', False, False])
+        self.assertListEqual(self._search(EmptyChar, [('name', 'ilike', False)]).mapped('name'),
+                             ['name', '', False, False])
         self.assertListEqual(self._search(EmptyChar, [('name', 'not ilike', False)]).mapped('name'), [])
 
         values = ['name', '', False]

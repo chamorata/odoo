@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.survey.tests import common
+
 from odoo.tests import tagged
 from odoo.tests.common import HttpCase
 
@@ -94,7 +95,8 @@ class TestSurveyFlow(common.TestSurveyCommon, HttpCase):
             page0_q0.id: {'value': ['Alfred Poilvache']},
             page0_q1.id: {'value': ['44.0']},
         }
-        post_data = self._format_submission_data(page_0, answer_data, {'csrf_token': csrf_token, 'token': answer_token, 'button_submit': 'next'})
+        post_data = self._format_submission_data(page_0, answer_data, {'csrf_token': csrf_token, 'token': answer_token,
+                                                                       'button_submit': 'next'})
         r = self._access_submit(survey, answer_token, post_data)
         self.assertResponse(r, 200)
         answers.invalidate_recordset()  # TDE note: necessary as lots of sudo in controllers messing with cache
@@ -112,7 +114,8 @@ class TestSurveyFlow(common.TestSurveyCommon, HttpCase):
         answer_data = {
             page1_q0.id: {'value': [page1_q0.suggested_answer_ids.ids[0], page1_q0.suggested_answer_ids.ids[1]]},
         }
-        post_data = self._format_submission_data(page_1, answer_data, {'csrf_token': csrf_token, 'token': answer_token, 'button_submit': 'next'})
+        post_data = self._format_submission_data(page_1, answer_data, {'csrf_token': csrf_token, 'token': answer_token,
+                                                                       'button_submit': 'next'})
         r = self._access_submit(survey, answer_token, post_data)
         self.assertResponse(r, 200)
         answers.invalidate_recordset()  # TDE note: necessary as lots of sudo in controllers messing with cache

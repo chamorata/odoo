@@ -193,12 +193,14 @@
                 <field name="name">13. VAT Claimable on Services Imported into Kenya</field>
                 <field name="code">box_13</field>
                 <field name="expression_ids">
-                    <record id="tax_report_vat_claimable_on_imported_services_base_tag" model="account.report.expression">
+                    <record id="tax_report_vat_claimable_on_imported_services_base_tag"
+                            model="account.report.expression">
                         <field name="label">base</field>
                         <field name="engine">tax_tags</field>
                         <field name="formula">Import Base</field>
                     </record>
-                    <record id="tax_report_vat_claimable_on_imported_services_tax_tag" model="account.report.expression">
+                    <record id="tax_report_vat_claimable_on_imported_services_tax_tag"
+                            model="account.report.expression">
                         <field name="label">tax</field>
                         <field name="engine">tax_tags</field>
                         <field name="formula">Import Tax</field>
@@ -209,7 +211,8 @@
                 <field name="name">14. Input VAT attributable to Only Exempt Supplies</field>
                 <field name="code">box_14</field>
                 <field name="expression_ids">
-                    <record id="tax_report_input_vat_attributable_to_exempt_supplies_tax_tag" model="account.report.expression">
+                    <record id="tax_report_input_vat_attributable_to_exempt_supplies_tax_tag"
+                            model="account.report.expression">
                         <field name="label">tax</field>
                         <field name="engine">external</field>
                         <field name="formula">sum</field>
@@ -217,11 +220,13 @@
                     </record>
                 </field>
             </record>
-            <record id="tax_report_line_input_vat_attributable_to_taxable_and_exempt_supplies" model="account.report.line">
+            <record id="tax_report_line_input_vat_attributable_to_taxable_and_exempt_supplies"
+                    model="account.report.line">
                 <field name="name">15. Input VAT attributable to Taxable and Exempt Supplies</field>
                 <field name="code">box_15</field>
                 <field name="expression_ids">
-                    <record id="tax_report_input_vat_attributable_to_taxable_and_exempt_supplies_tax_tag" model="account.report.expression">
+                    <record id="tax_report_input_vat_attributable_to_taxable_and_exempt_supplies_tax_tag"
+                            model="account.report.expression">
                         <field name="label">tax</field>
                         <field name="engine">external</field>
                         <field name="formula">sum</field>
@@ -236,7 +241,9 @@
                     <record id="tax_report_non_deductible_input_vat_tax_tag" model="account.report.expression">
                         <field name="label">tax</field>
                         <field name="engine">aggregation</field>
-                        <field name="formula">box_15.tax - (((box_1.tax + box_2.tax + box_3.base) / box_5.base) * box_15.tax)</field>
+                        <field name="formula">box_15.tax - (((box_1.tax + box_2.tax + box_3.base) / box_5.base) *
+                            box_15.tax)
+                        </field>
                         <field name="subformula">ignore_zero_division</field>
                     </record>
                 </field>
@@ -256,7 +263,8 @@
                 <field name="name">18. VAT Payable/Credit Due for the period</field>
                 <field name="code">box_18</field>
                 <field name="expression_ids">
-                    <record id="tax_report_vat_payable_or_credit_due_for_period_tax_tag" model="account.report.expression">
+                    <record id="tax_report_vat_payable_or_credit_due_for_period_tax_tag"
+                            model="account.report.expression">
                         <field name="label">tax</field>
                         <field name="engine">aggregation</field>
                         <field name="formula">box_6.tax - box_17.tax</field>
@@ -267,13 +275,15 @@
                 <field name="name">19. Credit Brought Forward from previous month</field>
                 <field name="code">box_19</field>
                 <field name="expression_ids">
-                    <record id="tax_report_credit_brought_forward_from_previous_month_applied_carryover" model="account.report.expression">
+                    <record id="tax_report_credit_brought_forward_from_previous_month_applied_carryover"
+                            model="account.report.expression">
                         <field name="label">_applied_carryover_tax</field>
                         <field name="engine">external</field>
                         <field name="formula">most_recent</field>
                         <field name="date_scope">previous_tax_period</field>
                     </record>
-                    <record id="tax_report_credit_brought_forward_from_previous_month_tax_tag" model="account.report.expression">
+                    <record id="tax_report_credit_brought_forward_from_previous_month_tax_tag"
+                            model="account.report.expression">
                         <field name="label">tax</field>
                         <field name="engine">aggregation</field>
                         <field name="formula">-box_19._applied_carryover_tax</field>
@@ -335,7 +345,8 @@
                 <field name="name">24. Total Credit Adjustment/Inventory Approval Order</field>
                 <field name="code">box_24</field>
                 <field name="expression_ids">
-                    <record id="tax_report_total_credit_adjustment_inventory_approval_order_tax_tag" model="account.report.expression">
+                    <record id="tax_report_total_credit_adjustment_inventory_approval_order_tax_tag"
+                            model="account.report.expression">
                         <field name="label">tax</field>
                         <field name="engine">external</field>
                         <field name="formula">sum</field>
@@ -359,12 +370,14 @@
                 <field name="name">26. Net VAT Payable/Credit Carried Forward</field>
                 <field name="code">box_26</field>
                 <field name="expression_ids">
-                    <record id="tax_report_net_vat_payable_or_credit_carried_forward_tax_tag" model="account.report.expression">
+                    <record id="tax_report_net_vat_payable_or_credit_carried_forward_tax_tag"
+                            model="account.report.expression">
                         <field name="label">tax</field>
                         <field name="engine">aggregation</field>
                         <field name="formula">box_22.tax - box_23.tax - box_24.tax + box_25.tax</field>
                     </record>
-                    <record id="tax_report_net_vat_payable_or_credit_carried_forward_carryover" model="account.report.expression">
+                    <record id="tax_report_net_vat_payable_or_credit_carried_forward_carryover"
+                            model="account.report.expression">
                         <field name="label">_carryover_tax</field>
                         <field name="engine">aggregation</field>
                         <field name="formula">box_26.tax</field>

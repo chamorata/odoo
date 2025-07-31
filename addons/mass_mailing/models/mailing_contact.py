@@ -68,7 +68,8 @@ class MassMailingContact(models.Model):
             else:
                 raise NotImplementedError()
 
-        if 'default_list_ids' in self._context and isinstance(self._context['default_list_ids'], (list, tuple)) and len(self._context['default_list_ids']) == 1:
+        if 'default_list_ids' in self._context and isinstance(self._context['default_list_ids'], (list, tuple)) and len(
+                self._context['default_list_ids']) == 1:
             [active_list_id] = self._context['default_list_ids']
             contacts = self.env['mailing.subscription'].search([('list_id', '=', active_list_id)])
             return [('id', 'in', [record.contact_id.id for record in contacts if record.opt_out == value])]
@@ -83,7 +84,8 @@ class MassMailingContact(models.Model):
     @api.depends('subscription_ids')
     @api.depends_context('default_list_ids')
     def _compute_opt_out(self):
-        if 'default_list_ids' in self._context and isinstance(self._context['default_list_ids'], (list, tuple)) and len(self._context['default_list_ids']) == 1:
+        if 'default_list_ids' in self._context and isinstance(self._context['default_list_ids'], (list, tuple)) and len(
+                self._context['default_list_ids']) == 1:
             [active_list_id] = self._context['default_list_ids']
             for record in self:
                 active_subscription_list = record.subscription_ids.filtered(lambda l: l.list_id.id == active_list_id)

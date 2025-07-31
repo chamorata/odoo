@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from datetime import datetime
 import json
 import logging
+from datetime import datetime
 
 import requests
 from werkzeug import urls
@@ -35,6 +35,7 @@ def _get_microsoft_client_secret(ICP_sudo, service):
     """
     return ICP_sudo.get_param('microsoft_%s_client_secret' % service)
 
+
 class MicrosoftService(models.AbstractModel):
     _name = 'microsoft.service'
     _description = 'Microsoft Service'
@@ -49,11 +50,13 @@ class MicrosoftService(models.AbstractModel):
 
     @api.model
     def _get_auth_endpoint(self):
-        return self.env["ir.config_parameter"].sudo().get_param('microsoft_account.auth_endpoint', DEFAULT_MICROSOFT_AUTH_ENDPOINT)
+        return self.env["ir.config_parameter"].sudo().get_param('microsoft_account.auth_endpoint',
+                                                                DEFAULT_MICROSOFT_AUTH_ENDPOINT)
 
     @api.model
     def _get_token_endpoint(self):
-        return self.env["ir.config_parameter"].sudo().get_param('microsoft_account.token_endpoint', DEFAULT_MICROSOFT_TOKEN_ENDPOINT)
+        return self.env["ir.config_parameter"].sudo().get_param('microsoft_account.token_endpoint',
+                                                                DEFAULT_MICROSOFT_TOKEN_ENDPOINT)
 
     @api.model
     def generate_refresh_token(self, service, authorization_code):
@@ -79,7 +82,8 @@ class MicrosoftService(models.AbstractModel):
             req.raise_for_status()
             content = req.json()
         except requests.exceptions.RequestException as exc:
-            error_msg = _("Something went wrong during your token generation. Maybe your Authorization Code is invalid or already expired")
+            error_msg = _(
+                "Something went wrong during your token generation. Maybe your Authorization Code is invalid or already expired")
             raise self.env['res.config.settings'].get_config_warning(error_msg) from exc
 
         return content.get('refresh_token')
@@ -151,7 +155,8 @@ class MicrosoftService(models.AbstractModel):
             'redirect_uri': redirect_uri
         }
         try:
-            dummy, response, dummy = self._do_request(self._get_token_endpoint(), params=data, headers=headers, method='POST', preuri='')
+            dummy, response, dummy = self._do_request(self._get_token_endpoint(), params=data, headers=headers,
+                                                      method='POST', preuri='')
             access_token = response.get('access_token')
             refresh_token = response.get('refresh_token')
             ttl = response.get('expires_in')
@@ -161,7 +166,8 @@ class MicrosoftService(models.AbstractModel):
             raise self.env['res.config.settings'].get_config_warning(error_msg)
 
     @api.model
-    def _do_request(self, uri, params=None, headers=None, method='POST', preuri=DEFAULT_MICROSOFT_GRAPH_ENDPOINT, timeout=TIMEOUT):
+    def _do_request(self, uri, params=None, headers=None, method='POST', preuri=DEFAULT_MICROSOFT_GRAPH_ENDPOINT,
+                    timeout=TIMEOUT):
         """ Execute the request to Microsoft API. Return a tuple ('HTTP_CODE', 'HTTP_RESPONSE')
             :param uri : the url to contact
             :param params : dict or already encoded parameters for the request to make

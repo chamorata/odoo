@@ -51,17 +51,18 @@
                     or
                     <hr class="flex-grow-1"/>
                 </div>
-            <div class="px-2">
-                <h3 class="pb-1">
-                    Try the backend and reporting:
-                </h3>
-                <div class="row justify-content-center">
-                    <a type="object" class="btn btn-secondary d-block col-6" t-on-click="() => this.loadAttendanceScenario()">
-                        Load sample data
-                    </a>
+                <div class="px-2">
+                    <h3 class="pb-1">
+                        Try the backend and reporting:
+                    </h3>
+                    <div class="row justify-content-center">
+                        <a type="object" class="btn btn-secondary d-block col-6"
+                           t-on-click="() => this.loadAttendanceScenario()">
+                            Load sample data
+                        </a>
+                    </div>
                 </div>
-            </div>
-        </t>
+            </t>
         </div>
     </t>
 
@@ -79,25 +80,29 @@
                         </div>
                     </div>
                 </a>
-                <div class="mx-5" >
-                        <img src="/hr_attendance/static/img/attendance_dot.gif" height="180" class="mb-2"/>
-                    <h3 class="mt-2"><em>Try the top
-                        <i class="fa fa-circle text-danger" role="img" aria-label="Attendance"/>
-                    icon (e.g for work from home)</em></h3>
+                <div class="mx-5">
+                    <img src="/hr_attendance/static/img/attendance_dot.gif" height="180" class="mb-2"/>
+                    <h3 class="mt-2">
+                        <em>Try the top
+                            <i class="fa fa-circle text-danger" role="img" aria-label="Attendance"/>
+                            icon (e.g for work from home)
+                        </em>
+                    </h3>
                 </div>
             </div>
             <t t-if="!state.hasDemoData">
-                    <div class="d-flex gap-3 align-items-center or-separator">
-                        <hr class="flex-grow-1"/>
-                        or
-                        <hr class="flex-grow-1"/>
-                    </div>
+                <div class="d-flex gap-3 align-items-center or-separator">
+                    <hr class="flex-grow-1"/>
+                    or
+                    <hr class="flex-grow-1"/>
+                </div>
                 <div class="px-2 py-2">
-                        <h3 class="m-2 py-2">
-                            Try the backend and reporting:
-                        </h3>
+                    <h3 class="m-2 py-2">
+                        Try the backend and reporting:
+                    </h3>
                     <div class="row justify-content-center">
-                        <a type="object" class="btn btn-secondary d-block col-2" t-on-click="() => this.loadAttendanceScenario()">
+                        <a type="object" class="btn btn-secondary d-block col-2"
+                           t-on-click="() => this.loadAttendanceScenario()">
                             Load sample data
                         </a>
                     </div>

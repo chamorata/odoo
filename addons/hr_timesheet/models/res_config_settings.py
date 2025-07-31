@@ -8,7 +8,7 @@ class ResConfigSettings(models.TransientModel):
     _inherit = 'res.config.settings'
 
     module_project_timesheet_holidays = fields.Boolean("Time Off",
-        compute="_compute_timesheet_modules", store=True, readonly=False)
+                                                       compute="_compute_timesheet_modules", store=True, readonly=False)
     reminder_user_allow = fields.Boolean(string="Employee Reminder")
     reminder_allow = fields.Boolean(string="Approver Reminder")
     project_time_mode_id = fields.Many2one(
@@ -20,7 +20,8 @@ class ResConfigSettings(models.TransientModel):
     timesheet_encode_method = fields.Selection([
         ('hours', 'Hours / Minutes'),
         ('days', 'Days / Half-Days'),
-    ], string='Encoding Method', compute="_compute_timesheet_encode_method", inverse="_inverse_timesheet_encode_method", required=True)
+    ], string='Encoding Method', compute="_compute_timesheet_encode_method", inverse="_inverse_timesheet_encode_method",
+        required=True)
 
     @api.depends('company_id')
     def _compute_timesheet_encode_method(self):

@@ -37,13 +37,22 @@
             </thead>
             <tbody>
                 <tr t-foreach="attendees" t-as="attendee">
-                    <td><t t-out="attendee.name"/></td>
-                    <td><t t-out="attendee.company_name"/></td>
-                    <td><t t-out="attendee.event_ticket_id.name"/></td>
-                    <td><t t-out="attendee.phone"/></td>
+                    <td>
+                        <t t-out="attendee.name"/>
+                    </td>
+                    <td>
+                        <t t-out="attendee.company_name"/>
+                    </td>
+                    <td>
+                        <t t-out="attendee.event_ticket_id.name"/>
+                    </td>
+                    <td>
+                        <t t-out="attendee.phone"/>
+                    </td>
                     <td class="text-center">
                         <t t-if="attendee.barcode">
-                            <img t-attf-src="/report/barcode/QR/{{ attendee.barcode }}?&amp;width=87&amp;height=87&amp;quiet=0" alt="QR Code"/>
+                            <img t-attf-src="/report/barcode/QR/{{ attendee.barcode }}?&amp;width=87&amp;height=87&amp;quiet=0"
+                                 alt="QR Code"/>
                         </t>
                     </td>
                 </tr>

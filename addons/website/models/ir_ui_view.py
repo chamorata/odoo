@@ -2,28 +2,30 @@
 
 import logging
 import uuid
+
 import werkzeug
+from odoo.addons.website.tools import add_form_signature
 
 from odoo import api, fields, models
 from odoo import tools
-from odoo.addons.website.tools import add_form_signature
 from odoo.exceptions import AccessError
-from odoo.osv import expression
 from odoo.http import request
+from odoo.osv import expression
 
 _logger = logging.getLogger(__name__)
 
 
 class View(models.Model):
-
     _name = "ir.ui.view"
     _inherit = ["ir.ui.view", "website.seo.metadata"]
 
     website_id = fields.Many2one('website', ondelete='cascade', string="Website")
     page_ids = fields.One2many('website.page', 'view_id')
     controller_page_ids = fields.One2many('website.controller.page', 'view_id')
-    first_page_id = fields.Many2one('website.page', string='Website Page', help='First page linked to this view', compute='_compute_first_page_id')
-    track = fields.Boolean(string='Track', default=False, help="Allow to specify for one page of the website to be trackable or not")
+    first_page_id = fields.Many2one('website.page', string='Website Page', help='First page linked to this view',
+                                    compute='_compute_first_page_id')
+    track = fields.Boolean(string='Track', default=False,
+                           help="Allow to specify for one page of the website to be trackable or not")
     visibility = fields.Selection(
         [
             ('', 'Public'),
@@ -34,7 +36,8 @@ class View(models.Model):
         default='',
     )
     visibility_password = fields.Char(groups='base.group_system', copy=False)
-    visibility_password_display = fields.Char(compute='_get_pwd', inverse='_set_pwd', groups='website.group_website_designer')
+    visibility_password_display = fields.Char(compute='_get_pwd', inverse='_set_pwd',
+                                              groups='website.group_website_designer')
 
     @api.depends('visibility_password')
     def _get_pwd(self):
@@ -45,7 +48,8 @@ class View(models.Model):
         crypt_context = self.env.user._crypt_context()
         for r in self:
             if r.type == 'qweb':
-                r.sudo().visibility_password = (r.visibility_password_display and crypt_context.hash(r.visibility_password_display)) or ''
+                r.sudo().visibility_password = (r.visibility_password_display and crypt_context.hash(
+                    r.visibility_password_display)) or ''
                 r.visibility = r.visibility  # double check access
 
     def _compute_first_page_id(self):
@@ -75,7 +79,8 @@ class View(models.Model):
                 if not new_website_id:
                     raise ValueError(f"Trying to create a generic view from a website {website_id} environment")
                 elif new_website_id != website_id:
-                    raise ValueError(f"Trying to create a view for website {new_website_id} from a website {website_id} environment")
+                    raise ValueError(
+                        f"Trying to create a view for website {new_website_id} from a website {website_id} environment")
         return super().create(vals_list)
 
     @api.depends('website_id', 'key')
@@ -201,7 +206,7 @@ class View(models.Model):
                AND specific.id IS NULL
           GROUP BY generic.id
         """
-        self.env.cr.execute(query, (regex, ))
+        self.env.cr.execute(query, (regex,))
         result = dict(self.env.cr.fetchall())
 
         for record in self.browse(result.keys()):
@@ -305,7 +310,9 @@ class View(models.Model):
                 most_specific_views |= view
             # generic view: add it only if, for the current website, there is no
             # specific view for this view (based on the same `key` attribute)
-            elif not view.website_id and not any(view.key == view2.key and view2.website_id and view2.website_id.id == current_website_id for view2 in self):
+            elif not view.website_id and not any(
+                    view.key == view2.key and view2.website_id and view2.website_id.id == current_website_id for view2
+                    in self):
                 most_specific_views |= view
 
         return most_specific_views
@@ -528,7 +535,9 @@ class View(models.Model):
         return res
 
     def _update_field_translations(self, fname, translations, digest=None, source_lang=None):
-        return super(View, self.with_context(no_cow=True))._update_field_translations(fname, translations, digest=digest, source_lang=source_lang)
+        return super(View, self.with_context(no_cow=True))._update_field_translations(fname, translations,
+                                                                                      digest=digest,
+                                                                                      source_lang=source_lang)
 
     def _get_base_lang(self):
         """ Returns the default language of the website as the base language if the record is bound to it """

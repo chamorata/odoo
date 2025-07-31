@@ -1,5 +1,6 @@
-from odoo import Command
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
+from odoo import Command
 from odoo.tests import tagged
 from odoo.tools import misc
 
@@ -123,7 +124,8 @@ class TestUblBis3(AccountTestInvoicingCommon):
     def test_single_fixed_tax_price_included(self):
         self.setup_partner_as_be1(self.env.company.partner_id)
         self.setup_partner_as_be2(self.partner_a)
-        tax_recupel = self.fixed_tax(1.0, name="RECUPEL", include_base_amount=True, price_include_override='tax_included')
+        tax_recupel = self.fixed_tax(1.0, name="RECUPEL", include_base_amount=True,
+                                     price_include_override='tax_included')
         tax_21 = self.percent_tax(21.0, price_include_override='tax_included')
 
         invoice = self.env['account.move'].create({

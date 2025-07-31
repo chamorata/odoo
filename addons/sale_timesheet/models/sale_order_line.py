@@ -9,11 +9,15 @@ class SaleOrderLine(models.Model):
     _inherit = "sale.order.line"
 
     qty_delivered_method = fields.Selection(selection_add=[('timesheet', 'Timesheets')])
-    analytic_line_ids = fields.One2many(domain=[('project_id', '=', False)])  # only analytic lines, not timesheets (since this field determine if SO line came from expense)
+    analytic_line_ids = fields.One2many(domain=[('project_id', '=',
+                                                 False)])  # only analytic lines, not timesheets (since this field determine if SO line came from expense)
     remaining_hours_available = fields.Boolean(compute='_compute_remaining_hours_available', compute_sudo=True)
-    remaining_hours = fields.Float('Time Remaining on SO', compute='_compute_remaining_hours', compute_sudo=True, store=True)
-    has_displayed_warning_upsell = fields.Boolean('Has Displayed Warning Upsell', copy=False, export_string_translation=False)
-    timesheet_ids = fields.One2many('account.analytic.line', 'so_line', domain=[('project_id', '!=', False)], string='Timesheets', export_string_translation=False)
+    remaining_hours = fields.Float('Time Remaining on SO', compute='_compute_remaining_hours', compute_sudo=True,
+                                   store=True)
+    has_displayed_warning_upsell = fields.Boolean('Has Displayed Warning Upsell', copy=False,
+                                                  export_string_translation=False)
+    timesheet_ids = fields.One2many('account.analytic.line', 'so_line', domain=[('project_id', '!=', False)],
+                                    string='Timesheets', export_string_translation=False)
 
     @api.depends('remaining_hours_available', 'remaining_hours')
     @api.depends_context('with_remaining_hours', 'company')
@@ -37,7 +41,8 @@ class SaleOrderLine(models.Model):
                     if is_hour:
                         remaining_time = f' ({format_duration(line.remaining_hours)} {unit_label})'
                     elif is_day:
-                        remaining_days = company.project_time_mode_id._compute_quantity(line.remaining_hours, encoding_uom, round=False)
+                        remaining_days = company.project_time_mode_id._compute_quantity(line.remaining_hours,
+                                                                                        encoding_uom, round=False)
                         remaining_time = f' ({remaining_days:.02f} {unit_label})'
                     name = f'{line.display_name}{remaining_time}'
                     line.display_name = name
@@ -158,13 +163,15 @@ class SaleOrderLine(models.Model):
         """
         lines_by_timesheet = self.filtered(lambda sol: sol.product_id and sol.product_id._is_delivered_timesheet())
         domain = lines_by_timesheet._timesheet_compute_delivered_quantity_domain()
-        refund_account_moves = self.order_id.invoice_ids.filtered(lambda am: am.state == 'posted' and am.move_type == 'out_refund').reversed_entry_id
+        refund_account_moves = self.order_id.invoice_ids.filtered(
+            lambda am: am.state == 'posted' and am.move_type == 'out_refund').reversed_entry_id
         timesheet_domain = [
             '|',
             ('timesheet_invoice_id', '=', False),
             ('timesheet_invoice_id.state', '=', 'cancel')]
         if refund_account_moves:
-            credited_timesheet_domain = [('timesheet_invoice_id.state', '=', 'posted'), ('timesheet_invoice_id', 'in', refund_account_moves.ids)]
+            credited_timesheet_domain = [('timesheet_invoice_id.state', '=', 'posted'),
+                                         ('timesheet_invoice_id', 'in', refund_account_moves.ids)]
             timesheet_domain = expression.OR([timesheet_domain, credited_timesheet_domain])
         domain = expression.AND([domain, timesheet_domain])
         if start_date:
@@ -193,7 +200,8 @@ class SaleOrderLine(models.Model):
         timesheet_action = self.env.ref('sale_timesheet.timesheet_action_from_sales_order_item').id
         timesheet_ids_per_sol = {}
         if self.env.user.has_group('hr_timesheet.group_hr_timesheet_user'):
-            timesheet_read_group = self.env['account.analytic.line']._read_group([('so_line', 'in', self.ids), ('project_id', '!=', False)], ['so_line'], ['id:array_agg'])
+            timesheet_read_group = self.env['account.analytic.line']._read_group(
+                [('so_line', 'in', self.ids), ('project_id', '!=', False)], ['so_line'], ['id:array_agg'])
             timesheet_ids_per_sol = {so_line.id: ids for so_line, ids in timesheet_read_group}
         for sol in self:
             timesheet_ids = timesheet_ids_per_sol.get(sol.id, [])

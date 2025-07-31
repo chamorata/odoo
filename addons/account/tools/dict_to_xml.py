@@ -37,6 +37,7 @@ def dict_to_xml(node, *, nsmap={}, template=None, render_empty_nodes=False, tag=
     :param path: (optional) The path of the currently rendered node in the XML tree (needed only for recursive calls).
     :return: The rendered XML node as an lxml.Element.
     """
+
     def convert_tag_to_lxml_convention(tag):
         if ':' in tag:
             namespace, local_name = tag.split(':')
@@ -60,7 +61,8 @@ def dict_to_xml(node, *, nsmap={}, template=None, render_empty_nodes=False, tag=
 
     # Add attributes
     for attr_name, attr_value in node.items():
-        if not attr_name.startswith('_') and not isinstance(attr_value, (dict, list)) and attr_value is not None and attr_value is not False:
+        if not attr_name.startswith('_') and not isinstance(attr_value, (dict,
+                                                                         list)) and attr_value is not None and attr_value is not False:
             element.set(convert_tag_to_lxml_convention(attr_name), str(attr_value))
 
     # Add text content if present

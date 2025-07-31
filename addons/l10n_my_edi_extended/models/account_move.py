@@ -63,7 +63,8 @@ class AccountMove(models.Model):
         self.ensure_one()
 
         if self.l10n_my_edi_state == 'in_progress':
-            raise UserError(_('You cannot send invoices that are currently being validated.\nPlease wait for the validation to complete.'))
+            raise UserError(
+                _('You cannot send invoices that are currently being validated.\nPlease wait for the validation to complete.'))
 
         return super().action_invoice_sent()
 

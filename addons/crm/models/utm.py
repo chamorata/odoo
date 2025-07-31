@@ -8,7 +8,8 @@ class UtmCampaign(models.Model):
     _inherit = 'utm.campaign'
 
     use_leads = fields.Boolean('Use Leads', compute='_compute_use_leads')
-    crm_lead_count = fields.Integer('Leads/Opportunities count', groups='sales_team.group_sale_salesman', compute="_compute_crm_lead_count")
+    crm_lead_count = fields.Integer('Leads/Opportunities count', groups='sales_team.group_sale_salesman',
+                                    compute="_compute_crm_lead_count")
 
     def _compute_use_leads(self):
         self.use_leads = self.env.user.has_group('crm.group_use_lead')

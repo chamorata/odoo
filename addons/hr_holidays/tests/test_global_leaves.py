@@ -2,11 +2,13 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import date, datetime, timedelta
-from odoo.addons.hr_holidays.tests.common import TestHrHolidaysCommon
-from odoo.exceptions import ValidationError
-from freezegun import freeze_time
 
+from freezegun import freeze_time
+from odoo.addons.hr_holidays.tests.common import TestHrHolidaysCommon
+
+from odoo.exceptions import ValidationError
 from odoo.tests import tagged
+
 
 @tagged('global_leaves')
 class TestGlobalLeaves(TestHrHolidaysCommon):
@@ -20,21 +22,36 @@ class TestGlobalLeaves(TestHrHolidaysCommon):
             'tz': 'UTC',
             'hours_per_day': 8.0,
             'attendance_ids': [
-                (0, 0, {'name': 'Monday Morning', 'dayofweek': '0', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-                (0, 0, {'name': 'Monday Lunch', 'dayofweek': '0', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
-                (0, 0, {'name': 'Monday Afternoon', 'dayofweek': '0', 'hour_from': 13, 'hour_to': 17, 'day_period': 'afternoon'}),
-                (0, 0, {'name': 'Tuesday Morning', 'dayofweek': '1', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-                (0, 0, {'name': 'Tuesday Lunch', 'dayofweek': '1', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
-                (0, 0, {'name': 'Tuesday Afternoon', 'dayofweek': '1', 'hour_from': 13, 'hour_to': 17, 'day_period': 'afternoon'}),
-                (0, 0, {'name': 'Wednesday Morning', 'dayofweek': '2', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-                (0, 0, {'name': 'Wednesday Lunch', 'dayofweek': '2', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
-                (0, 0, {'name': 'Wednesday Afternoon', 'dayofweek': '2', 'hour_from': 13, 'hour_to': 17, 'day_period': 'afternoon'}),
-                (0, 0, {'name': 'Thursday Morning', 'dayofweek': '3', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-                (0, 0, {'name': 'Thursday Lunch', 'dayofweek': '3', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
-                (0, 0, {'name': 'Thursday Afternoon', 'dayofweek': '3', 'hour_from': 13, 'hour_to': 17, 'day_period': 'afternoon'}),
-                (0, 0, {'name': 'Friday Morning', 'dayofweek': '4', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-                (0, 0, {'name': 'Friday Lunch', 'dayofweek': '4', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
-                (0, 0, {'name': 'Friday Afternoon', 'dayofweek': '4', 'hour_from': 13, 'hour_to': 17, 'day_period': 'afternoon'})
+                (0, 0,
+                 {'name': 'Monday Morning', 'dayofweek': '0', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
+                (0, 0,
+                 {'name': 'Monday Lunch', 'dayofweek': '0', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
+                (0, 0, {'name': 'Monday Afternoon', 'dayofweek': '0', 'hour_from': 13, 'hour_to': 17,
+                        'day_period': 'afternoon'}),
+                (0, 0,
+                 {'name': 'Tuesday Morning', 'dayofweek': '1', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
+                (0, 0,
+                 {'name': 'Tuesday Lunch', 'dayofweek': '1', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
+                (0, 0, {'name': 'Tuesday Afternoon', 'dayofweek': '1', 'hour_from': 13, 'hour_to': 17,
+                        'day_period': 'afternoon'}),
+                (0, 0, {'name': 'Wednesday Morning', 'dayofweek': '2', 'hour_from': 8, 'hour_to': 12,
+                        'day_period': 'morning'}),
+                (0, 0,
+                 {'name': 'Wednesday Lunch', 'dayofweek': '2', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
+                (0, 0, {'name': 'Wednesday Afternoon', 'dayofweek': '2', 'hour_from': 13, 'hour_to': 17,
+                        'day_period': 'afternoon'}),
+                (0, 0, {'name': 'Thursday Morning', 'dayofweek': '3', 'hour_from': 8, 'hour_to': 12,
+                        'day_period': 'morning'}),
+                (0, 0,
+                 {'name': 'Thursday Lunch', 'dayofweek': '3', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
+                (0, 0, {'name': 'Thursday Afternoon', 'dayofweek': '3', 'hour_from': 13, 'hour_to': 17,
+                        'day_period': 'afternoon'}),
+                (0, 0,
+                 {'name': 'Friday Morning', 'dayofweek': '4', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
+                (0, 0,
+                 {'name': 'Friday Lunch', 'dayofweek': '4', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
+                (0, 0, {'name': 'Friday Afternoon', 'dayofweek': '4', 'hour_from': 13, 'hour_to': 17,
+                        'day_period': 'afternoon'})
             ]
         })
 
@@ -43,11 +60,16 @@ class TestGlobalLeaves(TestHrHolidaysCommon):
             'tz': 'UTC',
             'hours_per_day': 4.0,
             'attendance_ids': [
-                (0, 0, {'name': 'Monday Morning', 'dayofweek': '0', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-                (0, 0, {'name': 'Tuesday Morning', 'dayofweek': '1', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-                (0, 0, {'name': 'Wednesday Morning', 'dayofweek': '2', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-                (0, 0, {'name': 'Thursday Morning', 'dayofweek': '3', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-                (0, 0, {'name': 'Friday Morning', 'dayofweek': '4', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
+                (0, 0,
+                 {'name': 'Monday Morning', 'dayofweek': '0', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
+                (0, 0,
+                 {'name': 'Tuesday Morning', 'dayofweek': '1', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
+                (0, 0, {'name': 'Wednesday Morning', 'dayofweek': '2', 'hour_from': 8, 'hour_to': 12,
+                        'day_period': 'morning'}),
+                (0, 0, {'name': 'Thursday Morning', 'dayofweek': '3', 'hour_from': 8, 'hour_to': 12,
+                        'day_period': 'morning'}),
+                (0, 0,
+                 {'name': 'Friday Morning', 'dayofweek': '4', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
             ]
         })
 
@@ -82,11 +104,11 @@ class TestGlobalLeaves(TestHrHolidaysCommon):
 
     def test_leave_on_calendar_leave(self):
         self.env['resource.calendar.leaves'].create({
-                'name': 'Correct Time Off',
-                'date_from': date(2022, 3, 8),
-                'date_to': date(2022, 3, 8),
-                'calendar_id': self.calendar_2.id,
-            })
+            'name': 'Correct Time Off',
+            'date_from': date(2022, 3, 8),
+            'date_to': date(2022, 3, 8),
+            'calendar_id': self.calendar_2.id,
+        })
 
         with self.assertRaises(ValidationError):
             self.env['resource.calendar.leaves'].create({
@@ -111,15 +133,15 @@ class TestGlobalLeaves(TestHrHolidaysCommon):
         """
         calendar_asia = self.env['resource.calendar'].create({
             'name': 'Asia calendar',
-            'tz': 'Asia/Kolkata', # UTC +05:30
+            'tz': 'Asia/Kolkata',  # UTC +05:30
             'hours_per_day': 8.0,
             'attendance_ids': []
         })
         self.env.user.tz = 'Europe/Brussels'
         global_leave = self.env['resource.calendar.leaves'].with_user(self.env.user).create({
             'name': 'Public holiday',
-            'date_from': "2023-05-15 06:00:00", # utc from 8:00:00 for Europe/Brussels (UTC +02:00)
-            'date_to': "2023-05-15 15:00:00", # utc from 17:00:00 for Europe/Brussels (UTC +02:00)
+            'date_from': "2023-05-15 06:00:00",  # utc from 8:00:00 for Europe/Brussels (UTC +02:00)
+            'date_to': "2023-05-15 15:00:00",  # utc from 17:00:00 for Europe/Brussels (UTC +02:00)
             'calendar_id': calendar_asia.id,
         })
         # Expectation:

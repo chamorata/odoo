@@ -2,9 +2,9 @@
 from contextlib import closing
 
 import freezegun
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 
 from odoo import fields, Command
-from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.tests import tagged
 
 
@@ -53,12 +53,12 @@ class TestAccountMoveDateAlgorithm(AccountTestInvoicingCommon):
         self.env.company.fiscalyear_lock_date = fields.Date.from_string(lock_date)
 
     def _reverse_invoice(self, invoice):
-        move_reversal = self.env['account.move.reversal']\
-            .with_context(active_model="account.move", active_ids=invoice.ids)\
+        move_reversal = self.env['account.move.reversal'] \
+            .with_context(active_model="account.move", active_ids=invoice.ids) \
             .create({
-                'journal_id': invoice.journal_id.id,
-                'reason': "no reason",
-            })
+            'journal_id': invoice.journal_id.id,
+            'reason': "no reason",
+        })
         reversal = move_reversal.refund_moves()
         return self.env['account.move'].browse(reversal['res_id'])
 
@@ -215,8 +215,8 @@ class TestAccountMoveDateAlgorithm(AccountTestInvoicingCommon):
         self._set_lock_date('2017-01-03')
 
         with freezegun.freeze_time('2017-01-12'):
-            (invoice + payment.move_id).line_ids\
-                .filtered(lambda x: x.account_id.account_type == 'asset_receivable')\
+            (invoice + payment.move_id).line_ids \
+                .filtered(lambda x: x.account_id.account_type == 'asset_receivable') \
                 .reconcile()
 
         caba_move = self.env['account.move'].search([('tax_cash_basis_origin_move_id', '=', invoice.id)])
@@ -231,7 +231,8 @@ class TestAccountMoveDateAlgorithm(AccountTestInvoicingCommon):
         with freezegun.freeze_time('2017-03-12'):
             (invoice + payment.move_id).line_ids.remove_move_reconcile()
 
-        reverse_exchange_move = self.env['account.move'].search([('tax_cash_basis_origin_move_id', '=', invoice.id)]) - caba_move
+        reverse_exchange_move = self.env['account.move'].search(
+            [('tax_cash_basis_origin_move_id', '=', invoice.id)]) - caba_move
 
         self.assertRecordValues(reverse_exchange_move, [{
             'date': fields.Date.from_string('2017-02-28'),
@@ -283,8 +284,8 @@ class TestAccountMoveDateAlgorithm(AccountTestInvoicingCommon):
                 self.assertEqual(payment.move_id.date.isoformat(), '2023-01-30')
 
                 self.env.company.sudo().sale_lock_date = fields.Date.to_date('2023-03-01')
-                (invoice + payment.move_id).line_ids\
-                    .filtered(lambda x: x.account_id.account_type == 'asset_receivable')\
+                (invoice + payment.move_id).line_ids \
+                    .filtered(lambda x: x.account_id.account_type == 'asset_receivable') \
                     .reconcile()
 
                 caba_move = self.env['account.move'].search([('tax_cash_basis_origin_move_id', '=', invoice.id)])

@@ -1,15 +1,17 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from base64 import b64encode
-from decorator import decorator
 import uuid
+from base64 import b64encode
 
-from odoo import _, fields, modules
+from decorator import decorator
+
+from odoo import _
 from odoo.tools.misc import file_open
 
 DEMO_BILL_PATH = 'account_peppol/tools/demo_bill'
 DEMO_ENC_KEY = 'account_peppol/tools/enc_key'
 DEMO_PRIVATE_KEY = 'account_peppol/tools/private_key.pem'
+
 
 # -------------------------------------------------------------------------
 # HELPERS
@@ -37,12 +39,12 @@ def _get_notification_message(proxy_state):
         message = _("You can now send invoices in demo mode.")
     return title, message
 
+
 # -------------------------------------------------------------------------
 # MOCKED FUNCTIONS
 # -------------------------------------------------------------------------
 
 def _mock_call_peppol_proxy(func, self, *args, **kwargs):
-
     def _mock_get_all_documents(user, args, kwargs):
         if not user.env['account.move'].search_count([
             ('peppol_message_uuid', '=', f'{user.company_id.id}_demo_vendor_bill')
@@ -203,6 +205,7 @@ _demo_behaviour = {
     'button_register_peppol_participant': _mock_user_creation,
     '_check_company_on_peppol': _mock_check_company_on_peppol,
 }
+
 
 # -------------------------------------------------------------------------
 # DECORATORS

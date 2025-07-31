@@ -152,7 +152,8 @@ def create_xml_node(parent_node, node_name, node_value=None):
     return create_xml_node_chain(parent_node, [node_name], node_value)[0]
 
 
-def cleanup_xml_node(xml_node_or_string, remove_blank_text=True, remove_blank_nodes=True, indent_level=0, indent_space="  "):
+def cleanup_xml_node(xml_node_or_string, remove_blank_text=True, remove_blank_nodes=True, indent_level=0,
+                     indent_space="  "):
     """Clean up the sub-tree of the provided XML node.
 
     If the provided XML node is of type:

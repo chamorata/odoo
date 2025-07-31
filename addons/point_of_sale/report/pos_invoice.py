@@ -26,5 +26,6 @@ class PosInvoiceReport(models.AbstractModel):
 
         return {
             'docs': self.env['account.move'].sudo().browse(ids_to_print),
-            'qr_code_urls': self.env['report.account.report_invoice'].sudo()._get_report_values(ids_to_print)['qr_code_urls']
+            'qr_code_urls': self.env['report.account.report_invoice'].sudo()._get_report_values(ids_to_print)[
+                'qr_code_urls']
         }

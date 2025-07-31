@@ -1,15 +1,15 @@
 import base64
-
-from markupsafe import Markup
 from unittest.mock import patch
 
-from odoo import SUPERUSER_ID
+from markupsafe import Markup
 from odoo.addons.mail.tests.common import mail_new_test_user, MailCommon
 from odoo.addons.test_mail.models.mail_test_access import MailTestAccess
 from odoo.addons.test_mail.models.test_mail_models import MailTestSimple
+
+from odoo import SUPERUSER_ID
 from odoo.exceptions import AccessError
-from odoo.tools import mute_logger
 from odoo.tests import tagged
+from odoo.tools import mute_logger
 
 
 class MessageAccessCommon(MailCommon):
@@ -72,15 +72,16 @@ class TestMailMessageAccess(MessageAccessCommon):
     def test_assert_initial_values(self):
         """ Just ensure tests data """
         for record in (
-            self.record_public + self.record_portal + self.record_portal_ro + self.record_followers +
-            self.record_internal + self.record_internal_ro + self.record_admin):
+                self.record_public + self.record_portal + self.record_portal_ro + self.record_followers +
+                self.record_internal + self.record_internal_ro + self.record_admin):
             self.assertFalse(record.message_follower_ids)
             self.assertEqual(len(record.message_ids), 3)
 
             for index, msg in enumerate(record.message_ids):
                 body = ['<p>Test Answer</p>', '<p>Test Comment</p>', '<p>Mail Access Test created</p>'][index]
                 message_type = ['comment', 'comment', 'notification'][index]
-                subtype_id = [self.env.ref('mail.mt_comment'), self.env.ref('mail.mt_comment'), self.env.ref('mail.mt_note')][index]
+                subtype_id = \
+                [self.env.ref('mail.mt_comment'), self.env.ref('mail.mt_comment'), self.env.ref('mail.mt_note')][index]
                 self.assertEqual(msg.author_id, self.partner_root)
                 self.assertEqual(msg.body, body)
                 self.assertEqual(msg.message_type, message_type)
@@ -273,7 +274,8 @@ class TestMailMessageAccess(MessageAccessCommon):
             }, False, 'No access on record but reply to notified parent'),
             # internal = forbidden (internal users only)
             (self.record_portal, {'is_internal': True}, True, 'Internal subtype always forbidden'),
-            (self.record_portal, {'subtype_id': self.env.ref('mail.mt_note').id}, True, 'Internal flag always forbidden'),
+            (self.record_portal, {'subtype_id': self.env.ref('mail.mt_note').id}, True,
+             'Internal flag always forbidden'),
             (self.record_portal, {'subtype_id': False}, True, 'No subtype = internal = always forbidden'),
         ]:
             with self.subTest(record=record, msg_vals=msg_vals, reason=reason):
@@ -652,48 +654,48 @@ class TestMailMessageAccess(MessageAccessCommon):
                  partner_ids=[(4, self.user_portal.partner_id.id)],
                  res_id=False,
                  subtype_id=self.ref('mail.mt_comment'),
-                ),
+                 ),
             dict(base_msg_vals,
                  body='Internal Log',
                  subtype_id=False,
-                ),
+                 ),
             dict(base_msg_vals,
                  body='Internal Note',
                  subtype_id=self.ref('mail.mt_note'),
-                ),
+                 ),
             dict(base_msg_vals,
                  body='Internal Comment (mention portal)',
                  partner_ids=[(4, self.user_portal.partner_id.id)],
                  subtype_id=self.ref('mail.mt_comment'),
-                ),
+                 ),
             dict(base_msg_vals,
                  body='Internal Comment (mention employee)',
                  partner_ids=[(4, self.user_employee.partner_id.id)],
                  subtype_id=self.ref('mail.mt_comment'),
-                ),
+                 ),
             dict(base_msg_vals,
                  body='Internal Comment',
                  subtype_id=self.ref('mail.mt_comment'),
-                ),
+                 ),
         ])
         msg_record_admin = self.env['mail.message'].create(dict(base_msg_vals,
-            body='Admin Comment',
-            model=self.record_admin._name,
-            res_id=self.record_admin.id,
-            subtype_id=self.ref('mail.mt_comment'),
-        ))
+                                                                body='Admin Comment',
+                                                                model=self.record_admin._name,
+                                                                res_id=self.record_admin.id,
+                                                                subtype_id=self.ref('mail.mt_comment'),
+                                                                ))
         msg_record_portal = self.env['mail.message'].create(dict(base_msg_vals,
-            body='Portal Comment',
-            model=self.record_portal._name,
-            res_id=self.record_portal.id,
-            subtype_id=self.ref('mail.mt_comment'),
-        ))
+                                                                 body='Portal Comment',
+                                                                 model=self.record_portal._name,
+                                                                 res_id=self.record_portal.id,
+                                                                 subtype_id=self.ref('mail.mt_comment'),
+                                                                 ))
         msg_record_public = self.env['mail.message'].create(dict(base_msg_vals,
-            body='Public Comment',
-            model=self.record_public._name,
-            res_id=self.record_public.id,
-            subtype_id=self.ref('mail.mt_comment'),
-        ))
+                                                                 body='Public Comment',
+                                                                 model=self.record_public._name,
+                                                                 res_id=self.record_public.id,
+                                                                 subtype_id=self.ref('mail.mt_comment'),
+                                                                 ))
 
         for (test_user, add_domain), exp_messages in zip([
             (self.user_public, []),

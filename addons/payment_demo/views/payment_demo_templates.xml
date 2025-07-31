@@ -37,12 +37,12 @@
                     data-bs-toggle="modal"
                     t-attf-data-bs-target="#o_payment_demo_modal_{{provider_sudo.id}}"
             >
-                    Pay with Demo
-                    <span t-if="not provider_sudo.is_published"
-                          class="badge rounded-pill text-bg-danger ms-1"
-                    >
-                          Unpublished
-                    </span>
+                Pay with Demo
+                <span t-if="not provider_sudo.is_published"
+                      class="badge rounded-pill text-bg-danger ms-1"
+                >
+                    Unpublished
+                </span>
             </button>
             <div t-attf-id="o_payment_demo_modal_{{provider_sudo.id}}"
                  class="modal fade mt-5"
@@ -93,7 +93,9 @@
                 <div class="row mt-0">
                     <div class="col mb-0">
                         <label for="o_payment_demo_shipping_name" class=" mt-0">
-                            <small><b>Name</b></small>
+                            <small>
+                                <b>Name</b>
+                            </small>
                         </label>
                         <input type="text"
                                id="o_payment_demo_shipping_name"
@@ -118,7 +120,9 @@
                 <div class="row">
                     <div class="col mb-0">
                         <label for="o_payment_demo_shipping_address" class="mt-1">
-                            <small><b>Street and Number</b></small>
+                            <small>
+                                <b>Street and Number</b>
+                            </small>
                         </label>
                         <input type="text"
                                id="o_payment_demo_shipping_address"
@@ -143,7 +147,9 @@
                 <div class="row">
                     <div class="col mb-0">
                         <label for="o_payment_demo_shipping_zip" class="mt-1">
-                            <small><b>Zip Code</b></small>
+                            <small>
+                                <b>Zip Code</b>
+                            </small>
                         </label>
                         <input type="text"
                                id="o_payment_demo_shipping_zip"
@@ -155,7 +161,9 @@
                     </div>
                     <div class="col mb-0">
                         <label for="o_payment_demo_shipping_city" class="mt-1">
-                            <small><b>City</b></small>
+                            <small>
+                                <b>City</b>
+                            </small>
                         </label>
                         <input type="text"
                                id="o_payment_demo_shipping_city"
@@ -167,7 +175,9 @@
                     </div>
                     <div class="col mb-0">
                         <label for="o_payment_demo_shipping_country" class="mt-1">
-                            <small><b>Country</b></small>
+                            <small>
+                                <b>Country</b>
+                            </small>
                         </label>
                         <select id="o_payment_demo_shipping_country"
                                 class="form-select"

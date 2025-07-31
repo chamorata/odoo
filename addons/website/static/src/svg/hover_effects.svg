@@ -7,27 +7,27 @@
         </svg>
         <g id="hoverEffects">
             <animateTransform
-                xlink:href="#shapeImage"
-                attributeName="transform"
-                attributeType="XML"
-                type="scale"
-                values="1;hover_effect_zoom"
-                keyTimes="0;1"
-                keySplines="0.5 0 0.5 1"
-                dur="0.3s"
-                fill="freeze"
-                repeatCount="1"
-                begin="indefinite"/>
+                    xlink:href="#shapeImage"
+                    attributeName="transform"
+                    attributeType="XML"
+                    type="scale"
+                    values="1;hover_effect_zoom"
+                    keyTimes="0;1"
+                    keySplines="0.5 0 0.5 1"
+                    dur="0.3s"
+                    fill="freeze"
+                    repeatCount="1"
+                    begin="indefinite"/>
             <animate
-                xlink:href="#shapeOverlay"
-                attributeName="fill-opacity"
-                values="0;hover_effect_opacity"
-                keyTimes="0;1"
-                keySplines="0.5 0 0.5 1"
-                dur="0.3s"
-                fill="freeze"
-                repeatCount="1"
-                begin="indefinite"/>
+                    xlink:href="#shapeOverlay"
+                    attributeName="fill-opacity"
+                    values="0;hover_effect_opacity"
+                    keyTimes="0;1"
+                    keySplines="0.5 0 0.5 1"
+                    dur="0.3s"
+                    fill="freeze"
+                    repeatCount="1"
+                    begin="indefinite"/>
         </g>
     </g>
 
@@ -38,32 +38,32 @@
         </svg>
         <g id="hoverEffects">
             <animateTransform
-                xlink:href="#shapeImage"
-                attributeName="transform"
-                attributeType="XML"
-                type="scale"
-                values="hover_effect_zoom;1"
-                keyTimes="0;1"
-                keySplines="0.5 0 0.5 1"
-                dur="0.3s"
-                fill="freeze"
-                repeatCount="1"
-                begin="indefinite"/>
+                    xlink:href="#shapeImage"
+                    attributeName="transform"
+                    attributeType="XML"
+                    type="scale"
+                    values="hover_effect_zoom;1"
+                    keyTimes="0;1"
+                    keySplines="0.5 0 0.5 1"
+                    dur="0.3s"
+                    fill="freeze"
+                    repeatCount="1"
+                    begin="indefinite"/>
             <animate
-                xlink:href="#shapeOverlay"
-                attributeName="fill-opacity"
-                values="0;hover_effect_opacity"
-                keyTimes="0;1"
-                keySplines="0.5 0 0.5 1"
-                dur="0.3s"
-                fill="freeze"
-                repeatCount="1"
-                begin="indefinite"/>
+                    xlink:href="#shapeOverlay"
+                    attributeName="fill-opacity"
+                    values="0;hover_effect_opacity"
+                    keyTimes="0;1"
+                    keySplines="0.5 0 0.5 1"
+                    dur="0.3s"
+                    fill="freeze"
+                    repeatCount="1"
+                    begin="indefinite"/>
         </g>
         <style>
             <!-- only if not already animated -->
             svg:not([class^="o_shape_anim_random_"]) #shapeImage {
-                scale: hover_effect_zoom;
+            scale: hover_effect_zoom;
             }
         </style>
     </g>
@@ -71,58 +71,59 @@
     <!-- Dolly Zoom -->
     <g id="dolly_zoom">
         <svg viewBox="0 0 1 1" preserveAspectRatio="none">
-            <use id="shapeOverlay" xlink:href="#filterPath" fill="hover_effect_color" fill-opacity="0" style="transform-origin: center;"/>
+            <use id="shapeOverlay" xlink:href="#filterPath" fill="hover_effect_color" fill-opacity="0"
+                 style="transform-origin: center;"/>
         </svg>
         <g id="hoverEffects">
             <animateTransform
-                xlink:href="#shapeImage"
-                attributeName="transform"
-                attributeType="XML"
-                type="scale"
-                calcMode="spline"
-                values="1;hover_effect_zoom"
-                keyTimes="0;1"
-                keySplines="0.5 0 0.5 1"
-                dur="0.3s"
-                fill="freeze"
-                repeatCount="1"
-                begin="indefinite"/>
+                    xlink:href="#shapeImage"
+                    attributeName="transform"
+                    attributeType="XML"
+                    type="scale"
+                    calcMode="spline"
+                    values="1;hover_effect_zoom"
+                    keyTimes="0;1"
+                    keySplines="0.5 0 0.5 1"
+                    dur="0.3s"
+                    fill="freeze"
+                    repeatCount="1"
+                    begin="indefinite"/>
             <animateTransform
-                xlink:href="#clip-path"
-                attributeName="transform"
-                attributeType="XML"
-                type="scale"
-                calcMode="spline"
-                values="1;hover_effect_zoom"
-                keyTimes="0;1"
-                keySplines="0.5 0 0.5 1"
-                dur="0.3s"
-                fill="freeze"
-                repeatCount="1"
-                begin="indefinite"/>
+                    xlink:href="#clip-path"
+                    attributeName="transform"
+                    attributeType="XML"
+                    type="scale"
+                    calcMode="spline"
+                    values="1;hover_effect_zoom"
+                    keyTimes="0;1"
+                    keySplines="0.5 0 0.5 1"
+                    dur="0.3s"
+                    fill="freeze"
+                    repeatCount="1"
+                    begin="indefinite"/>
             <animate
-                xlink:href="#shapeOverlay"
-                attributeName="fill-opacity"
-                values="0;hover_effect_opacity"
-                keyTimes="0;1"
-                keySplines="0.5 0 0.5 1"
-                dur="0.3s"
-                fill="freeze"
-                repeatCount="1"
-                begin="indefinite"/>
+                    xlink:href="#shapeOverlay"
+                    attributeName="fill-opacity"
+                    values="0;hover_effect_opacity"
+                    keyTimes="0;1"
+                    keySplines="0.5 0 0.5 1"
+                    dur="0.3s"
+                    fill="freeze"
+                    repeatCount="1"
+                    begin="indefinite"/>
             <animateTransform
-                xlink:href="#shapeOverlay"
-                attributeName="transform"
-                attributeType="XML"
-                type="scale"
-                calcMode="spline"
-                values="1;hover_effect_zoom"
-                keyTimes="0;1"
-                keySplines="0.5 0 0.5 1"
-                dur="0.3s"
-                fill="freeze"
-                repeatCount="1"
-                begin="indefinite"/>
+                    xlink:href="#shapeOverlay"
+                    attributeName="transform"
+                    attributeType="XML"
+                    type="scale"
+                    calcMode="spline"
+                    values="1;hover_effect_zoom"
+                    keyTimes="0;1"
+                    keySplines="0.5 0 0.5 1"
+                    dur="0.3s"
+                    fill="freeze"
+                    repeatCount="1"
+                    begin="indefinite"/>
         </g>
     </g>
 
@@ -136,23 +137,23 @@
                 </clipPath>
             </defs>
             <use id="shapeBorder" xlink:href="#filterPath" fill="none" stroke="hover_effect_color"
-                stroke-width="0" stroke-opacity="hover_effect_opacity" clip-path="url(#shapeBorderClipPath)"/>
+                 stroke-width="0" stroke-opacity="hover_effect_opacity" clip-path="url(#shapeBorderClipPath)"/>
         </svg>
         <g id="hoverEffects">
             <animate
-                xlink:href="#shapeBorder"
-                attributeName="stroke-width"
-                values="0;hover_effect_stroke_width"
-                keyTimes="0;1"
-                keySplines="0.5 0 0.5 1"
-                dur="0.3s"
-                fill="freeze"
-                repeatCount="1"
-                begin="indefinite"/>
+                    xlink:href="#shapeBorder"
+                    attributeName="stroke-width"
+                    values="0;hover_effect_stroke_width"
+                    keyTimes="0;1"
+                    keySplines="0.5 0 0.5 1"
+                    dur="0.3s"
+                    fill="freeze"
+                    repeatCount="1"
+                    begin="indefinite"/>
         </g>
         <style>
             #filterPath {
-                vector-effect: non-scaling-stroke;
+            vector-effect: non-scaling-stroke;
             }
         </style>
     </g>
@@ -164,15 +165,15 @@
         </svg>
         <g id="hoverEffects">
             <animate
-                xlink:href="#shapeOverlay"
-                attributeName="fill-opacity"
-                values="0;hover_effect_opacity"
-                keyTimes="0;1"
-                keySplines="0.5 0 0.5 1"
-                dur="0.3s"
-                fill="freeze"
-                repeatCount="1"
-                begin="indefinite"/>
+                    xlink:href="#shapeOverlay"
+                    attributeName="fill-opacity"
+                    values="0;hover_effect_opacity"
+                    keyTimes="0;1"
+                    keySplines="0.5 0 0.5 1"
+                    dur="0.3s"
+                    fill="freeze"
+                    repeatCount="1"
+                    begin="indefinite"/>
         </g>
     </g>
 
@@ -180,22 +181,22 @@
     <g id="image_mirror_blur">
         <g id="hoverEffects">
             <animateTransform
-                xlink:href="#shapeImage"
-                attributeName="transform"
-                attributeType="XML"
-                type="scale"
-                values="1;hover_effect_zoom"
-                keyTimes="0;1"
-                keySplines="0.5 0 0.5 1"
-                dur="0.3s"
-                fill="freeze"
-                repeatCount="1"
-                begin="indefinite"/>
+                    xlink:href="#shapeImage"
+                    attributeName="transform"
+                    attributeType="XML"
+                    type="scale"
+                    values="1;hover_effect_zoom"
+                    keyTimes="0;1"
+                    keySplines="0.5 0 0.5 1"
+                    dur="0.3s"
+                    fill="freeze"
+                    repeatCount="1"
+                    begin="indefinite"/>
 
             <filter xmlns="http://www.w3.org/2000/svg" id="blurFilter">
                 <feGaussianBlur stdDeviation="3"/>
             </filter>
-      </g>
+        </g>
     </g>
 
 </svg>

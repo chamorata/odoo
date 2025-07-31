@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from markupsafe import Markup
 from unittest.mock import patch
 
+from markupsafe import Markup
 from odoo.addons.mail.tests import common
+
 from odoo.exceptions import AccessError
 from odoo.tests import tagged, users
 
@@ -74,12 +75,12 @@ class TestMailRenderCommon(common.MailCommon):
             {'name': 'TestRender%d' % index,
              'type': 'qweb',
              'arch': qweb_content,
-            } for index, qweb_content in enumerate(cls.base_qweb_bits)
+             } for index, qweb_content in enumerate(cls.base_qweb_bits)
         ])
         cls.base_qweb_templates_data = cls.env['ir.model.data'].create([
             {'name': template.name, 'module': 'mail',
              'model': template._name, 'res_id': template.id,
-            } for template in cls.base_qweb_templates
+             } for template in cls.base_qweb_templates
         ])
         cls.base_qweb_templates_xmlids = [
             model_data.complete_name
@@ -224,7 +225,8 @@ class TestMailRender(TestMailRenderCommon):
         template = self.test_template.with_env(self.env)
         partner = self.render_object.with_env(self.env)
         for res_ids in ([], (), [False], [''], [None], [False, partner.id]):  # various corner cases
-            for fname, expected_obj, expected_void in zip(['subject', 'body_html'], self.base_rendered, self.base_rendered_void):
+            for fname, expected_obj, expected_void in zip(['subject', 'body_html'], self.base_rendered,
+                                                          self.base_rendered_void):
                 with self.subTest():
                     rendered_all = template._render_field(
                         fname,
@@ -271,6 +273,7 @@ class TestMailRender(TestMailRenderCommon):
     def test_render_template_inline_template_w_post_process_custom_local_links(self):
         def _mock_get_base_url(recordset):
             return f"http://www.render-object-{recordset._name}-{recordset.id}-{recordset.display_name}.com"
+
         partner_ids = self.env['res.partner'].sudo().create([{
             'name': f'test partner {n}'
         } for n in range(20)]).ids
@@ -288,7 +291,8 @@ class TestMailRender(TestMailRenderCommon):
         for partner_id, render_result in render_results.items():
             partner = Partner.browse(partner_id)
             expected_base_url = f"http://www.render-object-{partner._name}-{partner.id}-{partner.name}.com"
-            self.assertEqual(render_result, f'<a href="{expected_base_url}/test/destination"><img src="{expected_base_url}/test/image"></a>')
+            self.assertEqual(render_result,
+                             f'<a href="{expected_base_url}/test/destination"><img src="{expected_base_url}/test/image"></a>')
 
     @users('employee')
     def test_render_template_qweb(self):
@@ -450,13 +454,13 @@ class TestRegexRendering(common.MailCommon):
         o_qweb_render = self.env['ir.qweb']._render
         for template, expected in static_templates:
             with (patch('odoo.addons.base.models.ir_qweb.IrQWeb._render', side_effect=o_qweb_render) as qweb_render,
-                patch('odoo.addons.base.models.ir_qweb.unsafe_eval', side_effect=eval) as unsafe_eval):
+                  patch('odoo.addons.base.models.ir_qweb.unsafe_eval', side_effect=eval) as unsafe_eval):
                 self.assertEqual(render(template), expected)
                 self.assertFalse(qweb_render.called)
                 self.assertFalse(unsafe_eval.called)
 
         with (patch('odoo.addons.base.models.ir_qweb.IrQWeb._render', side_effect=o_qweb_render) as qweb_render,
-                patch('odoo.addons.base.models.ir_qweb.unsafe_eval', side_effect=eval) as unsafe_eval):
+              patch('odoo.addons.base.models.ir_qweb.unsafe_eval', side_effect=eval) as unsafe_eval):
             self.assertNotIn("<55", render('''<55 t-out="object.name"></55>'''))
             self.assertFalse(qweb_render.called)
             self.assertFalse(unsafe_eval.called)
@@ -474,7 +478,7 @@ class TestRegexRendering(common.MailCommon):
         )
         for template, expected in non_static_templates:
             with (patch('odoo.addons.base.models.ir_qweb.IrQWeb._render', side_effect=o_qweb_render) as qweb_render,
-                patch('odoo.addons.base.models.ir_qweb.unsafe_eval', side_effect=eval) as unsafe_eval):
+                  patch('odoo.addons.base.models.ir_qweb.unsafe_eval', side_effect=eval) as unsafe_eval):
                 rendered = render(template)
                 self.assertTrue(isinstance(rendered, Markup))
                 self.assertEqual(rendered, expected)
@@ -485,7 +489,8 @@ class TestRegexRendering(common.MailCommon):
         record = self.env['res.partner'].create({'name': 'Alice'})
 
         def render(template):
-            return self.env['mail.render.mixin']._render_template_inline_template(template, 'res.partner', record.ids)[record.id]
+            return self.env['mail.render.mixin']._render_template_inline_template(template, 'res.partner', record.ids)[
+                record.id]
 
         static_templates = (
             ('''{{object.name}}''', 'Alice'),
@@ -497,7 +502,8 @@ class TestRegexRendering(common.MailCommon):
             with patch('odoo.tools.safe_eval.unsafe_eval', side_effect=eval) as unsafe_eval:
                 self.assertEqual(render(template), expected)
                 self.assertFalse(unsafe_eval.called)
-                self.assertFalse(self.env['mail.render.mixin']._has_unsafe_expression_template_inline_template(template, 'res.partner'))
+                self.assertFalse(self.env['mail.render.mixin']._has_unsafe_expression_template_inline_template(template,
+                                                                                                               'res.partner'))
 
         non_static_templates = (
             ('''{{''}}''', ''),
@@ -508,7 +514,8 @@ class TestRegexRendering(common.MailCommon):
             with patch('odoo.tools.safe_eval.unsafe_eval', side_effect=eval) as unsafe_eval:
                 self.assertEqual(render(template), expected)
                 self.assertTrue(unsafe_eval.called)
-                self.assertTrue(self.env['mail.render.mixin']._has_unsafe_expression_template_inline_template(template, 'res.partner'))
+                self.assertTrue(self.env['mail.render.mixin']._has_unsafe_expression_template_inline_template(template,
+                                                                                                              'res.partner'))
 
 
 @tagged('mail_render')
@@ -623,13 +630,16 @@ class TestMailRenderSecurity(TestMailRenderCommon):
         """Test if we correctly detect condition block (which might contains code)."""
         res_ids = self.env['res.partner'].search([], limit=1).ids
         with self.assertRaises(AccessError, msg='Simple user should not be able to render dynamic code'):
-            self.env['mail.render.mixin']._render_template_inline_template(self.base_inline_template_bits[4], 'res.partner', res_ids)
+            self.env['mail.render.mixin']._render_template_inline_template(self.base_inline_template_bits[4],
+                                                                           'res.partner', res_ids)
 
     @users('employee')
     def test_security_inline_template_unrestricted(self):
         """Test if we correctly detect condition block (which might contains code)."""
         res_ids = self.env['res.partner'].search([], limit=1).ids
-        result = self.env['mail.render.mixin']._render_template_inline_template(self.base_inline_template_bits[4], 'res.partner', res_ids)[res_ids[0]]
+        result = \
+        self.env['mail.render.mixin']._render_template_inline_template(self.base_inline_template_bits[4], 'res.partner',
+                                                                       res_ids)[res_ids[0]]
         self.assertNotIn('Code not executed', result, 'The condition block did not work')
 
     @users('user_rendering_restricted')
@@ -659,5 +669,6 @@ class TestMailRenderSecurity(TestMailRenderCommon):
     def test_security_qweb_template_unrestricted(self):
         """Test if we correctly detect condition block (which might contains code)."""
         res_ids = self.env['res.partner'].search([], limit=1).ids
-        result = self.env['mail.render.mixin']._render_template_qweb(self.base_qweb_bits[1], 'res.partner', res_ids)[res_ids[0]]
+        result = self.env['mail.render.mixin']._render_template_qweb(self.base_qweb_bits[1], 'res.partner', res_ids)[
+            res_ids[0]]
         self.assertNotIn('Code not executed', result, 'The condition block did not work')

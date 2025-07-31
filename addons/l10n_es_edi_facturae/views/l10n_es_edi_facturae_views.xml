@@ -7,7 +7,8 @@
         <field name="inherit_id" ref="certificate.certificate_certificate_view_search"/>
         <field name="arch" type="xml">
             <filter name="scope_general" position="after">
-                <filter string="Facturae" name="scope_facturae" domain="[('scope','=','facturae')]" help="Facturae certificates"/>
+                <filter string="Facturae" name="scope_facturae" domain="[('scope','=','facturae')]"
+                        help="Facturae certificates"/>
             </filter>
         </field>
     </record>

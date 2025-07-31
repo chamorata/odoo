@@ -3,6 +3,7 @@
 ## Technical details
 
 APIs:
+
 - [Checkout Pro](https://www.mercadopago.com.mx/developers/en/docs/checkout-pro/landing)
 - [Checkout API](https://www.mercadopago.com.mx/developers/en/docs/checkout-api/landing)
 
@@ -27,7 +28,7 @@ website.
 ## Module history
 
 - `16.0`
-  - The first version of the module is merged. odoo/odoo#83957
+    - The first version of the module is merged. odoo/odoo#83957
 
 ## Testing instructions
 

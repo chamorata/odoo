@@ -80,7 +80,7 @@ class MailComposerMixin(models.AbstractModel):
                 }
                 sanitized_template_value = tools.html_sanitize(template_value, **sanitize_vals)
                 composer_mixin.body_has_template_value = composer_mixin.body in (template_value,
-                    sanitized_template_value)
+                                                                                 sanitized_template_value)
             else:
                 composer_mixin.body_has_template_value = False
 
@@ -105,8 +105,8 @@ class MailComposerMixin(models.AbstractModel):
     def _compute_can_edit_body(self):
         for record in self:
             record.can_edit_body = (
-                record.is_mail_template_editor
-                or not record.template_id
+                    record.is_mail_template_editor
+                    or not record.template_id
             )
 
     def _render_lang(self, *args, **kwargs):
@@ -157,7 +157,7 @@ class MailComposerMixin(models.AbstractModel):
             raise ValueError(
                 _('Rendering of %(field_name)s is not possible as not defined on template.',
                   field_name=field
-                 )
+                  )
             )
 
         if not self.template_id:
@@ -172,7 +172,7 @@ class MailComposerMixin(models.AbstractModel):
             raise ValueError(
                 _('Rendering of %(field_name)s is not possible as no counterpart on template.',
                   field_name=field
-                 )
+                  )
             )
 
         composer_value = self[field]
@@ -182,12 +182,12 @@ class MailComposerMixin(models.AbstractModel):
 
         call_sudo = False
         if (not self.is_mail_template_editor and field == 'body' and
-            (not self.can_edit_body or self.body_has_template_value)):
+                (not self.can_edit_body or self.body_has_template_value)):
             call_sudo = True
             # take the previous body which we can trust without HTML editor reformatting
             self.body = self.template_id.body_html
         if (not self.is_mail_template_editor and field != 'body' and
-              composer_value == template_value):
+                composer_value == template_value):
             call_sudo = True
 
         if translation_asked and equality:

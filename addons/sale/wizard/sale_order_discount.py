@@ -38,8 +38,8 @@ class SaleOrderDiscount(models.TransientModel):
     def _check_discount_amount(self):
         for wizard in self:
             if (
-                wizard.discount_type in ('sol_discount', 'so_discount')
-                and wizard.discount_percentage > 1.0
+                    wizard.discount_type in ('sol_discount', 'so_discount')
+                    and wizard.discount_percentage > 1.0
             ):
                 raise ValidationError(_("Invalid discount amount"))
 
@@ -76,10 +76,10 @@ class SaleOrderDiscount(models.TransientModel):
         discount_product = self.company_id.sale_discount_product_id
         if not discount_product:
             if (
-                self.env['product.product'].has_access('create')
-                and self.company_id.has_access('write')
-                and self.company_id._filtered_access('write')
-                and self.company_id.check_field_access_rights('write', ['sale_discount_product_id'])
+                    self.env['product.product'].has_access('create')
+                    and self.company_id.has_access('write')
+                    and self.company_id._filtered_access('write')
+                    and self.company_id.check_field_access_rights('write', ['sale_discount_product_id'])
             ):
                 self.company_id.sale_discount_product_id = self.env['product.product'].create(
                     self._prepare_discount_product_values()
@@ -104,7 +104,8 @@ class SaleOrderDiscount(models.TransientModel):
             so_amount = self.sale_order_id.amount_total
             # Fixed taxes cannot be discounted, so they cannot be considered in the total amount
             # when computing the discount percentage.
-            if any(tax.amount_type == 'fixed' for tax in self.sale_order_id.order_line.tax_id.flatten_taxes_hierarchy()):
+            if any(tax.amount_type == 'fixed' for tax in
+                   self.sale_order_id.order_line.tax_id.flatten_taxes_hierarchy()):
                 fixed_taxes_amount = 0
                 for line in self.sale_order_id.order_line:
                     taxes = line.tax_id.flatten_taxes_hierarchy()
@@ -112,7 +113,7 @@ class SaleOrderDiscount(models.TransientModel):
                         fixed_taxes_amount += tax.amount * line.product_uom_qty
                 so_amount -= fixed_taxes_amount
             discount_percentage = self.discount_amount / so_amount
-        else: # so_discount
+        else:  # so_discount
             discount_percentage = self.discount_percentage
         total_price_per_tax_groups = defaultdict(float)
         for line in self.sale_order_id.order_line:
@@ -122,7 +123,8 @@ class SaleOrderDiscount(models.TransientModel):
             taxes = line.tax_id.flatten_taxes_hierarchy()
             fixed_taxes = taxes.filtered(lambda t: t.amount_type == 'fixed')
             taxes -= fixed_taxes
-            total_price_per_tax_groups[taxes] += line.price_unit * (1 - (line.discount or 0.0) / 100) * line.product_uom_qty
+            total_price_per_tax_groups[taxes] += line.price_unit * (
+                        1 - (line.discount or 0.0) / 100) * line.product_uom_qty
 
         discount_dp = self.env['decimal.precision'].precision_get('Discount')
         context = {'lang': self.sale_order_id._get_lang()}  # noqa: F841
@@ -169,6 +171,6 @@ class SaleOrderDiscount(models.TransientModel):
         self.ensure_one()
         self = self.with_company(self.company_id)
         if self.discount_type == 'sol_discount':
-            self.sale_order_id.order_line.write({'discount': self.discount_percentage*100})
+            self.sale_order_id.order_line.write({'discount': self.discount_percentage * 100})
         else:
             self._create_discount_lines()

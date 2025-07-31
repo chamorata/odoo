@@ -18,8 +18,8 @@ import odoo.modules.db
 import odoo.modules.graph
 import odoo.modules.migration
 import odoo.modules.registry
-from .. import SUPERUSER_ID, api, tools
 from .module import adapt_version, initialize_sys_path, load_openerp_module
+from .. import SUPERUSER_ID, api, tools
 
 _logger = logging.getLogger(__name__)
 
@@ -75,6 +75,7 @@ def load_data(env, idref, mode, kind, package):
             threading.current_thread().testing = False
 
     return bool(filename)
+
 
 def load_demo(env, package, idref, mode):
     """
@@ -165,9 +166,9 @@ def load_module_graph(env, graph, status=None, perform_checks=True,
         module_extra_query_count = odoo.sql_db.sql_counter
 
         needs_update = (
-            hasattr(package, "init")
-            or hasattr(package, "update")
-            or package.state in ("to install", "to upgrade")
+                hasattr(package, "init")
+                or hasattr(package, "update")
+                or package.state in ("to install", "to upgrade")
         )
         module_log_level = logging.DEBUG
         if needs_update:
@@ -267,7 +268,8 @@ def load_module_graph(env, graph, status=None, perform_checks=True,
                     ]
                     for model in models:
                         xmlid = model.replace('.', '_')
-                        lines.append(f"{module_name}.access_{xmlid},access_{xmlid},{module_name}.model_{xmlid},base.group_user,1,0,0,0")
+                        lines.append(
+                            f"{module_name}.access_{xmlid},access_{xmlid},{module_name}.model_{xmlid},base.group_user,1,0,0,0")
                     _logger.warning('\n'.join(lines))
 
         updating = tools.config.options['init'] or tools.config.options['update']
@@ -314,7 +316,7 @@ def load_module_graph(env, graph, status=None, perform_checks=True,
             module_log_level, "Module %s loaded in %.2fs%s, %s queries%s",
             module_name, time.time() - module_t0,
             f' (incl. {test_time:.2f}s test)' if test_time else '',
-            env.cr.sql_log_count - module_cursor_query_count,
+                         env.cr.sql_log_count - module_cursor_query_count,
             f' ({", ".join(extras)})' if extras else ''
         )
         if test_results and not test_results.wasSuccessful():
@@ -332,6 +334,7 @@ def load_module_graph(env, graph, status=None, perform_checks=True,
 
     return loaded_modules, processed_modules
 
+
 def _check_module_names(cr, module_names):
     mod_names = set(module_names)
     if 'base' in mod_names:
@@ -345,6 +348,7 @@ def _check_module_names(cr, module_names):
             cr.execute("SELECT name FROM ir_module_module")
             incorrect_names = mod_names.difference([x['name'] for x in cr.dictfetchall()])
             _logger.warning('invalid module names, ignored: %s', ", ".join(incorrect_names))
+
 
 def load_marked_modules(env, graph, states, force, progressdict, report,
                         loaded_modules, perform_checks, models_to_check=None):
@@ -372,6 +376,7 @@ def load_marked_modules(env, graph, states, force, progressdict, report,
             break
     return processed_modules
 
+
 def load_modules(registry, force_demo=False, status=None, update_module=False):
     """ Load the modules for a registry object that has just been created.  This
         function is part of Registry.new() and should not be used anywhere else.
@@ -396,13 +401,14 @@ def load_modules(registry, force_demo=False, status=None, update_module=False):
                 return
             _logger.info("init db")
             odoo.modules.db.initialize(cr)
-            update_module = True # process auto-installed modules
+            update_module = True  # process auto-installed modules
             tools.config["init"]["all"] = 1
             if not tools.config['without_demo']:
                 tools.config["demo"]['all'] = 1
 
         if 'base' in tools.config['update'] or 'all' in tools.config['update']:
-            cr.execute("update ir_module_module set state=%s where name=%s and state=%s", ('to upgrade', 'base', 'installed'))
+            cr.execute("update ir_module_module set state=%s where name=%s and state=%s",
+                       ('to upgrade', 'base', 'installed'))
 
         # STEP 1: LOAD BASE (must be done before module dependencies can be computed for later steps)
         graph = odoo.modules.graph.Graph()
@@ -478,12 +484,13 @@ def load_modules(registry, force_demo=False, status=None, update_module=False):
         while previously_processed < len(processed_modules):
             previously_processed = len(processed_modules)
             processed_modules += load_marked_modules(env, graph,
-                ['installed', 'to upgrade', 'to remove'],
-                force, status, report, loaded_modules, update_module, models_to_check)
+                                                     ['installed', 'to upgrade', 'to remove'],
+                                                     force, status, report, loaded_modules, update_module,
+                                                     models_to_check)
             if update_module:
                 processed_modules += load_marked_modules(env, graph,
-                    ['to install'], force, status, report,
-                    loaded_modules, update_module, models_to_check)
+                                                         ['to install'], force, status, report,
+                                                         loaded_modules, update_module, models_to_check)
 
         if update_module:
             # set up the registry without the patch for translated fields
@@ -521,7 +528,8 @@ def load_modules(registry, force_demo=False, status=None, update_module=False):
         cr.execute("SELECT name from ir_module_module WHERE state IN ('to install', 'to upgrade')")
         module_list = [name for (name,) in cr.fetchall()]
         if module_list:
-            _logger.error("Some modules have inconsistent states, some dependencies may be missing: %s", sorted(module_list))
+            _logger.error("Some modules have inconsistent states, some dependencies may be missing: %s",
+                          sorted(module_list))
 
         # STEP 3.6: apply remaining constraints in case of an upgrade
         registry.finalize_constraints()
@@ -533,8 +541,10 @@ def load_modules(registry, force_demo=False, status=None, update_module=False):
             for (model,) in cr.fetchall():
                 if model in registry:
                     env[model]._check_removed_columns(log=True)
-                elif _logger.isEnabledFor(logging.INFO):    # more an info that a warning...
-                    _logger.runbot("Model %s is declared but cannot be loaded! (Perhaps a module was partially removed or renamed)", model)
+                elif _logger.isEnabledFor(logging.INFO):  # more an info that a warning...
+                    _logger.runbot(
+                        "Model %s is declared but cannot be loaded! (Perhaps a module was partially removed or renamed)",
+                        model)
 
             # Cleanup orphan records
             env['ir.model.data']._process_end(processed_modules)
@@ -602,7 +612,6 @@ def load_modules(registry, force_demo=False, status=None, update_module=False):
             _logger.info('Modules loaded.')
         else:
             _logger.error('At least one test failed when loading the modules.')
-
 
         # STEP 8: save installed/updated modules for post-install tests and _register_hook
         registry.updated_modules += processed_modules

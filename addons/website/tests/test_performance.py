@@ -1,14 +1,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import logging
+
 from odoo.addons.base.tests.common import HttpCaseWithUserPortal, HttpCaseWithUserDemo
-
-from contextlib import nullcontext
-
 from odoo.sql_db import categorize_query
+from odoo.tests.common import tagged
 from odoo.tools import mute_logger
-from odoo.tests.common import HttpCase, tagged
-
 
 _logger = logging.getLogger(__name__)
 
@@ -67,7 +64,8 @@ class UtilPerf(HttpCaseWithUserPortal, HttpCaseWithUserDemo):
             self.url_open(url)
 
         profiler = nested_profiler.profiler
-        self.assertEqual(len(profiler.sub_profilers), 1, "we expect to have only one accessed url") # if not adapt the code below
+        self.assertEqual(len(profiler.sub_profilers), 1,
+                         "we expect to have only one accessed url")  # if not adapt the code below
         route_profiler = profiler.sub_profilers[0]
         route_entries = route_profiler.collectors[0].entries
         entries = profiler.collectors[0].entries + route_entries
@@ -93,14 +91,17 @@ class UtilPerf(HttpCaseWithUserPortal, HttpCaseWithUserDemo):
             elif query_type == 'from':
                 log_target = sql_from_tables
             else:
-                _logger.warning("Query type %s for query %s is not supported by _check_url_hot_query", query_type, query)
+                _logger.warning("Query type %s for query %s is not supported by _check_url_hot_query", query_type,
+                                query)
             log_target.setdefault(table, 0)
             log_target[table] = log_target[table] + 1
         if query_count != expected_query_count:
             msq = f"Expected {expected_query_count} queries but {query_count} where ran: {query_separator}{queries}{query_separator}"
             self.fail(msq)
-        self.assertEqual(sql_from_tables, select_tables_perf or {}, f'Select queries does not match: {query_separator}{queries}{query_separator}')
-        self.assertEqual(sql_into_tables, insert_tables_perf or {}, f'Insert queries does not match: {query_separator}{queries}{query_separator}')
+        self.assertEqual(sql_from_tables, select_tables_perf or {},
+                         f'Select queries does not match: {query_separator}{queries}{query_separator}')
+        self.assertEqual(sql_into_tables, insert_tables_perf or {},
+                         f'Insert queries does not match: {query_separator}{queries}{query_separator}')
 
 
 class TestStandardPerformance(UtilPerf):
@@ -108,7 +109,8 @@ class TestStandardPerformance(UtilPerf):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.env['res.users'].browse(2).image_1920 = b'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGNgYGAAAAAEAAH2FzhVAAAAAElFTkSuQmCC'
+        cls.env['res.users'].browse(
+            2).image_1920 = b'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGNgYGAAAAAEAAH2FzhVAAAAAElFTkSuQmCC'
 
     @mute_logger('odoo.http')
     def test_10_perf_sql_img_controller(self):
@@ -206,7 +208,7 @@ class TestWebsitePerformance(TestWebsitePerformanceCommon):
                 }
                 expected_query_count = 5
                 if not readonly_enabled:
-                    select_tables_perf['ir_ui_view'] = 1 # Check if `view.track` to track visitor or not
+                    select_tables_perf['ir_ui_view'] = 1  # Check if `view.track` to track visitor or not
                     expected_query_count += 1
                 self._check_url_hot_query(self.page.url, expected_query_count, select_tables_perf)
                 self.assertEqual(self._get_url_hot_query(self.page.url, cache=False), 10)
@@ -233,7 +235,7 @@ class TestWebsitePerformance(TestWebsitePerformanceCommon):
                 expected_query_count_no_cache = 10
                 insert_tables_perf = {}
                 if not readonly_enabled:
-                    select_tables_perf['ir_ui_view'] = 1 # Check if `view.track` to track visitor or not
+                    select_tables_perf['ir_ui_view'] = 1  # Check if `view.track` to track visitor or not
                     insert_tables_perf = {
                         'website_visitor': 1,
                         # Visitor upsert
@@ -267,7 +269,7 @@ class TestWebsitePerformance(TestWebsitePerformanceCommon):
                 expected_query_count_no_cache = 8
                 insert_tables_perf = {}
                 if not readonly_enabled:
-                    select_tables_perf['ir_ui_view'] = 1 # Check if `view.track` to track visitor or not
+                    select_tables_perf['ir_ui_view'] = 1  # Check if `view.track` to track visitor or not
                     insert_tables_perf = {
                         'website_visitor': 1,
                         # Visitor upsert
@@ -326,12 +328,14 @@ class TestWebsitePerformance(TestWebsitePerformanceCommon):
         self._check_url_hot_query(self.page.url, 6, select_tables_perf)
         self.assertEqual(self._get_url_hot_query(self.page.url, cache=False), 10)
 
+
 @tagged('-at_install', 'post_install')
 class TestWebsitePerformancePost(UtilPerf):
     @mute_logger('odoo.http')
     def test_50_perf_sql_web_assets(self):
         # assets route /web/assets/..
-        assets_url = self.env['ir.qweb']._get_asset_bundle('web.assets_frontend_lazy', css=False, js=True).get_links()[0]
+        assets_url = self.env['ir.qweb']._get_asset_bundle('web.assets_frontend_lazy', css=False, js=True).get_links()[
+            0]
         self.assertIn('web.assets_frontend_lazy.min.js', assets_url)
         select_tables_perf = {
             'base_registry_signaling': 1,

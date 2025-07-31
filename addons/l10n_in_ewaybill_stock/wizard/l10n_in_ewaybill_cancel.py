@@ -3,7 +3,6 @@ from odoo import fields, models
 
 
 class EwaybillCancel(models.TransientModel):
-
     _name = 'l10n.in.ewaybill.cancel'
     _description = 'Cancel Ewaybill'
 
@@ -13,7 +12,7 @@ class EwaybillCancel(models.TransientModel):
         ("2", "Data Entry Mistake"),
         ("3", "Order Cancelled"),
         ("4", "Others"),
-        ], string="Cancel Reason", required=True
+    ], string="Cancel Reason", required=True
     )
     cancel_remarks = fields.Char("Cancel Remarks")
 

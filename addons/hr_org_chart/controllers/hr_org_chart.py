@@ -2,7 +2,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import http
-from odoo.exceptions import AccessError
 from odoo.http import request
 
 
@@ -56,7 +55,7 @@ class HrOrgChartController(http.Controller):
 
         # compute employee data for org chart
         ancestors, current = request.env['hr.employee.public'].sudo(), employee.sudo()
-        while current.parent_id and len(ancestors) < self._managers_level+1 and current != current.parent_id:
+        while current.parent_id and len(ancestors) < self._managers_level + 1 and current != current.parent_id:
             ancestors += current.parent_id
             current = current.parent_id
 

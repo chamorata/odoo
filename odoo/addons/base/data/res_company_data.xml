@@ -6,5 +6,5 @@
             <field name="partner_id" ref="main_partner"/>
             <field name="currency_id" ref="base.USD"/>
         </record>
-    </data> 
+    </data>
 </odoo>

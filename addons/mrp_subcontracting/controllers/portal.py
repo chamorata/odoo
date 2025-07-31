@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import werkzeug
 from collections import OrderedDict
 
-from odoo import conf, http, _
-from odoo.http import request
-from odoo.exceptions import AccessError, MissingError
+import werkzeug
 from odoo.addons.portal.controllers import portal
 from odoo.addons.portal.controllers.portal import pager as portal_pager
+
+from odoo import conf, http, _
+from odoo.exceptions import AccessError, MissingError
+from odoo.http import request
 
 
 class CustomerPortal(portal.CustomerPortal):
@@ -17,14 +18,17 @@ class CustomerPortal(portal.CustomerPortal):
         values = super()._prepare_home_portal_values(counters)
         if 'production_count' in counters:
             commercial_partner = request.env.user.partner_id.commercial_partner_id
-            values['production_count'] = request.env['stock.picking'].search_count([('partner_id.commercial_partner_id', '=', commercial_partner.id), ('move_ids.is_subcontract', '=', True)])
+            values['production_count'] = request.env['stock.picking'].search_count(
+                [('partner_id.commercial_partner_id', '=', commercial_partner.id),
+                 ('move_ids.is_subcontract', '=', True)])
         return values
 
     @http.route(['/my/productions', '/my/productions/page/<int:page>'], type='http', auth="user", website=True)
     def portal_my_productions(self, page=1, date_begin=None, date_end=None, sortby='date', filterby='all'):
         commercial_partner = request.env.user.partner_id.commercial_partner_id
         StockPicking = request.env['stock.picking']
-        domain = [('partner_id.commercial_partner_id', '=', commercial_partner.id), ('move_ids.is_subcontract', '=', True)]
+        domain = [('partner_id.commercial_partner_id', '=', commercial_partner.id),
+                  ('move_ids.is_subcontract', '=', True)]
 
         if date_begin and date_end:
             domain += [('create_date', '>', date_begin), ('create_date', '<=', date_end)]

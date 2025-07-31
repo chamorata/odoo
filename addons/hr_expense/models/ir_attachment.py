@@ -28,12 +28,14 @@ class IrAttachment(models.Model):
                 expenses = self.env['hr.expense'].browse(expenses_attachments.mapped('res_id'))
                 for expense in expenses.exists().filtered('sheet_id'):
                     checksums = set(expense.attachment_ids.mapped('checksum'))
-                    attachments_to_unlink += expense.sheet_id.attachment_ids.filtered(lambda att: att.checksum in checksums)
+                    attachments_to_unlink += expense.sheet_id.attachment_ids.filtered(
+                        lambda att: att.checksum in checksums)
             sheets_attachments = self.filtered(lambda att: att.res_model == 'hr.expense.sheet')
             if sheets_attachments:
                 sheets = self.env['hr.expense.sheet'].browse(sheets_attachments.mapped('res_id'))
                 for sheet in sheets.exists():
                     checksums = set((sheet.attachment_ids & sheets_attachments).mapped('checksum'))
-                    attachments_to_unlink += sheet.expense_line_ids.attachment_ids.filtered(lambda att: att.checksum in checksums)
+                    attachments_to_unlink += sheet.expense_line_ids.attachment_ids.filtered(
+                        lambda att: att.checksum in checksums)
             super(IrAttachment, attachments_to_unlink).unlink()
         return super().unlink()

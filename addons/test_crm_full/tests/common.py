@@ -38,5 +38,5 @@ class TestCrmFullCommon(TestCrmCommon, MockIAPReveal, MockVisitor):
              'phone': '04560000%02d' % idx,
              'street': 'Super Street, %092d' % idx,
              'zip': '1400',
-            } for idx in range(0, 10)
+             } for idx in range(0, 10)
         ])

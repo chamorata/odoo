@@ -3,6 +3,7 @@
 
 from odoo.addons.test_mass_mailing.data.mail_test_data import MAIL_TEMPLATE
 from odoo.addons.test_mass_mailing.tests.common import TestMassMailCommon
+
 from odoo.tests import tagged
 from odoo.tests.common import users
 from odoo.tools import mute_logger, email_normalize
@@ -132,7 +133,7 @@ class TestMassMailing(TestMassMailCommon):
         tested. """
         (customer_mult, customer_fmt, customer_unic,
          customer_case, customer_weird, customer_weird_2
-        ) = self.env['res.partner'].create([
+         ) = self.env['res.partner'].create([
             {
                 'email': 'customer.multi.1@example.com, "Test Multi 2" <customer.multi.2@example.com>',
                 'name': 'MultiEMail',
@@ -162,7 +163,7 @@ class TestMassMailing(TestMassMailCommon):
                  record_p_case, record_p_weird, record_p_weird_2,
                  record_mult, record_fmt, record_unic,
                  record_case, recod_weird, record_weird_2
-                ) = self.env[dst_model].create([
+                 ) = self.env[dst_model].create([
                     {
                         'customer_id': customer_mult.id,
                     }, {
@@ -190,10 +191,10 @@ class TestMassMailing(TestMassMailCommon):
                     }
                 ])
                 test_records = (
-                    record_p_mult + record_p_fmt + record_p_unic +
-                    record_p_case + record_p_weird + record_p_weird_2 +
-                    record_mult + record_fmt + record_unic +
-                    record_case + recod_weird + record_weird_2
+                        record_p_mult + record_p_fmt + record_p_unic +
+                        record_p_case + record_p_weird + record_p_weird_2 +
+                        record_mult + record_fmt + record_unic +
+                        record_case + recod_weird + record_weird_2
                 )
                 mailing = self.env['mailing.mailing'].create({
                     'body_html': """<div><p>Hello ${object.name}</p>""",
@@ -217,7 +218,8 @@ class TestMassMailing(TestMassMailCommon):
                     [
                         {'email': 'customer.multi.1@example.com, "Test Multi 2" <customer.multi.2@example.com>',
                          'email_to_mail': False,  # using recipient_ids, not email_to
-                         'email_to_recipients': [[f'"{customer_mult.name}" <customer.multi.1@example.com>', f'"{customer_mult.name}" <customer.multi.2@example.com>']],
+                         'email_to_recipients': [[f'"{customer_mult.name}" <customer.multi.1@example.com>',
+                                                  f'"{customer_mult.name}" <customer.multi.2@example.com>']],
                          'failure_type': False,
                          'partner': customer_mult,
                          'trace_status': 'sent'},
@@ -243,7 +245,8 @@ class TestMassMailing(TestMassMailCommon):
                          'trace_status': 'sent'},  # lower cased
                         {'email': 'test.customer.weird@example.com Weird Format',
                          'email_to_mail': False,  # using recipient_ids, not email_to
-                         'email_to_recipients': [[f'"{customer_weird.name}" <test.customer.weird@example.comweirdformat>']],
+                         'email_to_recipients': [
+                             [f'"{customer_weird.name}" <test.customer.weird@example.comweirdformat>']],
                          'failure_type': False,
                          'partner': customer_weird,
                          'trace_status': 'sent'},  # concatenates everything after domain
@@ -306,7 +309,8 @@ class TestMassMailing(TestMassMailCommon):
         with self.mock_mail_gateway(mail_unlink_sent=True):
             mailing.action_send_mail()
 
-        answer_rec = self.gateway_mail_reply_wemail(MAIL_TEMPLATE, recipients[0].email_normalized, target_model=self.test_alias.alias_model_id.model)
+        answer_rec = self.gateway_mail_reply_wemail(MAIL_TEMPLATE, recipients[0].email_normalized,
+                                                    target_model=self.test_alias.alias_model_id.model)
         self.assertTrue(bool(answer_rec))
         self.assertEqual(answer_rec.name, 'Re: %s' % mailing.subject)
         self.assertEqual(
@@ -332,7 +336,8 @@ class TestMassMailing(TestMassMailCommon):
         with self.mock_mail_gateway(mail_unlink_sent=True):
             mailing.action_send_mail()
 
-        answer_rec = self.gateway_mail_reply_wemail(MAIL_TEMPLATE, recipients[0].email_normalized, target_model=self.test_alias.alias_model_id.model)
+        answer_rec = self.gateway_mail_reply_wemail(MAIL_TEMPLATE, recipients[0].email_normalized,
+                                                    target_model=self.test_alias.alias_model_id.model)
         self.assertFalse(bool(answer_rec))
         self.assertEqual(
             recipients[0].message_ids[1].subject, mailing.subject,
@@ -374,7 +379,8 @@ class TestMassMailing(TestMassMailCommon):
         with self.mock_mail_gateway(mail_unlink_sent=False):
             mailing.action_send_mail()
 
-        traces = self.env['mailing.trace'].search([('model', '=', self.mailing_list_1.contact_ids._name), ('res_id', 'in', self.mailing_list_1.contact_ids.ids)])
+        traces = self.env['mailing.trace'].search([('model', '=', self.mailing_list_1.contact_ids._name),
+                                                   ('res_id', 'in', self.mailing_list_1.contact_ids.ids)])
         self.assertEqual(len(traces), 3)
 
         # simulate response to mailing
@@ -506,12 +512,12 @@ class TestMassMailing(TestMassMailCommon):
         test_customers = self.env['res.partner'].sudo().create([
             {'email': f'"Mailing Partner {idx}" <email.from.{idx}@test.example.com',
              'name': f'Mailing Partner {idx}',
-            } for idx in range(8)
+             } for idx in range(8)
         ])
         test_records = self.env['mailing.test.partner.unstored'].create([
             {'email_from': f'email.from.{idx}@test.example.com',
              'name': f'Mailing Record {idx}',
-            } for idx in range(10)
+             } for idx in range(10)
         ])
         self.assertEqual(test_records[:8].partner_id, test_customers)
         self.assertFalse(test_records[9:].partner_id)

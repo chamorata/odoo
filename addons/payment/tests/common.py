@@ -5,11 +5,10 @@ from unittest.mock import patch
 
 from lxml import objectify
 
+from odoo.addons.base.tests.common import BaseCommon
 from odoo.fields import Command
 from odoo.osv.expression import AND
 from odoo.tools.misc import hmac as hmac_tool
-
-from odoo.addons.base.tests.common import BaseCommon
 
 _logger = logging.getLogger(__name__)
 
@@ -108,7 +107,7 @@ class PaymentCommon(BaseCommon):
             )
             self.startPatcher(self.post_process_patcher)
 
-    #=== Utils ===#
+    # === Utils ===#
 
     @classmethod
     def _prepare_currency(cls, currency_code):

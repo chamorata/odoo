@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from datetime import date, datetime
-from pytz import utc, timezone
 
 from odoo.addons.resource.models.utils import Intervals, sum_intervals
-from odoo.fields import Date
+from pytz import utc, timezone
 
+from odoo.fields import Date
 from .common import TestContractCommon
+
 
 class TestResource(TestContractCommon):
 
@@ -19,21 +20,36 @@ class TestResource(TestContractCommon):
         cls.calendar_35h = cls.env['resource.calendar'].create({
             'name': '35h calendar',
             'attendance_ids': [
-                (0, 0, {'name': 'Monday Morning', 'dayofweek': '0', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-                (0, 0, {'name': 'Monday Lunch', 'dayofweek': '0', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
-                (0, 0, {'name': 'Monday Evening', 'dayofweek': '0', 'hour_from': 13, 'hour_to': 16, 'day_period': 'afternoon'}),
-                (0, 0, {'name': 'Tuesday Morning', 'dayofweek': '1', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-                (0, 0, {'name': 'Tuesday Lunch', 'dayofweek': '1', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
-                (0, 0, {'name': 'Tuesday Evening', 'dayofweek': '1', 'hour_from': 13, 'hour_to': 16, 'day_period': 'afternoon'}),
-                (0, 0, {'name': 'Wednesday Morning', 'dayofweek': '2', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-                (0, 0, {'name': 'Wednesday Lunch', 'dayofweek': '2', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
-                (0, 0, {'name': 'Wednesday Evening', 'dayofweek': '2', 'hour_from': 13, 'hour_to': 16, 'day_period': 'afternoon'}),
-                (0, 0, {'name': 'Thursday Morning', 'dayofweek': '3', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-                (0, 0, {'name': 'Thursday Lunch', 'dayofweek': '3', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
-                (0, 0, {'name': 'Thursday Evening', 'dayofweek': '3', 'hour_from': 13, 'hour_to': 16, 'day_period': 'afternoon'}),
-                (0, 0, {'name': 'Friday Morning', 'dayofweek': '4', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-                (0, 0, {'name': 'Friday Lunch', 'dayofweek': '4', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
-                (0, 0, {'name': 'Friday Evening', 'dayofweek': '4', 'hour_from': 13, 'hour_to': 16, 'day_period': 'afternoon'})
+                (0, 0,
+                 {'name': 'Monday Morning', 'dayofweek': '0', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
+                (0, 0,
+                 {'name': 'Monday Lunch', 'dayofweek': '0', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
+                (0, 0, {'name': 'Monday Evening', 'dayofweek': '0', 'hour_from': 13, 'hour_to': 16,
+                        'day_period': 'afternoon'}),
+                (0, 0,
+                 {'name': 'Tuesday Morning', 'dayofweek': '1', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
+                (0, 0,
+                 {'name': 'Tuesday Lunch', 'dayofweek': '1', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
+                (0, 0, {'name': 'Tuesday Evening', 'dayofweek': '1', 'hour_from': 13, 'hour_to': 16,
+                        'day_period': 'afternoon'}),
+                (0, 0, {'name': 'Wednesday Morning', 'dayofweek': '2', 'hour_from': 8, 'hour_to': 12,
+                        'day_period': 'morning'}),
+                (0, 0,
+                 {'name': 'Wednesday Lunch', 'dayofweek': '2', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
+                (0, 0, {'name': 'Wednesday Evening', 'dayofweek': '2', 'hour_from': 13, 'hour_to': 16,
+                        'day_period': 'afternoon'}),
+                (0, 0, {'name': 'Thursday Morning', 'dayofweek': '3', 'hour_from': 8, 'hour_to': 12,
+                        'day_period': 'morning'}),
+                (0, 0,
+                 {'name': 'Thursday Lunch', 'dayofweek': '3', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
+                (0, 0, {'name': 'Thursday Evening', 'dayofweek': '3', 'hour_from': 13, 'hour_to': 16,
+                        'day_period': 'afternoon'}),
+                (0, 0,
+                 {'name': 'Friday Morning', 'dayofweek': '4', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
+                (0, 0,
+                 {'name': 'Friday Lunch', 'dayofweek': '4', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
+                (0, 0, {'name': 'Friday Evening', 'dayofweek': '4', 'hour_from': 13, 'hour_to': 16,
+                        'day_period': 'afternoon'})
             ],
         })
 
@@ -79,11 +95,15 @@ class TestResource(TestContractCommon):
         for calendar in richard_entries:
             self.assertTrue(calendar in (self.calendar_35h | self.calendar_richard), "Each calendar should be listed")
             if calendar == self.calendar_35h:
-                self.assertFalse(richard_entries[calendar] - interval_35h, "Interval 35h should cover all calendar 35h validity")
-                self.assertFalse(interval_35h - richard_entries[calendar], "Calendar 35h validity should cover all interval 35h")
+                self.assertFalse(richard_entries[calendar] - interval_35h,
+                                 "Interval 35h should cover all calendar 35h validity")
+                self.assertFalse(interval_35h - richard_entries[calendar],
+                                 "Calendar 35h validity should cover all interval 35h")
             elif calendar == self.calendar_richard:
-                self.assertFalse(richard_entries[calendar] - interval_40h, "Interval 40h should cover all calendar 40h validity")
-                self.assertFalse(interval_40h - richard_entries[calendar], "Calendar 40h validity should cover all interval 40h")
+                self.assertFalse(richard_entries[calendar] - interval_40h,
+                                 "Interval 40h should cover all calendar 40h validity")
+                self.assertFalse(interval_40h - richard_entries[calendar],
+                                 "Calendar 40h validity should cover all interval 40h")
 
     def test_queries(self):
         employees_test = self.env['hr.employee'].create([{
@@ -122,11 +142,11 @@ class TestResource(TestContractCommon):
 
         attendances = self.employee._get_calendar_attendances(date_from, date_to)
         self.assertEqual(21 * 7, attendances['hours'],
-            "Attendances should only include running or finished contracts.")
+                         "Attendances should only include running or finished contracts.")
 
         self.contract_cdd.state = 'close'
         self.contract_cdi.state = 'open'
 
         attendances = self.employee._get_calendar_attendances(date_from, date_to)
         self.assertEqual(21 * 7 + 21 * 8, attendances['hours'],
-            "Attendances should add up multiple contracts with varying work weeks.")
+                         "Attendances should add up multiple contracts with varying work weeks.")

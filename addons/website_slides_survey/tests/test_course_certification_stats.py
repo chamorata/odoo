@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import Command
 from odoo.addons.survey.tests.common import TestSurveyCommon
+
+from odoo import Command
 
 
 class TestCourseCertificationStats(TestSurveyCommon):
@@ -19,14 +20,14 @@ class TestCourseCertificationStats(TestSurveyCommon):
 
         # Create courses and link them to certifications
         [cls.course_1, cls.course_2, cls.course_3] = cls.env["slide.channel"].create([{
-            "name": f"Course {i +1}",
+            "name": f"Course {i + 1}",
             "enroll": "public",
             "is_published": True,
             "slide_ids": [Command.create({
-                    "name": f"Certification {i + 1} slide",
-                    "slide_category": "certification",
-                    "survey_id": cls.certifications.ids[i],
-                    "is_published": True,
+                "name": f"Certification {i + 1} slide",
+                "slide_category": "certification",
+                "survey_id": cls.certifications.ids[i],
+                "is_published": True,
             })]} for i in range(3)])
 
         # Create course participants
@@ -51,8 +52,8 @@ class TestCourseCertificationStats(TestSurveyCommon):
         self.assertEqual(self.course_3.members_certified_count, 1)
 
         certified_partners_memberships = self.partner_memberships.filtered(lambda membership: (
-            membership.channel_id == self.course_1 and membership.partner_id == self.survey_user.partner_id) or (
-                membership.channel_id == self.course_3 and membership.partner_id == self.user_portal.partner_id))
+                                                                                                      membership.channel_id == self.course_1 and membership.partner_id == self.survey_user.partner_id) or (
+                                                                                                      membership.channel_id == self.course_3 and membership.partner_id == self.user_portal.partner_id))
         non_certified_partners_memberships = self.partner_memberships - certified_partners_memberships
 
         self.assertTrue(all(certified_partners_memberships.mapped('survey_certification_success')))

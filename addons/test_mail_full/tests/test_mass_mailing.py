@@ -2,11 +2,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import werkzeug
-
 from odoo.addons.test_mail_full.tests.common import TestMailFullCommon
+
+from odoo.tests import tagged
 from odoo.tests.common import users
 from odoo.tools import mute_logger
-from odoo.tests import tagged
 
 
 @tagged('mass_mailing')
@@ -48,8 +48,8 @@ class TestMassMailing(TestMailFullCommon):
             'email_from': 'falsymail'
         })
         recipients_all = (
-            recipients + recipient_dup_1 + recipient_dup_2 + recipient_dup_3 + recipient_dup_4
-            + recipient_void_1 + recipient_falsy_1
+                recipients + recipient_dup_1 + recipient_dup_2 + recipient_dup_3 + recipient_dup_4
+                + recipient_void_1 + recipient_falsy_1
         )
 
         mailing.write({'mailing_domain': [('id', 'in', recipients_all.ids)]})
@@ -90,7 +90,9 @@ class TestMassMailing(TestMailFullCommon):
                 else:
                     # multi email -> outgoing email contains all emails
                     if recipient == recipient_dup_3:
-                        email = self._find_sent_email(self.user_marketing.email_formatted, ['test.record.09@test.example.com', 'test.multi@test.example.com'])
+                        email = self._find_sent_email(self.user_marketing.email_formatted,
+                                                      ['test.record.09@test.example.com',
+                                                       'test.multi@test.example.com'])
                     else:
                         email = self._find_sent_email(self.user_marketing.email_formatted, [recipient.email_normalized])
                     # preview correctly integrated rendered qweb
@@ -107,7 +109,8 @@ class TestMassMailing(TestMailFullCommon):
                     self.assertEqual(int(unsubscribe_params['document_id']), recipient.id)
                     self.assertEqual(unsubscribe_params['email'], recipient.email_normalized)
                     self.assertEqual(
-                        mailing._generate_mailing_recipient_token(unsubscribe_params['document_id'], (unsubscribe_params['email'])),
+                        mailing._generate_mailing_recipient_token(unsubscribe_params['document_id'],
+                                                                  (unsubscribe_params['email'])),
                         unsubscribe_params['hash_token']
                     )
                     # rendered view

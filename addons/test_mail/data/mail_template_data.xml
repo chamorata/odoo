@@ -4,7 +4,11 @@
         <field name="name">Mail Test Full: Tracking Template</field>
         <field name="subject">Test Template</field>
         <field name="partner_to">{{ object.customer_id.id }}</field>
-        <field name="body_html" type="html"><p>Hello <t t-out="object.name or ''"></t></p></field>
+        <field name="body_html" type="html">
+            <p>Hello
+                <t t-out="object.name or ''"></t>
+            </p>
+        </field>
         <field name="model_id" ref="test_mail.model_mail_test_ticket"/>
         <field name="auto_delete" eval="True"/>
     </record>
@@ -13,13 +17,21 @@
         <field name="name">Mail Test: Template</field>
         <field name="subject">Post on {{ object.name }}</field>
         <field name="partner_to">{{ object.customer_id.id }}</field>
-        <field name="body_html" type="html"><p>Adding stuff on <t t-out="object.name or ''"></t></p></field>
+        <field name="body_html" type="html">
+            <p>Adding stuff on
+                <t t-out="object.name or ''"></t>
+            </p>
+        </field>
         <field name="model_id" ref="test_mail.model_mail_test_container"/>
         <field name="auto_delete" eval="True"/>
     </record>
 
     <template id="mail_test_ticket_tracking_view">
-    	<p><span t-out="object.name or ''"/> datetime has been updated to <span t-out="object.datetime or ''"/></p>
+        <p>
+            <span t-out="object.name or ''"/>
+            datetime has been updated to
+            <span t-out="object.datetime or ''"/>
+        </p>
     </template>
 
     <template id="mail_test_ticket_test_template">
@@ -50,7 +62,9 @@
                 <t t-call="web.external_layout">
                     <div class="page">
                         <p>This is a sample of an external report for a ticket for
-                            <span t-out="ticket.count"></span> people.</p>
+                            <span t-out="ticket.count"></span>
+                            people.
+                        </p>
                     </div>
                 </t>
             </t>
@@ -58,7 +72,8 @@
     </template>
 
     <template id="mail_template_simple_test">
-        <p>Hello <t t-out="partner.name"/>, this comes from <t t-out="object.name"/>.</p>
+        <p>Hello<t t-out="partner.name"/>, this comes from<t t-out="object.name"/>.
+        </p>
     </template>
 
 </odoo>

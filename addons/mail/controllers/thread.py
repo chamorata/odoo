@@ -1,15 +1,16 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import datetime
+
 from markupsafe import Markup
+from odoo.addons.mail.models.discuss.mail_guest import add_guest_to_context
+from odoo.addons.mail.tools.discuss import Store
 from werkzeug.exceptions import NotFound
 
 from odoo import http
 from odoo.http import request
-from odoo.tools import frozendict
 from odoo.tools import email_normalize
-from odoo.addons.mail.models.discuss.mail_guest import add_guest_to_context
-from odoo.addons.mail.tools.discuss import Store
+from odoo.tools import frozendict
 
 
 class ThreadController(http.Controller):
@@ -25,13 +26,15 @@ class ThreadController(http.Controller):
         return Store(thread, as_thread=True, request_list=request_list).get_result()
 
     @http.route("/mail/thread/messages", methods=["POST"], type="json", auth="user")
-    def mail_thread_messages(self, thread_model, thread_id, search_term=None, before=None, after=None, around=None, limit=30):
+    def mail_thread_messages(self, thread_model, thread_id, search_term=None, before=None, after=None, around=None,
+                             limit=30):
         domain = [
             ("res_id", "=", int(thread_id)),
             ("model", "=", thread_model),
             ("message_type", "!=", "user_notification"),
         ]
-        res = request.env["mail.message"]._message_fetch(domain, search_term=search_term, before=before, after=after, around=around, limit=limit)
+        res = request.env["mail.message"]._message_fetch(domain, search_term=search_term, before=before, after=after,
+                                                         around=around, limit=limit)
         messages = res.pop("messages")
         if not request.env.user._is_public():
             messages.set_message_done()
@@ -144,17 +147,18 @@ class ThreadController(http.Controller):
                 thread.env.context, mail_create_nosubscribe=True, mail_post_autofollow=False
             )
         post_data = {
-                key: value
-                for key, value in post_data.items()
-                if key in thread._get_allowed_message_post_params()
-            }
+            key: value
+            for key, value in post_data.items()
+            if key in thread._get_allowed_message_post_params()
+        }
         # sudo: mail.thread - users can post on accessible threads
         message = thread.sudo().message_post(**self._prepare_post_data(post_data, thread, **kwargs))
         return store.add(message, for_current_user=True).get_result()
 
     @http.route("/mail/message/update_content", methods=["POST"], type="json", auth="public")
     @add_guest_to_context
-    def mail_message_update_content(self, message_id, body, attachment_ids, attachment_tokens=None, partner_ids=None, **kwargs):
+    def mail_message_update_content(self, message_id, body, attachment_ids, attachment_tokens=None, partner_ids=None,
+                                    **kwargs):
         guest = request.env["mail.guest"]._get_guest_from_context()
         guest.env["ir.attachment"].browse(attachment_ids)._check_attachments_access(attachment_tokens)
         message = request.env["mail.message"]._get_with_access(message_id, "create", **kwargs)

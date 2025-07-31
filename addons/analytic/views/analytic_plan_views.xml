@@ -10,9 +10,12 @@
                         <button name="action_view_children_plans" type="object" class="oe_stat_button" icon="fa-bars">
                             <field string="Subplans" name="children_count" widget="statinfo"/>
                         </button>
-                        <button name="action_view_analytical_accounts" type="object" class="oe_stat_button" icon="fa-bars">
+                        <button name="action_view_analytical_accounts" type="object" class="oe_stat_button"
+                                icon="fa-bars">
                             <div class="o_field_widget o_stat_info">
-                                <span class="o_stat_value"><field name="all_account_count"/></span>
+                                <span class="o_stat_value">
+                                    <field name="all_account_count"/>
+                                </span>
                                 <span class="o_stat_text">Analytic Accounts</span>
                             </div>
                         </button>
@@ -27,7 +30,7 @@
                             <field name="parent_id"/>
                             <field name="default_applicability"
                                    invisible="parent_id" required="True"/>
-                        <field name="color" widget="color_picker"/>
+                            <field name="color" widget="color_picker"/>
                         </group>
                         <group>
                         </group>
@@ -72,9 +75,9 @@
             (0, 0, {'view_mode': 'form', 'view_id': ref('account_analytic_plan_form_view')})]"/>
         <field name="domain">[('parent_id', '=', False)]</field>
         <field name="help" type="html">
-          <p class="o_view_nocontent_smiling_face">
-              Click to add a new analytic account plan.
-          </p>
+            <p class="o_view_nocontent_smiling_face">
+                Click to add a new analytic account plan.
+            </p>
         </field>
     </record>
 </odoo>

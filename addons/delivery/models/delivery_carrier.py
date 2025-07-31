@@ -1,7 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import psycopg2
 import re
+
+import psycopg2
 
 from odoo import _, api, fields, models, Command, SUPERUSER_ID
 from odoo.exceptions import UserError
@@ -44,12 +45,17 @@ class DeliveryCarrier(models.Model):
         default='fixed',
         required=True,
     )
-    integration_level = fields.Selection([('rate', 'Get Rate'), ('rate_and_ship', 'Get Rate and Create Shipment')], string="Integration Level", default='rate_and_ship', help="Action while validating Delivery Orders")
-    prod_environment = fields.Boolean("Environment", help="Set to True if your credentials are certified for production.")
+    integration_level = fields.Selection([('rate', 'Get Rate'), ('rate_and_ship', 'Get Rate and Create Shipment')],
+                                         string="Integration Level", default='rate_and_ship',
+                                         help="Action while validating Delivery Orders")
+    prod_environment = fields.Boolean("Environment",
+                                      help="Set to True if your credentials are certified for production.")
     debug_logging = fields.Boolean('Debug logging', help="Log requests in order to ease debugging")
-    company_id = fields.Many2one('res.company', string='Company', related='product_id.company_id', store=True, readonly=False)
+    company_id = fields.Many2one('res.company', string='Company', related='product_id.company_id', store=True,
+                                 readonly=False)
     product_id = fields.Many2one('product.product', string='Delivery Product', required=True, ondelete='restrict')
-    tracking_url = fields.Char(string='Tracking Link', help="This option adds a link for the customer in the portal to track their package easily. Use <shipmenttrackingnumber> as a placeholder in your URL.")
+    tracking_url = fields.Char(string='Tracking Link',
+                               help="This option adds a link for the customer in the portal to track their package easily. Use <shipmenttrackingnumber> as a placeholder in your URL.")
     currency_id = fields.Many2one(related='product_id.currency_id')
 
     invoice_policy = fields.Selection(
@@ -60,19 +66,24 @@ class DeliveryCarrier(models.Model):
         help="Estimated Cost: the customer will be invoiced the estimated cost of the shipping.",
     )
 
-    country_ids = fields.Many2many('res.country', 'delivery_carrier_country_rel', 'carrier_id', 'country_id', 'Countries')
+    country_ids = fields.Many2many('res.country', 'delivery_carrier_country_rel', 'carrier_id', 'country_id',
+                                   'Countries')
     state_ids = fields.Many2many('res.country.state', 'delivery_carrier_state_rel', 'carrier_id', 'state_id', 'States')
     zip_prefix_ids = fields.Many2many(
         'delivery.zip.prefix', 'delivery_zip_prefix_rel', 'carrier_id', 'zip_prefix_id', 'Zip Prefixes',
         help="Prefixes of zip codes that this carrier applies to. Note that regular expressions can be used to support countries with varying zip code lengths, i.e. '$' can be added to end of prefix to match the exact zip (e.g. '100$' will only match '100' and not '1000')")
 
-    max_weight = fields.Float('Max Weight', help="If the total weight of the order is over this weight, the method won't be available.")
+    max_weight = fields.Float('Max Weight',
+                              help="If the total weight of the order is over this weight, the method won't be available.")
     weight_uom_name = fields.Char(string='Weight unit of measure label', compute='_compute_weight_uom_name')
-    max_volume = fields.Float('Max Volume', help="If the total volume of the order is over this volume, the method won't be available.")
+    max_volume = fields.Float('Max Volume',
+                              help="If the total volume of the order is over this volume, the method won't be available.")
     volume_uom_name = fields.Char(string='Volume unit of measure label', compute='_compute_volume_uom_name')
-    must_have_tag_ids = fields.Many2many(string='Must Have Tags', comodel_name='product.tag', relation='product_tag_delivery_carrier_must_have_rel',
+    must_have_tag_ids = fields.Many2many(string='Must Have Tags', comodel_name='product.tag',
+                                         relation='product_tag_delivery_carrier_must_have_rel',
                                          help="The method is available only if at least one product of the order has one of these tags.")
-    excluded_tag_ids = fields.Many2many(string='Excluded Tags', comodel_name='product.tag', relation='product_tag_delivery_carrier_excluded_rel',
+    excluded_tag_ids = fields.Many2many(string='Excluded Tags', comodel_name='product.tag',
+                                        relation='product_tag_delivery_carrier_excluded_rel',
                                         help="The method is NOT available if at least one product of the order has one of these tags.")
 
     carrier_description = fields.Text(
@@ -82,7 +93,9 @@ class DeliveryCarrier(models.Model):
 
     margin = fields.Float(help='This percentage will be added to the shipping price.')
     fixed_margin = fields.Float(help='This fixed amount will be added to the shipping price.')
-    free_over = fields.Boolean('Free if order amount is above', help="If the order total amount (shipping excluded) is above or equal to this value, the customer benefits from a free shipping", default=False)
+    free_over = fields.Boolean('Free if order amount is above',
+                               help="If the order total amount (shipping excluded) is above or equal to this value, the customer benefits from a free shipping",
+                               default=False)
     amount = fields.Float(
         string="Amount",
         default=1000,
@@ -90,8 +103,10 @@ class DeliveryCarrier(models.Model):
     )
 
     can_generate_return = fields.Boolean(compute="_compute_can_generate_return")
-    return_label_on_delivery = fields.Boolean(string="Generate Return Label", help="The return label is automatically generated at the delivery.")
-    get_return_label_from_portal = fields.Boolean(string="Return Label Accessible from Customer Portal", help="The return label can be downloaded by the customer from the customer portal.")
+    return_label_on_delivery = fields.Boolean(string="Generate Return Label",
+                                              help="The return label is automatically generated at the delivery.")
+    get_return_label_from_portal = fields.Boolean(string="Return Label Accessible from Customer Portal",
+                                                  help="The return label can be downloaded by the customer from the customer portal.")
 
     supports_shipping_insurance = fields.Boolean(compute="_compute_supports_shipping_insurance")
     shipping_insurance = fields.Integer(
@@ -106,14 +121,16 @@ class DeliveryCarrier(models.Model):
 
     _sql_constraints = [
         ('margin_not_under_100_percent', 'CHECK (margin >= -1)', 'Margin cannot be lower than -100%'),
-        ('shipping_insurance_is_percentage', 'CHECK(shipping_insurance >= 0 AND shipping_insurance <= 100)', "The shipping insurance must be a percentage between 0 and 100."),
+        ('shipping_insurance_is_percentage', 'CHECK(shipping_insurance >= 0 AND shipping_insurance <= 100)',
+         "The shipping insurance must be a percentage between 0 and 100."),
     ]
 
     @api.constrains('must_have_tag_ids', 'excluded_tag_ids')
     def _check_tags(self):
         for carrier in self:
             if carrier.must_have_tag_ids & carrier.excluded_tag_ids:
-                raise UserError(_("Carrier %s cannot have the same tag in both Must Have Tags and Excluded Tags.") % carrier.name)
+                raise UserError(
+                    _("Carrier %s cannot have the same tag in both Must Have Tags and Excluded Tags.") % carrier.name)
 
     def _compute_weight_uom_name(self):
         self.weight_uom_name = self.env['product.template']._get_weight_uom_name_from_ir_config_parameter()
@@ -168,7 +185,8 @@ class DeliveryCarrier(models.Model):
 
     def _match(self, partner, order):
         self.ensure_one()
-        return self._match_address(partner) and self._match_must_have_tags(order) and self._match_excluded_tags(order) and self._match_weight(order) and self._match_volume(order)
+        return self._match_address(partner) and self._match_must_have_tags(order) and self._match_excluded_tags(
+            order) and self._match_weight(order) and self._match_volume(order)
 
     def _match_address(self, partner):
         self.ensure_one()
@@ -195,11 +213,13 @@ class DeliveryCarrier(models.Model):
 
     def _match_weight(self, order):
         self.ensure_one()
-        return not self.max_weight or sum(order_line.product_id.weight * order_line.product_qty for order_line in order.order_line) <= self.max_weight
+        return not self.max_weight or sum(
+            order_line.product_id.weight * order_line.product_qty for order_line in order.order_line) <= self.max_weight
 
     def _match_volume(self, order):
         self.ensure_one()
-        return not self.max_volume or sum(order_line.product_id.volume * order_line.product_qty for order_line in order.order_line) <= self.max_volume
+        return not self.max_volume or sum(
+            order_line.product_id.volume * order_line.product_qty for order_line in order.order_line) <= self.max_volume
 
     @api.onchange('integration_level')
     def _onchange_integration_level(self):
@@ -242,7 +262,8 @@ class DeliveryCarrier(models.Model):
         if self.delivery_type == 'fixed':
             return float(price)
         order = self.env.context.get('order', self.env['sale.order'])
-        fixed_margin_in_sale_currency = self._compute_currency(order, self.fixed_margin, 'company_to_pricelist') if order else self.fixed_margin
+        fixed_margin_in_sale_currency = self._compute_currency(order, self.fixed_margin,
+                                                               'company_to_pricelist') if order else self.fixed_margin
         return float(price) * (1.0 + self.margin) + fixed_margin_in_sale_currency
 
     # -------------------------- #
@@ -280,10 +301,10 @@ class DeliveryCarrier(models.Model):
             # free when order is large enough
             amount_without_delivery = order._compute_amount_total_without_delivery()
             if (
-                res['success']
-                and self.free_over
-                and self.delivery_type != 'base_on_rule'
-                and self._compute_currency(order, amount_without_delivery, 'pricelist_to_company') >= self.amount
+                    res['success']
+                    and self.free_over
+                    and self.delivery_type != 'base_on_rule'
+                    and self._compute_currency(order, amount_without_delivery, 'pricelist_to_company') >= self.amount
             ):
                 res['warning_message'] = _('The shipping is free since the order amount exceeds %.2f.', self.amount)
                 res['price'] = 0.0
@@ -310,13 +331,13 @@ class DeliveryCarrier(models.Model):
                     env = api.Environment(cr, SUPERUSER_ID, {})
                     IrLogging = env['ir.logging']
                     IrLogging.sudo().create({'name': 'delivery.carrier',
-                              'type': 'server',
-                              'dbname': db_name,
-                              'level': 'DEBUG',
-                              'message': xml_string,
-                              'path': self.delivery_type,
-                              'func': func,
-                              'line': 1})
+                                             'type': 'server',
+                                             'dbname': db_name,
+                                             'level': 'DEBUG',
+                                             'message': xml_string,
+                                             'path': self.delivery_type,
+                                             'func': func,
+                                             'line': 1})
             except psycopg2.Error:
                 pass
 
@@ -324,7 +345,8 @@ class DeliveryCarrier(models.Model):
     # Fixed price shipping, aka a very simple provider #
     # ------------------------------------------------ #
 
-    fixed_price = fields.Float(compute='_compute_fixed_price', inverse='_set_product_fixed_price', store=True, string='Fixed Price')
+    fixed_price = fields.Float(compute='_compute_fixed_price', inverse='_set_product_fixed_price', store=True,
+                               string='Fixed Price')
 
     @api.depends('product_id.list_price', 'product_id.product_tmpl_id.list_price')
     def _compute_fixed_price(self):

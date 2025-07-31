@@ -1,8 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.l10n_it_edi.tests.common import TestItEdi
+
 from odoo import Command
 from odoo.tests import freeze_time, tagged
-from odoo.addons.l10n_it_edi.tests.common import TestItEdi
 
 
 @tagged('post_install_l10n', 'post_install', '-at_install')
@@ -256,10 +257,10 @@ class TestItEdiExport(TestItEdi):
             'amount_type': 'percent',
             'type_tax_use': 'purchase',
             'invoice_repartition_line_ids': self.repartition_lines(
-                self.RepartitionLine(100, 'base', ('+03', )),
-                self.RepartitionLine(100, 'tax', ('+5v', ))),
+                self.RepartitionLine(100, 'base', ('+03',)),
+                self.RepartitionLine(100, 'tax', ('+5v',))),
             'refund_repartition_line_ids': self.repartition_lines(
-                self.RepartitionLine(100, 'base', ('-03', )),
+                self.RepartitionLine(100, 'base', ('-03',)),
                 self.RepartitionLine(100, 'tax', False))
         })
         values = {

@@ -136,7 +136,8 @@ class PurchaseEdiXmlUBLBIS3(models.AbstractModel):
 
     def _get_anticipated_monetary_total_vals(self, purchase_order, order_lines):
         line_extension_amount = sum(line['line_extension_amount'] for line in order_lines)
-        allowance_total_amount = sum(line['price']['allowance_charge_vals']['amount'] for line in order_lines if 'allowance_charge_vals' in line['price'])
+        allowance_total_amount = sum(line['price']['allowance_charge_vals']['amount'] for line in order_lines if
+                                     'allowance_charge_vals' in line['price'])
         return {
             'currency': purchase_order.currency_id,
             'currency_dp': self._get_currency_decimal_places(purchase_order.currency_id),
@@ -177,9 +178,10 @@ class PurchaseEdiXmlUBLBIS3(models.AbstractModel):
                 'price': self._get_line_item_price_vals(order_line),
                 'item': self._get_item_vals(order, order_line),
             }
+
         return [_get_order_line_vals(line, line_id) for line_id, line in enumerate(
             order.order_line.filtered(lambda line: line.display_type not in ['line_note', 'line_section'])
-        , 1)]
+            , 1)]
 
     def _export_order_vals(self, order):
         order_lines = self._get_order_lines(order)
@@ -189,9 +191,9 @@ class PurchaseEdiXmlUBLBIS3(models.AbstractModel):
         customer = order.company_id.partner_id.commercial_partner_id
         customer_delivery_address = customer.child_ids.filtered(lambda child: child.type == 'delivery')
         delivery = (
-            order.dest_address_id
-            or (customer_delivery_address and customer_delivery_address[0])
-            or customer
+                order.dest_address_id
+                or (customer_delivery_address and customer_delivery_address[0])
+                or customer
         )
 
         vals = {

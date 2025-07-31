@@ -56,8 +56,8 @@ class AccountMoveSend(models.AbstractModel):
         """
         # EXTENDS 'account'
         return (
-            super()._get_invoice_extra_attachments(move)
-            + move.l10n_my_edi_file_id
+                super()._get_invoice_extra_attachments(move)
+                + move.l10n_my_edi_file_id
         )
 
     # -------------------------------------------------------------------------
@@ -67,8 +67,8 @@ class AccountMoveSend(models.AbstractModel):
     @api.model
     def _l10n_my_edi_generate_myinvois_xml(self, invoice, invoice_data):
         need_file = (
-            (invoice_data['invoice_edi_format'] == 'my_myinvois' and invoice.company_id.l10n_my_edi_proxy_user_id)
-            or 'my_myinvois_send' in invoice_data['extra_edis']
+                (invoice_data['invoice_edi_format'] == 'my_myinvois' and invoice.company_id.l10n_my_edi_proxy_user_id)
+                or 'my_myinvois_send' in invoice_data['extra_edis']
         )
         # It should always be generated when sending.
         if need_file:
@@ -196,4 +196,5 @@ class AccountMoveSend(models.AbstractModel):
         if attachments_vals:
             attachments = self.env['ir.attachment'].sudo().create(invoice_data.get('myinvois_attachments'))
             res_ids = attachments.mapped('res_id')
-            self.env['account.move'].browse(res_ids).invalidate_recordset(fnames=['l10n_my_edi_file_id', 'l10n_my_edi_file'])
+            self.env['account.move'].browse(res_ids).invalidate_recordset(
+                fnames=['l10n_my_edi_file_id', 'l10n_my_edi_file'])

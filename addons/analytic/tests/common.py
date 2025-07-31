@@ -23,7 +23,8 @@ class AnalyticCommon(BaseCommon):
             'parent_id': cls.analytic_plan_1.id,
         })
 
-        cls.analytic_account_1, cls.analytic_account_2, cls.analytic_account_3, cls.analytic_account_4 = cls.env['account.analytic.account'].create([
+        cls.analytic_account_1, cls.analytic_account_2, cls.analytic_account_3, cls.analytic_account_4 = cls.env[
+            'account.analytic.account'].create([
             {'name': 'Account 1', 'plan_id': cls.analytic_plan_1.id, 'company_id': False},
             {'name': 'Account 2', 'plan_id': cls.analytic_plan_child.id, 'company_id': False},
             {'name': 'Account 3', 'plan_id': cls.analytic_plan_2.id, 'company_id': False},
@@ -50,7 +51,8 @@ class AnalyticCommon(BaseCommon):
         # Removes access rights linked to timesheet and project as these add
         # record rules blocking analytic flows; account overrides it
         if 'account.account' not in cls.env:
-            core_group_ids = cls.env.ref("hr_timesheet.group_hr_timesheet_user", raise_if_not_found=False) or cls.env['res.groups']
+            core_group_ids = cls.env.ref("hr_timesheet.group_hr_timesheet_user", raise_if_not_found=False) or cls.env[
+                'res.groups']
             problematic_group_ids = default_groups.filtered(lambda g: (g | g.trans_implied_ids) & core_group_ids)
             if problematic_group_ids:
                 default_groups -= problematic_group_ids

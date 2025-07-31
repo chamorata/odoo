@@ -24,7 +24,8 @@ class Channel(models.Model):
     currency_id = fields.Many2one(related='product_id.currency_id')
 
     _sql_constraints = [
-        ('product_id_check', "CHECK( enroll!='payment' OR product_id IS NOT NULL )", "Product is required for on payment channels.")
+        ('product_id_check', "CHECK( enroll!='payment' OR product_id IS NOT NULL )",
+         "Product is required for on payment channels.")
     ]
 
     @api.depends('product_id')
@@ -59,7 +60,9 @@ class Channel(models.Model):
         """
         if not self:
             return
-        self.filtered(lambda channel: channel.is_published and not channel.product_id.is_published).sudo().product_id.write({'is_published': True})
+        self.filtered(
+            lambda channel: channel.is_published and not channel.product_id.is_published).sudo().product_id.write(
+            {'is_published': True})
 
         unpublished_channel_products = self.filtered(lambda channel: not channel.is_published).product_id
         group_data = self._read_group(
@@ -85,5 +88,6 @@ class Channel(models.Model):
             if on_payment.has_access('write'):
                 result |= on_payment
             elif raise_on_access:
-                raise AccessError(_('You are not allowed to add members to this course. Please contact the course responsible or an administrator.'))
+                raise AccessError(
+                    _('You are not allowed to add members to this course. Please contact the course responsible or an administrator.'))
         return result

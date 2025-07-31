@@ -4,7 +4,6 @@
 from odoo import _, api, fields, models
 from odoo.osv import expression
 
-
 FUEL_TYPES = [
     ('diesel', 'Diesel'),
     ('gasoline', 'Gasoline'),
@@ -16,6 +15,7 @@ FUEL_TYPES = [
     ('hydrogen', 'Hydrogen'),
     ('electric', 'Electric'),
 ]
+
 
 class FleetVehicleModel(models.Model):
     _name = 'fleet.vehicle.model'
@@ -47,7 +47,7 @@ class FleetVehicleModel(models.Model):
     power_unit = fields.Selection([
         ('power', 'kW'),
         ('horsepower', 'Horsepower')
-        ], 'Power Unit', default='power', required=True)
+    ], 'Power Unit', default='power', required=True)
     vehicle_properties_definition = fields.PropertiesDefinition('Vehicle Properties')
     vehicle_range = fields.Integer(string="Range")
 

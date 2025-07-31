@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from datetime import date
 import json
-from psycopg2 import IntegrityError, ProgrammingError
-import requests
+from datetime import date
 from unittest.mock import patch
 
-import odoo
-from odoo.exceptions import UserError, ValidationError, AccessError
-from odoo.tools import mute_logger
-from odoo.tests import common, tagged
-from odoo.addons.base.tests.common import TransactionCaseWithUserDemo
+import requests
+from psycopg2 import IntegrityError
+
 from odoo import Command
+from odoo.addons.base.tests.common import TransactionCaseWithUserDemo
+from odoo.exceptions import UserError, ValidationError, AccessError
+from odoo.tests import common, tagged
+from odoo.tools import mute_logger
 
 
 class TestServerActionsBase(TransactionCaseWithUserDemo):
@@ -52,9 +52,11 @@ class TestServerActionsBase(TransactionCaseWithUserDemo):
         self.res_country_model = Model.search([('model', '=', 'res.country')])
         self.res_country_name_field = Fields.search([('model', '=', 'res.country'), ('name', '=', 'name')])
         self.res_country_code_field = Fields.search([('model', '=', 'res.country'), ('name', '=', 'code')])
-        self.res_country_name_position_field = Fields.search([('model', '=', 'res.country'), ('name', '=', 'name_position')])
+        self.res_country_name_position_field = Fields.search(
+            [('model', '=', 'res.country'), ('name', '=', 'name_position')])
         self.res_partner_category_model = Model.search([('model', '=', 'res.partner.category')])
-        self.res_partner_category_name_field = Fields.search([('model', '=', 'res.partner.category'), ('name', '=', 'name')])
+        self.res_partner_category_name_field = Fields.search(
+            [('model', '=', 'res.partner.category'), ('name', '=', 'name')])
 
         # create server action to
         self.action = self.env['ir.actions.server'].create({
@@ -71,16 +73,16 @@ class TestServerActionsBase(TransactionCaseWithUserDemo):
             'model_id': server_action_model.id,
             'state': 'code',
             'code':
-"""
-_logger.log(10, "This is a %s debug %s", "test", "log")
-_logger.info("This is a %s info %s", "test", "log")
-_logger.warning("This is a %s warning %s", "test", "log")
-_logger.error("This is a %s error %s", "test", "log")
-try:
-    0/0
-except:
-    _logger.exception("This is a %s exception %s", "test", "log")
-""",
+                """
+                _logger.log(10, "This is a %s debug %s", "test", "log")
+                _logger.info("This is a %s info %s", "test", "log")
+                _logger.warning("This is a %s warning %s", "test", "log")
+                _logger.error("This is a %s error %s", "test", "log")
+                try:
+                    0/0
+                except:
+                    _logger.exception("This is a %s exception %s", "test", "log")
+                """,
         })
 
 
@@ -94,10 +96,10 @@ class TestServerActions(TestServerActionsBase):
                 'INFO:odoo.addons.base.models.ir_actions.server_action_safe_eval:This is a test info log',
                 'WARNING:odoo.addons.base.models.ir_actions.server_action_safe_eval:This is a test warning log',
                 'ERROR:odoo.addons.base.models.ir_actions.server_action_safe_eval:This is a test error log',
-"""ERROR:odoo.addons.base.models.ir_actions.server_action_safe_eval:This is a test exception log
-Traceback (most recent call last):
-  File "ir.actions.server(%d,)", line 6, in <module>
-ZeroDivisionError: division by zero""" % self.test_server_action.id
+                """ERROR:odoo.addons.base.models.ir_actions.server_action_safe_eval:This is a test exception log
+                Traceback (most recent call last):
+                  File "ir.actions.server(%d,)", line 6, in <module>
+                ZeroDivisionError: division by zero""" % self.test_server_action.id
             ])
 
     def test_00_action(self):
@@ -140,7 +142,6 @@ ZeroDivisionError: division by zero""" % self.test_server_action.id
         self.assertEqual(len(partner), 1, 'ir_actions_server: TODO')
 
     def test_20_crud_create_link_many2one(self):
-
         # Do: create a new record in the same model and link it with a many2one
         self.action.write({
             'state': 'object_create',
@@ -157,7 +158,6 @@ ZeroDivisionError: division by zero""" % self.test_server_action.id
         self.assertEqual(self.test_partner.parent_id, partner, 'ir_actions_server: TODO')
 
     def test_20_crud_create_link_one2many(self):
-
         # Do: create a new record in the same model and link it with a one2many
         self.action.write({
             'state': 'object_create',
@@ -305,7 +305,8 @@ ZeroDivisionError: division by zero""" % self.test_server_action.id
         run_res = self.action.with_context(self.context).run()
         self.assertFalse(run_res, 'ir_actions_server: update record action correctly finished should return False')
         # Test: partner updated
-        self.assertEqual(self.test_partner.country_id.name, 'TestUpdatedCountry', 'ir_actions_server: country name should have been updated through relation')
+        self.assertEqual(self.test_partner.country_id.name, 'TestUpdatedCountry',
+                         'ir_actions_server: country name should have been updated through relation')
 
         # update a readonly field
         self.action.write({
@@ -313,11 +314,13 @@ ZeroDivisionError: division by zero""" % self.test_server_action.id
             'update_path': 'country_id.image_url',
             'value': "/base/static/img/country_flags/be.png",
         })
-        self.assertEqual(self.test_partner.country_id.image_url, "/base/static/img/country_flags/ty.png", 'ir_actions_server: country flag has this value before the update')
+        self.assertEqual(self.test_partner.country_id.image_url, "/base/static/img/country_flags/ty.png",
+                         'ir_actions_server: country flag has this value before the update')
         run_res = self.action.with_context(self.context).run()
         self.assertFalse(run_res, 'ir_actions_server: update record action correctly finished should return False')
         # Test: partner updated
-        self.assertEqual(self.test_partner.country_id.image_url, "/base/static/img/country_flags/be.png", 'ir_actions_server: country should have been updated through a readonly field')
+        self.assertEqual(self.test_partner.country_id.image_url, "/base/static/img/country_flags/be.png",
+                         'ir_actions_server: country should have been updated through a readonly field')
         self.assertEqual(self.test_partner.country_id.code, "TY", 'ir_actions_server: country code is still TY')
 
         # input an invalid path
@@ -498,12 +501,13 @@ ZeroDivisionError: division by zero""" % self.test_server_action.id
                 Command.link(self.res_partner_name_field.id),
                 Command.link(self.res_partner_city_field.id),
                 Command.link(self.res_partner_country_field.id),
-                ],
+            ],
             'webhook_url': 'http://example.com/webhook',
         })
         # write a mock for the requests.post method that checks the data
         # and returns a 200 response
         num_requests = 0
+
         def _patched_post(*args, **kwargs):
             nonlocal num_requests
             response = requests.Response()

@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, fields, models
 from odoo.addons.onboarding.models.onboarding_progress import ONBOARDING_PROGRESS_STATES
+
+from odoo import api, fields, models
 
 
 class Onboarding(models.Model):
@@ -53,7 +54,8 @@ class Onboarding(models.Model):
         (self - onboardings_with_per_company_steps_or_progress).is_per_company = False
 
     @api.depends_context('company')
-    @api.depends('progress_ids', 'progress_ids.is_onboarding_closed', 'progress_ids.onboarding_state', 'progress_ids.company_id')
+    @api.depends('progress_ids', 'progress_ids.is_onboarding_closed', 'progress_ids.onboarding_state',
+                 'progress_ids.company_id')
     def _compute_current_progress(self):
         for onboarding in self:
             current_progress_id = onboarding.progress_ids.filtered(

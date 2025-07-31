@@ -1,6 +1,7 @@
 # coding: utf-8
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import logging
+
 import requests
 
 from odoo import fields, models, api, tools, _
@@ -14,17 +15,20 @@ class PosPaymentMethod(models.Model):
     _inherit = 'pos.payment.method'
 
     # Viva Wallet
-    viva_wallet_merchant_id = fields.Char(string="Merchant ID", help='Used when connecting to Viva Wallet: https://developer.vivawallet.com/getting-started/find-your-account-credentials/merchant-id-and-api-key/')
-    viva_wallet_api_key = fields.Char(string="API Key", help='Used when connecting to Viva Wallet: https://developer.vivawallet.com/getting-started/find-your-account-credentials/merchant-id-and-api-key/')
-    viva_wallet_client_id = fields.Char(string="Client ID", help='Used when connecting to Viva Wallet: https://developer.vivawallet.com/getting-started/find-your-account-credentials/pos-apis-credentials/#find-your-pos-apis-credentials')
+    viva_wallet_merchant_id = fields.Char(string="Merchant ID",
+                                          help='Used when connecting to Viva Wallet: https://developer.vivawallet.com/getting-started/find-your-account-credentials/merchant-id-and-api-key/')
+    viva_wallet_api_key = fields.Char(string="API Key",
+                                      help='Used when connecting to Viva Wallet: https://developer.vivawallet.com/getting-started/find-your-account-credentials/merchant-id-and-api-key/')
+    viva_wallet_client_id = fields.Char(string="Client ID",
+                                        help='Used when connecting to Viva Wallet: https://developer.vivawallet.com/getting-started/find-your-account-credentials/pos-apis-credentials/#find-your-pos-apis-credentials')
     viva_wallet_client_secret = fields.Char(string="Client secret")
-    viva_wallet_terminal_id = fields.Char(string="Terminal ID", help='[Terminal ID of the Viva Wallet terminal], for example: 16002169')
+    viva_wallet_terminal_id = fields.Char(string="Terminal ID",
+                                          help='[Terminal ID of the Viva Wallet terminal], for example: 16002169')
     viva_wallet_bearer_token = fields.Char(default='Bearer Token')
     viva_wallet_webhook_verification_key = fields.Char()
-    viva_wallet_latest_response = fields.Json() # used to buffer the latest asynchronous notification from Adyen.
+    viva_wallet_latest_response = fields.Json()  # used to buffer the latest asynchronous notification from Adyen.
     viva_wallet_test_mode = fields.Boolean(string="Test mode", help="Run transactions in the test environment.")
     viva_wallet_webhook_endpoint = fields.Char(compute='_compute_viva_wallet_webhook_endpoint', readonly=True)
-
 
     def _viva_wallet_account_get_endpoint(self):
         if self.viva_wallet_test_mode:
@@ -47,7 +51,8 @@ class PosPaymentMethod(models.Model):
 
     def _is_write_forbidden(self, fields):
         # Allow the modification of these fields even if a pos_session is open
-        whitelisted_fields = {'viva_wallet_bearer_token', 'viva_wallet_webhook_verification_key', 'viva_wallet_latest_response'}
+        whitelisted_fields = {'viva_wallet_bearer_token', 'viva_wallet_webhook_verification_key',
+                              'viva_wallet_latest_response'}
         return super(PosPaymentMethod, self)._is_write_forbidden(fields - whitelisted_fields)
 
     def _get_payment_terminal_selection(self):
@@ -59,7 +64,8 @@ class PosPaymentMethod(models.Model):
         data = {'grant_type': 'client_credentials'}
         auth = requests.auth.HTTPBasicAuth(self.viva_wallet_client_id, self.viva_wallet_client_secret)
         try:
-            resp = session.post(f"{self._viva_wallet_account_get_endpoint()}/connect/token", auth=auth, data=data, timeout=TIMEOUT)
+            resp = session.post(f"{self._viva_wallet_account_get_endpoint()}/connect/token", auth=auth, data=data,
+                                timeout=TIMEOUT)
         except requests.exceptions.RequestException:
             _logger.exception("Failed to call viva_wallet_bearer_token endpoint")
 
@@ -68,7 +74,8 @@ class PosPaymentMethod(models.Model):
             self.viva_wallet_bearer_token = access_token
             return {'Authorization': f"Bearer {access_token}"}
         else:
-            raise UserError(_('Unable to retrieve Viva Wallet Bearer Token: Please verify that the Client ID and Client Secret are correct'))
+            raise UserError(
+                _('Unable to retrieve Viva Wallet Bearer Token: Please verify that the Client ID and Client Secret are correct'))
 
     def _get_verification_key(self, endpoint, viva_wallet_merchant_id, viva_wallet_api_key):
         # Get a key to configure the webhook.
@@ -101,7 +108,8 @@ class PosPaymentMethod(models.Model):
                 return resp.json()
             return {'success': resp.status_code}
         else:
-            return {'error': _("There are some issues between us and Viva Wallet, try again later. %s", resp.json().get('detail'))}
+            return {'error': _("There are some issues between us and Viva Wallet, try again later. %s",
+                               resp.json().get('detail'))}
 
     def _retrieve_session_id(self, data_webhook):
         # Send a request to confirm the status of the sesions_id
@@ -112,8 +120,8 @@ class PosPaymentMethod(models.Model):
             return self._send_notification(
                 {'error': _(
                     "Your transaction with Viva Wallet failed. Please try again later."
-                    )}
-                )
+                )}
+            )
         session_id, pos_session_id = MerchantTrns.split("/")  # Split to retrieve pos_sessions_id
         endpoint = f"sessions/{session_id}"
         data = self._call_viva_wallet(endpoint, 'get')
@@ -127,8 +135,8 @@ class PosPaymentMethod(models.Model):
                 {'error': _(
                     "There are some issues between us and Viva Wallet, try again later. %s",
                     data.get('detail')
-                    )}
-                )
+                )}
+            )
 
     def _send_notification(self, data):
         # Send a notification to the point of sale channel to indicate that the transaction are finish
@@ -174,12 +182,11 @@ class PosPaymentMethod(models.Model):
                 self._viva_wallet_webhook_get_endpoint(),
                 self.viva_wallet_merchant_id,
                 self.viva_wallet_api_key
-                )
+            )
             if not self.viva_wallet_webhook_verification_key:
                 raise UserError(_("Can't update payment method. Please check the data and update it."))
 
         return record
-
 
     def create(self, vals):
         records = super().create(vals)
@@ -208,13 +215,13 @@ class PosPaymentMethod(models.Model):
     def _check_viva_wallet_credentials(self):
         for record in self:
             if (record.use_payment_terminal == 'viva_wallet'
-                and not all(record[f] for f in [
-                    'viva_wallet_merchant_id',
-                    'viva_wallet_api_key',
-                    'viva_wallet_client_id',
-                    'viva_wallet_client_secret',
-                    'viva_wallet_terminal_id']
-                )
+                    and not all(record[f] for f in [
+                        'viva_wallet_merchant_id',
+                        'viva_wallet_api_key',
+                        'viva_wallet_client_id',
+                        'viva_wallet_client_secret',
+                        'viva_wallet_terminal_id']
+                                )
             ):
                 raise UserError(_('It is essential to provide API key for the use of viva wallet'))
 
@@ -226,5 +233,5 @@ def get_viva_wallet_session(should_retry=True):
             total=5,
             backoff_factor=2,
             status_forcelist=[202, 500, 502, 503, 504],
-            )))
+        )))
     return session

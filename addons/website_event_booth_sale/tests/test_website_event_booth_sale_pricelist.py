@@ -1,10 +1,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.tests import tagged
-
 from odoo.addons.event_booth_sale.tests.common import TestEventBoothSaleCommon
 from odoo.addons.website_event_sale.tests.common import TestWebsiteEventSaleCommon
 from odoo.addons.website_sale.controllers.main import WebsiteSale
+
+from odoo.tests import tagged
 
 
 @tagged('post_install', '-at_install')
@@ -54,4 +54,5 @@ class TestWebsiteBoothPriceList(TestEventBoothSaleCommon, TestWebsiteEventSaleCo
             'name': 'Test pricelist (with discount)',
         })
         self.so._cart_update_pricelist(pricelist_id=pl2.id)
-        self.assertEqual(so_line.price_reduce_taxexcl, 360, 'Incorrect amount based on the pricelist "Without Discount" and its currency.')
+        self.assertEqual(so_line.price_reduce_taxexcl, 360,
+                         'Incorrect amount based on the pricelist "Without Discount" and its currency.')

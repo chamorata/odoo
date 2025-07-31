@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.sale_timesheet.tests.common import TestCommonSaleTimesheet
+
 from odoo import Command
 from odoo.tests import tagged
 
@@ -38,7 +39,7 @@ class TestSaleTimesheetMargin(TestCommonSaleTimesheet):
                     'price_unit': 1.0,
                     'product_uom': self.uom_day.id,
                     'product_uom_qty': 1.0,
-            })],
+                })],
             'partner_id': self.partner_b.id,
             'partner_invoice_id': self.partner_b.id,
             'partner_shipping_id': self.partner_b.id,
@@ -62,7 +63,8 @@ class TestSaleTimesheetMargin(TestCommonSaleTimesheet):
             self.employee_manager.hourly_cost,
             self.env.company.project_time_mode_id
         )
-        self.assertEqual(sale_order.order_line.purchase_price, expected_cost, "Sale order line cost should be number of working hours on one day * timesheet cost of the employee set on the timesheet linked to the SOL.")
+        self.assertEqual(sale_order.order_line.purchase_price, expected_cost,
+                         "Sale order line cost should be number of working hours on one day * timesheet cost of the employee set on the timesheet linked to the SOL.")
 
     def test_no_recompute_purchase_price_not_timesheet(self):
         project = self.env['project.project'].create({
@@ -85,7 +87,7 @@ class TestSaleTimesheetMargin(TestCommonSaleTimesheet):
                     'price_unit': 1.0,
                     'product_uom': self.ref('uom.product_uom_unit'),
                     'product_uom_qty': 1.0,
-            })],
+                })],
             'partner_id': self.partner_b.id,
             'partner_invoice_id': self.partner_b.id,
             'partner_shipping_id': self.partner_b.id,

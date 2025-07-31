@@ -1,13 +1,13 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from freezegun import freeze_time
+from odoo.addons.account_payment.tests.common import AccountPaymentCommon
+from odoo.addons.l10n_ar.tests.common import TestAr
+from odoo.addons.sale.tests.common import SaleCommon
+
 from odoo import fields
 from odoo.tests import tagged
 from odoo.tools import mute_logger
-from freezegun import freeze_time
-
-from odoo.addons.account_payment.tests.common import AccountPaymentCommon
-from odoo.addons.sale.tests.common import SaleCommon
-from odoo.addons.l10n_ar.tests.common import TestAr
 
 
 @tagged('-at_install', 'post_install', 'post_install_l10n')
@@ -23,7 +23,6 @@ class TestWebsiteSaleInvoice(AccountPaymentCommon, SaleCommon, TestAr):
         self.env['ir.config_parameter'].sudo().set_param('sale.automatic_invoice', 'True')
         self.frozen_today = "2025-01-24T21:10:00"
         with freeze_time(self.frozen_today, tz_offset=3):
-
             # Prepare values needed for AR invoice generation: Tax in all lines, and AFIP responsibility partner
             self.sale_order.order_line.write({'tax_id': self.company_data['default_tax_sale']})
             self.sale_order.partner_id = self.partner_cf

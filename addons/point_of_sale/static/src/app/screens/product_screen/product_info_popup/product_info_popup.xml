@@ -3,7 +3,8 @@
     <t t-name="point_of_sale.ProductInfoPopup">
         <Dialog title.translate="Product information">
             <ProductInfoBanner t-if="!props.product.isConfigurable()" product="props.product" info="props.info"/>
-            <div class="section-inventory mt-3 mb-4 pb-4 border-bottom text-start" t-if="!isVariant and props.info.productInfo.warehouses.length > 0">
+            <div class="section-inventory mt-3 mb-4 pb-4 border-bottom text-start"
+                 t-if="!isVariant and props.info.productInfo.warehouses.length > 0">
                 <h3 class="section-title">
                     Inventory
                     <t t-if="pos.session.update_stock_at_closing">(as of opening)</t>
@@ -17,7 +18,8 @@
                             </div>
                             <div>
                                 <span class="me-1 fw-bolder"><t t-esc="warehouse.available_quantity" class="table-name"/></span>
-                                <t t-esc="warehouse.uom"/> available,
+                                <t t-esc="warehouse.uom"/>
+                                available,
                             </div>
                             <div>
                                 <span class="me-1 fw-bolder"><t t-esc="warehouse.forecasted_quantity"/></span>
@@ -27,7 +29,8 @@
                     </t>
                 </div>
             </div>
-            <div class="section-supplier mt-3 mb-4 pb-4 border-bottom text-start" t-if="props.info.productInfo.suppliers.length > 0">
+            <div class="section-supplier mt-3 mb-4 pb-4 border-bottom text-start"
+                 t-if="props.info.productInfo.suppliers.length > 0">
                 <h3 class="section-title">Replenishment</h3>
                 <div class="section-supplier-body">
                     <t t-foreach="props.info.productInfo.suppliers" t-as="supplier" t-key="supplier.id">
@@ -36,7 +39,7 @@
                                 <span t-esc="supplier.name" class="table-name"/>:
                             </div>
                             <span class="me-1 fw-bolder">
-                                <t t-esc="supplier.delay"/> 
+                                <t t-esc="supplier.delay"/>
                                 Days
                             </span>
                             <span t-if="_hasMarginsCostsAccessRights()">
@@ -61,7 +64,8 @@
                             </tr>
                             <tr t-if="_hasMarginsCostsAccessRights()">
                                 <td>Margin:</td>
-                                <td><t t-esc="props.info.marginCurrency"/> (<t t-esc="props.info.marginPercent"/>%) </td>
+                                <td><t t-esc="props.info.marginCurrency"/>
+                                    (<t t-esc="props.info.marginPercent"/>%) </td>
                             </tr>
                         </table>
                         <table class="table table-borderless">
@@ -88,7 +92,8 @@
                             </tr>
                             <tr t-if="_hasMarginsCostsAccessRights()">
                                 <td>Total Margin:</td>
-                                <td class="table-value"><t t-esc="props.info.orderMarginCurrency"/> (<t t-esc="props.info.orderMarginPercent"/>%)</td>
+                                <td class="table-value"><t t-esc="props.info.orderMarginCurrency"/>
+                                    (<t t-esc="props.info.orderMarginPercent"/>%)</td>
                             </tr>
                         </table>
                     </div>
@@ -96,7 +101,8 @@
             </div>
             <t t-set-slot="footer">
                 <button class="btn btn-primary btn-lg lh-lg" t-on-click="props.close">Ok</button>
-                <button t-if="allowProductEdition" class="btn btn-secondary btn-lg lh-lg" t-on-click="editProduct">Edit</button>
+                <button t-if="allowProductEdition" class="btn btn-secondary btn-lg lh-lg"
+                        t-on-click="editProduct">Edit</button>
             </t>
         </Dialog>
     </t>

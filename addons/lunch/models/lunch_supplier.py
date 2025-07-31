@@ -1,22 +1,21 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import math
-import pytz
-
 from collections import defaultdict
 from datetime import datetime, time, timedelta
 from textwrap import dedent
 
+import pytz
+
 from odoo import api, fields, models, _
+from odoo.addons.base.models.res_partner import _tz_get
 from odoo.exceptions import UserError
 from odoo.osv import expression
 from odoo.tools import float_round
 
-from odoo.addons.base.models.res_partner import _tz_get
-
-
 WEEKDAY_TO_NAME = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
 CRON_DEPENDS = {'name', 'active', 'send_by', 'automatic_email_time', 'moment', 'tz'}
+
 
 def float_to_time(hours, moment='am'):
     """ Convert a number of hours into a time object. """
@@ -27,8 +26,10 @@ def float_to_time(hours, moment='am'):
         integral += 12
     return time(int(integral), int(float_round(60 * fractional, precision_digits=0)), 0)
 
+
 def time_to_float(t):
-    return float_round(t.hour + t.minute/60 + t.second/3600, precision_digits=2)
+    return float_round(t.hour + t.minute / 60 + t.second / 3600, precision_digits=2)
+
 
 class LunchSupplier(models.Model):
     _name = 'lunch.supplier'
@@ -50,7 +51,8 @@ class LunchSupplier(models.Model):
     country_id = fields.Many2one('res.country', related='partner_id.country_id', readonly=False)
     company_id = fields.Many2one('res.company', related='partner_id.company_id', readonly=False, store=True)
 
-    responsible_id = fields.Many2one('res.users', string="Responsible", domain=lambda self: [('groups_id', 'in', self.env.ref('lunch.group_lunch_manager').id)],
+    responsible_id = fields.Many2one('res.users', string="Responsible", domain=lambda self: [
+        ('groups_id', 'in', self.env.ref('lunch.group_lunch_manager').id)],
                                      default=lambda self: self.env.user,
                                      help="The responsible is the person that will order lunch for everyone. It will be used as the 'from' when sending the automatic email.")
 
@@ -136,9 +138,9 @@ class LunchSupplier(models.Model):
             cron = supplier.cron_id.sudo()
             lc = cron.lastcall
             if ((
-                lc and sendat_tz.date() <= fields.Datetime.context_timestamp(supplier, lc).date()
+                    lc and sendat_tz.date() <= fields.Datetime.context_timestamp(supplier, lc).date()
             ) or (
-                not lc and sendat_tz <= fields.Datetime.context_timestamp(supplier, fields.Datetime.now())
+                    not lc and sendat_tz <= fields.Datetime.context_timestamp(supplier, fields.Datetime.now())
             )):
                 sendat_tz += timedelta(days=1)
             sendat_utc = sendat_tz.astimezone(pytz.UTC).replace(tzinfo=None)
@@ -196,14 +198,16 @@ class LunchSupplier(models.Model):
             if topping_values:
                 topping_values.update({'topping_category': 3})
         if values.get('company_id'):
-            self.env['lunch.order'].search([('supplier_id', 'in', self.ids)]).write({'company_id': values['company_id']})
+            self.env['lunch.order'].search([('supplier_id', 'in', self.ids)]).write(
+                {'company_id': values['company_id']})
         res = super().write(values)
         if not CRON_DEPENDS.isdisjoint(values):
             # flush automatic_email_time field to call _sql_constraints
             if 'automatic_email_time' in values:
                 self.flush_model(['automatic_email_time'])
             self._sync_cron()
-        days_removed = [val for val in values if val in ('mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun') and not values[val]]
+        days_removed = [val for val in values if
+                        val in ('mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun') and not values[val]]
         if days_removed:
             self._cancel_future_days(days_removed)
         return res

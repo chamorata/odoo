@@ -43,7 +43,6 @@ class TestEquipmentCommon(TransactionCase):
 class TestEquipment(TestEquipmentCommon):
 
     def test_10_equipment_request_category(self):
-
         # Create a new equipment
         equipment_01 = self.equipment.with_user(self.manager).create({
             'name': 'Samsung Monitor "15',
@@ -99,7 +98,8 @@ class TestEquipment(TestEquipmentCommon):
         })
         maintenance_stages = self.env['maintenance.stage'].search([])
         maintenance_request.with_context(default_stage_id=maintenance_stages[1].id).stage_id = done_maintenance_stage
-        new_maintenance = self.env['maintenance.request'].search([('name', '=', 'Test forever maintenance'), ('stage_id', '=', maintenance_stages[0].id)])
+        new_maintenance = self.env['maintenance.request'].search(
+            [('name', '=', 'Test forever maintenance'), ('stage_id', '=', maintenance_stages[0].id)])
         self.assertTrue(new_maintenance)
 
     def test_update_multiple_maintenance_request_record(self):

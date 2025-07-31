@@ -23,7 +23,6 @@ import psycopg2
 
 import odoo
 from odoo.modules.db import FunctionStatus
-from .. import SUPERUSER_ID
 from odoo.sql_db import TestCursor
 from odoo.tools import (
     config, lazy_classproperty,
@@ -33,22 +32,21 @@ from odoo.tools import (
 from odoo.tools.func import locked
 from odoo.tools.lru import LRU
 from odoo.tools.misc import Collector, format_frame
+from .. import SUPERUSER_ID
 
 if typing.TYPE_CHECKING:
     from odoo.models import BaseModel
 
-
 _logger = logging.getLogger(__name__)
 _schema = logging.getLogger('odoo.schema')
 
-
 _REGISTRY_CACHES = {
     'default': 8192,
-    'assets': 512, # arbitrary
-    'templates': 1024, # arbitrary
+    'assets': 512,  # arbitrary
+    'templates': 1024,  # arbitrary
     'routing': 1024,  # 2 entries per website
     'routing.rewrites': 8192,  # url_rewrite entries
-    'templates.cached_values': 2048, # arbitrary
+    'templates.cached_values': 2048,  # arbitrary
     'groups': 1,  # contains all res.groups
 }
 
@@ -71,6 +69,7 @@ def _unaccent(x):
     if isinstance(x, psycopg2.sql.Composable):
         return psycopg2.sql.SQL('unaccent({})').format(x)
     return f'unaccent({x})'
+
 
 class Registry(Mapping):
     """ Model registry for a particular database.
@@ -132,7 +131,7 @@ class Registry(Mapping):
                 raise
         except Exception:
             _logger.error('Failed to load registry')
-            del cls.registries[db_name]     # pylint: disable=unsupported-delete-operation
+            del cls.registries[db_name]  # pylint: disable=unsupported-delete-operation
             raise
 
         # load_modules() above can replace the registry by calling
@@ -149,7 +148,7 @@ class Registry(Mapping):
         return registry
 
     def init(self, db_name):
-        self.models: dict[str, type[BaseModel]] = {}    # model name/model instance mapping
+        self.models: dict[str, type[BaseModel]] = {}  # model name/model instance mapping
         self._sql_constraints = set()
         self._init = True
         self._database_translated_fields = ()  # names of translated fields in database
@@ -165,14 +164,15 @@ class Registry(Mapping):
 
         # modules fully loaded (maintained during init phase by `loading` module)
         self._init_modules = set()
-        self.updated_modules = []       # installed/updated modules
+        self.updated_modules = []  # installed/updated modules
         self.loaded_xmlids = set()
 
         self.db_name = db_name
         self._db = odoo.sql_db.db_connect(db_name, readonly=False)
         self._db_readonly = None
         self._db_readonly_failed_time = None
-        if config['db_replica_host'] is not False or config['test_enable']:  # by default, only use readonly pool if we have a db_replica_host defined. Allows to have an empty replica host for testing
+        if config['db_replica_host'] is not False or config[
+            'test_enable']:  # by default, only use readonly pool if we have a db_replica_host defined. Allows to have an empty replica host for testing
             self._db_readonly = odoo.sql_db.db_connect(db_name, readonly=True)
 
         # cursor for test mode; None means "normal" mode
@@ -180,8 +180,8 @@ class Registry(Mapping):
         self.test_lock = None
 
         # Indicates that the registry is
-        self.loaded = False             # whether all modules are loaded
-        self.ready = False              # whether everything is set up
+        self.loaded = False  # whether all modules are loaded
+        self.ready = False  # whether everything is set up
 
         # field dependencies
         self.field_depends = Collector()
@@ -478,10 +478,10 @@ class Registry(Mapping):
             if seq1 and seq2:
                 f1, f2 = seq1[-1], seq2[0]
                 if (
-                    f1.type == 'many2one' and f2.type == 'one2many'
-                    and f1.name == f2.inverse_name
-                    and f1.model_name == f2.comodel_name
-                    and f1.comodel_name == f2.model_name
+                        f1.type == 'many2one' and f2.type == 'one2many'
+                        and f1.name == f2.inverse_name
+                        and f1.model_name == f2.comodel_name
+                        and f1.comodel_name == f2.model_name
                 ):
                     return concat(seq1[:-1], seq2[1:])
             return seq1 + seq2
@@ -534,10 +534,10 @@ class Registry(Mapping):
             return self._is_modifying_relations[field]
         except KeyError:
             result = field in self._field_triggers and (
-                field.relational or self.field_inverses[field] or any(
-                    dep.relational or self.field_inverses[dep]
-                    for dep in self.get_dependent_fields(field)
-                )
+                    field.relational or self.field_inverses[field] or any(
+                dep.relational or self.field_inverses[dep]
+                for dep in self.get_dependent_fields(field)
+            )
             )
             self._is_modifying_relations[field] = result
             return result
@@ -837,9 +837,12 @@ class Registry(Mapping):
             # must be reloaded.
             # The `base_cache_signaling_...` sequences indicates when caches must
             # be invalidated (i.e. cleared).
-            sequence_names = ('base_registry_signaling', *(f'base_cache_signaling_{cache_name}' for cache_name in _CACHES_BY_KEY))
-            cr.execute("SELECT sequence_name FROM information_schema.sequences WHERE sequence_name IN %s", [sequence_names])
-            existing_sequences = tuple(s[0] for s in cr.fetchall())  # could be a set but not efficient with such a little list
+            sequence_names = ('base_registry_signaling',
+                              *(f'base_cache_signaling_{cache_name}' for cache_name in _CACHES_BY_KEY))
+            cr.execute("SELECT sequence_name FROM information_schema.sequences WHERE sequence_name IN %s",
+                       [sequence_names])
+            existing_sequences = tuple(
+                s[0] for s in cr.fetchall())  # could be a set but not efficient with such a little list
 
             for sequence_name in sequence_names:
                 if sequence_name not in existing_sequences:
@@ -854,13 +857,15 @@ class Registry(Mapping):
             self.cache_sequences.update(db_cache_sequences)
 
             _logger.debug("Multiprocess load registry signaling: [Registry: %s] %s",
-                          self.registry_sequence, ' '.join('[Cache %s: %s]' % cs for cs in self.cache_sequences.items()))
+                          self.registry_sequence,
+                          ' '.join('[Cache %s: %s]' % cs for cs in self.cache_sequences.items()))
 
     def get_sequences(self, cr):
         assert cr.readonly is False, "can't use replica, sequence data is not replicated"
 
         cache_sequences_query = ', '.join([f'base_cache_signaling_{cache_name}' for cache_name in _CACHES_BY_KEY])
-        cache_sequences_values_query = ',\n'.join([f'base_cache_signaling_{cache_name}.last_value' for cache_name in _CACHES_BY_KEY])
+        cache_sequences_values_query = ',\n'.join(
+            [f'base_cache_signaling_{cache_name}.last_value' for cache_name in _CACHES_BY_KEY])
         cr.execute(f"""
             SELECT base_registry_signaling.last_value, {cache_sequences_values_query}
             FROM base_registry_signaling, {cache_sequences_query}
@@ -892,7 +897,7 @@ class Registry(Mapping):
                 for cache_name, cache_sequence in self.cache_sequences.items():
                     expected_sequence = db_cache_sequences[cache_name]
                     if cache_sequence != expected_sequence:
-                        for cache in _CACHES_BY_KEY[cache_name]: # don't call clear_cache to avoid signal loop
+                        for cache in _CACHES_BY_KEY[cache_name]:  # don't call clear_cache to avoid signal loop
                             if cache not in invalidated:
                                 invalidated.append(cache)
                                 self.__caches[cache].clear()
@@ -995,12 +1000,13 @@ class Registry(Mapping):
             # in test mode we use a proxy object that uses 'self.test_cr' underneath
             if readonly and not self.test_readonly_enabled:
                 _logger.info('Explicitly ignoring readonly flag when generating a cursor')
-            return TestCursor(self.test_cr, self.test_lock, readonly and self.test_readonly_enabled, current_test=odoo.modules.module.current_test)
+            return TestCursor(self.test_cr, self.test_lock, readonly and self.test_readonly_enabled,
+                              current_test=odoo.modules.module.current_test)
 
         if readonly and self._db_readonly is not None:
             if (
-                self._db_readonly_failed_time is None
-                or time.monotonic() > self._db_readonly_failed_time + _REPLICA_RETRY_TIME
+                    self._db_readonly_failed_time is None
+                    or time.monotonic() > self._db_readonly_failed_time + _REPLICA_RETRY_TIME
             ):
                 try:
                     cr = self._db_readonly.cursor()
@@ -1008,19 +1014,25 @@ class Registry(Mapping):
                     return cr
                 except psycopg2.OperationalError:
                     self._db_readonly_failed_time = time.monotonic()
-                    _logger.warning("Failed to open a readonly cursor, falling back to read-write cursor for %dmin %dsec", *divmod(_REPLICA_RETRY_TIME, 60))
+                    _logger.warning(
+                        "Failed to open a readonly cursor, falling back to read-write cursor for %dmin %dsec",
+                        *divmod(_REPLICA_RETRY_TIME, 60))
             threading.current_thread().cursor_mode = 'ro->rw'
         return self._db.cursor()
 
 
 class DummyRLock(object):
     """ Dummy reentrant lock, to be used while running rpc and js tests """
+
     def acquire(self):
         pass
+
     def release(self):
         pass
+
     def __enter__(self):
         self.acquire()
+
     def __exit__(self, type, value, traceback):
         self.release()
 
@@ -1077,8 +1089,8 @@ class TriggerTree(dict):
         called on every field to determine which fields should be kept in the
         tree nodes. This enables to discard some fields from the tree nodes.
         """
-        root_fields = OrderedSet()              # fields in the root node
-        subtrees_to_merge = defaultdict(list)   # subtrees to merge grouped by key
+        root_fields = OrderedSet()  # fields in the root node
+        subtrees_to_merge = defaultdict(list)  # subtrees to merge grouped by key
 
         for tree in trees:
             root_fields.update(tree.root)

@@ -1,9 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from markupsafe import Markup
+from odoo.addons.mail.tools.discuss import Store
 
 from odoo import models
-from odoo.addons.mail.tools.discuss import Store
 
 
 class BusListenerMixin(models.AbstractModel):

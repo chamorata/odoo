@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import babel.dates
 import calendar
-
 from datetime import timedelta
+
+import babel.dates
 from dateutil.relativedelta import relativedelta
+
 from odoo import api, fields, models, _
-from odoo.exceptions import UserError
 from odoo.tools.misc import format_date, get_lang
 
 COLORS_MAP = {
@@ -52,7 +52,8 @@ class HrHolidaySummaryReport(models.AbstractModel):
         start_date = fields.Date.from_string(start_date)
         for x in range(0, 60):
             color = '#ababab' if self._date_is_day_off(start_date) else ''
-            res.append({'day_str': babel.dates.get_day_names('abbreviated', locale=get_lang(self.env).code)[start_date.weekday()], 'day': start_date.day, 'color': color})
+            res.append({'day_str': babel.dates.get_day_names('abbreviated', locale=get_lang(self.env).code)[
+                start_date.weekday()], 'day': start_date.day, 'color': color})
             start_date = start_date + relativedelta(days=1)
         return res
 
@@ -66,7 +67,8 @@ class HrHolidaySummaryReport(models.AbstractModel):
             if last_date > end_date:
                 last_date = end_date
             month_days = (last_date - start_date).days + 1
-            res.append({'month_name': babel.dates.get_month_names(locale=get_lang(self.env).code)[start_date.month], 'days': month_days})
+            res.append({'month_name': babel.dates.get_month_names(locale=get_lang(self.env).code)[start_date.month],
+                        'days': month_days})
             start_date += relativedelta(day=1, months=+1)
         return res
 
@@ -78,7 +80,7 @@ class HrHolidaySummaryReport(models.AbstractModel):
         for index in range(0, 60):
             current = start_date + timedelta(index)
             res.append({'day': current.day, 'color': ''})
-            if self._date_is_day_off(current) :
+            if self._date_is_day_off(current):
                 res[index]['color'] = '#ababab'
 
         holidays = self._get_leaves(start_date, self.env['hr.employee'].browse(empid), holiday_type)
@@ -92,7 +94,7 @@ class HrHolidaySummaryReport(models.AbstractModel):
             date_to = fields.Datetime.context_timestamp(holiday, date_to).date()
             for index in range(0, ((date_to - date_from).days + 1)):
                 if date_from >= start_date and date_from <= end_date:
-                    res[(date_from-start_date).days]['color'] = COLORS_MAP[holiday.holiday_status_id.color]
+                    res[(date_from - start_date).days]['color'] = COLORS_MAP[holiday.holiday_status_id.color]
                 date_from += timedelta(1)
             count += holiday.number_of_days
         employee = self.env['hr.employee'].browse(empid)
@@ -127,7 +129,8 @@ class HrHolidaySummaryReport(models.AbstractModel):
         return res
 
     def _get_leaves(self, date_from, employees, holiday_type, date_to=None):
-        state = ['confirm', 'validate'] if holiday_type == 'both' else ['confirm'] if holiday_type == 'Confirmed' else ['validate']
+        state = ['confirm', 'validate'] if holiday_type == 'both' else ['confirm'] if holiday_type == 'Confirmed' else [
+            'validate']
 
         if not date_to:
             date_to = date_from + relativedelta(days=59)

@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from usb import core
-
 from odoo.addons.hw_drivers.interface import Interface
+from usb import core
 
 
 class USBInterface(Interface):

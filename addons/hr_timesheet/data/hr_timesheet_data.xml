@@ -13,9 +13,9 @@
 
     <!-- Force Analytic account creation for projects allowing timesheet (default is True) -->
     <function
-        model="project.project"
-        name="_init_data_analytic_account"
-        eval="[]"/>
+            model="project.project"
+            name="_init_data_analytic_account"
+            eval="[]"/>
 
     <record id="internal_project_default_stage" model="project.task.type">
         <field name="sequence">1</field>

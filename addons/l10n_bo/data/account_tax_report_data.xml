@@ -30,7 +30,9 @@
                         <field name="code">l10n_bo_tax_report_iva_debit</field>
                         <field name="children_ids">
                             <record id="l10n_bo_tax_report_iva_13" model="account.report.line">
-                                <field name="name">Sales of taxed goods and/or services in the domestic market, excepting sales taxed at Zero Rate</field>
+                                <field name="name">Sales of taxed goods and/or services in the domestic market,
+                                    excepting sales taxed at Zero Rate
+                                </field>
                                 <field name="code">l10n_bo_tax_report_iva_13</field>
                                 <field name="expression_ids">
                                     <record id="l10n_bo_tax_report_iva_13_code" model="account.report.expression">
@@ -98,7 +100,9 @@
                                 </field>
                             </record>
                             <record id="l10n_bo_tax_report_iva_16" model="account.report.line">
-                                <field name="name">Value attributed to retired goods and/or services and private consumption</field>
+                                <field name="name">Value attributed to retired goods and/or services and private
+                                    consumption
+                                </field>
                                 <field name="code">l10n_bo_tax_report_iva_16</field>
                                 <field name="expression_ids">
                                     <record id="l10n_bo_tax_report_iva_16_code" model="account.report.expression">
@@ -161,7 +165,10 @@
                                     <record id="l10n_bo_tax_report_iva_39_balance" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">0.13 * (l10n_bo_tax_report_iva_13.balance + l10n_bo_tax_report_iva_16.balance + l10n_bo_tax_report_iva_17.balance + l10n_bo_tax_report_iva_18.balance)</field>
+                                        <field name="formula">0.13 * (l10n_bo_tax_report_iva_13.balance +
+                                            l10n_bo_tax_report_iva_16.balance + l10n_bo_tax_report_iva_17.balance +
+                                            l10n_bo_tax_report_iva_18.balance)
+                                        </field>
                                     </record>
                                 </field>
                             </record>
@@ -192,7 +199,8 @@
                                         <field name="engine">aggregation</field>
                                         <field name="formula">19</field>
                                     </record>
-                                    <record id="l10n_bo_tax_report_iva_19_tax_amount_balance" model="account.report.expression">
+                                    <record id="l10n_bo_tax_report_iva_19_tax_amount_balance"
+                                            model="account.report.expression">
                                         <field name="label">tax_amount</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">IVA 19</field>
@@ -200,7 +208,9 @@
                                     <record id="l10n_bo_tax_report_iva_19_balance" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">l10n_bo_tax_report_iva_19.tax_amount - l10n_bo_tax_report_iva_39.balance</field>
+                                        <field name="formula">l10n_bo_tax_report_iva_19.tax_amount -
+                                            l10n_bo_tax_report_iva_39.balance
+                                        </field>
                                     </record>
                                 </field>
                             </record>
@@ -217,7 +227,10 @@
                                     <record id="l10n_bo_tax_report_iva_1002_balance" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">l10n_bo_tax_report_iva_39.balance + l10n_bo_tax_report_iva_debit_donations.balance + l10n_bo_tax_report_iva_19.balance</field>
+                                        <field name="formula">l10n_bo_tax_report_iva_39.balance +
+                                            l10n_bo_tax_report_iva_debit_donations.balance +
+                                            l10n_bo_tax_report_iva_19.balance
+                                        </field>
                                     </record>
                                 </field>
                             </record>
@@ -228,7 +241,8 @@
                         <field name="code">l10n_bo_tax_report_iva_credit</field>
                         <field name="children_ids">
                             <record id="l10n_bo_tax_report_iva_11" model="account.report.line">
-                                <field name="name">Total purchases corresponding to taxed and/or non-taxed activities</field>
+                                <field name="name">Total purchases corresponding to taxed and/or non-taxed activities
+                                </field>
                                 <field name="code">l10n_bo_tax_report_iva_11</field>
                                 <field name="expression_ids">
                                     <record id="l10n_bo_tax_report_iva_11_code" model="account.report.expression">
@@ -262,7 +276,9 @@
                                 </field>
                             </record>
                             <record id="l10n_bo_tax_report_iva_31" model="account.report.line">
-                                <field name="name">Purchases for which it is not possible to discriminate between taxed and non-taxed activities</field>
+                                <field name="name">Purchases for which it is not possible to discriminate between taxed
+                                    and non-taxed activities
+                                </field>
                                 <field name="code">l10n_bo_tax_report_iva_31</field>
                                 <field name="expression_ids">
                                     <record id="l10n_bo_tax_report_iva_31_code" model="account.report.expression">
@@ -325,7 +341,9 @@
                                     <record id="l10n_bo_tax_report_iva_114_balance" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">0.13 * (l10n_bo_tax_report_iva_26.balance + l10n_bo_tax_report_iva_27.balance + l10n_bo_tax_report_iva_28.balance)</field>
+                                        <field name="formula">0.13 * (l10n_bo_tax_report_iva_26.balance +
+                                            l10n_bo_tax_report_iva_27.balance + l10n_bo_tax_report_iva_28.balance)
+                                        </field>
                                     </record>
                                 </field>
                             </record>
@@ -339,7 +357,8 @@
                                         <field name="engine">aggregation</field>
                                         <field name="formula">30</field>
                                     </record>
-                                    <record id="l10n_bo_tax_report_iva_30_tax_amount_balance" model="account.report.expression">
+                                    <record id="l10n_bo_tax_report_iva_30_tax_amount_balance"
+                                            model="account.report.expression">
                                         <field name="label">tax_amount</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">IVA 30</field>
@@ -347,12 +366,16 @@
                                     <record id="l10n_bo_tax_report_iva_30_balance" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">l10n_bo_tax_report_iva_30.tax_amount - l10n_bo_tax_report_iva_114.balance</field>
+                                        <field name="formula">l10n_bo_tax_report_iva_30.tax_amount -
+                                            l10n_bo_tax_report_iva_114.balance
+                                        </field>
                                     </record>
                                 </field>
                             </record>
                             <record id="l10n_bo_tax_report_iva_1003" model="account.report.line">
-                                <field name="name">Proportional tax credit corresponding to taxed activities C31*(C13+C14)/(C13+C14+C15+C505) * 13%</field>
+                                <field name="name">Proportional tax credit corresponding to taxed activities
+                                    C31*(C13+C14)/(C13+C14+C15+C505) * 13%
+                                </field>
                                 <field name="code">l10n_bo_tax_report_iva_1003</field>
                                 <field name="expression_ids">
                                     <record id="l10n_bo_tax_report_iva_1003_code" model="account.report.expression">
@@ -364,7 +387,11 @@
                                     <record id="l10n_bo_tax_report_iva_1003_balance" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">0.13 * l10n_bo_tax_report_iva_31.balance * (l10n_bo_tax_report_iva_13.balance + l10n_bo_tax_report_iva_14.balance) / (l10n_bo_tax_report_iva_13.balance + l10n_bo_tax_report_iva_14.balance + l10n_bo_tax_report_iva_15.balance + l10n_bo_tax_report_iva_505.balance)</field>
+                                        <field name="formula">0.13 * l10n_bo_tax_report_iva_31.balance *
+                                            (l10n_bo_tax_report_iva_13.balance + l10n_bo_tax_report_iva_14.balance) /
+                                            (l10n_bo_tax_report_iva_13.balance + l10n_bo_tax_report_iva_14.balance +
+                                            l10n_bo_tax_report_iva_15.balance + l10n_bo_tax_report_iva_505.balance)
+                                        </field>
                                         <field name="subformula">ignore_zero_division</field>
                                     </record>
                                 </field>
@@ -382,7 +409,9 @@
                                     <record id="l10n_bo_tax_report_iva_1004_balance" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">l10n_bo_tax_report_iva_114.balance + l10n_bo_tax_report_iva_30.balance + l10n_bo_tax_report_iva_1003.balance</field>
+                                        <field name="formula">l10n_bo_tax_report_iva_114.balance +
+                                            l10n_bo_tax_report_iva_30.balance + l10n_bo_tax_report_iva_1003.balance
+                                        </field>
                                     </record>
                                 </field>
                             </record>
@@ -405,13 +434,17 @@
                                     <record id="l10n_bo_tax_report_iva_693_balance" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">l10n_bo_tax_report_iva_1004.balance - l10n_bo_tax_report_iva_1002.balance</field>
+                                        <field name="formula">l10n_bo_tax_report_iva_1004.balance -
+                                            l10n_bo_tax_report_iva_1002.balance
+                                        </field>
                                         <field name="subformula">if_above(BOB(0))</field>
                                     </record>
                                 </field>
                             </record>
                             <record id="l10n_bo_tax_report_iva_909" model="account.report.line">
-                                <field name="name">Difference in favor of the Tax Authority or determined Tax Amount (C1002-C1004; If >0)</field>
+                                <field name="name">Difference in favor of the Tax Authority or determined Tax Amount
+                                    (C1002-C1004; If >0)
+                                </field>
                                 <field name="code">l10n_bo_tax_report_iva_909</field>
                                 <field name="expression_ids">
                                     <record id="l10n_bo_tax_report_iva_909_code" model="account.report.expression">
@@ -423,13 +456,17 @@
                                     <record id="l10n_bo_tax_report_iva_909_balance" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">l10n_bo_tax_report_iva_1002.balance - l10n_bo_tax_report_iva_1004.balance</field>
+                                        <field name="formula">l10n_bo_tax_report_iva_1002.balance -
+                                            l10n_bo_tax_report_iva_1004.balance
+                                        </field>
                                         <field name="subformula">if_above(BOB(0))</field>
                                     </record>
                                 </field>
                             </record>
                             <record id="l10n_bo_tax_report_iva_635" model="account.report.line">
-                                <field name="name">Tax Credit balance to offset for the previous period (C592 of the Form for the previous period)</field>
+                                <field name="name">Tax Credit balance to offset for the previous period (C592 of the
+                                    Form for the previous period)
+                                </field>
                                 <field name="code">l10n_bo_tax_report_iva_635</field>
                                 <field name="expression_ids">
                                     <record id="l10n_bo_tax_report_iva_635_code" model="account.report.expression">
@@ -447,7 +484,8 @@
                                 </field>
                             </record>
                             <record id="l10n_bo_tax_report_iva_648" model="account.report.line">
-                                <field name="name">Value Adjustment on the Tax Credit balance for the previous period</field>
+                                <field name="name">Value Adjustment on the Tax Credit balance for the previous period
+                                </field>
                                 <field name="code">l10n_bo_tax_report_iva_648</field>
                                 <field name="expression_ids">
                                     <record id="l10n_bo_tax_report_iva_648_code" model="account.report.expression">
@@ -465,7 +503,9 @@
                                 </field>
                             </record>
                             <record id="l10n_bo_tax_report_iva_1001" model="account.report.line">
-                                <field name="name">Tax Balance Determined in favor of the Tax Authority (C909-C635-C648; If >0)</field>
+                                <field name="name">Tax Balance Determined in favor of the Tax Authority (C909-C635-C648;
+                                    If >0)
+                                </field>
                                 <field name="code">l10n_bo_tax_report_iva_1001</field>
                                 <field name="expression_ids">
                                     <record id="l10n_bo_tax_report_iva_1001_code" model="account.report.expression">
@@ -477,7 +517,9 @@
                                     <record id="l10n_bo_tax_report_iva_1001_balance" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">l10n_bo_tax_report_iva_909.balance - l10n_bo_tax_report_iva_635.balance - l10n_bo_tax_report_iva_648.balance</field>
+                                        <field name="formula">l10n_bo_tax_report_iva_909.balance -
+                                            l10n_bo_tax_report_iva_635.balance - l10n_bo_tax_report_iva_648.balance
+                                        </field>
                                         <field name="subformula">if_above(BOB(0))</field>
                                     </record>
                                 </field>
@@ -502,7 +544,10 @@
                                 </field>
                             </record>
                             <record id="l10n_bo_tax_report_iva_629" model="account.report.line">
-                                <field name="name">Balance in favour of the Tax Authority after offsetting payments on account for employer's contributions (C1001 -C621; If > 0) ((C621 - C1001; If > 0) = 0)</field>
+                                <field name="name">Balance in favour of the Tax Authority after offsetting payments on
+                                    account for employer's contributions (C1001 -C621; If > 0) ((C621 - C1001; If > 0) =
+                                    0)
+                                </field>
                                 <field name="code">l10n_bo_tax_report_iva_629</field>
                                 <field name="expression_ids">
                                     <record id="l10n_bo_tax_report_iva_629_code" model="account.report.expression">
@@ -514,13 +559,17 @@
                                     <record id="l10n_bo_tax_report_iva_629_balance" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">l10n_bo_tax_report_iva_1001.balance - l10n_bo_tax_report_iva_621.balance</field>
+                                        <field name="formula">l10n_bo_tax_report_iva_1001.balance -
+                                            l10n_bo_tax_report_iva_621.balance
+                                        </field>
                                         <field name="subformula">if_above(BOB(0))</field>
                                     </record>
                                 </field>
                             </record>
                             <record id="l10n_bo_tax_report_iva_622" model="account.report.line">
-                                <field name="name">Payments to Account already made in Declarations and/or Payment Tickets corresponding to the declared period</field>
+                                <field name="name">Payments to Account already made in Declarations and/or Payment
+                                    Tickets corresponding to the declared period
+                                </field>
                                 <field name="code">l10n_bo_tax_report_iva_622</field>
                                 <field name="expression_ids">
                                     <record id="l10n_bo_tax_report_iva_622_code" model="account.report.expression">
@@ -538,7 +587,9 @@
                                 </field>
                             </record>
                             <record id="l10n_bo_tax_report_iva_640" model="account.report.line">
-                                <field name="name">Balance of Payments on Account to offset from the previous period (C747 of the Form for the previous period)</field>
+                                <field name="name">Balance of Payments on Account to offset from the previous period
+                                    (C747 of the Form for the previous period)
+                                </field>
                                 <field name="code">l10n_bo_tax_report_iva_640</field>
                                 <field name="expression_ids">
                                     <record id="l10n_bo_tax_report_iva_640_code" model="account.report.expression">
@@ -556,7 +607,9 @@
                                 </field>
                             </record>
                             <record id="l10n_bo_tax_report_iva_643" model="account.report.line">
-                                <field name="name">Balance for Payments on Account in favor of the Taxpayer (C640+C622-C629; If >0)</field>
+                                <field name="name">Balance for Payments on Account in favor of the Taxpayer
+                                    (C640+C622-C629; If >0)
+                                </field>
                                 <field name="code">l10n_bo_tax_report_iva_643</field>
                                 <field name="expression_ids">
                                     <record id="l10n_bo_tax_report_iva_643_code" model="account.report.expression">
@@ -568,13 +621,17 @@
                                     <record id="l10n_bo_tax_report_iva_643_balance" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">l10n_bo_tax_report_iva_640.balance + l10n_bo_tax_report_iva_622.balance - l10n_bo_tax_report_iva_629.balance</field>
+                                        <field name="formula">l10n_bo_tax_report_iva_640.balance +
+                                            l10n_bo_tax_report_iva_622.balance - l10n_bo_tax_report_iva_629.balance
+                                        </field>
                                         <field name="subformula">if_above(BOB(0))</field>
                                     </record>
                                 </field>
                             </record>
                             <record id="l10n_bo_tax_report_iva_468" model="account.report.line">
-                                <field name="name">Balance in favor of the Tax Authority after offsetting payments on account (C629-C622-C640; If >0)</field>
+                                <field name="name">Balance in favor of the Tax Authority after offsetting payments on
+                                    account (C629-C622-C640; If >0)
+                                </field>
                                 <field name="code">l10n_bo_tax_report_iva_468</field>
                                 <field name="expression_ids">
                                     <record id="l10n_bo_tax_report_iva_468_code" model="account.report.expression">
@@ -586,7 +643,9 @@
                                     <record id="l10n_bo_tax_report_iva_468_balance" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">l10n_bo_tax_report_iva_629.balance - l10n_bo_tax_report_iva_622.balance - l10n_bo_tax_report_iva_640.balance</field>
+                                        <field name="formula">l10n_bo_tax_report_iva_629.balance -
+                                            l10n_bo_tax_report_iva_622.balance - l10n_bo_tax_report_iva_640.balance
+                                        </field>
                                         <field name="subformula">if_above(BOB(0))</field>
                                     </record>
                                 </field>
@@ -611,7 +670,9 @@
                                 </field>
                             </record>
                             <record id="l10n_bo_tax_report_iva_466" model="account.report.line">
-                                <field name="name">Balance of Payments on Account for 5% of purchases to SIETE-RG taxpayers (C469 of the previous period)</field>
+                                <field name="name">Balance of Payments on Account for 5% of purchases to SIETE-RG
+                                    taxpayers (C469 of the previous period)
+                                </field>
                                 <field name="code">l10n_bo_tax_report_iva_466</field>
                                 <field name="expression_ids">
                                     <record id="l10n_bo_tax_report_iva_466_code" model="account.report.expression">
@@ -629,7 +690,9 @@
                                 </field>
                             </record>
                             <record id="l10n_bo_tax_report_iva_467" model="account.report.line">
-                                <field name="name">Balance in favor after offsetting 5% of payments on account for purchases from SIETE-RG taxpayers (C465+C466-C468; If >0)</field>
+                                <field name="name">Balance in favor after offsetting 5% of payments on account for
+                                    purchases from SIETE-RG taxpayers (C465+C466-C468; If >0)
+                                </field>
                                 <field name="code">l10n_bo_tax_report_iva_467</field>
                                 <field name="expression_ids">
                                     <record id="l10n_bo_tax_report_iva_467_code" model="account.report.expression">
@@ -641,7 +704,9 @@
                                     <record id="l10n_bo_tax_report_iva_467_balance" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">l10n_bo_tax_report_iva_465.balance + l10n_bo_tax_report_iva_466.balance - l10n_bo_tax_report_iva_468.balance</field>
+                                        <field name="formula">l10n_bo_tax_report_iva_465.balance +
+                                            l10n_bo_tax_report_iva_466.balance - l10n_bo_tax_report_iva_468.balance
+                                        </field>
                                         <field name="subformula">if_above(BOB(0))</field>
                                     </record>
                                 </field>
@@ -659,7 +724,9 @@
                                     <record id="l10n_bo_tax_report_iva_996_balance" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">l10n_bo_tax_report_iva_468.balance - l10n_bo_tax_report_iva_465.balance - l10n_bo_tax_report_iva_466.balance</field>
+                                        <field name="formula">l10n_bo_tax_report_iva_468.balance -
+                                            l10n_bo_tax_report_iva_465.balance - l10n_bo_tax_report_iva_466.balance
+                                        </field>
                                         <field name="subformula">if_above(BOB(0))</field>
                                     </record>
                                 </field>
@@ -725,7 +792,9 @@
                                 </field>
                             </record>
                             <record id="l10n_bo_tax_report_iva_954" model="account.report.line">
-                                <field name="name">Fine for Non-Compliance to Formal Duty (IDF) for overdue declaration</field>
+                                <field name="name">Fine for Non-Compliance to Formal Duty (IDF) for overdue
+                                    declaration
+                                </field>
                                 <field name="code">l10n_bo_tax_report_iva_954</field>
                                 <field name="expression_ids">
                                     <record id="l10n_bo_tax_report_iva_954_code" model="account.report.expression">
@@ -743,7 +812,9 @@
                                 </field>
                             </record>
                             <record id="l10n_bo_tax_report_iva_967" model="account.report.line">
-                                <field name="name">Fine levied by the IDF for late declaration of a correction in the Tax Amount</field>
+                                <field name="name">Fine levied by the IDF for late declaration of a correction in the
+                                    Tax Amount
+                                </field>
                                 <field name="code">l10n_bo_tax_report_iva_967</field>
                                 <field name="expression_ids">
                                     <record id="l10n_bo_tax_report_iva_967_code" model="account.report.expression">
@@ -773,7 +844,10 @@
                                     <record id="l10n_bo_tax_report_iva_955_balance" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">l10n_bo_tax_report_iva_924.balance + l10n_bo_tax_report_iva_925.balance + l10n_bo_tax_report_iva_938.balance + l10n_bo_tax_report_iva_954.balance + l10n_bo_tax_report_iva_967.balance</field>
+                                        <field name="formula">l10n_bo_tax_report_iva_924.balance +
+                                            l10n_bo_tax_report_iva_925.balance + l10n_bo_tax_report_iva_938.balance +
+                                            l10n_bo_tax_report_iva_954.balance + l10n_bo_tax_report_iva_967.balance
+                                        </field>
                                     </record>
                                 </field>
                             </record>
@@ -784,7 +858,9 @@
                         <field name="code">l10n_bo_tax_report_iva_balance</field>
                         <field name="children_ids">
                             <record id="l10n_bo_tax_report_iva_592" model="account.report.line">
-                                <field name="name">Final Tax Credit Balance in favor of the Taxpayer for the next period (C693+C635+C648-C909; If >0)</field>
+                                <field name="name">Final Tax Credit Balance in favor of the Taxpayer for the next period
+                                    (C693+C635+C648-C909; If >0)
+                                </field>
                                 <field name="code">l10n_bo_tax_report_iva_592</field>
                                 <field name="expression_ids">
                                     <record id="l10n_bo_tax_report_iva_592_code" model="account.report.expression">
@@ -796,13 +872,18 @@
                                     <record id="l10n_bo_tax_report_iva_592_balance" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">l10n_bo_tax_report_iva_693.balance + l10n_bo_tax_report_iva_635.balance + l10n_bo_tax_report_iva_648.balance - l10n_bo_tax_report_iva_909.balance</field>
+                                        <field name="formula">l10n_bo_tax_report_iva_693.balance +
+                                            l10n_bo_tax_report_iva_635.balance + l10n_bo_tax_report_iva_648.balance -
+                                            l10n_bo_tax_report_iva_909.balance
+                                        </field>
                                         <field name="subformula">if_above(BOB(0))</field>
                                     </record>
                                 </field>
                             </record>
                             <record id="l10n_bo_tax_report_iva_469" model="account.report.line">
-                                <field name="name">Final Balance for Payments on Account in favor of the taxpayer of the 5% for purchases to SIETE-RG contributors for the next period (C467; Yes )</field>
+                                <field name="name">Final Balance for Payments on Account in favor of the taxpayer of the
+                                    5% for purchases to SIETE-RG contributors for the next period (C467; Yes )
+                                </field>
                                 <field name="code">l10n_bo_tax_report_iva_469</field>
                                 <field name="expression_ids">
                                     <record id="l10n_bo_tax_report_iva_469_code" model="account.report.expression">
@@ -820,7 +901,9 @@
                                 </field>
                             </record>
                             <record id="l10n_bo_tax_report_iva_747" model="account.report.line">
-                                <field name="name">Final Balance for Payments on Account in favor of the Taxpayer for the next period (C643-C955; If>0)</field>
+                                <field name="name">Final Balance for Payments on Account in favor of the Taxpayer for
+                                    the next period (C643-C955; If>0)
+                                </field>
                                 <field name="code">l10n_bo_tax_report_iva_747</field>
                                 <field name="expression_ids">
                                     <record id="l10n_bo_tax_report_iva_747_code" model="account.report.expression">
@@ -832,13 +915,17 @@
                                     <record id="l10n_bo_tax_report_iva_747_balance" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">l10n_bo_tax_report_iva_643.balance - l10n_bo_tax_report_iva_955.balance</field>
+                                        <field name="formula">l10n_bo_tax_report_iva_643.balance -
+                                            l10n_bo_tax_report_iva_955.balance
+                                        </field>
                                         <field name="subformula">if_above(BOB(0))</field>
                                     </record>
                                 </field>
                             </record>
                             <record id="l10n_bo_tax_report_iva_646" model="account.report.line">
-                                <field name="name">Final balance in favour of the Tax Authority (C996 or (C955-C643) as appropriate; If >0)</field>
+                                <field name="name">Final balance in favour of the Tax Authority (C996 or (C955-C643) as
+                                    appropriate; If >0)
+                                </field>
                                 <field name="code">l10n_bo_tax_report_iva_646</field>
                                 <field name="expression_ids">
                                     <record id="l10n_bo_tax_report_iva_646_code" model="account.report.expression">
@@ -850,7 +937,9 @@
                                     <record id="l10n_bo_tax_report_iva_646_balance" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">l10n_bo_tax_report_iva_955.balance - l10n_bo_tax_report_iva_643.balance</field>
+                                        <field name="formula">l10n_bo_tax_report_iva_955.balance -
+                                            l10n_bo_tax_report_iva_643.balance
+                                        </field>
                                         <field name="subformula">if_above(BOB(0))</field>
                                     </record>
                                 </field>
@@ -870,7 +959,9 @@
                         <field name="code">l10n_bo_tax_report_it_base</field>
                         <field name="children_ids">
                             <record id="l10n_bo_tax_report_it_13" model="account.report.line">
-                                <field name="name">Total gross income earned and/or received in kind (including exempt income)</field>
+                                <field name="name">Total gross income earned and/or received in kind (including exempt
+                                    income)
+                                </field>
                                 <field name="code">l10n_bo_tax_report_it_13</field>
                                 <field name="expression_ids">
                                     <record id="l10n_bo_tax_report_it_13_code" model="account.report.expression">
@@ -882,7 +973,9 @@
                                     <record id="l10n_bo_tax_report_it_13_balance" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">l10n_bo_tax_report_it_32.balance + l10n_bo_tax_report_it_24.balance</field>
+                                        <field name="formula">l10n_bo_tax_report_it_32.balance +
+                                            l10n_bo_tax_report_it_24.balance
+                                        </field>
                                     </record>
                                 </field>
                             </record>
@@ -944,7 +1037,9 @@
                         <field name="code">l10n_bo_tax_report_it_balance</field>
                         <field name="children_ids">
                             <record id="l10n_bo_tax_report_it_664" model="account.report.line">
-                                <field name="name">Paid IUE to offset (1st Instance or “Balance of IUE to offset” of Form 400, C619 of the previous period)</field>
+                                <field name="name">Paid IUE to offset (1st Instance or “Balance of IUE to offset” of
+                                    Form 400, C619 of the previous period)
+                                </field>
                                 <field name="code">l10n_bo_tax_report_it_664</field>
                                 <field name="expression_ids">
                                     <record id="l10n_bo_tax_report_it_664_code" model="account.report.expression">
@@ -962,7 +1057,9 @@
                                 </field>
                             </record>
                             <record id="l10n_bo_tax_report_it_1001" model="account.report.line">
-                                <field name="name">Tax Balance Determined in favor of the Tax Authority (C909 - C664; If >0)</field>
+                                <field name="name">Tax Balance Determined in favor of the Tax Authority (C909 - C664; If
+                                    >0)
+                                </field>
                                 <field name="code">l10n_bo_tax_report_it_1001</field>
                                 <field name="expression_ids">
                                     <record id="l10n_bo_tax_report_it_1001_code" model="account.report.expression">
@@ -974,13 +1071,17 @@
                                     <record id="l10n_bo_tax_report_it_1001_balance" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">l10n_bo_tax_report_it_909.balance - l10n_bo_tax_report_it_664.balance</field>
+                                        <field name="formula">l10n_bo_tax_report_it_909.balance -
+                                            l10n_bo_tax_report_it_664.balance
+                                        </field>
                                         <field name="subformula">if_above(BOB(0))</field>
                                     </record>
                                 </field>
                             </record>
                             <record id="l10n_bo_tax_report_it_622" model="account.report.line">
-                                <field name="name">Payments to Account already made in Declarations and/or Payment Tickets corresponding to the declared period</field>
+                                <field name="name">Payments to Account already made in Declarations and/or Payment
+                                    Tickets corresponding to the declared period
+                                </field>
                                 <field name="code">l10n_bo_tax_report_it_622</field>
                                 <field name="expression_ids">
                                     <record id="l10n_bo_tax_report_it_622_code" model="account.report.expression">
@@ -998,7 +1099,9 @@
                                 </field>
                             </record>
                             <record id="l10n_bo_tax_report_it_640" model="account.report.line">
-                                <field name="name">Balance of Payments on Account to offset from the previous period (C747 of Form 400 of the previous period)</field>
+                                <field name="name">Balance of Payments on Account to offset from the previous period
+                                    (C747 of Form 400 of the previous period)
+                                </field>
                                 <field name="code">l10n_bo_tax_report_it_640</field>
                                 <field name="expression_ids">
                                     <record id="l10n_bo_tax_report_it_640_code" model="account.report.expression">
@@ -1016,7 +1119,9 @@
                                 </field>
                             </record>
                             <record id="l10n_bo_tax_report_it_643" model="account.report.line">
-                                <field name="name">Balance for Payments on Account in favor of the Taxpayer (C622+C640-C1001; If >0)</field>
+                                <field name="name">Balance for Payments on Account in favor of the Taxpayer
+                                    (C622+C640-C1001; If >0)
+                                </field>
                                 <field name="code">l10n_bo_tax_report_it_643</field>
                                 <field name="expression_ids">
                                     <record id="l10n_bo_tax_report_it_643_code" model="account.report.expression">
@@ -1028,13 +1133,16 @@
                                     <record id="l10n_bo_tax_report_it_643_balance" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">l10n_bo_tax_report_it_622.balance + l10n_bo_tax_report_it_640.balance - l10n_bo_tax_report_it_1001.balance</field>
+                                        <field name="formula">l10n_bo_tax_report_it_622.balance +
+                                            l10n_bo_tax_report_it_640.balance - l10n_bo_tax_report_it_1001.balance
+                                        </field>
                                         <field name="subformula">if_above(BOB(0))</field>
                                     </record>
                                 </field>
                             </record>
                             <record id="l10n_bo_tax_report_it_996" model="account.report.line">
-                                <field name="name">Balance in favor of the Tax Authority (C1001-C622-C640; If >0)</field>
+                                <field name="name">Balance in favor of the Tax Authority (C1001-C622-C640; If >0)
+                                </field>
                                 <field name="code">l10n_bo_tax_report_it_996</field>
                                 <field name="expression_ids">
                                     <record id="l10n_bo_tax_report_it_996_code" model="account.report.expression">
@@ -1046,7 +1154,9 @@
                                     <record id="l10n_bo_tax_report_it_996_balance" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">l10n_bo_tax_report_it_1001.balance - l10n_bo_tax_report_it_622.balance - l10n_bo_tax_report_it_640.balance</field>
+                                        <field name="formula">l10n_bo_tax_report_it_1001.balance -
+                                            l10n_bo_tax_report_it_622.balance - l10n_bo_tax_report_it_640.balance
+                                        </field>
                                         <field name="subformula">if_above(BOB(0))</field>
                                     </record>
                                 </field>
@@ -1111,7 +1221,9 @@
                                 </field>
                             </record>
                             <record id="l10n_bo_tax_report_it_954" model="account.report.line">
-                                <field name="name">Fine for Non-Compliance to Formal Duty (IDF) for overdue declaration</field>
+                                <field name="name">Fine for Non-Compliance to Formal Duty (IDF) for overdue
+                                    declaration
+                                </field>
                                 <field name="code">l10n_bo_tax_report_it_954</field>
                                 <field name="expression_ids">
                                     <record id="l10n_bo_tax_report_it_954_code" model="account.report.expression">
@@ -1129,7 +1241,9 @@
                                 </field>
                             </record>
                             <record id="l10n_bo_tax_report_it_967" model="account.report.line">
-                                <field name="name">Fine levied by the IDF for late declaration of a correction in the Tax Amount</field>
+                                <field name="name">Fine levied by the IDF for late declaration of a correction in the
+                                    Tax Amount
+                                </field>
                                 <field name="code">l10n_bo_tax_report_it_967</field>
                                 <field name="expression_ids">
                                     <record id="l10n_bo_tax_report_it_967_code" model="account.report.expression">
@@ -1159,7 +1273,10 @@
                                     <record id="l10n_bo_tax_report_it_955_balance" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">l10n_bo_tax_report_it_924.balance + l10n_bo_tax_report_it_925.balance + l10n_bo_tax_report_it_938.balance + l10n_bo_tax_report_it_954.balance + l10n_bo_tax_report_it_967.balance</field>
+                                        <field name="formula">l10n_bo_tax_report_it_924.balance +
+                                            l10n_bo_tax_report_it_925.balance + l10n_bo_tax_report_it_938.balance +
+                                            l10n_bo_tax_report_it_954.balance + l10n_bo_tax_report_it_967.balance
+                                        </field>
                                     </record>
                                 </field>
                             </record>
@@ -1170,7 +1287,9 @@
                         <field name="code">l10n_bo_tax_report_it_final_balance</field>
                         <field name="children_ids">
                             <record id="l10n_bo_tax_report_it_619" model="account.report.line">
-                                <field name="name">Final balance of IUE to offset for the next period (C664-C909; If >0)</field>
+                                <field name="name">Final balance of IUE to offset for the next period (C664-C909; If
+                                    >0)
+                                </field>
                                 <field name="code">l10n_bo_tax_report_it_619</field>
                                 <field name="expression_ids">
                                     <record id="l10n_bo_tax_report_it_619_code" model="account.report.expression">
@@ -1182,13 +1301,17 @@
                                     <record id="l10n_bo_tax_report_it_619_balance" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">l10n_bo_tax_report_it_664.balance - l10n_bo_tax_report_it_909.balance</field>
+                                        <field name="formula">l10n_bo_tax_report_it_664.balance -
+                                            l10n_bo_tax_report_it_909.balance
+                                        </field>
                                         <field name="subformula">if_above(BOB(0))</field>
                                     </record>
                                 </field>
                             </record>
                             <record id="l10n_bo_tax_report_it_747" model="account.report.line">
-                                <field name="name">Final Balance for Payments on Account in favor of the Taxpayer for the next period (C643-C955; If >0)</field>
+                                <field name="name">Final Balance for Payments on Account in favor of the Taxpayer for
+                                    the next period (C643-C955; If >0)
+                                </field>
                                 <field name="code">l10n_bo_tax_report_it_747</field>
                                 <field name="expression_ids">
                                     <record id="l10n_bo_tax_report_it_747_code" model="account.report.expression">
@@ -1200,13 +1323,17 @@
                                     <record id="l10n_bo_tax_report_it_747_balance" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">l10n_bo_tax_report_it_643.balance - l10n_bo_tax_report_it_955.balance</field>
+                                        <field name="formula">l10n_bo_tax_report_it_643.balance -
+                                            l10n_bo_tax_report_it_955.balance
+                                        </field>
                                         <field name="subformula">if_above(BOB(0))</field>
                                     </record>
                                 </field>
                             </record>
                             <record id="l10n_bo_tax_report_it_646" model="account.report.line">
-                                <field name="name">Final balance in favour of the Tax Authority (C996 or (C955-C643) as appropriate; If >0)</field>
+                                <field name="name">Final balance in favour of the Tax Authority (C996 or (C955-C643) as
+                                    appropriate; If >0)
+                                </field>
                                 <field name="code">l10n_bo_tax_report_it_646</field>
                                 <field name="expression_ids">
                                     <record id="l10n_bo_tax_report_it_646_code" model="account.report.expression">
@@ -1218,7 +1345,9 @@
                                     <record id="l10n_bo_tax_report_it_646_balance" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">l10n_bo_tax_report_it_955.balance - l10n_bo_tax_report_it_643.balance</field>
+                                        <field name="formula">l10n_bo_tax_report_it_955.balance -
+                                            l10n_bo_tax_report_it_643.balance
+                                        </field>
                                         <field name="subformula">if_above(BOB(0))</field>
                                     </record>
                                 </field>
@@ -1355,7 +1484,9 @@
                             <record id="l10n_bo_tax_report_whh_iue_909_balance" model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">aggregation</field>
-                                <field name="formula">0.25 * (l10n_bo_tax_report_whh_iue_1001.balance + l10n_bo_tax_report_whh_iue_1002.balance)</field>
+                                <field name="formula">0.25 * (l10n_bo_tax_report_whh_iue_1001.balance +
+                                    l10n_bo_tax_report_whh_iue_1002.balance)
+                                </field>
                             </record>
                         </field>
                     </record>

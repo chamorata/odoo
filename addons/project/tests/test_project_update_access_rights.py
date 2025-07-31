@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
+from odoo.addons.mail.tests.common import mail_new_test_user
+from odoo.addons.project.tests.test_project_base import TestProjectCommon
+
 from odoo.exceptions import AccessError
 from odoo.tests import tagged
 from odoo.tests.common import users
 
-from odoo.addons.mail.tests.common import mail_new_test_user
-from odoo.addons.project.tests.test_project_base import TestProjectCommon
 
 @tagged('-at_install', 'post_install')
 class TestProjectUpdateAccessRights(TestProjectCommon):
@@ -32,7 +33,8 @@ class TestProjectUpdateAccessRights(TestProjectCommon):
 
     @users('Base user')
     def test_project_update_user_no_write(self):
-        with self.assertRaises(AccessError, msg="%s should not be able to write in the project update" % self.env.user.name):
+        with self.assertRaises(AccessError,
+                               msg="%s should not be able to write in the project update" % self.env.user.name):
             self.project_update_1.with_user(self.env.user).name = "Test write"
 
     @users('Project admin')
@@ -41,7 +43,8 @@ class TestProjectUpdateAccessRights(TestProjectCommon):
 
     @users('Base user')
     def test_project_update_user_no_unlink(self):
-        with self.assertRaises(AccessError, msg="%s should not be able to unlink in the project update" % self.env.user.name):
+        with self.assertRaises(AccessError,
+                               msg="%s should not be able to unlink in the project update" % self.env.user.name):
             self.project_update_1.with_user(self.env.user).unlink()
 
     @users('Project admin')
@@ -50,17 +53,20 @@ class TestProjectUpdateAccessRights(TestProjectCommon):
 
     @users('Portal user')
     def test_project_update_portal_user_no_read(self):
-        with self.assertRaises(AccessError, msg=f"{self.env.user.name} should not be able to read in the project update"):
+        with self.assertRaises(AccessError,
+                               msg=f"{self.env.user.name} should not be able to read in the project update"):
             self.project_update_1.with_user(self.env.user).name
 
     @users('Portal user')
     def test_project_update_portal_user_no_write(self):
-        with self.assertRaises(AccessError, msg=f"{self.env.user.name} should not be able to write in the project update"):
+        with self.assertRaises(AccessError,
+                               msg=f"{self.env.user.name} should not be able to write in the project update"):
             self.project_update_1.with_user(self.env.user).name = 'Test write'
 
     @users('Portal user')
     def test_project_update_portal_user_no_create(self):
-        with self.assertRaises(AccessError, msg=f"{self.env.user.name} should not be able to create in the project update model"):
+        with self.assertRaises(AccessError,
+                               msg=f"{self.env.user.name} should not be able to create in the project update model"):
             self.env['project.update'].with_user(self.env.user).create({
                 'name': 'Test Create with portal user',
                 'project_id': self.project_pigs.id,
@@ -69,22 +75,26 @@ class TestProjectUpdateAccessRights(TestProjectCommon):
 
     @users('Portal user')
     def test_project_update_portal_user_no_unlink(self):
-        with self.assertRaises(AccessError, msg=f"{self.env.user.name} should not be able to unlink in the project update"):
+        with self.assertRaises(AccessError,
+                               msg=f"{self.env.user.name} should not be able to unlink in the project update"):
             self.project_update_1.with_user(self.env.user).unlink()
 
     @users('Portal user')
     def test_project_milestone_portal_user_no_read(self):
-        with self.assertRaises(AccessError, msg=f"{self.env.user.name} should not be able to read in the project update"):
+        with self.assertRaises(AccessError,
+                               msg=f"{self.env.user.name} should not be able to read in the project update"):
             self.project_milestone.with_user(self.env.user).name
 
     @users('Portal user')
     def test_project_milestone_portal_user_no_write(self):
-        with self.assertRaises(AccessError, msg=f"{self.env.user.name} should not be able to write in the project update"):
+        with self.assertRaises(AccessError,
+                               msg=f"{self.env.user.name} should not be able to write in the project update"):
             self.project_milestone.with_user(self.env.user).name = 'Test write'
 
     @users('Portal user')
     def test_project_milestone_portal_user_no_create(self):
-        with self.assertRaises(AccessError, msg=f"{self.env.user.name} should not be able to create in the project update model"):
+        with self.assertRaises(AccessError,
+                               msg=f"{self.env.user.name} should not be able to create in the project update model"):
             self.env['project.update'].with_user(self.env.user).create({
                 'name': 'Test Create with portal user',
                 'project_id': self.project_pigs.id,
@@ -92,5 +102,6 @@ class TestProjectUpdateAccessRights(TestProjectCommon):
 
     @users('Portal user')
     def test_project_milestone_portal_user_no_unlink(self):
-        with self.assertRaises(AccessError, msg=f"{self.env.user.name} should not be able to unlink in the project update"):
+        with self.assertRaises(AccessError,
+                               msg=f"{self.env.user.name} should not be able to unlink in the project update"):
             self.project_milestone.with_user(self.env.user).unlink()

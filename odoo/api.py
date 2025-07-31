@@ -35,10 +35,12 @@ from .tools.translate import get_translation, get_translated_module, LazyGettext
 from odoo.tools.misc import StackMap
 
 import typing
+
 if typing.TYPE_CHECKING:
     from collections.abc import Callable
     from odoo.sql_db import BaseCursor
     from odoo.models import BaseModel
+
     try:
         from typing_extensions import Self  # noqa: F401
     except ImportError:
@@ -71,8 +73,8 @@ class NewId:
 
     def __eq__(self, other):
         return isinstance(other, NewId) and (
-            (self.origin and other.origin and self.origin == other.origin)
-            or (self.ref and other.ref and self.ref == other.ref)
+                (self.origin and other.origin and self.origin == other.origin)
+                or (self.ref and other.ref and self.ref == other.ref)
         )
 
     def __hash__(self):
@@ -443,6 +445,7 @@ def readonly(method: T) -> T:
     method._readonly = True
     return method
 
+
 def private(method):
     """ Decorate a record-style method to indicate that the method cannot be
         called using RPC. Example::
@@ -458,6 +461,7 @@ def private(method):
     """
     method._api_private = True
     return method
+
 
 _create_logger = logging.getLogger(__name__ + '.create')
 
@@ -483,7 +487,7 @@ def model_create_single(method: T) -> T:
         f"The model {method.__module__} is not overriding the create method in batch",
         DeprecationWarning
     )
-    wrapper = _model_create_single(method) # pylint: disable=no-value-for-parameter
+    wrapper = _model_create_single(method)  # pylint: disable=no-value-for-parameter
     wrapper._api = 'model_create'
     return wrapper
 
@@ -504,7 +508,7 @@ def model_create_multi(method: T) -> T:
             record = model.create(vals)
             records = model.create([vals, ...])
     """
-    wrapper = _model_create_multi(method) # pylint: disable=no-value-for-parameter
+    wrapper = _model_create_multi(method)  # pylint: disable=no-value-for-parameter
     wrapper._api = 'model_create'
     return wrapper
 
@@ -593,7 +597,7 @@ class Environment(Mapping):
         self.registry = transaction.registry
         self.cache = transaction.cache
 
-        self._cache_key = {}                    # memo {field: cache_key}
+        self._cache_key = {}  # memo {field: cache_key}
         self._protected = transaction.protected
 
         transaction.envs.add(self)
@@ -1479,7 +1483,7 @@ class Cache:
             sql_id = SQL.identifier(model._table, 'id')
             sql_field = model._field_to_sql(model._table, field.name, query)
             if field.type == 'binary' and (
-                model.env.context.get('bin_size') or model.env.context.get('bin_size_' + field.name)
+                    model.env.context.get('bin_size') or model.env.context.get('bin_size_' + field.name)
             ):
                 sql_field = SQL('pg_size_pretty(length(%s)::bigint)', sql_field)
             query.add_where(SQL("%s IN %s", sql_id, tuple(ids)))

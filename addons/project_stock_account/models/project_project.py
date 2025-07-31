@@ -1,8 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.osv import expression
-
 from odoo import models, _lt
+from odoo.osv import expression
 
 
 class Project(models.Model):
@@ -56,7 +55,8 @@ class Project(models.Model):
             total_costs += currency._convert(amounts, self.currency_id, self.company_id)
 
         profitability_sequence_per_invoice_type = self._get_profitability_sequence_per_invoice_type()
-        costs = [{'id': 'other_costs', 'sequence': profitability_sequence_per_invoice_type['other_costs_aal'], 'billed': total_costs, 'to_bill': 0.0}]
+        costs = [{'id': 'other_costs', 'sequence': profitability_sequence_per_invoice_type['other_costs_aal'],
+                  'billed': total_costs, 'to_bill': 0.0}]
 
         if with_action and self.env.user.has_group('account.group_account_readonly'):
             costs[0]['action'] = self._get_action_for_profitability_section(cost_ids, 'other_costs_aal')

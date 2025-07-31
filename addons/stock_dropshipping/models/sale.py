@@ -34,7 +34,7 @@ class SaleOrderLine(models.Model):
                 continue
             product_routes = line.route_id or (line.product_id.route_ids + line.product_id.categ_id.total_route_ids)
             for pull_rule in product_routes.mapped('rule_ids'):
-                if pull_rule.picking_type_id.sudo().default_location_src_id.usage == 'supplier' and\
+                if pull_rule.picking_type_id.sudo().default_location_src_id.usage == 'supplier' and \
                         pull_rule.picking_type_id.sudo().default_location_dest_id.usage == 'customer':
                     line.is_mto = True
                     break
@@ -43,10 +43,12 @@ class SaleOrderLine(models.Model):
         # People without purchase rights should be able to do this operation
         purchase_lines_sudo = self.sudo().purchase_line_ids
         # We make sure that it's not a kit with dropshipped components
-        if self.product_id == purchase_lines_sudo.product_id and purchase_lines_sudo.filtered(lambda r: r.state != 'cancel'):
+        if self.product_id == purchase_lines_sudo.product_id and purchase_lines_sudo.filtered(
+                lambda r: r.state != 'cancel'):
             qty = 0.0
             for po_line in purchase_lines_sudo.filtered(lambda r: r.state != 'cancel'):
-                qty += po_line.product_uom._compute_quantity(po_line.product_qty, self.product_uom, rounding_method='HALF-UP')
+                qty += po_line.product_uom._compute_quantity(po_line.product_qty, self.product_uom,
+                                                             rounding_method='HALF-UP')
             return qty
         else:
             return super(SaleOrderLine, self)._get_qty_procurement(previous_product_uom_qty=previous_product_uom_qty)

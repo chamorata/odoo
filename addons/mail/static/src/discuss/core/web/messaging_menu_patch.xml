@@ -10,19 +10,25 @@
                     <ChannelSelector category="category" autofocus="true"/>
                 </div>
             </t>
-            <button t-if="!ui.isSmall and !store.discuss.isActive" t-att-class="ui.isSmall ? 'w-50 p-2 btn btn-secondary m-1' : 'btn btn-link px-2 py-1'" t-on-click.stop="onClickNewMessage">
+            <button t-if="!ui.isSmall and !store.discuss.isActive"
+                    t-att-class="ui.isSmall ? 'w-50 p-2 btn btn-secondary m-1' : 'btn btn-link px-2 py-1'"
+                    t-on-click.stop="onClickNewMessage">
                 New Message
             </button>
             <t t-if="ui.isSmall">
                 <t t-if="store.discuss.activeTab !== 'main' or !env.inDiscussApp">
-                    <button name="startMeetingButton" t-if="!state.adding" class="w-50 m-1 me-0 btn btn-primary" t-on-click.stop="onClickStartMeeting">
+                    <button name="startMeetingButton" t-if="!state.adding" class="w-50 m-1 me-0 btn btn-primary"
+                            t-on-click.stop="onClickStartMeeting">
                         Start a meeting
                     </button>
-                    <button t-if="displayStartConversation" t-att-class="ui.isSmall ? 'w-50 p-2 btn btn-secondary m-1' : 'btn btn-link p-2'" t-on-click.stop="onClickNewMessage">
+                    <button t-if="displayStartConversation"
+                            t-att-class="ui.isSmall ? 'w-50 p-2 btn btn-secondary m-1' : 'btn btn-link p-2'"
+                            t-on-click.stop="onClickNewMessage">
                         Start a conversation
                     </button>
                 </t>
-                <button t-if="store.discuss.activeTab === 'channel' and !state.adding" class="w-50 p-2 btn btn-secondary m-1" t-on-click.stop="() => this.state.adding = 'channel'">
+                <button t-if="store.discuss.activeTab === 'channel' and !state.adding"
+                        class="w-50 p-2 btn btn-secondary m-1" t-on-click.stop="() => this.state.adding = 'channel'">
                     New Channel
                 </button>
             </t>

@@ -7,7 +7,8 @@ from odoo import api, fields, models
 class PosOrderLine(models.Model):
     _inherit = "pos.order.line"
 
-    l10n_in_hsn_code = fields.Char(string="HSN/SAC Code", compute="_compute_l10n_in_hsn_code", store=True, readonly=False, copy=False)
+    l10n_in_hsn_code = fields.Char(string="HSN/SAC Code", compute="_compute_l10n_in_hsn_code", store=True,
+                                   readonly=False, copy=False)
 
     @api.depends('product_id')
     def _compute_l10n_in_hsn_code(self):

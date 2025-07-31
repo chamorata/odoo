@@ -5,12 +5,12 @@
         </clipPath>
         <path id="filterPath" d="M1 .7827 0 1 0 0 1 0Z">
             <animate dur="6s" repeatCount="indefinite" attributeName="d" attributeType="XML"
-            values="
+                     values="
             M1 .7827 0 1 0 0 1 0Z;
             M1 .8027 0 .95 0 0 1 0Z;
             M1 .7827 0 1 0 0 1 0Z"
-            calcMode="spline"
-            keySplines=".56 .37 .43 .58; .56 .37 .43 .58"/>
+                     calcMode="spline"
+                     keySplines=".56 .37 .43 .58; .56 .37 .43 .58"/>
         </path>
     </defs>
     <svg viewBox="0 0 1 1" id="preview" preserveAspectRatio="none">

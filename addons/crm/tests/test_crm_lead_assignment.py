@@ -2,13 +2,13 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import random
-
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
 from unittest.mock import patch
 
-from odoo import fields
+from dateutil.relativedelta import relativedelta
 from odoo.addons.crm.tests.common import TestLeadConvertCommon
+
+from odoo import fields
 from odoo.tests.common import tagged
 from odoo.tools import mute_logger
 
@@ -30,7 +30,8 @@ class TestLeadAssignCommon(TestLeadConvertCommon):
         # repeatable (archive is not sufficient because of lost leads)
 
         with mute_logger('odoo.models.unlink'):
-            cls.env['crm.lead'].with_context(active_test=False).search(['|', ('team_id', '=', False), ('user_id', 'in', cls.sales_teams.member_ids.ids)]).unlink()
+            cls.env['crm.lead'].with_context(active_test=False).search(
+                ['|', ('team_id', '=', False), ('user_id', 'in', cls.sales_teams.member_ids.ids)]).unlink()
         cls.bundle_size = 50
         cls.env['ir.config_parameter'].set_param('crm.assignment.commit.bundle', '%s' % cls.bundle_size)
         cls.env['ir.config_parameter'].set_param('crm.assignment.delay', '0')
@@ -187,7 +188,8 @@ class TestLeadAssign(TestLeadAssignCommon):
         self.members.invalidate_model(['lead_month_count'])
         self.assertEqual(self.sales_team_1_m1.lead_month_count, 0)  # archived do not get leads
         self.assertEqual(self.sales_team_1_m2.lead_month_count, 0)  # opt-out through assignment_max = 0
-        self.assertEqual(self.sales_team_1_m3.lead_month_count, 14)  # ignore actual quota (round(45/30) => +2) + existing 12
+        self.assertEqual(self.sales_team_1_m3.lead_month_count,
+                         14)  # ignore actual quota (round(45/30) => +2) + existing 12
 
         with self.with_user('user_sales_manager'):
             self.env['crm.team'].browse(self.sales_team_1.ids)._action_assign_leads(force_quota=True)
@@ -196,7 +198,8 @@ class TestLeadAssign(TestLeadAssignCommon):
         self.members.invalidate_model(['lead_month_count'])
         self.assertEqual(self.sales_team_1_m1.lead_month_count, 0)  # archived do not get leads
         self.assertEqual(self.sales_team_1_m2.lead_month_count, 0)  # opt-out through assignment_max = 0
-        self.assertEqual(self.sales_team_1_m3.lead_month_count, 16)  # ignore actual quota (round(45/30) => +2) + existing 14 and not capped anymore
+        self.assertEqual(self.sales_team_1_m3.lead_month_count,
+                         16)  # ignore actual quota (round(45/30) => +2) + existing 14 and not capped anymore
 
     @mute_logger('odoo.models.unlink')
     def test_assign_duplicates(self):
@@ -445,7 +448,8 @@ class TestLeadAssign(TestLeadAssignCommon):
         leads[2].update({'stage_id': False, 'probability': 0})
         leads[3].update({'stage_id': False, 'probability': False})
         leads[4].active = False  # is lost -> should not be taken into account
-        leads[5].update({'team_id': self.sales_team_convert.id, 'user_id': self.user_sales_manager.id})  # assigned lead should not be re-assigned
+        leads[5].update({'team_id': self.sales_team_convert.id,
+                         'user_id': self.user_sales_manager.id})  # assigned lead should not be re-assigned
 
         # commit probability and related fields
         leads.flush_recordset()
@@ -532,4 +536,4 @@ class TestLeadAssign(TestLeadAssignCommon):
 
         members_data = sales_team_4._assign_and_convert_leads()
         self.assertFalse(members_data,
-            "If team member has lead count greater than max assign,then do not assign any more")
+                         "If team member has lead count greater than max assign,then do not assign any more")

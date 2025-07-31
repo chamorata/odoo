@@ -1,9 +1,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import json
-import requests
 from http import HTTPStatus
 from unittest.mock import patch
+
+import requests
 
 from odoo.addons.base.tests.common import HttpCaseWithUserDemo
 from odoo.tests.common import JsonRpcException, new_test_user, tagged

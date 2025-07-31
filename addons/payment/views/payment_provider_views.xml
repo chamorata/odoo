@@ -33,17 +33,26 @@
                     </div>
                     <field name="image_128" widget="image" class="oe_avatar"
                            readonly="module_state != 'installed'"/>
-                    <widget name="web_ribbon" title="Disabled" bg_color="text-bg-danger" invisible="module_state != 'installed' or state != 'disabled'"/>
-                    <widget name="web_ribbon" title="Test Mode" bg_color="text-bg-warning" invisible="module_state != 'installed' or state != 'test'"/>
+                    <widget name="web_ribbon" title="Disabled" bg_color="text-bg-danger"
+                            invisible="module_state != 'installed' or state != 'disabled'"/>
+                    <widget name="web_ribbon" title="Test Mode" bg_color="text-bg-warning"
+                            invisible="module_state != 'installed' or state != 'test'"/>
                     <div class="oe_title">
-                        <h1><field name="name" placeholder="Name"/></h1>
+                        <h1>
+                            <field name="name" placeholder="Name"/>
+                        </h1>
                         <div invisible="module_state == 'installed' or not module_id">
-                            <a invisible="not module_to_buy" href="https://odoo.com/pricing?utm_source=db&amp;utm_medium=module" target="_blank" class="btn btn-info" role="button">Upgrade</a>
-                            <button invisible="module_to_buy" type="object" class="btn btn-primary" name="button_immediate_install" string="Install"/>
+                            <a invisible="not module_to_buy"
+                               href="https://odoo.com/pricing?utm_source=db&amp;utm_medium=module" target="_blank"
+                               class="btn btn-info" role="button">Upgrade
+                            </a>
+                            <button invisible="module_to_buy" type="object" class="btn btn-primary"
+                                    name="button_immediate_install" string="Install"/>
                         </div>
                     </div>
                     <div id="provider_creation_warning" invisible="id" class="alert alert-warning" role="alert">
-                        <strong>Warning</strong> Creating a payment provider from the <em>CREATE</em> button is not supported.
+                        <strong>Warning</strong>
+                        Creating a payment provider from the <em>CREATE</em> button is not supported.
                         Please use the <em>Duplicate</em> action instead.
                     </div>
                     <group>
@@ -101,8 +110,8 @@
                             </group>
                         </page>
                         <page string="Messages"
-                            name="messages"
-                            invisible="module_id and module_state != 'installed'">
+                              name="messages"
+                              invisible="module_id and module_state != 'installed'">
                             <group>
                                 <field name="pre_msg"/>
                                 <field name="pending_msg"/>
@@ -143,32 +152,33 @@
                 <field name="module_to_buy"/>
                 <templates>
                     <t t-name="card" class="flex-row">
-                        <t t-set="installed" t-value="!record.module_id.value || (record.module_id.value &amp;&amp; record.module_state.raw_value === 'installed')"/>
+                        <t t-set="installed"
+                           t-value="!record.module_id.value || (record.module_id.value &amp;&amp; record.module_state.raw_value === 'installed')"/>
                         <t t-set="to_buy" t-value="record.module_to_buy.raw_value === true"/>
                         <t t-set="is_disabled" t-value="record.state.raw_value=='disabled'"/>
                         <t t-set="is_published" t-value="record.is_published.raw_value === true"/>
                         <t t-set="to_upgrade" t-value="!installed and to_buy"/>
                         <aside>
                             <field type="open"
-                                 name="image_128" widget="image"
-                                 class="mb-0 o_image_64_max"
-                                 alt="provider"/>
+                                   name="image_128" widget="image"
+                                   class="mb-0 o_image_64_max"
+                                   alt="provider"/>
                         </aside>
                         <main class="ms-2">
                             <field name="name" class="mb-0 fw-bold fs-4"/>
                             <div class="d-flex">
                                 <t t-if="installed">
                                     <field name="state"
-                                        widget="label_selection"
-                                        options="{'classes': {'enabled': 'success', 'test': 'warning', 'disabled' : 'light'}}"/>
+                                           widget="label_selection"
+                                           options="{'classes': {'enabled': 'success', 'test': 'warning', 'disabled' : 'light'}}"/>
                                     <t t-if="!is_disabled">
                                         <div>
                                             <span t-if="is_published"
-                                                class="badge text-bg-success ms-1">
+                                                  class="badge text-bg-success ms-1">
                                                 Published
                                             </span>
                                             <span t-else=""
-                                                class="badge text-bg-info ms-1">
+                                                  class="badge text-bg-info ms-1">
                                                 Unpublished
                                             </span>
                                         </div>
@@ -177,9 +187,16 @@
                                 <span t-if="to_upgrade" class="badge text-bg-primary">Enterprise</span>
                             </div>
                             <footer>
-                                <button t-if="!installed and !selection_mode and !to_buy" type="object" class="btn btn-sm btn-primary ms-auto" name="button_immediate_install">Install</button>
-                                <button t-if="installed and is_disabled and !selection_mode" type="edit" class="btn btn-sm btn-secondary ms-auto">Activate</button>
-                                <button t-if="!installed and to_buy" href="https://odoo.com/pricing?utm_source=db&amp;utm_medium=module" target="_blank" class="btn btn-sm btn-primary ms-auto">Upgrade</button>
+                                <button t-if="!installed and !selection_mode and !to_buy" type="object"
+                                        class="btn btn-sm btn-primary ms-auto" name="button_immediate_install">Install
+                                </button>
+                                <button t-if="installed and is_disabled and !selection_mode" type="edit"
+                                        class="btn btn-sm btn-secondary ms-auto">Activate
+                                </button>
+                                <button t-if="!installed and to_buy"
+                                        href="https://odoo.com/pricing?utm_source=db&amp;utm_medium=module"
+                                        target="_blank" class="btn btn-sm btn-primary ms-auto">Upgrade
+                                </button>
                             </footer>
                         </main>
                     </t>
@@ -207,7 +224,8 @@
                 <group expand="0" string="Group By">
                     <filter string="Provider" name="code" context="{'group_by': 'code'}"/>
                     <filter string="State" name="state" context="{'group_by': 'state'}"/>
-                    <filter string="Company" name="company" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
+                    <filter string="Company" name="company" context="{'group_by': 'company_id'}"
+                            groups="base.group_multi_company"/>
                 </group>
             </search>
         </field>

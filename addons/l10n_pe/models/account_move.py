@@ -13,9 +13,9 @@ class AccountMove(models.Model):
         result.append(("code", "in", ("01", "03", "07", "08", "20", "40")))
         if self.partner_id.l10n_latam_identification_type_id.l10n_pe_vat_code != '6' and self.move_type == 'out_invoice':
             result.append(('id', 'in', (
-                self.env.ref('l10n_pe.document_type08b')
-                | self.env.ref('l10n_pe.document_type02')
-                | self.env.ref('l10n_pe.document_type07b')
+                    self.env.ref('l10n_pe.document_type08b')
+                    | self.env.ref('l10n_pe.document_type02')
+                    | self.env.ref('l10n_pe.document_type07b')
             ).ids))
         return result
 
@@ -26,10 +26,10 @@ class AccountMove(models.Model):
         super()._inverse_l10n_latam_document_number()
         to_review = self.filtered(
             lambda x: x.journal_id.type == "purchase"
-            and x.l10n_latam_document_type_id.code in ("01", "03", "07", "08")
-            and x.l10n_latam_document_number
-            and "-" in x.l10n_latam_document_number
-            and x.l10n_latam_document_type_id.country_id.code == "PE"
+                      and x.l10n_latam_document_type_id.code in ("01", "03", "07", "08")
+                      and x.l10n_latam_document_number
+                      and "-" in x.l10n_latam_document_number
+                      and x.l10n_latam_document_type_id.country_id.code == "PE"
         )
         for rec in to_review:
             number = rec.l10n_latam_document_number.split("-")

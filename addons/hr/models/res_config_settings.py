@@ -1,5 +1,5 @@
-
 import threading
+
 from odoo import api, fields, models
 
 
@@ -16,7 +16,8 @@ class ResConfigSettings(models.TransientModel):
     hr_presence_control_email = fields.Boolean(related='company_id.hr_presence_control_email', readonly=False)
     hr_presence_control_ip = fields.Boolean(related='company_id.hr_presence_control_ip', readonly=False)
     module_hr_attendance = fields.Boolean(related='company_id.hr_presence_control_attendance', readonly=False)
-    hr_presence_control_email_amount = fields.Integer(related="company_id.hr_presence_control_email_amount", readonly=False)
+    hr_presence_control_email_amount = fields.Integer(related="company_id.hr_presence_control_email_amount",
+                                                      readonly=False)
     hr_presence_control_ip_list = fields.Char(related="company_id.hr_presence_control_ip_list", readonly=False)
     hr_employee_self_edit = fields.Boolean(string="Employee Editing", config_parameter='hr.hr_employee_self_edit')
 

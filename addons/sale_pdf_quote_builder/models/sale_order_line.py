@@ -11,7 +11,7 @@ class SaleOrderLine(models.Model):
         comodel_name='product.document',
         relation='available_sale_order_line_product_document_rel',
         compute='_compute_available_product_document_ids',
-        compute_sudo=True, # To access attached_on_sale
+        compute_sudo=True,  # To access attached_on_sale
     )
     product_document_ids = fields.Many2many(
         string="Product Documents",
@@ -37,11 +37,11 @@ class SaleOrderLine(models.Model):
         for line in self:
             line.available_product_document_ids = self.env['product.document'].search([
                 '|',
-                    '&',
-                        ('res_model', '=', 'product.product'),
-                        ('res_id', '=', line.product_id.id),
-                    '&',
-                        ('res_model', '=', 'product.template'),
-                        ('res_id', '=', line.product_template_id.id),
+                '&',
+                ('res_model', '=', 'product.product'),
+                ('res_id', '=', line.product_id.id),
+                '&',
+                ('res_model', '=', 'product.template'),
+                ('res_id', '=', line.product_template_id.id),
                 ('attached_on_sale', '=', 'inside')
             ], order='res_model, sequence').ids

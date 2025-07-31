@@ -7,7 +7,6 @@ from odoo import api, fields, models, tools, _
 from odoo.exceptions import UserError
 from odoo.tools.float_utils import float_is_zero
 
-
 SPLIT_METHOD = [
     ('equal', 'Equal'),
     ('by_quantity', 'By Quantity'),
@@ -26,7 +25,8 @@ class StockLandedCost(models.Model):
     def _default_account_journal_id(self):
         """Take the journal configured in the company, else fallback on the stock journal."""
         ProductCategory = self.env['product.category']
-        return self.env.company.lc_journal_id or ProductCategory._fields['property_stock_journal'].get_company_dependent_fallback(ProductCategory)
+        return self.env.company.lc_journal_id or ProductCategory._fields[
+            'property_stock_journal'].get_company_dependent_fallback(ProductCategory)
 
     name = fields.Char(
         'Name', default=lambda self: _('New'),
@@ -45,7 +45,7 @@ class StockLandedCost(models.Model):
         'stock.landed.cost.lines', 'cost_id', 'Cost Lines',
         copy=True)
     valuation_adjustment_lines = fields.One2many(
-        'stock.valuation.adjustment.lines', 'cost_id', 'Valuation Adjustments',)
+        'stock.valuation.adjustment.lines', 'cost_id', 'Valuation Adjustments', )
     description = fields.Text(
         'Item Description')
     amount_total = fields.Monetary(
@@ -127,7 +127,8 @@ class StockLandedCost(models.Model):
                 linked_layer = line.move_id._get_stock_valuation_layer_ids()
 
                 # Prorate the value at what's still in stock
-                move_qty = line.move_id.product_uom._compute_quantity(line.move_id.quantity, line.move_id.product_id.uom_id)
+                move_qty = line.move_id.product_uom._compute_quantity(line.move_id.quantity,
+                                                                      line.move_id.product_id.uom_id)
                 cost_to_add = (remaining_qty / move_qty) * line.additional_landed_cost
                 product = line.move_id.product_id
                 if not cost.company_id.currency_id.is_zero(cost_to_add):
@@ -186,10 +187,12 @@ class StockLandedCost(models.Model):
                 move_vals['line_ids'] += line._create_accounting_entries(move, qty_out)
 
             # batch standard price computation avoid recompute quantity_svl at each iteration
-            products = self.env['product.product'].browse(p.id for p in cost_to_add_byproduct.keys()).with_company(cost.company_id)
+            products = self.env['product.product'].browse(p.id for p in cost_to_add_byproduct.keys()).with_company(
+                cost.company_id)
             for product in products:  # iterate on recordset to prefetch efficiently quantity_svl
                 if not float_is_zero(product.quantity_svl, precision_rounding=product.uom_id.rounding):
-                    product.sudo().with_context(disable_auto_svl=True).standard_price += cost_to_add_byproduct[product] / product.quantity_svl
+                    product.sudo().with_context(disable_auto_svl=True).standard_price += cost_to_add_byproduct[
+                                                                                             product] / product.quantity_svl
                 if product.lot_valuated:
                     for lot, value in cost_to_add_bylot[product].items():
                         if float_is_zero(lot.quantity_svl, precision_rounding=product.uom_id.rounding):
@@ -215,8 +218,8 @@ class StockLandedCost(models.Model):
                 for product in cost.cost_lines.product_id:
                     accounts = product.product_tmpl_id.get_product_accounts()
                     input_account = accounts['stock_input']
-                    all_amls.filtered(lambda aml: aml.account_id == input_account and not aml.reconciled\
-                         and not aml.display_type in ('line_section', 'line_note')).reconcile()
+                    all_amls.filtered(lambda aml: aml.account_id == input_account and not aml.reconciled \
+                                                  and not aml.display_type in ('line_section', 'line_note')).reconcile()
 
     def get_valuation_lines(self):
         self.ensure_one()
@@ -239,7 +242,9 @@ class StockLandedCost(models.Model):
 
         if not lines:
             target_model_descriptions = dict(self._fields['target_model']._description_selection(self.env))
-            raise UserError(_("You cannot apply landed costs on the chosen %s(s). Landed costs can only be applied for products with FIFO or average costing method.", target_model_descriptions[self.target_model]))
+            raise UserError(
+                _("You cannot apply landed costs on the chosen %s(s). Landed costs can only be applied for products with FIFO or average costing method.",
+                  target_model_descriptions[self.target_model]))
         return lines
 
     def compute_landed_cost(self):
@@ -322,7 +327,8 @@ class StockLandedCost(models.Model):
         for cost in self:
             if not cost._get_targeted_move_ids():
                 target_model_descriptions = dict(self._fields['target_model']._description_selection(self.env))
-                raise UserError(_('Please define %s on which those additional costs should apply.', target_model_descriptions[cost.target_model]))
+                raise UserError(_('Please define %s on which those additional costs should apply.',
+                                  target_model_descriptions[cost.target_model]))
 
     def _check_sum(self):
         """ Check if each cost line its valuation lines sum to the correct amount
@@ -429,7 +435,8 @@ class AdjustmentLines(models.Model):
         if not credit_account_id:
             raise UserError(_('Please configure Stock Expense Account for product: %s.', cost_product.name))
 
-        return self._create_account_move_line(move, credit_account_id, debit_account_id, qty_out, already_out_account_id)
+        return self._create_account_move_line(move, credit_account_id, debit_account_id, qty_out,
+                                              already_out_account_id)
 
     def _prepare_account_move_line_values(self):
         return {

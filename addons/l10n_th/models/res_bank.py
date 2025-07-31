@@ -11,7 +11,8 @@ class ResPartnerBank(models.Model):
     proxy_type = fields.Selection(selection_add=[('ewallet_id', 'Ewallet ID'),
                                                  ('merchant_tax_id', 'Merchant Tax ID'),
                                                  ('mobile', "Mobile Number")],
-                                  ondelete={'ewallet_id': 'set default', 'merchant_tax_id': 'set default', 'mobile': 'set default'})
+                                  ondelete={'ewallet_id': 'set default', 'merchant_tax_id': 'set default',
+                                            'mobile': 'set default'})
 
     @api.constrains('proxy_type', 'proxy_value', 'partner_id')
     def _check_th_proxy(self):
@@ -19,11 +20,16 @@ class ResPartnerBank(models.Model):
         mobile_re = re.compile(r'^[0-9]{10}$')
         for bank in self.filtered(lambda b: b.country_code == 'TH'):
             if bank.proxy_type not in ['ewallet_id', 'merchant_tax_id', 'mobile', 'none', False]:
-                raise ValidationError(_("The QR Code Type must be either Ewallet ID, Merchant Tax ID or Mobile Number to generate a Thailand Bank QR code for account number %s.", bank.acc_number))
+                raise ValidationError(
+                    _("The QR Code Type must be either Ewallet ID, Merchant Tax ID or Mobile Number to generate a Thailand Bank QR code for account number %s.",
+                      bank.acc_number))
             if bank.proxy_type == 'merchant_tax_id' and (not bank.proxy_value or not tax_id_re.match(bank.proxy_value)):
-                raise ValidationError(_("The Merchant Tax ID must be in the format 1234567890123 for account number %s.", bank.acc_number))
+                raise ValidationError(
+                    _("The Merchant Tax ID must be in the format 1234567890123 for account number %s.",
+                      bank.acc_number))
             if bank.proxy_type == 'mobile' and (not bank.proxy_value or not mobile_re.match(bank.proxy_value)):
-                raise ValidationError(_("The Mobile Number must be in the format 0812345678 for account number %s.", bank.acc_number))
+                raise ValidationError(
+                    _("The Mobile Number must be in the format 0812345678 for account number %s.", bank.acc_number))
 
     @api.depends('country_code')
     def _compute_display_qr_setting(self):
@@ -38,7 +44,8 @@ class ResPartnerBank(models.Model):
                 'merchant_tax_id': 2,
                 'ewallet_id': 3,
             }
-            proxy_value = re.sub(r"^0", "66", self.proxy_value).zfill(13) if self.proxy_type == 'mobile' else self.proxy_value
+            proxy_value = re.sub(r"^0", "66", self.proxy_value).zfill(
+                13) if self.proxy_type == 'mobile' else self.proxy_value
             vals = [
                 (0, 'A000000677010111'),
                 (proxy_type_mapping[self.proxy_type], proxy_value),
@@ -54,8 +61,12 @@ class ResPartnerBank(models.Model):
 
         return super()._get_error_messages_for_qr(qr_method, debtor_partner, currency)
 
-    def _check_for_qr_code_errors(self, qr_method, amount, currency, debtor_partner, free_communication, structured_communication):
-        if qr_method == 'emv_qr' and self.country_code == 'TH' and self.proxy_type not in ['ewallet_id', 'merchant_tax_id', 'mobile']:
-            return _("The PayNow Type must be either Ewallet ID, Merchant Tax ID or Mobile Number to generate a Thailand Bank QR code")
+    def _check_for_qr_code_errors(self, qr_method, amount, currency, debtor_partner, free_communication,
+                                  structured_communication):
+        if qr_method == 'emv_qr' and self.country_code == 'TH' and self.proxy_type not in ['ewallet_id',
+                                                                                           'merchant_tax_id', 'mobile']:
+            return _(
+                "The PayNow Type must be either Ewallet ID, Merchant Tax ID or Mobile Number to generate a Thailand Bank QR code")
 
-        return super()._check_for_qr_code_errors(qr_method, amount, currency, debtor_partner, free_communication, structured_communication)
+        return super()._check_for_qr_code_errors(qr_method, amount, currency, debtor_partner, free_communication,
+                                                 structured_communication)

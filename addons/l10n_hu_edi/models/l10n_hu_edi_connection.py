@@ -1,24 +1,22 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from base64 import b64decode, b64encode
 import binascii
-from datetime import datetime, timedelta, timezone
 import hashlib
 import logging
 import secrets
+from base64 import b64decode, b64encode
+from datetime import datetime, timedelta, timezone
 
+import dateutil.parser
+import requests
 from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-import dateutil.parser
 from lxml import etree
-import requests
 
 from odoo import _, release
 from odoo.tools import cleanup_xml_node
 
-
 _logger = logging.getLogger(__name__)
-
 
 XML_NAMESPACES = {
     'api': 'http://schemas.nav.gov.hu/OSA/3.0/api',
@@ -95,7 +93,8 @@ class L10nHuEdiConnection:
 
         template_values = self._get_header_values(credentials)
         request_data = self.env['ir.qweb']._render('l10n_hu_edi.token_exchange_request', template_values)
-        request_data = etree.tostring(cleanup_xml_node(request_data, remove_blank_nodes=False), xml_declaration=True, encoding='UTF-8')
+        request_data = etree.tostring(cleanup_xml_node(request_data, remove_blank_nodes=False), xml_declaration=True,
+                                      encoding='UTF-8')
 
         response_xml = self._call_nav_endpoint(credentials['mode'], 'tokenExchange', request_data)
         self._parse_error_response(response_xml)
@@ -104,7 +103,8 @@ class L10nHuEdiConnection:
         token_validity_to = response_xml.findtext('api:tokenValidityTo', namespaces=XML_NAMESPACES)
         try:
             # Convert into a naive UTC datetime, since Odoo can't store timezone-aware datetimes
-            token_validity_to = dateutil.parser.isoparse(token_validity_to).astimezone(timezone.utc).replace(tzinfo=None)
+            token_validity_to = dateutil.parser.isoparse(token_validity_to).astimezone(timezone.utc).replace(
+                tzinfo=None)
         except ValueError:
             _logger.warning('Could not parse token validity end timestamp!')
             token_validity_to = datetime.utcnow() + timedelta(minutes=5)
@@ -113,7 +113,8 @@ class L10nHuEdiConnection:
             raise L10nHuEdiConnectionError(_('Missing token in response from NAV.'))
 
         try:
-            token = decrypt_aes128(credentials['replacement_key'].encode(), b64decode(encrypted_token.encode())).decode()
+            token = decrypt_aes128(credentials['replacement_key'].encode(),
+                                   b64decode(encrypted_token.encode())).decode()
         except ValueError as e:
             raise L10nHuEdiConnectionError(_('Error during decryption of ExchangeToken.')) from e
 
@@ -153,7 +154,8 @@ class L10nHuEdiConnection:
         template_values.update(self._get_header_values(credentials, invoice_hashs=invoice_hashes))
 
         request_data = self.env['ir.qweb']._render('l10n_hu_edi.manage_invoice_request', template_values)
-        request_data = etree.tostring(cleanup_xml_node(request_data, remove_blank_nodes=False), xml_declaration=True, encoding='UTF-8')
+        request_data = etree.tostring(cleanup_xml_node(request_data, remove_blank_nodes=False), xml_declaration=True,
+                                      encoding='UTF-8')
 
         response_xml = self._call_nav_endpoint(credentials['mode'], 'manageInvoice', request_data, timeout=60)
         self._parse_error_response(response_xml)
@@ -211,37 +213,46 @@ class L10nHuEdiConnection:
             'returnOriginalRequest': return_original_request,
         }
         request_data = self.env['ir.qweb']._render('l10n_hu_edi.query_transaction_status_request', template_values)
-        request_data = etree.tostring(cleanup_xml_node(request_data, remove_blank_nodes=False), xml_declaration=True, encoding='UTF-8')
+        request_data = etree.tostring(cleanup_xml_node(request_data, remove_blank_nodes=False), xml_declaration=True,
+                                      encoding='UTF-8')
 
         response_xml = self._call_nav_endpoint(credentials['mode'], 'queryTransactionStatus', request_data)
         self._parse_error_response(response_xml)
 
         results = {
             'processing_results': [],
-            'annulment_status': response_xml.findtext('api:processingResults/api:annulmentData/api:annulmentVerificationStatus', namespaces=XML_NAMESPACES),
+            'annulment_status': response_xml.findtext(
+                'api:processingResults/api:annulmentData/api:annulmentVerificationStatus', namespaces=XML_NAMESPACES),
         }
-        for processing_result_xml in response_xml.iterfind('api:processingResults/api:processingResult', namespaces=XML_NAMESPACES):
+        for processing_result_xml in response_xml.iterfind('api:processingResults/api:processingResult',
+                                                           namespaces=XML_NAMESPACES):
             processing_result = {
                 'index': processing_result_xml.findtext('api:index', namespaces=XML_NAMESPACES),
                 'invoice_status': processing_result_xml.findtext('api:invoiceStatus', namespaces=XML_NAMESPACES),
                 'business_validation_messages': [],
                 'technical_validation_messages': [],
             }
-            for message_xml in processing_result_xml.iterfind('api:businessValidationMessages', namespaces=XML_NAMESPACES):
+            for message_xml in processing_result_xml.iterfind('api:businessValidationMessages',
+                                                              namespaces=XML_NAMESPACES):
                 processing_result['business_validation_messages'].append({
-                    'validation_result_code': message_xml.findtext('api:validationResultCode', namespaces=XML_NAMESPACES),
+                    'validation_result_code': message_xml.findtext('api:validationResultCode',
+                                                                   namespaces=XML_NAMESPACES),
                     'validation_error_code': message_xml.findtext('api:validationErrorCode', namespaces=XML_NAMESPACES),
                     'message': message_xml.findtext('api:message', namespaces=XML_NAMESPACES),
                 })
-            for message_xml in processing_result_xml.iterfind('api:technicalValidationMessages', namespaces=XML_NAMESPACES):
+            for message_xml in processing_result_xml.iterfind('api:technicalValidationMessages',
+                                                              namespaces=XML_NAMESPACES):
                 processing_result['technical_validation_messages'].append({
-                    'validation_result_code': message_xml.findtext('common:validationResultCode', namespaces=XML_NAMESPACES),
-                    'validation_error_code': message_xml.findtext('common:validationErrorCode', namespaces=XML_NAMESPACES),
+                    'validation_result_code': message_xml.findtext('common:validationResultCode',
+                                                                   namespaces=XML_NAMESPACES),
+                    'validation_error_code': message_xml.findtext('common:validationErrorCode',
+                                                                  namespaces=XML_NAMESPACES),
                     'message': message_xml.findtext('common:message', namespaces=XML_NAMESPACES),
                 })
             if return_original_request:
                 try:
-                    original_file = b64decode(processing_result_xml.findtext('api:originalRequest', namespaces=XML_NAMESPACES))
+                    original_file = b64decode(
+                        processing_result_xml.findtext('api:originalRequest', namespaces=XML_NAMESPACES))
                     original_xml = etree.fromstring(original_file)
                 except binascii.Error as e:
                     raise L10nHuEdiConnectionError(str(e)) from e
@@ -275,21 +286,25 @@ class L10nHuEdiConnection:
             'dateTimeTo': format_timestamp(datetime_to),
         }
         request_data = self.env['ir.qweb']._render('l10n_hu_edi.query_transaction_list_request', template_values)
-        request_data = etree.tostring(cleanup_xml_node(request_data, remove_blank_nodes=False), xml_declaration=True, encoding='UTF-8')
+        request_data = etree.tostring(cleanup_xml_node(request_data, remove_blank_nodes=False), xml_declaration=True,
+                                      encoding='UTF-8')
 
         response_xml = self._call_nav_endpoint(credentials['mode'], 'queryTransactionList', request_data)
         self._parse_error_response(response_xml)
 
-        available_pages = response_xml.findtext('api:transactionListResult/api:availablePage', namespaces=XML_NAMESPACES)
+        available_pages = response_xml.findtext('api:transactionListResult/api:availablePage',
+                                                namespaces=XML_NAMESPACES)
         try:
             available_pages = int(available_pages)
         except ValueError:
             available_pages = 1
 
         transactions = []
-        for transaction_xml in response_xml.iterfind('api:transactionListResult/api:transaction', namespaces=XML_NAMESPACES):
+        for transaction_xml in response_xml.iterfind('api:transactionListResult/api:transaction',
+                                                     namespaces=XML_NAMESPACES):
             try:
-                send_time = datetime.fromisoformat(transaction_xml.findtext('api:insDate', namespaces=XML_NAMESPACES).replace('Z', ''))
+                send_time = datetime.fromisoformat(
+                    transaction_xml.findtext('api:insDate', namespaces=XML_NAMESPACES).replace('Z', ''))
             except ValueError as e:
                 raise L10nHuEdiConnectionError(_('Could not parse time of previous transaction')) from e
             transactions.append({
@@ -339,7 +354,8 @@ class L10nHuEdiConnection:
         template_values.update(self._get_header_values(credentials, invoice_hashs=annulment_hashes))
 
         request_data = self.env['ir.qweb']._render('l10n_hu_edi.manage_annulment_request', template_values)
-        request_data = etree.tostring(cleanup_xml_node(request_data, remove_blank_nodes=False), xml_declaration=True, encoding='UTF-8')
+        request_data = etree.tostring(cleanup_xml_node(request_data, remove_blank_nodes=False), xml_declaration=True,
+                                      encoding='UTF-8')
 
         response_xml = self._call_nav_endpoint(credentials['mode'], 'manageAnnulment', request_data, timeout=60)
         self._parse_error_response(response_xml)
@@ -355,9 +371,12 @@ class L10nHuEdiConnection:
     def _get_header_values(self, credentials, invoice_hashs=None):
         timestamp = datetime.utcnow()
         request_id = 'ODOO' + secrets.token_hex(13)
-        request_signature = self._calculate_request_signature(credentials['signature_key'], request_id, timestamp, invoice_hashs=invoice_hashs)
+        request_signature = self._calculate_request_signature(credentials['signature_key'], request_id, timestamp,
+                                                              invoice_hashs=invoice_hashs)
         odoo_version = release.version
-        module_version = self.env['ir.module.module'].get_module_info('l10n_hu_edi').get('version').replace('saas~', '').replace('.', '')
+        module_version = self.env['ir.module.module'].get_module_info('l10n_hu_edi').get('version').replace('saas~',
+                                                                                                            '').replace(
+            '.', '')
 
         return {
             'requestId': request_id,

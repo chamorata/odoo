@@ -1,12 +1,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import random
-
 from datetime import datetime
 
 from dateutil.relativedelta import relativedelta
 
-from odoo import SUPERUSER_ID, _, api, fields, models
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.fields import Command
 from odoo.http import request
@@ -43,7 +42,7 @@ class SaleOrder(models.Model):
         string="Abandoned Cart", compute='_compute_abandoned_cart', search='_search_abandoned_cart',
     )
 
-    #=== COMPUTE METHODS ===#
+    # === COMPUTE METHODS ===#
 
     @api.depends('order_line')
     def _compute_website_order_line(self):
@@ -76,7 +75,8 @@ class SaleOrder(models.Model):
                 # by default the expiration date is 1 hour if not specified on the website configuration
                 abandoned_delay = order.website_id.cart_abandoned_delay or 1.0
                 abandoned_datetime = datetime.utcnow() - relativedelta(hours=abandoned_delay)
-                order.is_abandoned_cart = bool(order.date_order <= abandoned_datetime and order.partner_id != public_partner_id and order.order_line)
+                order.is_abandoned_cart = bool(
+                    order.date_order <= abandoned_datetime and order.partner_id != public_partner_id and order.order_line)
             else:
                 order.is_abandoned_cart = False
 
@@ -98,8 +98,8 @@ class SaleOrder(models.Model):
             'account.account_payment_term_immediate', raise_if_not_found=False)
         for order in website_orders:
             if default_pt and (
-                order.company_id == default_pt.company_id
-                or not default_pt.company_id
+                    order.company_id == default_pt.company_id
+                    or not default_pt.company_id
             ):
                 order.payment_term_id = default_pt
             else:
@@ -112,7 +112,8 @@ class SaleOrder(models.Model):
         deadlines = [[
             '&', '&',
             ('website_id', '=', website_id['id']),
-            ('date_order', '<=', fields.Datetime.to_string(datetime.utcnow() - relativedelta(hours=website_id['cart_abandoned_delay'] or 1.0))),
+            ('date_order', '<=', fields.Datetime.to_string(
+                datetime.utcnow() - relativedelta(hours=website_id['cart_abandoned_delay'] or 1.0))),
             ('partner_id', '!=', website_id['partner_id'][0])
         ] for website_id in website_ids]
         abandoned_domain = [
@@ -122,7 +123,8 @@ class SaleOrder(models.Model):
         abandoned_domain.extend(expression.OR(deadlines))
         abandoned_domain = expression.normalize_domain(abandoned_domain)
         # is_abandoned domain possibilities
-        if (operator not in expression.NEGATIVE_TERM_OPERATORS and value) or (operator in expression.NEGATIVE_TERM_OPERATORS and not value):
+        if (operator not in expression.NEGATIVE_TERM_OPERATORS and value) or (
+                operator in expression.NEGATIVE_TERM_OPERATORS and not value):
             return abandoned_domain
         return expression.distribute_not(['!'] + abandoned_domain)  # negative domain
 
@@ -138,12 +140,12 @@ class SaleOrder(models.Model):
         for order in website_orders:
             if not order.user_id:
                 order.user_id = (
-                    order.website_id.salesperson_id
-                    or order.partner_id.user_id.id
-                    or order.partner_id.parent_id.user_id.id
+                        order.website_id.salesperson_id
+                        or order.partner_id.user_id.id
+                        or order.partner_id.parent_id.user_id.id
                 )
 
-    #=== CRUD METHODS ===#
+    # === CRUD METHODS ===#
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -163,7 +165,7 @@ class SaleOrder(models.Model):
                     vals['company_id'] = website.company_id.id
         return super().create(vals_list)
 
-    #=== ACTION METHODS ===#
+    # === ACTION METHODS ===#
 
     def action_preview_sale_order(self):
         action = super().action_preview_sale_order()
@@ -207,7 +209,7 @@ class SaleOrder(models.Model):
         template = template or self.env.ref('website_sale.mail_template_sale_cart_recovery', raise_if_not_found=False)
         return template or self.env['mail.template']
 
-    #=== BUSINESS METHODS ===#
+    # === BUSINESS METHODS ===#
 
     @api.model
     def _get_note_url(self):
@@ -261,15 +263,15 @@ class SaleOrder(models.Model):
                 self.env['product.pricelist'].browse(selected_pricelist_id).exists()
             )
             if (
-                selected_pricelist
-                and selected_pricelist._is_available_on_website(self.website_id)
-                and selected_pricelist._is_available_in_country(
-                    self.partner_id.country_id.code
-                )
+                    selected_pricelist
+                    and selected_pricelist._is_available_on_website(self.website_id)
+                    and selected_pricelist._is_available_in_country(
+                self.partner_id.country_id.code
+            )
             ):
                 self.pricelist_id = selected_pricelist
             else:
-               request.session.pop('website_sale_selected_pl_id', None)
+                request.session.pop('website_sale_selected_pl_id', None)
 
         if self.pricelist_id != pricelist_before or fpos_changed:
             # Pricelist may have been recomputed by the `partner_id` field update
@@ -351,13 +353,13 @@ class SaleOrder(models.Model):
         order_line = self._cart_update_order_line(product_id, quantity, order_line, **kwargs)
 
         if (
-            order_line
-            # Combo product lines will be checked after creating all of their combo item lines.
-            and order_line.product_template_id.type != 'combo'
-            and not order_line.combo_item_id
-            and order_line.price_unit == 0
-            and self.website_id.prevent_zero_price_sale
-            and product.service_tracking not in self.env['product.template']._get_product_types_allow_zero_price()
+                order_line
+                # Combo product lines will be checked after creating all of their combo item lines.
+                and order_line.product_template_id.type != 'combo'
+                and not order_line.combo_item_id
+                and order_line.price_unit == 0
+                and self.website_id.prevent_zero_price_sale
+                and product.service_tracking not in self.env['product.template']._get_product_types_allow_zero_price()
         ):
             raise UserError(_(
                 "The given product does not have a price therefore it cannot be added to cart.",
@@ -377,17 +379,17 @@ class SaleOrder(models.Model):
             'quantity': quantity,
             'option_ids': list(set(order_line.linked_line_ids.filtered(
                 lambda sol: sol.order_id == order_line.order_id).ids)
-            ),
+                               ),
             'warning': warning,
         }
 
     def _cart_find_product_line(
-        self,
-        product_id,
-        line_id=None,
-        linked_line_id=False,
-        no_variant_attribute_value_ids=None,
-        **kwargs
+            self,
+            product_id,
+            line_id=None,
+            linked_line_id=False,
+            no_variant_attribute_value_ids=None,
+            **kwargs
     ):
         """Find the cart line matching the given parameters.
 
@@ -433,7 +435,7 @@ class SaleOrder(models.Model):
         if product.product_tmpl_id._has_no_variant_attributes():
             filtered_sol = filtered_sol.filtered(
                 lambda sol:
-                    sol.product_no_variant_attribute_value_ids.ids == no_variant_attribute_value_ids
+                sol.product_no_variant_attribute_value_ids.ids == no_variant_attribute_value_ids
             )
 
         return filtered_sol
@@ -443,10 +445,10 @@ class SaleOrder(models.Model):
         return new_qty, ''
 
     def _prepare_order_line_values(
-        self, product_id, quantity, linked_line_id=False,
-        no_variant_attribute_value_ids=None, product_custom_attribute_values=None,
-        combo_item_id=None,
-        **kwargs
+            self, product_id, quantity, linked_line_id=False,
+            no_variant_attribute_value_ids=None, product_custom_attribute_values=None,
+            combo_item_id=None,
+            **kwargs
     ):
         self.ensure_one()
         product = self.env['product.product'].browse(product_id)
@@ -498,7 +500,8 @@ class SaleOrder(models.Model):
         if custom_values:
             values['product_custom_attribute_value_ids'] = [
                 fields.Command.create({
-                    'custom_product_template_attribute_value_id': custom_value['custom_product_template_attribute_value_id'],
+                    'custom_product_template_attribute_value_id': custom_value[
+                        'custom_product_template_attribute_value_id'],
                     'custom_value': custom_value['custom_value'],
                 }) for custom_value in custom_values
             ]
@@ -506,7 +509,7 @@ class SaleOrder(models.Model):
         return values
 
     def _prepare_order_line_update_values(
-        self, order_line, quantity, linked_line_id=False, **kwargs
+            self, order_line, quantity, linked_line_id=False, **kwargs
     ):
         self.ensure_one()
         values = {}
@@ -533,15 +536,18 @@ class SaleOrder(models.Model):
                 # Do not read ptavs if there is no accessory products to filter
                 combination = line.product_id.product_template_attribute_value_ids + line.product_no_variant_attribute_value_ids
                 all_accessory_products |= accessory_products.filtered(lambda product:
-                    product.id not in product_ids
-                    and product._website_show_quick_add()
-                    and product.filtered_domain(self.env['product.product']._check_company_domain(line.company_id))
-                    and product._is_variant_possible(parent_combination=combination)
-                    and (
-                        not self.website_id.prevent_zero_price_sale
-                        or product._get_contextual_price()
-                    )
-                )
+                                                                      product.id not in product_ids
+                                                                      and product._website_show_quick_add()
+                                                                      and product.filtered_domain(self.env[
+                                                                                                      'product.product']._check_company_domain(
+                                                                          line.company_id))
+                                                                      and product._is_variant_possible(
+                                                                          parent_combination=combination)
+                                                                      and (
+                                                                              not self.website_id.prevent_zero_price_sale
+                                                                              or product._get_contextual_price()
+                                                                      )
+                                                                      )
 
         return random.sample(all_accessory_products, len(all_accessory_products))
 
@@ -615,7 +621,8 @@ class SaleOrder(models.Model):
             if sale.partner_id not in latest_create_date_per_partner:
                 latest_create_date_per_partner[sale.partner_id] = sale.create_date
             else:
-                latest_create_date_per_partner[sale.partner_id] = max(latest_create_date_per_partner[sale.partner_id], sale.create_date)
+                latest_create_date_per_partner[sale.partner_id] = max(latest_create_date_per_partner[sale.partner_id],
+                                                                      sale.create_date)
         has_later_sale_order = {}
         for sale in sales_after_abandoned_date:
             if has_later_sale_order.get(sale.partner_id, False):
@@ -638,7 +645,8 @@ class SaleOrder(models.Model):
             lambda abandoned_sale_order:
             abandoned_sale_order.partner_id.email
             and not any(transaction.sudo().state == 'error' for transaction in abandoned_sale_order.transaction_ids)
-            and any(not float_is_zero(line.price_unit, precision_rounding=line.currency_id.rounding) for line in abandoned_sale_order.order_line)
+            and any(not float_is_zero(line.price_unit, precision_rounding=line.currency_id.rounding) for line in
+                    abandoned_sale_order.order_line)
             and not has_later_sale_order.get(abandoned_sale_order.partner_id, False)
         )
 
@@ -703,7 +711,7 @@ class SaleOrder(models.Model):
             *self.env['delivery.carrier']._check_company_domain(self.company_id),
         ]).filtered(lambda carrier: carrier._is_available_for_order(self))
 
-    #=== TOOLING ===#
+    # === TOOLING ===#
 
     def _is_anonymous_cart(self):
         """ Return whether the cart was created by the public user and no address was added yet.

@@ -2,10 +2,10 @@
 
 from itertools import chain
 
+from odoo.addons.sale_management.tests.common import SaleManagementCommon
+
 from odoo.fields import Command
 from odoo.tests import Form, tagged
-
-from odoo.addons.sale_management.tests.common import SaleManagementCommon
 
 
 @tagged('-at_install', 'post_install')
@@ -27,7 +27,8 @@ class TestSaleOrder(SaleManagementCommon):
         cls.pl_option_price = 100.0
         cls.tpl_option_discount = 20.0
         cls.pl_option_discount = (cls.pub_option_price - cls.pl_option_price) * 100 / cls.pub_option_price
-        cls.merged_option_discount = 100.0 - (100.0 - cls.pl_option_discount) * (100.0 - cls.tpl_option_discount) / 100.0
+        cls.merged_option_discount = 100.0 - (100.0 - cls.pl_option_discount) * (
+                    100.0 - cls.tpl_option_discount) / 100.0
 
         # create some products
         cls.product_1, cls.optional_product = cls.env['product.product'].create([
@@ -379,10 +380,10 @@ class TestSaleOrder(SaleManagementCommon):
         names_NL = ["Artikel 1", "Sectie 1", "Nota 1", "Optioneel artikel"]
         trans_dict = dict(zip(names_EN, names_NL))
         for record in chain(
-            self.quotation_template_no_discount.sale_order_template_line_ids,
-            self.quotation_template_no_discount.sale_order_template_line_ids.product_id,
-            self.quotation_template_no_discount.sale_order_template_option_ids,
-            self.quotation_template_no_discount.sale_order_template_option_ids.product_id,
+                self.quotation_template_no_discount.sale_order_template_line_ids,
+                self.quotation_template_no_discount.sale_order_template_line_ids.product_id,
+                self.quotation_template_no_discount.sale_order_template_option_ids,
+                self.quotation_template_no_discount.sale_order_template_option_ids.product_id,
         ):
             if not record.name:
                 continue

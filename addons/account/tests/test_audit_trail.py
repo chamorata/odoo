@@ -1,4 +1,5 @@
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
 from odoo.exceptions import UserError
 from odoo.fields import Command
 from odoo.tests import tagged, new_test_user

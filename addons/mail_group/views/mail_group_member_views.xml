@@ -6,9 +6,9 @@
         <field name="arch" type="xml">
             <list editable="top" sample="1">
                 <field name="email"
-                    force_save="1"
-                    required="1"
-                    readonly="partner_id"/>
+                       force_save="1"
+                       required="1"
+                       readonly="partner_id"/>
                 <field name="email_normalized" column_invisible="True" force_save="1"/>
                 <field name="partner_id"/>
                 <field name="mail_group_id"/>
@@ -20,7 +20,7 @@
         <field name="model">mail.group.member</field>
         <field name="arch" type="xml">
             <search string="Search Mail Group Member">
-                <field name="email" required="1" />
+                <field name="email" required="1"/>
                 <field name="partner_id"/>
                 <field name="mail_group_id"/>
             </search>

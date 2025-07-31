@@ -11,4 +11,4 @@ class L10nPeResCityDistrict(models.Model):
     city_id = fields.Many2one('res.city', 'City')
     code = fields.Char(
         help='This code will help with the identification of each district '
-        'in Peru.')
+             'in Peru.')

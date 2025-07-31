@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import lxml
 from datetime import datetime
 
-from odoo import http
+import lxml
 from odoo.addons.test_mail_full.tests.common import TestMailFullCommon
 from odoo.addons.test_mail_sms.tests.common import TestSMSRecipients
+
+from odoo import http
 from odoo.tests import tagged
 from odoo.tests.common import users, warmup
 from odoo.tools import mute_logger
@@ -64,8 +65,8 @@ class TestRatingFlow(TestRatingCommon):
     @mute_logger('odoo.addons.mail.models.mail_mail')
     def test_rating_rating_apply(self):
         for record_rating, expected_subtype, is_rating_mixin_test in (
-            (self.record_rating_thread, self.env.ref('mail.mt_comment'), False),
-            (self.record_rating, self.env.ref('test_mail_full.mt_mail_test_rating_rating_done'), True),
+                (self.record_rating_thread, self.env.ref('mail.mt_comment'), False),
+                (self.record_rating, self.env.ref('test_mail_full.mt_mail_test_rating_rating_done'), True),
         ):
             with self.subTest('With rating mixin' if is_rating_mixin_test else 'Without rating mixin'):
                 record_rating = record_rating.with_env(self.env)
@@ -137,10 +138,12 @@ class TestRatingMixin(TestRatingCommon):
         # Make sure to update the write_date which is used to retrieve the last rating
         last_rating.write_date = datetime(2022, 1, 1, 14, 00)
         access_1 = record_rating._rating_get_access_token()
-        last_rating = record_rating.rating_apply(1, token=access_1, feedback="This record sucks so much. I want to speak to the manager !")
+        last_rating = record_rating.rating_apply(1, token=access_1,
+                                                 feedback="This record sucks so much. I want to speak to the manager !")
         last_rating.write_date = datetime(2022, 2, 1, 14, 00)
         access_2 = record_rating._rating_get_access_token()
-        last_rating = record_rating.rating_apply(5, token=access_2, feedback="This is the best record ever ! I wish I read the documentation before complaining !")
+        last_rating = record_rating.rating_apply(5, token=access_2,
+                                                 feedback="This is the best record ever ! I wish I read the documentation before complaining !")
         last_rating.write_date = datetime(2022, 3, 1, 14, 00)
         record_rating.rating_ids.flush_model(['write_date'])
 
@@ -188,7 +191,6 @@ class TestRatingPerformance(TestRatingCommon):
     @users('employee')
     @warmup
     def test_rating_last_value_perfs_with_rating_mixin(self):
-
         with self.assertQueryCount(employee=1715):
             self.create_ratings('mail.test.rating')
 
@@ -196,7 +198,6 @@ class TestRatingPerformance(TestRatingCommon):
             self.apply_ratings(1)
 
         with self.assertQueryCount(employee=2203):
-
             self.apply_ratings(5)
 
         with self.assertQueryCount(employee=1):

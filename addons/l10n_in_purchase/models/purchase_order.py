@@ -8,15 +8,15 @@ class PurchaseOrder(models.Model):
     _inherit = "purchase.order"
 
     l10n_in_gst_treatment = fields.Selection([
-            ('regular', 'Registered Business - Regular'),
-            ('composition', 'Registered Business - Composition'),
-            ('unregistered', 'Unregistered Business'),
-            ('consumer', 'Consumer'),
-            ('overseas', 'Overseas'),
-            ('special_economic_zone', 'Special Economic Zone'),
-            ('deemed_export', 'Deemed Export'),
-            ('uin_holders', 'UIN Holders'),
-        ], string="GST Treatment", compute="_compute_l10n_in_gst_treatment", store=True)
+        ('regular', 'Registered Business - Regular'),
+        ('composition', 'Registered Business - Composition'),
+        ('unregistered', 'Unregistered Business'),
+        ('consumer', 'Consumer'),
+        ('overseas', 'Overseas'),
+        ('special_economic_zone', 'Special Economic Zone'),
+        ('deemed_export', 'Deemed Export'),
+        ('uin_holders', 'UIN Holders'),
+    ], string="GST Treatment", compute="_compute_l10n_in_gst_treatment", store=True)
 
     @api.depends('partner_id')
     def _compute_l10n_in_gst_treatment(self):

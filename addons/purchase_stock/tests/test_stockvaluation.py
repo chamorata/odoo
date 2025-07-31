@@ -3,16 +3,17 @@
 
 import time
 from datetime import datetime, timedelta
-from freezegun import freeze_time
 from unittest.mock import patch
+
+from freezegun import freeze_time
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+from odoo.addons.stock.tests.common import TestStockCommon
 
 import odoo
 from odoo import fields, exceptions, Command
 from odoo.tests import Form
 from odoo.tests.common import TransactionCase, tagged
-from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
-from odoo.addons.stock.tests.common import TestStockCommon
 
 
 class TestStockValuation(TransactionCase):
@@ -66,7 +67,6 @@ class TestStockValuation(TransactionCase):
         })
         cls.env.ref('base.EUR').active = True
 
-
     def test_different_uom(self):
         """ Set a quantity to replenish via the "Buy" route
         where product_uom is different from purchase uom
@@ -103,7 +103,8 @@ class TestStockValuation(TransactionCase):
 
         # Create a manual replenishment
         replenishment_uom_qty = 200
-        replenish_wizard = self.env['product.replenish'].with_context(default_product_tmpl_id=self.product1.product_tmpl_id.id).create({
+        replenish_wizard = self.env['product.replenish'].with_context(
+            default_product_tmpl_id=self.product1.product_tmpl_id.id).create({
             'product_id': self.product1.id,
             'product_tmpl_id': self.product1.product_tmpl_id.id,
             'product_uom_id': ap.id,
@@ -120,8 +121,8 @@ class TestStockValuation(TransactionCase):
 
         order_line = last_po_id.order_line.search([('product_id', '=', self.product1.id)])
         self.assertEqual(order_line.product_qty,
-            ap._compute_quantity(replenishment_uom_qty, kgm, rounding_method='HALF-UP'),
-            'Quantities does not match')
+                         ap._compute_quantity(replenishment_uom_qty, kgm, rounding_method='HALF-UP'),
+                         'Quantities does not match')
 
         # Recieve products
         last_po_id.button_confirm()
@@ -132,8 +133,8 @@ class TestStockValuation(TransactionCase):
         picking.button_validate()
 
         self.assertEqual(move.stock_valuation_layer_ids.unit_cost,
-            last_po_id.currency_id.round(ap_price),
-            "Wrong Unit price")
+                         last_po_id.currency_id.round(ap_price),
+                         "Wrong Unit price")
 
     def test_change_unit_cost_average_1(self):
         """ Confirm a purchase order and create the associated receipt, change the unit cost of the
@@ -164,7 +165,6 @@ class TestStockValuation(TransactionCase):
 
         # update the unit price on the purchase order line
         po1.order_line.price_unit = 200
-
 
         # validate the receipt
         picking1.button_validate()
@@ -358,7 +358,8 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
             'property_stock_account_output_categ_id': cls.stock_output_account.id,
             'property_stock_valuation_account_id': cls.stock_valuation_account.id,
             'property_stock_journal': cls.stock_journal.id,
-            'property_account_creditor_price_difference_categ': cls.product1.product_tmpl_id.get_product_accounts()['expense'],
+            'property_account_creditor_price_difference_categ': cls.product1.product_tmpl_id.get_product_accounts()[
+                'expense'],
             'property_valuation': 'real_time',
         })
 
@@ -410,7 +411,8 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
         return rinv
 
     def _return(self, picking, qty=None):
-        wizard_form = Form(self.env['stock.return.picking'].with_context(active_ids=picking.ids, active_id=picking.id, active_model='stock.picking'))
+        wizard_form = Form(self.env['stock.return.picking'].with_context(active_ids=picking.ids, active_id=picking.id,
+                                                                         active_model='stock.picking'))
         wizard = wizard_form.save()
         qty = qty or picking.move_ids.quantity
         for line in wizard.product_return_moves:
@@ -610,7 +612,8 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
         receipt.move_ids.picked = True
         receipt.button_validate()
 
-        stock_valuation_aml = self.env['account.move.line'].search([('account_id', '=', self.stock_valuation_account.id)])
+        stock_valuation_aml = self.env['account.move.line'].search(
+            [('account_id', '=', self.stock_valuation_account.id)])
         receipt_aml = stock_valuation_aml[0]
         self.assertEqual(len(stock_valuation_aml), 1, "For now, only one line for the stock valuation account")
         self.assertAlmostEqual(receipt_aml.debit, 10, msg="Should be equal to the PO line unit price (10)")
@@ -626,9 +629,11 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
         invoice.action_post()
 
         # Check what was posted in the stock valuation account
-        stock_valuation_aml = self.env['account.move.line'].search([('account_id', '=', self.stock_valuation_account.id)])
+        stock_valuation_aml = self.env['account.move.line'].search(
+            [('account_id', '=', self.stock_valuation_account.id)])
         price_diff_aml = stock_valuation_aml - receipt_aml
-        self.assertEqual(len(stock_valuation_aml), 2, "A second line should have been generated for the price difference.")
+        self.assertEqual(len(stock_valuation_aml), 2,
+                         "A second line should have been generated for the price difference.")
         self.assertAlmostEqual(price_diff_aml.debit, 5, msg="Price difference should be equal to 5 (15-10)")
         self.assertAlmostEqual(
             sum(stock_valuation_aml.mapped('debit')), 15,
@@ -636,12 +641,16 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
 
         # Check what was posted in stock input account
         input_aml = self.env['account.move.line'].search([('account_id', '=', self.stock_input_account.id)])
-        self.assertEqual(len(input_aml), 3, "Only three lines should have been generated in stock input account: one when receiving the product, one when making the invoice.")
+        self.assertEqual(len(input_aml), 3,
+                         "Only three lines should have been generated in stock input account: one when receiving the product, one when making the invoice.")
         invoice_amls = input_aml.filtered(lambda l: l.move_id == invoice)
         picking_aml = input_aml - invoice_amls
-        self.assertEqual(sum(invoice_amls.mapped('debit')), 15, "Total debit value on stock input account should be equal to the invoice price of the product.")
-        self.assertEqual(sum(invoice_amls.mapped('credit')), 0, "Invoice account move lines should not contains information on stock input at this point.")
-        self.assertEqual(sum(picking_aml.mapped('credit')), 15, "Total credit value on stock input account should be equal to the invoice price of the product.")
+        self.assertEqual(sum(invoice_amls.mapped('debit')), 15,
+                         "Total debit value on stock input account should be equal to the invoice price of the product.")
+        self.assertEqual(sum(invoice_amls.mapped('credit')), 0,
+                         "Invoice account move lines should not contains information on stock input at this point.")
+        self.assertEqual(sum(picking_aml.mapped('credit')), 15,
+                         "Total credit value on stock input account should be equal to the invoice price of the product.")
 
     def test_valuation_from_increasing_tax(self):
         """ Check that a tax without account will increment the stock value.
@@ -720,7 +729,7 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
                     'product_id': self.product1.id,
                     'product_qty': 1.0,
                     'product_uom': self.product1.uom_po_id.id,
-                    'price_unit': 100.0, # 50$
+                    'price_unit': 100.0,  # 50$
                     'date_planned': date_po,
                 }),
             ],
@@ -754,20 +763,25 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
 
         # Check what was posted in stock input account
         input_amls = self.env['account.move.line'].search([('account_id', '=', self.stock_input_account.id)])
-        self.assertEqual(len(input_amls), 3, "Only three lines should have been generated in stock input account: one when receiving the product, one when making the invoice.")
+        self.assertEqual(len(input_amls), 3,
+                         "Only three lines should have been generated in stock input account: one when receiving the product, one when making the invoice.")
         invoice_amls = input_amls.filtered(lambda l: l.move_id == inv)
         picking_aml = input_amls - invoice_amls
         payable_aml = invoice_amls.filtered(lambda l: l.amount_currency > 0)
         diff_aml = invoice_amls - payable_aml
 
         # check USD
-        self.assertAlmostEqual(payable_aml.debit, 50, msg="Total debit value should be equal to the original PO price of the product.")
-        self.assertAlmostEqual(picking_aml.credit, 10, msg="credit value for stock should be equal to the standard price of the product.")
+        self.assertAlmostEqual(payable_aml.debit, 50,
+                               msg="Total debit value should be equal to the original PO price of the product.")
+        self.assertAlmostEqual(picking_aml.credit, 10,
+                               msg="credit value for stock should be equal to the standard price of the product.")
         self.assertAlmostEqual(diff_aml.credit, 40, msg="credit value for price difference")
 
         # check EUR
-        self.assertAlmostEqual(payable_aml.amount_currency, 100, msg="Total debit value should be equal to the original PO price of the product.")
-        self.assertAlmostEqual(picking_aml.amount_currency, -20, msg="credit value for stock should be equal to the standard price of the product.")
+        self.assertAlmostEqual(payable_aml.amount_currency, 100,
+                               msg="Total debit value should be equal to the original PO price of the product.")
+        self.assertAlmostEqual(picking_aml.amount_currency, -20,
+                               msg="credit value for stock should be equal to the standard price of the product.")
         self.assertAlmostEqual(diff_aml.amount_currency, -80, msg="credit value for price difference")
 
     def test_bill_on_ordered_qty_valuation_multicurrency(self):
@@ -1009,8 +1023,10 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
         picking_aml = picking_am.line_ids.filtered(lambda line: line.account_id.id == self.stock_valuation_account.id)
 
         # check EUR
-        self.assertAlmostEqual(invoice_aml.amount_currency, 100, msg="Total debit value should be equal to the original PO price of the product.")
-        self.assertAlmostEqual(picking_aml.amount_currency, 100, msg="credit value for stock should be equal to the untaxed price of the product.")
+        self.assertAlmostEqual(invoice_aml.amount_currency, 100,
+                               msg="Total debit value should be equal to the original PO price of the product.")
+        self.assertAlmostEqual(picking_aml.amount_currency, 100,
+                               msg="credit value for stock should be equal to the untaxed price of the product.")
 
     def test_valuation_multicurrency_with_tax_without_account(self):
         """ Similar test as test_valuation_multicurrency_with_tax, but without the accounts in the tax.
@@ -1063,7 +1079,8 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
         picking_am = receipt.move_ids.stock_valuation_layer_ids.account_move_id.ensure_one()
         picking_aml = picking_am.line_ids.filtered(lambda line: line.account_id.id == self.stock_valuation_account.id)
 
-        self.assertAlmostEqual(picking_aml.amount_currency, 100, msg="The tax without account should be included in the stock value, and impact the amount_currency.")
+        self.assertAlmostEqual(picking_aml.amount_currency, 100,
+                               msg="The tax without account should be included in the stock value, and impact the amount_currency.")
 
     def test_average_realtime_anglo_saxon_valuation_multicurrency_same_date(self):
         """
@@ -1211,6 +1228,7 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
         # To allow testing validation of PO
         def _today(*args, **kwargs):
             return date_po
+
         patchers = [
             patch('odoo.fields.Date.context_today', _today),
         ]
@@ -1412,8 +1430,8 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
         today = date_delivery
         picking = po.picking_ids
         (picking.move_ids
-            .filtered(lambda l: l.purchase_line_id == line_product_avg)
-            .write({'quantity': 1.0, 'picked': True}))
+         .filtered(lambda l: l.purchase_line_id == line_product_avg)
+         .write({'quantity': 1.0, 'picked': True}))
 
         picking.button_validate()
         # 5 Units received at rate 0.7 = 42.86
@@ -1443,14 +1461,14 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
 
         self.assertRecordValues(inv.line_ids, [
             # pylint: disable=C0326
-            {'balance': 15.0,   'amount_currency': 30.0,    'account_id': self.stock_input_account.id},
-            {'balance': -15.0,  'amount_currency': -30.0,   'account_id': self.company_data['default_account_payable'].id},
+            {'balance': 15.0, 'amount_currency': 30.0, 'account_id': self.stock_input_account.id},
+            {'balance': -15.0, 'amount_currency': -30.0, 'account_id': self.company_data['default_account_payable'].id},
         ])
         self.assertRecordValues(inv.line_ids.full_reconcile_id.reconciled_line_ids.sorted('balance'), [
             # pylint: disable=C0326
-            {'balance': -42.86, 'amount_currency': -30.0,   'account_id': self.stock_input_account.id},
-            {'balance': 15.0,   'amount_currency': 30.0,    'account_id': self.stock_input_account.id},
-            {'balance': 27.86,  'amount_currency': 0.0,     'account_id': self.stock_input_account.id},
+            {'balance': -42.86, 'amount_currency': -30.0, 'account_id': self.stock_input_account.id},
+            {'balance': 15.0, 'amount_currency': 30.0, 'account_id': self.stock_input_account.id},
+            {'balance': 27.86, 'amount_currency': 0.0, 'account_id': self.stock_input_account.id},
         ])
         input_aml = self.env['account.move.line'].search([('account_id', '=', self.stock_input_account.id)])
         self.assertEqual(len(input_aml), 3)
@@ -1511,8 +1529,8 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
         line_product_avg = po.order_line.filtered(lambda l: l.product_id == product_avg)
         picking = po.picking_ids
         (picking.move_ids
-            .filtered(lambda l: l.purchase_line_id == line_product_avg)
-            .write({'quantity': 1.0, 'picked': True}))
+         .filtered(lambda l: l.purchase_line_id == line_product_avg)
+         .write({'quantity': 1.0, 'picked': True}))
 
         picking.button_validate()
         # 5 Units received at rate 2 = 42.86
@@ -1542,14 +1560,15 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
         inv.action_post()
         self.assertRecordValues(inv.line_ids, [
             # pylint: disable=C0326
-            {'balance': 120.0,  'amount_currency': 30.0,    'account_id': self.stock_input_account.id},
-            {'balance': -120.0, 'amount_currency': -30.0,   'account_id': self.company_data['default_account_payable'].id},
+            {'balance': 120.0, 'amount_currency': 30.0, 'account_id': self.stock_input_account.id},
+            {'balance': -120.0, 'amount_currency': -30.0,
+             'account_id': self.company_data['default_account_payable'].id},
         ])
         self.assertRecordValues(inv.line_ids.full_reconcile_id.reconciled_line_ids.sorted('id'), [
             # pylint: disable=C0326
-            {'balance': -60.0,  'amount_currency': -30.0,   'account_id': self.stock_input_account.id},
-            {'balance': 120.0,  'amount_currency': 30.0,    'account_id': self.stock_input_account.id},
-            {'balance': -60.0,  'amount_currency': 0.0,     'account_id': self.stock_input_account.id},
+            {'balance': -60.0, 'amount_currency': -30.0, 'account_id': self.stock_input_account.id},
+            {'balance': 120.0, 'amount_currency': 30.0, 'account_id': self.stock_input_account.id},
+            {'balance': -60.0, 'amount_currency': 0.0, 'account_id': self.stock_input_account.id},
         ])
         input_aml = self.env['account.move.line'].search([('account_id', '=', self.stock_input_account.id)])
         self.assertEqual(len(input_aml), 3)
@@ -1639,8 +1658,8 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
         with freeze_time(date_delivery):
             picking = po.picking_ids
             (picking.move_ids
-                .filtered(lambda l: l.purchase_line_id == line_product_avg)
-                .write({'quantity': 5.0, 'picked': True}))
+             .filtered(lambda l: l.purchase_line_id == line_product_avg)
+             .write({'quantity': 5.0, 'picked': True}))
 
             picking.button_validate()
             picking._action_done()  # Create Backorder
@@ -1673,8 +1692,8 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
         with freeze_time(date_delivery1):
             backorder_picking = self.env['stock.picking'].search([('backorder_id', '=', picking.id)])
             (backorder_picking.move_ids
-                .filtered(lambda l: l.purchase_line_id == line_product_avg)
-                .write({'quantity': 5.0, 'picked': True}))
+             .filtered(lambda l: l.purchase_line_id == line_product_avg)
+             .write({'quantity': 5.0, 'picked': True}))
             backorder_picking.button_validate()
         # 5 Units invoiced at rate 2 (10) + 5 Units received at rate 0.8 (37.50) = 23.75
         self.assertAlmostEqual(product_avg.standard_price, 23.75)
@@ -1707,8 +1726,9 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
 
         self.assertRecordValues(inv.line_ids, [
             # pylint: disable=C0326
-            {'balance': 50.0,   'amount_currency': 100.0,   'account_id': self.stock_input_account.id},
-            {'balance': -50.0,  'amount_currency': -100.0,  'account_id': self.company_data['default_account_payable'].id},
+            {'balance': 50.0, 'amount_currency': 100.0, 'account_id': self.stock_input_account.id},
+            {'balance': -50.0, 'amount_currency': -100.0,
+             'account_id': self.company_data['default_account_payable'].id},
         ])
 
         ##########################
@@ -1717,8 +1737,9 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
 
         self.assertRecordValues(inv1.line_ids, [
             # pylint: disable=C0326
-            {'balance': 90.91,  'amount_currency': 200.0,   'account_id': self.stock_input_account.id},
-            {'balance': -90.91, 'amount_currency': -200.0,  'account_id': self.company_data['default_account_payable'].id},
+            {'balance': 90.91, 'amount_currency': 200.0, 'account_id': self.stock_input_account.id},
+            {'balance': -90.91, 'amount_currency': -200.0,
+             'account_id': self.company_data['default_account_payable'].id},
         ])
 
         ##########################
@@ -1728,17 +1749,17 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
         self.assertTrue(inv1.line_ids.full_reconcile_id)
         self.assertRecordValues(inv.line_ids.full_reconcile_id.reconciled_line_ids.sorted('id'), [
             # pylint: disable=C0326
-            {'balance': -214.29,    'amount_currency': -150.0},
-            {'balance': 50,         'amount_currency': 100},
-            {'balance': 164.29,     'amount_currency': 0.0},
-            {'balance': 0.00,       'amount_currency': 50}
+            {'balance': -214.29, 'amount_currency': -150.0},
+            {'balance': 50, 'amount_currency': 100},
+            {'balance': 164.29, 'amount_currency': 0.0},
+            {'balance': 0.00, 'amount_currency': 50}
         ])
         self.assertRecordValues(inv1.line_ids.full_reconcile_id.reconciled_line_ids.sorted('id'), [
             # pylint: disable=C0326
-            {'balance': -187.5,     'amount_currency': -150.0},
-            {'balance': 90.91,      'amount_currency': 200.0},
-            {'balance': 96.59,      'amount_currency': 0.0},
-            {'balance': 0.00,       'amount_currency': -50.0},
+            {'balance': -187.5, 'amount_currency': -150.0},
+            {'balance': 90.91, 'amount_currency': 200.0},
+            {'balance': 96.59, 'amount_currency': 0.0},
+            {'balance': 0.00, 'amount_currency': -50.0},
         ])
 
     def test_anglosaxon_valuation_price_total_diff_discount(self):
@@ -1778,18 +1799,23 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
         invoice.action_post()
 
         # Check what was posted in the stock valuation account
-        stock_valuation_aml = self.env['account.move.line'].search([('account_id', '=', self.stock_valuation_account.id)])
+        stock_valuation_aml = self.env['account.move.line'].search(
+            [('account_id', '=', self.stock_valuation_account.id)])
         self.assertEqual(
             len(stock_valuation_aml), 2,
             "Two lines for the stock valuation account: one from the receipt (debit 110) and one from the bill (credit 20)")
         self.assertAlmostEqual(sum(stock_valuation_aml.mapped('debit')), 110)
-        self.assertAlmostEqual(sum(stock_valuation_aml.mapped('credit')), 20, msg="Credit of 20 because of the difference between the PO and its invoice")
+        self.assertAlmostEqual(sum(stock_valuation_aml.mapped('credit')), 20,
+                               msg="Credit of 20 because of the difference between the PO and its invoice")
 
         # Check what was posted in stock input account
-        input_aml = self.env['account.move.line'].search([('account_id','=', self.stock_input_account.id)])
-        self.assertEqual(len(input_aml), 3, "Only two lines should have been generated in stock input account: one when receiving the product, two when making the invoice.")
-        self.assertAlmostEqual(sum(input_aml.mapped('debit')), 110, msg="Total debit value on stock input account should be equal to the original PO price of the product.")
-        self.assertAlmostEqual(sum(input_aml.mapped('credit')), 110, msg="Total credit value on stock input account should be equal to the original PO price of the product.")
+        input_aml = self.env['account.move.line'].search([('account_id', '=', self.stock_input_account.id)])
+        self.assertEqual(len(input_aml), 3,
+                         "Only two lines should have been generated in stock input account: one when receiving the product, two when making the invoice.")
+        self.assertAlmostEqual(sum(input_aml.mapped('debit')), 110,
+                               msg="Total debit value on stock input account should be equal to the original PO price of the product.")
+        self.assertAlmostEqual(sum(input_aml.mapped('credit')), 110,
+                               msg="Total credit value on stock input account should be equal to the original PO price of the product.")
 
     def test_anglosaxon_valuation_discount(self):
         """
@@ -1828,16 +1854,22 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
         invoice.action_post()
 
         # Check what was posted in the stock valuation account
-        stock_valuation_aml = self.env['account.move.line'].search([('account_id', '=', self.stock_valuation_account.id)])
-        self.assertEqual(len(stock_valuation_aml), 2, "Only one line should have been generated in the price difference account.")
+        stock_valuation_aml = self.env['account.move.line'].search(
+            [('account_id', '=', self.stock_valuation_account.id)])
+        self.assertEqual(len(stock_valuation_aml), 2,
+                         "Only one line should have been generated in the price difference account.")
         self.assertAlmostEqual(sum(stock_valuation_aml.mapped('debit')), 100)
-        self.assertAlmostEqual(sum(stock_valuation_aml.mapped('credit')), 10, msg="Credit of 10 because of the 10% discount")
+        self.assertAlmostEqual(sum(stock_valuation_aml.mapped('credit')), 10,
+                               msg="Credit of 10 because of the 10% discount")
 
         # Check what was posted in stock input account
         input_aml = self.env['account.move.line'].search([('account_id', '=', self.stock_input_account.id)])
-        self.assertEqual(len(input_aml), 3, "Three lines generated in stock input account: one when receiving the product, two when making the invoice.")
-        self.assertAlmostEqual(sum(input_aml.mapped('debit')), 100, msg="Total debit value on stock input account should be equal to the original PO price of the product.")
-        self.assertAlmostEqual(sum(input_aml.mapped('credit')), 100, msg="Total credit value on stock input account should be equal to the original PO price of the product.")
+        self.assertEqual(len(input_aml), 3,
+                         "Three lines generated in stock input account: one when receiving the product, two when making the invoice.")
+        self.assertAlmostEqual(sum(input_aml.mapped('debit')), 100,
+                               msg="Total debit value on stock input account should be equal to the original PO price of the product.")
+        self.assertAlmostEqual(sum(input_aml.mapped('credit')), 100,
+                               msg="Total credit value on stock input account should be equal to the original PO price of the product.")
 
     def test_anglosaxon_valuation_price_unit_diff_discount(self):
         """
@@ -1877,13 +1909,17 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
 
         # Check if something was posted in the price difference account
         price_diff_aml = self.env['account.move.line'].search([('account_id', '=', self.stock_valuation_account.id)])
-        self.assertEqual(price_diff_aml.debit, 90, "Should have only one line in the stock valuation account, created by the receipt.")
+        self.assertEqual(price_diff_aml.debit, 90,
+                         "Should have only one line in the stock valuation account, created by the receipt.")
 
         # Check what was posted in stock input account
         input_aml = self.env['account.move.line'].search([('account_id', '=', self.stock_input_account.id)])
-        self.assertEqual(len(input_aml), 2, "Only two lines should have been generated in stock input account: one when receiving the product, one when making the invoice.")
-        self.assertAlmostEqual(sum(input_aml.mapped('debit')), 90, "Total debit value on stock input account should be equal to the original PO price of the product.")
-        self.assertAlmostEqual(sum(input_aml.mapped('credit')), 90, "Total credit value on stock input account should be equal to the original PO price of the product.")
+        self.assertEqual(len(input_aml), 2,
+                         "Only two lines should have been generated in stock input account: one when receiving the product, one when making the invoice.")
+        self.assertAlmostEqual(sum(input_aml.mapped('debit')), 90,
+                               "Total debit value on stock input account should be equal to the original PO price of the product.")
+        self.assertAlmostEqual(sum(input_aml.mapped('credit')), 90,
+                               "Total credit value on stock input account should be equal to the original PO price of the product.")
 
     def test_anglosaxon_valuation_price_unit_diff_avco(self):
         """
@@ -1899,7 +1935,8 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
             'invoice_date': '2022-03-31',
             'partner_id': self.partner_id.id,
             'invoice_line_ids': [
-                (0, 0, {'product_id': self.product1.id, 'quantity': 10.50, 'price_unit': 1.01, 'tax_ids': self.tax_purchase_a.ids})
+                (0, 0, {'product_id': self.product1.id, 'quantity': 10.50, 'price_unit': 1.01,
+                        'tax_ids': self.tax_purchase_a.ids})
             ]
         })
 
@@ -1934,7 +1971,7 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
         On top of that, make sure that everything will still work if the option
         "Lock Posted Entries with Hash" is enabled on the stock journal
         """
-        expected_svl_values = [] # USD
+        expected_svl_values = []  # USD
         warehouse = self.env['stock.warehouse'].search([('company_id', '=', self.env.company.id)], limit=1)
         stock_location = warehouse.lot_stock_id
         customer_location = self.env.ref('stock.stock_location_customers')
@@ -2025,11 +2062,11 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
         input_amls = self.env['account.move.line'].search([('account_id', '=', self.stock_input_account.id)])
         bills = self.env['account.move']
         # pylint: disable=bad-whitespace
-        for qty,    new_svl_expected,       expected_valuations,    expected_expenses in [
-            (1,     [],                     [],                     [10.0]),    # 1 hundred already out
-            (3,     [],                     [],                     [30.0]),    # 3 hundred already out
-            (2,     [1 * 10.0],             [10.0],                 [10.0]),    # 1 hundred already out and 1 hundred in stock (from R1)
-            (4,     [1 * 10.0, 3 * 10.0],   [3 * 10.0, 1 * 10.0],   []),        # 4 hundred in stock, 1 from R1 and 3 from R2
+        for qty, new_svl_expected, expected_valuations, expected_expenses in [
+            (1, [], [], [10.0]),  # 1 hundred already out
+            (3, [], [], [30.0]),  # 3 hundred already out
+            (2, [1 * 10.0], [10.0], [10.0]),  # 1 hundred already out and 1 hundred in stock (from R1)
+            (4, [1 * 10.0, 3 * 10.0], [3 * 10.0, 1 * 10.0], []),  # 4 hundred in stock, 1 from R1 and 3 from R2
         ]:
             bill_form = Form(self.env['account.move'].with_context(default_move_type='in_invoice'))
             bill_form.invoice_date = bill_form.date
@@ -2049,16 +2086,20 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
             self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('value'), expected_svl_values, err_msg)
 
             # account side
-            new_valuation_amls = self.env['account.move.line'].search([('account_id', '=', self.stock_valuation_account.id), ('id', 'not in', valuation_amls.ids)])
-            new_expense_amls = self.env['account.move.line'].search([('account_id', '=', expense_account.id), ('id', 'not in', expense_amls.ids)])
-            new_input_amls = self.env['account.move.line'].search([('account_id', '=', self.stock_input_account.id), ('id', 'not in', input_amls.ids)])
+            new_valuation_amls = self.env['account.move.line'].search(
+                [('account_id', '=', self.stock_valuation_account.id), ('id', 'not in', valuation_amls.ids)])
+            new_expense_amls = self.env['account.move.line'].search(
+                [('account_id', '=', expense_account.id), ('id', 'not in', expense_amls.ids)])
+            new_input_amls = self.env['account.move.line'].search(
+                [('account_id', '=', self.stock_input_account.id), ('id', 'not in', input_amls.ids)])
             valuation_amls |= new_valuation_amls
             expense_amls |= new_expense_amls
             input_amls |= new_input_amls
 
             self.assertEqual(new_valuation_amls.mapped('debit'), expected_valuations, err_msg)
             self.assertEqual(new_expense_amls.mapped('debit'), expected_expenses, err_msg)
-            self.assertEqual(new_input_amls.filtered(lambda aml: aml.credit > 0).mapped('credit'), expected_expenses + expected_valuations, err_msg)
+            self.assertEqual(new_input_amls.filtered(lambda aml: aml.credit > 0).mapped('credit'),
+                             expected_expenses + expected_valuations, err_msg)
             self.assertEqual(new_input_amls.filtered(lambda aml: aml.debit > 0).debit, qty * 60, err_msg)
 
         # All AML of Stock Interim Receipt should be reconciled
@@ -2215,16 +2256,20 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
         self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('value'), expected_svl_values)
 
         # pylint: disable=bad-whitespace
-        for qty,    price,  expected_svl_values,                                expected_svl_remaining_values in [
-            (3.0,   12.0,   [40.0, 30.0, 50.0, 6.0],                            [46.0, 30.0, 50.0, 0.0]),
-            (2.0,   11.0,   [40.0, 30.0, 50.0, 6.0, 1.0, 1.0],                  [47.0, 31.0, 50.0, 0.0, 0.0, 0.0]),
-            (1.0,   15.0,   [40.0, 30.0, 50.0, 6.0, 1.0, 1.0, 5.0],             [47.0, 36.0, 50.0, 0.0, 0.0, 0.0, 0.0]),
-            (4.0,   9.0,    [40.0, 30.0, 50.0, 6.0, 1.0, 1.0, 5.0, -1.0, -3.0], [47.0, 35.0, 47.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]),
-            (2.0,   10.0,   [40.0, 30.0, 50.0, 6.0, 1.0, 1.0, 5.0, -1.0, -3.0], [47.0, 35.0, 47.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]),
+        for qty, price, expected_svl_values, expected_svl_remaining_values in [
+            (3.0, 12.0, [40.0, 30.0, 50.0, 6.0], [46.0, 30.0, 50.0, 0.0]),
+            (2.0, 11.0, [40.0, 30.0, 50.0, 6.0, 1.0, 1.0], [47.0, 31.0, 50.0, 0.0, 0.0, 0.0]),
+            (1.0, 15.0, [40.0, 30.0, 50.0, 6.0, 1.0, 1.0, 5.0], [47.0, 36.0, 50.0, 0.0, 0.0, 0.0, 0.0]),
+            (4.0, 9.0, [40.0, 30.0, 50.0, 6.0, 1.0, 1.0, 5.0, -1.0, -3.0],
+             [47.0, 35.0, 47.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]),
+            (2.0, 10.0, [40.0, 30.0, 50.0, 6.0, 1.0, 1.0, 5.0, -1.0, -3.0],
+             [47.0, 35.0, 47.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]),
         ]:
             self._bill(po, qty, price)
-            self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('value'), expected_svl_values, 'Err while invoicing %s @ %s' % (qty, price))
-            self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('remaining_value'), expected_svl_remaining_values, 'Err while invoicing %s @ %s' % (qty, price))
+            self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('value'), expected_svl_values,
+                             'Err while invoicing %s @ %s' % (qty, price))
+            self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('remaining_value'),
+                             expected_svl_remaining_values, 'Err while invoicing %s @ %s' % (qty, price))
 
         bill01, bill02, _bill03, bill04, bill05 = po.invoice_ids.sorted('id')
 
@@ -2234,7 +2279,8 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
         # should impact the first layer
         expected_svl_remaining_values[0] -= 2.0
         self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('value'), expected_svl_values)
-        self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('remaining_value'), expected_svl_remaining_values)
+        self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('remaining_value'),
+                         expected_svl_remaining_values)
 
         self._refund(bill02)
         expected_svl_values += [-1.0, -1.0]
@@ -2243,7 +2289,8 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
         expected_svl_remaining_values[0] -= 1.0
         expected_svl_remaining_values[1] -= 1.0
         self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('value'), expected_svl_values)
-        self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('remaining_value'), expected_svl_remaining_values)
+        self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('remaining_value'),
+                         expected_svl_remaining_values)
 
         self._refund(bill04, 2.0)
         expected_svl_values += [1.0, 1.0]
@@ -2252,11 +2299,13 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
         expected_svl_remaining_values[1] += 1.0
         expected_svl_remaining_values[2] += 1.0
         self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('value'), expected_svl_values)
-        self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('remaining_value'), expected_svl_remaining_values)
+        self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('remaining_value'),
+                         expected_svl_remaining_values)
 
         self._refund(bill05, 1.0)
         self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('value'), expected_svl_values)
-        self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('remaining_value'), expected_svl_remaining_values)
+        self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('remaining_value'),
+                         expected_svl_remaining_values)
 
         self._bill(po, price=18.0)
         expected_svl_values += [16.0, 16.0, 16.0]
@@ -2266,10 +2315,12 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
         expected_svl_remaining_values[1] += 16.0
         expected_svl_remaining_values[2] += 16.0
         self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('value'), expected_svl_values)
-        self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('remaining_value'), expected_svl_remaining_values)
+        self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('remaining_value'),
+                         expected_svl_remaining_values)
 
         accounts = self.product1.product_tmpl_id._get_product_accounts()
-        stock_in_amls = self.env['account.move.line'].search([('account_id', '=', accounts['stock_input'].id)], order='id')
+        stock_in_amls = self.env['account.move.line'].search([('account_id', '=', accounts['stock_input'].id)],
+                                                             order='id')
         self.assertRecordValues(stock_in_amls, [
             # Receipts
             {'debit': 0.0, 'credit': 40.0},
@@ -2349,14 +2400,16 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
         expected_svl_values += [100.0]
         expected_svl_remaining_values += [100.0]
         self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('value'), expected_svl_values)
-        self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('remaining_value'), expected_svl_remaining_values)
+        self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('remaining_value'),
+                         expected_svl_remaining_values)
 
         bill01 = self._bill(po, price=12)
         expected_svl_values += [20.0]
         expected_svl_remaining_values += [0.0]
         expected_svl_remaining_values[0] += 20.0  # should impact the layer of the receipt
         self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('value'), expected_svl_values)
-        self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('remaining_value'), expected_svl_remaining_values)
+        self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('remaining_value'),
+                         expected_svl_remaining_values)
 
         delivery = self.env['stock.picking'].create({
             'location_id': stock_location.id,
@@ -2379,21 +2432,24 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
         expected_svl_remaining_values += [0.0]
         expected_svl_remaining_values[0] -= 36.0  # should impact the layer of the receipt
         self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('value'), expected_svl_values)
-        self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('remaining_value'), expected_svl_remaining_values)
+        self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('remaining_value'),
+                         expected_svl_remaining_values)
 
         self._refund(bill01)
         expected_svl_values += [-14.0]
         expected_svl_remaining_values += [0.0]
         expected_svl_remaining_values[0] -= 14.0  # should impact the layer of the receipt
         self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('value'), expected_svl_values)
-        self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('remaining_value'), expected_svl_remaining_values)
+        self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('remaining_value'),
+                         expected_svl_remaining_values)
 
         bill02 = self._bill(po, price=9)
         expected_svl_values += [-7.0]
         expected_svl_remaining_values += [0.0]
         expected_svl_remaining_values[0] -= 7.0  # should impact the layer of the receipt
         self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('value'), expected_svl_values)
-        self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('remaining_value'), expected_svl_remaining_values)
+        self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('remaining_value'),
+                         expected_svl_remaining_values)
 
         delivery = self.env['stock.picking'].create({
             'location_id': stock_location.id,
@@ -2416,7 +2472,8 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
         expected_svl_remaining_values += [0.0]
         expected_svl_remaining_values[0] -= 9.0  # should impact the layer of the receipt
         self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('value'), expected_svl_values)
-        self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('remaining_value'), expected_svl_remaining_values)
+        self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('remaining_value'),
+                         expected_svl_remaining_values)
 
         ctx = {'active_ids': bill02.ids, 'active_model': 'account.move'}
         credit_note_wizard = self.env['account.move.reversal'].with_context(ctx).create({
@@ -2432,10 +2489,12 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
         expected_svl_remaining_values += [0.0]
         expected_svl_remaining_values[0] += 6.0  # should impact the layer of the receipt
         self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('value'), expected_svl_values)
-        self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('remaining_value'), expected_svl_remaining_values)
+        self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('remaining_value'),
+                         expected_svl_remaining_values)
 
         accounts = self.product1.product_tmpl_id._get_product_accounts()
-        stock_in_amls = self.env['account.move.line'].search([('account_id', '=', accounts['stock_input'].id)], order='id')
+        stock_in_amls = self.env['account.move.line'].search([('account_id', '=', accounts['stock_input'].id)],
+                                                             order='id')
         self.assertRecordValues(stock_in_amls, [
             # IN 10 @ 10
             {'debit': 0.0, 'credit': 100.0},
@@ -2505,20 +2564,23 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
         expected_svl_values += [100.0]
         expected_svl_remaining_values += [100.0]
         self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('value'), expected_svl_values)
-        self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('remaining_value'), expected_svl_remaining_values)
+        self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('remaining_value'),
+                         expected_svl_remaining_values)
 
         return01 = self._return(receipt, qty=3)
         expected_svl_values += [-30.0]
         expected_svl_remaining_values += [0.0]
         expected_svl_remaining_values[0] -= 30
         self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('value'), expected_svl_values)
-        self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('remaining_value'), expected_svl_remaining_values)
+        self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('remaining_value'),
+                         expected_svl_remaining_values)
 
         self._return(return01)
         expected_svl_values += [30.0]
         expected_svl_remaining_values += [30.0]
         self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('value'), expected_svl_values)
-        self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('remaining_value'), expected_svl_remaining_values)
+        self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('remaining_value'),
+                         expected_svl_remaining_values)
 
         bill = self._bill(po, price=12)
         # two new layers because we have 7 remaining products in the first in-layer and 3 in the second one
@@ -2528,7 +2590,8 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
         # `expected_svl_remaining_values[1]` is the return, it does not change
         expected_svl_remaining_values[2] += 6.0
         self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('value'), expected_svl_values)
-        self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('remaining_value'), expected_svl_remaining_values)
+        self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('remaining_value'),
+                         expected_svl_remaining_values)
         stock_in_amls = self.env['account.move.line'].search([('account_id', '=', accounts['stock_input'].id)])
         self.assertTrue(stock_in_amls)
         self.assertTrue(all(aml.full_reconcile_id for aml in stock_in_amls))
@@ -2538,7 +2601,8 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
         expected_svl_remaining_values += [0.0]
         expected_svl_remaining_values[0] -= 12.0
         self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('value'), expected_svl_values)
-        self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('remaining_value'), expected_svl_remaining_values)
+        self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('remaining_value'),
+                         expected_svl_remaining_values)
 
         refund = self._bill(po, price=12)
         self.assertEqual(refund.move_type, 'in_refund')
@@ -2551,12 +2615,15 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
         expected_svl_remaining_values += [0.0]
         expected_svl_remaining_values[0] -= 60.0
         self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('value'), expected_svl_values)
-        self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('remaining_value'), expected_svl_remaining_values)
+        self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('remaining_value'),
+                         expected_svl_remaining_values)
 
         self._refund(bill, qty=5)
         self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('value'), expected_svl_values)
-        self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('remaining_value'), expected_svl_remaining_values)
-        stock_in_amls = self.env['account.move.line'].search([('account_id', '=', accounts['stock_input'].id)], order='id')
+        self.assertEqual(self.product1.stock_valuation_layer_ids.mapped('remaining_value'),
+                         expected_svl_remaining_values)
+        stock_in_amls = self.env['account.move.line'].search([('account_id', '=', accounts['stock_input'].id)],
+                                                             order='id')
         self.assertRecordValues(stock_in_amls, [
             # IN 10 @ 10
             {'debit': 0.0, 'credit': 100.0},
@@ -2779,9 +2846,9 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
         ], order='id')
         self.assertRecordValues(in_stock_amls, [
             # pylint: disable=bad-whitespace
-            {'date': today,         'debit': 0,     'credit': 150,  'reconciled': True},
-            {'date': one_day_ago,   'debit': 125,   'credit': 0,    'reconciled': True},
-            {'date': one_day_ago,   'debit': 25,    'credit': 0,    'reconciled': True},
+            {'date': today, 'debit': 0, 'credit': 150, 'reconciled': True},
+            {'date': one_day_ago, 'debit': 125, 'credit': 0, 'reconciled': True},
+            {'date': one_day_ago, 'debit': 25, 'credit': 0, 'reconciled': True},
         ])
 
     def test_pdiff_lot_valuation(self):
@@ -2881,7 +2948,8 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
             picking.button_validate()
             # Validate picking with backorder
             res_dict = picking.button_validate()
-            wizard = self.env[(res_dict.get('res_model'))].browse(res_dict.get('res_id')).with_context(res_dict['context'])
+            wizard = self.env[(res_dict.get('res_model'))].browse(res_dict.get('res_id')).with_context(
+                res_dict['context'])
             wizard.process()
             return picking
 
@@ -2917,7 +2985,8 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
         self.product1.purchase_method = 'purchase'
 
         price_unit_EUR = 100
-        price_unit_USD = self.env.ref('base.EUR')._convert(price_unit_EUR, usd_currency, self.env.company, fields.Date.today(), round=False)
+        price_unit_USD = self.env.ref('base.EUR')._convert(price_unit_EUR, usd_currency, self.env.company,
+                                                           fields.Date.today(), round=False)
         po = self.env['purchase.order'].create({
             'partner_id': self.partner_id.id,
             'currency_id': self.env.ref('base.EUR').id,
@@ -2963,7 +3032,8 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
         self.product1.purchase_method = 'purchase'
 
         price_unit_EUR = 100
-        price_unit_USD = self.env.ref('base.EUR')._convert(price_unit_EUR, usd_currency, self.env.company, fields.Date.today(), round=False)
+        price_unit_USD = self.env.ref('base.EUR')._convert(price_unit_EUR, usd_currency, self.env.company,
+                                                           fields.Date.today(), round=False)
         po = self.env['purchase.order'].create({
             'partner_id': self.partner_id.id,
             'currency_id': self.env.ref('base.EUR').id,
@@ -3122,18 +3192,18 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
         expense_id = product_accounts['expense'].id
         self.assertRecordValues(bill.line_ids, [
             # pylint: disable=bad-whitespace
-            {'debit': 30,   'credit': 0,    'account_id': stock_in_id,  'reconciled': True,     'amount_currency': 90},
-            {'debit': 0,    'credit': 30,   'account_id': payable_id,   'reconciled': False,    'amount_currency': -90},
-            {'debit': 0,    'credit': 15,   'account_id': expense_id,   'reconciled': False,    'amount_currency': 0},
-            {'debit': 15,   'credit': 0,    'account_id': stock_in_id,  'reconciled': True,     'amount_currency': 0},
+            {'debit': 30, 'credit': 0, 'account_id': stock_in_id, 'reconciled': True, 'amount_currency': 90},
+            {'debit': 0, 'credit': 30, 'account_id': payable_id, 'reconciled': False, 'amount_currency': -90},
+            {'debit': 0, 'credit': 15, 'account_id': expense_id, 'reconciled': False, 'amount_currency': 0},
+            {'debit': 15, 'credit': 0, 'account_id': stock_in_id, 'reconciled': True, 'amount_currency': 0},
         ])
 
         stock_amls = self.env['account.move.line'].search([('account_id', '=', stock_in_id)])
         self.assertRecordValues(stock_amls, [
             # pylint: disable=bad-whitespace
-            {'debit': 30,   'credit': 0,    'account_id': stock_in_id,  'reconciled': True, 'amount_currency': 90},
-            {'debit': 15,   'credit': 0,    'account_id': stock_in_id,  'reconciled': True, 'amount_currency': 0},
-            {'debit': 0,    'credit': 45,   'account_id': stock_in_id,  'reconciled': True, 'amount_currency': -90},
+            {'debit': 30, 'credit': 0, 'account_id': stock_in_id, 'reconciled': True, 'amount_currency': 90},
+            {'debit': 15, 'credit': 0, 'account_id': stock_in_id, 'reconciled': True, 'amount_currency': 0},
+            {'debit': 0, 'credit': 45, 'account_id': stock_in_id, 'reconciled': True, 'amount_currency': -90},
         ])
 
     def test_invoice_first_receipt_later_with_multicurrency_different_dates(self):
@@ -3214,11 +3284,11 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
         self.assertRecordValues(amls, [
             # pylint: disable=bad-whitespace
             # Bill Lines
-            {'debit': 50.0, 'credit': 0,    'reconciled': True,  'amount_currency': 100.0, 'account_id': stock_in_id},
-            {'debit': 0,    'credit': 50.0, 'reconciled': False, 'amount_currency': -100.0, 'account_id': payable_id},
+            {'debit': 50.0, 'credit': 0, 'reconciled': True, 'amount_currency': 100.0, 'account_id': stock_in_id},
+            {'debit': 0, 'credit': 50.0, 'reconciled': False, 'amount_currency': -100.0, 'account_id': payable_id},
             # Receipt Lines
-            {'debit': 0,    'credit': 50.0, 'reconciled': True,  'amount_currency': -100.0, 'account_id': stock_in_id},
-            {'debit': 50.0, 'credit': 0,    'reconciled': False, 'amount_currency': 100.0,  'account_id': stock_valuation},
+            {'debit': 0, 'credit': 50.0, 'reconciled': True, 'amount_currency': -100.0, 'account_id': stock_in_id},
+            {'debit': 50.0, 'credit': 0, 'reconciled': False, 'amount_currency': 100.0, 'account_id': stock_valuation},
         ])
 
     def test_analytic_distribution_propagation_with_exchange_difference(self):
@@ -3389,12 +3459,13 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
         bill.invoice_date = bill.date = today
         bill.action_post()
 
-        in_stock_amls = self.env['account.move.line'].search([('account_id', '=', self.stock_input_account.id)], order='id')
+        in_stock_amls = self.env['account.move.line'].search([('account_id', '=', self.stock_input_account.id)],
+                                                             order='id')
         self.assertRecordValues(in_stock_amls, [
             # pylint: disable=bad-whitespace
-            {'debit': 0,        'credit': 4335.1,   'reconciled': True},
-            {'debit': 4348,     'credit': 0,        'reconciled': True},
-            {'debit': 0,        'credit': 12.9,     'reconciled': True},
+            {'debit': 0, 'credit': 4335.1, 'reconciled': True},
+            {'debit': 4348, 'credit': 0, 'reconciled': True},
+            {'debit': 0, 'credit': 12.9, 'reconciled': True},
         ])
 
     def test_bill_with_zero_qty(self):
@@ -3446,7 +3517,8 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
             {'product_id': product2.id, 'qty_invoiced': 1.0},
         ])
 
-        stock_in_amls = self.env['account.move.line'].search([('account_id', '=', self.stock_input_account.id), ('balance', '!=', 0)], order='id')
+        stock_in_amls = self.env['account.move.line'].search(
+            [('account_id', '=', self.stock_input_account.id), ('balance', '!=', 0)], order='id')
         self.assertRecordValues(stock_in_amls, [
             {'product_id': product1.id, 'debit': 10.0, 'credit': 0.0},
             {'product_id': product1.id, 'debit': 0.0, 'credit': 10.0},
@@ -3513,7 +3585,8 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
 
         self._bill(po)
 
-        in_stock_amls = self.env['account.move.line'].search([('account_id', '=', self.stock_input_account.id)], order='id')
+        in_stock_amls = self.env['account.move.line'].search([('account_id', '=', self.stock_input_account.id)],
+                                                             order='id')
         self.assertRecordValues(in_stock_amls, [
             # Receive and bill 1 @ 10
             {'debit': 0.0, 'credit': 10.0, 'reconciled': True},
@@ -3558,7 +3631,8 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
         self._return(receipt01_return)
         self._bill(po)
 
-        in_stock_amls = self.env['account.move.line'].search([('account_id', '=', self.stock_input_account.id)], order='id')
+        in_stock_amls = self.env['account.move.line'].search([('account_id', '=', self.stock_input_account.id)],
+                                                             order='id')
         self.assertRecordValues(in_stock_amls, [
             # Receive and bill 1 @ 10
             {'debit': 0.0, 'credit': 10.0, 'reconciled': True},
@@ -3606,7 +3680,8 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
         self._return(receipt01)
         self._bill(po)  # Refund
 
-        in_stock_amls = self.env['account.move.line'].search([('account_id', '=', self.stock_input_account.id)], order='id')
+        in_stock_amls = self.env['account.move.line'].search([('account_id', '=', self.stock_input_account.id)],
+                                                             order='id')
         self.assertRecordValues(in_stock_amls, [
             # Receive and bill 1 @ 10
             {'debit': 0.0, 'credit': 10.0, 'reconciled': True},
@@ -3747,8 +3822,8 @@ class TestStockValuationWithCOA(AccountTestInvoicingCommon):
         self.assertRecordValues(
             bill.line_ids,
             [
-                {'account_id': expense_account.id,           'debit': 1200.0,   'credit': 0.0},
-                {'account_id': tax_paid_account.id,          'debit': 180.0,    'credit': 0.0},
-                {'account_id': account_payable_account.id,   'debit': 0.0,      'credit': 1380.0},
+                {'account_id': expense_account.id, 'debit': 1200.0, 'credit': 0.0},
+                {'account_id': tax_paid_account.id, 'debit': 180.0, 'credit': 0.0},
+                {'account_id': account_payable_account.id, 'debit': 0.0, 'credit': 1380.0},
             ]
         )

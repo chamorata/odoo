@@ -3,6 +3,7 @@
 
 from odoo.addons.mail.tests.common import MailCommon, mail_new_test_user
 from odoo.addons.test_mail.tests.common import TestRecipients
+
 from odoo.exceptions import AccessError
 from odoo.tests import tagged
 from odoo.tests.common import users

@@ -2,6 +2,7 @@
 
 from odoo.tests.common import TransactionCase
 
+
 class TestHrContractHistoryGroupby(TransactionCase):
 
     def test_related_activity_state_groupable(self):

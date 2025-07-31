@@ -1,16 +1,18 @@
 # -*- encoding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, fields, models, tools, _
-import odoo.addons
-
 import logging
 import sys
+
+import odoo.addons
+from odoo import api, fields, models, tools, _
+
 _logger = logging.getLogger(__name__)
 
 
 def get_precision(application):
-    _logger.warning("Deprecated call to decimal_precision.get_precision(<application>), use digits=<application> instead")
+    _logger.warning(
+        "Deprecated call to decimal_precision.get_precision(<application>), use digits=<application> instead")
     return application
 
 
@@ -65,6 +67,7 @@ class DecimalPrecision(models.Model):
                     )
                 }
             }
+
 
 # compatibility for decimal_precision.get_precision(): expose the module in addons namespace
 dp = sys.modules['odoo.addons.base.models.decimal_precision']

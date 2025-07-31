@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
 from odoo.tests import Form, tagged
 from odoo.tests.common import new_test_user
 
@@ -39,10 +40,12 @@ class TestProduct(AccountTestInvoicingCommon):
 
     def test_multi_company_product_tax(self):
         """ Ensure default taxes are set for all companies on products with no company set. """
-        product_without_company = self.env['product.template'].with_context(allowed_company_ids=self.env.company.ids).create({
+        product_without_company = self.env['product.template'].with_context(
+            allowed_company_ids=self.env.company.ids).create({
             'name': 'Product Without a Company',
         })
-        product_with_company = self.env['product.template'].with_context(allowed_company_ids=self.env.company.ids).create({
+        product_with_company = self.env['product.template'].with_context(
+            allowed_company_ids=self.env.company.ids).create({
             'name': 'Product With a Company',
             'company_id': self.company_data['company'].id,
         })

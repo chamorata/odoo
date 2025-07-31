@@ -2,16 +2,16 @@
 
 import logging
 
-from werkzeug.urls import url_encode
+from odoo.addons.mail.controllers.discuss.public_page import PublicPageController
+from odoo.addons.mail.models.discuss.mail_guest import add_guest_to_context
+from odoo.addons.mail.tools.discuss import Store
 from werkzeug.exceptions import NotFound, Unauthorized
+from werkzeug.urls import url_encode
 
 from odoo import _, http
 from odoo.exceptions import AccessError
 from odoo.http import request
 from odoo.tools import consteq
-from odoo.addons.mail.controllers.discuss.public_page import PublicPageController
-from odoo.addons.mail.models.discuss.mail_guest import add_guest_to_context
-from odoo.addons.mail.tools.discuss import Store
 
 _logger = logging.getLogger(__name__)
 

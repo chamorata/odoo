@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.tests import Form, tagged, TransactionCase
 from odoo.exceptions import MissingError
+from odoo.tests import Form, tagged, TransactionCase
+
 
 @tagged('post_install', '-at_install')
 class TestEmployeeDeletion(TransactionCase):
@@ -10,12 +11,12 @@ class TestEmployeeDeletion(TransactionCase):
     def test_employee_deletion(self):
         # Tests an issue with the form view where the employee could be deleted
         employee_a, employee_b = self.env['hr.employee'].create([
-                {
-                    'name': 'A',
-                },
-                {
-                    'name': 'B',
-                },
+            {
+                'name': 'A',
+            },
+            {
+                'name': 'B',
+            },
         ])
         department_a, department_b = self.env['hr.department'].create([
             {

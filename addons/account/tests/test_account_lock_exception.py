@@ -1,10 +1,10 @@
 from datetime import timedelta
 
 from freezegun import freeze_time
-
-from odoo import Command, fields
 from odoo.addons.account.models.company import SOFT_LOCK_DATE_FIELDS
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
+from odoo import Command, fields
 from odoo.exceptions import UserError
 from odoo.tests import new_test_user, tagged
 
@@ -44,7 +44,8 @@ class TestAccountLockException(AccountTestInvoicingCommon):
         """
         for lock_date_field, move_type in self.soft_lock_date_info:
             with self.subTest(lock_date_field=lock_date_field, move_type=move_type), self.cr.savepoint() as sp:
-                move = self.init_invoice(move_type, invoice_date='2016-01-01', post=True, amounts=[1000.0], taxes=self.tax_sale_a)
+                move = self.init_invoice(move_type, invoice_date='2016-01-01', post=True, amounts=[1000.0],
+                                         taxes=self.tax_sale_a)
 
                 # Lock the move
                 self.company[lock_date_field] = fields.Date.to_date('2020-01-01')
@@ -73,7 +74,8 @@ class TestAccountLockException(AccountTestInvoicingCommon):
         """
         for lock_date_field, move_type in self.soft_lock_date_info:
             with self.subTest(lock_date_field=lock_date_field, move_type=move_type), self.cr.savepoint() as sp:
-                move = self.init_invoice(move_type, invoice_date='2016-01-01', post=True, amounts=[1000.0], taxes=self.tax_sale_a)
+                move = self.init_invoice(move_type, invoice_date='2016-01-01', post=True, amounts=[1000.0],
+                                         taxes=self.tax_sale_a)
 
                 # Lock the move
                 self.company[lock_date_field] = fields.Date.to_date('2020-01-01')
@@ -115,12 +117,14 @@ class TestAccountLockException(AccountTestInvoicingCommon):
             with self.subTest(lock_date_field=lock_date_field, move_type=move_type), self.cr.savepoint() as sp:
                 # Create a move in the branch
                 branch_move = self.init_invoice(
-                    move_type, invoice_date='2016-01-01', post=True, amounts=[1000.0], taxes=self.tax_sale_a, company=branch,
+                    move_type, invoice_date='2016-01-01', post=True, amounts=[1000.0], taxes=self.tax_sale_a,
+                    company=branch,
                 )
 
                 # Create a move in the parent company
                 root_move = self.init_invoice(
-                    move_type, invoice_date='2016-01-01', post=True, amounts=[1000.0], taxes=self.tax_sale_a, company=root_company,
+                    move_type, invoice_date='2016-01-01', post=True, amounts=[1000.0], taxes=self.tax_sale_a,
+                    company=root_company,
                 )
 
                 # Lock the branch
@@ -171,7 +175,8 @@ class TestAccountLockException(AccountTestInvoicingCommon):
         """
         for lock_date_field, move_type in self.soft_lock_date_info:
             with self.subTest(lock_date_field=lock_date_field, move_type=move_type), self.cr.savepoint() as sp:
-                move = self.init_invoice(move_type, invoice_date='2016-01-01', post=True, amounts=[1000.0], taxes=self.tax_sale_a)
+                move = self.init_invoice(move_type, invoice_date='2016-01-01', post=True, amounts=[1000.0],
+                                         taxes=self.tax_sale_a)
                 # Lock the move
                 self.company[lock_date_field] = fields.Date.to_date('2020-01-01')
                 with self.assertRaises(UserError), self.cr.savepoint():
@@ -198,7 +203,8 @@ class TestAccountLockException(AccountTestInvoicingCommon):
         """
         for lock_date_field, move_type in self.soft_lock_date_info:
             with self.subTest(lock_date_field=lock_date_field, move_type=move_type), self.cr.savepoint() as sp:
-                move = self.init_invoice(move_type, invoice_date='2016-01-01', post=True, amounts=[1000.0], taxes=self.tax_sale_a)
+                move = self.init_invoice(move_type, invoice_date='2016-01-01', post=True, amounts=[1000.0],
+                                         taxes=self.tax_sale_a)
 
                 # Lock the move
                 self.company[lock_date_field] = fields.Date.to_date('2020-01-01')
@@ -226,7 +232,8 @@ class TestAccountLockException(AccountTestInvoicingCommon):
         """
         for lock_date_field, move_type in self.soft_lock_date_info:
             with self.subTest(lock_date_field=lock_date_field, move_type=move_type), self.cr.savepoint() as sp:
-                move = self.init_invoice(move_type, invoice_date='2016-01-01', post=True, amounts=[1000.0], taxes=self.tax_sale_a)
+                move = self.init_invoice(move_type, invoice_date='2016-01-01', post=True, amounts=[1000.0],
+                                         taxes=self.tax_sale_a)
 
                 # Lock the move
                 self.company[lock_date_field] = fields.Date.to_date('2020-01-01')
@@ -250,7 +257,8 @@ class TestAccountLockException(AccountTestInvoicingCommon):
     def test_revoked_exception(self):
         for lock_date_field, move_type in self.soft_lock_date_info:
             with self.subTest(lock_date_field=lock_date_field, move_type=move_type), self.cr.savepoint() as sp:
-                move = self.init_invoice(move_type, invoice_date='2016-01-01', post=True, amounts=[1000.0], taxes=self.tax_sale_a)
+                move = self.init_invoice(move_type, invoice_date='2016-01-01', post=True, amounts=[1000.0],
+                                         taxes=self.tax_sale_a)
 
                 # Lock the move
                 self.company[lock_date_field] = fields.Date.to_date('2020-01-01')
@@ -284,7 +292,8 @@ class TestAccountLockException(AccountTestInvoicingCommon):
             ('purchase_lock_date', 'in_invoice', 'sale_lock_date'),
         ]:
             with self.subTest(lock_date_field=lock_date_field, move_type=move_type), self.cr.savepoint() as sp:
-                move = self.init_invoice(move_type, invoice_date='2016-01-01', post=True, amounts=[1000.0], taxes=self.tax_sale_a)
+                move = self.init_invoice(move_type, invoice_date='2016-01-01', post=True, amounts=[1000.0],
+                                         taxes=self.tax_sale_a)
                 # Lock the move
                 self.company[lock_date_field] = fields.Date.to_date('2020-01-01')
                 with self.assertRaises(UserError), self.cr.savepoint():
@@ -311,8 +320,10 @@ class TestAccountLockException(AccountTestInvoicingCommon):
           * exceptions (for other lock date fields) do not allow bypassing the hard lock date
           * the hard lock date cannot be decreased or removed
         """
-        in_move = self.init_invoice('in_invoice', invoice_date='2016-01-01', post=True, amounts=[1000.0], taxes=self.tax_sale_a)
-        out_move = self.init_invoice('out_invoice', invoice_date='2016-01-01', post=True, amounts=[1000.0], taxes=self.tax_sale_a)
+        in_move = self.init_invoice('in_invoice', invoice_date='2016-01-01', post=True, amounts=[1000.0],
+                                    taxes=self.tax_sale_a)
+        out_move = self.init_invoice('out_invoice', invoice_date='2016-01-01', post=True, amounts=[1000.0],
+                                     taxes=self.tax_sale_a)
 
         self.company.hard_lock_date = fields.Date.to_date('2020-01-01')
 
@@ -327,11 +338,11 @@ class TestAccountLockException(AccountTestInvoicingCommon):
         # Create exceptions for all lock date fields except the hard lock date
         self.env['account.lock_exception'].create([
             {
-            'company_id': self.company_data_2['company'].id,
-            'user_id': self.env.user.id,
-            lock_date_field: fields.Date.to_date('2010-01-01'),
-            'end_datetime': self.fakenow + timedelta(hours=24),
-            'reason': f'test_hard_lock_ignores_exceptions {lock_date_field}',
+                'company_id': self.company_data_2['company'].id,
+                'user_id': self.env.user.id,
+                lock_date_field: fields.Date.to_date('2010-01-01'),
+                'end_datetime': self.fakenow + timedelta(hours=24),
+                'reason': f'test_hard_lock_ignores_exceptions {lock_date_field}',
             }
             for lock_date_field in SOFT_LOCK_DATE_FIELDS
         ])
@@ -401,7 +412,8 @@ class TestAccountLockException(AccountTestInvoicingCommon):
         """
         for lock_date_field, move_type in self.soft_lock_date_info:
             with self.subTest(lock_date_field=lock_date_field, move_type=move_type), self.cr.savepoint() as sp:
-                move = self.init_invoice(move_type, invoice_date='2016-01-01', post=True, amounts=[1000.0], taxes=self.tax_sale_a)
+                move = self.init_invoice(move_type, invoice_date='2016-01-01', post=True, amounts=[1000.0],
+                                         taxes=self.tax_sale_a)
 
                 # Lock the move
                 self.company[lock_date_field] = fields.Date.to_date('2020-01-01')

@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import Command
 from odoo.addons.sale_loyalty.tests.common import TestSaleCouponCommon
+
+from odoo import Command
 from odoo.exceptions import ValidationError
 
 
@@ -42,7 +43,8 @@ class TestProgramWithCodeOperations(TestSaleCouponCommon):
         self.env['loyalty.generate.wizard'].with_context(active_id=self.code_promotion_program.id).create({
             'mode': 'selected',
         }).generate_coupons()
-        self.assertEqual(len(self.code_promotion_program.coupon_ids), len(self.env['res.partner'].search([])), "It should have generated a coupon for every partner")
+        self.assertEqual(len(self.code_promotion_program.coupon_ids), len(self.env['res.partner'].search([])),
+                         "It should have generated a coupon for every partner")
 
     def test_program_basic_operation_coupon_code(self):
         # Test case: Generate a coupon for my customer, and add a reward then remove it automatically
@@ -139,10 +141,11 @@ class TestProgramWithCodeOperations(TestSaleCouponCommon):
         # Test case: Generate a coupon (10% discount) and apply it on an order with a specific pricelist (10% discount)
 
         self.code_promotion_program_with_discount.applies_on = 'future'
-        self.env['loyalty.generate.wizard'].with_context(active_id=self.code_promotion_program_with_discount.id).create({
-            'coupon_qty': 1,
-            'points_granted': 1,
-        }).generate_coupons()
+        self.env['loyalty.generate.wizard'].with_context(active_id=self.code_promotion_program_with_discount.id).create(
+            {
+                'coupon_qty': 1,
+                'points_granted': 1,
+            }).generate_coupons()
         coupon = self.code_promotion_program_with_discount.coupon_ids
 
         first_pricelist = self.env['product.pricelist'].create({
@@ -168,7 +171,8 @@ class TestProgramWithCodeOperations(TestSaleCouponCommon):
         ]})
         self._apply_promo_code(order, coupon.code)
         self.assertEqual(len(order.order_line.ids), 2)
-        self.assertEqual(order.amount_total, 81, "SO total should be 81: (10% of 100 with pricelist) + 10% of 90 with coupon code")
+        self.assertEqual(order.amount_total, 81,
+                         "SO total should be 81: (10% of 100 with pricelist) + 10% of 90 with coupon code")
 
     def test_on_next_order_reward_promotion_program(self):
         # The flow:
@@ -224,7 +228,8 @@ class TestProgramWithCodeOperations(TestSaleCouponCommon):
             })
         ]})
         order._update_programs_and_rewards()
-        self.assertEqual(len(self.p1.coupon_ids.ids), 1, "You should get a coupon for you next order that will offer 10% discount")
+        self.assertEqual(len(self.p1.coupon_ids.ids), 1,
+                         "You should get a coupon for you next order that will offer 10% discount")
         # 4.
         with self.assertRaises(ValidationError):
             self._apply_promo_code(order, 'free_B_on_next_order')
@@ -239,7 +244,8 @@ class TestProgramWithCodeOperations(TestSaleCouponCommon):
         ]})
         self._apply_promo_code(order, 'free_B_on_next_order', no_reward_fail=False)
         # 6.
-        self.assertEqual(len(order._get_reward_coupons()), 2, "You should get a second coupon for your next order that will offer a free Product B")
+        self.assertEqual(len(order._get_reward_coupons()), 2,
+                         "You should get a second coupon for your next order that will offer a free Product B")
         order.action_confirm()
         # 7.
         order_bis = self.empty_order
@@ -259,7 +265,8 @@ class TestProgramWithCodeOperations(TestSaleCouponCommon):
         # 10.
         self._apply_promo_code(order_bis, order._get_reward_coupons()[0].code)
         self.assertEqual(len(order_bis.order_line), 3, "You should get a 10% discount line")
-        self.assertAlmostEqual(order_bis.amount_total, order_bis.order_line[0].price_total * 0.9, 2, "SO total should be null: (Paid product - Free product = 0) + 10% of nothing")
+        self.assertAlmostEqual(order_bis.amount_total, order_bis.order_line[0].price_total * 0.9, 2,
+                               "SO total should be null: (Paid product - Free product = 0) + 10% of nothing")
 
     def test_on_next_order_reward_promotion_program_with_requirements(self):
         self.immediate_promotion_program.write({
@@ -283,7 +290,8 @@ class TestProgramWithCodeOperations(TestSaleCouponCommon):
             })
         ]})
         self._apply_promo_code(order, 'free_B_on_next_order', no_reward_fail=False)
-        self.assertEqual(len(self.immediate_promotion_program.coupon_ids.ids), 1, "You should get a coupon for you next order that will offer a free product B")
+        self.assertEqual(len(self.immediate_promotion_program.coupon_ids.ids), 1,
+                         "You should get a coupon for you next order that will offer a free product B")
         order_bis = self.empty_order
         order_bis.write({'order_line': [
             (0, False, {
@@ -301,7 +309,8 @@ class TestProgramWithCodeOperations(TestSaleCouponCommon):
         self._apply_promo_code(order_bis, order._get_reward_coupons()[0].code, no_reward_fail=False)
         self.assertEqual(len(order_bis.order_line), 2, "You should get 1 regular product_B and 1 free product_B")
         order_bis._update_programs_and_rewards()
-        self.assertEqual(len(order_bis.order_line), 2, "Free product from a coupon generated from a promotion program on next order should not dissapear")
+        self.assertEqual(len(order_bis.order_line), 2,
+                         "Free product from a coupon generated from a promotion program on next order should not dissapear")
 
     def test_partner_assigned_to_next_order_coupon(self):
         """ Test the assignment of a partner on coupons with program type `next_order_coupons`.
@@ -336,8 +345,8 @@ class TestProgramWithCodeOperations(TestSaleCouponCommon):
         generated_coupons = order._try_apply_program(loyalty_program).get('coupon')
         self.assertTrue(generated_coupons, "A coupon should have been generated")
         self.assertEqual(generated_coupons.partner_id, order.partner_id,
-            "The partner should be set on the coupon with program type 'next_order_coupons'"
-        )
+                         "The partner should be set on the coupon with program type 'next_order_coupons'"
+                         )
 
     def test_public_partner_updated_in_next_order_coupon(self):
         """ Test the update of a partner on coupons with program type `next_order_coupons`.
@@ -416,7 +425,7 @@ class TestProgramWithCodeOperations(TestSaleCouponCommon):
         ]})
         order._update_programs_and_rewards()
         self._claim_reward(order, self.p1)
-        self.assertEqual(len(order.order_line), 2, "You should get a discount line") # product + discount
+        self.assertEqual(len(order.order_line), 2, "You should get a discount line")  # product + discount
         # 3.
         self.p1.write({
             'trigger': 'with_code',
@@ -430,7 +439,7 @@ class TestProgramWithCodeOperations(TestSaleCouponCommon):
         # 4.
         self._apply_promo_code(order, 'test')
         # But the above line should not add any reward
-        self.assertEqual(len(order.order_line), 2, "You should get a discount line") # product + discount
+        self.assertEqual(len(order.order_line), 2, "You should get a discount line")  # product + discount
 
     def test_reapply_multiple_global_rewards_when_new_discount_greater(self):
         """ Test applying the maximum reward discount from multiple rewards when the applied

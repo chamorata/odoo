@@ -1,32 +1,34 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
+import logging
+import re
+
+import stdnum.ar
+
 from odoo import fields, models, api, _
 from odoo.exceptions import UserError, ValidationError
-import stdnum.ar
-import re
-import logging
 
 _logger = logging.getLogger(__name__)
 
 
 class ResPartner(models.Model):
-
     _inherit = 'res.partner'
 
     l10n_ar_vat = fields.Char(
         compute='_compute_l10n_ar_vat', string="VAT", help='Computed field that returns VAT or nothing if this one'
-        ' is not set for the partner')
+                                                           ' is not set for the partner')
     l10n_ar_formatted_vat = fields.Char(
         compute='_compute_l10n_ar_formatted_vat', string="Formatted VAT", help='Computed field that will convert the'
-        ' given VAT number to the format {person_category:2}-{number:10}-{validation_number:1}')
+                                                                               ' given VAT number to the format {person_category:2}-{number:10}-{validation_number:1}')
 
     l10n_ar_gross_income_number = fields.Char('Gross Income Number')
     l10n_ar_gross_income_type = fields.Selection(
         [('multilateral', 'Multilateral'), ('local', 'Local'), ('exempt', 'Exempt')],
         'Gross Income Type', help='Argentina: Type of gross income: exempt, local, multilateral.')
     l10n_ar_afip_responsibility_type_id = fields.Many2one(
-        'l10n_ar.afip.responsibility.type', string='AFIP Responsibility Type', index='btree_not_null', help='Defined by AFIP to'
-        ' identify the type of responsibilities that a person or a legal entity could have and that impacts in the'
-        ' type of operations and requirements they need.')
+        'l10n_ar.afip.responsibility.type', string='AFIP Responsibility Type', index='btree_not_null',
+        help='Defined by AFIP to'
+             ' identify the type of responsibilities that a person or a legal entity could have and that impacts in the'
+             ' type of operations and requirements they need.')
 
     @api.depends('l10n_ar_vat')
     def _compute_l10n_ar_formatted_vat(self):
@@ -60,7 +62,8 @@ class ResPartner(models.Model):
         # NOTE by the moment we include the CUIT (VAT AR) validation also here because we extend the messages
         # errors to be more friendly to the user. In a future when Odoo improve the base_vat message errors
         # we can change this method and use the base_vat.check_vat_ar method.s
-        l10n_ar_partners = self.filtered(lambda p: p.l10n_latam_identification_type_id.l10n_ar_afip_code or p.country_code == 'AR')
+        l10n_ar_partners = self.filtered(
+            lambda p: p.l10n_latam_identification_type_id.l10n_ar_afip_code or p.country_code == 'AR')
         l10n_ar_partners.l10n_ar_identification_validation()
         return super(ResPartner, self - l10n_ar_partners).check_vat()
 
@@ -108,7 +111,8 @@ class ResPartner(models.Model):
                 raise ValidationError(_('Only numbers allowed for "%s"', rec.l10n_latam_identification_type_id.name))
             except module.InvalidComponent:
                 valid_cuit = ('20', '23', '24', '27', '30', '33', '34', '50', '51', '55')
-                raise ValidationError(_('CUIT number must be prefixed with one of the following: %s', ', '.join(valid_cuit)))
+                raise ValidationError(
+                    _('CUIT number must be prefixed with one of the following: %s', ', '.join(valid_cuit)))
             except Exception as error:
                 raise ValidationError(repr(error))
 

@@ -58,6 +58,7 @@ class TestQwebFieldInteger(common.TransactionCase):
             "125.125k"
         )
 
+
 class TestQwebFieldContact(common.TransactionCase):
     @classmethod
     def setUpClass(cls):
@@ -85,4 +86,5 @@ class TestQwebFieldContact(common.TransactionCase):
         self.assertIn('itemprop="website"', result)
         self.assertIn(self.partner.website, result)
         self.assertNotIn(self.partner.phone, result)
-        self.assertIn('itemprop="telephone"', result, "Empty telephone itemprop should be added to prevent issue with iOS Safari")
+        self.assertIn('itemprop="telephone"', result,
+                      "Empty telephone itemprop should be added to prevent issue with iOS Safari")

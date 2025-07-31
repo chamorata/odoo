@@ -16,7 +16,8 @@
                     <attribute name="invisible">0</attribute>
                 </xpath>
                 <xpath expr="//field[@name='plan_date']" position="before">
-                    <field name="plan_id" options='{"no_open": True, "no_create": True}' invisible="not bool(plan_available_ids)"/>
+                    <field name="plan_id" options='{"no_open": True, "no_create": True}'
+                           invisible="not bool(plan_available_ids)"/>
                 </xpath>
                 <xpath expr="//field[@name='plan_date']" position="attributes">
                     <attribute name="invisible">not plan_id</attribute>

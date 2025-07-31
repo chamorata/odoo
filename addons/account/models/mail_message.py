@@ -111,11 +111,11 @@ class Message(models.Model):
     def _compute_account_audit_log_activated(self):
         for message in self:
             message.account_audit_log_activated = message.message_type == 'notification' and (
-                message.account_audit_log_move_id
-                or message.account_audit_log_account_id
-                or message.account_audit_log_tax_id
-                or message.account_audit_log_partner_id
-                or message.account_audit_log_company_id
+                    message.account_audit_log_move_id
+                    or message.account_audit_log_account_id
+                    or message.account_audit_log_tax_id
+                    or message.account_audit_log_partner_id
+                    or message.account_audit_log_company_id
             )
 
     def _search_account_audit_log_activated(self, operator, value):
@@ -163,8 +163,8 @@ class Message(models.Model):
                 to_check -= partner_message
         for message in to_check:
             if message.account_audit_log_activated and not (
-                message.account_audit_log_move_id
-                and not message.account_audit_log_move_id.posted_before
+                    message.account_audit_log_move_id
+                    and not message.account_audit_log_move_id.posted_before
             ):
                 raise UserError(self.env._("You cannot remove parts of the audit trail."))
 
@@ -172,9 +172,10 @@ class Message(models.Model):
         # We allow any whitespace modifications in the subject
         normalized_subject = ' '.join(vals['subject'].split()) if vals.get('subject') else None
         if (
-            vals.keys() & {'res_id', 'res_model', 'message_type', 'subtype_id'}
-            or ('subject' in vals and any(' '.join(s.subject.split()) != normalized_subject for s in self if s.subject))
-            or ('body' in vals and any(self.mapped('body')))
+                vals.keys() & {'res_id', 'res_model', 'message_type', 'subtype_id'}
+                or (
+                'subject' in vals and any(' '.join(s.subject.split()) != normalized_subject for s in self if s.subject))
+                or ('body' in vals and any(self.mapped('body')))
         ):
             self._except_audit_log()
         return super().write(vals)

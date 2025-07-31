@@ -1,8 +1,9 @@
 from odoo.addons.mail.tests.common import mail_new_test_user, MailCommon
 from odoo.addons.test_mail.data.test_mail_data import MAIL_TEMPLATE
 from odoo.addons.test_mail.tests.common import TestRecipients
-from odoo.tools.mail import email_normalize, formataddr
+
 from odoo.tests import tagged
+from odoo.tools.mail import email_normalize, formataddr
 
 
 @tagged('mail_gateway', 'mail_flow', 'post_install', '-at_install')
@@ -150,7 +151,8 @@ class TestMailFlow(MailCommon, TestRecipients):
         self.assertEqual(lead_as_emp.message_partner_ids, self.partner_employee)
         # adds other employee and a portal customer as followers
         lead_as_emp.message_subscribe(partner_ids=(self.partner_employee_2 + self.partner_portal).ids)
-        self.assertEqual(lead_as_emp.message_partner_ids, self.partner_employee + self.partner_employee_2 + self.partner_portal)
+        self.assertEqual(lead_as_emp.message_partner_ids,
+                         self.partner_employee + self.partner_employee_2 + self.partner_portal)
         # updates some customer information
         lead_as_emp.write({
             'customer_name': 'Sylvie Lelitre (Zboing)',
@@ -221,11 +223,13 @@ class TestMailFlow(MailCommon, TestRecipients):
                 subject=f'Re: {lead.name}',
                 subtype_id=self.env.ref('mail.mt_comment').id,
             )
-        self.assertEqual(lead_as_emp.message_partner_ids, self.partner_employee + self.partner_employee_2 + self.partner_portal)
+        self.assertEqual(lead_as_emp.message_partner_ids,
+                         self.partner_employee + self.partner_employee_2 + self.partner_portal)
 
         external_partners = partner_sylvie + partner_pay + self.customer_portal_zboing + self.partner_portal
         internal_partners = self.partner_employee + self.partner_employee_2
-        expected_chatter_reply_to = formataddr((f'{self.env.company.name} {lead.name}', f'{self.alias_catchall}@{self.alias_domain}'))
+        expected_chatter_reply_to = formataddr(
+            (f'{self.env.company.name} {lead.name}', f'{self.alias_catchall}@{self.alias_domain}'))
 
         self.assertMailNotifications(
             responsible_answer,

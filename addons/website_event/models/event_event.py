@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from ast import literal_eval
-from dateutil.relativedelta import relativedelta
 import json
-import werkzeug.urls
+from ast import literal_eval
 
+import werkzeug.urls
+from dateutil.relativedelta import relativedelta
 from markupsafe import Markup
 from pytz import utc, timezone
 
@@ -42,7 +42,8 @@ class Event(models.Model):
     is_participating = fields.Boolean("Is Participating", compute="_compute_is_participating",
                                       search="_search_is_participating")
     # website
-    is_visible_on_website = fields.Boolean(string="Visible On Website", compute='_compute_is_visible_on_website', search='_search_is_visible_on_website')
+    is_visible_on_website = fields.Boolean(string="Visible On Website", compute='_compute_is_visible_on_website',
+                                           search='_search_is_visible_on_website')
     event_register_url = fields.Char('Event Registration Link', compute='_compute_event_register_url')
     website_visibility = fields.Selection(
         [('public', 'Public'), ('link', 'Via a Link'), ('logged_users', 'Logged Users')],
@@ -324,8 +325,10 @@ class Event(models.Model):
                 menus_update_by_field[fname] = self
             else:
                 menus_update_by_field[fname] = self.env['event.event']
-                menus_update_by_field[fname] |= menus_state_by_field[fname]['activated'].filtered(lambda event: not event[fname])
-                menus_update_by_field[fname] |= menus_state_by_field[fname]['deactivated'].filtered(lambda event: event[fname])
+                menus_update_by_field[fname] |= menus_state_by_field[fname]['activated'].filtered(
+                    lambda event: not event[fname])
+                menus_update_by_field[fname] |= menus_state_by_field[fname]['deactivated'].filtered(
+                    lambda event: event[fname])
         return menus_update_by_field
 
     def _get_website_menu_entries(self):
@@ -359,7 +362,8 @@ class Event(models.Model):
                 # letting some ir.ui.views in DB
                 (event.menu_id + event.menu_id.child_id).sudo().unlink()
             elif event.website_menu and not event.menu_id:
-                root_menu = self.env['website.menu'].sudo().create({'name': event.name, 'website_id': event.website_id.id})
+                root_menu = self.env['website.menu'].sudo().create(
+                    {'name': event.name, 'website_id': event.website_id.id})
                 event.menu_id = root_menu
             if event.menu_id and (not menus_update_by_field or event in menus_update_by_field.get('community_menu')):
                 event._update_website_menu_entry('community_menu', 'community_menu_ids', 'community')
@@ -489,7 +493,8 @@ class Event(models.Model):
         res = super(Event, self)._default_website_meta()
         event_cover_properties = json.loads(self.cover_properties)
         # background-image might contain single quotes eg `url('/my/url')`
-        res['default_opengraph']['og:image'] = res['default_twitter']['twitter:image'] = event_cover_properties.get('background-image', 'none')[4:-1].strip("'")
+        res['default_opengraph']['og:image'] = res['default_twitter']['twitter:image'] = event_cover_properties.get(
+            'background-image', 'none')[4:-1].strip("'")
         res['default_opengraph']['og:title'] = res['default_twitter']['twitter:title'] = self.name
         res['default_opengraph']['og:description'] = res['default_twitter']['twitter:description'] = self.subtitle
         res['default_twitter']['twitter:card'] = 'summary'
@@ -513,22 +518,22 @@ class Event(models.Model):
             first_day_of_the_month = today.replace(day=1)
             filter_string = _('This month') if months_delta == 0 \
                 else format_date(self.env, value=today + relativedelta(months=months_delta),
-                    date_format='LLLL', lang_code=get_lang(self.env).code).capitalize()
+                                 date_format='LLLL', lang_code=get_lang(self.env).code).capitalize()
             return [filter_name, filter_string, [
                 ("date_end", ">=", sd(first_day_of_the_month + relativedelta(months=months_delta))),
-                ("date_begin", "<", sd(first_day_of_the_month + relativedelta(months=months_delta+1)))],
-                0]
+                ("date_begin", "<", sd(first_day_of_the_month + relativedelta(months=months_delta + 1)))],
+                    0]
 
         return [
             ['upcoming', _('Upcoming Events'), [("date_end", ">", sd(today))], 0],
             ['today', _('Today'), [
                 ("date_end", ">", sd(today)),
                 ("date_begin", "<", sdn(today))],
-                0],
+             0],
             get_month_filter_domain('month', 0),
             ['old', _('Past Events'), [
                 ("date_end", "<", sd(today))],
-                0],
+             0],
             ['all', _('All Events'), [], 0]
         ]
 
@@ -597,7 +602,7 @@ class Event(models.Model):
         # Bypassing the access rigths of partner to search the address.
         def search_in_address(env, search_term):
             ret = env['event.event'].sudo()._search([
-               ('address_search', 'ilike', search_term),
+                ('address_search', 'ilike', search_term),
             ])
             return [('id', 'in', ret)]
 

@@ -4,6 +4,7 @@
 from threading import Thread, Event
 
 from odoo.addons.hw_drivers.main import drivers, iot_devices
+
 from odoo.tools.lru import LRU
 
 

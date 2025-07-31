@@ -4,7 +4,7 @@
         <record id="view_task_project_user_graph_inherited" model="ir.ui.view">
             <field name="name">report.project.task.user.graph.inherited</field>
             <field name="model">report.project.task.user</field>
-            <field name="inherit_id" ref="project.view_task_project_user_graph" />
+            <field name="inherit_id" ref="project.view_task_project_user_graph"/>
             <field name="arch" type="xml">
                 <xpath expr="//graph" position="attributes">
                     <attribute name="js_class">hr_timesheet_graphview</attribute>
@@ -17,7 +17,7 @@
                     <field name="remaining_hours" widget="timesheet_uom" type="measure"/>
                     <field name="remaining_hours_percentage" invisible="1"/>
                 </xpath>
-             </field>
+            </field>
         </record>
 
         <record id="view_task_project_user_pivot_inherited" model="ir.ui.view">
@@ -34,7 +34,7 @@
                     <field name="overtime" widget="timesheet_uom" type="measure"/>
                     <field name="remaining_hours_percentage" invisible="1"/>
                 </pivot>
-             </field>
+            </field>
         </record>
     </data>
 </odoo>

@@ -2,8 +2,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from unittest.mock import patch
 
-from odoo import Command
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
+from odoo import Command
 from odoo.tests import tagged
 
 
@@ -105,21 +106,21 @@ class TestProductMargin(AccountTestInvoicingCommon):
         })
 
         customer_invoice = self.env['account.move'].create([{
-                'move_type': 'out_invoice',
-                'partner_id': customer.id,
-                'invoice_line_ids': [
-                    Command.create({
-                        'product_id': ipad.id,
-                        'price_unit': 1000,
-                        'quantity': 2,
-                    }),
-                    Command.create({
-                        'product_id': ipad.id,
-                        'price_unit': 1000,
-                        'quantity': -1,
-                    }),
-                ],
-            }])
+            'move_type': 'out_invoice',
+            'partner_id': customer.id,
+            'invoice_line_ids': [
+                Command.create({
+                    'product_id': ipad.id,
+                    'price_unit': 1000,
+                    'quantity': 2,
+                }),
+                Command.create({
+                    'product_id': ipad.id,
+                    'price_unit': 1000,
+                    'quantity': -1,
+                }),
+            ],
+        }])
 
         customer_invoice.action_post()
 

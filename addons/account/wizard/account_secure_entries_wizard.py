@@ -136,7 +136,8 @@ class AccountSecureEntries(models.TransientModel):
             wizard.not_hashable_unlocked_move_ids = [Command.set(not_hashable_unlocked_moves)]
             wizard.move_to_hash_ids = [Command.set(move_to_hash_ids)]
 
-    @api.depends('company_id', 'chains_to_hash_with_gaps', 'hash_date', 'not_hashable_unlocked_move_ids', 'max_hash_date', 'unreconciled_bank_statement_line_ids')
+    @api.depends('company_id', 'chains_to_hash_with_gaps', 'hash_date', 'not_hashable_unlocked_move_ids',
+                 'max_hash_date', 'unreconciled_bank_statement_line_ids')
     def _compute_warnings(self):
         for wizard in self:
             warnings = {}
@@ -146,14 +147,16 @@ class AccountSecureEntries(models.TransientModel):
                 continue
 
             if wizard.unreconciled_bank_statement_line_ids:
-                ignored_sequence_prefixes = list(set(wizard.unreconciled_bank_statement_line_ids.move_id.mapped('sequence_prefix')))
+                ignored_sequence_prefixes = list(
+                    set(wizard.unreconciled_bank_statement_line_ids.move_id.mapped('sequence_prefix')))
                 warnings['account_unreconciled_bank_statement_line_ids'] = {
                     'message': _("There are still unreconciled bank statement lines before the selected date. "
                                  "The entries from journal prefixes containing them will not be secured: %(prefix_info)s",
                                  prefix_info=format_list(self.env, ignored_sequence_prefixes)),
                     'level': 'danger',
                     'action_text': _("Review"),
-                    'action': wizard.company_id._get_unreconciled_statement_lines_redirect_action(wizard.unreconciled_bank_statement_line_ids),
+                    'action': wizard.company_id._get_unreconciled_statement_lines_redirect_action(
+                        wizard.unreconciled_bank_statement_line_ids),
                 }
 
             draft_entries = self.env['account.move'].search_count(
@@ -170,7 +173,8 @@ class AccountSecureEntries(models.TransientModel):
             not_hashable_unlocked_moves = wizard.not_hashable_unlocked_move_ids
             if not_hashable_unlocked_moves:
                 warnings['account_not_hashable_unlocked_moves'] = {
-                    'message': _("There are entries that cannot be hashed. They can be protected by the Hard Lock Date."),
+                    'message': _(
+                        "There are entries that cannot be hashed. They can be protected by the Hard Lock Date."),
                     'action_text': _("Review"),
                     'action': wizard.action_show_moves(not_hashable_unlocked_moves),
                 }
@@ -193,11 +197,13 @@ class AccountSecureEntries(models.TransientModel):
                     'action_text': _("Review"),
                     'action': {
                         **self.env['account.journal']._show_sequence_holes(domain),
-                        'views': [[self.env.ref('account.view_move_tree_multi_edit').id, 'list'], [self.env.ref('account.view_move_form').id, 'form']],
+                        'views': [[self.env.ref('account.view_move_tree_multi_edit').id, 'list'],
+                                  [self.env.ref('account.view_move_form').id, 'form']],
                     }
                 }
 
-            moves_to_hash_after_selected_date = wizard.move_to_hash_ids.filtered(lambda move: move.date > wizard.hash_date)
+            moves_to_hash_after_selected_date = wizard.move_to_hash_ids.filtered(
+                lambda move: move.date > wizard.hash_date)
             if moves_to_hash_after_selected_date:
                 warnings['account_move_to_secure_after_selected_date'] = {
                     'message': _("Securing these entries will also secure entries after the selected date."),
@@ -227,7 +233,8 @@ class AccountSecureEntries(models.TransientModel):
 
     def _get_draft_moves_in_hashed_period_domain(self):
         self.ensure_one()
-        return self._get_unhashed_moves_in_hashed_period_domain(self.company_id, self.hash_date, [('state', '=', 'draft')])
+        return self._get_unhashed_moves_in_hashed_period_domain(self.company_id, self.hash_date,
+                                                                [('state', '=', 'draft')])
 
     def action_show_moves(self, moves):
         self.ensure_one()
@@ -238,7 +245,8 @@ class AccountSecureEntries(models.TransientModel):
             'type': 'ir.actions.act_window',
             'domain': [('id', 'in', moves.ids)],
             'search_view_id': [self.env.ref('account.view_account_move_filter').id, 'search'],
-            'views': [[self.env.ref('account.view_move_tree_multi_edit').id, 'list'], [self.env.ref('account.view_move_form').id, 'form']],
+            'views': [[self.env.ref('account.view_move_tree_multi_edit').id, 'list'],
+                      [self.env.ref('account.view_move_form').id, 'form']],
         }
 
     def action_show_draft_moves_in_hashed_period(self):
@@ -250,7 +258,8 @@ class AccountSecureEntries(models.TransientModel):
             'type': 'ir.actions.act_window',
             'domain': self._get_draft_moves_in_hashed_period_domain(),
             'search_view_id': [self.env.ref('account.view_account_move_filter').id, 'search'],
-            'views': [[self.env.ref('account.view_move_tree_multi_edit').id, 'list'], [self.env.ref('account.view_move_form').id, 'form']],
+            'views': [[self.env.ref('account.view_move_tree_multi_edit').id, 'list'],
+                      [self.env.ref('account.view_move_form').id, 'form']],
         }
 
     def action_secure_entries(self):

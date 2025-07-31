@@ -15,6 +15,6 @@ List of contributors:
 Goran Kliska goran@ecodica.eu https://github.com/gkliska
 Ivan Vađić ivan.vadjic@ecodica.eu https://github.com/IvanVadjic
 Marko Falatec marko.falatec@ecodica.eu https://github.com/mfalatec
-Mihael Cindori mihael.cindori@ecodica.eu https://github.com/cimbaIG 
+Mihael Cindori mihael.cindori@ecodica.eu https://github.com/cimbaIG
 Danijel Bosnar danijel.bosnar@ecodica.eu https://github.com/dancib7
 Mario Semialjac mario.semialjac@ecodica.eu https://github.com/msemialjac

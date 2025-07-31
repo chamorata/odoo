@@ -178,7 +178,7 @@ class TestCustomSnippet(TransactionCase):
         })
 
         view.update_field_translations('arch_db', {
-           parseltongue.code: {
+            parseltongue.code: {
                 'English Text': 'Parseltongue Text',
             }
         })

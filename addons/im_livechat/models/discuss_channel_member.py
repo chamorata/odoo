@@ -2,9 +2,10 @@
 
 from datetime import datetime, timedelta
 
+from odoo.addons.mail.tools.discuss import Store
+
 from odoo import api, models, fields
 from odoo.osv import expression
-from odoo.addons.mail.tools.discuss import Store
 
 
 class ChannelMember(models.Model):
@@ -32,7 +33,7 @@ class ChannelMember(models.Model):
                 member,
                 {
                     "is_bot": member.partner_id
-                    in member.channel_id.sudo().livechat_channel_id.rule_ids.chatbot_script_id.operator_partner_id,
+                              in member.channel_id.sudo().livechat_channel_id.rule_ids.chatbot_script_id.operator_partner_id,
                 },
             )
 

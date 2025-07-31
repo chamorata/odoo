@@ -2,8 +2,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import _, models, fields
-from odoo.tools.float_utils import float_is_zero, float_round
 from odoo.exceptions import UserError
+from odoo.tools.float_utils import float_is_zero
 
 
 class StockMove(models.Model):
@@ -24,7 +24,8 @@ class StockMove(models.Model):
         bom_line = self.bom_line_id
         bom = bom_line.bom_id
         if line.currency_id != self.company_id.currency_id:
-            kit_price_unit = line.currency_id._convert(kit_price_unit, self.company_id.currency_id, self.company_id, fields.Date.context_today(self), round=False)
+            kit_price_unit = line.currency_id._convert(kit_price_unit, self.company_id.currency_id, self.company_id,
+                                                       fields.Date.context_today(self), round=False)
         cost_share = self.bom_line_id._get_cost_share()
         uom_factor = 1.0
         kit_product = bom.product_id or bom.product_tmpl_id
@@ -43,16 +44,22 @@ class StockMove(models.Model):
 
     def _get_valuation_price_and_qty(self, related_aml, to_curr):
         valuation_price_unit_total, valuation_total_qty = super()._get_valuation_price_and_qty(related_aml, to_curr)
-        boms = self.env['mrp.bom']._bom_find(related_aml.product_id, company_id=related_aml.company_id.id, bom_type='phantom')
+        boms = self.env['mrp.bom']._bom_find(related_aml.product_id, company_id=related_aml.company_id.id,
+                                             bom_type='phantom')
         if related_aml.product_id in boms:
             kit_bom = boms[related_aml.product_id]
             order_qty = related_aml.product_id.uom_id._compute_quantity(related_aml.quantity, kit_bom.product_uom_id)
             filters = {
-                'incoming_moves': lambda m: m.location_id.usage == 'supplier' and (not m.origin_returned_move_id or (m.origin_returned_move_id and m.to_refund)),
+                'incoming_moves': lambda m: m.location_id.usage == 'supplier' and (
+                            not m.origin_returned_move_id or (m.origin_returned_move_id and m.to_refund)),
                 'outgoing_moves': lambda m: m.location_id.usage != 'supplier' and m.to_refund
             }
             valuation_total_qty = self._compute_kit_quantities(related_aml.product_id, order_qty, kit_bom, filters)
-            valuation_total_qty = kit_bom.product_uom_id._compute_quantity(valuation_total_qty, related_aml.product_id.uom_id)
-            if float_is_zero(valuation_total_qty, precision_rounding=related_aml.product_uom_id.rounding or related_aml.product_id.uom_id.rounding):
-                raise UserError(_('Odoo is not able to generate the anglo saxon entries. The total valuation of %s is zero.', related_aml.product_id.display_name))
+            valuation_total_qty = kit_bom.product_uom_id._compute_quantity(valuation_total_qty,
+                                                                           related_aml.product_id.uom_id)
+            if float_is_zero(valuation_total_qty,
+                             precision_rounding=related_aml.product_uom_id.rounding or related_aml.product_id.uom_id.rounding):
+                raise UserError(
+                    _('Odoo is not able to generate the anglo saxon entries. The total valuation of %s is zero.',
+                      related_aml.product_id.display_name))
         return valuation_price_unit_total, valuation_total_qty

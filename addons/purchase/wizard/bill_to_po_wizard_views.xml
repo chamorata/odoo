@@ -13,7 +13,8 @@
                                context="{'show_total_amount': True}"/>
                     </group>
                     <footer>
-                        <button name="action_add_to_po" type="object" string="Add Products" invisible="not context.get('has_products')"/>
+                        <button name="action_add_to_po" type="object" string="Add Products"
+                                invisible="not context.get('has_products')"/>
                         <button name="action_add_downpayment" type="object" string="Add Down Payment"/>
                     </footer>
                 </sheet>

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo.addons.mrp.tests.common import TestMrpCommon
+
 from odoo.tests import tagged, Form, HttpCase
 
 
@@ -17,11 +18,11 @@ class TestTourManualConsumption(HttpCase):
         product_finish = Product.create({
             'name': 'finish',
             'is_storable': True,
-            'tracking': 'none',})
+            'tracking': 'none', })
         product_nt = Product.create({
             'name': 'No tracking',
             'is_storable': True,
-            'tracking': 'none',})
+            'tracking': 'none', })
         bom = self.env['mrp.bom'].create({
             'product_id': product_finish.id,
             'product_tmpl_id': product_finish.product_tmpl_id.id,
@@ -51,6 +52,7 @@ class TestTourManualConsumption(HttpCase):
         self.assertEqual(move_nt.manual_consumption, True)
         self.assertEqual(move_nt.picked, True)
         self.assertEqual(move_nt.quantity, 16.0)
+
 
 class TestManualConsumption(TestMrpCommon):
     @classmethod
@@ -295,7 +297,7 @@ class TestManualConsumption(TestMrpCommon):
         mo = mo_form.save()
         mo.action_confirm()
         self.assertRecordValues(mo.picking_ids.move_ids, [
-            { "product_id": components[0].id, "product_uom_qty": 2.0}
+            {"product_id": components[0].id, "product_uom_qty": 2.0}
         ])
         self.assertEqual(mo.reservation_state, "waiting")
         mo.picking_ids.button_validate()

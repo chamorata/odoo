@@ -24,8 +24,10 @@ class StockWarehouse(models.Model):
         'stock.picking.type', 'Manufacturing Operation Type',
         domain="[('code', '=', 'mrp_operation'), ('company_id', '=', company_id)]", check_company=True, copy=False)
 
-    pbm_type_id = fields.Many2one('stock.picking.type', 'Picking Before Manufacturing Operation Type', check_company=True, copy=False)
-    sam_type_id = fields.Many2one('stock.picking.type', 'Stock After Manufacturing Operation Type', check_company=True, copy=False)
+    pbm_type_id = fields.Many2one('stock.picking.type', 'Picking Before Manufacturing Operation Type',
+                                  check_company=True, copy=False)
+    sam_type_id = fields.Many2one('stock.picking.type', 'Stock After Manufacturing Operation Type', check_company=True,
+                                  copy=False)
 
     manufacture_steps = fields.Selection([
         ('mrp_one_step', 'Manufacture (1 step)'),
@@ -62,7 +64,8 @@ class StockWarehouse(models.Model):
 
     @api.model
     def _get_production_location(self):
-        location = self.env['stock.location'].search([('usage', '=', 'production'), ('company_id', '=', self.company_id.id)], limit=1)
+        location = self.env['stock.location'].search(
+            [('usage', '=', 'production'), ('company_id', '=', self.company_id.id)], limit=1)
         if not location:
             raise UserError(_('Can\'t find any production location.'))
         return location
@@ -114,7 +117,8 @@ class StockWarehouse(models.Model):
                     'procure_method': 'make_to_order',
                     'company_id': self.company_id.id,
                     'picking_type_id': self.manu_type_id.id,
-                    'route_id': self._find_or_create_global_route('mrp.route_warehouse0_manufacture', _('Manufacture')).id
+                    'route_id': self._find_or_create_global_route('mrp.route_warehouse0_manufacture',
+                                                                  _('Manufacture')).id
                 },
                 'update_values': {
                     'active': self.manufacture_to_resupply,
@@ -130,7 +134,8 @@ class StockWarehouse(models.Model):
                     'company_id': self.company_id.id,
                     'action': 'pull',
                     'auto': 'manual',
-                    'route_id': self._find_or_create_global_route('stock.route_warehouse0_mto', _('Replenish on Order (MTO)')).id,
+                    'route_id': self._find_or_create_global_route('stock.route_warehouse0_mto',
+                                                                  _('Replenish on Order (MTO)')).id,
                     'location_dest_id': production_location.id,
                     'location_src_id': self.lot_stock_id.id,
                     'picking_type_id': self.manu_type_id.id
@@ -147,7 +152,8 @@ class StockWarehouse(models.Model):
                     'company_id': self.company_id.id,
                     'action': 'pull',
                     'auto': 'manual',
-                    'route_id': self._find_or_create_global_route('stock.route_warehouse0_mto', _('Replenish on Order (MTO)')).id,
+                    'route_id': self._find_or_create_global_route('stock.route_warehouse0_mto',
+                                                                  _('Replenish on Order (MTO)')).id,
                     'name': self._format_rulename(self.lot_stock_id, self.pbm_loc_id, 'MTO'),
                     'location_dest_id': self.pbm_loc_id.id,
                     'location_src_id': self.lot_stock_id.id,
@@ -186,9 +192,15 @@ class StockWarehouse(models.Model):
     def _get_sequence_values(self, name=False, code=False):
         values = super(StockWarehouse, self)._get_sequence_values(name=name, code=code)
         values.update({
-            'pbm_type_id': {'name': _('%(name)s Sequence picking before manufacturing', name=self.name), 'prefix': self.code + '/' + (self.pbm_type_id.sequence_code or 'PC') + '/', 'padding': 5, 'company_id': self.company_id.id},
-            'sam_type_id': {'name': _('%(name)s Sequence stock after manufacturing', name=self.name), 'prefix': self.code + '/' + (self.sam_type_id.sequence_code or 'SFP') + '/', 'padding': 5, 'company_id': self.company_id.id},
-            'manu_type_id': {'name': _('%(name)s Sequence production', name=self.name), 'prefix': self.code + '/' + (self.manu_type_id.sequence_code or 'MO') + '/', 'padding': 5, 'company_id': self.company_id.id},
+            'pbm_type_id': {'name': _('%(name)s Sequence picking before manufacturing', name=self.name),
+                            'prefix': self.code + '/' + (self.pbm_type_id.sequence_code or 'PC') + '/', 'padding': 5,
+                            'company_id': self.company_id.id},
+            'sam_type_id': {'name': _('%(name)s Sequence stock after manufacturing', name=self.name),
+                            'prefix': self.code + '/' + (self.sam_type_id.sequence_code or 'SFP') + '/', 'padding': 5,
+                            'company_id': self.company_id.id},
+            'manu_type_id': {'name': _('%(name)s Sequence production', name=self.name),
+                             'prefix': self.code + '/' + (self.manu_type_id.sequence_code or 'MO') + '/', 'padding': 5,
+                             'company_id': self.company_id.id},
         })
         return values
 
@@ -243,7 +255,8 @@ class StockWarehouse(models.Model):
             'manu_type_id': {
                 'active': self.manufacture_to_resupply and self.active,
                 'barcode': self.code.replace(" ", "").upper() + "MANUF",
-                'default_location_src_id': self.manufacture_steps in ('pbm', 'pbm_sam') and self.pbm_loc_id.id or self.lot_stock_id.id,
+                'default_location_src_id': self.manufacture_steps in ('pbm',
+                                                                      'pbm_sam') and self.pbm_loc_id.id or self.lot_stock_id.id,
                 'default_location_dest_id': self.manufacture_steps == 'pbm_sam' and self.sam_loc_id.id or self.lot_stock_id.id,
             },
         })
@@ -252,7 +265,8 @@ class StockWarehouse(models.Model):
     def _create_missing_locations(self, vals):
         super()._create_missing_locations(vals)
         for company_id in self.company_id:
-            location = self.env['stock.location'].search([('usage', '=', 'production'), ('company_id', '=', company_id.id)], limit=1)
+            location = self.env['stock.location'].search(
+                [('usage', '=', 'production'), ('company_id', '=', company_id.id)], limit=1)
             if not location:
                 company_id._create_production_location()
 
@@ -264,7 +278,9 @@ class StockWarehouse(models.Model):
 
     def _get_all_routes(self):
         routes = super(StockWarehouse, self)._get_all_routes()
-        routes |= self.filtered(lambda self: self.manufacture_to_resupply and self.manufacture_pull_id and self.manufacture_pull_id.route_id).mapped('manufacture_pull_id').mapped('route_id')
+        routes |= self.filtered(lambda
+                                    self: self.manufacture_to_resupply and self.manufacture_pull_id and self.manufacture_pull_id.route_id).mapped(
+            'manufacture_pull_id').mapped('route_id')
         return routes
 
     def _update_location_manufacture(self, new_manufacture_step):
@@ -276,8 +292,10 @@ class StockWarehouse(models.Model):
         # change the manufacture stock rule name
         for warehouse in self:
             if warehouse.manufacture_pull_id and name:
-                warehouse.manufacture_pull_id.write({'name': warehouse.manufacture_pull_id.name.replace(warehouse.name, name, 1)})
+                warehouse.manufacture_pull_id.write(
+                    {'name': warehouse.manufacture_pull_id.name.replace(warehouse.name, name, 1)})
         return res
+
 
 class Orderpoint(models.Model):
     _inherit = "stock.warehouse.orderpoint"
@@ -286,8 +304,8 @@ class Orderpoint(models.Model):
     def check_product_is_not_kit(self):
         domain = [
             '|', ('product_id', 'in', self.product_id.ids),
-                 '&', ('product_id', '=', False),
-                      ('product_tmpl_id', 'in', self.product_id.product_tmpl_id.ids),
+            '&', ('product_id', '=', False),
+            ('product_tmpl_id', 'in', self.product_id.product_tmpl_id.ids),
             ('type', '=', 'phantom'),
         ]
         if self.env['mrp.bom'].search_count(domain, limit=1):

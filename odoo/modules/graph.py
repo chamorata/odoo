@@ -21,6 +21,7 @@ def _ignored_modules(cr):
         result += [m[0] for m in cr.fetchall()]
     return result
 
+
 class Graph(dict):
     """ Modules dependency graph.
 
@@ -45,11 +46,12 @@ class Graph(dict):
             return
         # update the graph with values from the database (if exist)
         ## First, we set the default values for each package in graph
-        additional_data = {key: {'id': 0, 'state': 'uninstalled', 'dbdemo': False, 'installed_version': None} for key in self.keys()}
+        additional_data = {key: {'id': 0, 'state': 'uninstalled', 'dbdemo': False, 'installed_version': None} for key in
+                           self.keys()}
         ## Then we get the values from the database
         cr.execute('SELECT name, id, state, demo AS dbdemo, latest_version AS installed_version'
                    '  FROM ir_module_module'
-                   ' WHERE name IN %s',(tuple(additional_data),)
+                   ' WHERE name IN %s', (tuple(additional_data),)
                    )
 
         ## and we update the default values with values from the database
@@ -70,7 +72,7 @@ class Graph(dict):
         for module in module_list:
             info = odoo.modules.module.get_manifest(module)
             if info and info['installable']:
-                packages.append((module, info)) # TODO directly a dict, like in get_modules_with_version
+                packages.append((module, info))  # TODO directly a dict, like in get_modules_with_version
             elif module not in _ignored_modules(cr):
                 _logger.warning('module %s: not installable, skipped', module)
 
@@ -105,12 +107,11 @@ class Graph(dict):
 
         return len(self) - len_graph
 
-
     def __iter__(self):
         level = 0
         done = set(self.keys())
         while done:
-            level_modules = sorted((name, module) for name, module in self.items() if module.depth==level)
+            level_modules = sorted((name, module) for name, module in self.items() if module.depth == level)
             for name, module in level_modules:
                 done.remove(name)
                 yield module
@@ -118,6 +119,7 @@ class Graph(dict):
 
     def __str__(self):
         return '\n'.join(str(n) for n in self if n.depth == 0)
+
 
 class Node(object):
     """ One module in the modules dependency graph.
@@ -127,6 +129,7 @@ class Node(object):
     ir_module_module (set by Graph.update_from_db()).
 
     """
+
     def __new__(cls, name, graph, info):
         if name in graph:
             inst = graph[name]
@@ -181,11 +184,12 @@ class Node(object):
     def _pprint(self, depth=0):
         s = '%s\n' % self.name
         for c in self.children:
-            s += '%s`-> %s' % ('   ' * depth, c._pprint(depth+1))
+            s += '%s`-> %s' % ('   ' * depth, c._pprint(depth + 1))
         return s
 
     def should_have_demo(self):
-        return (hasattr(self, 'demo') or (self.dbdemo and self.state != 'installed')) and all(p.dbdemo for p in self.parents)
+        return (hasattr(self, 'demo') or (self.dbdemo and self.state != 'installed')) and all(
+            p.dbdemo for p in self.parents)
 
     @property
     def parents(self):

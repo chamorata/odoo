@@ -5,10 +5,11 @@ from datetime import timedelta
 from itertools import islice
 
 from lxml import etree
+from odoo.addons.l10n_hu_edi.models.l10n_hu_edi_connection import L10nHuEdiConnection, L10nHuEdiConnectionError, \
+    XML_NAMESPACES
 
 from odoo import models, fields, _
 from odoo.exceptions import UserError
-from odoo.addons.l10n_hu_edi.models.l10n_hu_edi_connection import L10nHuEdiConnection, L10nHuEdiConnectionError, XML_NAMESPACES
 
 
 class ResCompany(models.Model):
@@ -66,8 +67,10 @@ class ResCompany(models.Model):
         """
         for company in self:
             # Set profit/loss accounts on cash rounding method
-            profit_account = self.env['account.chart.template'].with_company(company).ref('l10n_hu_969', raise_if_not_found=False)
-            loss_account = self.env['account.chart.template'].with_company(company).ref('l10n_hu_869', raise_if_not_found=False)
+            profit_account = self.env['account.chart.template'].with_company(company).ref('l10n_hu_969',
+                                                                                          raise_if_not_found=False)
+            loss_account = self.env['account.chart.template'].with_company(company).ref('l10n_hu_869',
+                                                                                        raise_if_not_found=False)
             rounding_method = self.env.ref('l10n_hu_edi.cash_rounding_1_huf', raise_if_not_found=False)
             if profit_account and loss_account and rounding_method:
                 rounding_method.with_company(company).write({
@@ -105,7 +108,8 @@ class ResCompany(models.Model):
                     connection.do_token_exchange(company._l10n_hu_edi_get_credentials_dict())
                 except L10nHuEdiConnectionError as e:
                     raise UserError(
-                        _('Incorrect NAV Credentials! Check that your company VAT number is set correctly. \nError details: %s', e)
+                        _('Incorrect NAV Credentials! Check that your company VAT number is set correctly. \nError details: %s',
+                          e)
                     ) from e
 
     def _l10n_hu_edi_recover_transactions(self, connection):
@@ -164,8 +168,8 @@ class ResCompany(models.Model):
             transactions_to_query = (
                 t for t in reversed(transactions)
                 if t['username'] == company.sudo().l10n_hu_edi_username
-                    and t['source'] == 'MGM'
-                    and t['transaction_code'] not in invoices_to_check.mapped('l10n_hu_edi_transaction_code')
+                   and t['source'] == 'MGM'
+                   and t['transaction_code'] not in invoices_to_check.mapped('l10n_hu_edi_transaction_code')
             )
 
             for transaction in islice(transactions_to_query, 10):
@@ -182,48 +186,53 @@ class ResCompany(models.Model):
                     }
 
                 for processing_result in results['processing_results']:
-                    invoice_name = processing_result['original_xml'].findtext('data:invoiceNumber', namespaces=XML_NAMESPACES)
+                    invoice_name = processing_result['original_xml'].findtext('data:invoiceNumber',
+                                                                              namespaces=XML_NAMESPACES)
                     canonicalized_attachment = etree.canonicalize(processing_result['original_file'])
-                    annulment_invoice_name = processing_result['original_xml'].findtext('data:annulmentReference', namespaces=XML_NAMESPACES)
+                    annulment_invoice_name = processing_result['original_xml'].findtext('data:annulmentReference',
+                                                                                        namespaces=XML_NAMESPACES)
 
                     matched_invoice = invoices_to_check.filtered(
                         lambda m: (
-                            # 1. Match invoice if the entire XML matches.
-                            # For performance, we first check the invoice name before trying to match the whole XML.
-                            (
-                                m.name == invoice_name
-                                and etree.canonicalize(base64.b64decode(m.l10n_hu_edi_attachment).decode())
-                                    == canonicalized_attachment
-                            )
-                            or m.name == annulment_invoice_name
-                        ) and (
-                            # 2. We update the invoice state only if:
-                            # - the invoice doesn't have a transaction code, or
-                            # - it currently has a duplicate error, or
-                            # - the current transaction is more recent than the latest transaction on the invoice
-                            #   and is not a duplicate error (this avoid overwriting the state with a previous, obsolete one).
-                            not m.l10n_hu_edi_transaction_code
-                            or any(
-                                'INVOICE_NUMBER_NOT_UNIQUE' in error or 'ANNULMENT_IN_PROGRESS' in error
-                                for error in m.l10n_hu_edi_messages['errors']
-                            )
-                            or (
-                                transaction['send_time'] >= m.l10n_hu_edi_send_time
-                                and not (
-                                    processing_result['technical_validation_messages']
-                                    or any(
-                                        message['validation_error_code'] in ['INVOICE_NUMBER_NOT_UNIQUE', 'ANNULMENT_IN_PROGRESS']
-                                        for message in processing_result['business_validation_messages']
-                                    )
-                                )
-                            )
-                        )
+                                      # 1. Match invoice if the entire XML matches.
+                                      # For performance, we first check the invoice name before trying to match the whole XML.
+                                          (
+                                                  m.name == invoice_name
+                                                  and etree.canonicalize(
+                                              base64.b64decode(m.l10n_hu_edi_attachment).decode())
+                                                  == canonicalized_attachment
+                                          )
+                                          or m.name == annulment_invoice_name
+                                  ) and (
+                                      # 2. We update the invoice state only if:
+                                      # - the invoice doesn't have a transaction code, or
+                                      # - it currently has a duplicate error, or
+                                      # - the current transaction is more recent than the latest transaction on the invoice
+                                      #   and is not a duplicate error (this avoid overwriting the state with a previous, obsolete one).
+                                          not m.l10n_hu_edi_transaction_code
+                                          or any(
+                                      'INVOICE_NUMBER_NOT_UNIQUE' in error or 'ANNULMENT_IN_PROGRESS' in error
+                                      for error in m.l10n_hu_edi_messages['errors']
+                                  )
+                                          or (
+                                                  transaction['send_time'] >= m.l10n_hu_edi_send_time
+                                                  and not (
+                                                  processing_result['technical_validation_messages']
+                                                  or any(
+                                              message['validation_error_code'] in ['INVOICE_NUMBER_NOT_UNIQUE',
+                                                                                   'ANNULMENT_IN_PROGRESS']
+                                              for message in processing_result['business_validation_messages']
+                                          )
+                                          )
+                                          )
+                                  )
                     )
 
                     if matched_invoice:
                         # Set the correct transaction code on the matched invoice
                         matched_invoice.l10n_hu_edi_transaction_code = transaction['transaction_code']
-                        matched_invoice._l10n_hu_edi_process_query_transaction_result(processing_result, results['annulment_status'])
+                        matched_invoice._l10n_hu_edi_process_query_transaction_result(processing_result,
+                                                                                      results['annulment_status'])
 
             # The server might still be processing transactions from the last 6 minutes,
             # so we should keep open the possibility of re-querying them.

@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import json
-
 from datetime import date
 from unittest.mock import patch
 
-from odoo import Command
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.addons.mail.tests.common import MailCommon
+
+from odoo import Command
 from odoo.exceptions import UserError
 from odoo.tests import users, warmup, tagged
 from odoo.tools import formataddr, mute_logger
@@ -58,7 +58,7 @@ class TestAccountComposerPerformance(AccountTestInvoicingCommon, MailCommon):
                 (6, 0, [cls.env.ref('base.group_user').id,
                         cls.env.ref('account.group_account_invoice').id,
                         cls.env.ref('base.group_partner_manager').id
-                       ])
+                        ])
             ],
             'login': 'user_account',
             'name': 'Ernest Employee Account',
@@ -74,7 +74,7 @@ class TestAccountComposerPerformance(AccountTestInvoicingCommon, MailCommon):
                 (6, 0, [cls.env.ref('base.group_user').id,
                         cls.env.ref('account.group_account_invoice').id,
                         cls.env.ref('base.group_partner_manager').id
-                       ])
+                        ])
             ],
             'login': 'user_account_other',
             'name': 'Eglantine Employee AccountOther',
@@ -93,7 +93,7 @@ class TestAccountComposerPerformance(AccountTestInvoicingCommon, MailCommon):
              'mobile': f'047500{idx:2d}{idx:2d}',
              'lang': langs[idx % len(langs)],
              'name': f'Partner_{idx}',
-            } for idx in range(0, 10)
+             } for idx in range(0, 10)
         ])
         cls.test_account_moves = cls.env['account.move'].create([{
             'invoice_date': date(2022, 3, 2),
@@ -101,12 +101,12 @@ class TestAccountComposerPerformance(AccountTestInvoicingCommon, MailCommon):
             'invoice_line_ids': [
                 (0, 0, {'name': 'Line1',
                         'price_unit': 100.0
-                       }
-                ),
+                        }
+                 ),
                 (0, 0, {'name': 'Line2',
                         'price_unit': 200.0
-                       }
-                ),
+                        }
+                 ),
             ],
             'invoice_user_id': cls.user_account_other.id,
             'move_type': 'out_invoice',
@@ -225,17 +225,19 @@ class TestAccountComposerPerformance(AccountTestInvoicingCommon, MailCommon):
         test_customer = self.test_customers[0].with_env(self.env)
         move_template = self.move_template.with_env(self.env)
 
-        composer = self.env['account.move.send.wizard'].with_context(active_model='account.move', active_ids=test_move.ids).create({
+        composer = self.env['account.move.send.wizard'].with_context(active_model='account.move',
+                                                                     active_ids=test_move.ids).create({
             'sending_methods': ['email'],
             'mail_template_id': move_template.id,
         })
 
         with self.mock_mail_gateway(mail_unlink_sent=False), \
-             self.mock_mail_app():
+                self.mock_mail_app():
             composer.action_send_and_print(allow_fallback_pdf=True)
             self.env.cr.flush()  # force tracking message
 
-        self.assertEqual(len(self._new_msgs), 2, 'Should produce 2 messages: one for posting template, one for tracking')
+        self.assertEqual(len(self._new_msgs), 2,
+                         'Should produce 2 messages: one for posting template, one for tracking')
         print_msg, track_msg = self._new_msgs[0], self._new_msgs[1]
         self.assertNotified(
             print_msg,
@@ -312,17 +314,19 @@ class TestAccountComposerPerformance(AccountTestInvoicingCommon, MailCommon):
         test_customer = self.test_customers[1].with_env(self.env)
         move_template = self.move_template.with_env(self.env)
 
-        composer = self.env['account.move.send.wizard'].with_context(active_model='account.move', active_ids=test_move.ids).create({
+        composer = self.env['account.move.send.wizard'].with_context(active_model='account.move',
+                                                                     active_ids=test_move.ids).create({
             'sending_methods': ['email'],
             'mail_template_id': move_template.id,
         })
 
         with self.mock_mail_gateway(mail_unlink_sent=False), \
-             self.mock_mail_app():
+                self.mock_mail_app():
             composer.action_send_and_print()
             self.env.cr.flush()  # force tracking message
 
-        self.assertEqual(len(self._new_msgs), 2, 'Should produce 2 messages: one for posting template, one for tracking')
+        self.assertEqual(len(self._new_msgs), 2,
+                         'Should produce 2 messages: one for posting template, one for tracking')
         print_msg, track_msg = self._new_msgs[0], self._new_msgs[1]
         self.assertNotified(
             print_msg,
@@ -409,13 +413,14 @@ class TestAccountComposerPerformance(AccountTestInvoicingCommon, MailCommon):
         extra_dynamic_report = self.env.ref('account.action_account_original_vendor_bill')
         move_template.report_template_ids += extra_dynamic_report
 
-        composer = self.env['account.move.send.wizard'].with_context(active_model='account.move', active_ids=test_move.ids).create({
+        composer = self.env['account.move.send.wizard'].with_context(active_model='account.move',
+                                                                     active_ids=test_move.ids).create({
             'sending_methods': ['email'],
             'mail_template_id': move_template.id,
         })
 
         with self.mock_mail_gateway(mail_unlink_sent=False), \
-             self.mock_mail_app():
+                self.mock_mail_app():
             composer.action_send_and_print()
             self.env.cr.flush()  # force tracking message
 
@@ -466,7 +471,8 @@ class TestAccountComposerPerformance(AccountTestInvoicingCommon, MailCommon):
             'email': "additional@example.com",
         })
 
-        composer = self.env['account.move.send.wizard'].with_context(active_model='account.move', active_ids=test_move.ids).create({
+        composer = self.env['account.move.send.wizard'].with_context(active_model='account.move',
+                                                                     active_ids=test_move.ids).create({
             'sending_methods': ['email'],
             'mail_template_id': move_template.id,
             'mail_partner_ids': additional_partner.ids,
@@ -513,8 +519,8 @@ class TestAccountMoveSendCommon(AccountTestInvoicingCommon):
 
     def create_send_and_print(self, invoices, **kwargs):
         wizard_model = 'account.move.send.wizard' if len(invoices) == 1 else 'account.move.send.batch.wizard'
-        return self.env[wizard_model]\
-            .with_context(active_model='account.move', active_ids=invoices.ids)\
+        return self.env[wizard_model] \
+            .with_context(active_model='account.move', active_ids=invoices.ids) \
             .create(kwargs)
 
     def _get_mail_message(self, move):
@@ -574,7 +580,8 @@ class TestAccountMoveSend(TestAccountMoveSendCommon):
 
         # Send it again. The PDF must not be created again.
         wizard = self.create_send_and_print(invoice, sending_methods=['email', 'manual'])
-        with patch('odoo.addons.account.models.account_move_send.AccountMoveSend._hook_invoice_document_after_pdf_report_render') as mocked_method:
+        with patch(
+                'odoo.addons.account.models.account_move_send.AccountMoveSend._hook_invoice_document_after_pdf_report_render') as mocked_method:
             results = wizard.action_send_and_print()
             mocked_method.assert_not_called()
         self.assertEqual(results['type'], 'ir.actions.act_url')
@@ -712,8 +719,10 @@ class TestAccountMoveSend(TestAccountMoveSendCommon):
             }
 
         with (
-            patch('odoo.addons.account.models.account_move_send.AccountMoveSend._get_default_extra_edis', get_default_extra_edis),
-            patch('odoo.addons.account.models.account_move_send.AccountMoveSend._get_all_extra_edis', get_all_extra_edis)
+            patch('odoo.addons.account.models.account_move_send.AccountMoveSend._get_default_extra_edis',
+                  get_default_extra_edis),
+            patch('odoo.addons.account.models.account_move_send.AccountMoveSend._get_all_extra_edis',
+                  get_all_extra_edis)
         ):
             wizard = self.create_send_and_print(invoice1 + invoice2)
             self.assertEqual(wizard.summary_data, {
@@ -997,8 +1006,10 @@ class TestAccountMoveSend(TestAccountMoveSendCommon):
         wizard = self.create_send_and_print(invoice_1_1 + invoice_1_2)
         wizard.action_send_and_print()  # saves value on moves to be sent asynchronously
 
-        invoice_2_1 = self.init_invoice("out_invoice", amounts=[1000], post=True, company=self.company_data_2['company'])
-        invoice_2_2 = self.init_invoice("out_invoice", amounts=[1000], post=True, company=self.company_data_2['company'])
+        invoice_2_1 = self.init_invoice("out_invoice", amounts=[1000], post=True,
+                                        company=self.company_data_2['company'])
+        invoice_2_2 = self.init_invoice("out_invoice", amounts=[1000], post=True,
+                                        company=self.company_data_2['company'])
         wizard_2 = self.create_send_and_print(invoice_2_1 + invoice_2_2)
         wizard_2.action_send_and_print()
 
@@ -1011,12 +1022,12 @@ class TestAccountMoveSend(TestAccountMoveSendCommon):
 
     def test_cron_notifications(self):
         invoices_success = (
-            self.init_invoice("out_invoice", amounts=[1000], post=True) +
-            self.init_invoice("out_invoice", amounts=[1000], post=True)
+                self.init_invoice("out_invoice", amounts=[1000], post=True) +
+                self.init_invoice("out_invoice", amounts=[1000], post=True)
         )
         invoices_error = (
-            self.init_invoice("out_invoice", amounts=[1000], post=True) +
-            self.init_invoice("out_invoice", amounts=[1000], post=True)
+                self.init_invoice("out_invoice", amounts=[1000], post=True) +
+                self.init_invoice("out_invoice", amounts=[1000], post=True)
         )
 
         sp_partner_1 = self.env.user.partner_id
@@ -1033,12 +1044,14 @@ class TestAccountMoveSend(TestAccountMoveSendCommon):
                 invoice_data['error'] = 'blblblbl'
 
         self.assertTrue(all(invoice.sending_data for invoice in invoices_success + invoices_error))
-        self.assertTrue(all(invoice.sending_data.get('author_partner_id') == sp_partner_1.id for invoice in invoices_success))
-        self.assertTrue(all(invoice.sending_data.get('author_partner_id') == sp_partner_2.id for invoice in invoices_error))
+        self.assertTrue(
+            all(invoice.sending_data.get('author_partner_id') == sp_partner_1.id for invoice in invoices_success))
+        self.assertTrue(
+            all(invoice.sending_data.get('author_partner_id') == sp_partner_2.id for invoice in invoices_error))
 
         with patch(
-            'odoo.addons.account.models.account_move_send.AccountMoveSend._hook_invoice_document_before_pdf_report_render',
-            _hook_invoice_document_before_pdf_report_render,
+                'odoo.addons.account.models.account_move_send.AccountMoveSend._hook_invoice_document_before_pdf_report_render',
+                _hook_invoice_document_before_pdf_report_render,
         ):
             self.env.ref('account.ir_cron_account_move_send').method_direct_trigger()
             self.env.cr.precommit.run()  # trigger the creation of bus.bus records
@@ -1090,7 +1103,7 @@ class TestAccountMoveSend(TestAccountMoveSendCommon):
     def test_get_sending_settings(self):
         invoice = self.init_invoice("out_invoice", amounts=[1000], post=True)
         wizard = self.create_send_and_print(invoice)
-        
+
         expected_results = {
             'sending_methods': ['email'],
             'invoice_edi_format': False,
@@ -1103,7 +1116,9 @@ class TestAccountMoveSend(TestAccountMoveSendCommon):
             'mail_body': wizard.mail_body,
             'mail_subject': 'company_1_data Invoice (Ref INV/2019/00001)',
             'mail_partner_ids': invoice.partner_id.ids,
-            'mail_attachments_widget': [{'id': 'placeholder_INV_2019_00001.pdf', 'name': 'INV_2019_00001.pdf', 'mimetype': 'application/pdf', 'placeholder': True}],
+            'mail_attachments_widget': [
+                {'id': 'placeholder_INV_2019_00001.pdf', 'name': 'INV_2019_00001.pdf', 'mimetype': 'application/pdf',
+                 'placeholder': True}],
         }
         results = wizard._get_sending_settings()
         self.assertDictEqual(results, expected_results)

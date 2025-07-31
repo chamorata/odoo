@@ -11,7 +11,8 @@ class ResConfigSettings(models.TransientModel):
     company_parent_id = fields.Many2one(related='company_id.parent_id', readonly=True)  # TODO: remove in master
     use_root_proxy_user = fields.Boolean(compute='_compute_use_root_proxy_user')
     l10n_it_edi_proxy_current_state = fields.Char(compute='_compute_l10n_it_edi_proxy_current_state')
-    l10n_it_edi_register = fields.Boolean(compute='_compute_l10n_it_edi_register', inverse='_set_l10n_it_edi_register_demo_mode')
+    l10n_it_edi_register = fields.Boolean(compute='_compute_l10n_it_edi_register',
+                                          inverse='_set_l10n_it_edi_register_demo_mode')
     l10n_it_edi_demo_mode = fields.Selection(
         [('demo', 'Demo'),
          ('test', 'Test (experimental)'),
@@ -41,7 +42,8 @@ class ResConfigSettings(models.TransientModel):
     def _compute_l10n_it_edi_proxy_current_state(self):
         for config in self:
             proxy_user = config.company_id.l10n_it_edi_proxy_user_id
-            config.l10n_it_edi_proxy_current_state = 'inactive' if not proxy_user else 'demo' if proxy_user.id_client[:4] == 'demo' else 'active'
+            config.l10n_it_edi_proxy_current_state = 'inactive' if not proxy_user else 'demo' if proxy_user.id_client[
+                                                                                                 :4] == 'demo' else 'active'
 
     @api.depends('company_id')
     def _compute_l10n_it_edi_register(self):
@@ -57,7 +59,8 @@ class ResConfigSettings(models.TransientModel):
             # If the user is trying to change from a state in which they have a registered official or testing proxy client
             # to another state, we should stop them
             if old_edi_mode not in ('demo', False, edi_mode):
-                raise UserError(_("The company has already registered with the service as 'Test' or 'Official', it cannot change."))
+                raise UserError(
+                    _("The company has already registered with the service as 'Test' or 'Official', it cannot change."))
 
             if config.l10n_it_edi_register:
                 # If we are transitioning from a demo user

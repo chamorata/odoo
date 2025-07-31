@@ -1,8 +1,10 @@
 import base64
+
 from lxml import etree
 
 from odoo.tests.common import TransactionCase
 from odoo.tools.mimetypes import guess_mimetype
+
 
 class TestIrQweb(TransactionCase):
     def test_image_field(self):
@@ -63,12 +65,14 @@ class TestIrQweb(TransactionCase):
         })
         jpeg_datas = jpeg_attach.datas
 
-        html = view.with_context(webp_as_jpg=False)._render_template(view.id, {"is_raw_image": True, "record": lang_record})
+        html = view.with_context(webp_as_jpg=False)._render_template(view.id,
+                                                                     {"is_raw_image": True, "record": lang_record})
         tree = etree.fromstring(html)
         img = tree.find("img")
         self.assertEqual(img.get("src"), "data:image/webp;base64,%s" % webp)
 
-        html = view.with_context(webp_as_jpg=True)._render_template(view.id, {"is_raw_image": True, "record": lang_record})
+        html = view.with_context(webp_as_jpg=True)._render_template(view.id,
+                                                                    {"is_raw_image": True, "record": lang_record})
         tree = etree.fromstring(html)
         img = tree.find("img")
         self.assertEqual(img.get("src"), "data:image/png;base64,%s" % jpeg_datas.decode())

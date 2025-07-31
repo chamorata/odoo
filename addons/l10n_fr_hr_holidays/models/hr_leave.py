@@ -5,6 +5,7 @@ from dateutil.relativedelta import relativedelta
 from odoo import fields, models, api, _
 from odoo.exceptions import UserError
 
+
 class HrLeave(models.Model):
     _inherit = 'hr.leave'
 
@@ -17,9 +18,9 @@ class HrLeave(models.Model):
         # - the leave_type is the reference leave_type of that company
         self.ensure_one()
         return self.employee_id and \
-               self.company_id.country_id.code == 'FR' and \
-               self.resource_calendar_id != self.company_id.resource_calendar_id and \
-               self.holiday_status_id == self.company_id._get_fr_reference_leave_type()
+            self.company_id.country_id.code == 'FR' and \
+            self.resource_calendar_id != self.company_id.resource_calendar_id and \
+            self.holiday_status_id == self.company_id._get_fr_reference_leave_type()
 
     def _get_fr_date_from_to(self, date_from, date_to):
         self.ensure_one()
@@ -36,10 +37,12 @@ class HrLeave(models.Model):
             def adjust_date_range(date_from, date_to, period, attendance_ids, employee_id):
                 period_ids_from = attendance_ids.filtered(lambda a: a.day_period in period
                                                                     and int(a.dayofweek) == date_from.weekday()
-                                                                    and (not a.two_weeks_calendar or int(a.week_type) == a.get_week_type(date_from)))
+                                                                    and (not a.two_weeks_calendar or int(
+                    a.week_type) == a.get_week_type(date_from)))
                 period_ids_to = attendance_ids.filtered(lambda a: a.day_period in period
-                                                                    and int(a.dayofweek) == date_to.weekday()
-                                                                    and (not a.two_weeks_calendar or int(a.week_type) == a.get_week_type(date_to)))
+                                                                  and int(a.dayofweek) == date_to.weekday()
+                                                                  and (not a.two_weeks_calendar or int(
+                    a.week_type) == a.get_week_type(date_to)))
                 if period_ids_from:
                     min_hour = min(attendance.hour_from for attendance in period_ids_from)
                     date_from = self._to_utc(date_from, min_hour, employee_id)
@@ -64,9 +67,10 @@ class HrLeave(models.Model):
             date_from_dayofweek = str(date_from.weekday())
             # Fetch the attendances we care about
             attendance_ids = self.resource_calendar_id.attendance_ids.filtered(lambda a:
-                a.dayofweek == date_from_dayofweek
-                and a.day_period != "lunch"
-                and (not self.resource_calendar_id.two_weeks_calendar or a.week_type == date_from_weektype))
+                                                                               a.dayofweek == date_from_dayofweek
+                                                                               and a.day_period != "lunch"
+                                                                               and (
+                                                                                           not self.resource_calendar_id.two_weeks_calendar or a.week_type == date_from_weektype))
             if len(attendance_ids) == 2:
                 # The employee took the morning off on a day where he works the afternoon aswell
                 return (date_from, date_to)
@@ -87,7 +91,8 @@ class HrLeave(models.Model):
         # Undo the last day increment
         return (date_start, date_target)
 
-    @api.depends('request_date_from_period', 'request_hour_from', 'request_hour_to', 'request_date_from', 'request_date_to',
+    @api.depends('request_date_from_period', 'request_hour_from', 'request_hour_to', 'request_date_from',
+                 'request_date_to',
                  'request_unit_half', 'request_unit_hours', 'employee_id')
     def _compute_date_from_to(self):
         super()._compute_date_from_to()

@@ -1,12 +1,13 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import logging
+import os
 import threading
 import time
-import os
+from datetime import datetime, timedelta
+
 import psycopg2
 import psycopg2.errors
 import pytz
-from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 
 import odoo
@@ -32,6 +33,7 @@ ODOO_NOTIFY_FUNCTION = os.getenv('ODOO_NOTIFY_FUNCTION', 'pg_notify')
 class BadVersion(Exception):
     pass
 
+
 class BadModuleState(Exception):
     pass
 
@@ -39,7 +41,7 @@ class BadModuleState(Exception):
 _intervalTypes = {
     'days': lambda interval: relativedelta(days=interval),
     'hours': lambda interval: relativedelta(hours=interval),
-    'weeks': lambda interval: relativedelta(days=7*interval),
+    'weeks': lambda interval: relativedelta(days=7 * interval),
     'months': lambda interval: relativedelta(months=interval),
     'minutes': lambda interval: relativedelta(minutes=interval),
 }
@@ -77,11 +79,16 @@ class ir_cron(models.Model):
                                       ('days', 'Days'),
                                       ('weeks', 'Weeks'),
                                       ('months', 'Months')], string='Interval Unit', default='months', required=True)
-    nextcall = fields.Datetime(string='Next Execution Date', required=True, default=fields.Datetime.now, help="Next planned execution date for this job.")
-    lastcall = fields.Datetime(string='Last Execution Date', help="Previous time the cron ran successfully, provided to the job through the context on the `lastcall` key")
-    priority = fields.Integer(default=5, aggregator=None, help='The priority of the job, as an integer: 0 means higher priority, 10 means lower priority.')
-    failure_count = fields.Integer(default=0, help="The number of consecutive failures of this job. It is automatically reset on success.")
-    first_failure_date = fields.Datetime(string='First Failure Date', help="The first time the cron failed. It is automatically reset on success.")
+    nextcall = fields.Datetime(string='Next Execution Date', required=True, default=fields.Datetime.now,
+                               help="Next planned execution date for this job.")
+    lastcall = fields.Datetime(string='Last Execution Date',
+                               help="Previous time the cron ran successfully, provided to the job through the context on the `lastcall` key")
+    priority = fields.Integer(default=5, aggregator=None,
+                              help='The priority of the job, as an integer: 0 means higher priority, 10 means lower priority.')
+    failure_count = fields.Integer(default=0,
+                                   help="The number of consecutive failures of this job. It is automatically reset on success.")
+    first_failure_date = fields.Datetime(string='First Failure Date',
+                                         help="The first time the cron failed. It is automatically reset on success.")
 
     _sql_constraints = [
         (
@@ -116,7 +123,8 @@ class ir_cron(models.Model):
         self.browse().check_access('write')
         self._try_lock()
         _logger.info('Job %r (%s) started manually', self.name, self.id)
-        self, _ = self.with_user(self.user_id).with_context({'lastcall': self.lastcall})._add_progress()  # noqa: PLW0642
+        self, _ = self.with_user(self.user_id).with_context(
+            {'lastcall': self.lastcall})._add_progress()  # noqa: PLW0642
         self.ir_actions_server_id.run()
         self.lastcall = fields.Datetime.now()
         self.env.flush_all()
@@ -308,7 +316,7 @@ class ir_cron(models.Model):
 
         job = cr.dictfetchone()
 
-        if not job:     # Job is already taken
+        if not job:  # Job is already taken
             return None
 
         for field_name in ('done', 'remaining', 'timed_out_counter'):
@@ -359,8 +367,8 @@ class ir_cron(models.Model):
         ir_cron = env[cls._name]
 
         failed_by_timeout = (
-            job['timed_out_counter'] >= CONSECUTIVE_TIMEOUT_FOR_FAILURE
-            and not job['done']
+                job['timed_out_counter'] >= CONSECUTIVE_TIMEOUT_FOR_FAILURE
+                and not job['done']
         )
 
         if not failed_by_timeout:
@@ -476,8 +484,9 @@ class ir_cron(models.Model):
             first_failure_date = job['first_failure_date'] or now
             active = job['active']
             if (
-                failure_count >= MIN_FAILURE_COUNT_BEFORE_DEACTIVATION
-                and fields.Datetime.context_timestamp(self, first_failure_date) + MIN_DELTA_BEFORE_DEACTIVATION < now
+                    failure_count >= MIN_FAILURE_COUNT_BEFORE_DEACTIVATION
+                    and fields.Datetime.context_timestamp(self,
+                                                          first_failure_date) + MIN_DELTA_BEFORE_DEACTIVATION < now
             ):
                 failure_count = 0
                 first_failure_date = None

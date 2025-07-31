@@ -11,7 +11,8 @@ class RequestZATCAOtp(models.TransientModel):
                                      default=False)
     l10n_sa_otp = fields.Char("OTP", copy=False, help="OTP required to get a CCSID. Can only be acquired through "
                                                       "the Fatoora portal.")
-    journal_id = fields.Many2one('account.journal', default=lambda self: self.env.context.get('active_id'), required=True)
+    journal_id = fields.Many2one('account.journal', default=lambda self: self.env.context.get('active_id'),
+                                 required=True)
 
     @api.model
     def default_get(self, fields):

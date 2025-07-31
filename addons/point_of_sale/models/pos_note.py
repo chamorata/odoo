@@ -16,7 +16,8 @@ class PosNote(models.Model):
 
     @api.model
     def _load_pos_data_domain(self, data):
-        return [('id', 'in', data['pos.config']['data'][0]['note_ids'])] if data['pos.config']['data'][0]['note_ids'] else []
+        return [('id', 'in', data['pos.config']['data'][0]['note_ids'])] if data['pos.config']['data'][0][
+            'note_ids'] else []
 
     @api.model
     def _load_pos_data_fields(self, config_id):

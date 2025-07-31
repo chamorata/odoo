@@ -3,6 +3,7 @@
 
 
 from odoo.addons.website_slides.tests.common import SlidesCase
+
 from odoo.exceptions import ValidationError
 from odoo.tests.common import users
 
@@ -29,8 +30,8 @@ class TestSurvey(SlidesCase):
         }])
 
         with self.assertRaises(
-            ValidationError,
-            msg="Should raise when trying to unlink a survey linked to courses"
+                ValidationError,
+                msg="Should raise when trying to unlink a survey linked to courses"
         ):
             (self.survey | self.survey2).unlink()
 

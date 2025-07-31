@@ -2,6 +2,7 @@
 
 from odoo.tests import HttpCase, tagged, new_test_user
 
+
 @tagged('-at_install', 'post_install')
 class TestEmployeeUi(HttpCase):
     def test_employee_profile_tour(self):

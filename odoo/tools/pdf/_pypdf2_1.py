@@ -10,6 +10,7 @@ __all__ = [
     "generic",
 ]
 
+
 # by default PdfFileReader will overwrite warnings.showwarning which is what
 # logging.captureWarnings does, meaning it essentially reverts captureWarnings
 # every time it's called which is undesirable

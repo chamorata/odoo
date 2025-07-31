@@ -5,8 +5,10 @@
         <field name="model">confirm.stock.sms</field>
         <field name="arch" type="xml">
             <form string="SMS">
-                You are about to confirm this Delivery Order by SMS Text Message.<br/>
-                This feature can easily be disabled from the Settings of Inventory or by clicking on "Disable SMS".<br/>
+                You are about to confirm this Delivery Order by SMS Text Message.
+                <br/>
+                This feature can easily be disabled from the Settings of Inventory or by clicking on "Disable SMS".
+                <br/>
                 <footer>
                     <button name="send_sms" type="object" data-hotkey="q"
                             string="Confirm" class="oe_highlight"/>

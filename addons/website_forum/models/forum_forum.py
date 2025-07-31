@@ -80,7 +80,8 @@ class Forum(models.Model):
         ('relevancy desc', 'Relevance'),
         ('child_count desc', 'Answered')],
         string='Default', required=True, default='last_activity_date desc')
-    relevancy_post_vote = fields.Float('First Relevance Parameter', default=0.8, help="This formula is used in order to sort by relevance. The variable 'votes' represents number of votes for a post, and 'days' is number of days since the post creation")
+    relevancy_post_vote = fields.Float('First Relevance Parameter', default=0.8,
+                                       help="This formula is used in order to sort by relevance. The variable 'votes' represents number of votes for a post, and 'days' is number of days since the post creation")
     relevancy_time_decay = fields.Float('Second Relevance Parameter', default=1.8)
     allow_share = fields.Boolean('Sharing Options', default=True,
                                  help='After posting the user will be proposed to share its question '
@@ -93,7 +94,8 @@ class Forum(models.Model):
     total_views = fields.Integer('# Views', compute='_compute_forum_statistics')
     total_answers = fields.Integer('# Answers', compute='_compute_forum_statistics')
     total_favorites = fields.Integer('# Favorites', compute='_compute_forum_statistics')
-    count_posts_waiting_validation = fields.Integer(string="Number of posts waiting for validation", compute='_compute_count_posts_waiting_validation')
+    count_posts_waiting_validation = fields.Integer(string="Number of posts waiting for validation",
+                                                    compute='_compute_count_posts_waiting_validation')
     count_flagged_posts = fields.Integer(string='Number of flagged posts', compute='_compute_count_flagged_posts')
     # karma generation
     karma_gen_question_new = fields.Integer(string='Asking a question', default=2)
@@ -126,7 +128,9 @@ class Forum(models.Model):
     karma_comment_unlink_own = fields.Integer(string='Delete own comments', default=50)
     karma_comment_unlink_all = fields.Integer(string='Delete all comments', default=500)
     karma_flag = fields.Integer(string='Flag a post as offensive', default=500)
-    karma_dofollow = fields.Integer(string='Nofollow links', help='If the author has not enough karma, a nofollow attribute is added to links', default=500)
+    karma_dofollow = fields.Integer(string='Nofollow links',
+                                    help='If the author has not enough karma, a nofollow attribute is added to links',
+                                    default=500)
     karma_editor = fields.Integer(string='Editor Features: image and links',
                                   default=30)
     karma_user_bio = fields.Integer(string='Display detailed user biography', default=750)
@@ -192,7 +196,8 @@ class Forum(models.Model):
     @api.depends('description')
     def _compute_teaser(self):
         for forum in self:
-            forum.teaser = textwrap.shorten(forum.description, width=180, placeholder='...') if forum.description else ""
+            forum.teaser = textwrap.shorten(forum.description, width=180,
+                                            placeholder='...') if forum.description else ""
 
     @api.depends('post_ids')
     def _compute_last_post_id(self):
@@ -270,7 +275,8 @@ class Forum(models.Model):
         res = super().write(vals)
         if 'active' in vals:
             # archiving/unarchiving a forum does it on its posts, too
-            self.env['forum.post'].with_context(active_test=False).search([('forum_id', 'in', self.ids)]).write({'active': vals['active']})
+            self.env['forum.post'].with_context(active_test=False).search([('forum_id', 'in', self.ids)]).write(
+                {'active': vals['active']})
 
         if 'active' in vals or 'website_id' in vals:
             self.env['website'].sudo()._update_forum_count()

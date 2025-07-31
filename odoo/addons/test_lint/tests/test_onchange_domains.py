@@ -2,8 +2,9 @@ import ast
 import itertools
 import os
 
-from . import lint_case
 from odoo.tools.misc import file_open
+from . import lint_case
+
 
 class OnchangeChecker(lint_case.NodeVisitor):
     def matches_onchange(self, node):
@@ -29,6 +30,7 @@ class TestOnchangeDomains(lint_case.LintCase):
     (takes minutes to run, and can blow up entirely depending on the pylint
     version)
     """
+
     def test_forbid_domains_in_onchanges(self):
         """ Dynamic domains (returning a domain from an onchange) are deprecated
         and should not be used in "standard" Odoo anymore

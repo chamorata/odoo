@@ -2,10 +2,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import timedelta
-from freezegun import freeze_time
 
+from freezegun import freeze_time
 from odoo.addons.test_event_full.tests.common import TestEventFullCommon
 from odoo.addons.website.tests.test_performance import UtilPerf
+
 from odoo.tests import Form, users, warmup, tagged
 
 
@@ -56,7 +57,7 @@ class TestEventPerformance(EventPerformanceCase):
             event_values = [
                 dict(self.event_base_vals,
                      website_menu=True
-                    )
+                     )
                 for x in range(batch_size)
             ]
             self.env['event.event'].with_context(lang='en_US').create(event_values)
@@ -75,7 +76,7 @@ class TestEventPerformance(EventPerformanceCase):
                 dict(self.event_base_vals,
                      event_type_id=event_type.id,
                      website_menu=False,
-                    )
+                     )
                 for x in range(batch_size)
             ]
             self.env['event.event'].create(event_values)
@@ -93,11 +94,10 @@ class TestEventPerformance(EventPerformanceCase):
             event_values = [
                 dict(self.event_base_vals,
                      event_type_id=event_type.id,
-                    )
+                     )
                 for x in range(batch_size)
             ]
             self.env['event.event'].with_context(lang='en_US').create(event_values)
-
 
     @users('event_user')
     @warmup
@@ -243,7 +243,7 @@ class TestRegistrationPerformance(EventPerformanceCase):
             registration_values += [
                 {'event_id': event.id,
                  'partner_id': partner.id,
-                } for partner in self.partners
+                 } for partner in self.partners
             ]
             _registrations = self.env['event.registration'].create(registration_values)
 
@@ -267,9 +267,10 @@ class TestRegistrationPerformance(EventPerformanceCase):
             registration_values += [
                 {'event_id': event.id,
                  'partner_id': partner.id,
-                } for partner in self.partners
+                 } for partner in self.partners
             ]
-            _registrations = self.env['event.registration'].with_context(event_lead_rule_skip=True).create(registration_values)
+            _registrations = self.env['event.registration'].with_context(event_lead_rule_skip=True).create(
+                registration_values)
 
     @users('event_user')
     @warmup
@@ -290,7 +291,7 @@ class TestRegistrationPerformance(EventPerformanceCase):
                 {'event_id': event.id,
                  'partner_id': partner.id,
                  'registration_answer_ids': self.website_customer_data[0]['registration_answer_ids'],
-                } for partner in self.partners
+                 } for partner in self.partners
             ]
             _registrations = self.env['event.registration'].create(registration_values)
 
@@ -377,7 +378,8 @@ class TestRegistrationPerformance(EventPerformanceCase):
                 'event_id': event.id,
                 'partner_id': self.partners[0].id,
             }
-            _registration = self.env['event.registration'].with_context(event_lead_rule_skip=True).create([registration_values])
+            _registration = self.env['event.registration'].with_context(event_lead_rule_skip=True).create(
+                [registration_values])
 
     @users('event_user')
     @warmup
@@ -419,10 +421,10 @@ class TestOnlineEventPerformance(EventPerformanceCase, UtilPerf):
         # create noise for events
         cls.noise_events = cls.env['event.event'].create([
             {'name': 'Event %02d' % idx,
-             'date_begin': cls.reference_now + timedelta(days=(-2 + int(idx/10))),
+             'date_begin': cls.reference_now + timedelta(days=(-2 + int(idx / 10))),
              'date_end': cls.reference_now + timedelta(days=5),
              'is_published': True,
-            }
+             }
             for idx in range(0, 50)
         ])
 

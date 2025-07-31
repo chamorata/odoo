@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from collections import namedtuple
-from contextlib import contextmanager
 import logging
-import serial
-from threading import Lock
 import time
 import traceback
+from collections import namedtuple
+from contextlib import contextmanager
+from threading import Lock
 
-from odoo.addons.hw_drivers.event_manager import event_manager
+import serial
 from odoo.addons.hw_drivers.driver import Driver
+from odoo.addons.hw_drivers.event_manager import event_manager
 
 _logger = logging.getLogger(__name__)
 
@@ -39,8 +39,8 @@ def serial_connection(path, protocol, is_probing=False):
         'bytesize': protocol.bytesize,
         'stopbits': protocol.stopbits,
         'parity': protocol.parity,
-        'timeout': PROBING_TIMEOUT if is_probing else protocol.timeout,               # longer timeouts for probing
-        'writeTimeout': PROBING_TIMEOUT if is_probing else protocol.writeTimeout      # longer timeouts for probing
+        'timeout': PROBING_TIMEOUT if is_probing else protocol.timeout,  # longer timeouts for probing
+        'writeTimeout': PROBING_TIMEOUT if is_probing else protocol.writeTimeout  # longer timeouts for probing
     }
     connection = serial.Serial(path, **port_config)
     yield connection
@@ -109,7 +109,8 @@ class SerialDriver(Driver):
             except Exception:
                 msg = f'An error occurred while performing action "{data}" on "{self.device_name}"'
                 _logger.exception(msg)
-                self._status = {'status': self.STATUS_ERROR, 'message_title': msg, 'message_body': traceback.format_exc()}
+                self._status = {'status': self.STATUS_ERROR, 'message_title': msg,
+                                'message_body': traceback.format_exc()}
                 self._push_status()
             self._status = {'status': self.STATUS_CONNECTED, 'message_title': '', 'message_body': ''}
             self.data['status'] = self._status

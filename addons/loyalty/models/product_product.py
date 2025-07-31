@@ -18,7 +18,8 @@ class ProductProduct(models.Model):
                 ('discount_product_ids', 'in', self.ids),
             ], limit=1)
             if rewards:
-                raise ValidationError(_("This product may not be archived. It is being used for an active promotion program."))
+                raise ValidationError(
+                    _("This product may not be archived. It is being used for an active promotion program."))
         return super().write(vals)
 
     @api.ondelete(at_uninstall=False)

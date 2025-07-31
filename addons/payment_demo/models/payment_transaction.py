@@ -13,7 +13,7 @@ class PaymentTransaction(models.Model):
 
     capture_manually = fields.Boolean(related='provider_id.capture_manually')
 
-    #=== ACTION METHODS ===#
+    # === ACTION METHODS ===#
 
     def action_demo_set_done(self):
         """ Set the state of the demo transaction to 'done'.
@@ -57,7 +57,7 @@ class PaymentTransaction(models.Model):
         notification_data = {'reference': self.reference, 'simulated_state': 'error'}
         self._handle_notification_data('demo', notification_data)
 
-    #=== BUSINESS METHODS ===#
+    # === BUSINESS METHODS ===#
 
     def _send_payment_request(self):
         """ Override of payment to simulate a payment request.

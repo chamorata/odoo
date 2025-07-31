@@ -1,8 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.http import route
 from odoo.addons.im_livechat.controllers.main import LivechatController
 from odoo.addons.im_livechat.tools.misc import force_guest_env
+
+from odoo.http import route
 
 
 class CorsLivechatController(LivechatController):
@@ -28,7 +29,8 @@ class CorsLivechatController(LivechatController):
 
     @route("/im_livechat/cors/get_session", methods=["POST"], type="json", auth="public", cors="*")
     def cors_get_session(
-        self, channel_id, anonymous_name, previous_operator_id=None, chatbot_script_id=None, persisted=True, **kwargs
+            self, channel_id, anonymous_name, previous_operator_id=None, chatbot_script_id=None, persisted=True,
+            **kwargs
     ):
         force_guest_env(kwargs.get("guest_token", ""), raise_if_not_found=False)
         return self.get_session(

@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from datetime import date
 import calendar
+from datetime import date
+
 from dateutil.relativedelta import relativedelta
 
 from odoo import models, api, _

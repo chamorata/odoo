@@ -1,11 +1,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.payment import utils as payment_utils
+from odoo.addons.payment.const import REPORT_REASONS_MAPPING
+
 from odoo import Command, _, api, fields, models
 from odoo.exceptions import UserError
 from odoo.osv import expression
-
-from odoo.addons.payment import utils as payment_utils
-from odoo.addons.payment.const import REPORT_REASONS_MAPPING
 
 
 class PaymentMethod(models.Model):
@@ -94,7 +94,7 @@ class PaymentMethod(models.Model):
         context={'active_test': False},
     )
 
-    #=== COMPUTE METHODS ===#
+    # === COMPUTE METHODS ===#
 
     def _compute_is_primary(self):
         for payment_method in self:
@@ -108,7 +108,7 @@ class PaymentMethod(models.Model):
         else:
             raise NotImplementedError(_("Operation not supported."))
 
-    #=== ONCHANGE METHODS ===#
+    # === ONCHANGE METHODS ===#
 
     @api.onchange('active', 'provider_ids', 'support_tokenization')
     def _onchange_warn_before_disabling_tokens(self):
@@ -165,7 +165,7 @@ class PaymentMethod(models.Model):
                 }
             }
 
-    #=== CRUD METHODS ===#
+    # === CRUD METHODS ===#
 
     def write(self, values):
         # Handle payment methods being archived, detached from providers, or blocking tokenization.
@@ -188,8 +188,8 @@ class PaymentMethod(models.Model):
             for pm in self:
                 primary_pm = pm if pm.is_primary else pm.primary_payment_method_id
                 if (
-                    not primary_pm.active  # Don't bother for already enabled payment methods.
-                    and all(p.state == 'disabled' for p in primary_pm.provider_ids)
+                        not primary_pm.active  # Don't bother for already enabled payment methods.
+                        and all(p.state == 'disabled' for p in primary_pm.provider_ids)
                 ):
                     raise UserError(_(
                         "This payment method needs a partner in crime; you should enable a payment"
@@ -207,8 +207,8 @@ class PaymentMethod(models.Model):
     # === BUSINESS METHODS === #
 
     def _get_compatible_payment_methods(
-        self, provider_ids, partner_id, currency_id=None, force_tokenization=False,
-        is_express_checkout=False, report=None, **kwargs
+            self, provider_ids, partner_id, currency_id=None, force_tokenization=False,
+            is_express_checkout=False, report=None, **kwargs
     ):
         """ Search and return the payment methods matching the compatibility criteria.
 
@@ -252,8 +252,8 @@ class PaymentMethod(models.Model):
             unfiltered_pms = payment_methods
             payment_methods = payment_methods.filtered(
                 lambda pm: (
-                    not pm.supported_country_ids
-                    or partner.country_id.id in pm.supported_country_ids.ids
+                        not pm.supported_country_ids
+                        or partner.country_id.id in pm.supported_country_ids.ids
                 )
             )
             payment_utils.add_to_report(
@@ -268,8 +268,8 @@ class PaymentMethod(models.Model):
             unfiltered_pms = payment_methods
             payment_methods = payment_methods.filtered(
                 lambda pm: (
-                    not pm.supported_currency_ids
-                    or currency_id in pm.supported_currency_ids.ids
+                        not pm.supported_currency_ids
+                        or currency_id in pm.supported_currency_ids.ids
                 )
             )
             payment_utils.add_to_report(

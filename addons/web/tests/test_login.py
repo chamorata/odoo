@@ -24,7 +24,7 @@ class TestWebLoginCommon(HttpCase):
         res_post = self.url_open('/web/login', data={
             'login': username,
             'password': password,
-            'csrf_token':csrf_token or http.Request.csrf_token(self),
+            'csrf_token': csrf_token or http.Request.csrf_token(self),
         })
         res_post.raise_for_status()
 

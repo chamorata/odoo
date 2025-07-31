@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.exceptions import UserError
 from odoo.fields import Command
 from odoo.tests import common, Form
-from odoo.exceptions import UserError
 
 
 class TestMrpMulticompany(common.TransactionCase):
@@ -277,7 +277,8 @@ class TestMrpMulticompany(common.TransactionCase):
         }).execute()
         group_user.write({'implied_ids': [(4, group_stock_multi_warehouses.id), (4, group_stock_multi_locations.id)]})
 
-        new_warehouse = self.env['stock.warehouse'].with_user(self.user_a).with_context(allowed_company_ids=[self.company_b.id]).create({
+        new_warehouse = self.env['stock.warehouse'].with_user(self.user_a).with_context(
+            allowed_company_ids=[self.company_b.id]).create({
             'name': 'Warehouse #2',
             'code': 'WH2',
         })
@@ -308,7 +309,7 @@ class TestMrpMulticompany(common.TransactionCase):
                 'name': semi_kit_product.name,
                 'product_id': semi_kit_product.id,
                 'product_uom_qty': 1,
-                'location_id':  warehouse_b.lot_stock_id.id,
+                'location_id': warehouse_b.lot_stock_id.id,
                 'location_dest_id': self.ref('stock.stock_location_customers'),
             })]
         })

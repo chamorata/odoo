@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import io
 import base64
-
+import io
 from datetime import datetime, timedelta
-from freezegun import freeze_time
+
 from PIL import Image
+from freezegun import freeze_time
 from werkzeug.urls import url_unquote_plus
 
-from odoo.tools.misc import limited_field_access_token
 from odoo.tests.common import HttpCase, tagged
+from odoo.tools.misc import limited_field_access_token
 
 
 @tagged('-at_install', 'post_install')
@@ -115,7 +115,7 @@ class TestImage(HttpCase):
                 expected_filename,
                 expected_filename_star='',
                 message=r"File that will be saved on disc should have the original filename without \n and \r",
-            ):
+        ):
             res = self.url_open(url)
             res.raise_for_status()
             if expected_filename_star:
@@ -132,34 +132,34 @@ class TestImage(HttpCase):
             self.assertEqual(filename_star, expected_filename_star, message)
 
         assert_filenames(f'/web/image/{att.id}',
-            r"""foo-l'eb _ a\"!r\".gif""",
-            r"""fô☺o-l'éb _ a"!r".gif""",
-        )
+                         r"""foo-l'eb _ a\"!r\".gif""",
+                         r"""fô☺o-l'éb _ a"!r".gif""",
+                         )
         assert_filenames(f'/web/image/{att.id}/custom_invalid_name\nis-ok.gif',
-            r"""custom_invalid_name_is-ok.gif""",
-        )
+                         r"""custom_invalid_name_is-ok.gif""",
+                         )
         assert_filenames(f'/web/image/{att.id}/\r\n',
-            r"""__.gif""",
-        )
+                         r"""__.gif""",
+                         )
         assert_filenames(f'/web/image/{att.id}/你好',
-            r""".gif""",
-            r"""你好.gif""",
-        )
+                         r""".gif""",
+                         r"""你好.gif""",
+                         )
         assert_filenames(f'/web/image/{att.id}/%E9%9D%A2%E5%9B%BE.gif',
-            r""".gif""",
-            r"""面图.gif""",
-        )
+                         r""".gif""",
+                         r"""面图.gif""",
+                         )
         assert_filenames(f'/web/image/{att.id}/hindi_नमस्ते.gif',
-            r"""hindi_.gif""",
-            r"""hindi_नमस्ते.gif""",
-        )
+                         r"""hindi_.gif""",
+                         r"""hindi_नमस्ते.gif""",
+                         )
         assert_filenames(f'/web/image/{att.id}/arabic_مرحبا',
-            r"""arabic_.gif""",
-            r"""arabic_مرحبا.gif""",
-        )
+                         r"""arabic_.gif""",
+                         r"""arabic_مرحبا.gif""",
+                         )
         assert_filenames(f'/web/image/{att.id}/4wzb_!!63148-0-t1.jpg_360x1Q75.jpg_.webp',
-            r"""4wzb_!!63148-0-t1.jpg_360x1Q75.jpg_.webp""",
-        )
+                         r"""4wzb_!!63148-0-t1.jpg_360x1Q75.jpg_.webp""",
+                         )
 
     def test_05_web_image_access_token(self):
         """Tests that valid access tokens grant access to binary data."""
@@ -213,7 +213,7 @@ class TestImage(HttpCase):
         # days from the previous token
         for i in range(50):
             with freeze_time(
-                start_of_period + timedelta(days=14 * i + i % 14, hours=i % 24, minutes=i % 60)
+                    start_of_period + timedelta(days=14 * i + i % 14, hours=i % 24, minutes=i % 60)
             ):
                 self.assertEqual(
                     get_datetime_from_record_field(self.env["ir.attachment"].browse(2), "raw"),

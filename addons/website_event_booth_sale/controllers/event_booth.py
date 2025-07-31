@@ -3,8 +3,9 @@
 
 import json
 
-from odoo.http import request, route
 from odoo.addons.website_event.controllers.main import WebsiteEventController
+
+from odoo.http import request, route
 
 
 class WebsiteEventBoothController(WebsiteEventController):
@@ -43,11 +44,13 @@ class WebsiteEventBoothController(WebsiteEventController):
     def _prepare_booth_contact_form_values(self, event, booth_ids, booth_category_id):
         values = super()._prepare_booth_contact_form_values(event, booth_ids, booth_category_id)
         values['has_payment_step'] = request.website.sale_get_order().amount_total or \
-            values.get('booth_category', request.env['event.booth.category']).price
+                                     values.get('booth_category', request.env['event.booth.category']).price
         return values
 
     def _prepare_booth_main_values(self, event, booth_category_id=False, booth_ids=False):
         values = super()._prepare_booth_main_values(event, booth_category_id=booth_category_id, booth_ids=booth_ids)
         values['has_payment_step'] = request.website.sale_get_order().amount_total or \
-            any(booth_category.price for booth_category in values.get('available_booth_category_ids', request.env['event.booth.category']))
+                                     any(booth_category.price for booth_category in
+                                         values.get('available_booth_category_ids',
+                                                    request.env['event.booth.category']))
         return values

@@ -1,10 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from dateutil.relativedelta import relativedelta
+from odoo.addons.l10n_my_edi.models.account_edi_xml_ubl_my import E_164_REGEX
 
 from odoo import api, fields, models
 from odoo.tools import date_utils
-
-from odoo.addons.l10n_my_edi.models.account_edi_xml_ubl_my import E_164_REGEX
 
 
 class MyInvoisDocumentPoS(models.Model):
@@ -200,7 +199,8 @@ class MyInvoisDocumentPoS(models.Model):
 
         builder = self.env['account.edi.xml.ubl_myinvois_my']
         if not self.company_id.l10n_my_edi_industrial_classification:
-            builder._l10n_my_edi_make_validation_error(constraints, 'industrial_classification_required', 'company', self.company_id.display_name)
+            builder._l10n_my_edi_make_validation_error(constraints, 'industrial_classification_required', 'company',
+                                                       self.company_id.display_name)
 
         # Supplier Check
         supplier = xml_vals['supplier']
@@ -208,12 +208,15 @@ class MyInvoisDocumentPoS(models.Model):
         if phone_number != "NA":
             phone = builder._l10n_my_edi_get_formatted_phone_number(phone_number)
             if E_164_REGEX.match(phone) is None:
-                builder._l10n_my_edi_make_validation_error(constraints, 'phone_number_format', 'supplier', supplier.display_name)
+                builder._l10n_my_edi_make_validation_error(constraints, 'phone_number_format', 'supplier',
+                                                           supplier.display_name)
         elif not phone_number:
-            builder._l10n_my_edi_make_validation_error(constraints, 'phone_number_required', 'supplier', supplier.display_name)
+            builder._l10n_my_edi_make_validation_error(constraints, 'phone_number_required', 'supplier',
+                                                       supplier.display_name)
 
         if not supplier.commercial_partner_id.l10n_my_identification_type or not supplier.commercial_partner_id.l10n_my_identification_number:
-            builder._l10n_my_edi_make_validation_error(constraints, 'required_id', 'supplier', supplier.commercial_partner_id.display_name)
+            builder._l10n_my_edi_make_validation_error(constraints, 'required_id', 'supplier',
+                                                       supplier.commercial_partner_id.display_name)
 
         if not supplier.state_id:
             builder._l10n_my_edi_make_validation_error(constraints, 'no_state', 'supplier', supplier.display_name)
@@ -224,24 +227,34 @@ class MyInvoisDocumentPoS(models.Model):
         if not supplier.street:
             builder._l10n_my_edi_make_validation_error(constraints, 'no_street', 'supplier', supplier.display_name)
 
-        if supplier.commercial_partner_id.sst_registration_number and len(supplier.commercial_partner_id.sst_registration_number.split(';')) > 2:
-            builder._l10n_my_edi_make_validation_error(constraints, 'too_many_sst', 'supplier', supplier.commercial_partner_id.display_name)
+        if supplier.commercial_partner_id.sst_registration_number and len(
+                supplier.commercial_partner_id.sst_registration_number.split(';')) > 2:
+            builder._l10n_my_edi_make_validation_error(constraints, 'too_many_sst', 'supplier',
+                                                       supplier.commercial_partner_id.display_name)
 
         # Line check (based on the vals)
         for line in xml_vals['template']['cac:InvoiceLine']:
             item_vals = line['cac:Item']
             if not item_vals['cac:ClassifiedTaxCategory']:
-                builder._l10n_my_edi_make_validation_error(constraints, 'tax_ids_required', line['id'], item_vals['name'])
+                builder._l10n_my_edi_make_validation_error(constraints, 'tax_ids_required', line['id'],
+                                                           item_vals['name'])
 
             for classified_tax_category_val in item_vals['cac:ClassifiedTaxCategory']:
-                if classified_tax_category_val['cbc:TaxExemptionReasonCode']['_text'] == 'E' and not classified_tax_category_val['cbc:TaxExemptionReason']['_text']:
+                if classified_tax_category_val['cbc:TaxExemptionReasonCode']['_text'] == 'E' and not \
+                classified_tax_category_val['cbc:TaxExemptionReason']['_text']:
                     # We don't have a name here, so the % will have to do
-                    builder._l10n_my_edi_make_validation_error(constraints, 'tax_exemption_required_on_tax', classified_tax_category_val['id'], classified_tax_category_val['percent'])
+                    builder._l10n_my_edi_make_validation_error(constraints, 'tax_exemption_required_on_tax',
+                                                               classified_tax_category_val['id'],
+                                                               classified_tax_category_val['percent'])
 
-        if all(line['cac:Item']['cac:CommodityClassification']['cbc:ItemClassificationCode']['_text'] == '04' for line in xml_vals['template']['cac:InvoiceLine']):
+        if all(line['cac:Item']['cac:CommodityClassification']['cbc:ItemClassificationCode']['_text'] == '04' for line
+               in xml_vals['template']['cac:InvoiceLine']):
             # consolidated invoices must use a specific customer VAT number.
-            customer_vat = xml_vals['template']['cac:AccountingCustomerParty']['cac:Party']['cac:PartyIdentification'][0]['cbc:ID']['_text']
+            customer_vat = \
+            xml_vals['template']['cac:AccountingCustomerParty']['cac:Party']['cac:PartyIdentification'][0]['cbc:ID'][
+                '_text']
             if customer_vat != 'EI00000000010':
-                builder._l10n_my_edi_make_validation_error(constraints, 'missing_general_public', xml_vals['customer'].id, xml_vals['customer'].name)
+                builder._l10n_my_edi_make_validation_error(constraints, 'missing_general_public',
+                                                           xml_vals['customer'].id, xml_vals['customer'].name)
 
         return constraints

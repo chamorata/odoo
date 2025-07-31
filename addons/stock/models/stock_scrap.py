@@ -14,7 +14,7 @@ class StockScrap(models.Model):
     _description = 'Scrap'
 
     name = fields.Char(
-        'Reference',  default=lambda self: _('New'),
+        'Reference', default=lambda self: _('New'),
         copy=False, readonly=True, required=True)
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company, required=True)
     origin = fields.Char(string='Source Document')
@@ -162,16 +162,17 @@ class StockScrap(models.Model):
     def do_replenish(self, values=False):
         self.ensure_one()
         values = values or {}
-        self.with_context(clean_context(self.env.context)).env['procurement.group'].run([self.env['procurement.group'].Procurement(
-            self.product_id,
-            self.scrap_qty,
-            self.product_uom_id,
-            self.location_id,
-            self.name,
-            self.name,
-            self.company_id,
-            values
-        )])
+        self.with_context(clean_context(self.env.context)).env['procurement.group'].run(
+            [self.env['procurement.group'].Procurement(
+                self.product_id,
+                self.scrap_qty,
+                self.product_uom_id,
+                self.location_id,
+                self.name,
+                self.name,
+                self.company_id,
+                values
+            )])
 
     def action_get_stock_picking(self):
         action = self.env['ir.actions.act_window']._for_xml_id('stock.action_picking_tree_all')

@@ -2,7 +2,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import sys
 import time
-
 from unittest.mock import patch
 
 from odoo.exceptions import AccessError
@@ -192,20 +191,20 @@ class TestSpeedscope(BaseCase):
         res = sp.make()
         profile_combined = res['profiles'][0]
         events = [
-            (e['at']+2, e['type'], res['shared']['frames'][e['frame']]['name'])
+            (e['at'] + 2, e['type'], res['shared']['frames'][e['frame']]['name'])
             for e in profile_combined['events']
         ]
         self.assertEqual(events, [
             # pylint: disable=bad-continuation
             (2.0, 'O', 'main'),
-                (2.0, 'O', 'do_stuff1'),
-                    (2.5, 'O', 'execute'),
-                        (2.5, 'O', "sql('SELECT 1')"),
-                        (5.5, 'C', "sql('SELECT 1')"),  # select ends at 5.5 as expected despite another concurent frame at 3 and 4
-                    (5.5, 'C', 'execute'),
-                    (6.0, 'O', 'check'),
-                    (10.0, 'C', 'check'),
-                (10.35, 'C', 'do_stuff1'),
+            (2.0, 'O', 'do_stuff1'),
+            (2.5, 'O', 'execute'),
+            (2.5, 'O', "sql('SELECT 1')"),
+            (5.5, 'C', "sql('SELECT 1')"),  # select ends at 5.5 as expected despite another concurent frame at 3 and 4
+            (5.5, 'C', 'execute'),
+            (6.0, 'O', 'check'),
+            (10.0, 'C', 'check'),
+            (10.35, 'C', 'do_stuff1'),
             (10.35, 'C', 'main'),
         ])
 
@@ -241,18 +240,18 @@ class TestSpeedscope(BaseCase):
         self.assertEqual(events, [
             # pylint: disable=bad-continuation
             ('O', 'level0'),
-                ('O', 'a=1'),
-                    ('O', 'level1'),
-                        ('O', 'b=1'),
-                            ('O', 'level2'),
-                            ('C', 'level2'),
-                        ('C', 'b=1'),
-                        ('O', 'b=2'),
-                            ('O', 'level2'),
-                            ('C', 'level2'),
-                        ('C', 'b=2'),
-                    ('C', 'level1'),
-                ('C', 'a=1'),
+            ('O', 'a=1'),
+            ('O', 'level1'),
+            ('O', 'b=1'),
+            ('O', 'level2'),
+            ('C', 'level2'),
+            ('C', 'b=1'),
+            ('O', 'b=2'),
+            ('O', 'level2'),
+            ('C', 'level2'),
+            ('C', 'b=2'),
+            ('C', 'level1'),
+            ('C', 'a=1'),
             ('C', 'level0'),
         ])
 
@@ -284,14 +283,14 @@ class TestSpeedscope(BaseCase):
         self.assertEqual(events, [
             # pylint: disable=bad-continuation
             ('O', 'level0'),
-                ('O', 'level1'),
-                    ('O', 'a=1'),
-                        ('O', 'b=1'),
-                            ('O', 'level2'),
-                            ('C', 'level2'),
-                        ('C', 'b=1'),
-                    ('C', 'a=1'),
-                ('C', 'level1'),
+            ('O', 'level1'),
+            ('O', 'a=1'),
+            ('O', 'b=1'),
+            ('O', 'level2'),
+            ('C', 'level2'),
+            ('C', 'b=1'),
+            ('C', 'a=1'),
+            ('C', 'level1'),
             ('C', 'level0'),
         ])
 
@@ -328,10 +327,10 @@ class TestSpeedscope(BaseCase):
         self.assertEqual(events, [
             # pylint: disable=bad-continuation
             ('O', 'level4'),
-                ('O', 'b=1'),
-                    ('O', 'level5'),
-                    ('C', 'level5'),
-                ('C', 'b=1'),
+            ('O', 'b=1'),
+            ('O', 'level5'),
+            ('C', 'level5'),
+            ('C', 'b=1'),
             ('C', 'level4'),
         ])
 
@@ -368,8 +367,8 @@ class TestSpeedscope(BaseCase):
         self.assertEqual(events, [
             # pylint: disable=bad-continuation
             ('O', 'level4'),
-                ('O', 'level5'),
-                ('C', 'level5'),
+            ('O', 'level5'),
+            ('C', 'level5'),
             ('C', 'level4'),
         ])
 
@@ -414,8 +413,10 @@ class TestProfiling(TransactionCase):
                 self.env.cr.execute('SELECT 1')
         entries = p.collectors[0].entries
         self.assertEqual(entries.pop(0)['exec_context'], ((stack_level, {'letter': 'a'}),))
-        self.assertEqual(entries.pop(0)['exec_context'], ((stack_level, {'letter': 'a'}), (stack_level, {'letter': 'b'})))
-        self.assertEqual(entries.pop(0)['exec_context'], ((stack_level, {'letter': 'a'}), (stack_level, {'letter': 'c'})))
+        self.assertEqual(entries.pop(0)['exec_context'],
+                         ((stack_level, {'letter': 'a'}), (stack_level, {'letter': 'b'})))
+        self.assertEqual(entries.pop(0)['exec_context'],
+                         ((stack_level, {'letter': 'a'}), (stack_level, {'letter': 'c'})))
         self.assertEqual(entries.pop(0)['exec_context'], ((stack_level, {'letter': 'a'}),))
 
     def test_qweb_recorder(self):
@@ -477,35 +478,37 @@ class TestProfiling(TransactionCase):
         expected = [
             # pylint: disable=bad-whitespace
             # first template and first directive
-            {'view_id': template.id,       'xpath': '/t/t',         'directive': """t-foreach="{'a': 3, 'b': 2, 'c': 1}" t-as='item'""", 'query': 0},
+            {'view_id': template.id, 'xpath': '/t/t',
+             'directive': """t-foreach="{'a': 3, 'b': 2, 'c': 1}" t-as='item'""", 'query': 0},
             # first pass in the loop
-            {'view_id': template.id,       'xpath': '/t/t/t[1]',    'directive': "t-out='item_index'", 'query': 0},
-            {'view_id': template.id,       'xpath': '/t/t/t[2]',    'directive': "t-set='record' t-value='item'", 'query': 0},
-            {'view_id': template.id,       'xpath': '/t/t/t[3]',    'directive': "t-call='base.dummy'", 'query': 0}, # 0 because the template is in ir.ui.view cache
+            {'view_id': template.id, 'xpath': '/t/t/t[1]', 'directive': "t-out='item_index'", 'query': 0},
+            {'view_id': template.id, 'xpath': '/t/t/t[2]', 'directive': "t-set='record' t-value='item'", 'query': 0},
+            {'view_id': template.id, 'xpath': '/t/t/t[3]', 'directive': "t-call='base.dummy'", 'query': 0},
+            # 0 because the template is in ir.ui.view cache
             # first pass in the loop: content of the child template
-            {'view_id': child_template.id, 'xpath': '/t/span',      'directive': "t-attf-class='myclass'", 'query': 0},
+            {'view_id': child_template.id, 'xpath': '/t/span', 'directive': "t-attf-class='myclass'", 'query': 0},
             {'view_id': child_template.id, 'xpath': '/t/span/t[1]', 'directive': "t-out='record'", 'query': 0},
             {'view_id': child_template.id, 'xpath': '/t/span/t[2]', 'directive': "t-out='add_one_query()'", 'query': 1},
-            {'view_id': template.id,       'xpath': '/t/t/t[4]',    'directive': "t-out='item_value'", 'query': 0},
-            {'view_id': template.id,       'xpath': '/t/t/b',       'directive': "t-out='add_one_query()'", 'query':1},
+            {'view_id': template.id, 'xpath': '/t/t/t[4]', 'directive': "t-out='item_value'", 'query': 0},
+            {'view_id': template.id, 'xpath': '/t/t/b', 'directive': "t-out='add_one_query()'", 'query': 1},
             # second pass in the loop
-            {'view_id': template.id,       'xpath': '/t/t/t[1]',    'directive': "t-out='item_index'", 'query': 0},
-            {'view_id': template.id,       'xpath': '/t/t/t[2]',    'directive': "t-set='record' t-value='item'", 'query': 0},
-            {'view_id': template.id,       'xpath': '/t/t/t[3]',    'directive': "t-call='base.dummy'", 'query': 0},
-            {'view_id': child_template.id, 'xpath': '/t/span',      'directive': "t-attf-class='myclass'", 'query': 0},
+            {'view_id': template.id, 'xpath': '/t/t/t[1]', 'directive': "t-out='item_index'", 'query': 0},
+            {'view_id': template.id, 'xpath': '/t/t/t[2]', 'directive': "t-set='record' t-value='item'", 'query': 0},
+            {'view_id': template.id, 'xpath': '/t/t/t[3]', 'directive': "t-call='base.dummy'", 'query': 0},
+            {'view_id': child_template.id, 'xpath': '/t/span', 'directive': "t-attf-class='myclass'", 'query': 0},
             {'view_id': child_template.id, 'xpath': '/t/span/t[1]', 'directive': "t-out='record'", 'query': 0},
             {'view_id': child_template.id, 'xpath': '/t/span/t[2]', 'directive': "t-out='add_one_query()'", 'query': 1},
-            {'view_id': template.id,       'xpath': '/t/t/t[4]',    'directive': "t-out='item_value'", 'query': 0},
-            {'view_id': template.id,       'xpath': '/t/t/b',       'directive': "t-out='add_one_query()'", 'query':1},
+            {'view_id': template.id, 'xpath': '/t/t/t[4]', 'directive': "t-out='item_value'", 'query': 0},
+            {'view_id': template.id, 'xpath': '/t/t/b', 'directive': "t-out='add_one_query()'", 'query': 1},
             # third pass in the loop
-            {'view_id': template.id,       'xpath': '/t/t/t[1]',    'directive': "t-out='item_index'", 'query': 0},
-            {'view_id': template.id,       'xpath': '/t/t/t[2]',    'directive': "t-set='record' t-value='item'", 'query': 0},
-            {'view_id': template.id,       'xpath': '/t/t/t[3]',    'directive': "t-call='base.dummy'", 'query': 0},
-            {'view_id': child_template.id, 'xpath': '/t/span',      'directive': "t-attf-class='myclass'", 'query': 0},
+            {'view_id': template.id, 'xpath': '/t/t/t[1]', 'directive': "t-out='item_index'", 'query': 0},
+            {'view_id': template.id, 'xpath': '/t/t/t[2]', 'directive': "t-set='record' t-value='item'", 'query': 0},
+            {'view_id': template.id, 'xpath': '/t/t/t[3]', 'directive': "t-call='base.dummy'", 'query': 0},
+            {'view_id': child_template.id, 'xpath': '/t/span', 'directive': "t-attf-class='myclass'", 'query': 0},
             {'view_id': child_template.id, 'xpath': '/t/span/t[1]', 'directive': "t-out='record'", 'query': 0},
             {'view_id': child_template.id, 'xpath': '/t/span/t[2]', 'directive': "t-out='add_one_query()'", 'query': 1},
-            {'view_id': template.id,       'xpath': '/t/t/t[4]',    'directive': "t-out='item_value'", 'query': 0},
-            {'view_id': template.id,       'xpath': '/t/t/b',       'directive': "t-out='add_one_query()'", 'query':1},
+            {'view_id': template.id, 'xpath': '/t/t/t[4]', 'directive': "t-out='item_value'", 'query': 0},
+            {'view_id': template.id, 'xpath': '/t/t/b', 'directive': "t-out='add_one_query()'", 'query': 1},
         ]
         self.assertEqual(data, expected)
 
@@ -524,7 +527,7 @@ class TestProfiling(TransactionCase):
         self.assertEqual(len(rq), total_queries)
         first_query = rq[0]
         self.assertEqual(first_query['stack'][0][2], 'create')
-        #self.assertIn("self.env['res.partner'].create({", first_query['stack'][0][3])
+        # self.assertIn("self.env['res.partner'].create({", first_query['stack'][0][3])
 
         self.assertGreater(first_query['time'], 0)
         self.assertEqual(first_query['stack'][-1][2], 'execute')
@@ -592,6 +595,7 @@ class TestPerformance(BaseCase):
         we need to artificially change the frame as often as possible to avoid
         triggering the memory optimisation skipping identical frames
         """
+
         def sleep_1():
             time.sleep(0.0001)
 

@@ -14,26 +14,26 @@
                         </t>
                         <t t-foreach="range(qty)" t-as="item">
                             <t t-translation="off">
-^XA
-^FO100,50
-^A0N,44,33^FD<t t-esc="move_line.product_id.display_name"/>^FS
-<t t-if="move_line.product_id.tracking != 'none' and move_line.lot_id">
-^FO100,100
-^A0N,44,33^FDLN/SN: <t t-esc="move_line.lot_id.name"/>^FS
-^FO100,150^BY3
-^BCN,100,Y,N,N
-^FD<t t-esc="move_line.lot_id.name"/>^FS
-</t>
-<t t-elif="move_line.product_id.tracking == 'none' and move_line.product_id.barcode">
-^FO100,100^BY3
-^BCN,100,Y,N,N
-^FD<t t-esc="move_line.product_id.barcode"/>^FS
-</t>
-<t t-else="">
-^FO100,100
-^A0N,44,33^FDNo barcode available^FS
-</t>
-^XZ
+                                ^XA
+                                ^FO100,50
+                                ^A0N,44,33^FD<t t-esc="move_line.product_id.display_name"/>^FS
+                                <t t-if="move_line.product_id.tracking != 'none' and move_line.lot_id">
+                                    ^FO100,100
+                                    ^A0N,44,33^FDLN/SN:<t t-esc="move_line.lot_id.name"/>^FS
+                                    ^FO100,150^BY3
+                                    ^BCN,100,Y,N,N
+                                    ^FD<t t-esc="move_line.lot_id.name"/>^FS
+                                </t>
+                                <t t-elif="move_line.product_id.tracking == 'none' and move_line.product_id.barcode">
+                                    ^FO100,100^BY3
+                                    ^BCN,100,Y,N,N
+                                    ^FD<t t-esc="move_line.product_id.barcode"/>^FS
+                                </t>
+                                <t t-else="">
+                                    ^FO100,100
+                                    ^A0N,44,33^FDNo barcode available^FS
+                                </t>
+                                ^XZ
                             </t>
                         </t>
                     </t>

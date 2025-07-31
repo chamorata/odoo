@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo.addons.stock_account.tests.test_anglo_saxon_valuation_reconciliation_common import ValuationReconciliationTestCommon
-from odoo.tests import tagged
-
 import time
+
+from odoo.addons.stock_account.tests.test_anglo_saxon_valuation_reconciliation_common import \
+    ValuationReconciliationTestCommon
+
+from odoo.tests import tagged
 
 
 @tagged('-at_install', 'post_install')
@@ -67,7 +69,7 @@ class TestFifoPrice(ValuationReconciliationTestCommon):
                 'product_uom': self.env.ref('uom.product_uom_kgm').id,
                 'price_unit': 80.0,
                 'date_planned': time.strftime('%Y-%m-%d')})],
-            })
+        })
 
         # Confirm the second purchase order
         purchase_order_2.button_confirm()
@@ -78,7 +80,8 @@ class TestFifoPrice(ValuationReconciliationTestCommon):
 
         # Check the standard price of the product, that should have not changed because we
         # still have icecream in stock
-        self.assertEqual(product_cable_management_box.standard_price, 72.5, 'Standard price as fifo price of second reception incorrect!')
+        self.assertEqual(product_cable_management_box.standard_price, 72.5,
+                         'Standard price as fifo price of second reception incorrect!')
         self.assertEqual(product_cable_management_box.value_svl, 2900.0, 'Stock valuation should be 2900')
 
         # Let us send some goods
@@ -94,7 +97,7 @@ class TestFifoPrice(ValuationReconciliationTestCommon):
                 'location_id': self.company_data['default_warehouse'].lot_stock_id.id,
                 'location_dest_id': self.env.ref('stock.stock_location_customers').id,
                 'picking_type_id': self.company_data['default_warehouse'].out_type_id.id})]
-            })
+        })
 
         # I assign this outgoing shipment
         outgoing_shipment.action_assign()
@@ -118,7 +121,7 @@ class TestFifoPrice(ValuationReconciliationTestCommon):
                 'location_id': self.company_data['default_warehouse'].lot_stock_id.id,
                 'location_dest_id': self.env.ref('stock.stock_location_customers').id,
                 'picking_type_id': self.company_data['default_warehouse'].out_type_id.id})]
-            })
+        })
 
         # I assign this outgoing shipment
         outgoing_shipment_uom.action_assign()
@@ -142,20 +145,20 @@ class TestFifoPrice(ValuationReconciliationTestCommon):
             'partner_id': res_partner_3.id,
             'currency_id': NewUSD.id,
             'order_line': [(0, 0, {
-                    'name': 'FIFO Ice Cream',
-                    'product_id': product_cable_management_box.id,
-                    'product_qty': 30,
-                    'product_uom': self.env.ref('uom.product_uom_kgm').id,
-                    'price_unit': 0.150,
-                    'date_planned': time.strftime('%Y-%m-%d')}),
-                (0, 0, {
-                    'name': product_cable_management_box.name,
-                    'product_id': product_cable_management_box.id,
-                    'product_qty': 10.0,
-                    'product_uom': self.env.ref('uom.product_uom_kgm').id,
-                    'price_unit': 150.0,
-                    'date_planned': time.strftime('%Y-%m-%d')})]
-                })
+                'name': 'FIFO Ice Cream',
+                'product_id': product_cable_management_box.id,
+                'product_qty': 30,
+                'product_uom': self.env.ref('uom.product_uom_kgm').id,
+                'price_unit': 0.150,
+                'date_planned': time.strftime('%Y-%m-%d')}),
+                           (0, 0, {
+                               'name': product_cable_management_box.name,
+                               'product_id': product_cable_management_box.id,
+                               'product_qty': 10.0,
+                               'product_uom': self.env.ref('uom.product_uom_kgm').id,
+                               'price_unit': 150.0,
+                               'date_planned': time.strftime('%Y-%m-%d')})]
+        })
 
         # Confirm the purchase order in USD
         purchase_order_usd.button_confirm()
@@ -197,14 +200,15 @@ class TestFifoPrice(ValuationReconciliationTestCommon):
                 'location_id': self.company_data['default_warehouse'].lot_stock_id.id,
                 'location_dest_id': self.env.ref('stock.stock_location_customers').id,
                 'picking_type_id': self.company_data['default_warehouse'].out_type_id.id})]
-            })
+        })
 
         # I assign this outgoing shipment
         outgoing_shipment_ret.action_assign()
         outgoing_shipment_ret.button_validate()
 
         # Check rounded price is 150.0 / 1.2834
-        self.assertEqual(round(product_cable_management_box.qty_available), 0.0, 'Wrong quantity in stock after first reception.')
+        self.assertEqual(round(product_cable_management_box.qty_available), 0.0,
+                         'Wrong quantity in stock after first reception.')
 
         # Let us create some outs to get negative stock for a new product using the same config
         product_fifo_negative = self.env['product.product'].create({
@@ -310,7 +314,7 @@ class TestFifoPrice(ValuationReconciliationTestCommon):
         picking.button_validate()
 
         original_out_move = outgoing_shipment_neg.move_ids[0]
-        self.assertEqual(original_out_move.product_id.value_svl,  12000.0, 'Value of the move should be 12000')
+        self.assertEqual(original_out_move.product_id.value_svl, 12000.0, 'Value of the move should be 12000')
         self.assertEqual(original_out_move.product_id.qty_available, 150.0, 'Qty available should be 150')
 
     def test_01_test_fifo(self):

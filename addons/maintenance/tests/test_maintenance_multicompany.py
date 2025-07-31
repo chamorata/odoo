@@ -3,8 +3,8 @@
 
 import time
 
-from odoo.tests.common import TransactionCase
 from odoo.exceptions import AccessError
+from odoo.tests.common import TransactionCase
 
 
 class TestEquipmentMulticompany(TransactionCase):
@@ -37,7 +37,7 @@ class TestEquipmentMulticompany(TransactionCase):
         })
 
         # Create equipment manager.
-        cids = [company_a.id, company_b.id] 
+        cids = [company_a.id, company_b.id]
         equipment_manager = ResUsers.create({
             'name': 'Equipment Manager',
             'company_id': company_a.id,
@@ -98,7 +98,8 @@ class TestEquipmentMulticompany(TransactionCase):
         })
 
         # Check category for user equipment_manager and user
-        self.assertEqual(Category.with_user(equipment_manager).with_context(allowed_company_ids=cids).search_count([]), 3)
+        self.assertEqual(Category.with_user(equipment_manager).with_context(allowed_company_ids=cids).search_count([]),
+                         3)
         self.assertEqual(Category.with_user(user).search_count([]), 2)
 
         # User should not able to create equipment.
@@ -128,7 +129,8 @@ class TestEquipmentMulticompany(TransactionCase):
             'owner_user_id': equipment_manager.id,
         })
         # Now there are total 2 equipment created and can view by equipment_manager user
-        self.assertEqual(Equipment.with_user(equipment_manager).with_context(allowed_company_ids=cids).search_count([]), 2)
+        self.assertEqual(Equipment.with_user(equipment_manager).with_context(allowed_company_ids=cids).search_count([]),
+                         2)
 
         # And there is total 1 equipment can be view by Normal User ( Which user is followers)
         self.assertEqual(Equipment.with_user(user).search_count([]), 1)
@@ -171,5 +173,6 @@ class TestEquipmentMulticompany(TransactionCase):
         })
 
         # Now here is total 1 maintenance request can be view by Normal User
-        self.assertEqual(MaintenanceRequest.with_user(equipment_manager).with_context(allowed_company_ids=cids).search_count([]), 2)
+        self.assertEqual(
+            MaintenanceRequest.with_user(equipment_manager).with_context(allowed_company_ids=cids).search_count([]), 2)
         self.assertEqual(MaintenanceRequest.with_user(user).search_count([]), 1)

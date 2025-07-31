@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
 from odoo import Command
 from odoo.tests import tagged
-from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 
 
 class TestAngloSaxonCommon(AccountTestInvoicingCommon):
@@ -18,19 +19,25 @@ class TestAngloSaxonCommon(AccountTestInvoicingCommon):
         cls.warehouse = cls.env['stock.warehouse'].search([('company_id', '=', cls.env.company.id)], limit=1)
         cls.partner = cls.env['res.partner'].create({'name': 'Partner 1'})
         cls.category = cls.env.ref('product.product_category_all')
-        cls.category = cls.category.copy({'name': 'New category','property_valuation': 'real_time'})
-        cls.account = cls.env['account.account'].create({'name': 'Receivable', 'code': 'RCV00', 'account_type': 'asset_receivable', 'reconcile': True})
-        account_expense = cls.env['account.account'].create({'name': 'Expense', 'code': 'EXP00', 'account_type': 'expense', 'reconcile': True})
-        account_income = cls.env['account.account'].create({'name': 'Income', 'code': 'INC00', 'account_type': 'income', 'reconcile': True})
-        account_output = cls.env['account.account'].create({'name': 'Output', 'code': 'OUT00', 'account_type': 'expense', 'reconcile': True})
-        account_valuation = cls.env['account.account'].create({'name': 'Valuation', 'code': 'STV00', 'account_type': 'expense', 'reconcile': True})
+        cls.category = cls.category.copy({'name': 'New category', 'property_valuation': 'real_time'})
+        cls.account = cls.env['account.account'].create(
+            {'name': 'Receivable', 'code': 'RCV00', 'account_type': 'asset_receivable', 'reconcile': True})
+        account_expense = cls.env['account.account'].create(
+            {'name': 'Expense', 'code': 'EXP00', 'account_type': 'expense', 'reconcile': True})
+        account_income = cls.env['account.account'].create(
+            {'name': 'Income', 'code': 'INC00', 'account_type': 'income', 'reconcile': True})
+        account_output = cls.env['account.account'].create(
+            {'name': 'Output', 'code': 'OUT00', 'account_type': 'expense', 'reconcile': True})
+        account_valuation = cls.env['account.account'].create(
+            {'name': 'Valuation', 'code': 'STV00', 'account_type': 'expense', 'reconcile': True})
         cls.partner.property_account_receivable_id = cls.account
         cls.category.property_account_income_categ_id = account_income
         cls.category.property_account_expense_categ_id = account_expense
         cls.category.property_stock_account_input_categ_id = cls.account
         cls.category.property_stock_account_output_categ_id = account_output
         cls.category.property_stock_valuation_account_id = account_valuation
-        cls.category.property_stock_journal = cls.env['account.journal'].create({'name': 'Stock journal', 'type': 'sale', 'code': 'STK00'})
+        cls.category.property_stock_journal = cls.env['account.journal'].create(
+            {'name': 'Stock journal', 'type': 'sale', 'code': 'STK00'})
         cls.cash_journal = cls.env['account.journal'].create(
             {'name': 'CASH journal', 'type': 'cash', 'code': 'CSH02'})
         cls.cash_payment_method = cls.env['pos.payment.method'].create({
@@ -63,6 +70,7 @@ class TestAngloSaxonCommon(AccountTestInvoicingCommon):
             'receivable_account_id': cls.account.id,
         })
         cls.pos_config.write({'payment_method_ids': [(6, 0, cls.cash_payment_method.ids)]})
+
 
 @tagged('post_install', '-at_install')
 class TestAngloSaxonFlow(TestAngloSaxonCommon):
@@ -128,8 +136,10 @@ class TestAngloSaxonFlow(TestAngloSaxonCommon):
         aml = current_session.move_id.line_ids
         aml_output = aml.filtered(lambda l: l.account_id.id == account_output.id)
         aml_expense = aml.filtered(lambda l: l.account_id.id == expense_account.id)
-        self.assertEqual(aml_output.credit, self.product.standard_price, "Cost of Good Sold entry missing or mismatching")
-        self.assertEqual(aml_expense.debit, self.product.standard_price, "Cost of Good Sold entry missing or mismatching")
+        self.assertEqual(aml_output.credit, self.product.standard_price,
+                         "Cost of Good Sold entry missing or mismatching")
+        self.assertEqual(aml_expense.debit, self.product.standard_price,
+                         "Cost of Good Sold entry missing or mismatching")
 
     def _prepare_pos_order(self):
         """ Set the cost method of `self.product` as FIFO. Receive 5@5 and 5@1 and
@@ -151,7 +161,6 @@ class TestAngloSaxonFlow(TestAngloSaxonCommon):
         }).action_apply_inventory()
         self.assertEqual(self.product.value_svl, 30, "Value should be (5*5 + 5*1) = 30")
         self.assertEqual(self.product.quantity_svl, 10)
-
 
         self.pos_config.open_ui()
         pos_session = self.pos_config.current_session_id
@@ -203,7 +212,8 @@ class TestAngloSaxonFlow(TestAngloSaxonCommon):
         # with uninvoiced orders, the account_move field of pos.order is empty.
         # the accounting lines are in move_id of pos.session.
         session_move = pos_order_pos0.session_id.move_id
-        line = session_move.line_ids.filtered(lambda l: l.debit and l.account_id == self.category.property_account_expense_categ_id)
+        line = session_move.line_ids.filtered(
+            lambda l: l.debit and l.account_id == self.category.property_account_expense_categ_id)
         self.assertEqual(session_move.journal_id, self.pos_config.journal_id)
         self.assertEqual(line.debit, 27, 'As it is a fifo product, the move\'s value should be 5*5 + 2*1')
 
@@ -225,7 +235,8 @@ class TestAngloSaxonFlow(TestAngloSaxonCommon):
         pos_order_pos0.action_pos_order_invoice()
 
         # check the anglo saxon move lines
-        line = pos_order_pos0.account_move.line_ids.filtered(lambda l: l.debit and l.account_id == self.category.property_account_expense_categ_id)
+        line = pos_order_pos0.account_move.line_ids.filtered(
+            lambda l: l.debit and l.account_id == self.category.property_account_expense_categ_id)
         self.assertEqual(pos_order_pos0.account_move.journal_id, self.pos_config.invoice_journal_id)
         self.assertEqual(line.debit, 27, 'As it is a fifo product, the move\'s value should be 5*5 + 2*1')
 
@@ -298,13 +309,16 @@ class TestAngloSaxonFlow(TestAngloSaxonCommon):
         # 2 moves in POS journal (Pos order + manual entry at delivery)
         self.assertEqual(len(aml_output.move_id.filtered(lambda l: l.journal_id == self.pos_config.journal_id)), 1)
         # 1 move in stock journal (delivery from stock layers)
-        self.assertEqual(len(aml_output.move_id.filtered(lambda l: l.journal_id == self.category.property_stock_journal)), 1)
-        #Check the lines created after the picking validation
-        self.assertEqual(aml_output[1].credit, self.product.standard_price, "Cost of Good Sold entry missing or mismatching")
+        self.assertEqual(
+            len(aml_output.move_id.filtered(lambda l: l.journal_id == self.category.property_stock_journal)), 1)
+        # Check the lines created after the picking validation
+        self.assertEqual(aml_output[1].credit, self.product.standard_price,
+                         "Cost of Good Sold entry missing or mismatching")
         self.assertEqual(aml_output[1].debit, 0.0, "Cost of Good Sold entry missing or mismatching")
-        self.assertEqual(aml_expense[0].debit, self.product.standard_price, "Cost of Good Sold entry missing or mismatching")
+        self.assertEqual(aml_expense[0].debit, self.product.standard_price,
+                         "Cost of Good Sold entry missing or mismatching")
         self.assertEqual(aml_expense[0].credit, 0.0, "Cost of Good Sold entry missing or mismatching")
-        #Check the lines created by the PoS session
+        # Check the lines created by the PoS session
         self.assertEqual(aml_output[0].debit, 100.0, "Cost of Good Sold entry missing or mismatching")
         self.assertEqual(aml_output[0].credit, 0.0, "Cost of Good Sold entry missing or mismatching")
 
@@ -395,7 +409,8 @@ class TestAngloSaxonFlow(TestAngloSaxonCommon):
 
         res = self.pos_order_pos0.action_pos_order_invoice()
         invoice = self.env['account.move'].browse(res['res_id'])
-        self.assertTrue('Price discount from 100.00 to 95.00' in invoice.invoice_line_ids.filtered(lambda l: l.display_type == "line_note").display_name)
+        self.assertTrue('Price discount from 100.00 to 95.00' in invoice.invoice_line_ids.filtered(
+            lambda l: l.display_type == "line_note").display_name)
         product_line = invoice.invoice_line_ids.filtered(lambda l: l.display_type == "product")
         self.assertEqual(product_line.price_unit, 95)  # Only pricelist applies
         self.assertEqual(product_line.discount, 5)  # Disount is reflected
@@ -476,7 +491,8 @@ class TestAngloSaxonFlow(TestAngloSaxonCommon):
         current_session_id.close_session_from_ui()
         self.assertEqual(current_session_id.state, 'closed', 'Check that session is closed')
 
-        current_session.picking_ids.move_ids_without_package.filtered(lambda m: m.product_id == self.product_2).write({'quantity': 1, 'picked': True})
+        current_session.picking_ids.move_ids_without_package.filtered(lambda m: m.product_id == self.product_2).write(
+            {'quantity': 1, 'picked': True})
         res_dict = current_session.picking_ids.button_validate()
         self.env['stock.backorder.confirmation'].with_context(res_dict['context']).process()
 

@@ -41,7 +41,8 @@ class MailBlackListMixin(models.AbstractModel):
         search="_search_is_blacklisted", groups="base.group_user",
         help="If the email address is on the blacklist, the contact won't receive mass mailing anymore, from any list")
     # messaging
-    message_bounce = fields.Integer('Bounce', help="Counter of the number of bounced emails for this contact", default=0)
+    message_bounce = fields.Integer('Bounce', help="Counter of the number of bounced emails for this contact",
+                                    default=0)
 
     @api.depends(lambda self: [self._primary_email])
     def _compute_email_normalized(self):
@@ -124,7 +125,8 @@ class MailBlackListMixin(models.AbstractModel):
                 'target': 'new',
             }
         else:
-            raise AccessError(_("You do not have the access right to unblacklist emails. Please contact your administrator."))
+            raise AccessError(
+                _("You do not have the access right to unblacklist emails. Please contact your administrator."))
 
     @api.model
     def _detect_loop_sender_domain(self, email_from_normalized):

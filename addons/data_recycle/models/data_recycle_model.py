@@ -2,14 +2,14 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import ast
-
 from collections import defaultdict
+
 from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
-from odoo.tools import config, split_every
 from odoo.osv import expression
+from odoo.tools import config, split_every
 
 # When recycle_mode = automatic, _recycle_records calls action_validate.
 # This is quite slow so requires smaller batch size.
@@ -116,7 +116,8 @@ class DataRecycleModel(models.Model):
             mapped_existing_records[recycle_record.recycle_model_id].append(recycle_record.res_id)
 
         for recycle_model in self:
-            rule_domain = ast.literal_eval(recycle_model.domain) if recycle_model.domain and recycle_model.domain != '[]' else []
+            rule_domain = ast.literal_eval(
+                recycle_model.domain) if recycle_model.domain and recycle_model.domain != '[]' else []
             if recycle_model.time_field_id and recycle_model.time_field_delta and recycle_model.time_field_delta_unit:
                 if recycle_model.time_field_id.ttype == 'date':
                     now = fields.Date.today()
@@ -160,7 +161,7 @@ class DataRecycleModel(models.Model):
             else:
                 delta = relativedelta(months=recycle.notify_frequency)
 
-            if not recycle.last_notification or\
+            if not recycle.last_notification or \
                     (recycle.last_notification + delta) < fields.Datetime.now():
                 recycle.last_notification = fields.Datetime.now()
                 recycle._send_notification(delta)

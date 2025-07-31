@@ -1,24 +1,25 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import jinja2
 import json
 import logging
-import netifaces as ni
 import os
 import socket
 import subprocess
 import time
-import werkzeug
-import urllib3
 
-from odoo import http
+import jinja2
+import netifaces as ni
+import urllib3
+import werkzeug
 from odoo.addons.hw_drivers.browser import Browser, BrowserState
 from odoo.addons.hw_drivers.connection_manager import connection_manager
 from odoo.addons.hw_drivers.driver import Driver
 from odoo.addons.hw_drivers.main import iot_devices
 from odoo.addons.hw_drivers.tools import helpers
 from odoo.addons.hw_drivers.tools.helpers import Orientation
+
+from odoo import http
 from odoo.tools.misc import file_path
 
 path = os.path.realpath(os.path.join(os.path.dirname(__file__), '../../views'))
@@ -79,9 +80,9 @@ class DisplayDriver(Driver):
 
     def update_url(self, url=None):
         self.url = (
-            url
-            or helpers.load_browser_state()[0]
-            or 'http://localhost:8069/point_of_sale/display/' + self.device_identifier
+                url
+                or helpers.load_browser_state()[0]
+                or 'http://localhost:8069/point_of_sale/display/' + self.device_identifier
         )
 
         browser_state = BrowserState.KIOSK if "/pos-self/" in self.url else BrowserState.FULLSCREEN
@@ -125,15 +126,18 @@ class DisplayDriver(Driver):
             raise TypeError("orientation must be of type Orientation")
 
         if float(helpers.get_version()[1:]) >= MIN_IMAGE_VERSION_WAYLAND:
-            subprocess.run(['wlr-randr', '--output', self.device_identifier, '--transform', orientation.value], check=True)
+            subprocess.run(['wlr-randr', '--output', self.device_identifier, '--transform', orientation.value],
+                           check=True)
             # Update touchscreen mapping to this display
             with helpers.writable():
-                subprocess.run(['sed', '-i', f's/HDMI-A-[12]/{self.device_identifier}/', '/home/odoo/.config/labwc/rc.xml'])
+                subprocess.run(
+                    ['sed', '-i', f's/HDMI-A-[12]/{self.device_identifier}/', '/home/odoo/.config/labwc/rc.xml'])
             # Tell labwc to reload its configuration
             subprocess.run(['pkill', '-HUP', 'labwc'])
         else:
             subprocess.run(['xrandr', '-o', orientation.name.lower()], check=True)
-            subprocess.run([file_path('hw_drivers/tools/sync_touchscreen.sh'), str(int(self._x_screen) + 1)], check=False)
+            subprocess.run([file_path('hw_drivers/tools/sync_touchscreen.sh'), str(int(self._x_screen) + 1)],
+                           check=False)
         helpers.save_browser_state(orientation=orientation)
 
 

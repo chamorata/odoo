@@ -19,7 +19,8 @@ class ResUsers(models.Model):
             user_list.insert(0, user_tuple)
         elif limit is not None and len(user_list) == limit:
             # user not found and limit reached, try to find the user again
-            if user_tuple := super().name_search(name, expression.AND([args or [], [('id', '=', uid)]]), operator, limit=1):
+            if user_tuple := super().name_search(name, expression.AND([args or [], [('id', '=', uid)]]), operator,
+                                                 limit=1):
                 user_list = [user_tuple[0], *user_list[:-1]]
         return user_list
 

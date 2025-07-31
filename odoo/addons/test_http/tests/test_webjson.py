@@ -1,16 +1,14 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import html
-from http import HTTPStatus
 from base64 import b64encode
-from urllib.parse import parse_qs, urlsplit
-
 from datetime import date
+from http import HTTPStatus
+from urllib.parse import parse_qs, urlsplit
 
 from odoo.api import Environment
 from odoo.fields import Command
 from odoo.tests import tagged
 from odoo.tools import file_open, mute_logger
-
 from .test_common import TestHttpBase
 
 CT_HTML = 'text/html; charset=utf-8'
@@ -183,7 +181,7 @@ class TestHttpWebJson_1(TestHttpBase):
         self.assertEqual(
             res.json(),
             env['test_http.stargate']
-                .web_search_read([], {'name': {}, 'sgc_designation': {}})
+            .web_search_read([], {'name': {}, 'sgc_designation': {}})
         )
 
     def test_webjson_list_limit_offset(self):
@@ -191,7 +189,7 @@ class TestHttpWebJson_1(TestHttpBase):
         url = '/test_http.stargate'
         stargates = (
             env['test_http.stargate']
-                .web_search_read([], {'name': {}, 'sgc_designation': {}})
+            .web_search_read([], {'name': {}, 'sgc_designation': {}})
         )['records']
 
         res_limit = self.url_open_json(f'{url}?limit=1')
@@ -219,7 +217,7 @@ class TestHttpWebJson_1(TestHttpBase):
         self.assertEqual(
             res.json(),
             env['test_http.stargate']
-                .web_search_read(domain, {'name': {}, 'sgc_designation': {}})
+            .web_search_read(domain, {'name': {}, 'sgc_designation': {}})
         )
 
     def test_webjson_list_domain_default_filter(self):
@@ -262,7 +260,7 @@ class TestHttpWebJson_1(TestHttpBase):
         self.assertEqual(
             res.json(),
             env['test_http.stargate']
-                .web_search_read(domain, {'name': {}, 'sgc_designation': {}})
+            .web_search_read(domain, {'name': {}, 'sgc_designation': {}})
         )
         self.assertEqual(len(res.history), 1, "should had been redirected")
         self.assertEqual(res.history[0].status_code, HTTPStatus.TEMPORARY_REDIRECT)
@@ -281,7 +279,8 @@ class TestHttpWebJson_1(TestHttpBase):
                 env['test_http.stargate'], [], ['galaxy_id', 'has_galaxy_crystal'], ['availability']),
         )
 
-        res = self.url_open_json('/test_http.stargate?view_type=pivot&groupby=has_galaxy_crystal&fields=availability:min')
+        res = self.url_open_json(
+            '/test_http.stargate?view_type=pivot&groupby=has_galaxy_crystal&fields=availability:min')
         self.assertEqual(
             res.json(),
             read_group_list(env['test_http.stargate'], [], ['has_galaxy_crystal'], ['availability:min']),
@@ -294,7 +293,8 @@ class TestHttpWebJson_1(TestHttpBase):
             'name': 'Some def filter',
             'is_default': True,
         })
-        res = self.url_open_json('/test_http.stargate?view_type=pivot&groupby=has_galaxy_crystal&fields=availability:min')
+        res = self.url_open_json(
+            '/test_http.stargate?view_type=pivot&groupby=has_galaxy_crystal&fields=availability:min')
         self.assertEqual(
             res.json(),
             read_group_list(env['test_http.stargate'], user_domain, ['has_galaxy_crystal'], ['availability:min']),
@@ -331,7 +331,8 @@ class TestHttpWebJson_1(TestHttpBase):
             env['test_http.stargate'].search([('last_use_date', '!=', False)])
             .mapped('last_use_date')
         )
-        res = self.url_open_json(f'/test_http.stargate?view_type=calendar&domain=[]&start_date={last_date.isoformat()}&end_date=2099-01-01')
+        res = self.url_open_json(
+            f'/test_http.stargate?view_type=calendar&domain=[]&start_date={last_date.isoformat()}&end_date=2099-01-01')
         self.assertEqual(
             res.json()["length"],
             env['test_http.stargate'].search_count([('last_use_date', '>=', last_date)]),

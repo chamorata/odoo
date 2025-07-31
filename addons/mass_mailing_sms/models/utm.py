@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from collections import defaultdict
+
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
@@ -15,15 +16,14 @@ class UtmCampaign(models.Model):
         string='Mass SMS',
         groups="mass_mailing.group_mass_mailing_user")
     mailing_sms_count = fields.Integer('Number of Mass SMS',
-        compute="_compute_mailing_sms_count",
-        groups="mass_mailing.group_mass_mailing_user")
+                                       compute="_compute_mailing_sms_count",
+                                       groups="mass_mailing.group_mass_mailing_user")
 
     # A/B Testing
     ab_testing_mailings_sms_count = fields.Integer("A/B Test Mailings SMS #", compute="_compute_mailing_sms_count")
     ab_testing_sms_winner_selection = fields.Selection([
         ('manual', 'Manual'),
         ('clicks_ratio', 'Highest Click Rate')], string="SMS Winner Selection", default="clicks_ratio")
-
 
     @api.depends('mailing_sms_ids')
     def _compute_mailing_sms_count(self):

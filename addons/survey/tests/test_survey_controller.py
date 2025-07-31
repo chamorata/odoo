@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import Command
 from odoo.addons.survey.tests import common
+
+from odoo import Command
 from odoo.tests.common import HttpCase
 
 
@@ -64,12 +65,14 @@ class TestSurveyController(common.TestSurveyCommon, HttpCase):
             ('page_per_question', [], q1_correct_answer),
             ('page_per_question', a_q1_correct, q1_correct_answer),
             ('page_per_question', a_q1_incorrect, q1_correct_answer),
-            ('one_page', [], q1_correct_answer), # skipping gives answers for active questions (q2 and q3 conditional questions are inactive)
+            ('one_page', [], q1_correct_answer),
+            # skipping gives answers for active questions (q2 and q3 conditional questions are inactive)
             ('one_page', a_q1_correct, {**q1_correct_answer, str(q3.id): [a_q3_correct.id]}),
             ('one_page', a_q1_partial, {**q1_correct_answer, str(q2.id): [a_q2_correct.id]}),
             # page0 contains q1 and q2, page1 contains q3
             ('page_per_section', [], q1_correct_answer),
-            ('page_per_section', a_q1_correct, q1_correct_answer), # no correct answers for q3 because q3 is not on the same page as q1
+            ('page_per_section', a_q1_correct, q1_correct_answer),
+            # no correct answers for q3 because q3 is not on the same page as q1
             ('page_per_section', a_q1_partial, {**q1_correct_answer, str(q2.id): [a_q2_correct.id]}),
         ]
 
@@ -102,4 +105,4 @@ class TestSurveyController(common.TestSurveyCommon, HttpCase):
                 self.assertResponse(response, 200)
                 self.assertEqual(response.json()['result'][0], expected_correct_answers)
 
-                user_input.invalidate_recordset() # TDE note: necessary as lots of sudo in controllers messing with cache
+                user_input.invalidate_recordset()  # TDE note: necessary as lots of sudo in controllers messing with cache

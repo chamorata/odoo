@@ -12,8 +12,10 @@ class StorageCategory(models.Model):
     name = fields.Char('Storage Category', required=True)
     max_weight = fields.Float('Max Weight', digits='Stock Weight')
     capacity_ids = fields.One2many('stock.storage.category.capacity', 'storage_category_id', copy=True)
-    product_capacity_ids = fields.One2many('stock.storage.category.capacity', compute="_compute_storage_capacity_ids", inverse="_set_storage_capacity_ids")
-    package_capacity_ids = fields.One2many('stock.storage.category.capacity', compute="_compute_storage_capacity_ids", inverse="_set_storage_capacity_ids")
+    product_capacity_ids = fields.One2many('stock.storage.category.capacity', compute="_compute_storage_capacity_ids",
+                                           inverse="_set_storage_capacity_ids")
+    package_capacity_ids = fields.One2many('stock.storage.category.capacity', compute="_compute_storage_capacity_ids",
+                                           inverse="_set_storage_capacity_ids")
     allow_new_product = fields.Selection([
         ('empty', 'If the location is empty'),
         ('same', 'If all products are same'),
@@ -52,9 +54,10 @@ class StorageCategoryProductCapacity(models.Model):
 
     storage_category_id = fields.Many2one('stock.storage.category', ondelete='cascade', required=True, index=True)
     product_id = fields.Many2one('product.product', 'Product', ondelete='cascade', check_company=True,
-        domain=("[('product_tmpl_id', '=', context.get('active_id', False))] if context.get('active_model') == 'product.template' else"
-            " [('id', '=', context.get('default_product_id', False))] if context.get('default_product_id') else"
-            " [('is_storable', '=', True)]"))
+                                 domain=(
+                                     "[('product_tmpl_id', '=', context.get('active_id', False))] if context.get('active_model') == 'product.template' else"
+                                     " [('id', '=', context.get('default_product_id', False))] if context.get('default_product_id') else"
+                                     " [('is_storable', '=', True)]"))
     package_type_id = fields.Many2one('stock.package.type', 'Package Type', ondelete='cascade', check_company=True)
     quantity = fields.Float('Quantity', required=True)
     product_uom_id = fields.Many2one(related='product_id.uom_id')
@@ -63,5 +66,6 @@ class StorageCategoryProductCapacity(models.Model):
     _sql_constraints = [
         ('positive_quantity', 'CHECK(quantity > 0)', 'Quantity should be a positive number.'),
         ('unique_product', 'UNIQUE(product_id, storage_category_id)', 'Multiple capacity rules for one product.'),
-        ('unique_package_type', 'UNIQUE(package_type_id, storage_category_id)', 'Multiple capacity rules for one package type.'),
+        ('unique_package_type', 'UNIQUE(package_type_id, storage_category_id)',
+         'Multiple capacity rules for one package type.'),
     ]

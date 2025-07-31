@@ -14,11 +14,11 @@ class ResConfigSettings(models.TransientModel):
     def l10n_in_check_gst_number(self):
         if not self.company_id.vat:
             action = {
-                    "view_mode": "form",
-                    "res_model": "res.company",
-                    "type": "ir.actions.act_window",
-                    "res_id" : self.company_id.id,
-                    "views": [[self.env.ref("base.view_company_form").id, "form"]],
+                "view_mode": "form",
+                "res_model": "res.company",
+                "type": "ir.actions.act_window",
+                "res_id": self.company_id.id,
+                "views": [[self.env.ref("base.view_company_form").id, "form"]],
             }
             raise RedirectWarning(_("Please enter a GST number in company."), action, _('Go to Company'))
 
@@ -28,11 +28,11 @@ class ResConfigSettings(models.TransientModel):
         if not self.company_id.sudo()._l10n_in_edi_token_is_valid():
             raise UserError(_("Incorrect username or password, or the GST number on company does not match."))
         return {
-              'type': 'ir.actions.client',
-              'tag': 'display_notification',
-              'params': {
-                  'type': 'info',
-                  'sticky': False,
-                  'message': _("API credentials validated successfully"),
-              }
-          }
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'type': 'info',
+                'sticky': False,
+                'message': _("API credentials validated successfully"),
+            }
+        }

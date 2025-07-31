@@ -31,8 +31,8 @@ class HrEmployeeBase(models.AbstractModel):
         for employee in self:
             badge_ids = self.env['gamification.badge.user'].search([
                 '|', ('employee_id', 'in', employee.ids),
-                     '&', ('employee_id', '=', False),
-                          ('user_id', 'in', employee.user_id.ids)
+                '&', ('employee_id', '=', False),
+                ('user_id', 'in', employee.user_id.ids)
             ])
             employee.has_badges = bool(badge_ids)
             employee.badge_ids = badge_ids

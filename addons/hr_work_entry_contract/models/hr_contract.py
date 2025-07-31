@@ -4,16 +4,15 @@
 import itertools
 from collections import defaultdict
 from datetime import datetime, date, time
-import pytz
 
+import pytz
 from dateutil.relativedelta import relativedelta
+from odoo.addons.resource.models.utils import string_to_datetime, Intervals
 
 from odoo import api, Command, fields, models, _
-from odoo.addons.resource.models.utils import string_to_datetime, Intervals
+from odoo.exceptions import UserError
 from odoo.osv import expression
 from odoo.tools import ormcache, format_list
-from odoo.exceptions import UserError
-
 from .hr_work_intervals import WorkIntervals
 
 
@@ -22,9 +21,11 @@ class HrContract(models.Model):
     _description = 'Employee Contract'
 
     date_generated_from = fields.Datetime(string='Generated From', readonly=True, required=True,
-        default=lambda self: datetime.now().replace(hour=0, minute=0, second=0, microsecond=0), copy=False)
+                                          default=lambda self: datetime.now().replace(hour=0, minute=0, second=0,
+                                                                                      microsecond=0), copy=False)
     date_generated_to = fields.Datetime(string='Generated To', readonly=True, required=True,
-        default=lambda self: datetime.now().replace(hour=0, minute=0, second=0, microsecond=0), copy=False)
+                                        default=lambda self: datetime.now().replace(hour=0, minute=0, second=0,
+                                                                                    microsecond=0), copy=False)
     last_generation_date = fields.Date(string='Last Generation Date', readonly=True)
     work_entry_source = fields.Selection([('calendar', 'Working Schedule')], required=True, default='calendar', help='''
         Defines the source for work entries generation
@@ -33,7 +34,7 @@ class HrContract(models.Model):
         Attendances: Work entries will be generated from the employee's attendances. (requires Attendance app)
         Planning: Work entries will be generated from the employee's planning. (requires Planning app)
     '''
-    )
+                                         )
     work_entry_source_calendar_invalid = fields.Boolean(compute='_compute_work_entry_source_calendar_invalid')
 
     @api.depends('work_entry_source', 'resource_calendar_id')
@@ -239,15 +240,15 @@ class HrContract(models.Model):
                 work_entry_type = contract._get_interval_work_entry_type(interval)
                 # All benefits generated here are using datetimes converted from the employee's timezone
                 contract_vals += [dict([
-                    ('name', "%s: %s" % (work_entry_type.name, employee.name)),
-                    ('date_start', interval[0].astimezone(pytz.utc).replace(tzinfo=None)),
-                    ('date_stop', interval[1].astimezone(pytz.utc).replace(tzinfo=None)),
-                    ('work_entry_type_id', work_entry_type.id),
-                    ('employee_id', employee.id),
-                    ('contract_id', contract.id),
-                    ('company_id', contract.company_id.id),
-                    ('state', 'draft'),
-                ] + contract._get_more_vals_attendance_interval(interval))]
+                                           ('name', "%s: %s" % (work_entry_type.name, employee.name)),
+                                           ('date_start', interval[0].astimezone(pytz.utc).replace(tzinfo=None)),
+                                           ('date_stop', interval[1].astimezone(pytz.utc).replace(tzinfo=None)),
+                                           ('work_entry_type_id', work_entry_type.id),
+                                           ('employee_id', employee.id),
+                                           ('contract_id', contract.id),
+                                           ('company_id', contract.company_id.id),
+                                           ('state', 'draft'),
+                                       ] + contract._get_more_vals_attendance_interval(interval))]
 
             leaves_over_attendances = WorkIntervals(leaves) & real_leaves
             for interval in real_leaves:
@@ -257,22 +258,27 @@ class HrContract(models.Model):
                 # sql constraint error
                 if interval[0] == interval[1]:  # if start == stop
                     continue
-                leaves_over_interval = [l for l in leaves_over_attendances if l[0] >= interval[0] and l[1] <= interval[1]]
+                leaves_over_interval = [l for l in leaves_over_attendances if
+                                        l[0] >= interval[0] and l[1] <= interval[1]]
                 for leave_interval in [(l[0], l[1], interval[2]) for l in leaves_over_interval]:
-                    leave_entry_type = contract._get_interval_leave_work_entry_type(leave_interval, leaves, bypassing_work_entry_type_codes)
-                    interval_leaves = [leave for leave in leaves if leave[2].work_entry_type_id.id == leave_entry_type.id]
+                    leave_entry_type = contract._get_interval_leave_work_entry_type(leave_interval, leaves,
+                                                                                    bypassing_work_entry_type_codes)
+                    interval_leaves = [leave for leave in leaves if
+                                       leave[2].work_entry_type_id.id == leave_entry_type.id]
                     interval_start = leave_interval[0].astimezone(pytz.utc).replace(tzinfo=None)
                     interval_stop = leave_interval[1].astimezone(pytz.utc).replace(tzinfo=None)
                     contract_vals += [dict([
-                        ('name', "%s%s" % (leave_entry_type.name + ": " if leave_entry_type else "", employee.name)),
-                        ('date_start', interval_start),
-                        ('date_stop', interval_stop),
-                        ('work_entry_type_id', leave_entry_type.id),
-                        ('employee_id', employee.id),
-                        ('company_id', contract.company_id.id),
-                        ('state', 'draft'),
-                        ('contract_id', contract.id),
-                    ] + contract._get_more_vals_leave_interval(interval, interval_leaves))]
+                                               ('name',
+                                                "%s%s" % (leave_entry_type.name + ": " if leave_entry_type else "",
+                                                          employee.name)),
+                                               ('date_start', interval_start),
+                                               ('date_stop', interval_stop),
+                                               ('work_entry_type_id', leave_entry_type.id),
+                                               ('employee_id', employee.id),
+                                               ('company_id', contract.company_id.id),
+                                               ('state', 'draft'),
+                                               ('contract_id', contract.id),
+                                           ] + contract._get_more_vals_leave_interval(interval, interval_leaves))]
         return contract_vals
 
     def _get_work_entries_values(self, date_start, date_stop):
@@ -302,8 +308,8 @@ class HrContract(models.Model):
         for contract in self:
             # If we generate work_entries which exceeds date_start or date_stop, we change boundaries on contract
             if contract_vals:
-                #Handle empty work entries for certain contracts, could happen on an attendance based contract
-                #NOTE: this does not handle date_stop or date_start not being present in vals
+                # Handle empty work entries for certain contracts, could happen on an attendance based contract
+                # NOTE: this does not handle date_stop or date_start not being present in vals
                 dates_stop = mapped_contract_dates[contract.id][1]
                 if dates_stop:
                     date_stop_max = max(dates_stop)
@@ -378,7 +384,8 @@ class HrContract(models.Model):
         for contract in self:
             contract_tz = (contract.resource_calendar_id or contract.employee_id.resource_calendar_id).tz
             tz = pytz.timezone(contract_tz) if contract_tz else pytz.utc
-            contract_start = tz.localize(fields.Datetime.to_datetime(contract.date_start)).astimezone(utc).replace(tzinfo=None)
+            contract_start = tz.localize(fields.Datetime.to_datetime(contract.date_start)).astimezone(utc).replace(
+                tzinfo=None)
             contract_stop = datetime.combine(fields.Datetime.to_datetime(contract.date_end or datetime.max.date()),
                                              datetime.max.time())
             if contract.date_end:
@@ -419,7 +426,8 @@ class HrContract(models.Model):
         for contract in self:
             date_start = fields.Datetime.to_datetime(contract.date_start)
             if contract.date_generated_from < date_start:
-                we_to_remove = self.env['hr.work.entry'].search([('date_stop', '<=', date_start), ('contract_id', '=', contract.id)])
+                we_to_remove = self.env['hr.work.entry'].search(
+                    [('date_stop', '<=', date_start), ('contract_id', '=', contract.id)])
                 if we_to_remove:
                     contract.date_generated_from = date_start
                     all_we_to_unlink |= we_to_remove
@@ -427,7 +435,8 @@ class HrContract(models.Model):
                 continue
             date_end = datetime.combine(contract.date_end, datetime.max.time())
             if contract.date_generated_to > date_end:
-                we_to_remove = self.env['hr.work.entry'].search([('date_start', '>=', date_end), ('contract_id', '=', contract.id)])
+                we_to_remove = self.env['hr.work.entry'].search(
+                    [('date_start', '>=', date_end), ('contract_id', '=', contract.id)])
                 if we_to_remove:
                     contract.date_generated_to = date_end
                     all_we_to_unlink |= we_to_remove
@@ -490,9 +499,9 @@ class HrContract(models.Model):
         all_contracts = self.env['hr.employee']._get_all_contracts(
             start, stop, states=['open', 'close'])
         # determine contracts to do (the ones whose generated dates have open periods this month)
-        contracts_todo = all_contracts.filtered(lambda c:\
-            (c.date_generated_from > start or c.date_generated_to < stop) and\
-            (not c.last_generation_date or c.last_generation_date < today))
+        contracts_todo = all_contracts.filtered(lambda c: \
+                                                    (c.date_generated_from > start or c.date_generated_to < stop) and \
+                                                    (not c.last_generation_date or c.last_generation_date < today))
         if not contracts_todo:
             return
         countract_todo_count = len(contracts_todo)

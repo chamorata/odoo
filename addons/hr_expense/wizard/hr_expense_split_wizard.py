@@ -9,7 +9,8 @@ class HrExpenseSplitWizard(models.TransientModel):
 
     expense_id = fields.Many2one(comodel_name='hr.expense', string='Expense', required=True)
     expense_split_line_ids = fields.One2many(comodel_name='hr.expense.split', inverse_name='wizard_id')
-    total_amount_currency = fields.Monetary(string='Total Amount', compute='_compute_total_amount_currency', currency_field='currency_id')
+    total_amount_currency = fields.Monetary(string='Total Amount', compute='_compute_total_amount_currency',
+                                            currency_field='currency_id')
     total_amount_currency_original = fields.Monetary(
         string='Total amount original', related='expense_id.total_amount_currency',
         currency_field='currency_id',
@@ -20,7 +21,8 @@ class HrExpenseSplitWizard(models.TransientModel):
         currency_field='currency_id',
         compute='_compute_tax_amount_currency',
     )
-    split_possible = fields.Boolean(help='The sum of after split shut remain the same', compute='_compute_split_possible')
+    split_possible = fields.Boolean(help='The sum of after split shut remain the same',
+                                    compute='_compute_split_possible')
     currency_id = fields.Many2one(comodel_name='res.currency', related='expense_id.currency_id')
 
     @api.depends('expense_split_line_ids.total_amount_currency')
@@ -37,7 +39,8 @@ class HrExpenseSplitWizard(models.TransientModel):
     def _compute_split_possible(self):
         for wizard in self:
             wizard.split_possible = wizard.total_amount_currency_original \
-                    and wizard.currency_id.compare_amounts(wizard.total_amount_currency_original, wizard.total_amount_currency) == 0
+                                    and wizard.currency_id.compare_amounts(wizard.total_amount_currency_original,
+                                                                           wizard.total_amount_currency) == 0
 
     def action_split_expense(self):
         self.ensure_one()

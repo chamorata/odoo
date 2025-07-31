@@ -39,7 +39,7 @@ class ProductAttributeValue(models.Model):
     html_color = fields.Char(
         string="Color",
         help="Here you can set a specific HTML color index (e.g. #ff0000)"
-            " to display the color if the attribute type is 'Color'.")
+             " to display the color if the attribute type is 'Color'.")
     display_type = fields.Selection(related='attribute_id.display_type')
     color = fields.Integer(string="Color Index", default=_get_default_color)
     image = fields.Image(
@@ -81,7 +81,7 @@ class ProductAttributeValue(models.Model):
     def _compute_default_extra_price_changed(self):
         for pav in self:
             pav.default_extra_price_changed = (
-                pav.default_extra_price != pav._origin.default_extra_price
+                    pav.default_extra_price != pav._origin.default_extra_price
             )
 
     # === CRUD METHODS === #

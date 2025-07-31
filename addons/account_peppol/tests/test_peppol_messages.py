@@ -1,19 +1,20 @@
 import json
 from base64 import b64encode
 from contextlib import contextmanager
-from requests import Session, PreparedRequest, Response
 from unittest.mock import patch
 
 from odoo.addons.account.tests.test_account_move_send import TestAccountMoveSendCommon
+from requests import Session, PreparedRequest, Response
+
 from odoo.exceptions import UserError
 from odoo.tests.common import tagged, freeze_time
 from odoo.tools.misc import file_open
-
 
 ID_CLIENT = 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
 FAKE_UUID = ['yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy',
              'zzzzzzzz-zzzz-zzzz-zzzz-zzzzzzzzzzzz']
 FILE_PATH = 'account_peppol/tests/assets'
+
 
 @freeze_time('2023-01-01')
 @tagged('-at_install', 'post_install')
@@ -31,7 +32,8 @@ class TestPeppolMessage(TestAccountMoveSendCommon):
             'account_peppol_proxy_state': 'receiver',
         })
 
-        edi_identification = cls.env['account_edi_proxy_client.user']._get_proxy_identification(cls.env.company, 'peppol')
+        edi_identification = cls.env['account_edi_proxy_client.user']._get_proxy_identification(cls.env.company,
+                                                                                                'peppol')
         cls.private_key = cls.env['certificate.key'].create({
             'name': 'Test key PEPPOL',
             'content': b64encode(file_open(f'{FILE_PATH}/private_key.pem', 'rb').read()),
@@ -165,7 +167,8 @@ class TestPeppolMessage(TestAccountMoveSendCommon):
         if url == '/api/peppol/1/send_document':
             if not body['params']['documents']:
                 raise UserError('No documents were provided')
-            proxy_documents, responses = cls._get_mock_data(cls.env.context.get('error'), nr_invoices=len(body['params']['documents']))
+            proxy_documents, responses = cls._get_mock_data(cls.env.context.get('error'),
+                                                            nr_invoices=len(body['params']['documents']))
         else:
             proxy_documents, responses = cls._get_mock_data(cls.env.context.get('error'))
 
@@ -202,7 +205,8 @@ class TestPeppolMessage(TestAccountMoveSendCommon):
 
         wizard.sending_methods = ['peppol']
         wizard.action_send_and_print()
-        self.assertEqual(self._get_mail_message(move).preview, 'The document has been sent to the Peppol Access Point for processing')
+        self.assertEqual(self._get_mail_message(move).preview,
+                         'The document has been sent to the Peppol Access Point for processing')
 
     def test_send_peppol_alerts_not_valid_partner(self):
         move = self.create_move(self.invalid_partner)
@@ -219,10 +223,12 @@ class TestPeppolMessage(TestAccountMoveSendCommon):
     def test_send_peppol_alerts_not_valid_format_partner(self, mocked_check):
         move = self.create_move(self.valid_partner)
         move.action_post()
-        wizard = self.create_send_and_print(move, sending_methods=['peppol'])  # partner can't receive BIS3 so Peppol not checked by default, force it
+        wizard = self.create_send_and_print(move, sending_methods=[
+            'peppol'])  # partner can't receive BIS3 so Peppol not checked by default, force it
 
         self.assertEqual(wizard.invoice_edi_format, 'ubl_bis3')
-        self.assertEqual(self.valid_partner.peppol_verification_state, 'not_valid_format')  # on peppol but can't receive bis3
+        self.assertEqual(self.valid_partner.peppol_verification_state,
+                         'not_valid_format')  # on peppol but can't receive bis3
         self.assertTrue('account_peppol_warning_partner' in wizard.alerts)
 
     def test_send_peppol_alerts_invalid_partner(self):
@@ -281,10 +287,10 @@ class TestPeppolMessage(TestAccountMoveSendCommon):
 
         self.env['account_edi_proxy_client.user']._cron_peppol_get_message_status()
         self.assertRecordValues(move, [{
-                'peppol_move_state': 'done',
-                'peppol_message_uuid': FAKE_UUID[0],
-            }],
-        )
+            'peppol_move_state': 'done',
+            'peppol_message_uuid': FAKE_UUID[0],
+        }],
+                                )
         self.assertTrue(bool(move.ubl_cii_xml_id))
 
     def test_send_invalid_edi_user(self):
@@ -458,6 +464,7 @@ class TestPeppolMessage(TestAccountMoveSendCommon):
         """When in multi/async mode, the generation of XML can fail silently (without raising).
         This needs to be reflected as an error and put the move in Peppol Error state.
         """
+
         def mocked_export_invoice_constraints(self, invoice, vals):
             return {'test_error_key': 'test_error_description'}
 
@@ -468,8 +475,8 @@ class TestPeppolMessage(TestAccountMoveSendCommon):
 
         wizard = self.create_send_and_print(move_1 + move_2)
         with patch(
-            'odoo.addons.account_edi_ubl_cii.models.account_edi_xml_ubl_20.AccountEdiXmlUBL20._export_invoice_constraints',
-            mocked_export_invoice_constraints
+                'odoo.addons.account_edi_ubl_cii.models.account_edi_xml_ubl_20.AccountEdiXmlUBL20._export_invoice_constraints',
+                mocked_export_invoice_constraints
         ):
             wizard.action_send_and_print()
             self.env.ref('account.ir_cron_account_move_send').method_direct_trigger()

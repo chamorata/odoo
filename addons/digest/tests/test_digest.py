@@ -3,17 +3,18 @@
 
 from ast import literal_eval
 from contextlib import contextmanager
-from freezegun import freeze_time
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
-from lxml import html
 from unittest.mock import patch
+
+from dateutil.relativedelta import relativedelta
+from freezegun import freeze_time
+from lxml import html
+from odoo.addons.digest.tests.common import TestDigestCommon
+from odoo.addons.mail.tests.common import MailCommon
 from werkzeug.urls import url_encode, url_join
 
 from odoo import SUPERUSER_ID
 from odoo.addons.base.tests.common import HttpCaseWithUserDemo
-from odoo.addons.digest.tests.common import TestDigestCommon
-from odoo.addons.mail.tests.common import MailCommon
 from odoo.tests import tagged
 from odoo.tests.common import users
 from odoo.tools import mute_logger
@@ -27,7 +28,7 @@ class TestDigest(TestDigestCommon):
         in addition to standard datetime mocks. Used mainly to detect sync
         issues. """
         with freeze_time(mock_dt), \
-             patch.object(self.env.cr, 'now', lambda: mock_dt):
+                patch.object(self.env.cr, 'now', lambda: mock_dt):
             yield
 
     @classmethod
@@ -102,9 +103,9 @@ class TestDigest(TestDigestCommon):
 
         self.assertEqual(self.digest_1.kpi_res_users_connected_value, 2)
         self.assertEqual(self.digest_2.kpi_res_users_connected_value, 0,
-            msg='This KPI is in an other company')
+                         msg='This KPI is in an other company')
         self.assertEqual(self.digest_3.kpi_res_users_connected_value, 2,
-            msg='This KPI has no company, should take the current one')
+                         msg='This KPI has no company, should take the current one')
 
     @users('admin')
     def test_digest_numbers(self):
@@ -124,7 +125,8 @@ class TestDigest(TestDigestCommon):
         self.assertEqual(mail.email_from, self.company_admin.email_formatted)
         self.assertEqual(mail.state, 'outgoing', 'Mail should use the queue')
 
-        kpi_message_values = html.fromstring(mail.body_html).xpath('//table[@data-field="kpi_mail_message_total"]//*[hasclass("kpi_value")]/text()')
+        kpi_message_values = html.fromstring(mail.body_html).xpath(
+            '//table[@data-field="kpi_mail_message_total"]//*[hasclass("kpi_value")]/text()')
         self.assertEqual(
             [t.strip() for t in kpi_message_values],
             ['3', '8', '15']
@@ -186,7 +188,7 @@ class TestDigest(TestDigestCommon):
         digests.flush_recordset()
         current_dt = self.reference_datetime + relativedelta(days=1)
         with self.mock_datetime_and_now(current_dt), \
-             self.mock_mail_gateway():
+                self.mock_mail_gateway():
             digests.action_send()
 
         self.assertEqual(test_digest.next_run_date, current_dt.date() + relativedelta(weeks=1))
@@ -197,7 +199,7 @@ class TestDigest(TestDigestCommon):
 
         # no logs for employee -> should tone down periodicity
         with self.mock_datetime_and_now(current_dt), \
-             self.mock_mail_gateway():
+                self.mock_mail_gateway():
             digests.action_send()
 
         self.assertEqual(test_digest.next_run_date, current_dt.date() + relativedelta(months=1))
@@ -207,7 +209,7 @@ class TestDigest(TestDigestCommon):
 
         # no logs for employee -> should tone down periodicity
         with self.mock_datetime_and_now(current_dt), \
-             self.mock_mail_gateway():
+                self.mock_mail_gateway():
             digests.action_send()
 
         self.assertEqual(test_digest.next_run_date, current_dt.date() + relativedelta(months=3))
@@ -221,62 +223,76 @@ class TestDigest(TestDigestCommon):
         digest._action_subscribe_users(self.user_employee)
 
         for logs, (periodicity, run_date), (exp_periodicity, exp_run_date, msg) in zip(
-            [
-                # daily
-                [(self.user_employee, self.reference_datetime)],
-                [(self.user_employee, self.reference_datetime - relativedelta(days=1, hours=23))],  # two days logs -> do not tone down
-                [(self.user_employee, self.reference_datetime - relativedelta(days=2, hours=1))],  # > two days logs -> tone down
-                [],  # no logs -> tone down
-                # weekly
-                [(self.user_employee, self.reference_datetime - relativedelta(days=6))],
-                [(self.user_employee, self.reference_datetime - relativedelta(days=8))],  # old logs -> tone down
-                [],  # no logs -> tone down
-                # monthly
-                [(self.user_employee, self.reference_datetime - relativedelta(days=25))],
-                [(self.user_employee, self.reference_datetime - relativedelta(days=32))],  # old logs -> tone down
-                [],  # no logs -> tone down
-                # quarterly
-                [(self.user_employee, self.reference_datetime - relativedelta(months=2))],
-                [(self.user_employee, self.reference_datetime - relativedelta(months=4))],  # old logs but end of tone down
-                [],  # no logs but end of town down
-            ],
-            [
-                # daily
-                ('daily', self.reference_datetime.date()),
-                ('daily', self.reference_datetime.date()),
-                ('daily', self.reference_datetime.date()),
-                ('daily', self.reference_datetime.date()),
-                # weekly
-                ('weekly', self.reference_datetime.date()),
-                ('weekly', self.reference_datetime.date()),
-                ('weekly', self.reference_datetime.date()),
-                # monthly
-                ('monthly', self.reference_datetime.date()),
-                ('monthly', self.reference_datetime.date()),
-                ('monthly', self.reference_datetime.date()),
-                # quarterly
-                ('quarterly', self.reference_datetime.date()),
-                ('quarterly', self.reference_datetime.date()),
-                ('quarterly', self.reference_datetime.date()),
-            ],
-            [
-                ('daily', self.reference_datetime.date() + relativedelta(days=1), 'Daily ok'),  # just push date
-                ('daily', self.reference_datetime.date() + relativedelta(days=1), 'Daily ok, 2 days - 1 hour'),  # just push date
-                ('weekly', self.reference_datetime.date() + relativedelta(weeks=1), 'Daily old logs (2 days + 1 hour)'),  # tone down on daily
-                ('weekly', self.reference_datetime.date() + relativedelta(weeks=1), 'Daily no logs'),  # tone down on daily
-                # weekly
-                ('weekly', self.reference_datetime.date() + relativedelta(weeks=1), 'Weekly ok'),  # just push date
-                ('monthly', self.reference_datetime.date() + relativedelta(months=1), 'Weekly old logs'),  # tone down on weekly
-                ('monthly', self.reference_datetime.date() + relativedelta(months=1), 'Weekly no logs'),  # tone down on weekly
-                # monthly
-                ('monthly', self.reference_datetime.date() + relativedelta(months=1), 'Monthly ok'),  # just push date
-                ('quarterly', self.reference_datetime.date() + relativedelta(months=3), 'Monthly old logs'),  # tone down on monthly
-                ('quarterly', self.reference_datetime.date() + relativedelta(months=3), 'Monthly no logs'),  # tone down on monthly
-                # quarterly
-                ('quarterly', self.reference_datetime.date() + relativedelta(months=3), 'Quaterly ok'),  # just push date
-                ('quarterly', self.reference_datetime.date() + relativedelta(months=3), 'Quaterly ok'),  # just push date
-                ('quarterly', self.reference_datetime.date() + relativedelta(months=3), 'Quaterly ok'),  # just push date
-            ],
+                [
+                    # daily
+                    [(self.user_employee, self.reference_datetime)],
+                    [(self.user_employee, self.reference_datetime - relativedelta(days=1, hours=23))],
+                    # two days logs -> do not tone down
+                    [(self.user_employee, self.reference_datetime - relativedelta(days=2, hours=1))],
+                    # > two days logs -> tone down
+                    [],  # no logs -> tone down
+                    # weekly
+                    [(self.user_employee, self.reference_datetime - relativedelta(days=6))],
+                    [(self.user_employee, self.reference_datetime - relativedelta(days=8))],  # old logs -> tone down
+                    [],  # no logs -> tone down
+                    # monthly
+                    [(self.user_employee, self.reference_datetime - relativedelta(days=25))],
+                    [(self.user_employee, self.reference_datetime - relativedelta(days=32))],  # old logs -> tone down
+                    [],  # no logs -> tone down
+                    # quarterly
+                    [(self.user_employee, self.reference_datetime - relativedelta(months=2))],
+                    [(self.user_employee, self.reference_datetime - relativedelta(months=4))],
+                    # old logs but end of tone down
+                    [],  # no logs but end of town down
+                ],
+                [
+                    # daily
+                    ('daily', self.reference_datetime.date()),
+                    ('daily', self.reference_datetime.date()),
+                    ('daily', self.reference_datetime.date()),
+                    ('daily', self.reference_datetime.date()),
+                    # weekly
+                    ('weekly', self.reference_datetime.date()),
+                    ('weekly', self.reference_datetime.date()),
+                    ('weekly', self.reference_datetime.date()),
+                    # monthly
+                    ('monthly', self.reference_datetime.date()),
+                    ('monthly', self.reference_datetime.date()),
+                    ('monthly', self.reference_datetime.date()),
+                    # quarterly
+                    ('quarterly', self.reference_datetime.date()),
+                    ('quarterly', self.reference_datetime.date()),
+                    ('quarterly', self.reference_datetime.date()),
+                ],
+                [
+                    ('daily', self.reference_datetime.date() + relativedelta(days=1), 'Daily ok'),  # just push date
+                    ('daily', self.reference_datetime.date() + relativedelta(days=1), 'Daily ok, 2 days - 1 hour'),
+                    # just push date
+                    ('weekly', self.reference_datetime.date() + relativedelta(weeks=1),
+                     'Daily old logs (2 days + 1 hour)'),  # tone down on daily
+                    ('weekly', self.reference_datetime.date() + relativedelta(weeks=1), 'Daily no logs'),
+                    # tone down on daily
+                    # weekly
+                    ('weekly', self.reference_datetime.date() + relativedelta(weeks=1), 'Weekly ok'),  # just push date
+                    ('monthly', self.reference_datetime.date() + relativedelta(months=1), 'Weekly old logs'),
+                    # tone down on weekly
+                    ('monthly', self.reference_datetime.date() + relativedelta(months=1), 'Weekly no logs'),
+                    # tone down on weekly
+                    # monthly
+                    ('monthly', self.reference_datetime.date() + relativedelta(months=1), 'Monthly ok'),
+                    # just push date
+                    ('quarterly', self.reference_datetime.date() + relativedelta(months=3), 'Monthly old logs'),
+                    # tone down on monthly
+                    ('quarterly', self.reference_datetime.date() + relativedelta(months=3), 'Monthly no logs'),
+                    # tone down on monthly
+                    # quarterly
+                    ('quarterly', self.reference_datetime.date() + relativedelta(months=3), 'Quaterly ok'),
+                    # just push date
+                    ('quarterly', self.reference_datetime.date() + relativedelta(months=3), 'Quaterly ok'),
+                    # just push date
+                    ('quarterly', self.reference_datetime.date() + relativedelta(months=3), 'Quaterly ok'),
+                    # just push date
+                ],
         ):
             with self.subTest(logs=logs, msg=msg, periodicity=periodicity, run_date=run_date):
                 digest.write({
@@ -287,7 +303,7 @@ class TestDigest(TestDigestCommon):
                     self._setup_logs_for_users(log_user, log_dt)
 
                 with self.mock_datetime_and_now(self.reference_datetime), \
-                     self.mock_mail_gateway():
+                        self.mock_mail_gateway():
                     digest.action_send()
 
                 self.assertEqual(digest.next_run_date, exp_run_date)

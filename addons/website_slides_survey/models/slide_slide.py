@@ -9,7 +9,8 @@ class SlidePartnerRelation(models.Model):
     _inherit = 'slide.slide.partner'
 
     user_input_ids = fields.One2many('survey.user_input', 'slide_partner_id', 'Certification attempts')
-    survey_scoring_success = fields.Boolean('Certification Succeeded', compute='_compute_survey_scoring_success', store=True)
+    survey_scoring_success = fields.Boolean('Certification Succeeded', compute='_compute_survey_scoring_success',
+                                            store=True)
 
     @api.depends('partner_id', 'user_input_ids.scoring_success')
     def _compute_survey_scoring_success(self):
@@ -43,6 +44,7 @@ class SlidePartnerRelation(models.Model):
             certified_channels_domain]
         )).survey_certification_success = True
 
+
 class Slide(models.Model):
     _inherit = 'slide.slide'
 
@@ -59,8 +61,10 @@ class Slide(models.Model):
     is_preview = fields.Boolean(compute='_compute_is_preview', readonly=False, store=True)
 
     _sql_constraints = [
-        ('check_survey_id', "CHECK(slide_category != 'certification' OR survey_id IS NOT NULL)", "A slide of type 'certification' requires a certification."),
-        ('check_certification_preview', "CHECK(slide_category != 'certification' OR is_preview = False)", "A slide of type certification cannot be previewed."),
+        ('check_survey_id', "CHECK(slide_category != 'certification' OR survey_id IS NOT NULL)",
+         "A slide of type 'certification' requires a certification."),
+        ('check_certification_preview', "CHECK(slide_category != 'certification' OR is_preview = False)",
+         "A slide of type certification cannot be previewed."),
     ]
 
     @api.depends('survey_id')

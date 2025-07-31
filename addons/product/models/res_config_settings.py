@@ -10,9 +10,9 @@ class ResConfigSettings(models.TransientModel):
     group_product_variant = fields.Boolean("Variants", implied_group='product.group_product_variant')
     module_loyalty = fields.Boolean("Promotions, Coupons, Gift Card & Loyalty Program")
     group_stock_packaging = fields.Boolean('Product Packagings',
-        implied_group='product.group_stock_packaging')
+                                           implied_group='product.group_stock_packaging')
     group_product_pricelist = fields.Boolean("Pricelists",
-        implied_group='product.group_product_pricelist')
+                                             implied_group='product.group_product_pricelist')
     product_weight_in_lbs = fields.Selection([
         ('0', 'Kilograms'),
         ('1', 'Pounds'),
@@ -31,9 +31,9 @@ class ResConfigSettings(models.TransientModel):
             if active_pricelist:
                 return {
                     'warning': {
-                    'message': _("You are deactivating the pricelist feature. "
-                                 "Every active pricelist will be archived.")
-                }}
+                        'message': _("You are deactivating the pricelist feature. "
+                                     "Every active pricelist will be archived.")
+                    }}
 
     def set_values(self):
         had_group_pl = self.default_get(['group_product_pricelist'])['group_product_pricelist']

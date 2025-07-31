@@ -18,7 +18,8 @@
     <cac:AdditionalDocumentReference>
         <cbc:ID>___ignore___</cbc:ID>
         <cac:Attachment>
-            <cbc:EmbeddedDocumentBinaryObject mimeCode="___ignore___" filename="___ignore___">___ignore___</cbc:EmbeddedDocumentBinaryObject>
+            <cbc:EmbeddedDocumentBinaryObject mimeCode="___ignore___" filename="___ignore___">___ignore___
+            </cbc:EmbeddedDocumentBinaryObject>
         </cac:Attachment>
     </cac:AdditionalDocumentReference>
     <cac:AccountingSupplierParty>

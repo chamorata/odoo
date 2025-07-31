@@ -5,6 +5,7 @@ import base64
 from datetime import timedelta
 
 from odoo.addons.crm.tests.common import TestLeadConvertMassCommon
+
 from odoo.fields import Datetime
 from odoo.tests.common import tagged, users
 from odoo.tools import mute_logger
@@ -249,7 +250,8 @@ class TestLeadMerge(TestLeadMergeCommon):
         leads = self.env['crm.lead'].browse((self.lead_1 + self.lead_w_partner + self.lead_w_partner_company).ids)
         merged_lead = self._run_merge_wizard(leads)
         self.assertEqual(merged_lead, self.lead_1)
-        self.assertTrue(merged_lead.is_automated_probability, "lead with Auto proba should remain with auto probability")
+        self.assertTrue(merged_lead.is_automated_probability,
+                        "lead with Auto proba should remain with auto probability")
 
     @users('user_sales_manager')
     @mute_logger('odoo.models.unlink')
@@ -261,7 +263,8 @@ class TestLeadMerge(TestLeadMergeCommon):
         leads = self.env['crm.lead'].browse((self.lead_1 + self.lead_w_partner + self.lead_w_partner_company).ids)
         merged_lead = self._run_merge_wizard(leads)
         self.assertEqual(merged_lead, self.lead_1)
-        self.assertTrue(merged_lead.is_automated_probability, "lead with Auto proba should remain with auto probability")
+        self.assertTrue(merged_lead.is_automated_probability,
+                        "lead with Auto proba should remain with auto probability")
 
     @users('user_sales_manager')
     @mute_logger('odoo.models.unlink')
@@ -443,7 +446,7 @@ class TestLeadMerge(TestLeadMergeCommon):
              'datas': base64.b64encode(b'Att%02d' % idx),
              'res_model': 'crm.lead',
              'res_id': self.lead_w_email.id,
-            } for idx in range(4)
+             } for idx in range(4)
         ])
         lead_1 = self.env['crm.lead'].browse(self.lead_1.ids)
         activity = lead_1.activity_schedule('crm.lead_test_activity_1')

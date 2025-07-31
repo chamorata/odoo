@@ -2,12 +2,13 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import json
+
 import werkzeug
+from odoo.addons.website_event.controllers.main import WebsiteEventController
 from werkzeug.exceptions import Forbidden, NotFound
 
 from odoo import http, tools
 from odoo.http import request
-from odoo.addons.website_event.controllers.main import WebsiteEventController
 
 
 class WebsiteEventBoothController(WebsiteEventController):
@@ -122,7 +123,8 @@ class WebsiteEventBoothController(WebsiteEventController):
         event_sudo = event.sudo()
         available_booth_categories = event_sudo.event_booth_category_available_ids
         chosen_booth_category = available_booth_categories.filtered(lambda cat: cat.id == booth_category_id)
-        default_booth_category = available_booth_categories[0] if available_booth_categories else request.env['event.booth.category']
+        default_booth_category = available_booth_categories[0] if available_booth_categories else request.env[
+            'event.booth.category']
         return {
             'available_booth_category_ids': available_booth_categories,
             'event': event_sudo,

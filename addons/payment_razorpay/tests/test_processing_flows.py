@@ -2,14 +2,13 @@
 
 from unittest.mock import patch
 
+from odoo.addons.payment.tests.http_common import PaymentHttpCommon
+from odoo.addons.payment_razorpay.controllers.main import RazorpayController
+from odoo.addons.payment_razorpay.tests.common import RazorpayCommon
 from werkzeug.exceptions import Forbidden
 
 from odoo.tests import tagged
 from odoo.tools import mute_logger
-
-from odoo.addons.payment.tests.http_common import PaymentHttpCommon
-from odoo.addons.payment_razorpay.controllers.main import RazorpayController
-from odoo.addons.payment_razorpay.tests.common import RazorpayCommon
 
 
 @tagged('post_install', '-at_install')
@@ -22,8 +21,8 @@ class TestProcessingFlows(RazorpayCommon, PaymentHttpCommon):
         self._create_transaction('direct')
         url = self._build_url(RazorpayController._webhook_url)
         with patch(
-            'odoo.addons.payment_razorpay.controllers.main.RazorpayController.'
-            '_verify_notification_signature'
+                'odoo.addons.payment_razorpay.controllers.main.RazorpayController.'
+                '_verify_notification_signature'
         ), patch(
             'odoo.addons.payment.models.payment_transaction.PaymentTransaction'
             '._handle_notification_data'
@@ -37,8 +36,8 @@ class TestProcessingFlows(RazorpayCommon, PaymentHttpCommon):
         self._create_transaction('redirect')
         url = self._build_url(RazorpayController._webhook_url)
         with patch(
-            'odoo.addons.payment_razorpay.controllers.main.RazorpayController'
-            '._verify_notification_signature'
+                'odoo.addons.payment_razorpay.controllers.main.RazorpayController'
+                '._verify_notification_signature'
         ) as signature_check_mock, patch(
             'odoo.addons.payment.models.payment_transaction.PaymentTransaction'
             '._handle_notification_data'
@@ -50,8 +49,8 @@ class TestProcessingFlows(RazorpayCommon, PaymentHttpCommon):
         """ Test the verification of a webhook notification with a valid signature. """
         tx = self._create_transaction('redirect')
         with patch(
-            'odoo.addons.payment_razorpay.models.payment_provider.PaymentProvider'
-            '._razorpay_calculate_signature', return_value='valid_signature'
+                'odoo.addons.payment_razorpay.models.payment_provider.PaymentProvider'
+                '._razorpay_calculate_signature', return_value='valid_signature'
         ):
             self._assert_does_not_raise(
                 Forbidden,
@@ -79,8 +78,8 @@ class TestProcessingFlows(RazorpayCommon, PaymentHttpCommon):
         """ Test the verification of a notification with an invalid signature. """
         tx = self._create_transaction('redirect')
         with patch(
-            'odoo.addons.payment_razorpay.models.payment_provider.PaymentProvider'
-            '._razorpay_calculate_signature', return_value='valid_signature'
+                'odoo.addons.payment_razorpay.models.payment_provider.PaymentProvider'
+                '._razorpay_calculate_signature', return_value='valid_signature'
         ):
             self.assertRaises(
                 Forbidden,

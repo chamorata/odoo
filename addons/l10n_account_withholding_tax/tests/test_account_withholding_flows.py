@@ -1,12 +1,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from freezegun import freeze_time
+from odoo.addons.account.tests.common import TestTaxCommon
+from odoo.addons.analytic.tests.common import AnalyticCommon
 
 from odoo import Command
 from odoo.exceptions import UserError
 from odoo.tests import tagged, Form
-
-from odoo.addons.account.tests.common import TestTaxCommon
-from odoo.addons.analytic.tests.common import AnalyticCommon
 
 
 @tagged('post_install_l10n', 'post_install', '-at_install')
@@ -40,7 +39,8 @@ class TestL10nAccountWithholdingTaxesFlows(TestTaxCommon, AnalyticCommon):
     def test_no_withholding_tax_invoice_but_included_one_on_payment(self):
         """ Test a flow where not withholding tax is set on the invoice line, but one is added to the payment register. """
         invoice_tax = self.percent_tax(15)
-        withholding_tax = self.percent_tax(-1, is_withholding_tax_on_payment=True, withholding_sequence_id=self.withholding_sequence.id)
+        withholding_tax = self.percent_tax(-1, is_withholding_tax_on_payment=True,
+                                           withholding_sequence_id=self.withholding_sequence.id)
 
         invoice = self.env['account.move'].create({
             'move_type': 'out_invoice',
@@ -53,8 +53,8 @@ class TestL10nAccountWithholdingTaxesFlows(TestTaxCommon, AnalyticCommon):
         })
         invoice.action_post()
 
-        payment_register = self.env['account.payment.register']\
-            .with_context(active_model='account.move', active_ids=invoice.ids)\
+        payment_register = self.env['account.payment.register'] \
+            .with_context(active_model='account.move', active_ids=invoice.ids) \
             .create({})
         with Form(payment_register) as payment_register_form:
             payment_register_form.should_withhold_tax = True
@@ -73,11 +73,11 @@ class TestL10nAccountWithholdingTaxesFlows(TestTaxCommon, AnalyticCommon):
             'amount': 1150.0,
         }])
         self.assertRecordValues(payment.move_id.line_ids, [
-            {'balance': 1140.0,     'tax_ids': []},
-            {'balance': -1150.0,    'tax_ids': []},
-            {'balance': 10.0,       'tax_ids': []},
-            {'balance': 1000.0,     'tax_ids': withholding_tax.ids},
-            {'balance': -1000.0,    'tax_ids': []},
+            {'balance': 1140.0, 'tax_ids': []},
+            {'balance': -1150.0, 'tax_ids': []},
+            {'balance': 10.0, 'tax_ids': []},
+            {'balance': 1000.0, 'tax_ids': withholding_tax.ids},
+            {'balance': -1000.0, 'tax_ids': []},
         ])
 
     def test_withholding_tax_before_payment(self):
@@ -86,7 +86,8 @@ class TestL10nAccountWithholdingTaxesFlows(TestTaxCommon, AnalyticCommon):
         Afterward, register the payment separately.
         """
         invoice_tax = self.percent_tax(15)
-        withholding_tax = self.percent_tax(-1, is_withholding_tax_on_payment=True, withholding_sequence_id=self.withholding_sequence.id)
+        withholding_tax = self.percent_tax(-1, is_withholding_tax_on_payment=True,
+                                           withholding_sequence_id=self.withholding_sequence.id)
 
         invoice = self.env['account.move'].create({
             'move_type': 'out_invoice',
@@ -99,8 +100,8 @@ class TestL10nAccountWithholdingTaxesFlows(TestTaxCommon, AnalyticCommon):
         })
         invoice.action_post()
 
-        payment_register = self.env['account.payment.register']\
-            .with_context(active_model='account.move', active_ids=invoice.ids)\
+        payment_register = self.env['account.payment.register'] \
+            .with_context(active_model='account.move', active_ids=invoice.ids) \
             .create({})
         with Form(payment_register) as payment_register_form:
             payment_register_form.should_withhold_tax = True
@@ -145,8 +146,8 @@ class TestL10nAccountWithholdingTaxesFlows(TestTaxCommon, AnalyticCommon):
         ])
 
         # We then register payment a second time, only for the actual payment.
-        payment_register = self.env['account.payment.register']\
-            .with_context(active_model='account.move', active_ids=invoice.ids)\
+        payment_register = self.env['account.payment.register'] \
+            .with_context(active_model='account.move', active_ids=invoice.ids) \
             .create({})
         self.assertRecordValues(payment_register, [{
             'amount': 1140.0,
@@ -195,8 +196,8 @@ class TestL10nAccountWithholdingTaxesFlows(TestTaxCommon, AnalyticCommon):
             'amount_total': 2300.0,
         }])
 
-        payment_register = self.env['account.payment.register']\
-            .with_context(active_model='account.move', active_ids=invoice.ids)\
+        payment_register = self.env['account.payment.register'] \
+            .with_context(active_model='account.move', active_ids=invoice.ids) \
             .create({})
         self.assertRecordValues(payment_register, [{
             'amount': 2300.0,
@@ -255,17 +256,17 @@ class TestL10nAccountWithholdingTaxesFlows(TestTaxCommon, AnalyticCommon):
         }])
         # The manual line amount is not updated from a currency change; this is a current limitation
         self.assertRecordValues(payment_register.withholding_line_ids, [{
-                'original_base_amount': 1000.0,
-                'original_tax_amount': 10.0,
-                'base_amount': 500.0,
-                'amount': 5.0,
-            },
+            'original_base_amount': 1000.0,
+            'original_tax_amount': 10.0,
+            'base_amount': 500.0,
+            'amount': 5.0,
+        },
             {
                 'original_base_amount': 500.0,
                 'original_tax_amount': 10.0,
                 'base_amount': 500.0,
                 'amount': 10.0,
-        }])
+            }])
 
         with Form(payment_register) as payment_register_form:
             payment_register_form.currency_id = foreign_curr
@@ -278,33 +279,33 @@ class TestL10nAccountWithholdingTaxesFlows(TestTaxCommon, AnalyticCommon):
             'source_amount_currency': 2300.0,
         }])
         self.assertRecordValues(payment_register.withholding_line_ids, [{
-                'original_base_amount': 2000.0,
-                'original_tax_amount': 20.0,
-                'base_amount': 200.0,
-                'amount': 2.0,
-            },
+            'original_base_amount': 2000.0,
+            'original_tax_amount': 20.0,
+            'base_amount': 200.0,
+            'amount': 2.0,
+        },
             {
                 'original_base_amount': 500.0,
                 'original_tax_amount': 10.0,
                 'base_amount': 500.0,
                 'amount': 10.0,
-        }])
+            }])
 
         with Form(payment_register) as payment_register_form:
             with payment_register_form.withholding_line_ids.edit(0) as line:
                 line.base_amount = 150.0
         self.assertRecordValues(payment_register.withholding_line_ids, [{
-                'original_base_amount': 2000.0,
-                'original_tax_amount': 20.0,
-                'base_amount': 150.0,
-                'amount': 1.5,
-            },
+            'original_base_amount': 2000.0,
+            'original_tax_amount': 20.0,
+            'base_amount': 150.0,
+            'amount': 1.5,
+        },
             {
                 'original_base_amount': 500.0,
                 'original_tax_amount': 10.0,
                 'base_amount': 500.0,
                 'amount': 10.0,
-        }])
+            }])
 
         with Form(payment_register) as payment_register_form:
             with payment_register_form.withholding_line_ids.edit(0) as line:
@@ -314,17 +315,17 @@ class TestL10nAccountWithholdingTaxesFlows(TestTaxCommon, AnalyticCommon):
             'withholding_net_amount': 218.0,
         }])
         self.assertRecordValues(payment_register.withholding_line_ids, [{
-                'original_base_amount': 2000.0,
-                'original_tax_amount': 20.0,
-                'base_amount': 150.0,
-                'amount': 2.0,
-            },
+            'original_base_amount': 2000.0,
+            'original_tax_amount': 20.0,
+            'base_amount': 150.0,
+            'amount': 2.0,
+        },
             {
                 'original_base_amount': 500.0,
                 'original_tax_amount': 10.0,
                 'base_amount': 500.0,
                 'amount': 10.0,
-        }])
+            }])
 
         payment = payment_register._create_payments()
         self.assertRecordValues(payment, [{
@@ -332,17 +333,17 @@ class TestL10nAccountWithholdingTaxesFlows(TestTaxCommon, AnalyticCommon):
         }])
         self.assertRecordValues(payment.move_id.line_ids, [
             # Liquidity line:
-            {'balance': 109.0,      'currency_id': foreign_curr.id,     'amount_currency': 218.0},
+            {'balance': 109.0, 'currency_id': foreign_curr.id, 'amount_currency': 218.0},
             # Receivable line:
-            {'balance': -115.0,     'currency_id': foreign_curr.id,     'amount_currency': -230.0},
+            {'balance': -115.0, 'currency_id': foreign_curr.id, 'amount_currency': -230.0},
             # withholding line:
-            {'balance': 1.0,        'currency_id': foreign_curr.id,     'amount_currency': 2.0},
-            {'balance': 5.0,        'currency_id': foreign_curr.id,     'amount_currency': 10.0},
+            {'balance': 1.0, 'currency_id': foreign_curr.id, 'amount_currency': 2.0},
+            {'balance': 5.0, 'currency_id': foreign_curr.id, 'amount_currency': 10.0},
             # base lines:
-            {'balance': 75.0,       'currency_id': foreign_curr.id,     'amount_currency': 150.0},
-            {'balance': -75.0,      'currency_id': foreign_curr.id,     'amount_currency': -150.0},
-            {'balance': 250.0,       'currency_id': foreign_curr.id,     'amount_currency': 500.0},
-            {'balance': -250.0,      'currency_id': foreign_curr.id,     'amount_currency': -500.0},
+            {'balance': 75.0, 'currency_id': foreign_curr.id, 'amount_currency': 150.0},
+            {'balance': -75.0, 'currency_id': foreign_curr.id, 'amount_currency': -150.0},
+            {'balance': 250.0, 'currency_id': foreign_curr.id, 'amount_currency': 500.0},
+            {'balance': -250.0, 'currency_id': foreign_curr.id, 'amount_currency': -500.0},
         ])
 
     def test_withholding_tax_default_tax_on_product(self):
@@ -350,7 +351,8 @@ class TestL10nAccountWithholdingTaxesFlows(TestTaxCommon, AnalyticCommon):
         Simply test that an invoice having a product with a default withholding tax will cause
         that tax to appear on a default line in the wizard.
         """
-        self.product_b.taxes_id = self.percent_tax(-1, is_withholding_tax_on_payment=True, withholding_sequence_id=self.withholding_sequence.id)
+        self.product_b.taxes_id = self.percent_tax(-1, is_withholding_tax_on_payment=True,
+                                                   withholding_sequence_id=self.withholding_sequence.id)
 
         invoice = self.env['account.move'].create({
             'move_type': 'out_invoice',
@@ -367,8 +369,8 @@ class TestL10nAccountWithholdingTaxesFlows(TestTaxCommon, AnalyticCommon):
         })
         invoice.action_post()
 
-        payment_register = self.env['account.payment.register']\
-            .with_context(active_model='account.move', active_ids=invoice.ids)\
+        payment_register = self.env['account.payment.register'] \
+            .with_context(active_model='account.move', active_ids=invoice.ids) \
             .create({})
         self.assertRecordValues(payment_register, [{
             'amount': 600.0,
@@ -382,7 +384,8 @@ class TestL10nAccountWithholdingTaxesFlows(TestTaxCommon, AnalyticCommon):
     def test_withholding_not_payment_account_on_method_line(self):
         """ Test that when no payment account is set on the payment method line, the one from the wizard is used. """
         invoice_tax = self.percent_tax(15)
-        withholding_tax = self.percent_tax(-1, is_withholding_tax_on_payment=True, withholding_sequence_id=self.withholding_sequence.id)
+        withholding_tax = self.percent_tax(-1, is_withholding_tax_on_payment=True,
+                                           withholding_sequence_id=self.withholding_sequence.id)
         self.company_data['default_journal_bank'].inbound_payment_method_line_ids.payment_account_id = False
 
         invoice = self.env['account.move'].create({
@@ -396,8 +399,8 @@ class TestL10nAccountWithholdingTaxesFlows(TestTaxCommon, AnalyticCommon):
         })
         invoice.action_post()
 
-        payment_register = self.env['account.payment.register']\
-            .with_context(active_model='account.move', active_ids=invoice.ids)\
+        payment_register = self.env['account.payment.register'] \
+            .with_context(active_model='account.move', active_ids=invoice.ids) \
             .create({})
         with Form(payment_register) as payment_register_form:
             payment_register_form.should_withhold_tax = True
@@ -413,14 +416,14 @@ class TestL10nAccountWithholdingTaxesFlows(TestTaxCommon, AnalyticCommon):
 
         self.assertRecordValues(payment.move_id.line_ids, [
             # Liquidity line:
-            {'balance': 1140.0,     'account_id': outstanding.id},
+            {'balance': 1140.0, 'account_id': outstanding.id},
             # Receivable line:
-            {'balance': -1150.0,    'account_id': receivable.id},
+            {'balance': -1150.0, 'account_id': receivable.id},
             # withholding line:
-            {'balance': 10.0,       'account_id': withholding_account.id},
+            {'balance': 10.0, 'account_id': withholding_account.id},
             # base lines:
-            {'balance': 1000.0,     'account_id': withholding_account.id},
-            {'balance': -1000.0,    'account_id': withholding_account.id},
+            {'balance': 1000.0, 'account_id': withholding_account.id},
+            {'balance': -1000.0, 'account_id': withholding_account.id},
         ])
 
     def test_withholding_tax_grids(self):
@@ -481,8 +484,8 @@ class TestL10nAccountWithholdingTaxesFlows(TestTaxCommon, AnalyticCommon):
         })
         invoice.action_post()
 
-        payment_register = self.env['account.payment.register']\
-            .with_context(active_model='account.move', active_ids=invoice.ids)\
+        payment_register = self.env['account.payment.register'] \
+            .with_context(active_model='account.move', active_ids=invoice.ids) \
             .create({})
         with Form(payment_register) as payment_register_form:
             payment_register_form.should_withhold_tax = True
@@ -496,17 +499,17 @@ class TestL10nAccountWithholdingTaxesFlows(TestTaxCommon, AnalyticCommon):
         payment = payment_register._create_payments()
         self.assertRecordValues(payment.move_id.line_ids, [
             # Liquidity line:
-            {'balance': 1120.0,     'tax_tag_ids': []},
+            {'balance': 1120.0, 'tax_tag_ids': []},
             # Receivable line:
-            {'balance': -1150.0,    'tax_tag_ids': []},
+            {'balance': -1150.0, 'tax_tag_ids': []},
             # withholding line:
-            {'balance': 10.0,       'tax_tag_ids': tax_tag_1.ids},
-            {'balance': 20.0,       'tax_tag_ids': tax_tag_2.ids},
+            {'balance': 10.0, 'tax_tag_ids': tax_tag_1.ids},
+            {'balance': 20.0, 'tax_tag_ids': tax_tag_2.ids},
             # base lines:
-            {'balance': 1000.0,     'tax_tag_ids': base_tag_1.ids},
-            {'balance': -1000.0,    'tax_tag_ids': []},
-            {'balance': 1000.0,     'tax_tag_ids': base_tag_2.ids},
-            {'balance': -1000.0,    'tax_tag_ids': []},
+            {'balance': 1000.0, 'tax_tag_ids': base_tag_1.ids},
+            {'balance': -1000.0, 'tax_tag_ids': []},
+            {'balance': 1000.0, 'tax_tag_ids': base_tag_2.ids},
+            {'balance': -1000.0, 'tax_tag_ids': []},
         ])
 
     # We need the date to be fixed for the EPD part; to the date of the invoice.
@@ -531,8 +534,8 @@ class TestL10nAccountWithholdingTaxesFlows(TestTaxCommon, AnalyticCommon):
         })
         invoice.action_post()
 
-        payment_register = self.env['account.payment.register']\
-            .with_context(active_model='account.move', active_ids=invoice.ids)\
+        payment_register = self.env['account.payment.register'] \
+            .with_context(active_model='account.move', active_ids=invoice.ids) \
             .create({})
         self.assertRecordValues(payment_register, [{
             'amount': 300.0,
@@ -586,8 +589,8 @@ class TestL10nAccountWithholdingTaxesFlows(TestTaxCommon, AnalyticCommon):
         invoice.action_post()
 
         # We then open the wizard, and expect a single withholding line (There is only one tax!)
-        payment_register = self.env['account.payment.register']\
-            .with_context(active_model='account.move', active_ids=invoice.ids)\
+        payment_register = self.env['account.payment.register'] \
+            .with_context(active_model='account.move', active_ids=invoice.ids) \
             .create({})
         self.assertRecordValues(payment_register, [{
             'amount': 200.0,
@@ -639,8 +642,8 @@ class TestL10nAccountWithholdingTaxesFlows(TestTaxCommon, AnalyticCommon):
         })
         invoice.action_post()
 
-        payment_register = self.env['account.payment.register']\
-            .with_context(active_model='account.move', active_ids=invoice.ids)\
+        payment_register = self.env['account.payment.register'] \
+            .with_context(active_model='account.move', active_ids=invoice.ids) \
             .create({})
         self.assertRecordValues(payment_register, [{
             'amount': 200.0,
@@ -660,21 +663,21 @@ class TestL10nAccountWithholdingTaxesFlows(TestTaxCommon, AnalyticCommon):
         payment = payment_register._create_payments()
         self.assertRecordValues(payment.move_id.line_ids, [
             # Liquidity line:
-            {'balance': 198.0,    'analytic_distribution': False},
+            {'balance': 198.0, 'analytic_distribution': False},
             # Receivable line:
-            {'balance': -200.0,   'analytic_distribution': False},
+            {'balance': -200.0, 'analytic_distribution': False},
             # withholding lines:
-            {'balance': 2.0,      'analytic_distribution': {
+            {'balance': 2.0, 'analytic_distribution': {
                 str(self.analytic_account_3.id): 50,
                 str(self.analytic_account_4.id): 50,
             }},
             # base line:
-            {'balance': 200.0,    'analytic_distribution': {
+            {'balance': 200.0, 'analytic_distribution': {
                 str(self.analytic_account_3.id): 50,
                 str(self.analytic_account_4.id): 50,
             }},
             # Counterpart:
-            {'balance': -200.0,   'analytic_distribution': False},
+            {'balance': -200.0, 'analytic_distribution': False},
         ])
 
     def test_withholding_analytic_distribution_two_invoice_line(self):
@@ -698,20 +701,20 @@ class TestL10nAccountWithholdingTaxesFlows(TestTaxCommon, AnalyticCommon):
                     self.analytic_account_4.id: 50.0,
                 }
             }),
-            Command.create({
-                'product_id': self.product_b.id,
-                'tax_ids': withholding_tax.ids,
-                'analytic_distribution': {
-                    self.analytic_account_3.id: 25.0,
-                    self.analytic_account_4.id: 75.0,
-                }
-            })
+                Command.create({
+                    'product_id': self.product_b.id,
+                    'tax_ids': withholding_tax.ids,
+                    'analytic_distribution': {
+                        self.analytic_account_3.id: 25.0,
+                        self.analytic_account_4.id: 75.0,
+                    }
+                })
             ],
         })
         invoice.action_post()
 
-        payment_register = self.env['account.payment.register']\
-            .with_context(active_model='account.move', active_ids=invoice.ids)\
+        payment_register = self.env['account.payment.register'] \
+            .with_context(active_model='account.move', active_ids=invoice.ids) \
             .create({})
         self.assertRecordValues(payment_register, [{
             'amount': 400.0,
@@ -739,29 +742,29 @@ class TestL10nAccountWithholdingTaxesFlows(TestTaxCommon, AnalyticCommon):
         payment = payment_register._create_payments()
         self.assertRecordValues(payment.move_id.line_ids, [
             # Liquidity line:
-            {'balance': 396.0,    'analytic_distribution': False},
+            {'balance': 396.0, 'analytic_distribution': False},
             # Receivable line:
-            {'balance': -400.0,   'analytic_distribution': False},
+            {'balance': -400.0, 'analytic_distribution': False},
             # withholding lines:
-            {'balance': 2.0,      'analytic_distribution': {
+            {'balance': 2.0, 'analytic_distribution': {
                 str(self.analytic_account_3.id): 50.0,
                 str(self.analytic_account_4.id): 50.0,
             }},
-            {'balance': 2.0,      'analytic_distribution': {
+            {'balance': 2.0, 'analytic_distribution': {
                 str(self.analytic_account_3.id): 25.0,
                 str(self.analytic_account_4.id): 75.0,
             }},
             # base line:
-            {'balance': 200.0,    'analytic_distribution': {
+            {'balance': 200.0, 'analytic_distribution': {
                 str(self.analytic_account_3.id): 50.0,
                 str(self.analytic_account_4.id): 50.0,
             }},
-            {'balance': -200.0,   'analytic_distribution': False},
-            {'balance': 200.0,    'analytic_distribution': {
+            {'balance': -200.0, 'analytic_distribution': False},
+            {'balance': 200.0, 'analytic_distribution': {
                 str(self.analytic_account_3.id): 25.0,
                 str(self.analytic_account_4.id): 75.0,
             }},
-            {'balance': -200.0,   'analytic_distribution': False},
+            {'balance': -200.0, 'analytic_distribution': False},
         ])
 
     def test_outstanding_account_marked_as_reconcilable(self):
@@ -782,8 +785,8 @@ class TestL10nAccountWithholdingTaxesFlows(TestTaxCommon, AnalyticCommon):
         })
         invoice.action_post()
 
-        payment_register = self.env['account.payment.register']\
-            .with_context(active_model='account.move', active_ids=invoice.ids)\
+        payment_register = self.env['account.payment.register'] \
+            .with_context(active_model='account.move', active_ids=invoice.ids) \
             .create({'withholding_outstanding_account_id': self.outstanding_account.id})
         payment_register._create_payments()
         self.assertRecordValues(self.outstanding_account, [{'reconcile': True}])
@@ -792,7 +795,8 @@ class TestL10nAccountWithholdingTaxesFlows(TestTaxCommon, AnalyticCommon):
     def test_payment_synchronize_to_moves(self):
         """ Test that the payment and the journal entry behind it are synchronized as expected when the payment record is updated. """
         invoice_tax = self.percent_tax(15)
-        withholding_tax = self.percent_tax(-1, is_withholding_tax_on_payment=True, withholding_sequence_id=self.withholding_sequence.id)
+        withholding_tax = self.percent_tax(-1, is_withholding_tax_on_payment=True,
+                                           withholding_sequence_id=self.withholding_sequence.id)
 
         invoice = self.env['account.move'].create({
             'move_type': 'out_invoice',
@@ -805,8 +809,8 @@ class TestL10nAccountWithholdingTaxesFlows(TestTaxCommon, AnalyticCommon):
         })
         invoice.action_post()
 
-        payment_register = self.env['account.payment.register']\
-            .with_context(active_model='account.move', active_ids=invoice.ids)\
+        payment_register = self.env['account.payment.register'] \
+            .with_context(active_model='account.move', active_ids=invoice.ids) \
             .create({})
         with Form(payment_register) as payment_register_form:
             payment_register_form.should_withhold_tax = True
@@ -817,14 +821,14 @@ class TestL10nAccountWithholdingTaxesFlows(TestTaxCommon, AnalyticCommon):
         payment = payment_register._create_payments()
         self.assertRecordValues(payment.move_id.line_ids, [
             # Liquidity line:
-            {'name': 'Manual Payment: INV/2024/00001',          'balance': 1140.0},
+            {'name': 'Manual Payment: INV/2024/00001', 'balance': 1140.0},
             # Receivable line:
-            {'name': 'Manual Payment: INV/2024/00001',          'balance': -1150.0},
+            {'name': 'Manual Payment: INV/2024/00001', 'balance': -1150.0},
             # withholding line:
-            {'name': 'WH Tax: 0001',                 'balance': 10.0},
+            {'name': 'WH Tax: 0001', 'balance': 10.0},
             # base lines:
-            {'name': 'WH Base: 0001',                'balance': 1000.0},
-            {'name': 'WH Base Counterpart: 0001',    'balance': -1000.0},
+            {'name': 'WH Base: 0001', 'balance': 1000.0},
+            {'name': 'WH Base Counterpart: 0001', 'balance': -1000.0},
         ])
 
         payment.action_draft()
@@ -838,19 +842,20 @@ class TestL10nAccountWithholdingTaxesFlows(TestTaxCommon, AnalyticCommon):
         }])
         self.assertRecordValues(payment.move_id.line_ids, [
             # Liquidity line:
-            {'name': 'Manual Payment: INV/2024/00001',      'balance': 1145.0},
+            {'name': 'Manual Payment: INV/2024/00001', 'balance': 1145.0},
             # Receivable line:
-            {'name': 'Manual Payment: INV/2024/00001',      'balance': -1150.0},
+            {'name': 'Manual Payment: INV/2024/00001', 'balance': -1150.0},
             # withholding line:
-            {'name': 'WH Tax: 0005',                        'balance': 5.0},
+            {'name': 'WH Tax: 0005', 'balance': 5.0},
             # base lines:
-            {'name': 'WH Base: 0005',                       'balance': 500.0},
-            {'name': 'WH Base Counterpart: 0005',           'balance': -500.0},
+            {'name': 'WH Base: 0005', 'balance': 500.0},
+            {'name': 'WH Base Counterpart: 0005', 'balance': -500.0},
         ])
 
     def test_display_withholding(self):
         """ Simple test that checks if display_withholding is set or not depending on the state of the database. """
-        available_withholding_taxes = self.percent_tax(-1, is_withholding_tax_on_payment=True, withholding_sequence_id=self.withholding_sequence.id)
+        available_withholding_taxes = self.percent_tax(-1, is_withholding_tax_on_payment=True,
+                                                       withholding_sequence_id=self.withholding_sequence.id)
         payment = self.env['account.payment'].create({
             'amount': 50.0,
             'payment_type': 'inbound',
@@ -867,7 +872,8 @@ class TestL10nAccountWithholdingTaxesFlows(TestTaxCommon, AnalyticCommon):
 
     def test_withholding_line_base_amount(self):
         """ Test that a withholding line base amount cannot be less than or equal to 0 """
-        self.product_a.taxes_id = self.percent_tax(-1, is_withholding_tax_on_payment=True, withholding_sequence_id=self.withholding_sequence.id)
+        self.product_a.taxes_id = self.percent_tax(-1, is_withholding_tax_on_payment=True,
+                                                   withholding_sequence_id=self.withholding_sequence.id)
 
         invoice = self.env['account.move'].create({
             'move_type': 'out_invoice',
@@ -910,15 +916,15 @@ class TestL10nAccountWithholdingTaxesFlows(TestTaxCommon, AnalyticCommon):
         })
         invoice.action_post()
 
-        payment_register = self.env['account.payment.register']\
-            .with_context(active_model='account.move', active_ids=invoice.ids)\
+        payment_register = self.env['account.payment.register'] \
+            .with_context(active_model='account.move', active_ids=invoice.ids) \
             .create({'withholding_outstanding_account_id': self.outstanding_account.id})
         payment_register._create_payments()
 
         invoice.mapped('line_ids').remove_move_reconcile()
 
-        payment_register = self.env['account.payment.register']\
-            .with_context(active_model='account.move', active_ids=invoice.ids)\
+        payment_register = self.env['account.payment.register'] \
+            .with_context(active_model='account.move', active_ids=invoice.ids) \
             .create({})
         self.assertRecordValues(payment_register, [{
             'withholding_outstanding_account_id': self.outstanding_account.id,
@@ -926,7 +932,8 @@ class TestL10nAccountWithholdingTaxesFlows(TestTaxCommon, AnalyticCommon):
 
     def test_cannot_register_negative_payment(self):
         """ Test that you cannot register a payment where the withholding amount is higher than the payment amount. """
-        withholding_tax = self.percent_tax(-1, is_withholding_tax_on_payment=True, withholding_sequence_id=self.withholding_sequence.id)
+        withholding_tax = self.percent_tax(-1, is_withholding_tax_on_payment=True,
+                                           withholding_sequence_id=self.withholding_sequence.id)
 
         invoice = self.env['account.move'].create({
             'move_type': 'out_invoice',
@@ -939,8 +946,8 @@ class TestL10nAccountWithholdingTaxesFlows(TestTaxCommon, AnalyticCommon):
         })
         invoice.action_post()
 
-        payment_register = self.env['account.payment.register']\
-            .with_context(active_model='account.move', active_ids=invoice.ids)\
+        payment_register = self.env['account.payment.register'] \
+            .with_context(active_model='account.move', active_ids=invoice.ids) \
             .create({})
         with Form(payment_register) as payment_register_form:
             with payment_register_form.withholding_line_ids.new() as line:
@@ -1010,7 +1017,8 @@ class TestL10nAccountWithholdingTaxesFlows(TestTaxCommon, AnalyticCommon):
 
     def test_manual_adjustments(self):
         """ Ensure that when manually adjusting the base or tax amount of a line, the manually set amount is saved. """
-        withholding_tax = self.percent_tax(-2, is_withholding_tax_on_payment=True, withholding_sequence_id=self.withholding_sequence.id)
+        withholding_tax = self.percent_tax(-2, is_withholding_tax_on_payment=True,
+                                           withholding_sequence_id=self.withholding_sequence.id)
 
         invoice = self.env['account.move'].create({
             'move_type': 'out_invoice',

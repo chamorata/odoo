@@ -9,11 +9,11 @@
             <setting id="click_and_collect_setting" position="inside">
                 <div class="mt8">
                     <button
-                        string="Configure Pickup Locations"
-                        name="action_view_in_store_delivery_methods"
-                        type="object"
-                        class="btn-link"
-                        icon="oi-arrow-right"
+                            string="Configure Pickup Locations"
+                            name="action_view_in_store_delivery_methods"
+                            type="object"
+                            class="btn-link"
+                            icon="oi-arrow-right"
                     />
                 </div>
             </setting>

@@ -2,16 +2,14 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import werkzeug.urls
-
+from odoo.addons.portal.controllers.portal import CustomerPortal
+from odoo.addons.website_google_map.controllers.main import GoogleMap
+from odoo.addons.website_partner.controllers.main import WebsitePartnerPage
 from werkzeug.exceptions import NotFound
 
 from odoo import fields
 from odoo import http
 from odoo.http import request
-from odoo.addons.portal.controllers.portal import CustomerPortal
-from odoo.addons.website_google_map.controllers.main import GoogleMap
-from odoo.addons.website_partner.controllers.main import WebsitePartnerPage
-
 from odoo.tools.translate import _
 
 
@@ -101,7 +99,8 @@ class WebsiteAccount(CustomerPortal):
             'all': {'label': _('Active'), 'domain': []},
             'no_activities': {
                 'label': _('No Activities'),
-                'domain': [('activity_ids', 'not any', [('user_id', '=', request.env.user.id)]), ('stage_id.is_won', '=', False)]
+                'domain': [('activity_ids', 'not any', [('user_id', '=', request.env.user.id)]),
+                           ('stage_id.is_won', '=', False)]
             },
             'overdue': {'label': _('Late Activities'), 'domain': [('activity_date_deadline', '<', today)]},
             'today': {'label': _('Today Activities'), 'domain': [('activity_date_deadline', '=', today)]},
@@ -158,13 +157,15 @@ class WebsiteAccount(CustomerPortal):
         })
         return request.render("website_crm_partner_assign.portal_my_opportunities", values)
 
-    @http.route(['''/my/lead/<model('crm.lead', "[('type','=', 'lead')]"):lead>'''], type='http', auth="user", website=True)
+    @http.route(['''/my/lead/<model('crm.lead', "[('type','=', 'lead')]"):lead>'''], type='http', auth="user",
+                website=True)
     def portal_my_lead(self, lead, **kw):
         if lead.type != 'lead':
             raise NotFound()
         return request.render("website_crm_partner_assign.portal_my_lead", {'lead': lead})
 
-    @http.route(['''/my/opportunity/<model('crm.lead', "[('type','=', 'opportunity')]"):opp>'''], type='http', auth="user", website=True)
+    @http.route(['''/my/opportunity/<model('crm.lead', "[('type','=', 'opportunity')]"):opp>'''], type='http',
+                auth="user", website=True)
     def portal_my_opportunity(self, opp, **kw):
         if opp.type != 'opportunity':
             raise NotFound()
@@ -172,11 +173,13 @@ class WebsiteAccount(CustomerPortal):
         return request.render(
             "website_crm_partner_assign.portal_my_opportunity", {
                 'opportunity': opp,
-                'user_activity': opp.sudo().activity_ids.filtered(lambda activity: activity.user_id == request.env.user)[:1],
+                'user_activity': opp.sudo().activity_ids.filtered(
+                    lambda activity: activity.user_id == request.env.user)[:1],
                 'stages': request.env['crm.stage'].search([
                     ('is_won', '!=', True), '|', ('team_id', '=', False), ('team_id', '=', opp.team_id.id)
                 ], order='sequence desc, name desc, id desc'),
-                'activity_types': request.env['mail.activity.type'].sudo().search(['|', ('res_model', '=', opp._name), ('res_model', '=', False)]),
+                'activity_types': request.env['mail.activity.type'].sudo().search(
+                    ['|', ('res_model', '=', opp._name), ('res_model', '=', False)]),
                 'states': request.env['res.country.state'].sudo().search([]),
                 'countries': request.env['res.country'].sudo().search([]),
             })
@@ -246,7 +249,8 @@ class WebsiteCrmPartnerAssign(WebsitePartnerPage, GoogleMap):
         country_obj = request.env['res.country']
         search = post.get('search', '')
 
-        base_partner_domain = [('is_company', '=', True), ('grade_id', '!=', False), ('website_published', '=', True), ('grade_id.active', '=', True)]
+        base_partner_domain = [('is_company', '=', True), ('grade_id', '!=', False), ('website_published', '=', True),
+                               ('grade_id.active', '=', True)]
         if not request.env.user.has_group('website.group_website_restricted_editor'):
             base_partner_domain += [('grade_id.website_published', '=', True)]
         if search:
@@ -293,7 +297,8 @@ class WebsiteCrmPartnerAssign(WebsitePartnerPage, GoogleMap):
         countries_partners = partner_obj.sudo().search_count(country_domain)
         # flag active country
         for country_dict in countries:
-            country_dict['active'] = country and country_dict['country_id'] and country_dict['country_id'][0] == country.id
+            country_dict['active'] = country and country_dict['country_id'] and country_dict['country_id'][
+                0] == country.id
         countries.insert(0, {
             'country_id_count': countries_partners,
             'country_id': (0, _("All Countries")),
@@ -349,7 +354,6 @@ class WebsiteCrmPartnerAssign(WebsitePartnerPage, GoogleMap):
             'fallback_all_countries': fallback_all_countries,
         }
         return request.render("website_crm_partner_assign.index", values, status=partners and 200 or 404)
-
 
     # Do not use semantic controller due to sudo()
     @http.route()

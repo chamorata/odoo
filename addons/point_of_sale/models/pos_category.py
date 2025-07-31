@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from typing import List, Tuple
 import random
+from typing import List
 
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError, UserError
@@ -36,7 +36,8 @@ class PosCategory(models.Model):
     @api.model
     def _load_pos_data_domain(self, data):
         config_id = self.env['pos.config'].browse(data['pos.config']['data'][0]['id'])
-        domain = [('id', 'in', config_id._get_available_categories().ids)] if config_id.limit_categories and config_id.iface_available_categ_ids else []
+        domain = [('id', 'in',
+                   config_id._get_available_categories().ids)] if config_id.limit_categories and config_id.iface_available_categ_ids else []
         return domain
 
     @api.model

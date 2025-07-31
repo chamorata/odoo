@@ -4,6 +4,7 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
+
 class EventEvent(models.Model):
     _name = "event.event"
     _inherit = "event.event"

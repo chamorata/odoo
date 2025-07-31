@@ -25,6 +25,7 @@ def remove_signature(content, target=None):
         with suppress(Exception):
             return removal_strategy(content)
 
+
 # --------------------------------------------------------------------------------
 # UTILS
 # --------------------------------------------------------------------------------
@@ -42,6 +43,7 @@ def bit_array_to_byte(val):
     for i in range(max_idx, -1, -1):
         value += val[i] << max_idx - i
     return value
+
 
 # --------------------------------------------------------------------------------
 # OPENSSL
@@ -62,7 +64,8 @@ def remove_signature_openssl(content):
 
     # Prevent using the library if it had import errors
     if not ssl_crypto:
-        _logger.warning("Error reading the content, check if the OpenSSL library is installed for for PKCS#7 envelope extraction.")
+        _logger.warning(
+            "Error reading the content, check if the OpenSSL library is installed for for PKCS#7 envelope extraction.")
         return None
 
     # Load some tools from the library
@@ -86,6 +89,7 @@ def remove_signature_openssl(content):
 
     # Get the content as a byte-string
     return ssl_crypto._bio_to_string(out_buffer)
+
 
 # --------------------------------------------------------------------------------
 # FALLBACK REMOVE SIGNATURE (ASN1 parse)
@@ -121,6 +125,7 @@ def remove_signature_fallback(content):
     if not data_found:
         raise Exception("ASN1 Content not found")
     return result
+
 
 # --------------------------------------------------------------------------------
 # ASN1 DATA
@@ -158,6 +163,7 @@ universal_tags = {
     29: 'CharacterString',
     30: 'BMPString',
 }
+
 
 # --------------------------------------------------------------------------------
 # NODES (ASN1 parse)
@@ -221,6 +227,7 @@ class OctetStringNode(PrimitiveNode):
 
 class ObjectIdentifierNode(PrimitiveNode):
     """ Asn1 Object Identifier, i.e. 1.3.6.1.5.5.7.48.1 """
+
     @Asn1Node.content.setter
     def content(self, content):
         # Run through the content's bytes
@@ -241,6 +248,7 @@ class ObjectIdentifierNode(PrimitiveNode):
                 calc = 0
 
         self._content = result
+
 
 # --------------------------------------------------------------------------------
 # READER (ASN1 parse)
@@ -304,10 +312,10 @@ class Reader:
 
             # Clear the stack of all finished nodes
             while (
-                self.last_open_node
-                and not self.last_open_node.finalized
-                and self.last_open_node.length != '?'
-                and self.last_open_node.start_offset + self.last_open_node.total_length() <= self.offset
+                    self.last_open_node
+                    and not self.last_open_node.finalized
+                    and self.last_open_node.length != '?'
+                    and self.last_open_node.start_offset + self.last_open_node.total_length() <= self.offset
             ):
                 yield self.finalize_last_open_node()
 

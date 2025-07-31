@@ -21,34 +21,46 @@ WITHHOLDING_TYPE_SELECTION = [
 
 WITHHOLDING_REASON_SELECTION = [
     ('A', '[A] Autonomous work in the fields of art or profession'),
-    ('B', '[B] Income from the use of intellectual properties or patents or processes, formulas and informations in the fields of science, commerce or science'),
+    ('B',
+     '[B] Income from the use of intellectual properties or patents or processes, formulas and informations in the fields of science, commerce or science'),
     ('C', '[C] Income from work as part of association groups or other cooperation determined by contracts'),
     ('D', '[D] Income as partner or founder of a corporation'),
     ('E', '[E] Income from client-related bill protests made by town secretaries'),
     ('G', '[G] Compensation for the end of a professional sport career'),
-    ('H', '[H] Compensation for the end of a societary career (excluded those earned before 31.12.2003) and already taxed'),
+    ('H',
+     '[H] Compensation for the end of a societary career (excluded those earned before 31.12.2003) and already taxed'),
     ('I', '[I] Compensation for the end of a notary career'),
     ('K', '[K] Civil service checks, ref art. 16 D.lgs. n.40 6/03/2017'),
-    ('L', '[L] Income from the use of intellectual properties or patents or processes, formulas and informations in the fields of science, commerce or science, but not made by the author/inventor'),
-    ('L1', '[L1] Income from the use of intellectual properties or patents or processes, formulas and informations in the fields of science, commerce or science, from someone who actively bought the use rights'),
-    ('M', '[M] Autonomous work which isn\'t part of usual professional/artistic duties, or incomes due for an obligation to act, not to act, or to allow'),
+    ('L',
+     '[L] Income from the use of intellectual properties or patents or processes, formulas and informations in the fields of science, commerce or science, but not made by the author/inventor'),
+    ('L1',
+     '[L1] Income from the use of intellectual properties or patents or processes, formulas and informations in the fields of science, commerce or science, from someone who actively bought the use rights'),
+    ('M',
+     '[M] Autonomous work which isn\'t part of usual professional/artistic duties, or incomes due for an obligation to act, not to act, or to allow'),
     ('M1', '[M1] Incomes due for an obligation to act, not to act, or to allow'),
-    ('M2', '[M2] Autonomous work which isn\'t part of usual professional/artistic duties, or incomes due for an obligation to act, not to act, or to allow - that require being registered to the "Gestione separata"'),
+    ('M2',
+     '[M2] Autonomous work which isn\'t part of usual professional/artistic duties, or incomes due for an obligation to act, not to act, or to allow - that require being registered to the "Gestione separata"'),
     ('N', '[N] Compensation for travel, expenses, prizes, or other compensations for amateur sport activities'),
-    ('O', '[O] Autonomous work which isn\'t part of usual professional/artistic duties, or incomes due for an obligation to act, not to act, or to allow - that do not require being registered to the "Gestione separata"'),
-    ('O1', '[O1] Incomes due for an obligation to act, not to act, or to allow - that do not require being registered to the "Gestione Separata"'),
-    ('P', '[P] Compensation for people residing abroad for continuous use or concession of industrial machinery, commercial or scientific tools that are on the Italian soil'),
+    ('O',
+     '[O] Autonomous work which isn\'t part of usual professional/artistic duties, or incomes due for an obligation to act, not to act, or to allow - that do not require being registered to the "Gestione separata"'),
+    ('O1',
+     '[O1] Incomes due for an obligation to act, not to act, or to allow - that do not require being registered to the "Gestione Separata"'),
+    ('P',
+     '[P] Compensation for people residing abroad for continuous use or concession of industrial machinery, commercial or scientific tools that are on the Italian soil'),
     ('Q', '[Q] Provisions for exclusive agents or sales representatives\' work'),
     ('R', '[R] Provisions for non-exclusive agents or sales representatives\' work'),
     ('S', '[S] Provisions for commissioner work'),
     ('T', '[T] Provisions for mediator work'),
     ('U', '[U] Provisions for procurer work'),
     ('V', '[V] Provisions for door-to-door sales persons and newspaper selling in kiosks'),
-    ('V1', '[V1] Income from unusual commercial activities (such as provisions for occasional work or sales representative, mediator, procurer)'),
+    ('V1',
+     '[V1] Income from unusual commercial activities (such as provisions for occasional work or sales representative, mediator, procurer)'),
     ('V2', '[V2] Income from unusual work activities from door-to-door sales representatives'),
     ('W', '[W] Income from 2015 tinders subject to law art. 25-ter D.P.R. 600/1973'),
-    ('X', '[X] Income from 2014 for foreign companies or institutions subject to law art. 26-quater, c. 1, lett. a) and b) D.P.R. 600/1973'),
-    ('Y', '[Y] Income from 1.01.2005 to 26.07.2005 from companies or institutions not included in the description above'),
+    ('X',
+     '[X] Income from 2014 for foreign companies or institutions subject to law art. 26-quater, c. 1, lett. a) and b) D.P.R. 600/1973'),
+    ('Y',
+     '[Y] Income from 1.01.2005 to 26.07.2005 from companies or institutions not included in the description above'),
     ('Z', '[Z] Deprecated'),
     ('ZO', '[ZO] Other reason'),
 ]
@@ -82,9 +94,12 @@ PENSION_FUND_TYPE_SELECTION = [
 class AccountTax(models.Model):
     _inherit = 'account.tax'
 
-    l10n_it_withholding_type = fields.Selection(WITHHOLDING_TYPE_SELECTION, string="Withholding tax type (Italy)", help="Withholding tax type. Only for Italian accounting EDI.")
-    l10n_it_withholding_reason = fields.Selection(WITHHOLDING_REASON_SELECTION, string="Withholding tax reason (Italy)", help="Withholding tax reason. Only for Italian accounting EDI.")
-    l10n_it_pension_fund_type = fields.Selection(PENSION_FUND_TYPE_SELECTION, string="Pension fund type (Italy)", help="Pension Fund Type. Only for Italian accounting EDI.")
+    l10n_it_withholding_type = fields.Selection(WITHHOLDING_TYPE_SELECTION, string="Withholding tax type (Italy)",
+                                                help="Withholding tax type. Only for Italian accounting EDI.")
+    l10n_it_withholding_reason = fields.Selection(WITHHOLDING_REASON_SELECTION, string="Withholding tax reason (Italy)",
+                                                  help="Withholding tax reason. Only for Italian accounting EDI.")
+    l10n_it_pension_fund_type = fields.Selection(PENSION_FUND_TYPE_SELECTION, string="Pension fund type (Italy)",
+                                                 help="Pension Fund Type. Only for Italian accounting EDI.")
 
     def _l10n_it_get_tax_kind(self):
         return ((self.l10n_it_withholding_type and 'withholding')
@@ -97,8 +112,12 @@ class AccountTax(models.Model):
             if tax.l10n_it_withholding_type and tax.l10n_it_withholding_type != 'RT04' and tax.amount >= 0:
                 raise ValidationError(_("Tax '%s' has a withholding type so the amount must be negative.", tax.name))
             if tax.l10n_it_withholding_type and not tax.l10n_it_withholding_reason:
-                raise ValidationError(_("Tax '%s' has a withholding type, so the withholding reason must also be specified", tax.name))
+                raise ValidationError(
+                    _("Tax '%s' has a withholding type, so the withholding reason must also be specified", tax.name))
             if tax.l10n_it_withholding_reason and not tax.l10n_it_withholding_type:
-                raise ValidationError(_("Tax '%s' has a withholding reason, so the withholding type must also be specified", tax.name))
+                raise ValidationError(
+                    _("Tax '%s' has a withholding reason, so the withholding type must also be specified", tax.name))
             if (tax.l10n_it_withholding_type or tax.l10n_it_withholding_reason) and tax.l10n_it_pension_fund_type:
-                raise ValidationError(_("Tax '%s' cannot be both a Withholding tax and a Pension fund tax. Please create two separate ones.", tax.name))
+                raise ValidationError(
+                    _("Tax '%s' cannot be both a Withholding tax and a Pension fund tax. Please create two separate ones.",
+                      tax.name))

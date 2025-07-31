@@ -84,7 +84,8 @@ class TestOnchangeProductId(TransactionCase):
 
         supplierinfo.write({'min_qty': 24})
         po_line.write({'product_qty': 20})
-        self.assertEqual(0, po_line.price_unit, "Unit price should be reset to 0 since the supplier supplies minimum of 24 quantities")
+        self.assertEqual(0, po_line.price_unit,
+                         "Unit price should be reset to 0 since the supplier supplies minimum of 24 quantities")
 
         po_line.write({'product_qty': 3, 'product_uom': self.ref("uom.product_uom_dozen")})
         self.assertEqual(1200, po_line.price_unit, "Unit price should be 1200 for one Dozen")
@@ -118,10 +119,12 @@ class TestOnchangeProductId(TransactionCase):
         })
 
         po_line2.onchange_product_id()
-        self.assertEqual(100, po_line2.price_unit, "No vendor supplies this product, hence unit price should be set to 100")
+        self.assertEqual(100, po_line2.price_unit,
+                         "No vendor supplies this product, hence unit price should be set to 100")
 
         po_form = Form(po)
         with po_form.order_line.edit(1) as order_line:
             order_line.product_uom = ipad_lot_10
         po_form.save()
-        self.assertEqual(1000, po_line2.price_unit, "The product_uom is multiplied by 10, hence unit price should be set to 1000")
+        self.assertEqual(1000, po_line2.price_unit,
+                         "The product_uom is multiplied by 10, hence unit price should be set to 1000")

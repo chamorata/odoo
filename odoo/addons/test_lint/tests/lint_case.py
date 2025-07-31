@@ -1,6 +1,7 @@
 import ast
 import fnmatch
 import os
+
 j = os.path.join
 
 from odoo.modules import get_modules, get_module_path

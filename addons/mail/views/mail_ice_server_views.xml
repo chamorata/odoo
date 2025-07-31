@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <odoo>
     <record id="action_ice_servers" model="ir.actions.act_window">
-         <field name="name">ICE servers</field>
-         <field name="res_model">mail.ice.server</field>
-         <field name="view_mode">list,form</field>
+        <field name="name">ICE servers</field>
+        <field name="res_model">mail.ice.server</field>
+        <field name="view_mode">list,form</field>
     </record>
 
     <record model="ir.ui.view" id="view_ice_server_tree">
@@ -28,7 +28,8 @@
                     <group>
                         <label for="uri"/>
                         <div class="oe_inline" name="URI" style="display: inline;">
-                            <field name="server_type" class="oe_inline"/><field name="uri" class="oe_inline"/>
+                            <field name="server_type" class="oe_inline"/>
+                            <field name="uri" class="oe_inline"/>
                         </div>
                     </group>
                     <group>

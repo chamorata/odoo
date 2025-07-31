@@ -6,20 +6,21 @@ from socket import gethostbyname
 from unittest.mock import patch
 
 import odoo
+from odoo.addons.test_http.controllers import CT_JSON
+from odoo.addons.test_http.utils import TEST_IP
 from odoo.http import root, content_disposition
 from odoo.tests import tagged
 from odoo.tests.common import HOST, new_test_user, get_db_name, BaseCase
 from odoo.tools import config, file_path, parse_version
-from odoo.addons.test_http.controllers import CT_JSON
-
-from odoo.addons.test_http.utils import TEST_IP
 from .test_common import TestHttpBase
 
 try:
     from importlib import metadata
+
     werkzeug_version = metadata.version('werkzeug')
 except ImportError:
     import werkzeug
+
     werkzeug_version = werkzeug.__version__
 
 
@@ -65,11 +66,13 @@ class TestHttpMisc(TestHttpBase):
         def local_redirect(path):
             fake_req = odoo.tools.misc.DotDict(db=False)
             return odoo.http.Request.redirect(fake_req, path, local=True).headers['Location']
+
         self.assertEqual(local_redirect('https://www.example.com/hello?a=b'), '/hello?a=b')
         self.assertEqual(local_redirect('/hello?a=b'), '/hello?a=b')
         self.assertEqual(local_redirect('hello?a=b'), '/hello?a=b')
         self.assertEqual(local_redirect('www.example.com/hello?a=b'), '/www.example.com/hello?a=b')
-        self.assertEqual(local_redirect('https://www.example.comhttps://www.example2.com/hello?a=b'), '/www.example2.com/hello?a=b')
+        self.assertEqual(local_redirect('https://www.example.comhttps://www.example2.com/hello?a=b'),
+                         '/www.example2.com/hello?a=b')
         self.assertEqual(local_redirect('https://https://www.example.com/hello?a=b'), '/www.example.com/hello?a=b')
 
     def test_misc3_is_static_file(self):
@@ -79,7 +82,8 @@ class TestHttpMisc(TestHttpBase):
         # Valid URLs
         self.assertEqual(root.get_static_file(f'/{uri}'), path, "Valid file")
         self.assertEqual(root.get_static_file(f'odoo.com/{uri}', host='odoo.com'), path, "Valid file with valid host")
-        self.assertEqual(root.get_static_file(f'http://odoo.com/{uri}', host='odoo.com'), path, "Valid file with valid host")
+        self.assertEqual(root.get_static_file(f'http://odoo.com/{uri}', host='odoo.com'), path,
+                         "Valid file with valid host")
 
         # Invalid URLs
         self.assertIsNone(root.get_static_file('/test_http/i-dont-exist'), "File doesn't exist")
@@ -150,15 +154,18 @@ class TestHttpMisc(TestHttpBase):
     def test_misc7_robotstxt(self):
         self.nodb_url_open('/robots.txt').raise_for_status()
 
+
 @tagged('post_install', '-at_install')
 class TestHttpCors(TestHttpBase):
     def test_cors0_http_default(self):
-        res_opt = self.opener.options(f'{self.base_url()}/test_http/cors_http_default', timeout=10, allow_redirects=False)
+        res_opt = self.opener.options(f'{self.base_url()}/test_http/cors_http_default', timeout=10,
+                                      allow_redirects=False)
         self.assertIn(res_opt.status_code, (200, 204))
         self.assertEqual(res_opt.headers.get('Access-Control-Allow-Origin'), '*')
         self.assertEqual(res_opt.headers.get('Access-Control-Allow-Methods'), 'GET, POST')
         self.assertEqual(res_opt.headers.get('Access-Control-Max-Age'), '86400')  # one day
-        self.assertEqual(res_opt.headers.get('Access-Control-Allow-Headers'), 'Origin, X-Requested-With, Content-Type, Accept, Authorization')
+        self.assertEqual(res_opt.headers.get('Access-Control-Allow-Headers'),
+                         'Origin, X-Requested-With, Content-Type, Accept, Authorization')
 
         res_get = self.url_open('/test_http/cors_http_default')
         self.assertEqual(res_get.status_code, 200)
@@ -166,12 +173,14 @@ class TestHttpCors(TestHttpBase):
         self.assertEqual(res_get.headers.get('Access-Control-Allow-Methods'), 'GET, POST')
 
     def test_cors1_http_methods(self):
-        res_opt = self.opener.options(f'{self.base_url()}/test_http/cors_http_methods', timeout=10, allow_redirects=False)
+        res_opt = self.opener.options(f'{self.base_url()}/test_http/cors_http_methods', timeout=10,
+                                      allow_redirects=False)
         self.assertIn(res_opt.status_code, (200, 204))
         self.assertEqual(res_opt.headers.get('Access-Control-Allow-Origin'), '*')
         self.assertEqual(res_opt.headers.get('Access-Control-Allow-Methods'), 'GET, PUT')
         self.assertEqual(res_opt.headers.get('Access-Control-Max-Age'), '86400')  # one day
-        self.assertEqual(res_opt.headers.get('Access-Control-Allow-Headers'), 'Origin, X-Requested-With, Content-Type, Accept, Authorization')
+        self.assertEqual(res_opt.headers.get('Access-Control-Allow-Headers'),
+                         'Origin, X-Requested-With, Content-Type, Accept, Authorization')
 
         res_post = self.url_open('/test_http/cors_http_methods')
         self.assertEqual(res_post.status_code, 200)
@@ -184,7 +193,8 @@ class TestHttpCors(TestHttpBase):
         self.assertEqual(res_opt.headers.get('Access-Control-Allow-Origin'), '*')
         self.assertEqual(res_opt.headers.get('Access-Control-Allow-Methods'), 'POST')
         self.assertEqual(res_opt.headers.get('Access-Control-Max-Age'), '86400')  # one day
-        self.assertEqual(res_opt.headers.get('Access-Control-Allow-Headers'), 'Origin, X-Requested-With, Content-Type, Accept, Authorization')
+        self.assertEqual(res_opt.headers.get('Access-Control-Allow-Headers'),
+                         'Origin, X-Requested-With, Content-Type, Accept, Authorization')
 
         res_post = self.url_open('/test_http/cors_json', data=json.dumps({'params': {}}), headers=CT_JSON)
         self.assertEqual(res_post.status_code, 200)
@@ -295,4 +305,5 @@ class TestContentDisposition(BaseCase):
             ('foo%bar.xls', 'foo%25bar.xls', 'Percent sign'),
         ]
         for filename, pct_encoded, hint in assertions:
-            self.assertEqual(content_disposition(filename), f"attachment; filename*=UTF-8''{pct_encoded}", f'{hint} should be percent encoded')
+            self.assertEqual(content_disposition(filename), f"attachment; filename*=UTF-8''{pct_encoded}",
+                             f'{hint} should be percent encoded')

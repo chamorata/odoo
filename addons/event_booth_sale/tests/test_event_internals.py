@@ -3,8 +3,9 @@
 
 from datetime import datetime, timedelta
 
-from odoo import Command
 from odoo.addons.event_booth_sale.tests.common import TestEventBoothSaleCommon
+
+from odoo import Command
 from odoo.fields import Datetime as FieldsDatetime
 from odoo.tests import Form, users
 

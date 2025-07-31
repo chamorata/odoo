@@ -2,10 +2,11 @@ import json
 from datetime import date
 from unittest.mock import patch
 
+from odoo.addons.web.controllers.export import ExportXlsxWriter
+
 from odoo import http
 from odoo.tests import common, tagged
 from odoo.tools.misc import get_lang
-from odoo.addons.web.controllers.export import ExportXlsxWriter
 
 
 class XlsxCreatorCase(common.HttpCase):
@@ -154,7 +155,8 @@ class TestGroupedExport(XlsxCreatorCase):
             {'int_sum': 1, 'active': True},
         ]
         self.make(values)
-        export = self.export(fields=['int_sum', 'active'], params={'groupby': ['int_sum'], 'domain': [('active', '=', False)]})
+        export = self.export(fields=['int_sum', 'active'],
+                             params={'groupby': ['int_sum'], 'domain': [('active', '=', False)]})
         self.assertExportEqual(
             export,
             [
@@ -198,10 +200,10 @@ class TestGroupedExport(XlsxCreatorCase):
         )
 
     def test_archived_grouped_by_ids_one2many(self):
-        sub_rec_active = self.env['export.aggregator.one2many'].create({ 'name': 'active', 'active': True })
-        sub_rec_non_active = self.env['export.aggregator.one2many'].create({ 'name': 'non active', 'active': False })
+        sub_rec_active = self.env['export.aggregator.one2many'].create({'name': 'active', 'active': True})
+        sub_rec_non_active = self.env['export.aggregator.one2many'].create({'name': 'non active', 'active': False})
         values = [
-            { 'int_sum': 1, 'active': False, 'one2many': [sub_rec_active.id, sub_rec_non_active.id]},
+            {'int_sum': 1, 'active': False, 'one2many': [sub_rec_active.id, sub_rec_non_active.id]},
         ]
         ids = [rec.id for rec in self.make(values)]
         export = self.export(fields=['int_sum', 'active', 'one2many'], params={'groupby': ['int_sum'], 'ids': ids})

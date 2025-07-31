@@ -96,7 +96,8 @@ class MailingContactImport(models.TransientModel):
                 duplicate_count=ignored,
             )
         else:
-            message = _("Contacts successfully imported. Number of contacts imported: %(imported_count)s", imported_count=len(unique_contacts))
+            message = _("Contacts successfully imported. Number of contacts imported: %(imported_count)s",
+                        imported_count=len(unique_contacts))
 
         return {
             'type': 'ir.actions.client',

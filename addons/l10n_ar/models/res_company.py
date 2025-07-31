@@ -2,8 +2,8 @@
 from odoo import fields, models, api, _
 from odoo.exceptions import UserError
 
-class ResCompany(models.Model):
 
+class ResCompany(models.Model):
     _inherit = "res.company"
 
     l10n_ar_gross_income_number = fields.Char(
@@ -14,7 +14,8 @@ class ResCompany(models.Model):
         help="This field is required in order to print the invoice report properly")
     l10n_ar_afip_responsibility_type_id = fields.Many2one(
         domain="[('code', 'in', [1, 4, 6])]", related='partner_id.l10n_ar_afip_responsibility_type_id', readonly=False)
-    l10n_ar_company_requires_vat = fields.Boolean(compute='_compute_l10n_ar_company_requires_vat', string='Company Requires Vat?')
+    l10n_ar_company_requires_vat = fields.Boolean(compute='_compute_l10n_ar_company_requires_vat',
+                                                  string='Company Requires Vat?')
     l10n_ar_afip_start_date = fields.Date('Activities Start')
 
     @api.onchange('country_id')
@@ -38,7 +39,9 @@ class ResCompany(models.Model):
     def write(self, vals):
         if 'l10n_ar_afip_responsibility_type_id' in vals:
             for company in self:
-                if vals['l10n_ar_afip_responsibility_type_id'] != company.l10n_ar_afip_responsibility_type_id.id and company.sudo()._existing_accounting():
-                    raise UserError(_('Could not change the AFIP Responsibility of this company because there are already accounting entries.'))
+                if vals[
+                    'l10n_ar_afip_responsibility_type_id'] != company.l10n_ar_afip_responsibility_type_id.id and company.sudo()._existing_accounting():
+                    raise UserError(
+                        _('Could not change the AFIP Responsibility of this company because there are already accounting entries.'))
 
         return super().write(vals)

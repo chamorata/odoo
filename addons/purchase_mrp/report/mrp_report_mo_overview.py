@@ -3,6 +3,7 @@
 
 from odoo import fields, models
 
+
 class ReportMoOverview(models.AbstractModel):
     _inherit = 'report.mrp.report_mo_overview'
 
@@ -74,7 +75,8 @@ class ReportMoOverview(models.AbstractModel):
 
     def _is_doc_in_done(self, doc_in):
         if doc_in._name == 'purchase.order':
-            return doc_in.state == 'purchase' and all(move.state in ('done', 'cancel') for move in doc_in.order_line.move_ids)
+            return doc_in.state == 'purchase' and all(
+                move.state in ('done', 'cancel') for move in doc_in.order_line.move_ids)
         return super()._is_doc_in_done(doc_in)
 
     def _get_origin(self, move):
@@ -94,6 +96,7 @@ class ReportMoOverview(models.AbstractModel):
                 partner=po.partner_id,
                 rounding_method='round_globally',
             )['total_void']
-            price = po_line.currency_id._convert(price, currency, (move_in.company_id or self.env.company), fields.Date.today())
+            price = po_line.currency_id._convert(price, currency, (move_in.company_id or self.env.company),
+                                                 fields.Date.today())
             return currency.round(price)
         return super()._get_replenishment_mo_cost(product, quantity, uom_id, currency, move_in)

@@ -1,5 +1,5 @@
-import logging
 import json
+import logging
 import time
 from xmlrpc.client import Fault
 
@@ -8,10 +8,10 @@ from passlib.totp import TOTP
 from odoo import http
 from odoo.tests import tagged, get_db_name, new_test_user, HttpCase
 from odoo.tools import mute_logger
-
 from ..controllers.home import Home
 
 _logger = logging.getLogger(__name__)
+
 
 class TestTOTPMixin:
     @classmethod
@@ -23,6 +23,7 @@ class TestTOTPMixin:
 
     def install_totphook(self):
         totp = None
+
         # might be possible to do client-side using `crypto.subtle` instead of
         # this horror show, but requires working on 64b integers, & BigInt is
         # significantly less well supported than crypto
@@ -37,11 +38,13 @@ class TestTOTPMixin:
                 # "burned" so we can't generate the same, but tour is so fast
                 # we're pretty certainly within the same 30s
                 return totp.generate(time.time() + 30).token
+
         # because not preprocessed by ControllerType metaclass
         totp_hook.routing_type = 'json'
         self.env.registry.clear_cache('routing')
         # patch Home to add test endpoint
         Home.totp_hook = http.route('/totphook', type='json', auth='none')(totp_hook)
+
         # remove endpoint and destroy routing map
         @self.addCleanup
         def _cleanup():
@@ -93,7 +96,6 @@ class TestTOTP(TestTOTPMixin, HttpCase):
             'res.users', 'read', [uid, ['login']]
         )
         self.assertEqual(r['login'], 'test_user')
-
 
     def test_totp_administration(self):
         self.start_tour('/web', 'totp_tour_setup', login='test_user')

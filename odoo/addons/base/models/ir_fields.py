@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import json
 import functools
 import itertools
+import json
 from typing import NamedTuple
 
 import psycopg2
@@ -16,10 +16,15 @@ from odoo.tools.translate import _, code_translations, LazyTranslate
 _lt = LazyTranslate(__name__)
 
 REFERENCING_FIELDS = {None, 'id', '.id'}
+
+
 def only_ref_fields(record):
     return {k: v for k, v in record.items() if k in REFERENCING_FIELDS}
+
+
 def exclude_ref_fields(record):
     return {k: v for k, v in record.items() if k not in REFERENCING_FIELDS}
+
 
 # these lazy translations promise translations for ['yes', 'no', 'true', 'false']
 BOOLEAN_TRANSLATIONS = (
@@ -39,8 +44,10 @@ class ImportWarning(Warning):
     """ Used to send warnings upwards the stack during the import process """
     pass
 
+
 class ConversionNotFound(ValueError):
     pass
+
 
 class IrFieldsConverter(models.AbstractModel):
     _name = 'ir.fields.converter'
@@ -226,7 +233,8 @@ class IrFieldsConverter(models.AbstractModel):
         warnings = []
         for property_dict in value:
             if not (property_dict.keys() >= {'name', 'type', 'string'}):
-                msg = _("'%(value)s' does not seem to be a valid Property value for field '%%(field)s'. Each property need at least 'name', 'type' and 'string' attribute.")
+                msg = _(
+                    "'%(value)s' does not seem to be a valid Property value for field '%%(field)s'. Each property need at least 'name', 'type' and 'string' attribute.")
                 raise self._format_import_error(ValueError, msg, {'value': property_dict})
 
             val = property_dict.get('value')
@@ -243,8 +251,10 @@ class IrFieldsConverter(models.AbstractModel):
                     if val in (sel_val, sel_label)
                 ), None)
                 if not new_val:
-                    msg = _("'%(value)s' does not seem to be a valid Selection value for '%(label_property)s' (subfield of '%%(field)s' field).")
-                    raise self._format_import_error(ValueError, msg, {'value': val, 'label_property': property_dict['string']})
+                    msg = _(
+                        "'%(value)s' does not seem to be a valid Selection value for '%(label_property)s' (subfield of '%%(field)s' field).")
+                    raise self._format_import_error(ValueError, msg,
+                                                    {'value': val, 'label_property': property_dict['string']})
                 property_dict['value'] = new_val
 
             elif property_type == 'tags':
@@ -256,8 +266,10 @@ class IrFieldsConverter(models.AbstractModel):
                         if tag in (tag_val, tag_label)
                     ), None)
                     if not val_tag:
-                        msg = _("'%(value)s' does not seem to be a valid Tag value for '%(label_property)s' (subfield of '%%(field)s' field).")
-                        raise self._format_import_error(ValueError, msg, {'value': tag, 'label_property': property_dict['string']})
+                        msg = _(
+                            "'%(value)s' does not seem to be a valid Tag value for '%(label_property)s' (subfield of '%%(field)s' field).")
+                        raise self._format_import_error(ValueError, msg,
+                                                        {'value': tag, 'label_property': property_dict['string']})
                     new_val.append(val_tag)
                 property_dict['value'] = new_val
 
@@ -266,8 +278,10 @@ class IrFieldsConverter(models.AbstractModel):
                 if not warnings:
                     property_dict['value'] = new_val
                 else:
-                    msg = _("Unknown value '%(value)s' for boolean '%(label_property)s' property (subfield of '%%(field)s' field).")
-                    raise self._format_import_error(ValueError, msg, {'value': val, 'label_property': property_dict['string']})
+                    msg = _(
+                        "Unknown value '%(value)s' for boolean '%(label_property)s' property (subfield of '%%(field)s' field).")
+                    raise self._format_import_error(ValueError, msg,
+                                                    {'value': val, 'label_property': property_dict['string']})
 
             elif property_type in ('many2one', 'many2many'):
                 [record] = property_dict['value']
@@ -292,15 +306,19 @@ class IrFieldsConverter(models.AbstractModel):
                 try:
                     property_dict['value'] = int(val)
                 except ValueError:
-                    msg = _("'%(value)s' does not seem to be an integer for field '%(label_property)s' property (subfield of '%%(field)s' field).")
-                    raise self._format_import_error(ValueError, msg, {'value': val, 'label_property': property_dict['string']})
+                    msg = _(
+                        "'%(value)s' does not seem to be an integer for field '%(label_property)s' property (subfield of '%%(field)s' field).")
+                    raise self._format_import_error(ValueError, msg,
+                                                    {'value': val, 'label_property': property_dict['string']})
 
             elif property_type == 'float':
                 try:
                     property_dict['value'] = float(val)
                 except ValueError:
-                    msg = _("'%(value)s' does not seem to be an float for field '%(label_property)s' property (subfield of '%%(field)s' field).")
-                    raise self._format_import_error(ValueError, msg, {'value': val, 'label_property': property_dict['string']})
+                    msg = _(
+                        "'%(value)s' does not seem to be an float for field '%(label_property)s' property (subfield of '%%(field)s' field).")
+                    raise self._format_import_error(ValueError, msg,
+                                                    {'value': val, 'label_property': property_dict['string']})
 
         return value, warnings
 
@@ -309,7 +327,7 @@ class IrFieldsConverter(models.AbstractModel):
         # all translatables used for booleans
         # potentially broken casefolding? What about locales?
         trues = set(word.lower() for word in itertools.chain(
-            [u'1', u"true", u"yes"], # don't use potentially translated values
+            [u'1', u"true", u"yes"],  # don't use potentially translated values
             self._get_boolean_translations(u"true"),
             self._get_boolean_translations(u"yes"),
         ))
@@ -410,7 +428,7 @@ class IrFieldsConverter(models.AbstractModel):
                 {'moreinfo': _(u"Use the format '%s'", u"2012-12-31 23:59:59")}
             )
 
-        input_tz = self._input_tz()# Apply input tz to the parsed naive datetime
+        input_tz = self._input_tz()  # Apply input tz to the parsed naive datetime
         dt = input_tz.localize(parsed_value, is_dst=False)
         # And convert to UTC before reformatting for writing
         return fields.Datetime.to_string(dt.astimezone(pytz.UTC)), []
@@ -572,7 +590,9 @@ class IrFieldsConverter(models.AbstractModel):
                         with self.env.cr.savepoint():
                             id, _name = RelatedModel.name_create(name=value)
                     except (Exception, psycopg2.IntegrityError):
-                        error_msg = _("Cannot create new '%s' records from their name alone. Please create those records manually and try importing again.", RelatedModel._description)
+                        error_msg = _(
+                            "Cannot create new '%s' records from their name alone. Please create those records manually and try importing again.",
+                            RelatedModel._description)
         else:
             raise self._format_import_error(
                 Exception,
@@ -588,7 +608,8 @@ class IrFieldsConverter(models.AbstractModel):
             skip_record = field_path in self.env.context.get('import_skip_records', [])
         if id is None and not set_empty and not skip_record:
             if error_msg:
-                message = _("No matching record found for %(field_type)s '%(value)s' in field '%%(field)s' and the following error was encountered when we attempted to create one: %(error_message)s")
+                message = _(
+                    "No matching record found for %(field_type)s '%(value)s' in field '%%(field)s' and the following error was encountered when we attempted to create one: %(error_message)s")
             else:
                 message = _("No matching record found for %(field_type)s '%(value)s' in field '%%(field)s'")
 
@@ -710,7 +731,7 @@ class IrFieldsConverter(models.AbstractModel):
             warnings.extend(ws)
             # transform [{subfield:ref1,ref2,ref3}] into
             # [{subfield:ref1},{subfield:ref2},{subfield:ref3}]
-            records = ({subfield:item} for item in record[subfield].split(','))
+            records = ({subfield: item} for item in record[subfield].split(','))
 
         def log(f, exception):
             if not isinstance(exception, Warning):

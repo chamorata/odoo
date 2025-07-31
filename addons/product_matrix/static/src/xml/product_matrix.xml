@@ -28,14 +28,14 @@
                                 <t t-call="product_matrix.extra_price"/>
                             </div>
                         </th>
-                        <td t-else="" 
+                        <td t-else=""
                             class="o_matrix_input_td text-end"
                             t-attf-class="{{cell_last?'o_matrix_pe':''}}">
                             <div t-if="cell.is_possible_combination" class="input-group">
-                                <input  type="number"
-                                        class="o_input o_field_number o_matrix_input border-0 text-end"
-                                        t-att="{'ptav_ids': cell.ptav_ids,'value': cell.qty}"
-                                        onClick="this.select();"/>
+                                <input type="number"
+                                       class="o_input o_field_number o_matrix_input border-0 text-end"
+                                       t-att="{'ptav_ids': cell.ptav_ids,'value': cell.qty}"
+                                       onClick="this.select();"/>
                             </div>
                             <span t-else=""
                                   class="text-muted overflow-auto">
@@ -50,7 +50,7 @@
     <span t-name="product_matrix.extra_price"
           t-if="cell.price"
           class="badge rounded-pill text-bg-secondary"
-         >
+    >
         <!--
             price_extra is displayed as catalog price instead of
             price after pricelist because it is impossible to

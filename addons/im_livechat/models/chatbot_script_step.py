@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from collections import defaultdict
+
+from markupsafe import Markup
+from odoo.addons.mail.tools.discuss import Store
+
 from odoo import _, api, models, fields
 from odoo.exceptions import ValidationError
 from odoo.fields import Command
 from odoo.osv import expression
 from odoo.tools import html2plaintext, is_html_empty, email_normalize, plaintext2html
-from odoo.addons.mail.tools.discuss import Store
-
-from collections import defaultdict
-from markupsafe import Markup
 
 
 class ChatbotScriptStep(models.Model):
@@ -47,7 +48,7 @@ class ChatbotScriptStep(models.Model):
     def _compute_triggering_answer_ids(self):
         for step in self.filtered('triggering_answer_ids'):
             update_command = [Command.unlink(answer.id) for answer in step.triggering_answer_ids
-                                if answer.script_step_id.sequence >= step.sequence]
+                              if answer.script_step_id.sequence >= step.sequence]
             if update_command:
                 step.triggering_answer_ids = update_command
 
@@ -262,7 +263,7 @@ class ChatbotScriptStep(models.Model):
         # if it's not a question and if there is no next step, then we end the script
         # sudo: chatbot.script.answser - visitor can access their own answers
         if self.step_type != "question_selection" and not self._fetch_next_step(
-            discuss_channel.sudo().chatbot_message_ids.user_script_answer_id
+                discuss_channel.sudo().chatbot_message_ids.user_script_answer_id
         ):
             return True
 
@@ -343,7 +344,8 @@ class ChatbotScriptStep(models.Model):
         if human_operator and human_operator != self.env.user:
             if self.message:
                 # first post the message of the step (if we have one)
-                posted_message = discuss_channel._chatbot_post_message(self.chatbot_script_id, plaintext2html(self.message))
+                posted_message = discuss_channel._chatbot_post_message(self.chatbot_script_id,
+                                                                       plaintext2html(self.message))
 
             # next, add the human_operator to the channel and post a "Operator joined the channel" notification
             discuss_channel.sudo()._add_members(
@@ -361,7 +363,7 @@ class ChatbotScriptStep(models.Model):
                 # sudo - chatbot.message.id: visitor can access chat bot messages.
                 m.mail_message_id for m in discuss_channel.sudo().chatbot_message_ids
                 if m.script_step_id == self
-                and m.mail_message_id.author_id == self.chatbot_script_id.operator_partner_id
+                   and m.mail_message_id.author_id == self.chatbot_script_id.operator_partner_id
             ), self.env["mail.message"])
             discuss_channel._bus_send_store(
                 Store(

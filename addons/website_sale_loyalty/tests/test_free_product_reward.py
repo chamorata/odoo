@@ -1,11 +1,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import Command, http
-from odoo.tests import tagged
-
-from odoo.addons.base.tests.common import HttpCaseWithUserDemo
 from odoo.addons.website.tools import MockRequest
 from odoo.addons.website_sale_loyalty.controllers.main import WebsiteSale
+
+from odoo import Command, http
+from odoo.addons.base.tests.common import HttpCaseWithUserDemo
+from odoo.tests import tagged
 
 
 @tagged('post_install', '-at_install')
@@ -73,8 +73,10 @@ class TestFreeProductReward(HttpCaseWithUserDemo):
             self.WebsiteSaleController.claim_reward(self.program.reward_ids[0].id)
             self.WebsiteSaleController.cart_update_json(self.carpet.id, set_qty=1)
             sofa_line = order.order_line.filtered(lambda line: line.product_id.id == self.sofa.id)
-            carpet_reward_line = order.order_line.filtered(lambda line: line.product_id.id == self.carpet.id and line.is_reward_line)
-            carpet_line = order.order_line.filtered(lambda line: line.product_id.id == self.carpet.id and not line.is_reward_line)
+            carpet_reward_line = order.order_line.filtered(
+                lambda line: line.product_id.id == self.carpet.id and line.is_reward_line)
+            carpet_line = order.order_line.filtered(
+                lambda line: line.product_id.id == self.carpet.id and not line.is_reward_line)
             self.assertEqual(sofa_line.product_uom_qty, 1, "Should have only 1 qty of Sofa")
             self.assertEqual(carpet_reward_line.product_uom_qty, 1, "Should have only 1 qty for the carpet as reward")
             self.assertEqual(carpet_line.product_uom_qty, 1, "Should have only 1 qty for carpet as non reward")

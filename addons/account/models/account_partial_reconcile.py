@@ -3,8 +3,6 @@ from odoo import api, fields, models, _, Command
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import frozendict
 
-from datetime import date
-
 
 class AccountPartialReconcile(models.Model):
     _name = "account.partial.reconcile"
@@ -60,7 +58,8 @@ class AccountPartialReconcile(models.Model):
         string="Max Date of Matched Lines", store=True,
         precompute=True,
         compute='_compute_max_date')
-        # used to determine at which date this reconciliation needs to be shown on the aged receivable/payable reports
+
+    # used to determine at which date this reconciliation needs to be shown on the aged receivable/payable reports
 
     # -------------------------------------------------------------------------
     # CONSTRAINT METHODS
@@ -147,7 +146,8 @@ class AccountPartialReconcile(models.Model):
         to_update = []
         for partial in self:
             matched_payments = (partial.credit_move_id | partial.debit_move_id).move_id.matched_payment_ids
-            to_check_payments = matched_payments.filtered(lambda payment: not payment.outstanding_account_id and payment.state == from_state)
+            to_check_payments = matched_payments.filtered(
+                lambda payment: not payment.outstanding_account_id and payment.state == from_state)
             for payment in to_check_payments:
                 if payment.payment_type == 'inbound':
                     amount = partial.debit_amount_currency
@@ -264,7 +264,8 @@ class AccountPartialReconcile(models.Model):
                     source_line = partial.credit_move_id
                     counterpart_line = partial.debit_move_id
 
-                if partial.debit_move_id.move_id.is_invoice(include_receipts=True) and partial.credit_move_id.move_id.is_invoice(include_receipts=True):
+                if partial.debit_move_id.move_id.is_invoice(
+                        include_receipts=True) and partial.credit_move_id.move_id.is_invoice(include_receipts=True):
                     # Will match when reconciling a refund with an invoice.
                     # In this case, we want to use the rate of each businness document to compute its cash basis entry,
                     # not the rate of what it's reconciled with.
@@ -385,7 +386,8 @@ class AccountPartialReconcile(models.Model):
                                 account.move.line.
         '''
         tax_ids = tax_line.tax_ids.filtered(lambda x: x.tax_exigibility == 'on_payment')
-        base_tags = tax_ids.get_tax_tags(tax_line.tax_repartition_line_id.filtered(lambda rl: rl.document_type == 'refund').tax_id, 'base')
+        base_tags = tax_ids.get_tax_tags(
+            tax_line.tax_repartition_line_id.filtered(lambda rl: rl.document_type == 'refund').tax_id, 'base')
         product_tags = tax_line.tax_tag_ids.filtered(lambda x: x.applicability == 'products')
         all_tags = base_tags + tax_line.tax_repartition_line_id.tag_ids + product_tags
 
@@ -434,7 +436,7 @@ class AccountPartialReconcile(models.Model):
         :param base_line_vals:  The values to create a new account.move.line record.
         :return:                The grouping key as a tuple.
         '''
-        tax_ids = base_line_vals['tax_ids'][0][2] # Decode [(6, 0, [...])] command
+        tax_ids = base_line_vals['tax_ids'][0][2]  # Decode [(6, 0, [...])] command
         base_taxes = self.env['account.tax'].browse(tax_ids)
         return (
             base_line_vals['currency_id'],
@@ -455,7 +457,8 @@ class AccountPartialReconcile(models.Model):
             base_line.currency_id.id,
             base_line.partner_id.id,
             (account or base_line.account_id).id,
-            tuple(base_line.tax_ids.flatten_taxes_hierarchy().filtered(lambda x: x.tax_exigibility == 'on_payment').ids),
+            tuple(
+                base_line.tax_ids.flatten_taxes_hierarchy().filtered(lambda x: x.tax_exigibility == 'on_payment').ids),
             frozendict(base_line.analytic_distribution or {}),
         )
 
@@ -465,7 +468,7 @@ class AccountPartialReconcile(models.Model):
         :param tax_line_vals:   The values to create a new account.move.line record.
         :return:                The grouping key as a tuple.
         '''
-        tax_ids = tax_line_vals['tax_ids'][0][2] # Decode [(6, 0, [...])] command
+        tax_ids = tax_line_vals['tax_ids'][0][2]  # Decode [(6, 0, [...])] command
         base_taxes = self.env['account.tax'].browse(tax_ids)
         return (
             tax_line_vals['currency_id'],
@@ -625,12 +628,12 @@ class AccountPartialReconcile(models.Model):
 
                 moves_to_create.append(move_vals)
 
-        moves = self.env['account.move']\
+        moves = self.env['account.move'] \
             .with_context(
-                skip_invoice_sync=True,
-                skip_invoice_line_sync=True,
-                skip_account_move_synchronization=True,
-            )\
+            skip_invoice_sync=True,
+            skip_invoice_line_sync=True,
+            skip_account_move_synchronization=True,
+        ) \
             .create(moves_to_create)
         moves._post(soft=False)
 

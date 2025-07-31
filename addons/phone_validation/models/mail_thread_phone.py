@@ -41,11 +41,13 @@ class PhoneMixin(models.AbstractModel):
         search="_search_phone_sanitized_blacklisted", groups="base.group_user",
         help="If the sanitized phone number is on the blacklist, the contact won't receive mass mailing sms anymore, from any list")
     phone_blacklisted = fields.Boolean(
-        string='Blacklisted Phone is Phone', compute="_compute_blacklisted", compute_sudo=True, store=False, groups="base.group_user",
+        string='Blacklisted Phone is Phone', compute="_compute_blacklisted", compute_sudo=True, store=False,
+        groups="base.group_user",
         help="Indicates if a blacklisted sanitized phone number is a phone number. Helps distinguish which number is blacklisted \
             when there is both a mobile and phone field in a model.")
     mobile_blacklisted = fields.Boolean(
-        string='Blacklisted Phone Is Mobile', compute="_compute_blacklisted", compute_sudo=True, store=False, groups="base.group_user",
+        string='Blacklisted Phone Is Mobile', compute="_compute_blacklisted", compute_sudo=True, store=False,
+        groups="base.group_user",
         help="Indicates if a blacklisted sanitized phone number is a mobile number. Helps distinguish which number is blacklisted \
             when there is both a mobile and phone field in a model.")
     phone_mobile_search = fields.Char("Phone/Mobile", store=False, search='_search_phone_mobile_search')
@@ -173,9 +175,11 @@ class PhoneMixin(models.AbstractModel):
             # may not be calculated as blacklisted even though it is if both field values exist in a model.
             for number_field in number_fields:
                 if 'mobile' in number_field:
-                    mobile_blacklisted = record.phone_sanitized_blacklisted and record._phone_format(fname=number_field) == record.phone_sanitized
+                    mobile_blacklisted = record.phone_sanitized_blacklisted and record._phone_format(
+                        fname=number_field) == record.phone_sanitized
                 else:
-                    phone_blacklisted = record.phone_sanitized_blacklisted and record._phone_format(fname=number_field) == record.phone_sanitized
+                    phone_blacklisted = record.phone_sanitized_blacklisted and record._phone_format(
+                        fname=number_field) == record.phone_sanitized
             record.mobile_blacklisted = mobile_blacklisted
             record.phone_blacklisted = phone_blacklisted
 
@@ -245,4 +249,5 @@ class PhoneMixin(models.AbstractModel):
                 'target': 'new',
             }
         else:
-            raise AccessError(self.env._("You do not have the access right to unblacklist phone numbers. Please contact your administrator."))
+            raise AccessError(self.env._(
+                "You do not have the access right to unblacklist phone numbers. Please contact your administrator."))

@@ -20,8 +20,10 @@ class EventBooth(models.Model):
     # customer
     partner_id = fields.Many2one('res.partner', string='Renter', tracking=True, copy=False)
     contact_name = fields.Char('Renter Name', compute='_compute_contact_name', readonly=False, store=True, copy=False)
-    contact_email = fields.Char('Renter Email', compute='_compute_contact_email', readonly=False, store=True, copy=False)
-    contact_phone = fields.Char('Renter Phone', compute='_compute_contact_phone', readonly=False, store=True, copy=False)
+    contact_email = fields.Char('Renter Email', compute='_compute_contact_email', readonly=False, store=True,
+                                copy=False)
+    contact_phone = fields.Char('Renter Phone', compute='_compute_contact_phone', readonly=False, store=True,
+                                copy=False)
     # state
     state = fields.Selection(
         [('available', 'Available'), ('unavailable', 'Unavailable')],

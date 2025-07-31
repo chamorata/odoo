@@ -1,5 +1,6 @@
-from odoo import Command
 from odoo.addons.l10n_in.tests.common import L10nInTestInvoicingCommon
+
+from odoo import Command
 from odoo.tests import tagged
 
 
@@ -84,7 +85,8 @@ class TestTdsTcsAlert(L10nInTestInvoicingCommon):
 
         cls.branch_a, cls.branch_b, cls.branch_c = cls.env.company.child_ids
 
-    def create_invoice(self, move_type=None, partner=None, invoice_date=None, amounts=None, taxes=[], company=None, accounts=[], quantities=[]):
+    def create_invoice(self, move_type=None, partner=None, invoice_date=None, amounts=None, taxes=[], company=None,
+                       accounts=[], quantities=[]):
         invoice = self.init_invoice(
             move_type=move_type or 'in_invoice',
             partner=partner,
@@ -106,13 +108,14 @@ class TestTdsTcsAlert(L10nInTestInvoicingCommon):
         return invoice
 
     def tds_wizard_entry(self, move, lines):
-        tds_wizard = self.env['l10n_in.withhold.wizard'].with_context(active_model='account.move', active_ids=move.ids).create({
-                'journal_id': self.env['account.journal'].search([
-                    ('company_id', '=', self.env.company.id),
-                    ('type', '=', 'general')
-                ], limit=1).id,
-                'date': move.invoice_date,
-            })
+        tds_wizard = self.env['l10n_in.withhold.wizard'].with_context(active_model='account.move',
+                                                                      active_ids=move.ids).create({
+            'journal_id': self.env['account.journal'].search([
+                ('company_id', '=', self.env.company.id),
+                ('type', '=', 'general')
+            ], limit=1).id,
+            'date': move.invoice_date,
+        })
         for tax, amount in lines:
             self.env['l10n_in.withhold.wizard.line'].create({
                 'withhold_id': tds_wizard.id,
@@ -122,7 +125,8 @@ class TestTdsTcsAlert(L10nInTestInvoicingCommon):
         tds_wizard.action_create_and_post_withhold()
 
     def reverse_move(self, move, date):
-        move_reversal = self.env['account.move.reversal'].with_context(active_model="account.move", active_ids=move.ids).create({
+        move_reversal = self.env['account.move.reversal'].with_context(active_model="account.move",
+                                                                       active_ids=move.ids).create({
             'date': date,
             'reason': 'no reason',
             'journal_id': move.journal_id.id,
@@ -408,7 +412,8 @@ class TestTdsTcsAlert(L10nInTestInvoicingCommon):
             company=self.branch_a,
             accounts=[self.rent_account, self.internet_account, self.purchase_account],
         )
-        self.tds_wizard_entry(move=move_1, lines=[(self.tax_194ib, 100000), (self.tax_194j, 100000), (self.tax_194c, 100000)])
+        self.tds_wizard_entry(move=move_1,
+                              lines=[(self.tax_194ib, 100000), (self.tax_194j, 100000), (self.tax_194c, 100000)])
         move_1.button_draft()
         move_1.action_post()
         self.assertEqual(move_1.l10n_in_tcs_tds_warning, False)
@@ -605,4 +610,5 @@ class TestTdsTcsAlert(L10nInTestInvoicingCommon):
             company=self.branch_a,
         )
 
-        self.assertEqual(move.l10n_in_tcs_tds_warning, "It's advisable to collect TCS u/s 206C(1G) Remittance on this transaction.")
+        self.assertEqual(move.l10n_in_tcs_tds_warning,
+                         "It's advisable to collect TCS u/s 206C(1G) Remittance on this transaction.")

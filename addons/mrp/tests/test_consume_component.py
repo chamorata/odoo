@@ -192,7 +192,8 @@ class TestConsumeComponentCommon(common.TransactionCase):
         sameTracking = True
         for mo in mrp_productions:
             sameTracking = sameTracking and mo.product_tracking == tracking
-        self.assertTrue(sameTracking, "MOs passed to the executeConsumptionTriggers method shall have the same product_tracking")
+        self.assertTrue(sameTracking,
+                        "MOs passed to the executeConsumptionTriggers method shall have the same product_tracking")
 
         isSerial = tracking == 'serial'
         isAvailable = all(move.state == 'assigned' for move in mrp_productions.move_raw_ids)
@@ -210,7 +211,8 @@ class TestConsumeComponentCommon(common.TransactionCase):
                 countOk = length == self.DEFAULT_AVAILABLE_TRIGGERS_COUNT
             else:
                 countOk = length == self.DEFAULT_TRIGGERS_COUNT
-        self.assertTrue(countOk, "The number of MOs passed to the executeConsumptionTriggers method does not match the associated TRIGGERS_COUNT")
+        self.assertTrue(countOk,
+                        "The number of MOs passed to the executeConsumptionTriggers method does not match the associated TRIGGERS_COUNT")
 
         mrp_productions[0].qty_producing = mrp_productions[0].product_qty
         mrp_productions[0]._onchange_producing()
@@ -247,9 +249,9 @@ class TestConsumeComponent(TestConsumeComponentCommon):
 
         all_qty = 2 * self.DEFAULT_AVAILABLE_TRIGGERS_COUNT + self.SERIAL_AVAILABLE_TRIGGERS_COUNT
 
-        quant = self.create_quant(self.raw_none, 3*all_qty)
-        quant |= self.create_quant(self.raw_lot, 2*all_qty)
-        quant |= self.create_quant(self.raw_serial, 1*all_qty)
+        quant = self.create_quant(self.raw_none, 3 * all_qty)
+        quant |= self.create_quant(self.raw_lot, 2 * all_qty)
+        quant |= self.create_quant(self.raw_serial, 1 * all_qty)
         quant.action_apply_inventory()
 
         # Quantities are fully reserved (stock.move state is available)
@@ -319,9 +321,11 @@ class TestConsumeComponent(TestConsumeComponentCommon):
             mo.action_assign()
             for mov in mo.move_raw_ids:
                 if mov.has_tracking == "none":
-                    self.assertEqual(raw_none_qty, mov.quantity, "Reserved quantity shall be equal to " + str(raw_none_qty) + ".")
+                    self.assertEqual(raw_none_qty, mov.quantity,
+                                     "Reserved quantity shall be equal to " + str(raw_none_qty) + ".")
                 else:
-                    self.assertEqual(raw_tracked_qty, mov.quantity, "Reserved quantity shall be equal to " + str(raw_tracked_qty) + ".")
+                    self.assertEqual(raw_tracked_qty, mov.quantity,
+                                     "Reserved quantity shall be equal to " + str(raw_tracked_qty) + ".")
 
             if serialTrigger is None:
                 self.executeConsumptionTriggers(mo)
@@ -336,7 +340,8 @@ class TestConsumeComponent(TestConsumeComponentCommon):
                 if mov.has_tracking == "none":
                     self.assertTrue(mov.picked, "non tracked components should be picked")
                 else:
-                    self.assertEqual(mov.product_qty, mov.quantity, "Done quantity shall be equal to To Consume quantity.")
+                    self.assertEqual(mov.product_qty, mov.quantity,
+                                     "Done quantity shall be equal to To Consume quantity.")
             mo.action_cancel()
 
         testUnit(self.mo_none_tmpl)
@@ -365,9 +370,12 @@ class TestConsumeComponent(TestConsumeComponentCommon):
             'product_id': components[2].id,
             'company_id': self.env.company.id,
         })
-        self.env['stock.quant']._update_available_quantity(components[0], self.env.ref('stock.warehouse0').lot_stock_id, 3)
-        self.env['stock.quant']._update_available_quantity(components[1], self.env.ref('stock.warehouse0').lot_stock_id, 2, lot_id=lot_1)
-        self.env['stock.quant']._update_available_quantity(components[2], self.env.ref('stock.warehouse0').lot_stock_id, 1, lot_id=lot_2)
+        self.env['stock.quant']._update_available_quantity(components[0], self.env.ref('stock.warehouse0').lot_stock_id,
+                                                           3)
+        self.env['stock.quant']._update_available_quantity(components[1], self.env.ref('stock.warehouse0').lot_stock_id,
+                                                           2, lot_id=lot_1)
+        self.env['stock.quant']._update_available_quantity(components[2], self.env.ref('stock.warehouse0').lot_stock_id,
+                                                           1, lot_id=lot_2)
         mo = self.env['mrp.production'].create({
             'product_id': bom.product_id.id,
             'product_qty': 1,
@@ -454,7 +462,8 @@ class TestConsumeComponent(TestConsumeComponentCommon):
             'product_id': compo2.id,
             'raw_material_production_id': mo.id,
             'location_id': self.ref('stock.stock_location_stock'),
-            'location_dest_id': self.env['stock.location'].search([('usage', '=', 'production'), ('company_id', '=', self.env.company.id)]).id,
+            'location_dest_id': self.env['stock.location'].search(
+                [('usage', '=', 'production'), ('company_id', '=', self.env.company.id)]).id,
         })
         move.should_consume_qty = 1
         move.quantity = 1

@@ -1,13 +1,14 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.service.common import exp_version
+import datetime
+
 from odoo import http, _
 from odoo.http import request
 from odoo.osv import expression
+from odoo.service.common import exp_version
 from odoo.tools import float_round, py_to_js_locale, SQL
 from odoo.tools.image import image_data_uri
 
-import datetime
 
 class HrAttendance(http.Controller):
     @staticmethod
@@ -133,7 +134,8 @@ class HrAttendance(http.Controller):
     def scan_barcode(self, token, barcode):
         company = self._get_company(token)
         if company:
-            employee = request.env['hr.employee'].sudo().search([('barcode', '=', barcode), ('company_id', '=', company.id)], limit=1)
+            employee = request.env['hr.employee'].sudo().search(
+                [('barcode', '=', barcode), ('company_id', '=', company.id)], limit=1)
             if employee:
                 employee._attendance_action_change(self._get_geoip_response('kiosk'))
                 return self._get_employee_info_response(employee)
@@ -147,8 +149,10 @@ class HrAttendance(http.Controller):
         company = self._get_company(token)
         if company:
             employee = request.env['hr.employee'].sudo().browse(employee_id)
-            if employee.company_id == company and ((not company.attendance_kiosk_use_pin) or (employee.pin == pin_code)):
-                employee.sudo()._attendance_action_change(self._get_geoip_response('kiosk', latitude=latitude, longitude=longitude))
+            if employee.company_id == company and (
+                    (not company.attendance_kiosk_use_pin) or (employee.pin == pin_code)):
+                employee.sudo()._attendance_action_change(
+                    self._get_geoip_response('kiosk', latitude=latitude, longitude=longitude))
                 return self._get_employee_info_response(employee)
         return {}
 
@@ -158,7 +162,7 @@ class HrAttendance(http.Controller):
         if company:
             domain = expression.AND([domain, [('company_id', '=', company.id)]])
             employees = request.env['hr.employee'].sudo().search_fetch(domain, ['id', 'display_name', 'job_id'],
-                limit=limit, offset=offset, order="name, id")
+                                                                       limit=limit, offset=offset, order="name, id")
             employees_data = [{
                 'id': employee.id,
                 'display_name': employee.display_name,
@@ -172,8 +176,8 @@ class HrAttendance(http.Controller):
     def systray_attendance(self, latitude=False, longitude=False):
         employee = request.env.user.employee_id
         geo_ip_response = self._get_geoip_response(mode='systray',
-                                                  latitude=latitude,
-                                                  longitude=longitude)
+                                                   latitude=latitude,
+                                                   longitude=longitude)
         employee._attendance_action_change(geo_ip_response)
         return self._get_employee_info_response(employee)
 

@@ -1,20 +1,21 @@
 # -*- coding: utf-8 -*-
 
-import babel.dates
 import re
-import werkzeug
-
 from ast import literal_eval
 from collections import Counter
+
+import babel.dates
+import werkzeug
+from odoo.addons.website.controllers.main import QueryURL
 from werkzeug.exceptions import NotFound
 
 from odoo import fields, http, _
-from odoo.addons.website.controllers.main import QueryURL
+from odoo.exceptions import UserError
 from odoo.http import request
 from odoo.osv import expression
-from odoo.tools.misc import get_lang
 from odoo.tools import lazy
-from odoo.exceptions import UserError
+from odoo.tools.misc import get_lang
+
 
 class WebsiteEventController(http.Controller):
 
@@ -40,9 +41,11 @@ class WebsiteEventController(http.Controller):
             'country': post.get('country'),
         }
 
-    @http.route(['/event', '/event/page/<int:page>', '/events', '/events/page/<int:page>'], type='http', auth="public", website=True, sitemap=sitemap_event, readonly=True)
+    @http.route(['/event', '/event/page/<int:page>', '/events', '/events/page/<int:page>'], type='http', auth="public",
+                website=True, sitemap=sitemap_event, readonly=True)
     def events(self, page=1, **searches):
-        if searches.get('tags', '[]').count(',') > 0 and request.httprequest.method == 'GET' and not searches.get('prevent_redirect'):
+        if searches.get('tags', '[]').count(',') > 0 and request.httprequest.method == 'GET' and not searches.get(
+                'prevent_redirect'):
             # Previously, the tags were searched using GET, which caused issues with crawlers (too many hits)
             # We replaced those with POST to avoid that, but it's not sufficient as bots "remember" crawled pages for a while
             # This permanent redirect is placed to instruct the bots that this page is no longer valid
@@ -72,7 +75,8 @@ class WebsiteEventController(http.Controller):
         order = 'is_published desc, ' + order + ', id desc'
         search = searches.get('search')
         event_count, details, fuzzy_search_term = website._search_with_fuzzy("events", search,
-            limit=page * step, order=order, options=options)
+                                                                             limit=page * step, order=order,
+                                                                             options=options)
         event_details = details[0]
         events = event_details.get('results', Event)
         events = events[(page - 1) * step:page * step]
@@ -88,7 +92,7 @@ class WebsiteEventController(http.Controller):
 
         no_country_domain = event_details['no_country_domain']
         countries = Event.read_group(expression.AND(no_country_domain) + domain_search, ["id", "country_id"],
-            groupby="country_id", orderby="country_id")
+                                     groupby="country_id", orderby="country_id")
         countries.insert(0, {
             'country_id_count': sum([int(country['country_id_count']) for country in countries]),
             'country_id': ("all", _("All Countries"))
@@ -115,9 +119,9 @@ class WebsiteEventController(http.Controller):
 
         keep = QueryURL('/event', **{
             key: value for key, value in searches.items() if (
-                key == 'search' or
-                (value != 'upcoming' if key == 'date' else value != 'all'))
-            })
+                    key == 'search' or
+                    (value != 'upcoming' if key == 'date' else value != 'all'))
+        })
 
         searches['search'] = fuzzy_search_term or search
 
@@ -146,7 +150,8 @@ class WebsiteEventController(http.Controller):
     # EVENT PAGE
     # ------------------------------------------------------------
 
-    @http.route(['''/event/<model("event.event"):event>/page/<path:page>'''], type='http', auth="public", website=True, sitemap=False, readonly=True)
+    @http.route(['''/event/<model("event.event"):event>/page/<path:page>'''], type='http', auth="public", website=True,
+                sitemap=False, readonly=True)
     def event_page(self, event, page, **post):
         values = {
             'event': event,
@@ -167,11 +172,13 @@ class WebsiteEventController(http.Controller):
             # page not found
             values['path'] = re.sub(r"^website_event\.", '', page)
             values['from_template'] = 'website_event.default_page'  # .strip('website_event.')
-            page = request.env.user.has_group('website.group_website_designer') and 'website.page_404' or 'http_routing.404'
+            page = request.env.user.has_group(
+                'website.group_website_designer') and 'website.page_404' or 'http_routing.404'
 
         return request.render(page, values)
 
-    @http.route(['''/event/<model("event.event"):event>'''], type='http', auth="public", website=True, sitemap=True, readonly=True)
+    @http.route(['''/event/<model("event.event"):event>'''], type='http', auth="public", website=True, sitemap=True,
+                readonly=True)
     def event(self, event, **post):
         if event.menu_id and event.menu_id.child_id:
             target_url = event.menu_id.child_id[0].url
@@ -181,7 +188,8 @@ class WebsiteEventController(http.Controller):
             target_url += '?enable_editor=1'
         return request.redirect(target_url)
 
-    @http.route(['''/event/<model("event.event"):event>/register'''], type='http', auth="public", website=True, sitemap=False, readonly=True)
+    @http.route(['''/event/<model("event.event"):event>/register'''], type='http', auth="public", website=True,
+                sitemap=False, readonly=True)
     def event_register(self, event, **post):
         values = self._prepare_event_register_values(event, **post)
         return request.render("website_event.event_description_full", values)
@@ -228,7 +236,8 @@ class WebsiteEventController(http.Controller):
             'quantity': count,
         } for tid, count in ticket_order.items() if count]
 
-    @http.route(['/event/<model("event.event"):event>/registration/new'], type='json', auth="public", methods=['POST'], website=True)
+    @http.route(['/event/<model("event.event"):event>/registration/new'], type='json', auth="public", methods=['POST'],
+                website=True)
     def registration_new(self, event, **post):
         tickets = self._process_tickets_form(event, post)
         availability_check = True
@@ -273,8 +282,11 @@ class WebsiteEventController(http.Controller):
             {'1-name': 'r', '1-email': 'r@r.com', '1-phone': '', '1-event_ticket_id': '1'}
         """
         allowed_fields = request.env['event.registration']._get_website_registration_allowed_fields()
-        registration_fields = {key: v for key, v in request.env['event.registration']._fields.items() if key in allowed_fields}
-        for ticket_id in list(filter(lambda x: x is not None, [form_details[field] if 'event_ticket_id' in field else None for field in form_details.keys()])):
+        registration_fields = {key: v for key, v in request.env['event.registration']._fields.items() if
+                               key in allowed_fields}
+        for ticket_id in list(filter(lambda x: x is not None,
+                                     [form_details[field] if 'event_ticket_id' in field else None for field in
+                                      form_details.keys()])):
             if int(ticket_id) not in event.event_ticket_ids.ids and len(event.event_ticket_ids.ids) > 0:
                 raise UserError(_("This ticket is not available for sale for this event"))
         registrations = {}
@@ -316,11 +328,11 @@ class WebsiteEventController(http.Controller):
             if answer_values and not int(registration_index):
                 general_answer_ids.append((0, 0, answer_values))
             elif answer_values:
-                registrations.setdefault(registration_index, dict())\
+                registrations.setdefault(registration_index, dict()) \
                     .setdefault('registration_answer_ids', list()).append((0, 0, answer_values))
 
-            if question_type in ('name', 'email', 'phone', 'company_name')\
-                and question_type not in already_handled_fields_data.get(registration_index, []):
+            if question_type in ('name', 'email', 'phone', 'company_name') \
+                    and question_type not in already_handled_fields_data.get(registration_index, []):
                 if question_type not in registration_fields:
                     continue
 
@@ -355,7 +367,8 @@ class WebsiteEventController(http.Controller):
             if not registration_values.get('partner_id') and visitor_sudo.partner_id:
                 registration_values['partner_id'] = visitor_sudo.partner_id.id
             elif not registration_values.get('partner_id'):
-                registration_values['partner_id'] = False if request.env.user._is_public() else request.env.user.partner_id.id
+                registration_values[
+                    'partner_id'] = False if request.env.user._is_public() else request.env.user.partner_id.id
 
             # update registration based on visitor
             registration_values['visitor_id'] = visitor_sudo.id
@@ -364,7 +377,8 @@ class WebsiteEventController(http.Controller):
 
         return request.env['event.registration'].sudo().create(registrations_to_create)
 
-    @http.route(['''/event/<model("event.event"):event>/registration/confirm'''], type='http', auth="public", methods=['POST'], website=True)
+    @http.route(['''/event/<model("event.event"):event>/registration/confirm'''], type='http', auth="public",
+                methods=['POST'], website=True)
     def registration_confirm(self, event, **post):
         """ Check before creating and finalize the creation of the registrations
             that we have enough seats for all selected tickets.
@@ -375,13 +389,16 @@ class WebsiteEventController(http.Controller):
         registrations_data = self._process_attendees_form(event, post)
         registration_tickets = Counter(registration['event_ticket_id'] for registration in registrations_data)
         event_tickets = request.env['event.event.ticket'].browse(list(registration_tickets.keys()))
-        if any(event_ticket.seats_limited and event_ticket.seats_available < registration_tickets.get(event_ticket.id) for event_ticket in event_tickets):
+        if any(event_ticket.seats_limited and event_ticket.seats_available < registration_tickets.get(event_ticket.id)
+               for event_ticket in event_tickets):
             return request.redirect('/event/%s/register?registration_error_code=insufficient_seats' % event.id)
         attendees_sudo = self._create_attendees_from_registration_post(event, registrations_data)
 
-        return request.redirect(('/event/%s/registration/success?' % event.id) + werkzeug.urls.url_encode({'registration_ids': ",".join([str(id) for id in attendees_sudo.ids])}))
+        return request.redirect(('/event/%s/registration/success?' % event.id) + werkzeug.urls.url_encode(
+            {'registration_ids': ",".join([str(id) for id in attendees_sudo.ids])}))
 
-    @http.route(['/event/<model("event.event"):event>/registration/success'], type='http', auth="public", methods=['GET'], website=True, sitemap=False)
+    @http.route(['/event/<model("event.event"):event>/registration/success'], type='http', auth="public",
+                methods=['GET'], website=True, sitemap=False)
     def event_registration_success(self, event, registration_ids):
         # fetch the related registrations, make sure they belong to the correct visitor / event pair
         visitor = request.env['website.visitor']._get_visitor_from_request()
@@ -393,7 +410,7 @@ class WebsiteEventController(http.Controller):
             ('visitor_id', '=', visitor.id),
         ])
         return request.render("website_event.registration_complete",
-            self._get_registration_confirm_values(event, attendees_sudo))
+                              self._get_registration_confirm_values(event, attendees_sudo))
 
     def _get_registration_confirm_values(self, event, attendees_sudo):
         urls = event._get_event_resource_urls()
@@ -412,7 +429,8 @@ class WebsiteEventController(http.Controller):
         start_date = fields.Datetime.from_string(event.date_begin).date()
         end_date = fields.Datetime.from_string(event.date_end).date()
         month = babel.dates.get_month_names('abbreviated', locale=get_lang(event.env).code)[start_date.month]
-        return ('%s %s%s') % (month, start_date.strftime("%e"), (end_date != start_date and ("-" + end_date.strftime("%e")) or ""))
+        return ('%s %s%s') % (month, start_date.strftime("%e"),
+                              (end_date != start_date and ("-" + end_date.strftime("%e")) or ""))
 
     def _extract_searched_event_tags(self, searches):
         tags = request.env['event.tag']

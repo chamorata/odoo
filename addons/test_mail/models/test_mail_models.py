@@ -32,6 +32,7 @@ class MailTestSimple(models.Model):
         headers['X-Custom'] = 'Done'
         return headers
 
+
 class MailTestSimpleUnnamed(models.Model):
     """ A very simple model only inheriting from mail.thread when only
     communication history is necessary, and has no 'name' field """
@@ -41,6 +42,7 @@ class MailTestSimpleUnnamed(models.Model):
     _rec_name = "description"
 
     description = fields.Char()
+
 
 class MailTestSimpleWithMainAttachment(models.Model):
     _description = 'Simple Chatter Model With Main Attachment Management'
@@ -188,6 +190,7 @@ class MailTestStandard(models.Model):
         if self.track_enable_default_log and not all(change in filtered_fields for change in changes):
             return f'There was a change on {self.name} for fields "{",".join(changes)}"'
         return super()._track_get_default_log_message(changes)
+
 
 class MailTestActivity(models.Model):
     """ This model can be used to test activities in addition to simple chatter
@@ -469,7 +472,8 @@ class MailTestComposerMixin(models.Model):
 
     name = fields.Char('Name')
     author_id = fields.Many2one('res.partner')
-    description = fields.Html('Description', render_engine="qweb", render_options={"post_process": True}, sanitize='email_outgoing')
+    description = fields.Html('Description', render_engine="qweb", render_options={"post_process": True},
+                              sanitize='email_outgoing')
     source_ids = fields.Many2many('mail.test.composer.source', string='Invite source')
 
     def _compute_render_model(self):

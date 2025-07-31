@@ -25,6 +25,8 @@ _ooxml_dirs = {
     'pt/': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
     'xl/': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 }
+
+
 def _check_ooxml(data):
     with io.BytesIO(data) as f, zipfile.ZipFile(f) as z:
         filenames = z.namelist()
@@ -50,6 +52,8 @@ _mime_validator = re.compile(r"""
     (?:\.[\w-]+)* # optional faceted name
     (?:\+[\w-]+)? # optional structured syntax specifier
 """, re.VERBOSE)
+
+
 def _check_open_container_format(data):
     # Open Document Format for Office Applications (OpenDocument) Version 1.2
     #
@@ -74,6 +78,7 @@ def _check_open_container_format(data):
 
         return False
 
+
 _xls_pattern = re.compile(b"""
     \x09\x08\x10\x00\x00\x06\x05\x00
   | \xFD\xFF\xFF\xFF(\x10|\x1F|\x20|"|\\#|\\(|\\))
@@ -84,6 +89,8 @@ _ppt_pattern = re.compile(b"""
   | \xA0\x46\x1D\xF0
   | \xFD\xFF\xFF\xFF(\x0E|\x1C|\x43)\x00\x00\x00
 """, re.VERBOSE)
+
+
 def _check_olecf(data):
     """ Pre-OOXML Office formats are OLE Compound Files which all use the same
     file signature ("magic bytes") and should have a subheader at offset 512
@@ -110,10 +117,12 @@ def _check_svg(data):
     if b'<svg' in data and b'/svg' in data:
         return 'image/svg+xml'
 
+
 def _check_webp(data):
     """This checks the presence of the WEBP and VP8 in the RIFF"""
     if data[8:15] == b'WEBPVP8':
         return 'image/webp'
+
 
 # for "master" formats with many subformats, discriminants is a list of
 # functions, tried in order and the first non-falsy value returned is the
@@ -124,7 +133,9 @@ _mime_mappings = (
     # pdf
     _Entry('application/pdf', [b'%PDF'], []),
     # jpg, jpeg, png, gif, bmp, jfif
-    _Entry('image/jpeg', [b'\xFF\xD8\xFF\xE0', b'\xFF\xD8\xFF\xE2', b'\xFF\xD8\xFF\xE3', b'\xFF\xD8\xFF\xE1', b'\xFF\xD8\xFF\xDB'], []),
+    _Entry('image/jpeg',
+           [b'\xFF\xD8\xFF\xE0', b'\xFF\xD8\xFF\xE2', b'\xFF\xD8\xFF\xE3', b'\xFF\xD8\xFF\xE1', b'\xFF\xD8\xFF\xDB'],
+           []),
     _Entry('image/png', [b'\x89PNG\r\n\x1A\n'], []),
     _Entry('image/gif', [b'GIF87a', b'GIF89a'], []),
     _Entry('image/bmp', [b'BM'], []),
@@ -142,6 +153,8 @@ _mime_mappings = (
     # zip, but will include jar, odt, ods, odp, docx, xlsx, pptx, apk
     _Entry('application/zip', [b'PK\x03\x04'], [_check_ooxml, _check_open_container_format]),
 )
+
+
 def _odoo_guess_mimetype(bin_data, default='application/octet-stream'):
     """ Attempts to guess the mime type of the provided binary data, similar
     to but significantly more limited than libmagic
@@ -192,6 +205,7 @@ if magic:
         ms.load()
         _guesser = ms.buffer
 
+
     def guess_mimetype(bin_data, default=None):
         mimetype = _guesser(bin_data[:1024])
         # upgrade incorrect mimetype to official one, fixed upstream
@@ -211,6 +225,8 @@ def neuter_mimetype(mimetype, user):
 
 
 _extension_pattern = re.compile(r'\w+')
+
+
 def get_extension(filename):
     # A file has no extension if it has no dot (ignoring the leading one
     # of hidden files) or that what follow the last dot is not a single

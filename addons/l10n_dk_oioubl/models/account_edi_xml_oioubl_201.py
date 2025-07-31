@@ -1,5 +1,6 @@
-from odoo import _, models, tools
 from markupsafe import Markup
+
+from odoo import _, models, tools
 from odoo.tools import html2plaintext
 
 DANISH_NATIONAL_IT_AND_TELECOM_AGENCY_ID = '320'
@@ -129,7 +130,8 @@ class AccountEdiXmlOIOUBL201(models.AbstractModel):
             module = self.env['ir.module.module']._get('l10n_dk_oioubl')
             module_url = f"/web#id={module.id}&model={module._name}&view_type=form"
             message = _("The payment method in the generated XML may be incorrect. Please update the following module ")
-            message += Markup("<a href='%s' style='color:#017e84; font-weight: bold;'>(%s)</a>") % (module_url, _("Denmark E-Invoicing"))
+            message += Markup("<a href='%s' style='color:#017e84; font-weight: bold;'>(%s)</a>") % (module_url,
+                                                                                                    _("Denmark E-Invoicing"))
             invoice.message_post(body=message)
         vals['vals'].update({
             'customization_id': 'OIOUBL-2.01',
@@ -267,10 +269,12 @@ class AccountEdiXmlOIOUBL201(models.AbstractModel):
                 # TaxCategory id list: https://www.oioubl.info/codelists/en/urn_oioubl_id_taxcategoryid-1.1.html
                 # The condition prevents the value to be mapped again when the methods is run several time
                 if subtotal_vals['tax_category_vals']['id'] not in TAX_POSSIBLE_VALUES:
-                    subtotal_vals['tax_category_vals']['id'] = UBL_TO_OIOUBL_TAX_CATEGORY_ID_MAPPING.get(subtotal_vals['tax_category_vals']['id'])
+                    subtotal_vals['tax_category_vals']['id'] = UBL_TO_OIOUBL_TAX_CATEGORY_ID_MAPPING.get(
+                        subtotal_vals['tax_category_vals']['id'])
 
                 subtotal_vals['tax_category_vals']['tax_scheme_vals']['name'] = 'VAT'
-                subtotal_vals['tax_category_vals']['tax_scheme_vals']['id_attrs'] = {'schemeID': 'urn:oioubl:id:taxschemeid-1.5'}
+                subtotal_vals['tax_category_vals']['tax_scheme_vals']['id_attrs'] = {
+                    'schemeID': 'urn:oioubl:id:taxschemeid-1.5'}
 
                 # /Invoice[1]/cac:TaxTotal[1]/cac:TaxSubtotal[1]/cac:TaxCategory[1]
                 # [W-LIB230] Name should only be used within NES profiles
@@ -280,9 +284,11 @@ class AccountEdiXmlOIOUBL201(models.AbstractModel):
 
         return vals_list
 
-    def _get_invoice_monetary_total_vals(self, invoice, taxes_vals, line_extension_amount, allowance_total_amount, charge_total_amount):
+    def _get_invoice_monetary_total_vals(self, invoice, taxes_vals, line_extension_amount, allowance_total_amount,
+                                         charge_total_amount):
         # EXTENDS account.edi.xml.ubl_20
-        vals = super()._get_invoice_monetary_total_vals(invoice, taxes_vals, line_extension_amount, allowance_total_amount, charge_total_amount)
+        vals = super()._get_invoice_monetary_total_vals(invoice, taxes_vals, line_extension_amount,
+                                                        allowance_total_amount, charge_total_amount)
         # In OIOUBL context, tax_exclusive_amount means "tax only"
         vals['tax_exclusive_amount'] = taxes_vals['tax_amount_currency']
         if invoice.currency_id.is_zero(vals['prepaid_amount']):
@@ -307,7 +313,8 @@ class AccountEdiXmlOIOUBL201(models.AbstractModel):
                     'end_date': line.date_maturity,
                 }
             }
-            for line in invoice.line_ids.filtered(lambda line: line.display_type == 'payment_term').sorted('date_maturity')
+            for line in
+            invoice.line_ids.filtered(lambda line: line.display_type == 'payment_term').sorted('date_maturity')
         ]
 
     def _get_tax_category_list(self, customer, supplier, taxes):
@@ -349,11 +356,12 @@ class AccountEdiXmlOIOUBL201(models.AbstractModel):
             building_number = tools.street_split(partner.street).get('street_number')
             if not building_number:
                 constraints[f"oioubl201_{partner_type}_building_number_required"] = \
-                        _("The following partner's street number is missing: %s", partner.display_name)
+                    _("The following partner's street number is missing: %s", partner.display_name)
             if partner.country_code == "FR" and not partner.commercial_partner_id.company_registry:
                 constraints["oioubl201_company_registry_required_for_french_partner"] = \
-                        _("The company registry is required for french partner: %s", partner.display_name)
-            constraints[f'oioubl201_{partner_type}_vat_required'] = self._check_required_fields(partner.commercial_partner_id, 'vat')
+                    _("The company registry is required for french partner: %s", partner.display_name)
+            constraints[f'oioubl201_{partner_type}_vat_required'] = self._check_required_fields(
+                partner.commercial_partner_id, 'vat')
 
         return constraints
 

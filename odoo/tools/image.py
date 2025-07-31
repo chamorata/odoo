@@ -6,8 +6,9 @@ import io
 from typing import Tuple, Union
 
 from PIL import Image, ImageOps
+
 # We can preload Ico too because it is considered safe
-from PIL import IcoImagePlugin
+
 try:
     from PIL.Image import Transpose, Palette, Resampling
 except ImportError:
@@ -18,7 +19,6 @@ from random import randrange
 from odoo.exceptions import UserError
 from odoo.tools.misc import DotDict
 from odoo.tools.translate import LazyTranslate
-
 
 __all__ = ["image_process"]
 _lt = LazyTranslate('base')
@@ -40,16 +40,16 @@ FILETYPE_BASE64_MAGICWORD = {
 EXIF_TAG_ORIENTATION = 0x112
 # The target is to have 1st row/col to be top/left
 # Note: rotate is counterclockwise
-EXIF_TAG_ORIENTATION_TO_TRANSPOSE_METHODS = { # Initial side on 1st row/col:
-    0: [],                                              # reserved
-    1: [],                                              # top/left
-    2: [Transpose.FLIP_LEFT_RIGHT],                     # top/right
-    3: [Transpose.ROTATE_180],                          # bottom/right
-    4: [Transpose.FLIP_TOP_BOTTOM],                     # bottom/left
-    5: [Transpose.FLIP_LEFT_RIGHT, Transpose.ROTATE_90],# left/top
-    6: [Transpose.ROTATE_270],                          # right/top
-    7: [Transpose.FLIP_TOP_BOTTOM, Transpose.ROTATE_90],# right/bottom
-    8: [Transpose.ROTATE_90],                           # left/bottom
+EXIF_TAG_ORIENTATION_TO_TRANSPOSE_METHODS = {  # Initial side on 1st row/col:
+    0: [],  # reserved
+    1: [],  # top/left
+    2: [Transpose.FLIP_LEFT_RIGHT],  # top/right
+    3: [Transpose.ROTATE_180],  # bottom/right
+    4: [Transpose.FLIP_TOP_BOTTOM],  # bottom/left
+    5: [Transpose.FLIP_LEFT_RIGHT, Transpose.ROTATE_90],  # left/top
+    6: [Transpose.ROTATE_270],  # right/top
+    7: [Transpose.FLIP_TOP_BOTTOM, Transpose.ROTATE_90],  # right/bottom
+    8: [Transpose.ROTATE_90],  # left/bottom
 }
 
 # Arbitrary limit to fit most resolutions, including Samsung Galaxy A22 photo,
@@ -96,7 +96,8 @@ class ImageProcess:
 
             w, h = self.image.size
             if verify_resolution and w * h > IMAGE_MAX_RESOLUTION:
-                raise UserError(_lt("Too large image (above %sMpx), reduce the image size.", str(IMAGE_MAX_RESOLUTION / 1e6)))
+                raise UserError(
+                    _lt("Too large image (above %sMpx), reduce the image size.", str(IMAGE_MAX_RESOLUTION / 1e6)))
 
     def image_quality(self, quality=0, output_format=''):
         """Return the image resulting of all the image processing
@@ -149,7 +150,8 @@ class ImageProcess:
             opt['optimize'] = True
             opt['save_all'] = True
 
-        if output_image.mode not in ["1", "L", "P", "RGB", "RGBA"] or (output_format == 'JPEG' and output_image.mode == 'RGBA'):
+        if output_image.mode not in ["1", "L", "P", "RGB", "RGBA"] or (
+                output_format == 'JPEG' and output_image.mode == 'RGBA'):
             output_image = output_image.convert("RGB")
 
         output_bytes = image_apply_opt(output_image, **opt)
@@ -285,11 +287,13 @@ class ImageProcess:
         return self
 
 
-def image_process(source, size=(0, 0), verify_resolution=False, quality=0, expand=False, crop=None, colorize=False, output_format='', padding=False):
+def image_process(source, size=(0, 0), verify_resolution=False, quality=0, expand=False, crop=None, colorize=False,
+                  output_format='', padding=False):
     """Process the `source` image by executing the given operations and
     return the result image.
     """
-    if not source or ((not size or (not size[0] and not size[1])) and not verify_resolution and not quality and not crop and not colorize and not output_format and not padding):
+    if not source or ((not size or (not size[0] and not size[
+        1])) and not verify_resolution and not quality and not crop and not colorize and not output_format and not padding):
         # for performance: don't do anything if the image is falsy or if
         # no operations have been requested
         return source
@@ -358,7 +362,7 @@ def average_dominant_color(colors, mitigate=175, max_margin=140):
     for color in colors:
         rgb = color[1]
         if (rgb[0] < dominant_rgb[0] + margins[0] and rgb[0] > dominant_rgb[0] - margins[0] and
-            rgb[1] < dominant_rgb[1] + margins[1] and rgb[1] > dominant_rgb[1] - margins[1] and
+                rgb[1] < dominant_rgb[1] + margins[1] and rgb[1] > dominant_rgb[1] - margins[1] and
                 rgb[2] < dominant_rgb[2] + margins[2] and rgb[2] > dominant_rgb[2] - margins[2]):
             dominant_set.append(color)
         else:
@@ -423,6 +427,7 @@ def binary_to_image(source):
         return Image.open(io.BytesIO(source))
     except (OSError, binascii.Error):
         raise UserError(_lt("This file could not be decoded as an image file."))
+
 
 def base64_to_image(base64_source: Union[str, bytes]) -> Image:
     """Return a PIL image from the given `base64_source`.
@@ -587,7 +592,7 @@ def get_lightness(rgb):
 
 def hex_to_rgb(hx):
     """Converts an hexadecimal string (starting with '#') to a RGB tuple"""
-    return tuple([int(hx[i:i+2], 16) for i in range(1, 6, 2)])
+    return tuple([int(hx[i:i + 2], 16) for i in range(1, 6, 2)])
 
 
 def rgb_to_hex(rgb):

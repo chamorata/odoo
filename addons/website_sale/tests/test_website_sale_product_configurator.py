@@ -2,16 +2,16 @@
 
 from datetime import datetime
 
-from odoo.fields import Command
-from odoo.tests import tagged
-
-from odoo.addons.base.tests.common import HttpCaseWithUserDemo, HttpCaseWithUserPortal
 from odoo.addons.sale.tests.product_configurator_common import TestProductConfiguratorCommon
 from odoo.addons.website.tools import MockRequest
 from odoo.addons.website_sale.controllers.product_configurator import (
     WebsiteSaleProductConfiguratorController,
 )
 from odoo.addons.website_sale.tests.common import WebsiteSaleCommon
+
+from odoo.addons.base.tests.common import HttpCaseWithUserDemo, HttpCaseWithUserPortal
+from odoo.fields import Command
+from odoo.tests import tagged
 
 
 @tagged('post_install', '-at_install')
@@ -57,7 +57,8 @@ class TestWebsiteSaleProductConfigurator(
         the default values of the variants will be used (the first one).
         """
 
-        always_attribute, dynamic_attribute, never_attribute, never_attribute_custom = self.env['product.attribute'].create([
+        always_attribute, dynamic_attribute, never_attribute, never_attribute_custom = self.env[
+            'product.attribute'].create([
             {
                 'name': 'Always attribute size',
                 'display_type': 'radio',
@@ -79,7 +80,8 @@ class TestWebsiteSaleProductConfigurator(
                 'create_variant': 'no_variant'
             }
         ])
-        always_S, always_M, dynamic_S, dynamic_M, never_S, never_M, never_custom_no, never_custom_yes = self.env['product.attribute.value'].create([
+        always_S, always_M, dynamic_S, dynamic_M, never_S, never_M, never_custom_no, never_custom_yes = self.env[
+            'product.attribute.value'].create([
             {
                 'name': 'S always',
                 'attribute_id': always_attribute.id,
@@ -156,7 +158,8 @@ class TestWebsiteSaleProductConfigurator(
         # Check the name of the created sale order line
         new_sale_order = self.env['sale.order'].search([]) - old_sale_order
         new_order_line = new_sale_order.order_line
-        self.assertEqual(new_order_line.name, 'Short (TEST) (M always, M dynamic)\n\nNever attribute size: M never\nNever attribute size custom: Yes never custom: TEST')
+        self.assertEqual(new_order_line.name,
+                         'Short (TEST) (M always, M dynamic)\n\nNever attribute size: M never\nNever attribute size custom: Yes never custom: TEST')
 
     def test_product_configurator_force_dialog(self):
         """ Test that the product configurator is shown if forced. """

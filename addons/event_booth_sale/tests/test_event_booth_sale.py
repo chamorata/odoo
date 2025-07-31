@@ -3,10 +3,11 @@
 
 from datetime import datetime, timedelta
 
-from odoo import Command, fields
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.addons.event_booth_sale.tests.common import TestEventBoothSaleCommon
 from odoo.addons.sales_team.tests.common import TestSalesCommon
-from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
+from odoo import Command, fields
 from odoo.tests.common import tagged, users
 from odoo.tools import float_compare
 
@@ -62,7 +63,8 @@ class TestEventBoothSale(TestEventBoothSaleWData):
 
         self.assertEqual(self.booth_1.price, self.event_booth_product.list_price,
                          "Booth price should be equal from product price.")
-        self.assertEqual(self.event_booth_category_1.with_context(pricelist=self.test_pricelist.id).price_reduce_taxinc, 22.0,
+        self.assertEqual(self.event_booth_category_1.with_context(pricelist=self.test_pricelist.id).price_reduce_taxinc,
+                         22.0,
                          "Booth price reduce tax should be equal to its price with 10% taxes ($20.0 + $2.0)")
         # Here we expect the price to be the sum of the booth ($40.0)
         self.assertEqual(float_compare(sale_order.amount_untaxed, 40.0, precision_rounding=0.1), 0,
@@ -75,7 +77,8 @@ class TestEventBoothSale(TestEventBoothSaleWData):
 
         self.assertNotEqual(self.booth_1.price, self.event_booth_product.list_price,
                             "Booth price should be different from product price.")
-        self.assertEqual(self.event_booth_category_1.with_context(pricelist=self.test_pricelist.id).price_reduce_taxinc, 110.0,
+        self.assertEqual(self.event_booth_category_1.with_context(pricelist=self.test_pricelist.id).price_reduce_taxinc,
+                         110.0,
                          "Booth price reduce tax should be equal to its price with 10% taxes ($100.0 + $10.0)")
         # Here we expect the price to be the sum of the booth ($200.0)
         self.assertEqual(float_compare(sale_order.amount_untaxed, 200.0, precision_rounding=0.1), 0,
@@ -154,6 +157,7 @@ class TestEventBoothSale(TestEventBoothSaleWData):
                          (self.booth_2 + self.booth_3).ids,
                          "Booths not correctly linked with event_booth_registration.")
 
+
 @tagged('post_install', '-at_install')
 class TestEventBoothSaleInvoice(AccountTestInvoicingCommon, TestEventBoothSaleWData):
 
@@ -194,9 +198,11 @@ class TestEventBoothSaleInvoice(AccountTestInvoicingCommon, TestEventBoothSaleWD
             sale_order.invoice_status, 'invoiced',
             f"Order is in '{sale_order.invoice_status}' status while it should be 'invoiced'.")
         # Pay the invoice.
-        journal = self.env['account.journal'].search([('type', '=', 'cash'), ('company_id', '=', sale_order.company_id.id)], limit=1)
+        journal = self.env['account.journal'].search(
+            [('type', '=', 'cash'), ('company_id', '=', sale_order.company_id.id)], limit=1)
 
-        register_payments = self.env['account.payment.register'].with_context(active_model='account.move', active_ids=invoice.ids).create({
+        register_payments = self.env['account.payment.register'].with_context(active_model='account.move',
+                                                                              active_ids=invoice.ids).create({
             'journal_id': journal.id,
         })
         register_payments._create_payments()
@@ -204,7 +210,7 @@ class TestEventBoothSaleInvoice(AccountTestInvoicingCommon, TestEventBoothSaleWD
         # Check the invoice payment state after paying the invoice
         in_payment_state = invoice._get_invoice_in_payment_state()
         self.assertEqual(invoice.payment_state, in_payment_state,
-            f"Invoice payment is in '{invoice.payment_state}' status while it should be '{in_payment_state}'.")
+                         f"Invoice payment is in '{invoice.payment_state}' status while it should be '{in_payment_state}'.")
 
         self.assertEqual(booth.state, 'unavailable')
         # When running without enterprise the payments get reconciled immediately.

@@ -4,14 +4,13 @@ import logging
 from urllib.parse import urlencode
 from uuid import uuid4
 
-from odoo import _, models
-from odoo.exceptions import UserError, ValidationError
-from odoo.tools import float_round
-
 from odoo.addons.payment import utils as payment_utils
 from odoo.addons.payment_nuvei import const
 from odoo.addons.payment_nuvei.controllers.main import NuveiController
 
+from odoo import _, models
+from odoo.exceptions import UserError, ValidationError
+from odoo.tools import float_round
 
 _logger = logging.getLogger(__name__)
 

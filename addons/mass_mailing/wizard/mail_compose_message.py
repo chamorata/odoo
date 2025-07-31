@@ -12,7 +12,8 @@ class MailComposeMessage(models.TransientModel):
 
     mass_mailing_id = fields.Many2one('mailing.mailing', string='Mass Mailing', ondelete='cascade')
     campaign_id = fields.Many2one('utm.campaign', string='Mass Mailing Campaign', ondelete='set null')
-    mass_mailing_name = fields.Char(string='Mass Mailing Name', help='If set, a mass mailing will be created so that you can track its results in the Email Marketing app.')
+    mass_mailing_name = fields.Char(string='Mass Mailing Name',
+                                    help='If set, a mass mailing will be created so that you can track its results in the Email Marketing app.')
     mailing_list_ids = fields.Many2many('mailing.list', string='Mailing List')
 
     def _action_send_mail(self, auto_commit=False):
@@ -32,8 +33,8 @@ class MailComposeMessage(models.TransientModel):
 
         # use only for allowed models in mass mailing
         if (self.composition_mode != 'mass_mail' or
-            not self.mass_mailing_id or
-            not self.model_is_thread):
+                not self.mass_mailing_id or
+                not self.model_is_thread):
             return mail_values_all
 
         trace_values_all = self._prepare_mail_values_mailing_traces(mail_values_all)

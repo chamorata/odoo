@@ -14,8 +14,8 @@ class ResPartner(models.Model):
         for presence in self.env["bus.presence"].search([("user_id", "in", self.user_ids.ids)]):
             partner = presence.user_id.partner_id
             if (
-                status_by_partner.get(partner, "offline") == "offline"
-                or presence.status == "online"
+                    status_by_partner.get(partner, "offline") == "offline"
+                    or presence.status == "online"
             ):
                 status_by_partner[partner] = presence.status
         for partner in self:

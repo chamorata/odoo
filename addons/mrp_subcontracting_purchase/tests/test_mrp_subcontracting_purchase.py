@@ -2,17 +2,16 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import logging
-
 from datetime import datetime, timedelta
-from freezegun import freeze_time
 from json import loads
+
+from freezegun import freeze_time
+from odoo.addons.mrp_subcontracting.tests.common import TestMrpSubcontractingCommon
 
 from odoo import Command
 from odoo.exceptions import UserError
 from odoo.fields import Date
-from odoo.tests import Form, tagged, loaded_demo_data
-
-from odoo.addons.mrp_subcontracting.tests.common import TestMrpSubcontractingCommon
+from odoo.tests import Form, tagged
 
 _logger = logging.getLogger(__name__)
 
@@ -145,7 +144,8 @@ class MrpSubcontractingPurchaseTest(TestMrpSubcontractingCommon):
         receipt = po.picking_ids
         sub_mo = receipt._get_subcontract_production()
         self.assertEqual(len(receipt), 1, "A receipt should have been created")
-        self.assertEqual(receipt.move_ids.product_qty, product_qty, "Qty of subcontracted product to receive is incorrect")
+        self.assertEqual(receipt.move_ids.product_qty, product_qty,
+                         "Qty of subcontracted product to receive is incorrect")
         self.assertEqual(len(sub_mo), 1, "A subcontracting MO should have been created")
         self.assertEqual(sub_mo.product_qty, product_qty, "Qty of subcontracted product to produce is incorrect")
 
@@ -153,14 +153,16 @@ class MrpSubcontractingPurchaseTest(TestMrpSubcontractingCommon):
         lower_qty = product_qty - 1.0
         po.order_line.product_qty = lower_qty
         sub_mos = receipt._get_subcontract_production()
-        self.assertEqual(receipt.move_ids.product_qty, lower_qty, "Qty of subcontracted product to receive should update (not validated yet)")
+        self.assertEqual(receipt.move_ids.product_qty, lower_qty,
+                         "Qty of subcontracted product to receive should update (not validated yet)")
         self.assertEqual(len(sub_mos), 1, "Original subcontract MO should have absorbed qty change")
         self.assertEqual(sub_mo.product_qty, lower_qty, "Qty of subcontract MO should update (none validated yet)")
 
         # increase qty again
         po.order_line.product_qty = product_qty
         sub_mos = receipt._get_subcontract_production()
-        self.assertEqual(sum(receipt.move_ids.mapped('product_qty')), product_qty, "Qty of subcontracted product to receive should update (not validated yet)")
+        self.assertEqual(sum(receipt.move_ids.mapped('product_qty')), product_qty,
+                         "Qty of subcontracted product to receive should update (not validated yet)")
         self.assertEqual(len(sub_mos), 1, "The subcontracted mo should have been updated")
 
         # check that a neg qty can't proprogate once receipt is done
@@ -199,7 +201,8 @@ class MrpSubcontractingPurchaseTest(TestMrpSubcontractingCommon):
         receipt.move_ids.picked = True
         receipt.button_validate()
 
-        return_form = Form(self.env['stock.return.picking'].with_context(active_id=receipt.id, active_model='stock.picking'))
+        return_form = Form(
+            self.env['stock.return.picking'].with_context(active_id=receipt.id, active_model='stock.picking'))
         return_wizard = return_form.save()
         return_wizard.product_return_moves.quantity = 3
         return_wizard.product_return_moves.to_refund = True
@@ -241,7 +244,8 @@ class MrpSubcontractingPurchaseTest(TestMrpSubcontractingCommon):
         receipt.move_ids.picked = True
         receipt.button_validate()
 
-        return_form = Form(self.env['stock.return.picking'].with_context(active_id=receipt.id, active_model='stock.picking'))
+        return_form = Form(
+            self.env['stock.return.picking'].with_context(active_id=receipt.id, active_model='stock.picking'))
         return_wizard = return_form.save()
         return_wizard.product_return_moves.quantity = 3
         return_wizard.product_return_moves.to_refund = False
@@ -285,9 +289,9 @@ class MrpSubcontractingPurchaseTest(TestMrpSubcontractingCommon):
             'type': 'subcontract',
             'subcontractor_ids': [(subcontractor.id)],
             'bom_line_ids': [(0, 0, {
-                    'product_id': component.id,
-                    'product_qty': 1,
-                    'product_uom_id': component.uom_id.id,
+                'product_id': component.id,
+                'product_qty': 1,
+                'product_uom_id': component.uom_id.id,
             })],
         })
 
@@ -344,7 +348,8 @@ class MrpSubcontractingPurchaseTest(TestMrpSubcontractingCommon):
         self.assertEqual(po.order_line.qty_received, 10.0)
 
         # Return Products
-        return_form = Form(self.env['stock.return.picking'].with_context(active_id=receipt.id, active_model='stock.picking'))
+        return_form = Form(
+            self.env['stock.return.picking'].with_context(active_id=receipt.id, active_model='stock.picking'))
         return_wizard = return_form.save()
         return_wizard.product_return_moves.quantity = 3
         return_wizard.product_return_moves.to_refund = True
@@ -385,7 +390,7 @@ class MrpSubcontractingPurchaseTest(TestMrpSubcontractingCommon):
         with po_form.order_line.new() as po_line:
             po_line.product_id = self.finished
             po_line.product_qty = 2
-            po_line.price_unit = 50   # should be 70
+            po_line.price_unit = 50  # should be 70
         po = po_form.save()
         po.button_confirm()
 
@@ -530,7 +535,8 @@ class MrpSubcontractingPurchaseTest(TestMrpSubcontractingCommon):
         receipt.move_ids.quantity = 10
         receipt.button_validate()
 
-        return_form = Form(self.env['stock.return.picking'].with_context(active_id=receipt.id, active_model='stock.picking'))
+        return_form = Form(
+            self.env['stock.return.picking'].with_context(active_id=receipt.id, active_model='stock.picking'))
         wizard = return_form.save()
         wizard.product_return_moves.quantity = 1.0
         return_picking = wizard._create_return()
@@ -555,7 +561,7 @@ class MrpSubcontractingPurchaseTest(TestMrpSubcontractingCommon):
             max(Vendor lead time, Manufacturing lead time + DTPMO) + Days to Purchase + Purchase security lead time
         """
         rule = self.env['stock.rule'].search([('action', '=', 'buy')], limit=1)
-        self.env.company.manufacturing_lead = 114514   # should never be used
+        self.env.company.manufacturing_lead = 114514  # should never be used
 
         self.env.company.po_lead = 1
         self.env.company.days_to_purchase = 2
@@ -569,12 +575,14 @@ class MrpSubcontractingPurchaseTest(TestMrpSubcontractingCommon):
         self.bom.produce_delay = 3
         self.bom.days_to_prepare_mo = 4
         delays, _ = rule._get_lead_days(self.finished, supplierinfo=seller)
-        self.assertEqual(delays['total_delay'], seller.delay + self.env.company.po_lead + self.env.company.days_to_purchase)
+        self.assertEqual(delays['total_delay'],
+                         seller.delay + self.env.company.po_lead + self.env.company.days_to_purchase)
         # Case 2 Vendor lead time < Manufacturing lead time + DTPMO
         self.bom.produce_delay = 5
         self.bom.days_to_prepare_mo = 6
         delays, _ = rule._get_lead_days(self.finished, supplierinfo=seller)
-        self.assertEqual(delays['total_delay'], self.bom.produce_delay + self.bom.days_to_prepare_mo + self.env.company.po_lead + self.env.company.days_to_purchase)
+        self.assertEqual(delays['total_delay'],
+                         self.bom.produce_delay + self.bom.days_to_prepare_mo + self.env.company.po_lead + self.env.company.days_to_purchase)
 
     def test_subcontracting_lead_days_on_overview(self):
         """Test on the BOM overview, the lead days and resupply availability are
@@ -614,20 +622,20 @@ class MrpSubcontractingPurchaseTest(TestMrpSubcontractingCommon):
         # Case 1: Vendor lead time >= Manufacturing lead time + DTPMO on BOM
         bom_data = self.env['report.mrp.report_bom_structure']._get_bom_data(self.bom, self.warehouse, self.finished)
         self.assertEqual(bom_data['lead_time'], 15 + 5 + 5 + 0,
-            "Lead time = Purchase lead time(finished) + Days to Purchase + Purchase security lead time + DTPMO on BOM")
+                         "Lead time = Purchase lead time(finished) + Days to Purchase + Purchase security lead time + DTPMO on BOM")
         # Resupply delay = 0 (received from MRP, where route type != "manufacture")
         # Vendor lead time = 15 (finished product supplier delay)
         # Manufacture lead time = 10 (BoM.produce_delay)
         # Max purchase component delay = max delay(comp1, comp2) + po_lead + days_to_purchase = 20
         self.assertEqual(bom_data['resupply_avail_delay'], 0 + 15 + 20 + 5 + 5,
-            'Resupply avail delay = Resupply delay + Max(Vendor lead time, Manufacture lead time)'
-            ' + Max purchase component delay + Purchase security lead time + Days to Purchase'
-        )
+                         'Resupply avail delay = Resupply delay + Max(Vendor lead time, Manufacture lead time)'
+                         ' + Max purchase component delay + Purchase security lead time + Days to Purchase'
+                         )
 
         # Case 2: Vendor lead time < Manufacturing lead time + DTPMO on BOM
         self.bom.action_compute_bom_days()
         self.assertEqual(self.bom.days_to_prepare_mo, 10 + 5 + 5,
-            "DTPMO = Purchase lead time(comp1) + Days to Purchase + Purchase security lead time")
+                         "DTPMO = Purchase lead time(comp1) + Days to Purchase + Purchase security lead time")
 
         self.bom.days_to_prepare_mo = 10
         # Temp increase BoM.produce_delay, to check if it is now used in the final calculation
@@ -635,36 +643,36 @@ class MrpSubcontractingPurchaseTest(TestMrpSubcontractingCommon):
 
         bom_data = self.env['report.mrp.report_bom_structure']._get_bom_data(self.bom, self.warehouse, self.finished)
         self.assertEqual(bom_data['lead_time'], 30 + 5 + 5 + 10,
-            "Lead time = Manufacturing lead time + Days to Purchase + Purchase security lead time + DTPMO on BOM")
+                         "Lead time = Manufacturing lead time + Days to Purchase + Purchase security lead time + DTPMO on BOM")
         # Resupply delay = 0 (received from MRP, where route type != "manufacture")
         # Vendor lead time = 15 (finished product supplier delay)
         # Manufacture lead time = 30 (BoM.produce_delay)
         # Max purchase component delay = max delay(comp1, comp2) + po_lead + days_to_purchase = 20
         self.assertEqual(bom_data['resupply_avail_delay'], 0 + 30 + 20 + 5 + 5,
-            'Resupply avail delay = Resupply delay + Max(Vendor lead time, Manufacture lead time)'
-            ' + Max purchase component delay + Purchase security lead time + Days to Purchase'
-        )
+                         'Resupply avail delay = Resupply delay + Max(Vendor lead time, Manufacture lead time)'
+                         ' + Max purchase component delay + Purchase security lead time + Days to Purchase'
+                         )
         # Continue the test with the original produce_delay
         self.bom.produce_delay = 10
 
         # Update stock for components, calculate DTPMO should be 0
         self.env['stock.quant']._update_available_quantity(self.comp1, self.env.company.subcontracting_location_id, 100)
         self.env['stock.quant']._update_available_quantity(self.comp2, self.env.company.subcontracting_location_id, 100)
-        self.env.invalidate_all()   # invalidate cache to get updated qty_available
+        self.env.invalidate_all()  # invalidate cache to get updated qty_available
         # Case 1: Vendor lead time >= Manufacturing lead time + DTPMO on BOM
         self.bom.days_to_prepare_mo = 2
         bom_data = self.env['report.mrp.report_bom_structure']._get_bom_data(self.bom, self.warehouse, self.finished)
         self.assertEqual(bom_data['lead_time'], 15 + 5 + 5,
-            "Lead time = Purchase lead time(finished) + Days to Purchase + Purchase security lead time")
+                         "Lead time = Purchase lead time(finished) + Days to Purchase + Purchase security lead time")
         for component in bom_data['components']:
             self.assertEqual(component['availability_state'], 'available')
         # Case 2: Vendor lead time < Manufacturing lead time + DTPMO on BOM
         self.bom.action_compute_bom_days()
         self.assertEqual(self.bom.days_to_prepare_mo, 10 + 5 + 5,
-            "DTPMO = Purchase lead time(comp1) + Days to Purchase + Purchase security lead time")
+                         "DTPMO = Purchase lead time(comp1) + Days to Purchase + Purchase security lead time")
         bom_data = self.env['report.mrp.report_bom_structure']._get_bom_data(self.bom, self.warehouse, self.finished)
         self.assertEqual(bom_data['lead_time'], 10 + 5 + 5 + 20,
-            "Lead time = Manufacturing lead time + Days to Purchase + Purchase security lead time + DTPMO on BOM")
+                         "Lead time = Manufacturing lead time + Days to Purchase + Purchase security lead time + DTPMO on BOM")
         for component in bom_data['components']:
             self.assertEqual(component['availability_state'], 'available')
 
@@ -674,13 +682,13 @@ class MrpSubcontractingPurchaseTest(TestMrpSubcontractingCommon):
         mto_route.active = True
         resupply_sub_on_order_route = self.env['stock.route'].search([('name', '=', 'Resupply Subcontractor on Order')])
         (self.comp1 + self.comp2).write({
-             'route_ids': [
+            'route_ids': [
                 Command.link(resupply_sub_on_order_route.id),
                 Command.link(self.env.ref('purchase_stock.route_warehouse0_buy').id),
                 Command.link(mto_route.id)],
-             'seller_ids': [Command.create({
-                 'partner_id': self.vendor.id,
-             })],
+            'seller_ids': [Command.create({
+                'partner_id': self.vendor.id,
+            })],
         })
 
         po = self.env['purchase.order'].create({
@@ -695,7 +703,8 @@ class MrpSubcontractingPurchaseTest(TestMrpSubcontractingCommon):
         })
 
         po.button_confirm()
-        ressuply_pick = self.env['stock.picking'].search([('location_dest_id', '=', self.env.company.subcontracting_location_id.id)])
+        ressuply_pick = self.env['stock.picking'].search(
+            [('location_dest_id', '=', self.env.company.subcontracting_location_id.id)])
         self.assertEqual(len(ressuply_pick.move_ids), 2)
         self.assertEqual(ressuply_pick.move_ids.mapped('product_id'), self.comp1 | self.comp2)
 
@@ -799,7 +808,9 @@ class MrpSubcontractingPurchaseTest(TestMrpSubcontractingCommon):
         self.assertEqual(component.virtual_available, total_component_quantity)
         self.assertEqual(component.qty_available, total_component_quantity)
 
-        quantity_before_move = self.env['stock.quant']._get_available_quantity(component, self.subcontractor_partner1.property_stock_subcontractor, allow_negative=True)
+        quantity_before_move = self.env['stock.quant']._get_available_quantity(component,
+                                                                               self.subcontractor_partner1.property_stock_subcontractor,
+                                                                               allow_negative=True)
         picking_form = Form(self.env['stock.picking'])
         picking_form.picking_type_id = self.warehouse.subcontracting_resupply_type_id
         picking_form.partner_id = self.subcontractor_partner1
@@ -811,10 +822,14 @@ class MrpSubcontractingPurchaseTest(TestMrpSubcontractingCommon):
         picking.move_ids.quantity = moved_quantity_to_subcontractor
         picking.move_ids.picked = True
         picking.button_validate()
-        quantity_after_move = self.env['stock.quant']._get_available_quantity(component, self.subcontractor_partner1.property_stock_subcontractor, allow_negative=True)
+        quantity_after_move = self.env['stock.quant']._get_available_quantity(component,
+                                                                              self.subcontractor_partner1.property_stock_subcontractor,
+                                                                              allow_negative=True)
         self.assertEqual(quantity_after_move, quantity_before_move + moved_quantity_to_subcontractor)
 
-        report_values = self.env['report.mrp.report_bom_structure']._get_report_data(bom.id, searchQty=search_qty_less_than_or_equal_moved, searchVariant=False)
+        report_values = self.env['report.mrp.report_bom_structure']._get_report_data(bom.id,
+                                                                                     searchQty=search_qty_less_than_or_equal_moved,
+                                                                                     searchVariant=False)
         self.assertEqual(report_values['lines']['components'][0]['quantity_available'], moved_quantity_to_subcontractor)
         self.assertEqual(report_values['lines']['components'][0]['quantity_on_hand'], moved_quantity_to_subcontractor)
         self.assertEqual(report_values['lines']['quantity_available'], 0)
@@ -824,10 +839,14 @@ class MrpSubcontractingPurchaseTest(TestMrpSubcontractingCommon):
 
         self.assertEqual(report_values['lines']['components'][0]['stock_avail_state'], 'available')
 
-        report_values = self.env['report.mrp.report_bom_structure']._get_report_data(bom.id, searchQty=search_qty_less_than_or_equal_moved, searchVariant=False)
+        report_values = self.env['report.mrp.report_bom_structure']._get_report_data(bom.id,
+                                                                                     searchQty=search_qty_less_than_or_equal_moved,
+                                                                                     searchVariant=False)
         self.assertEqual(report_values['lines']['components'][0]['stock_avail_state'], 'available')
 
-        report_values = self.env['report.mrp.report_bom_structure']._get_report_data(bom.id, searchQty=search_qty_more_than_total, searchVariant=False)
+        report_values = self.env['report.mrp.report_bom_structure']._get_report_data(bom.id,
+                                                                                     searchQty=search_qty_more_than_total,
+                                                                                     searchVariant=False)
         self.assertEqual(report_values['lines']['components'][0]['stock_avail_state'], 'unavailable')
 
     @freeze_time('2024-01-01')
@@ -965,7 +984,8 @@ class MrpSubcontractingPurchaseTest(TestMrpSubcontractingCommon):
         self.assertEqual(picking.state, 'done')
         # create a return to the vendor location
         supplier_location = self.env.ref('stock.stock_location_suppliers')
-        return_form = Form(self.env['stock.return.picking'].with_context(active_id=picking.id, active_model='stock.picking'))
+        return_form = Form(
+            self.env['stock.return.picking'].with_context(active_id=picking.id, active_model='stock.picking'))
         wizard = return_form.save()
         wizard.product_return_moves.quantity = 2.0
         return_picking = wizard._create_return()
@@ -1000,7 +1020,8 @@ class MrpSubcontractingPurchaseTest(TestMrpSubcontractingCommon):
         r = orderpoint.action_stock_replenishment_info()
         repl_info = self.env[r['res_model']].browse(r['res_id'])
         lead_days_date = datetime.strptime(
-            loads(repl_info.with_context(global_visibility_days=365).json_lead_days)['lead_days_date'],'%m/%d/%Y').date()
+            loads(repl_info.with_context(global_visibility_days=365).json_lead_days)['lead_days_date'],
+            '%m/%d/%Y').date()
         self.assertEqual(lead_days_date, Date.today() + timedelta(days=365))
 
         orderpoint.action_replenish()
@@ -1033,7 +1054,8 @@ class MrpSubcontractingPurchaseTest(TestMrpSubcontractingCommon):
         original_mo_start_date = mo.date_start
         with Form(po.picking_ids[0]) as receipt_form:
             receipt_form.scheduled_date = '2000-06-01'
-        self.assertEqual(mo.date_start, datetime(year=2000, month=6, day=1) - timedelta(days=self.bom_finished2.produce_delay))
+        self.assertEqual(mo.date_start,
+                         datetime(year=2000, month=6, day=1) - timedelta(days=self.bom_finished2.produce_delay))
         with Form(po.picking_ids[0]) as receipt_form:
             receipt_form.scheduled_date = '2000-05-01'
         self.assertEqual(mo.date_start, original_mo_start_date)

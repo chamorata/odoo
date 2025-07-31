@@ -1,12 +1,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.payment import utils as payment_utils
+from odoo.addons.payment.const import REPORT_REASONS_MAPPING
 from werkzeug.urls import iri_to_uri
 
 from odoo import api, fields, models
 from odoo.http import request
-
-from odoo.addons.payment import utils as payment_utils
-from odoo.addons.payment.const import REPORT_REASONS_MAPPING
 
 
 class PaymentProvider(models.Model):

@@ -3,8 +3,6 @@
 
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
-from odoo.osv import expression
-
 
 from odoo.tools import float_compare, float_round
 
@@ -17,9 +15,12 @@ class ProductPackaging(models.Model):
 
     name = fields.Char('Product Packaging', required=True)
     sequence = fields.Integer('Sequence', default=1, help="The first in the sequence is the default one.")
-    product_id = fields.Many2one('product.product', string='Product', check_company=True, required=True, ondelete="cascade")
-    qty = fields.Float('Contained Quantity', default=1, digits='Product Unit of Measure', help="Quantity of products contained in the packaging.")
-    barcode = fields.Char('Barcode', copy=False, help="Barcode used for packaging identification. Scan this packaging barcode from a transfer in the Barcode app to move all the contained units")
+    product_id = fields.Many2one('product.product', string='Product', check_company=True, required=True,
+                                 ondelete="cascade")
+    qty = fields.Float('Contained Quantity', default=1, digits='Product Unit of Measure',
+                       help="Quantity of products contained in the packaging.")
+    barcode = fields.Char('Barcode', copy=False,
+                          help="Barcode used for packaging identification. Scan this packaging barcode from a transfer in the Barcode app to move all the contained units")
     product_uom_id = fields.Many2one('uom.uom', related='product_id.uom_id', readonly=True)
     company_id = fields.Many2one('res.company', 'Company', index=True)
 
@@ -50,8 +51,9 @@ class ProductPackaging(models.Model):
         # 5.4 % 1.8 = 2.220446049250313e-16
         if product_qty and packaging_qty:
             rounded_qty = float_round(product_qty / packaging_qty, precision_rounding=1.0,
-                                  rounding_method=rounding_method) * packaging_qty
-            return rounded_qty if float_compare(rounded_qty, product_qty, precision_rounding=default_uom.rounding) else product_qty
+                                      rounding_method=rounding_method) * packaging_qty
+            return rounded_qty if float_compare(rounded_qty, product_qty,
+                                                precision_rounding=default_uom.rounding) else product_qty
         return product_qty
 
     def _find_suitable_product_packaging(self, product_qty, uom_id):

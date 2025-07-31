@@ -34,13 +34,15 @@ COUNTRY_CODE_MAP = {
     "AX": "ALA", "AZ": "AZE", "IE": "IRL", "ID": "IDN", "UA": "UKR", "QA": "QAT", "MZ": "MOZ"
 }
 
+
 class AccountMove(models.Model):
     _inherit = "account.move"
 
     # Extra selection after choosing l10n_id_kode_transaksi 07
     l10n_id_coretax_add_info_07 = fields.Selection([
         ('TD.00501', '1 - Pajak Pertambahan Nilai Tidak Dipungut berdasarkan PP Nomor 10 Tahun 2012'),
-        ('TD.00502', '2 - Pajak Pertambahan Nilai atau Pajak Pertambahan Nilai dan Pajak Penjualan atas Barang Mewah tidak dipungut'),
+        ('TD.00502',
+         '2 - Pajak Pertambahan Nilai atau Pajak Pertambahan Nilai dan Pajak Penjualan atas Barang Mewah tidak dipungut'),
         ('TD.00503', '3 - Pajak Pertambahan Nilai dan Pajak Penjualan atas Barang Mewah Tidak Dipungut'),
         ('TD.00504', '4 - Pajak Pertambahan Nilai Tidak Dipungut Sesuai PP Nomor 71 Tahun 2012'),
         ('TD.00505', '5 - (Tidak ada Cap)'),
@@ -78,17 +80,26 @@ class AccountMove(models.Model):
         ('TD.01105', '5 - untuk Lainnya'),
         ('TD.01106', '6 - untuk Kontraktor Perjanjian Karya Pengusahaan Pertambangan Batubara Generasi I'),
         ('TD.01107', '7 - untuk Penyerahan bahan bakar minyak untuk Kapal Angkutan Laut Luar Negeri'),
-        ('TD.01108', '8 - untuk Penyerahan jasa kena pajak terkait alat angkutan tertentu'), ('TD.01109', '9 - untuk Penyerahan BKP Tertentu di KEK'), ('TD.01110', '10 - untuk BKP tertentu yang bersifat strategis berupa anode slime'), ('TD.01111', '11 - untuk Penyerahan alat angkutan tertentu dan/atau Jasa Kena Pajak terkait alat angkutan tertentu'),
-        ('TD.01112', '12 - untuk Penyerahan kepada Kontraktor Kerja Sama Migas yang mengikuti ketentuan Peraturan Pemerintah Nomor 27 Tahun 2017'),
-        ('TD.01113', '13 - Penyerahan Rumah Tapak dan Satuan Rumah Susun Rumah Susun Ditanggung Pemerintah Tahun Anggaran 2021'),
-        ('TD.01114', '14 - Penyerahan Jasa Sewa Ruangan atau Bangunan Kepada Pedagang Eceran yang Ditanggung Pemerintah Tahun Anggaran 2021'),
+        ('TD.01108', '8 - untuk Penyerahan jasa kena pajak terkait alat angkutan tertentu'),
+        ('TD.01109', '9 - untuk Penyerahan BKP Tertentu di KEK'),
+        ('TD.01110', '10 - untuk BKP tertentu yang bersifat strategis berupa anode slime'), ('TD.01111',
+                                                                                             '11 - untuk Penyerahan alat angkutan tertentu dan/atau Jasa Kena Pajak terkait alat angkutan tertentu'),
+        ('TD.01112',
+         '12 - untuk Penyerahan kepada Kontraktor Kerja Sama Migas yang mengikuti ketentuan Peraturan Pemerintah Nomor 27 Tahun 2017'),
+        ('TD.01113',
+         '13 - Penyerahan Rumah Tapak dan Satuan Rumah Susun Rumah Susun Ditanggung Pemerintah Tahun Anggaran 2021'),
+        ('TD.01114',
+         '14 - Penyerahan Jasa Sewa Ruangan atau Bangunan Kepada Pedagang Eceran yang Ditanggung Pemerintah Tahun Anggaran 2021'),
         ('TD.01115', '15 - Penyerahan Barang dan Jasa Dalam Rangka Penanganan Pandemi COVID-19 (PMK 239/PMK. 03/2020)'),
-        ('TD.01116', '16 - Insentif PMK-103/PMK.010/2021 berupa PPN atas Penyerahan Rumah Tapak dan Unit Hunian Rumah Susun yang Ditanggung Pemerintah Tahun Anggaran 2021'),
+        ('TD.01116',
+         '16 - Insentif PMK-103/PMK.010/2021 berupa PPN atas Penyerahan Rumah Tapak dan Unit Hunian Rumah Susun yang Ditanggung Pemerintah Tahun Anggaran 2021'),
         ('TD.01117', '17 - Kawasan Ekonomi Khusus PP nomor 40 Tahun 2021'),
         ('TD.01118', '18 - Kawasan Bebas PP nomor 41 Tahun 2021'),
-        ('TD.01119', '19 - Penyerahan Rumah Tapak dan Unit Hunian Rumah Susun yang Ditanggung Pemerintah Tahun Anggaran 2022'),
+        ('TD.01119',
+         '19 - Penyerahan Rumah Tapak dan Unit Hunian Rumah Susun yang Ditanggung Pemerintah Tahun Anggaran 2022'),
         ('TD.01120', '20 - PPN Ditanggung Pemerintah dalam rangka Penanganan Pandemi Corona Virus'),
-        ('TD.01121', '21 - Penyerahan kepada Kontraktor Kerja Sama Migas yang mengikuti ketentuan Peraturan Pemerintah Nomor 53 Tahun 2017'),
+        ('TD.01121',
+         '21 - Penyerahan kepada Kontraktor Kerja Sama Migas yang mengikuti ketentuan Peraturan Pemerintah Nomor 53 Tahun 2017'),
         ('TD.01122', '22 - BKP strategis tertentu dalam bentuk anode slime dan emas butiran'),
         ('TD.01123', '23 - untuk penyerahan kertas koran dan/atau majalah'),
         ('TD.01124', '24 - PPN tidak dipungut oleh Pemerintah lainnya'),
@@ -102,14 +113,17 @@ class AccountMove(models.Model):
 
     # Extra selection after choosing l10n_id_kode_transaksi 08
     l10n_id_coretax_add_info_08 = fields.Selection([
-        ('TD.00501', '1 - PPN Dibebaskan Sesuai PP Nomor 146 Tahun 2000 Sebagaimana Telah Diubah Dengan PP Nomor 38 Tahun 2003'),
-        ('TD.00502', '2 - PPN Dibebaskan Sesuai PP Nomor 12 Tahun 2001 Sebagaimana Telah Beberapa Kali Diubah Terakhir Dengan PP Nomor 31 Tahun 2007'),
+        ('TD.00501',
+         '1 - PPN Dibebaskan Sesuai PP Nomor 146 Tahun 2000 Sebagaimana Telah Diubah Dengan PP Nomor 38 Tahun 2003'),
+        ('TD.00502',
+         '2 - PPN Dibebaskan Sesuai PP Nomor 12 Tahun 2001 Sebagaimana Telah Beberapa Kali Diubah Terakhir Dengan PP Nomor 31 Tahun 2007'),
         ('TD.00503', '3 - PPN dibebaskan berdasarkan Peraturan Pemerintah Nomor 28 Tahun 2009'),
         ('TD.00504', '4 - (Tidak ada cap)'),
         ('TD.00505', '5 - PPN Dibebaskan Sesuai Dengan PP Nomor 81 Tahun 2015'),
         ('TD.00506', '6 - PPN Dibebaskan Berdasarkan PP Nomor 74 Tahun 2015'),
         ('TD.00507', '7 - (tanpa cap)'),
-        ('TD.00508', '8 - PPN DIBEBASKAN SESUAI PP NOMOR 81 TAHUN 2015 SEBAGAIMANA TELAH DIUBAH DENGAN PP 48 TAHUN 2020'),
+        ('TD.00508',
+         '8 - PPN DIBEBASKAN SESUAI PP NOMOR 81 TAHUN 2015 SEBAGAIMANA TELAH DIUBAH DENGAN PP 48 TAHUN 2020'),
         ('TD.00509', '9 - PPN DIBEBASKAN BERDASARKAN PP NOMOR 47 TAHUN 2020'),
         ('TD.00510', '10 - PPN Dibebaskan berdasarkan PP Nomor 49 Tahun 2022')],
         compute="_compute_l10n_id_coretax_add_info",
@@ -117,14 +131,17 @@ class AccountMove(models.Model):
         store=True,
     )
     l10n_id_coretax_facility_info_08 = fields.Selection([
-        ('TD.01101', '1 - PPN Dibebaskan Sesuai PP Nomor 146 Tahun 2000 Sebagaimana Telah Diubah Dengan PP Nomor 38 Tahun 2003'),
-        ('TD.01102', '2 - PPN Dibebaskan Sesuai PP Nomor 12 Tahun 2001 Sebagaimana Telah Beberapa Kali Diubah Terakhir Dengan PP Nomor 31 Tahun 2007'),
+        ('TD.01101',
+         '1 - PPN Dibebaskan Sesuai PP Nomor 146 Tahun 2000 Sebagaimana Telah Diubah Dengan PP Nomor 38 Tahun 2003'),
+        ('TD.01102',
+         '2 - PPN Dibebaskan Sesuai PP Nomor 12 Tahun 2001 Sebagaimana Telah Beberapa Kali Diubah Terakhir Dengan PP Nomor 31 Tahun 2007'),
         ('TD.01103', '3 - PPN dibebaskan berdasarkan Peraturan Pemerintah Nomor 28 Tahun 2009'),
         ('TD.01104', '4 - (Tidak ada cap)'),
         ('TD.01105', '5 - PPN Dibebaskan Sesuai Dengan PP Nomor 81 Tahun 2015'),
         ('TD.01106', '6 - PPN Dibebaskan Berdasarkan PP Nomor 74 Tahun 2015'),
         ('TD.01107', '7 - (tanpa cap)'),
-        ('TD.01108', '8 - PPN DIBEBASKAN SESUAI PP NOMOR 81 TAHUN 2015 SEBAGAIMANA TELAH DIUBAH DENGAN PP 48 TAHUN 2020'),
+        ('TD.01108',
+         '8 - PPN DIBEBASKAN SESUAI PP NOMOR 81 TAHUN 2015 SEBAGAIMANA TELAH DIUBAH DENGAN PP 48 TAHUN 2020'),
         ('TD.01109', '9 - PPN DIBEBASKAN BERDASARKAN PP NOMOR 47 TAHUN 2020'),
         ('TD.01110', '10 - PPN Dibebaskan berdasarkan PP Nomor 49 Tahun 2022')],
         compute="_compute_l10n_id_coretax_facility_info",
@@ -134,7 +151,8 @@ class AccountMove(models.Model):
 
     l10n_id_kode_transaksi = fields.Selection(selection_add=[('10', '10 Other deliveries')])
     l10n_id_coretax_efaktur_available = fields.Boolean(compute="_compute_l10n_id_coretax_efaktur_available")
-    l10n_id_coretax_document = fields.Many2one('l10n_id_efaktur_coretax.document', readonly=True, copy=False, string="e-Faktur Document (Coretax)")
+    l10n_id_coretax_document = fields.Many2one('l10n_id_efaktur_coretax.document', readonly=True, copy=False,
+                                               string="e-Faktur Document (Coretax)")
     l10n_id_coretax_custom_doc = fields.Char(help="Additional documentation when choosing kode 07 or 08")
 
     def _compute_need_kode_transaksi(self):
@@ -153,10 +171,10 @@ class AccountMove(models.Model):
         """
         for move in self:
             move.l10n_id_coretax_efaktur_available = (
-                move.partner_id.l10n_id_pkp
-                and move.country_code == 'ID'
-                and move.move_type == 'out_invoice'
-                and move.line_ids.tax_ids
+                    move.partner_id.l10n_id_pkp
+                    and move.country_code == 'ID'
+                    and move.move_type == 'out_invoice'
+                    and move.line_ids.tax_ids
             )
 
     # Interactions that is triggered when choosing kode 07 or 08
@@ -196,7 +214,8 @@ class AccountMove(models.Model):
         # Should prevent users from generating e-Faktur document on invoices across multi-company.
         # Allowing it will cause issues on the invoice/eFaktur document record rule
         if len(self.company_id) > 1:
-            raise UserError(_("You are not allowed to generate e-Faktur document from invoices coming from different companies"))
+            raise UserError(
+                _("You are not allowed to generate e-Faktur document from invoices coming from different companies"))
 
         err_messages = []
 
@@ -227,10 +246,14 @@ class AccountMove(models.Model):
                 err_messages.append(_("Invoice %s does not contain any taxes", record.name))
             if record.l10n_id_kode_transaksi == "07":
                 if not (record.l10n_id_coretax_add_info_07 and record.l10n_id_coretax_facility_info_07):
-                    err_messages.append(_("Invoice %s doesn't contain the Additional info and Facility Stamp yet (Kode 07)", record.name))
+                    err_messages.append(
+                        _("Invoice %s doesn't contain the Additional info and Facility Stamp yet (Kode 07)",
+                          record.name))
             if record.l10n_id_kode_transaksi == "08":
                 if not (record.l10n_id_coretax_add_info_08 and record.l10n_id_coretax_facility_info_08):
-                    err_messages.append(_("Invoice %s doesn't contain the Additional info and Facility Stamp yet (Kode 08)", record.name))
+                    err_messages.append(
+                        _("Invoice %s doesn't contain the Additional info and Facility Stamp yet (Kode 08)",
+                          record.name))
 
         if err_messages:
             err_messages = [_('Unable to download E-faktur fot he following reasons(s):')] + err_messages
@@ -247,7 +270,8 @@ class AccountMove(models.Model):
 
         # If there is more than one document, or all invoices for a document were not selected, the resulting file could cause mistakes;
         # They could get a file with additional invoices for example. In this case, we redirect them to the document view to make it clearer.
-        elif len(self.l10n_id_coretax_document) > 1 or set(self.l10n_id_coretax_document.invoice_ids.ids) != set(self.ids):
+        elif len(self.l10n_id_coretax_document) > 1 or set(self.l10n_id_coretax_document.invoice_ids.ids) != set(
+                self.ids):
             action_error = {
                 'name': _('Document Mismatch'),
                 'view_mode': 'list',

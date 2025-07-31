@@ -20,7 +20,9 @@
             </field>
             <field name="line_ids">
                 <record id="mod_130_title_1" model="account.report.line">
-                    <field name="name">I. Economic activities in the direct assessment system, normal or simplified mode, other than agriculture, livestock farming, forestry and fishing.</field>
+                    <field name="name">I. Economic activities in the direct assessment system, normal or simplified
+                        mode, other than agriculture, livestock farming, forestry and fishing.
+                    </field>
                     <field name="code">aeat_mod_130_title_1</field>
                     <field name="hierarchy_level">0</field>
                     <field name="children_ids">
@@ -33,7 +35,8 @@
                                 <record id="mod_130_casilla_01_balance" model="account.report.expression">
                                     <field name="label">balance</field>
                                     <field name="engine">domain</field>
-                                    <field name="formula" eval="[('account_id.internal_group', '=', 'income'), '|', ('partner_id.industry_id', '=', False), ('partner_id.industry_id.name', '!=', 'Agriculture')]"/>
+                                    <field name="formula"
+                                           eval="[('account_id.internal_group', '=', 'income'), '|', ('partner_id.industry_id', '=', False), ('partner_id.industry_id.name', '!=', 'Agriculture')]"/>
                                     <field name="subformula">-sum</field>
                                     <field name="date_scope">from_fiscalyear</field>
                                 </record>
@@ -48,7 +51,8 @@
                                 <record id="mod_130_casilla_02_balance" model="account.report.expression">
                                     <field name="label">balance</field>
                                     <field name="engine">domain</field>
-                                    <field name="formula" eval="[('account_id.internal_group', '=', 'expense'), '|', ('partner_id.industry_id', '=', False), ('partner_id.industry_id.name', '!=', 'Agriculture')]"/>
+                                    <field name="formula"
+                                           eval="[('account_id.internal_group', '=', 'expense'), '|', ('partner_id.industry_id', '=', False), ('partner_id.industry_id.name', '!=', 'Agriculture')]"/>
                                     <field name="subformula">sum</field>
                                     <field name="date_scope">from_fiscalyear</field>
                                 </record>
@@ -78,7 +82,8 @@
                                 <record id="mod_130_casilla_04_balance" model="account.report.expression">
                                     <field name="label">balance</field>
                                     <field name="engine">aggregation</field>
-                                    <field name="formula">aeat_mod_130_03.balance * (aeat_mod_130_04.percentage / 100)</field>
+                                    <field name="formula">aeat_mod_130_03.balance * (aeat_mod_130_04.percentage / 100)
+                                    </field>
                                     <field name="subformula">if_above(EUR(0))</field>
                                 </record>
                             </field>
@@ -110,7 +115,8 @@
                                 <record id="mod_130_casilla_06_balance" model="account.report.expression">
                                     <field name="label">balance</field>
                                     <field name="engine">domain</field>
-                                    <field name="formula" eval="[('tax_tag_ids', '=', '-mod130[06]'), '|', ('partner_id.industry_id', '=', False), ('partner_id.industry_id.name', '!=', 'Agriculture')]"/>
+                                    <field name="formula"
+                                           eval="[('tax_tag_ids', '=', '-mod130[06]'), '|', ('partner_id.industry_id', '=', False), ('partner_id.industry_id.name', '!=', 'Agriculture')]"/>
                                     <field name="subformula">sum</field>
                                     <field name="date_scope">from_fiscalyear</field>
                                 </record>
@@ -123,14 +129,18 @@
                                 <record id="mod_130_casilla_07_balance" model="account.report.expression">
                                     <field name="label">balance</field>
                                     <field name="engine">aggregation</field>
-                                    <field name="formula">aeat_mod_130_04.balance - aeat_mod_130_05.balance - aeat_mod_130_06.balance</field>
+                                    <field name="formula">aeat_mod_130_04.balance - aeat_mod_130_05.balance -
+                                        aeat_mod_130_06.balance
+                                    </field>
                                 </record>
                             </field>
                         </record>
                     </field>
                 </record>
                 <record id="mod_130_title_2" model="account.report.line">
-                    <field name="name">II. Agriculture, livestock farming, forestry and fishing in the direct assessment system, normal or simplified mode.</field>
+                    <field name="name">II. Agriculture, livestock farming, forestry and fishing in the direct assessment
+                        system, normal or simplified mode.
+                    </field>
                     <field name="code">aeat_mod_130_title_2</field>
                     <field name="hierarchy_level">0</field>
                     <field name="children_ids">
@@ -143,7 +153,8 @@
                                 <record id="mod_130_casilla_08_balance" model="account.report.expression">
                                     <field name="label">balance</field>
                                     <field name="engine">domain</field>
-                                    <field name="formula" eval="[('account_id.internal_group', '=', 'income'), ('partner_id.industry_id.name', '=', 'Agriculture')]"/>
+                                    <field name="formula"
+                                           eval="[('account_id.internal_group', '=', 'income'), ('partner_id.industry_id.name', '=', 'Agriculture')]"/>
                                     <field name="subformula">-sum</field>
                                     <field name="date_scope">from_fiscalyear</field>
                                 </record>
@@ -162,7 +173,8 @@
                                 <record id="mod_130_casilla_09_balance" model="account.report.expression">
                                     <field name="label">balance</field>
                                     <field name="engine">aggregation</field>
-                                    <field name="formula">aeat_mod_130_08.balance * (aeat_mod_130_09.percentage / 100)</field>
+                                    <field name="formula">aeat_mod_130_08.balance * (aeat_mod_130_09.percentage / 100)
+                                    </field>
                                     <field name="subformula">if_above(EUR(0))</field>
                                 </record>
                             </field>
@@ -182,7 +194,8 @@
                                 <record id="mod_130_casilla_10_balance" model="account.report.expression">
                                     <field name="label">balance</field>
                                     <field name="engine">domain</field>
-                                    <field name="formula" eval="[('tax_tag_ids', '=', '-mod130[06]'), ('partner_id.industry_id.name', '=', 'Agriculture')]"/>
+                                    <field name="formula"
+                                           eval="[('tax_tag_ids', '=', '-mod130[06]'), ('partner_id.industry_id.name', '=', 'Agriculture')]"/>
                                     <field name="subformula">sum</field>
                                     <field name="date_scope">from_fiscalyear</field>
                                 </record>
@@ -219,7 +232,9 @@
                             </field>
                         </record>
                         <record id="mod_130_casilla_13" model="account.report.line">
-                            <field name="name">[13] Value of the reduction based on sum of net earnings from the previous tax year</field>
+                            <field name="name">[13] Value of the reduction based on sum of net earnings from the
+                                previous tax year
+                            </field>
                             <field name="code">aeat_mod_130_13</field>
                             <field name="expression_ids">
                                 <record id="mod_130_casilla_13_balance" model="account.report.expression">
@@ -254,7 +269,9 @@
                             </field>
                         </record>
                         <record id="mod_130_casilla_16" model="account.report.line">
-                            <field name="name">[16] Deduction for allocating amounts to the payment of loans for the acquisition or rehabilitation</field>
+                            <field name="name">[16] Deduction for allocating amounts to the payment of loans for the
+                                acquisition or rehabilitation
+                            </field>
                             <field name="code">aeat_mod_130_16</field>
                             <field name="expression_ids">
                                 <record id="mod_130_casilla_16_balance" model="account.report.expression">
@@ -272,7 +289,9 @@
                                 <record id="mod_130_casilla_17_balance" model="account.report.expression">
                                     <field name="label">balance</field>
                                     <field name="engine">aggregation</field>
-                                    <field name="formula">aeat_mod_130_14.balance - aeat_mod_130_15.balance - aeat_mod_130_16.balance</field>
+                                    <field name="formula">aeat_mod_130_14.balance - aeat_mod_130_15.balance -
+                                        aeat_mod_130_16.balance
+                                    </field>
                                 </record>
                             </field>
                         </record>

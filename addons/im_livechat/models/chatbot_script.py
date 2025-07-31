@@ -2,9 +2,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import api, Command, models, fields
+from odoo.exceptions import ValidationError
 from odoo.http import request
 from odoo.tools import email_normalize, get_lang, html2plaintext, is_html_empty, plaintext2html
-from odoo.exceptions import ValidationError
 
 
 class ChatbotScript(models.Model):
@@ -20,9 +20,9 @@ class ChatbotScript(models.Model):
     image_1920 = fields.Image(related='operator_partner_id.image_1920', readonly=False)
 
     script_step_ids = fields.One2many('chatbot.script.step', 'chatbot_script_id',
-        copy=True, string='Script Steps')
+                                      copy=True, string='Script Steps')
     operator_partner_id = fields.Many2one('res.partner', string='Bot Operator',
-        ondelete='restrict', required=True, copy=False)
+                                          ondelete='restrict', required=True, copy=False)
     livechat_channel_count = fields.Integer(string='Livechat Channel Count', compute='_compute_livechat_channel_count')
     first_step_warning = fields.Selection([
         ('first_step_operator', 'First Step Operator'),
@@ -88,7 +88,8 @@ class ChatbotScript(models.Model):
 
             answers_map = {}
             for clone_step, original_step in zip(clone_steps, original_steps):
-                for clone_answer, original_answer in zip(clone_step.answer_ids.sorted(), original_step.answer_ids.sorted()):
+                for clone_answer, original_answer in zip(clone_step.answer_ids.sorted(),
+                                                         original_step.answer_ids.sorted()):
                     answers_map[original_answer] = clone_answer
 
             for clone_step, original_step in zip(clone_steps, original_steps):
@@ -115,8 +116,8 @@ class ChatbotScript(models.Model):
         operator_partners = self.env['res.partner'].create(operator_partners_values)
 
         for vals, partner in zip(
-            [vals for vals in vals_list if 'operator_partner_id' not in vals and 'title' in vals],
-            operator_partners
+                [vals for vals in vals_list if 'operator_partner_id' not in vals and 'title' in vals],
+                operator_partners
         ):
             vals['operator_partner_id'] = partner.id
 

@@ -9,7 +9,6 @@ class RecurrenceRule(models.Model):
     _name = 'calendar.recurrence'
     _inherit = ['calendar.recurrence', 'microsoft.calendar.sync']
 
-
     # Don't sync by default. Sync only when the recurrence is applied
     need_sync_m = fields.Boolean(default=False)
 
@@ -82,16 +81,17 @@ class RecurrenceRule(models.Model):
         on provided `new` values.
         Note: for all day event comparison, hours/minutes are ignored.
         """
+
         def _convert(value, to_convert):
             return value.date() if to_convert else value
 
         old = self.base_event_id and self.base_event_id.read(['start', 'stop', 'allday'])[0]
         return old and (
-            old['allday'] != new['allday']
-            or any(
-                _convert(new[f], new['allday']) != _convert(old[f], old['allday'])
-                for f in ('start', 'stop')
-            )
+                old['allday'] != new['allday']
+                or any(
+            _convert(new[f], new['allday']) != _convert(old[f], old['allday'])
+            for f in ('start', 'stop')
+        )
         )
 
     def _write_from_microsoft(self, microsoft_event, vals):
@@ -101,7 +101,8 @@ class RecurrenceRule(models.Model):
         super()._write_from_microsoft(microsoft_event, vals)
         new_event_values = self.env["calendar.event"]._microsoft_to_odoo_values(microsoft_event)
         # Edge case:  if the base event was deleted manually in 'self_only' update, skip applying recurrence.
-        if self._has_base_event_time_fields_changed(new_event_values) and (new_event_values['start'] >= self.base_event_id.start):
+        if self._has_base_event_time_fields_changed(new_event_values) and (
+                new_event_values['start'] >= self.base_event_id.start):
             # we need to recreate the recurrence, time_fields were modified.
             base_event_id = self.base_event_id
             # We archive the old events to recompute the recurrence. These events are already deleted on Microsoft side.
@@ -126,7 +127,7 @@ class RecurrenceRule(models.Model):
                 field: value
                 for field, value in new_event_values.items()
                 if field not in time_fields
-                }, need_sync_m=False)
+            }, need_sync_m=False)
             )
         # We apply the rrule check after the time_field check because the microsoft ids are generated according
         # to base_event start datetime.
@@ -145,7 +146,8 @@ class RecurrenceRule(models.Model):
         super()._cancel_microsoft()
 
     @api.model
-    def _microsoft_to_odoo_values(self, microsoft_recurrence, default_reminders=(), default_values=None, with_ids=False):
+    def _microsoft_to_odoo_values(self, microsoft_recurrence, default_reminders=(), default_values=None,
+                                  with_ids=False):
         recurrence = microsoft_recurrence.get_recurrence()
 
         if with_ids:

@@ -1,12 +1,13 @@
-
+import logging
 from ast import literal_eval
 from collections import OrderedDict
+from random import randint
+
+from lxml import etree, html
+
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError, MissingError
 from odoo.osv import expression
-from lxml import etree, html
-import logging
-from random import randint
 
 _logger = logging.getLogger(__name__)
 
@@ -56,7 +57,8 @@ class WebsiteSnippetFilter(models.Model):
     def _render(self, template_key, limit, search_domain=None, with_sample=False, **custom_template_data):
         """Renders the website dynamic snippet items"""
         self.ensure_one()
-        assert '.dynamic_filter_template_' in template_key, _("You can only use template prefixed by dynamic_filter_template_ ")
+        assert '.dynamic_filter_template_' in template_key, _(
+            "You can only use template prefixed by dynamic_filter_template_ ")
         if search_domain is None:
             search_domain = []
 
@@ -75,7 +77,8 @@ class WebsiteSnippetFilter(models.Model):
             is_sample=is_sample,
             **custom_template_data,
         ))
-        return [etree.tostring(el, encoding='unicode', method='html') for el in html.fromstring('<root>%s</root>' % str(content)).getchildren()]
+        return [etree.tostring(el, encoding='unicode', method='html') for el in
+                html.fromstring('<root>%s</root>' % str(content)).getchildren()]
 
     def _prepare_values(self, limit=None, search_domain=None):
         """Gets the data and returns it the right format for render."""
@@ -100,14 +103,16 @@ class WebsiteSnippetFilter(models.Model):
             if search_domain:
                 domain = expression.AND([domain, search_domain])
             try:
-                records = self.env[filter_sudo.model_id].sudo(False).with_context(**literal_eval(filter_sudo.context)).search(
+                records = self.env[filter_sudo.model_id].sudo(False).with_context(
+                    **literal_eval(filter_sudo.context)).search(
                     domain,
                     order=','.join(literal_eval(filter_sudo.sort)) or None,
                     limit=limit
                 )
                 return self._filter_records_to_values(records.sudo())
             except MissingError:
-                _logger.warning("The provided domain %s in 'ir.filters' generated a MissingError in '%s'", domain, self._name)
+                _logger.warning("The provided domain %s in 'ir.filters' generated a MissingError in '%s'", domain,
+                                self._name)
                 return []
         elif self.action_server_id:
             try:
@@ -117,7 +122,8 @@ class WebsiteSnippetFilter(models.Model):
                     search_domain=search_domain,
                 ).sudo().run() or []
             except MissingError:
-                _logger.warning("The provided domain %s in 'ir.actions.server' generated a MissingError in '%s'", search_domain, self._name)
+                _logger.warning("The provided domain %s in 'ir.actions.server' generated a MissingError in '%s'",
+                                search_domain, self._name)
                 return []
 
     def _get_field_name_and_type(self, model, field_name):

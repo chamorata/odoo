@@ -32,6 +32,8 @@
         <field name="view_mode">graph</field>
         <field name="domain">[('state', 'not in', ['draft', 'cancel'])]</field>
         <field name="context">{'search_default_month':1, 'search_default_team_id': [active_id]}</field>
-        <field name="help">From this report, you can have an overview of the amount invoiced to your customer. The search tool can also be used to personalise your Invoices reports and so, match this analysis to your needs.</field>
+        <field name="help">From this report, you can have an overview of the amount invoiced to your customer. The
+            search tool can also be used to personalise your Invoices reports and so, match this analysis to your needs.
+        </field>
     </record>
 </odoo>

@@ -4,8 +4,6 @@
 import logging
 import math
 
-from lxml import etree
-
 from odoo import api, fields, models, tools, _
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import parse_date, SQL
@@ -37,12 +35,13 @@ class Currency(models.Model):
     rate_string = fields.Char(compute='_compute_current_rate')
     rate_ids = fields.One2many('res.currency.rate', 'currency_id', string='Rates')
     rounding = fields.Float(string='Rounding Factor', digits=(12, 6), default=0.01,
-        help='Amounts in this currency are rounded off to the nearest multiple of the rounding factor.')
+                            help='Amounts in this currency are rounded off to the nearest multiple of the rounding factor.')
     decimal_places = fields.Integer(compute='_compute_decimal_places', store=True,
-        help='Decimal places taken into account for operations on amounts in this currency. It is determined by the rounding factor.')
+                                    help='Decimal places taken into account for operations on amounts in this currency. It is determined by the rounding factor.')
     active = fields.Boolean(default=True)
     position = fields.Selection([('after', 'After Amount'), ('before', 'Before Amount')], default='after',
-        string='Symbol Position', help="Determines where the currency symbol should be placed after or before the amount.")
+                                string='Symbol Position',
+                                help="Determines where the currency symbol should be placed after or before the amount.")
     date = fields.Date(compute='_compute_date')
     currency_unit_label = fields.Char(string="Currency Unit", translate=True)
     currency_subunit_label = fields.Char(string="Currency Subunit", translate=True)
@@ -165,7 +164,7 @@ class Currency(models.Model):
     def _compute_decimal_places(self):
         for currency in self:
             if 0 < currency.rounding < 1:
-                currency.decimal_places = int(math.ceil(math.log10(1/currency.rounding)))
+                currency.decimal_places = int(math.ceil(math.log10(1 / currency.rounding)))
             else:
                 currency.decimal_places = 0
 
@@ -176,6 +175,7 @@ class Currency(models.Model):
 
     def amount_to_text(self, amount):
         self.ensure_one()
+
         def _num2words(number, lang):
             try:
                 return num2words(number, lang=lang).title()
@@ -270,7 +270,8 @@ class Currency(models.Model):
         date = date or fields.Date.context_today(self)
         return from_currency.with_company(company).with_context(to_currency=to_currency.id, date=str(date)).inverse_rate
 
-    def _convert(self, from_amount, to_currency, company=None, date=None, round=True):  # noqa: A002 builtin-argument-shadowing
+    def _convert(self, from_amount, to_currency, company=None, date=None,
+                 round=True):  # noqa: A002 builtin-argument-shadowing
         """Returns the converted amount of ``from_amount``` from the currency
            ``self`` to the currency ``to_currency`` for the given ``date`` and
            company.
@@ -313,13 +314,15 @@ class Currency(models.Model):
         """The override of _get_view changing the rate field labels according to the company currency
         makes the view cache dependent on the company currency"""
         key = super()._get_view_cache_key(view_id, view_type, **options)
-        return key + ((self.env['res.company'].browse(self._context.get('company_id')) or self.env.company).currency_id.name,)
+        return key + (
+            (self.env['res.company'].browse(self._context.get('company_id')) or self.env.company).currency_id.name,)
 
     @api.model
     def _get_view(self, view_id=None, view_type='form', **options):
         arch, view = super()._get_view(view_id, view_type, **options)
         if view_type in ('list', 'form'):
-            currency_name = (self.env['res.company'].browse(self._context.get('company_id')) or self.env.company).currency_id.name
+            currency_name = (self.env['res.company'].browse(
+                self._context.get('company_id')) or self.env.company).currency_id.name
             fields_maps = [
                 [['company_rate', 'rate'], _('Unit per %s', currency_name)],
                 [['inverse_company_rate', 'inverse_rate'], _('%s per Unit', currency_name)],
@@ -340,7 +343,7 @@ class CurrencyRate(models.Model):
     _check_company_domain = models.check_company_domain_parent_of
 
     name = fields.Date(string='Date', required=True, index=True,
-                           default=fields.Date.context_today)
+                       default=fields.Date.context_today)
     rate = fields.Float(
         digits=0,
         aggregator="avg",
@@ -391,16 +394,16 @@ class CurrencyRate(models.Model):
         if not self.name:
             raise UserError(_("The name for the current rate is empty.\nPlease set it."))
         return self.currency_id.rate_ids.sudo().filtered(lambda x: (
-            x.rate
-            and x.company_id == (self.company_id or self.env.company.root_id)
-            and x.name < (self.name or fields.Date.today())
+                x.rate
+                and x.company_id == (self.company_id or self.env.company.root_id)
+                and x.name < (self.name or fields.Date.today())
         )).sorted('name')[-1:]
 
     def _get_last_rates_for_companies(self, companies):
         return {
             company: company.sudo().currency_id.rate_ids.filtered(lambda x: (
-                x.rate
-                and x.company_id == company or not x.company_id
+                    x.rate
+                    and x.company_id == company or not x.company_id
             )).sorted('name')[-1:].rate or 1
             for company in companies
         }
@@ -413,14 +416,17 @@ class CurrencyRate(models.Model):
     @api.depends('rate', 'name', 'currency_id', 'company_id', 'currency_id.rate_ids.rate')
     @api.depends_context('company')
     def _compute_company_rate(self):
-        last_rate = self.env['res.currency.rate']._get_last_rates_for_companies(self.company_id | self.env.company.root_id)
+        last_rate = self.env['res.currency.rate']._get_last_rates_for_companies(
+            self.company_id | self.env.company.root_id)
         for currency_rate in self:
             company = currency_rate.company_id or self.env.company.root_id
-            currency_rate.company_rate = (currency_rate.rate or currency_rate._get_latest_rate().rate or 1.0) / last_rate[company]
+            currency_rate.company_rate = (currency_rate.rate or currency_rate._get_latest_rate().rate or 1.0) / \
+                                         last_rate[company]
 
     @api.onchange('company_rate')
     def _inverse_company_rate(self):
-        last_rate = self.env['res.currency.rate']._get_last_rates_for_companies(self.company_id | self.env.company.root_id)
+        last_rate = self.env['res.currency.rate']._get_last_rates_for_companies(
+            self.company_id | self.env.company.root_id)
         for currency_rate in self:
             company = currency_rate.company_id or self.env.company.root_id
             currency_rate.rate = currency_rate.company_rate * last_rate[company]
@@ -471,18 +477,21 @@ class CurrencyRate(models.Model):
         """The override of _get_view changing the rate field labels according to the company currency
         makes the view cache dependent on the company currency"""
         key = super()._get_view_cache_key(view_id, view_type, **options)
-        return key + ((self.env['res.company'].browse(self._context.get('company_id')) or self.env.company).currency_id.name,)
+        return key + (
+            (self.env['res.company'].browse(self._context.get('company_id')) or self.env.company).currency_id.name,)
 
     @api.model
     def _get_view(self, view_id=None, view_type='form', **options):
         arch, view = super()._get_view(view_id, view_type, **options)
         if view_type == 'list':
             names = {
-                'company_currency_name': (self.env['res.company'].browse(self._context.get('company_id')) or self.env.company).currency_id.name,
+                'company_currency_name': (self.env['res.company'].browse(
+                    self._context.get('company_id')) or self.env.company).currency_id.name,
                 'rate_currency_name': self.env['res.currency'].browse(self._context.get('active_id')).name or 'Unit',
             }
             for name, label in [['company_rate', _('%(rate_currency_name)s per %(company_currency_name)s', **names)],
-                                ['inverse_company_rate', _('%(company_currency_name)s per %(rate_currency_name)s', **names)]]:
+                                ['inverse_company_rate',
+                                 _('%(company_currency_name)s per %(rate_currency_name)s', **names)]]:
 
                 if (node := arch.find(f"./field[@name='{name}']")) is not None:
                     node.set('string', label)

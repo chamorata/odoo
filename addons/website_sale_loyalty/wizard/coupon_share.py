@@ -22,9 +22,9 @@ class CouponShare(models.TransientModel):
     website_id = fields.Many2one('website', required=True, default=_get_default_website_id)
     coupon_id = fields.Many2one('loyalty.card', domain="[('program_id', '=', program_id)]")
     program_id = fields.Many2one('loyalty.program', required=True, domain=[
-        '|', ('program_type', '=', 'coupons'), # All coupons programs
-        '|', ('trigger', '=', 'with_code'), # All programs that require a code
-             ('rule_ids.code', '!=', False), # All programs that can not trigger without a code
+        '|', ('program_type', '=', 'coupons'),  # All coupons programs
+        '|', ('trigger', '=', 'with_code'),  # All programs that require a code
+        ('rule_ids.code', '!=', False),  # All programs that can not trigger without a code
     ])
     program_website_id = fields.Many2one('website', string='Program Website', related='program_id.website_id')
 
@@ -84,7 +84,8 @@ class CouponShare(models.TransientModel):
             raise UserError(_("Provide either a coupon or a program."))
 
         return {
-            'name': _('Share %s', self.env["loyalty.program"]._program_items_name().get((program or coupon).program_type, "")),
+            'name': _('Share %s',
+                      self.env["loyalty.program"]._program_items_name().get((program or coupon).program_type, "")),
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
             'res_model': 'coupon.share',

@@ -3,8 +3,8 @@
 from urllib.parse import quote
 
 from odoo import api, models, fields
-from odoo.tools.image import base64_to_image
 from odoo.exceptions import UserError
+from odoo.tools.image import base64_to_image
 
 SUPPORTED_IMAGE_MIMETYPES = {
     'image/gif': '.gif',
@@ -18,14 +18,14 @@ SUPPORTED_IMAGE_MIMETYPES = {
 
 
 class IrAttachment(models.Model):
-
     _inherit = "ir.attachment"
 
     local_url = fields.Char("Attachment URL", compute='_compute_local_url')
     image_src = fields.Char(compute='_compute_image_src')
     image_width = fields.Integer(compute='_compute_image_size')
     image_height = fields.Integer(compute='_compute_image_size')
-    original_id = fields.Many2one('ir.attachment', string="Original (unoptimized, unresized) attachment", index='btree_not_null')
+    original_id = fields.Many2one('ir.attachment', string="Original (unoptimized, unresized) attachment",
+                                  index='btree_not_null')
 
     def _compute_local_url(self):
         for attachment in self:
@@ -75,7 +75,9 @@ class IrAttachment(models.Model):
     def _get_media_info(self):
         """Return a dict with the values that we need on the media dialog."""
         self.ensure_one()
-        return self._read_format(['id', 'name', 'description', 'mimetype', 'checksum', 'url', 'type', 'res_id', 'res_model', 'public', 'access_token', 'image_src', 'image_width', 'image_height', 'original_id'])[0]
+        return self._read_format(
+            ['id', 'name', 'description', 'mimetype', 'checksum', 'url', 'type', 'res_id', 'res_model', 'public',
+             'access_token', 'image_src', 'image_width', 'image_height', 'original_id'])[0]
 
     def _can_bypass_rights_on_media_dialog(self, **attachment_data):
         """ This method is meant to be overridden, for instance to allow to

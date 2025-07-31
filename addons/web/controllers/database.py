@@ -11,16 +11,13 @@ from lxml import html
 import odoo
 import odoo.modules.registry
 from odoo import http
+from odoo.addons.base.models.ir_qweb import render as qweb_render
 from odoo.http import content_disposition, dispatch_rpc, request, Response
 from odoo.service import db
 from odoo.tools.misc import file_open, str2bool
 from odoo.tools.translate import _
 
-from odoo.addons.base.models.ir_qweb import render as qweb_render
-
-
 _logger = logging.getLogger(__name__)
-
 
 DBNAME_PATTERN = '^[a-zA-Z0-9][a-zA-Z0-9_.-]+$'
 
@@ -75,10 +72,13 @@ class Database(http.Controller):
             dispatch_rpc('db', 'change_admin_password', ["admin", master_pwd])
         try:
             if not re.match(DBNAME_PATTERN, name):
-                raise Exception(_('Houston, we have a database naming issue! Make sure you only use letters, numbers, underscores, hyphens, or dots in the database name, and you\'ll be golden.'))
+                raise Exception(
+                    _('Houston, we have a database naming issue! Make sure you only use letters, numbers, underscores, hyphens, or dots in the database name, and you\'ll be golden.'))
             # country code could be = "False" which is actually True in python
             country_code = post.get('country_code') or False
-            dispatch_rpc('db', 'create_database', [master_pwd, name, bool(post.get('demo')), lang, password, post['login'], country_code, post['phone']])
+            dispatch_rpc('db', 'create_database',
+                         [master_pwd, name, bool(post.get('demo')), lang, password, post['login'], country_code,
+                          post['phone']])
             credential = {'login': post['login'], 'password': password, 'type': 'password'}
             request.session.authenticate(name, credential)
             request.session.db = name
@@ -95,7 +95,8 @@ class Database(http.Controller):
             dispatch_rpc('db', 'change_admin_password', ["admin", master_pwd])
         try:
             if not re.match(DBNAME_PATTERN, new_name):
-                raise Exception(_('Houston, we have a database naming issue! Make sure you only use letters, numbers, underscores, hyphens, or dots in the database name, and you\'ll be golden.'))
+                raise Exception(
+                    _('Houston, we have a database naming issue! Make sure you only use letters, numbers, underscores, hyphens, or dots in the database name, and you\'ll be golden.'))
             dispatch_rpc('db', 'duplicate_database', [master_pwd, name, new_name, neutralize_database])
             if request.db == name:
                 request.env.cr.close()  # duplicating a database leads to an unusable cursor
@@ -143,7 +144,8 @@ class Database(http.Controller):
             error = "Database backup error: %s" % (str(e) or repr(e))
             return self._render_template(error=error)
 
-    @http.route('/web/database/restore', type='http', auth="none", methods=['POST'], csrf=False, max_content_length=None)
+    @http.route('/web/database/restore', type='http', auth="none", methods=['POST'], csrf=False,
+                max_content_length=None)
     def restore(self, master_pwd, backup_file, name, copy=False, neutralize_database=False):
         insecure = odoo.tools.config.verify_admin_password('admin')
         if insecure and master_pwd:

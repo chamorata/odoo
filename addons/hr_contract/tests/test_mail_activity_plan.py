@@ -2,9 +2,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from freezegun import freeze_time
+from odoo.addons.hr.tests.test_mail_activity_plan import ActivityScheduleHRCase
 
 from odoo import fields
-from odoo.addons.hr.tests.test_mail_activity_plan import ActivityScheduleHRCase
 from odoo.tests import tagged, users
 
 
@@ -50,8 +50,8 @@ class TestActivitySchedule(ActivityScheduleHRCase):
 
         # not applicable on other models
         customers = self.env['res.partner'].create([
-            {'name': 'Customer1',},
-            {'name': 'Customer2',},
+            {'name': 'Customer1', },
+            {'name': 'Customer2', },
         ])
         with self._instantiate_activity_schedule_wizard(customers) as form:
             form.plan_id = self.plan_party

@@ -30,7 +30,7 @@ class MailTracking(models.Model):
     new_value_datetime = fields.Datetime('New Value Datetime', readonly=True)
 
     currency_id = fields.Many2one('res.currency', 'Currency', readonly=True, ondelete='set null',
-        help="Used to display the currency when tracking monetary values")
+                                  help="Used to display the currency when tracking monetary values")
 
     mail_message_id = fields.Many2one('mail.message', 'Message ID', required=True, index=True, ondelete='cascade')
 
@@ -98,8 +98,10 @@ class MailTracking(models.Model):
             })
         elif col_info['type'] == 'date':
             values.update({
-                'old_value_datetime': initial_value and fields.Datetime.to_string(datetime.combine(fields.Date.from_string(initial_value), datetime.min.time())) or False,
-                'new_value_datetime': new_value and fields.Datetime.to_string(datetime.combine(fields.Date.from_string(new_value), datetime.min.time())) or False,
+                'old_value_datetime': initial_value and fields.Datetime.to_string(
+                    datetime.combine(fields.Date.from_string(initial_value), datetime.min.time())) or False,
+                'new_value_datetime': new_value and fields.Datetime.to_string(
+                    datetime.combine(fields.Date.from_string(new_value), datetime.min.time())) or False,
             })
         elif col_info['type'] == 'boolean':
             values.update({
@@ -160,7 +162,8 @@ class MailTracking(models.Model):
         # fetch model-based information
         if model:
             TrackedModel = self.env[model]
-            tracked_fields = TrackedModel.fields_get(self.field_id.mapped('name'), attributes={'digits', 'string', 'type'})
+            tracked_fields = TrackedModel.fields_get(self.field_id.mapped('name'),
+                                                     attributes={'digits', 'string', 'type'})
             model_sequence_info = dict(TrackedModel._mail_track_order_fields(tracked_fields)) if model else {}
         else:
             tracked_fields, model_sequence_info = {}, {}
@@ -185,7 +188,8 @@ class MailTracking(models.Model):
             {
                 'changedField': col_info['string'],
                 'id': tracking.id,
-                'fieldName': tracking.field_id.name or (tracking.field_info['name'] if tracking.field_info else 'unknown'),
+                'fieldName': tracking.field_id.name or (
+                    tracking.field_info['name'] if tracking.field_info else 'unknown'),
                 'fieldType': col_info['type'],
                 'newValue': {
                     'currencyId': tracking.currency_id.id,

@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from uuid import uuid4
+
 import pytz
 from dateutil.parser import parse
 from dateutil.relativedelta import relativedelta
-from uuid import uuid4
+from odoo.addons.google_calendar.utils.google_calendar import GoogleCalendarService
 
 from odoo import api, fields, models, tools, _
 from odoo.exceptions import ValidationError
 
-from odoo.addons.google_calendar.utils.google_calendar import GoogleCalendarService
 
 class Meeting(models.Model):
     _name = 'calendar.event'
@@ -21,7 +22,8 @@ class Meeting(models.Model):
         'Google Calendar Event Id', compute='_compute_google_id', store=True, readonly=False)
     guests_readonly = fields.Boolean(
         'Guests Event Modification Permission', default=False)
-    videocall_source = fields.Selection(selection_add=[('google_meet', 'Google Meet')], ondelete={'google_meet': 'set discuss'})
+    videocall_source = fields.Selection(selection_add=[('google_meet', 'Google Meet')],
+                                        ondelete={'google_meet': 'set discuss'})
 
     @api.depends('recurrence_id.google_id')
     def _compute_google_id(self):
@@ -94,7 +96,8 @@ class Meeting(models.Model):
         if not notify_context and ([self.env.user.id != record.user_id.id for record in self]):
             self._check_modify_event_permission(values)
         res = super(Meeting, self.with_context(dont_notify=notify_context)).write(values)
-        if recurrence_update_setting in ('all_events',) and len(self) == 1 and values.keys() & self._get_google_synced_fields():
+        if recurrence_update_setting in ('all_events',) and len(
+                self) == 1 and values.keys() & self._get_google_synced_fields():
             self.recurrence_id.need_sync = True
         return res
 
@@ -245,7 +248,7 @@ class Meeting(models.Model):
             if alarm:
                 commands += [(4, alarm.id)]
             else:
-                if minutes % (60*24) == 0:
+                if minutes % (60 * 24) == 0:
                     interval = 'days'
                     duration = minutes / 60 / 24
                     name = _(
@@ -269,7 +272,8 @@ class Meeting(models.Model):
                         reminder_type=alarm_type_label,
                         duration=duration,
                     )
-                commands += [(0, 0, {'duration': duration, 'interval': interval, 'name': name, 'alarm_type': alarm_type})]
+                commands += [
+                    (0, 0, {'duration': duration, 'interval': interval, 'name': name, 'alarm_type': alarm_type})]
         return commands
 
     def action_mass_archive(self, recurrence_update_setting):
@@ -278,7 +282,8 @@ class Meeting(models.Model):
         google_service = GoogleCalendarService(self.env['google.service'])
         archive_future_events = recurrence_update_setting == 'future_events' and self == self.recurrence_id.base_event_id
         if recurrence_update_setting == 'all_events' or archive_future_events:
-            self.recurrence_id.with_context(is_recurrence=True)._google_delete(google_service, self.recurrence_id.google_id)
+            self.recurrence_id.with_context(is_recurrence=True)._google_delete(google_service,
+                                                                               self.recurrence_id.google_id)
             # Increase performance handling 'future_events' edge case as it was an 'all_events' update.
             if archive_future_events:
                 recurrence_update_setting = 'all_events'

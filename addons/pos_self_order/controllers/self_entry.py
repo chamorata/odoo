@@ -6,25 +6,26 @@ from odoo.http import request
 
 
 class PosSelfKiosk(http.Controller):
-    @http.route(["/pos-self/<config_id>", "/pos-self/<config_id>/<path:subpath>"], auth="public", website=True, sitemap=True)
+    @http.route(["/pos-self/<config_id>", "/pos-self/<config_id>/<path:subpath>"], auth="public", website=True,
+                sitemap=True)
     def start_self_ordering(self, config_id=None, access_token=None, table_identifier=None, subpath=None):
         pos_config, _, config_access_token = self._verify_entry_access(config_id, access_token, table_identifier)
         return request.render(
-                'pos_self_order.index',
-                {
-                    'access_token': config_access_token,
-                    'session_info': {
-                        **request.env["ir.http"].get_frontend_session_info(),
-                        'currencies': request.env["ir.http"].get_currencies(),
-                        'data': {
-                            'config_id': pos_config.id,
-                            'self_ordering_mode': pos_config.self_ordering_mode,
-                        },
-                        "base_url": request.env['pos.session'].get_base_url(),
-                        "db": request.env.cr.dbname,
-                    }
+            'pos_self_order.index',
+            {
+                'access_token': config_access_token,
+                'session_info': {
+                    **request.env["ir.http"].get_frontend_session_info(),
+                    'currencies': request.env["ir.http"].get_currencies(),
+                    'data': {
+                        'config_id': pos_config.id,
+                        'self_ordering_mode': pos_config.self_ordering_mode,
+                    },
+                    "base_url": request.env['pos.session'].get_base_url(),
+                    "db": request.env.cr.dbname,
                 }
-            )
+            }
+        )
 
     @http.route("/pos-self/data/<config_id>", type='json', auth='public', website=True)
     def get_self_ordering_data(self, config_id=None, access_token=None, table_identifier=None):
@@ -52,7 +53,8 @@ class PosSelfKiosk(http.Controller):
 
         company = pos_config_sudo.company_id
         user = pos_config_sudo.self_ordering_default_user_id
-        pos_config = pos_config_sudo.sudo(False).with_company(company).with_user(user).with_context(allowed_company_ids=company.ids, lang=request.cookies.get('frontend_lang'))
+        pos_config = pos_config_sudo.sudo(False).with_company(company).with_user(user).with_context(
+            allowed_company_ids=company.ids, lang=request.cookies.get('frontend_lang'))
 
         if not pos_config:
             raise werkzeug.exceptions.NotFound()

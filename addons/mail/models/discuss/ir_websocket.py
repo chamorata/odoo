@@ -2,9 +2,10 @@
 
 import re
 
-from odoo import models
 from odoo.addons.mail.models.discuss.mail_guest import add_guest_to_context
 from odoo.addons.mail.tools.discuss import Store
+
+from odoo import models
 
 
 class IrWebsocket(models.AbstractModel):

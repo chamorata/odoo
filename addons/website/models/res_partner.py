@@ -4,6 +4,7 @@ import werkzeug.urls
 
 from odoo import models, fields, api
 
+
 class Partner(models.Model):
     _name = 'res.partner'
     _inherit = ['res.partner', 'website.published.multi.mixin']
@@ -15,7 +16,8 @@ class Partner(models.Model):
         if not google_maps_api_key:
             return False
         params = {
-            'center': '%s, %s %s, %s' % (self.street or '', self.city or '', self.zip or '', self.country_id and self.country_id.display_name or ''),
+            'center': '%s, %s %s, %s' % (self.street or '', self.city or '', self.zip or '',
+                                         self.country_id and self.country_id.display_name or ''),
             'size': "%sx%s" % (width, height),
             'zoom': zoom,
             'sensor': 'false',
@@ -25,7 +27,8 @@ class Partner(models.Model):
 
     def google_map_link(self, zoom=10):
         params = {
-            'q': '%s, %s %s, %s' % (self.street or '', self.city or '', self.zip or '', self.country_id and self.country_id.display_name or ''),
+            'q': '%s, %s %s, %s' % (self.street or '', self.city or '', self.zip or '',
+                                    self.country_id and self.country_id.display_name or ''),
             'z': zoom,
         }
         return 'https://maps.google.com/maps?' + werkzeug.urls.url_encode(params)

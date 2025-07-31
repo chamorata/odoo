@@ -1,9 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.sale.tests.common import SaleCommon
+
 from odoo.fields import Command
 from odoo.tests import HttpCase, tagged
-
-from odoo.addons.sale.tests.common import SaleCommon
 
 
 @tagged('post_install', '-at_install')

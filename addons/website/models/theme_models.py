@@ -2,11 +2,12 @@
 
 import logging
 import threading
-from odoo import api, fields, models
-from odoo.tools.translate import xml_translate
-from odoo.modules.module import get_resource_from_path
 
-from odoo.addons.base.models.ir_asset import AFTER_DIRECTIVE, APPEND_DIRECTIVE, BEFORE_DIRECTIVE, DEFAULT_SEQUENCE, INCLUDE_DIRECTIVE, PREPEND_DIRECTIVE, REMOVE_DIRECTIVE, REPLACE_DIRECTIVE
+from odoo import api, fields, models
+from odoo.addons.base.models.ir_asset import AFTER_DIRECTIVE, APPEND_DIRECTIVE, BEFORE_DIRECTIVE, DEFAULT_SEQUENCE, \
+    INCLUDE_DIRECTIVE, PREPEND_DIRECTIVE, REMOVE_DIRECTIVE, REPLACE_DIRECTIVE
+from odoo.modules.module import get_resource_from_path
+from odoo.tools.translate import xml_translate
 
 _logger = logging.getLogger(__name__)
 
@@ -76,7 +77,8 @@ class ThemeView(models.Model):
         self.ensure_one()
         inherit = self.inherit_id
         if self.inherit_id and self.inherit_id._name == 'theme.ir.ui.view':
-            inherit = self.inherit_id.with_context(active_test=False).copy_ids.filtered(lambda x: x.website_id == website)
+            inherit = self.inherit_id.with_context(active_test=False).copy_ids.filtered(
+                lambda x: x.website_id == website)
             if not inherit:
                 # inherit_id not yet created, add to the queue
                 return False
@@ -116,7 +118,8 @@ class ThemeAttachment(models.Model):
     name = fields.Char(required=True)
     key = fields.Char(required=True)
     url = fields.Char()
-    copy_ids = fields.One2many('ir.attachment', 'theme_template_id', 'Attachment using a copy of me', copy=False, readonly=True)
+    copy_ids = fields.One2many('ir.attachment', 'theme_template_id', 'Attachment using a copy of me', copy=False,
+                               readonly=True)
 
     def _convert_to_base_model(self, website, **kwargs):
         self.ensure_one()
@@ -147,7 +150,8 @@ class ThemeMenu(models.Model):
     mega_menu_classes = fields.Char()
 
     use_main_menu_as_parent = fields.Boolean(default=True)
-    copy_ids = fields.One2many('website.menu', 'theme_template_id', 'Menu using a copy of me', copy=False, readonly=True)
+    copy_ids = fields.One2many('website.menu', 'theme_template_id', 'Menu using a copy of me', copy=False,
+                               readonly=True)
 
     def _convert_to_base_model(self, website, **kwargs):
         self.ensure_one()
@@ -190,7 +194,8 @@ class ThemePage(models.Model):
     header_visible = fields.Boolean(default=True)
     footer_visible = fields.Boolean(default=True)
 
-    copy_ids = fields.One2many('website.page', 'theme_template_id', 'Page using a copy of me', copy=False, readonly=True)
+    copy_ids = fields.One2many('website.page', 'theme_template_id', 'Page using a copy of me', copy=False,
+                               readonly=True)
 
     def _convert_to_base_model(self, website, **kwargs):
         self.ensure_one()

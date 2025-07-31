@@ -78,7 +78,7 @@ class ResConfigSettings(models.TransientModel):
     module_sale_pdf_quote_builder = fields.Boolean("PDF Quote builder")
     module_sale_commission = fields.Boolean("Commissions")
 
-    #=== ONCHANGE METHODS ===#
+    # === ONCHANGE METHODS ===#
 
     @api.depends('group_discount_per_so_line')
     def _onchange_group_discount_per_so_line(self):
@@ -114,7 +114,7 @@ class ResConfigSettings(models.TransientModel):
                 },
             }
 
-    #=== CRUD METHODS ===#
+    # === CRUD METHODS ===#
 
     def set_values(self):
         super().set_values()

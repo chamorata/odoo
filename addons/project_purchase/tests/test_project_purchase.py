@@ -1,8 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import Command
-
 from odoo.addons.project_purchase.tests.test_project_profitability import TestProjectPurchaseProfitability
+
+from odoo import Command
 
 
 class TestProjectPurchase(TestProjectPurchaseProfitability):
@@ -20,7 +20,8 @@ class TestProjectPurchase(TestProjectPurchaseProfitability):
             {
                 'name': 'Purchase Order 1',
                 'partner_id': self.partner_a.id,
-                'order_line': [Command.create({**order_line_values, 'analytic_distribution': {self.analytic_account.id: 100}})]
+                'order_line': [
+                    Command.create({**order_line_values, 'analytic_distribution': {self.analytic_account.id: 100}})]
             },
             {
                 'name': 'Purchase Order 2',
@@ -32,10 +33,12 @@ class TestProjectPurchase(TestProjectPurchaseProfitability):
                 'name': 'Purchase Order 3',
                 'partner_id': self.partner_a.id,
                 'project_id': project1.id,
-                'order_line': [Command.create({**order_line_values, 'analytic_distribution': {self.analytic_account.id: 100}})]
+                'order_line': [
+                    Command.create({**order_line_values, 'analytic_distribution': {self.analytic_account.id: 100}})]
             },
         ])
-        self.assertEqual(project1.purchase_orders_count, 3, 'The number of purchase orders linked to project1 should be equal to 3.')
+        self.assertEqual(project1.purchase_orders_count, 3,
+                         'The number of purchase orders linked to project1 should be equal to 3.')
 
         project2 = self.env['project.project'].create({'name': 'Project'})
         project2.account_id = False  # Project without analytics
@@ -53,4 +56,5 @@ class TestProjectPurchase(TestProjectPurchaseProfitability):
                 'order_line': [Command.create(order_line_values)],
             },
         ])
-        self.assertEqual(project2.purchase_orders_count, 2, 'The number of purchase orders linked to project2 should be equal to 2.')
+        self.assertEqual(project2.purchase_orders_count, 2,
+                         'The number of purchase orders linked to project2 should be equal to 2.')

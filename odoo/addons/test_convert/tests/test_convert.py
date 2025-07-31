@@ -7,13 +7,13 @@ import unittest
 from lxml import etree as ET
 from lxml.builder import E
 
-import odoo
 from odoo.tests import common
 from odoo.tools.convert import convert_file, xml_import, _eval_xml
 from odoo.tools.misc import file_path
 
 Field = E.field
 Value = E.value
+
 
 class TestEvalXML(common.TransactionCase):
     def eval_xml(self, node, obj=None):
@@ -296,14 +296,14 @@ class TestEvalXML(common.TransactionCase):
     def test_html(self):
         self.assertEqual(
             self.eval_xml(Field(ET.fromstring(
-            """<parent>
-                <t t-if="True">
-                    <t t-out="'text'"/>
-                </t>
-                <t t-else="">
-                    <t t-out="'text2'"></t>
-                </t>
-            </parent>"""), type="html")),
+                """<parent>
+                    <t t-if="True">
+                        <t t-out="'text'"/>
+                    </t>
+                    <t t-else="">
+                        <t t-out="'text2'"></t>
+                    </t>
+                </parent>"""), type="html")),
             """<parent>
                 <t t-if="True">
                     <t t-out="'text'"></t>

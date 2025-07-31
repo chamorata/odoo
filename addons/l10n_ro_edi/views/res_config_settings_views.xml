@@ -25,23 +25,30 @@
                                 </div>
                                 <ul>
                                     <li>
-                                        Go to <a href="https://pfinternet.anaf.ro/" target="_blank">https://pfinternet.anaf.ro/</a>.
+                                        Go to <a href="https://pfinternet.anaf.ro/" target="_blank">
+                                        https://pfinternet.anaf.ro/</a>.
                                         Login or Sign Up if you don't have an account yet
                                     </li>
                                     <li>Go to "Editare profil Oauth"</li>
                                     <li>Generate a new Client data
                                         <ul>
-                                            <li>Fill "Denumire Aplicatie" with any desired name for your registration data</li>
+                                            <li>Fill "Denumire Aplicatie" with any desired name for your registration
+                                                data
+                                            </li>
                                             <li>
                                                 Fill "Callback URL 1" with the following URL:
-                                                <br/><field name="l10n_ro_edi_callback_url" widget="text" class="w-100 text-success"/>
+                                                <br/>
+                                                <field name="l10n_ro_edi_callback_url" widget="text"
+                                                       class="w-100 text-success"/>
                                             </li>
                                             <li>In "Serviciu", select the option "E-Factura"</li>
                                             <li>Submit the form by clicking on "Generare Client ID"</li>
                                         </ul>
                                     </li>
                                     <li>Copy the generated Client ID and Client Secret to the fields below</li>
-                                    <li>With the digital signature USB token inserted, generate the token using the button below</li>
+                                    <li>With the digital signature USB token inserted, generate the token using the
+                                        button below
+                                    </li>
                                 </ul>
                             </div>
                             <div class="row text-warning" invisible="not l10n_ro_edi_oauth_error">

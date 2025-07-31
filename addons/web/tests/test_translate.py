@@ -3,6 +3,7 @@
 
 from odoo.tests.common import TransactionCase
 
+
 class TestTranslationOverride(TransactionCase):
     @classmethod
     def setUpClass(cls):

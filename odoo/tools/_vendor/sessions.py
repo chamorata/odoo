@@ -15,10 +15,10 @@ r"""
     :copyright: 2007 Pallets
     :license: BSD-3-Clause
 """
+import json
 import logging
 import os
 import re
-import json
 import tempfile
 from hashlib import sha1
 from os import path, replace as rename
@@ -164,19 +164,19 @@ class FilesystemSessionStore(SessionStore):
     """
 
     def __init__(
-        self,
-        path=None,
-        filename_template="werkzeug_%s.sess",
-        session_class=None,
-        renew_missing=False,
-        mode=0o644,
+            self,
+            path=None,
+            filename_template="werkzeug_%s.sess",
+            session_class=None,
+            renew_missing=False,
+            mode=0o644,
     ):
         SessionStore.__init__(self, session_class)
         if path is None:
             path = tempfile.gettempdir()
         self.path = path
         assert not filename_template.endswith(_fs_transaction_suffix), (
-            "filename templates may not end with %s" % _fs_transaction_suffix
+                "filename templates may not end with %s" % _fs_transaction_suffix
         )
         self.filename_template = filename_template
         self.renew_missing = renew_missing

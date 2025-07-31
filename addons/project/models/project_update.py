@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from datetime import timedelta
 from dateutil.relativedelta import relativedelta
 from werkzeug.urls import url_encode
 
@@ -19,6 +18,7 @@ STATUS_COLOR = {
     # Only used in project.task
     'to_define': 0,
 }
+
 
 class ProjectUpdate(models.Model):
     _name = 'project.update'
@@ -39,7 +39,8 @@ class ProjectUpdate(models.Model):
             if 'status' in fields and not result.get('status'):
                 # `to_define` is not an option for self.status, here we actually want to default to `on_track`
                 # the goal of `to_define` is for a project to start without an actual status.
-                result['status'] = project.last_update_status if project.last_update_status != 'to_define' else 'on_track'
+                result[
+                    'status'] = project.last_update_status if project.last_update_status != 'to_define' else 'on_track'
         return result
 
     name = fields.Char("Title", required=True, tracking=True)
@@ -60,7 +61,8 @@ class ProjectUpdate(models.Model):
     name_cropped = fields.Char(compute="_compute_name_cropped", export_string_translation=False)
     task_count = fields.Integer("Task Count", readonly=True, export_string_translation=False)
     closed_task_count = fields.Integer("Closed Task Count", readonly=True, export_string_translation=False)
-    closed_task_percentage = fields.Integer("Closed Task Percentage", compute="_compute_closed_task_percentage", export_string_translation=False)
+    closed_task_percentage = fields.Integer("Closed Task Percentage", compute="_compute_closed_task_percentage",
+                                            export_string_translation=False)
 
     @api.depends('status')
     def _compute_color(self):
@@ -79,7 +81,8 @@ class ProjectUpdate(models.Model):
 
     def _compute_closed_task_percentage(self):
         for update in self:
-            update.closed_task_percentage = update.task_count and round(update.closed_task_count * 100 / update.task_count)
+            update.closed_task_percentage = update.task_count and round(
+                update.closed_task_count * 100 / update.task_count)
 
     # ---------------------------------
     # ORM Override
@@ -108,7 +111,8 @@ class ProjectUpdate(models.Model):
     # ---------------------------------
     @api.model
     def _build_description(self, project):
-        return self.env['ir.qweb']._render('project.project_update_default_description', self._get_template_values(project))
+        return self.env['ir.qweb']._render('project.project_update_default_description',
+                                           self._get_template_values(project))
 
     @api.model
     def _get_template_values(self, project):
@@ -135,7 +139,8 @@ class ProjectUpdate(models.Model):
             }
         list_milestones = Milestone.search(
             [('project_id', '=', project.id),
-             '|', ('deadline', '<', fields.Date.context_today(self) + relativedelta(years=1)), ('deadline', '=', False)])._get_data_list()
+             '|', ('deadline', '<', fields.Date.context_today(self) + relativedelta(years=1)),
+             ('deadline', '=', False)])._get_data_list()
         updated_milestones = self._get_last_updated_milestone(project)
         domain = [('project_id', '=', project.id)]
         if project.last_update_id.create_date:
@@ -184,7 +189,8 @@ class ProjectUpdate(models.Model):
             query_params['last_update_date'] = project.last_update_id.create_date
         self.env.cr.execute(query, query_params)
         results = self.env.cr.dictfetchall()
-        mapped_result = {res['milestone_id']: {'new_value': res['new_value'], 'old_value': res['old_value']} for res in results}
+        mapped_result = {res['milestone_id']: {'new_value': res['new_value'], 'old_value': res['old_value']} for res in
+                         results}
         milestones = self.env['project.milestone'].search([('id', 'in', list(mapped_result.keys()))])
         return [{
             **milestone._get_data(),

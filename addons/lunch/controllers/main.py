@@ -25,10 +25,10 @@ class LunchController(http.Controller):
                 'id': line.id,
                 'product': (line.product_id.id, line.product_id.name, float_repr(
                     float_round(line.product_id.price, 2) * line.quantity, 2),
-                float_round(line.product_id.price, 2)),
+                            float_round(line.product_id.price, 2)),
                 'toppings': [(topping.name, float_repr(float_round(topping.price, 2) * line.quantity, 2),
-                float_round(topping.price, 2))
-                    for topping in line.topping_ids_1 | line.topping_ids_2 | line.topping_ids_3],
+                              float_round(topping.price, 2))
+                             for topping in line.topping_ids_1 | line.topping_ids_2 | line.topping_ids_3],
                 'quantity': line.quantity,
                 'price': line.price,
                 'raw_state': line.state,
@@ -36,7 +36,7 @@ class LunchController(http.Controller):
                 'date': line.date,
                 'location': line.lunch_location_id.name,
                 'note': line.note
-                } for line in lines.sorted('date')]
+            } for line in lines.sorted('date')]
             total = float_round(sum(line['price'] for line in lines), 2)
             paid_subtotal = float_round(sum(line['price'] for line in lines if line['raw_state'] != 'new'), 2)
             unpaid_subtotal = total - paid_subtotal
@@ -123,10 +123,12 @@ class LunchController(http.Controller):
         })
 
         user_location = user.last_lunch_location_id
-        has_multi_company_access = not user_location.company_id or user_location.company_id.id in request.env.context.get('allowed_company_ids', request.env.company.ids)
+        has_multi_company_access = not user_location.company_id or user_location.company_id.id in request.env.context.get(
+            'allowed_company_ids', request.env.company.ids)
 
         if not user_location or not has_multi_company_access:
-            user.last_lunch_location_id = user_location = request.env['lunch.location'].search([], limit=1) or user_location
+            user.last_lunch_location_id = user_location = request.env['lunch.location'].search([],
+                                                                                               limit=1) or user_location
 
         alert_domain = expression.AND([
             [('available_today', '=', True)],
@@ -143,12 +145,13 @@ class LunchController(http.Controller):
 
     def _check_user_impersonification(self, user_id=None):
         if (user_id and request.env.uid != user_id and not request.env.user.has_group('lunch.group_lunch_manager')):
-            raise AccessError(_('You are trying to impersonate another user, but this can only be done by a lunch manager'))
+            raise AccessError(
+                _('You are trying to impersonate another user, but this can only be done by a lunch manager'))
 
     def _get_current_lines(self, user):
         return request.env['lunch.order'].search(
             [('user_id', '=', user.id), ('date', '>=', fields.Date.context_today(user)), ('state', '!=', 'cancelled')]
-            )
+        )
 
     def _get_state(self, lines):
         """

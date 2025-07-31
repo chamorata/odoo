@@ -3,9 +3,9 @@
 from markupsafe import Markup
 
 from odoo import api, Command, fields, models, SUPERUSER_ID, _
-from odoo.tools.float_utils import float_compare
 from odoo.exceptions import UserError
 from odoo.tools import format_list
+from odoo.tools.float_utils import float_compare
 from odoo.tools.misc import OrderedSet
 
 
@@ -18,23 +18,27 @@ class PurchaseOrder(models.Model):
 
     incoterm_location = fields.Char(string='Incoterm Location')
     incoming_picking_count = fields.Integer("Incoming Shipment count", compute='_compute_incoming_picking_count')
-    picking_ids = fields.Many2many('stock.picking', compute='_compute_picking_ids', string='Receptions', copy=False, store=True)
+    picking_ids = fields.Many2many('stock.picking', compute='_compute_picking_ids', string='Receptions', copy=False,
+                                   store=True)
     dest_address_id = fields.Many2one('res.partner', compute='_compute_dest_address_id', store=True, readonly=False)
-    picking_type_id = fields.Many2one('stock.picking.type', 'Deliver To', required=True, default=_default_picking_type, domain="['|', ('warehouse_id', '=', False), ('warehouse_id.company_id', '=', company_id)]",
-        help="This will determine operation type of incoming shipment")
-    default_location_dest_id_usage = fields.Selection(related='picking_type_id.default_location_dest_id.usage', string='Destination Location Type',
-        help="Technical field used to display the Drop Ship Address", readonly=True)
+    picking_type_id = fields.Many2one('stock.picking.type', 'Deliver To', required=True, default=_default_picking_type,
+                                      domain="['|', ('warehouse_id', '=', False), ('warehouse_id.company_id', '=', company_id)]",
+                                      help="This will determine operation type of incoming shipment")
+    default_location_dest_id_usage = fields.Selection(related='picking_type_id.default_location_dest_id.usage',
+                                                      string='Destination Location Type',
+                                                      help="Technical field used to display the Drop Ship Address",
+                                                      readonly=True)
     group_id = fields.Many2one('procurement.group', string="Procurement Group", copy=False)
     is_shipped = fields.Boolean(compute="_compute_is_shipped")
     effective_date = fields.Datetime("Arrival", compute='_compute_effective_date', store=True, copy=False,
-        help="Completion date of the first receipt order.")
+                                     help="Completion date of the first receipt order.")
     on_time_rate = fields.Float(related='partner_id.on_time_rate', compute_sudo=False)
     receipt_status = fields.Selection([
         ('pending', 'Not Received'),
         ('partial', 'Partially Received'),
         ('full', 'Fully Received'),
     ], string='Receipt Status', compute='_compute_receipt_status', store=True,
-       help="Red: Late\n\
+        help="Red: Late\n\
             Orange: To process today\n\
             Green: On time")
 
@@ -51,7 +55,8 @@ class PurchaseOrder(models.Model):
     @api.depends('picking_ids.date_done')
     def _compute_effective_date(self):
         for order in self:
-            pickings = order.picking_ids.filtered(lambda x: x.state == 'done' and x.location_dest_id.usage != 'supplier' and x.date_done)
+            pickings = order.picking_ids.filtered(
+                lambda x: x.state == 'done' and x.location_dest_id.usage != 'supplier' and x.date_done)
             order.effective_date = min(pickings.mapped('date_done'), default=False)
 
     @api.depends('picking_ids', 'picking_ids.state')
@@ -76,12 +81,14 @@ class PurchaseOrder(models.Model):
 
     @api.depends('picking_type_id')
     def _compute_dest_address_id(self):
-        self.filtered(lambda po: po.picking_type_id.default_location_dest_id.usage != 'customer').dest_address_id = False
+        self.filtered(
+            lambda po: po.picking_type_id.default_location_dest_id.usage != 'customer').dest_address_id = False
 
     @api.onchange('company_id')
     def _onchange_company_id(self):
         p_type = self.picking_type_id
-        if not(p_type and p_type.code == 'incoming' and (p_type.warehouse_id.company_id == self.company_id or not p_type.warehouse_id)):
+        if not (p_type and p_type.code == 'incoming' and (
+                p_type.warehouse_id.company_id == self.company_id or not p_type.warehouse_id)):
             self.picking_type_id = self._get_picking_type(self.company_id.id)
 
     # --------------------------------------------------
@@ -97,7 +104,9 @@ class PurchaseOrder(models.Model):
             for order in self:
                 to_log = {}
                 for order_line in order.order_line:
-                    if pre_order_line_qty.get(order_line, False) and float_compare(pre_order_line_qty[order_line], order_line.product_qty, precision_rounding=order_line.product_uom.rounding) > 0:
+                    if pre_order_line_qty.get(order_line, False) and float_compare(pre_order_line_qty[order_line],
+                                                                                   order_line.product_qty,
+                                                                                   precision_rounding=order_line.product_uom.rounding) > 0:
                         to_log[order_line] = (order_line.product_qty, pre_order_line_qty[order_line])
                 if to_log:
                     order._log_decrease_ordered_quantity(to_log)
@@ -111,7 +120,8 @@ class PurchaseOrder(models.Model):
         # Replaces the product's kanban view by the purchase specific one.
         action = super().action_add_from_catalog()
         kanban_view_id = self.env.ref('purchase_stock.product_view_kanban_catalog_purchase_only').id
-        action['views'] = [(kanban_view_id, view_type) if view_type == 'kanban' else (view_id, view_type) for (view_id, view_type) in action['views']]
+        action['views'] = [(kanban_view_id, view_type) if view_type == 'kanban' else (view_id, view_type) for
+                           (view_id, view_type) in action['views']]
         return action
 
     def button_approve(self, force=False):
@@ -127,9 +137,11 @@ class PurchaseOrder(models.Model):
         order_lines_ids = OrderedSet()
         pickings_to_cancel_ids = OrderedSet()
 
-        purchase_orders_with_receipt = self.filtered(lambda po: any(move.state == 'done' for move in po.order_line.move_ids))
+        purchase_orders_with_receipt = self.filtered(
+            lambda po: any(move.state == 'done' for move in po.order_line.move_ids))
         if purchase_orders_with_receipt:
-            raise UserError(_("Unable to cancel purchase order(s): %s since they have receipts that are already done.", format_list(self.env, purchase_orders_with_receipt.mapped('display_name'))))
+            raise UserError(_("Unable to cancel purchase order(s): %s since they have receipts that are already done.",
+                              format_list(self.env, purchase_orders_with_receipt.mapped('display_name'))))
         for order in self:
             # If the product is MTO, change the procure_method of the closest move to purchase to MTS.
             # The purpose is to link the po that the user will manually generate to the existing moves's chain.
@@ -145,8 +157,10 @@ class PurchaseOrder(models.Model):
         for order_line in order_lines:
             moves_to_cancel_ids.update(order_line.move_ids.ids)
             if order_line.move_dest_ids:
-                move_dest_ids = order_line.move_dest_ids.filtered(lambda move: move.state != 'done' and not move.scrapped)
-                moves_to_mts = move_dest_ids.filtered(lambda move: move.rule_id.route_id != move.location_dest_id.warehouse_id.reception_route_id)
+                move_dest_ids = order_line.move_dest_ids.filtered(
+                    lambda move: move.state != 'done' and not move.scrapped)
+                moves_to_mts = move_dest_ids.filtered(
+                    lambda move: move.rule_id.route_id != move.location_dest_id.warehouse_id.reception_route_id)
                 move_dest_ids -= moves_to_mts
                 moves_to_recompute_ids.update(moves_to_mts.ids)
                 moves_to_unlink = move_dest_ids.filtered(lambda m: len(m.created_purchase_line_ids.ids) > 1)
@@ -187,7 +201,8 @@ class PurchaseOrder(models.Model):
         self.ensure_one()
         result = self.env["ir.actions.actions"]._for_xml_id('stock.action_picking_tree_all')
         # override the context to get rid of the default filtering on operation type
-        result['context'] = {'default_partner_id': self.partner_id.id, 'default_origin': self.name, 'default_picking_type_id': self.picking_type_id.id}
+        result['context'] = {'default_partner_id': self.partner_id.id, 'default_origin': self.name,
+                             'default_picking_type_id': self.picking_type_id.id}
         # choose the view_mode accordingly
         if not pickings or len(pickings) > 1:
             result['domain'] = [('id', 'in', pickings.ids)]
@@ -216,10 +231,12 @@ class PurchaseOrder(models.Model):
             return (move.picking_id, move.product_id.responsible_id)
 
         def _render_note_exception_quantity_po(order_exceptions):
-            order_line_ids = self.env['purchase.order.line'].browse([order_line.id for order in order_exceptions.values() for order_line in order[0]])
+            order_line_ids = self.env['purchase.order.line'].browse(
+                [order_line.id for order in order_exceptions.values() for order_line in order[0]])
             purchase_order_ids = order_line_ids.mapped('order_id')
             move_ids = self.env['stock.move'].concat(*rendering_context.keys())
-            impacted_pickings = move_ids.mapped('picking_id')._get_impacted_pickings(move_ids) - move_ids.mapped('picking_id')
+            impacted_pickings = move_ids.mapped('picking_id')._get_impacted_pickings(move_ids) - move_ids.mapped(
+                'picking_id')
             values = {
                 'purchase_order_ids': purchase_order_ids,
                 'order_exceptions': order_exceptions.values(),
@@ -227,7 +244,8 @@ class PurchaseOrder(models.Model):
             }
             return self.env['ir.qweb']._render('purchase_stock.exception_on_po', values)
 
-        documents = self.env['stock.picking']._log_activity_get_documents(purchase_order_lines_quantities, 'move_ids', 'DOWN', _keys_in_groupby)
+        documents = self.env['stock.picking']._log_activity_get_documents(purchase_order_lines_quantities, 'move_ids',
+                                                                          'DOWN', _keys_in_groupby)
         filtered_documents = {}
         for (parent, responsible), rendering_context in documents.items():
             if parent._name == 'stock.picking':
@@ -252,11 +270,14 @@ class PurchaseOrder(models.Model):
 
     @api.model
     def _get_picking_type(self, company_id):
-        picking_type = self.env['stock.picking.type'].search([('code', '=', 'incoming'), ('warehouse_id.company_id', '=', company_id)])
+        picking_type = self.env['stock.picking.type'].search(
+            [('code', '=', 'incoming'), ('warehouse_id.company_id', '=', company_id)])
         if not picking_type:
-            picking_type = self.env['stock.picking.type'].search([('code', '=', 'incoming'), ('warehouse_id', '=', False)])
+            picking_type = self.env['stock.picking.type'].search(
+                [('code', '=', 'incoming'), ('warehouse_id', '=', False)])
         if not picking_type:
-            picking_type = self.env['stock.picking.type'].with_context(active_test=False).search([('code', '=', 'incoming'), ('warehouse_id', '=', False)])
+            picking_type = self.env['stock.picking.type'].with_context(active_test=False).search(
+                [('code', '=', 'incoming'), ('warehouse_id', '=', False)])
         return picking_type[:1]
 
     def _prepare_group_vals(self):
@@ -318,7 +339,9 @@ class PurchaseOrder(models.Model):
         """
         validated_picking = self.picking_ids.filtered(lambda p: p.state == 'done')
         if validated_picking:
-            message = _("Those dates couldn’t be modified accordingly on the receipt %s which had already been validated.", validated_picking[0].name)
+            message = _(
+                "Those dates couldn’t be modified accordingly on the receipt %s which had already been validated.",
+                validated_picking[0].name)
         elif not self.picking_ids:
             message = _("Corresponding receipt not found.")
         else:

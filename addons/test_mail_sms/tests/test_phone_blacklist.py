@@ -28,8 +28,10 @@ class TestPhoneBlacklist(SMSCommon, TestSMSRecipients):
         self.assertFalse(unblacklisted_record.active, "Creating an unblacklisted record resulted in a blacklisted one")
 
         # Make sure that an attempt to re-create unblacklisted number will leave the number as it was (unblacklisted)
-        still_unblacklisted_record = self.env['phone.blacklist'].sudo().create([{'number': phone_number, 'active': False}])
-        self.assertFalse(still_unblacklisted_record.active, "Attempt to re-create the unblacklisted record made it blacklisted")
+        still_unblacklisted_record = self.env['phone.blacklist'].sudo().create(
+            [{'number': phone_number, 'active': False}])
+        self.assertFalse(still_unblacklisted_record.active,
+                         "Attempt to re-create the unblacklisted record made it blacklisted")
 
     def test_phone_blacklist_internals(self):
         with self.with_user('employee'):
@@ -77,9 +79,10 @@ class TestPhoneBlacklist(SMSCommon, TestSMSRecipients):
         # Attempt to blacklist unblacklisted
         self.env['phone.blacklist'].sudo().create([{'number': phone_number}])
 
-        self.assertTrue(bl_record.active, "Attempting to blacklist already-unblacklisted, should make the record active again")
+        self.assertTrue(bl_record.active,
+                        "Attempting to blacklist already-unblacklisted, should make the record active again")
         self.assertEqual(num_of_records, self.env['phone.blacklist'].with_context(active_test=False).search_count([]),
-            "Number of records shouldn't change. (Records probably were recreated, instead of activated)")
+                         "Number of records shouldn't change. (Records probably were recreated, instead of activated)")
 
     def test_phone_sanitize_api(self):
         with self.with_user('employee'):

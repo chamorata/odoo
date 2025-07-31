@@ -19,7 +19,8 @@
             <field name="inherit_id" ref="website_slides.slide_channel_partner_view_search"/>
             <field name="arch" type="xml">
                 <xpath expr="//filter[@name='filter_completed']" position="after">
-                    <filter string="Certified" name="filter_certified" domain="[('survey_certification_success', '=', True)]"/>
+                    <filter string="Certified" name="filter_certified"
+                            domain="[('survey_certification_success', '=', True)]"/>
                 </xpath>
             </field>
         </record>

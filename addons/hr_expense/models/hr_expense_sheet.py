@@ -2,8 +2,8 @@
 
 from odoo import api, fields, Command, models, _
 from odoo.exceptions import AccessError, UserError, ValidationError, RedirectWarning
-from odoo.tools.misc import clean_context
 from odoo.tools import format_date
+from odoo.tools.misc import clean_context
 
 
 class HrExpenseSheet(models.Model):
@@ -203,7 +203,8 @@ class HrExpenseSheet(models.Model):
         string='Attachments of expenses',
     )
     message_main_attachment_id = fields.Many2one(compute='_compute_main_attachment', store=True)
-    accounting_date = fields.Date(string="Expense Report Date", help="Specify the bill date of the related vendor bill.")
+    accounting_date = fields.Date(string="Expense Report Date",
+                                  help="Specify the bill date of the related vendor bill.")
     account_move_ids = fields.One2many(
         string="Journal Entries",
         comodel_name='account.move', inverse_name='expense_sheet_id', readonly=True,
@@ -423,7 +424,8 @@ class HrExpenseSheet(models.Model):
     def _check_payment_mode(self):
         for sheet in self:
             expense_lines = sheet.mapped('expense_line_ids')
-            if expense_lines and any(expense.payment_mode != expense_lines[:1].payment_mode for expense in expense_lines):
+            if expense_lines and any(
+                    expense.payment_mode != expense_lines[:1].payment_mode for expense in expense_lines):
                 raise ValidationError(_("All expenses in an expense report must have the same \"paid by\" criteria."))
 
     @api.depends('expense_line_ids')
@@ -510,16 +512,20 @@ class HrExpenseSheet(models.Model):
         edit_states = 'state' in values or 'approval_state' in values
         # Forbids (un)linking expenses from an approved sheet if you're not an accountant
         if edit_lines and not user_is_accountant and set(self.mapped('state')) - {'draft', 'submit'}:
-            raise AccessError(_("You do not have the rights to add or remove any expenses on an approved or paid expense report."))
+            raise AccessError(
+                _("You do not have the rights to add or remove any expenses on an approved or paid expense report."))
 
         # Ensures there is no empty expense report in a state different from draft or cancel
         if edit_states or edit_lines:
             for sheet in self.filtered(lambda sheet: not sheet.expense_line_ids):
-                if sheet.state in {'submit', 'approve', 'post', 'done'}:  # Empty expense report in a state different from draft or cancel
+                if sheet.state in {'submit', 'approve', 'post',
+                                   'done'}:  # Empty expense report in a state different from draft or cancel
                     if edit_lines and not sheet.expense_line_ids:  # If you try to remove all expenses from the sheet
-                        raise UserError(_("You cannot remove all expenses from a submitted, approved or paid expense report."))
+                        raise UserError(
+                            _("You cannot remove all expenses from a submitted, approved or paid expense report."))
                     else:  # If you try to submit, approve, post or pay an empty sheet
-                        raise UserError(_("This expense report is empty. You cannot submit or approve an empty expense report."))
+                        raise UserError(
+                            _("This expense report is empty. You cannot submit or approve an empty expense report."))
         return res
 
     @api.ondelete(at_uninstall=False)
@@ -765,7 +771,8 @@ class HrExpenseSheet(models.Model):
 
         for sheet in own_account_sheets:
             sheet.accounting_date = sheet.accounting_date or sheet._calculate_default_accounting_date()
-        moves_sudo = self.env['account.move'].sudo().create([sheet._prepare_bills_vals() for sheet in own_account_sheets])
+        moves_sudo = self.env['account.move'].sudo().create(
+            [sheet._prepare_bills_vals() for sheet in own_account_sheets])
         for move_sudo in moves_sudo:
             move_sudo._message_set_main_attachment_id(move_sudo.attachment_ids, force=True, filter_xml=False)
         if company_account_sheets:
@@ -799,7 +806,8 @@ class HrExpenseSheet(models.Model):
             draft_moves_sudo = moves_sudo.filtered(lambda m: m.state == 'draft')
             non_draft_moves_sudo = moves_sudo - draft_moves_sudo
             non_draft_moves_sudo._reverse_moves(
-                default_values_list=[{'invoice_date': fields.Date.context_today(move), 'ref': False} for move in non_draft_moves_sudo],
+                default_values_list=[{'invoice_date': fields.Date.context_today(move), 'ref': False} for move in
+                                     non_draft_moves_sudo],
                 cancel=True
             )
             draft_moves_sudo.unlink()
@@ -845,7 +853,8 @@ class HrExpenseSheet(models.Model):
             'currency_id': self.currency_id.id,
             'line_ids': [Command.create(expense._prepare_move_lines_vals()) for expense in self.expense_line_ids],
             'attachment_ids': [
-                Command.create(attachment.copy_data({'res_model': 'account.move', 'res_id': False, 'raw': attachment.raw})[0])
+                Command.create(
+                    attachment.copy_data({'res_model': 'account.move', 'res_id': False, 'raw': attachment.raw})[0])
                 for attachment in self.expense_line_ids.message_main_attachment_id
             ],
         }
@@ -871,7 +880,8 @@ class HrExpenseSheet(models.Model):
 
     def _validate_analytic_distribution(self):
         for line in self.expense_line_ids:
-            line._validate_distribution(account=line.account_id.id, product=line.product_id.id, business_domain='expense', company_id=line.company_id.id)
+            line._validate_distribution(account=line.account_id.id, product=line.product_id.id,
+                                        business_domain='expense', company_id=line.company_id.id)
 
     def _get_responsible_for_approval(self):
         if self.user_id:
@@ -887,8 +897,8 @@ class HrExpenseSheet(models.Model):
         if self.payment_mode == 'company_account':
             journal = self.payment_method_line_id.journal_id
             account_dest = (
-                self.payment_method_line_id.payment_account_id
-                or journal.company_id.expense_outstanding_account_id
+                    self.payment_method_line_id.payment_account_id
+                    or journal.company_id.expense_outstanding_account_id
             )
             if not account_dest:
                 error_msg = _(
@@ -903,7 +913,8 @@ class HrExpenseSheet(models.Model):
                     raise UserError(error_msg)
         else:
             if not self.employee_id.sudo().work_contact_id:
-                raise UserError(_("No work contact found for the employee %s, please configure one.", self.employee_id.name))
+                raise UserError(
+                    _("No work contact found for the employee %s, please configure one.", self.employee_id.name))
             partner = self.employee_id.sudo().work_contact_id.with_company(self.company_id)
             account_dest = partner.property_account_payable_id or partner.parent_id.property_account_payable_id
         return account_dest.id

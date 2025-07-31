@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import odoo
 from odoo.addons.mail.tests.common import mail_new_test_user
 from odoo.addons.point_of_sale.tests.test_frontend import TestPointOfSaleHttpCommon
+
+import odoo
+
 
 @odoo.tests.tagged('post_install', '-at_install')
 class TestPoSController(TestPointOfSaleHttpCommon):
@@ -157,7 +159,8 @@ class TestPoSController(TestPointOfSaleHttpCommon):
             'phone': "123456789",
             'csrf_token': odoo.http.Request.csrf_token(self)
         }
-        self.url_open(f'/pos/ticket/validate?access_token={self.pos_order.access_token}', data=get_invoice_data, timeout=30000)
+        self.url_open(f'/pos/ticket/validate?access_token={self.pos_order.access_token}', data=get_invoice_data,
+                      timeout=30000)
         self.assertEqual(self.partner_1.vat, 'VAT_TEST_NUMBER_123')
         self.assertEqual(self.partner_1.name, 'New Name')
         self.assertEqual(self.partner_1.zip, '12345')

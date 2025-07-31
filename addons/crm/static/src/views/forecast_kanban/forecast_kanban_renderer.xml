@@ -4,11 +4,11 @@
         <KanbanColumnQuickCreate position="replace">
             <t t-if="isGroupedByForecastField()">
                 <ForecastKanbanColumnQuickCreate
-                    folded="true"
-                    onFoldChange="() => {}"
-                    onValidate.bind="addForecastColumn"
-                    exampleData="exampleData"
-                    groupByField="props.list.groupByField"
+                        folded="true"
+                        onFoldChange="() => {}"
+                        onValidate.bind="addForecastColumn"
+                        exampleData="exampleData"
+                        groupByField="props.list.groupByField"
                 />
             </t>
             <t t-else="">$0</t>

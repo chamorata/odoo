@@ -1,7 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
+from odoo.addons.point_of_sale.tests.common import TestPoSCommon
+
 import odoo
 
-from odoo.addons.point_of_sale.tests.common import TestPoSCommon
 
 @odoo.tests.tagged('post_install', '-at_install')
 class TestReportSession(TestPoSCommon):
@@ -47,7 +48,8 @@ class TestReportSession(TestPoSCommon):
         self.make_payment(order, self.bank_split_pm1, 60)
         self.make_payment(order, self.bank_pm1, 50)
 
-        self.config.current_session_id.action_pos_session_closing_control(bank_payment_method_diffs={self.bank_split_pm1.id: 50, self.bank_pm1.id: 40})
+        self.config.current_session_id.action_pos_session_closing_control(
+            bank_payment_method_diffs={self.bank_split_pm1.id: 50, self.bank_pm1.id: 40})
 
         # PoS Orders have negative IDs to avoid conflict, so reports[0] will correspond to the newest order
         report = self.env['report.point_of_sale.report_saledetails'].get_sale_details(session_ids=[session_id])
@@ -55,8 +57,10 @@ class TestReportSession(TestPoSCommon):
         self.assertEqual(split_payment_bank[0]['cash_moves'][0]['amount'], 50)
         bank_payment = [p for p in report['payments'] if p.get('id', 0) == self.bank_pm1.id]
         # self.assertEqual(bank_payment[0]['cash_moves'][0]['amount'], 40)  TODO WAN
-        self.assertEqual(report['products_info']['total'], 100, "Total amount of products should be 100, as we want total without tax")
-        self.assertEqual(report['products'][0]['products'][0]['base_amount'], 100, "Base amount of product should be 100, as we want price without tax")
+        self.assertEqual(report['products_info']['total'], 100,
+                         "Total amount of products should be 100, as we want total without tax")
+        self.assertEqual(report['products'][0]['products'][0]['base_amount'], 100,
+                         "Base amount of product should be 100, as we want price without tax")
 
     def test_report_session_2(self):
 
@@ -180,8 +184,10 @@ class TestReportSession(TestPoSCommon):
             self.assertEqual(order.nbr_lines, 1)
             self.assertEqual(order.product_qty, 1)
 
-        order_report_lines_count_product1 = self.env['report.pos.order'].sudo().search_count([('product_id', '=', product1.id)])
-        order_report_lines_count_product2 = self.env['report.pos.order'].sudo().search_count([('product_id', '=', product2.id)])
+        order_report_lines_count_product1 = self.env['report.pos.order'].sudo().search_count(
+            [('product_id', '=', product1.id)])
+        order_report_lines_count_product2 = self.env['report.pos.order'].sudo().search_count(
+            [('product_id', '=', product2.id)])
 
         self.assertEqual(order_report_lines_count_product1, 1)
         self.assertEqual(order_report_lines_count_product2, 1)
@@ -191,33 +197,34 @@ class TestReportSession(TestPoSCommon):
         self.config.open_ui()
         session_id = self.config.current_session_id.id
         order_info = {'company_id': self.env.company.id,
-                'session_id': session_id,
-                'partner_id': self.partner_a.id,
-                'lines': [(0, 0, {
-                    'name': "OL/0001",
-                    'product_id': self.product1.id,
-                    'price_unit': 0,
-                    'discount': 0,
-                    'qty': 14.9,
-                    'tax_ids': [],
-                    'price_subtotal': 0,
-                    'price_subtotal_incl': 0,
-                })],
-                'pricelist_id': self.config.pricelist_id.id,
-                'amount_paid': 0.0,
-                'amount_total': 0.0,
-                'amount_tax': 0.0,
-                'amount_return': 0.0,
-                'to_invoice': False,
-                }
+                      'session_id': session_id,
+                      'partner_id': self.partner_a.id,
+                      'lines': [(0, 0, {
+                          'name': "OL/0001",
+                          'product_id': self.product1.id,
+                          'price_unit': 0,
+                          'discount': 0,
+                          'qty': 14.9,
+                          'tax_ids': [],
+                          'price_subtotal': 0,
+                          'price_subtotal_incl': 0,
+                      })],
+                      'pricelist_id': self.config.pricelist_id.id,
+                      'amount_paid': 0.0,
+                      'amount_total': 0.0,
+                      'amount_tax': 0.0,
+                      'amount_return': 0.0,
+                      'to_invoice': False,
+                      }
         order = self.env['pos.order'].create(order_info)
         self.make_payment(order, self.bank_pm1, 0)
-        order_info['lines'][0][2]['qty'] =  59.7
+        order_info['lines'][0][2]['qty'] = 59.7
         order = self.env['pos.order'].create(order_info)
         self.make_payment(order, self.bank_pm1, 0)
         self.config.current_session_id.action_pos_session_closing_control()
         report = self.env['report.point_of_sale.report_saledetails'].get_sale_details()
-        self.assertEqual(report['products'][0]['products'][0]['quantity'], 74.6, "Quantity of product should be 74.6, as we want the sum of the quantity of the two orders")
+        self.assertEqual(report['products'][0]['products'][0]['quantity'], 74.6,
+                         "Quantity of product should be 74.6, as we want the sum of the quantity of the two orders")
 
     def test_report_bank_expected_different_than_counted(self):
         """
@@ -294,7 +301,8 @@ class TestReportSession(TestPoSCommon):
 
         self.make_payment(order2, self.bank_pm1, 100)
 
-        self.config.current_session_id.action_pos_session_closing_control(bank_payment_method_diffs={self.bank_pm1.id: -20})
+        self.config.current_session_id.action_pos_session_closing_control(
+            bank_payment_method_diffs={self.bank_pm1.id: -20})
         report = self.env['report.point_of_sale.report_saledetails'].get_sale_details(session_ids=[session2_id])
         self.assertEqual(report['payments'][1]['money_difference'], -20)
 

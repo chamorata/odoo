@@ -3,7 +3,7 @@
     <record id="view_account_payment_form" model="ir.ui.view">
         <field name="name">account.payment.form.inherited</field>
         <field name="model">account.payment</field>
-        <field name="inherit_id" ref="l10n_latam_check.view_account_payment_form_inherited" />
+        <field name="inherit_id" ref="l10n_latam_check.view_account_payment_form_inherited"/>
         <field name="arch" type="xml">
             <page name="latam_checks_page" position="after">
                 <page name="withholdings_page" string="Withholdings" invisible="country_code != 'AR'">

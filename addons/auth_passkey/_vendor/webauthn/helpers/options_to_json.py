@@ -1,18 +1,18 @@
 import json
 from typing import Union, Dict, Any
 
+from .bytes_to_base64url import bytes_to_base64url
 from .structs import (
     PublicKeyCredentialCreationOptions,
     PublicKeyCredentialRequestOptions,
 )
-from .bytes_to_base64url import bytes_to_base64url
 
 
 def options_to_json(
-    options: Union[
-        PublicKeyCredentialCreationOptions,
-        PublicKeyCredentialRequestOptions,
-    ]
+        options: Union[
+            PublicKeyCredentialCreationOptions,
+            PublicKeyCredentialRequestOptions,
+        ]
 ) -> str:
     """
     Prepare options for transmission to the front end as JSON

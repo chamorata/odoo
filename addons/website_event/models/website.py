@@ -3,6 +3,7 @@
 
 from odoo import models, _
 
+
 class Website(models.Model):
     _inherit = "website"
 

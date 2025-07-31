@@ -15,7 +15,8 @@ class ResConfigSettings(models.TransientModel):
         super()._compute_pos_iface_cashdrawer()
 
     def _is_cashdrawer_displayed(self, res_config):
-        return super()._is_cashdrawer_displayed(res_config) or (res_config.pos_other_devices and bool(res_config.pos_epson_printer_ip))
+        return super()._is_cashdrawer_displayed(res_config) or (
+                    res_config.pos_other_devices and bool(res_config.pos_epson_printer_ip))
 
     @api.depends('pos_other_devices', 'pos_config_id')
     def _compute_pos_epson_printer_ip(self):

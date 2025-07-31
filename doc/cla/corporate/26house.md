@@ -6,7 +6,7 @@ Agreement v1.0.
 I declare that I am authorized and able to make this agreement and sign this
 declaration.
 
-Signed, 
+Signed,
 
 Dominik Kertys dominik.kertys@26house.com https://github.com/dominikkertys
 

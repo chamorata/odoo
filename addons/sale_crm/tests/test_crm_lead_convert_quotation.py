@@ -3,6 +3,7 @@
 
 
 from odoo.addons.crm.tests import common as crm_common
+
 from odoo.tests.common import tagged, users
 
 

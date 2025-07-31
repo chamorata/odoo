@@ -8,12 +8,13 @@ import textwrap
 from contextlib import closing
 from datetime import timedelta
 from unittest.mock import patch
+
 from freezegun import freeze_time
 
 from odoo import fields
+from odoo.addons.base.models.ir_cron import MIN_FAILURE_COUNT_BEFORE_DEACTIVATION, MIN_DELTA_BEFORE_DEACTIVATION
 from odoo.tests.common import TransactionCase, RecordCapturer
 from odoo.tools import mute_logger
-from odoo.addons.base.models.ir_cron import MIN_FAILURE_COUNT_BEFORE_DEACTIVATION, MIN_DELTA_BEFORE_DEACTIVATION
 
 
 class CronMixinCase:
@@ -160,7 +161,7 @@ class TestIrCron(TransactionCase, CronMixinCase):
 
         ready_jobs = self.registry['ir.cron']._get_all_ready_jobs(self.cr)
         self.assertNotIn(self.cron.id, [job['id'] for job in ready_jobs],
-            "the cron shouldn't be ready")
+                         "the cron shouldn't be ready")
         self.assertFalse(capture.records, "trigger should has been skipped")
 
     def test_cron_keep_future_triggers(self):
@@ -189,7 +190,7 @@ class TestIrCron(TransactionCase, CronMixinCase):
         self.frozen_datetime.tick(delta=timedelta(days=1))
         ready_jobs = self.registry['ir.cron']._get_all_ready_jobs(self.cr)
         self.assertIn(self.cron.id, [job['id'] for job in ready_jobs],
-            "cron should be ready")
+                      "cron should be ready")
         self.assertTrue(capture.records, "trigger should has been kept")
 
     def test_cron_process_job(self):
@@ -200,42 +201,51 @@ class TestIrCron(TransactionCase, CronMixinCase):
 
         def nothing(cron):
             state = {'call_count': 0}
+
             def f(self):
                 state['call_count'] += 1
+
             return f, state
 
         def eleven_success(cron):
             state = {'call_count': 0}
             CALL_TARGET = 11
+
             def f(self):
                 state['call_count'] += 1
                 self.env['ir.cron']._notify_progress(
                     done=1,
                     remaining=CALL_TARGET - state['call_count']
                 )
+
             return f, state
 
         def five_success(cron):
             state = {'call_count': 0}
             CALL_TARGET = 5
+
             def f(self):
                 state['call_count'] += 1
                 self.env['ir.cron']._notify_progress(
                     done=1,
                     remaining=CALL_TARGET - state['call_count']
                 )
+
             return f, state
 
         def failure(cron):
             state = {'call_count': 0}
+
             def f(self):
                 state['call_count'] += 1
                 raise ValueError
+
             return f, state
 
         def failure_partial(cron):
             state = {'call_count': 0}
             CALL_TARGET = 5
+
             def f(self):
                 state['call_count'] += 1
                 self.env['ir.cron']._notify_progress(
@@ -244,32 +254,35 @@ class TestIrCron(TransactionCase, CronMixinCase):
                 )
                 self.env.cr.commit()
                 raise ValueError
+
             return f, state
 
         def failure_fully(cron):
             state = {'call_count': 0}
+
             def f(self):
                 state['call_count'] += 1
                 self.env['ir.cron']._notify_progress(done=1, remaining=0)
                 self.env.cr.commit()
                 raise ValueError
+
             return f, state
 
         CASES = [
             #                 IN          |                 OUT
             #       callback, curr_failures, trigger, call_count, done_count, fail_count, active,
-            (        nothing,             0,   False,          1,          0,          0,  True),
-            (        nothing, almost_failed,   False,          1,          0,          0,  True),
-            ( eleven_success,             0,    True,         10,         10,          0,  True),
-            ( eleven_success, almost_failed,    True,         10,         10,          0,  True),
-            (   five_success,             0,   False,          5,          5,          0,  True),
-            (   five_success, almost_failed,   False,          5,          5,          0,  True),
-            (        failure,             0,   False,          1,          0,          1,  True),
-            (        failure, almost_failed,   False,          1,          0,          0, False),
-            (failure_partial,             0,   False,          5,          5,          1,  True),
-            (failure_partial, almost_failed,   False,          5,          5,          0, False),
-            (  failure_fully,             0,   False,          1,          1,          1,  True),
-            (  failure_fully, almost_failed,   False,          1,          1,          0, False),
+            (nothing, 0, False, 1, 0, 0, True),
+            (nothing, almost_failed, False, 1, 0, 0, True),
+            (eleven_success, 0, True, 10, 10, 0, True),
+            (eleven_success, almost_failed, True, 10, 10, 0, True),
+            (five_success, 0, False, 5, 5, 0, True),
+            (five_success, almost_failed, False, 5, 5, 0, True),
+            (failure, 0, False, 1, 0, 1, True),
+            (failure, almost_failed, False, 1, 0, 0, False),
+            (failure_partial, 0, False, 5, 5, 1, True),
+            (failure_partial, almost_failed, False, 5, 5, 0, False),
+            (failure_fully, 0, False, 1, 1, 1, True),
+            (failure_fully, almost_failed, False, 1, 1, 0, False),
         ]
 
         for cb, curr_failures, trigger, call_count, done_count, fail_count, active in CASES:
@@ -287,7 +300,7 @@ class TestIrCron(TransactionCase, CronMixinCase):
                 self.registry.enter_test_mode(self.cr)
                 cb, state = cb(self.cron)
                 try:
-                    with mute_logger('odoo.addons.base.models.ir_cron'),\
+                    with mute_logger('odoo.addons.base.models.ir_cron'), \
                             patch.object(self.registry['ir.actions.server'], 'run', cb):
                         self.registry['ir.cron']._process_job(
                             self.registry.db_name,
@@ -299,7 +312,8 @@ class TestIrCron(TransactionCase, CronMixinCase):
                 self.cron.invalidate_recordset()
                 capture.records.invalidate_recordset()
 
-                self.assertEqual(self.cron.id in [job['id'] for job in self.cron._get_all_ready_jobs(self.env.cr)], trigger)
+                self.assertEqual(self.cron.id in [job['id'] for job in self.cron._get_all_ready_jobs(self.env.cr)],
+                                 trigger)
                 self.assertEqual(state['call_count'], call_count)
                 self.assertEqual(Progress.search_count([('cron_id', '=', self.cron.id), ('done', '=', 1)]), done_count)
                 self.assertEqual(self.cron.failure_count, fail_count)
@@ -317,6 +331,7 @@ class TestIrCron(TransactionCase, CronMixinCase):
             def run(self):
                 state['call_count'] += 1
                 self.env['ir.cron']._notify_progress(done=1, remaining=CALL_TARGET - state['call_count'])
+
             return run, state
 
         self.cron._trigger()
@@ -414,7 +429,8 @@ class TestIrCron(TransactionCase, CronMixinCase):
             self.registry.leave_test_mode()
 
         self.env.invalidate_all()
-        self.assertEqual(self.cron.failure_count, 5, 'The cron should have failed one more time but not reset (due to time)')
+        self.assertEqual(self.cron.failure_count, 5,
+                         'The cron should have failed one more time but not reset (due to time)')
         self.assertEqual(self.cron.active, True, 'The cron should not have been deactivated due to time constraint')
         self.assertFalse(notify.called)
 
@@ -445,10 +461,10 @@ class TestIrCron(TransactionCase, CronMixinCase):
     def test_cron_timeout_failure(self):
         self.cron._trigger()
         progress = self.env['ir.cron.progress'].create([{
-                'cron_id': self.cron.id,
-                'remaining': 0,
-                'done': 0,
-                'timed_out_counter': 3,
+            'cron_id': self.cron.id,
+            'remaining': 0,
+            'done': 0,
+            'timed_out_counter': 3,
         }])
         self.env.flush_all()
         self.registry.enter_test_mode(self.cr)
@@ -458,7 +474,8 @@ class TestIrCron(TransactionCase, CronMixinCase):
                 self.registry['ir.cron']._process_job(
                     self.registry.db_name,
                     self.registry.cursor(),
-                    {**progress.read(fields=['done', 'remaining', 'timed_out_counter'], load=None)[0], 'progress_id': progress.id, **self.cron.read(load=None)[0]}
+                    {**progress.read(fields=['done', 'remaining', 'timed_out_counter'], load=None)[0],
+                     'progress_id': progress.id, **self.cron.read(load=None)[0]}
                 )
         finally:
             self.registry.leave_test_mode()
@@ -473,7 +490,8 @@ class TestIrCron(TransactionCase, CronMixinCase):
             self.registry['ir.cron']._process_job(
                 self.registry.db_name,
                 self.registry.cursor(),
-                {**progress.read(fields=['done', 'remaining', 'timed_out_counter'], load=None)[0], 'progress_id': progress.id, **self.cron.read(load=None)[0]}
+                {**progress.read(fields=['done', 'remaining', 'timed_out_counter'], load=None)[0],
+                 'progress_id': progress.id, **self.cron.read(load=None)[0]}
             )
         finally:
             self.registry.leave_test_mode()
@@ -484,10 +502,10 @@ class TestIrCron(TransactionCase, CronMixinCase):
     def test_cron_timeout_success(self):
         self.cron._trigger()
         progress = self.env['ir.cron.progress'].create([{
-                'cron_id': self.cron.id,
-                'remaining': 0,
-                'done': 0,
-                'timed_out_counter': 3,
+            'cron_id': self.cron.id,
+            'remaining': 0,
+            'done': 0,
+            'timed_out_counter': 3,
         }])
         self.env.flush_all()
         self.registry.enter_test_mode(self.cr)
@@ -497,7 +515,8 @@ class TestIrCron(TransactionCase, CronMixinCase):
                 self.registry['ir.cron']._process_job(
                     self.registry.db_name,
                     self.registry.cursor(),
-                    {**progress.read(fields=['done', 'remaining', 'timed_out_counter'], load=None)[0], 'progress_id': progress.id, **self.cron.read(load=None)[0]}
+                    {**progress.read(fields=['done', 'remaining', 'timed_out_counter'], load=None)[0],
+                     'progress_id': progress.id, **self.cron.read(load=None)[0]}
                 )
         finally:
             self.registry.leave_test_mode()
@@ -512,7 +531,8 @@ class TestIrCron(TransactionCase, CronMixinCase):
             self.registry['ir.cron']._process_job(
                 self.registry.db_name,
                 self.registry.cursor(),
-                {**progress.read(fields=['done', 'remaining', 'timed_out_counter'], load=None)[0], 'progress_id': progress.id, **self.cron.read(load=None)[0]}
+                {**progress.read(fields=['done', 'remaining', 'timed_out_counter'], load=None)[0],
+                 'progress_id': progress.id, **self.cron.read(load=None)[0]}
             )
         finally:
             self.registry.leave_test_mode()

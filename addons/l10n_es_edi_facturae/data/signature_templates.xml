@@ -34,7 +34,8 @@
                     </ds:KeyValue>
                 </ds:KeyInfo>
                 <ds:Object>
-                    <xades:QualifyingProperties xmlns:xades="http://uri.etsi.org/01903/v1.3.2#" t-attf-Target="##{signature_id}">
+                    <xades:QualifyingProperties xmlns:xades="http://uri.etsi.org/01903/v1.3.2#"
+                                                t-attf-Target="##{signature_id}">
                         <xades:SignedProperties t-att-Id="sigproperties_id">
                             <xades:SignedSignatureProperties>
                                 <xades:SigningTime t-out="iso_now"/>
@@ -75,7 +76,8 @@
                                         <!-- Identifier below is Uniform Resource Number for MimeType "text/xml" (no specific version) -->
                                         <!-- 1.2.840.10003.5: see http://www.oid-info.com/cgi-bin/display?oid=1.2.840.10003.5&a=display -->
                                         <!-- 109.10: see https://www.loc.gov/z3950/agency/defns/oids.html#5 -->
-                                        <xades:Identifier Qualifier="OIDAsURN">urn:oid:1.2.840.10003.5.109.10</xades:Identifier>
+                                        <xades:Identifier Qualifier="OIDAsURN">urn:oid:1.2.840.10003.5.109.10
+                                        </xades:Identifier>
                                         <xades:Description/>
                                     </xades:ObjectIdentifier>
                                     <xades:MimeType>text/xml</xades:MimeType>

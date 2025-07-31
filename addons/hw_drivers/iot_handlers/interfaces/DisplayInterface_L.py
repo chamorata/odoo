@@ -20,6 +20,7 @@ _logger = logging.getLogger(__name__)
 
 MIN_IMAGE_VERSION_WAYLAND = 25.03
 
+
 class DisplayInterface(Interface):
     _loop_delay = 3
     connection_type = 'display'

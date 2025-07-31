@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from collections import defaultdict
 from markupsafe import Markup
+from odoo.addons.phone_validation.tools import phone_validation
 
 from odoo import api, fields, models, tools, _
-from odoo.addons.phone_validation.tools import phone_validation
 
 
 class EventRegistration(models.Model):
@@ -63,9 +62,11 @@ class EventRegistration(models.Model):
         # handle triggers based on state
         if not event_lead_rule_skip:
             if vals.get('state') == 'open':
-                self.env['event.lead.rule'].search([('lead_creation_trigger', '=', 'confirm')]).sudo()._run_on_registrations(self)
+                self.env['event.lead.rule'].search(
+                    [('lead_creation_trigger', '=', 'confirm')]).sudo()._run_on_registrations(self)
             elif vals.get('state') == 'done':
-                self.env['event.lead.rule'].search([('lead_creation_trigger', '=', 'done')]).sudo()._run_on_registrations(self)
+                self.env['event.lead.rule'].search(
+                    [('lead_creation_trigger', '=', 'done')]).sudo()._run_on_registrations(self)
 
         return res
 
@@ -130,7 +131,7 @@ class EventRegistration(models.Model):
                     (field, registration[field])
                     for field in self._get_lead_contact_fields()
                     if field != 'partner_id')
-                )
+                                )
 
             lead_values = {}
             # update contact fields: valid for all leads of registration
@@ -140,7 +141,8 @@ class EventRegistration(models.Model):
 
             # update description fields: each lead has to be updated, otherwise
             # update in batch
-            upd_description_fields = [field for field in self._get_lead_description_fields() if field in new_vals.keys()]
+            upd_description_fields = [field for field in self._get_lead_description_fields() if
+                                      field in new_vals.keys()]
             if any(new_vals[field] != old_vals[field] for field in upd_description_fields):
                 for lead in leads_attendee:
                     lead_values['description'] = "%s<br/>%s" % (
@@ -157,9 +159,12 @@ class EventRegistration(models.Model):
             if new_vals.get('partner_id'):
                 lead_values.update(lead.registration_ids._get_lead_contact_values())
                 if not lead.partner_id:
-                    lead_values['description'] = lead.registration_ids._get_lead_description(_("Participants"), line_counter=True)
+                    lead_values['description'] = lead.registration_ids._get_lead_description(_("Participants"),
+                                                                                             line_counter=True)
                 elif new_vals['partner_id'] != lead.partner_id.id:
-                    lead_values['description'] = (lead.description or '') + "<br/>" + lead.registration_ids._get_lead_description(_("Updated registrations"), line_counter=True, line_suffix=_("(updated)"))
+                    lead_values['description'] = (
+                                                             lead.description or '') + "<br/>" + lead.registration_ids._get_lead_description(
+                        _("Updated registrations"), line_counter=True, line_suffix=_("(updated)"))
             if lead_values:
                 lead.write(lead_values)
 
@@ -214,7 +219,8 @@ class EventRegistration(models.Model):
         if len(self) == 1 and valid_partner:
             # compare emails: email_normalized or raw
             if self.email and valid_partner.email:
-                if valid_partner.email_normalized and tools.email_normalize(self.email) != valid_partner.email_normalized:
+                if valid_partner.email_normalized and tools.email_normalize(
+                        self.email) != valid_partner.email_normalized:
                     valid_partner = self.env['res.partner']
                 elif not valid_partner.email_normalized and valid_partner.email != self.email:
                     valid_partner = self.env['res.partner']
@@ -244,7 +250,8 @@ class EventRegistration(models.Model):
                 'phone': registration_phone,
                 'lang_id': False,
             }
-        contact_name = valid_partner.name or sorted_self._find_first_notnull('name') or sorted_self._find_first_notnull('email')
+        contact_name = valid_partner.name or sorted_self._find_first_notnull('name') or sorted_self._find_first_notnull(
+            'email')
         contact_vals.update({
             'name': f'{self.event_id[:1].name} - {contact_name}',
             'partner_id': valid_partner.id,
@@ -303,7 +310,7 @@ class EventRegistration(models.Model):
         return dict(
             (registration.id,
              dict((field, self._convert_value(registration[field], field)) for field in tracked_fields)
-            ) for registration in self
+             ) for registration in self
         )
 
     def _get_lead_grouping(self, rules, rule_to_new_regs):

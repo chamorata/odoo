@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, fields, models, _
+from odoo import api, fields, models
 
 
 class SkillLevel(models.Model):
@@ -11,11 +11,14 @@ class SkillLevel(models.Model):
 
     skill_type_id = fields.Many2one('hr.skill.type', ondelete='cascade')
     name = fields.Char(required=True)
-    level_progress = fields.Integer(string="Progress", help="Progress from zero knowledge (0%) to fully mastered (100%).")
-    default_level = fields.Boolean(help="If checked, this level will be the default one selected when choosing this skill.")
+    level_progress = fields.Integer(string="Progress",
+                                    help="Progress from zero knowledge (0%) to fully mastered (100%).")
+    default_level = fields.Boolean(
+        help="If checked, this level will be the default one selected when choosing this skill.")
 
     _sql_constraints = [
-        ('check_level_progress', 'CHECK(level_progress BETWEEN 0 AND 100)', "Progress should be a number between 0 and 100."),
+        ('check_level_progress', 'CHECK(level_progress BETWEEN 0 AND 100)',
+         "Progress should be a number between 0 and 100."),
     ]
 
     @api.depends('level_progress')

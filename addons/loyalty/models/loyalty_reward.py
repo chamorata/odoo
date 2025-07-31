@@ -21,11 +21,12 @@ class LoyaltyReward(models.Model):
         if 'program_type' in self.env.context:
             program_type = self.env.context['program_type']
             program_default_values = self.env['loyalty.program']._program_type_default_values()
-            if program_type in program_default_values and\
-                len(program_default_values[program_type]['reward_ids']) == 2 and\
-                isinstance(program_default_values[program_type]['reward_ids'][1][2], dict):
+            if program_type in program_default_values and \
+                    len(program_default_values[program_type]['reward_ids']) == 2 and \
+                    isinstance(program_default_values[program_type]['reward_ids'][1][2], dict):
                 result.update({
-                    k: v for k, v in program_default_values[program_type]['reward_ids'][1][2].items() if k in fields_list
+                    k: v for k, v in program_default_values[program_type]['reward_ids'][1][2].items() if
+                    k in fields_list
                 })
         return result
 
@@ -82,9 +83,9 @@ class LoyaltyReward(models.Model):
     all_discount_product_ids = fields.Many2many('product.product', compute='_compute_all_discount_product_ids')
     reward_product_domain = fields.Char(compute='_compute_reward_product_domain', store=False)
     discount_max_amount = fields.Monetary('Max Discount', 'currency_id',
-        help="This is the max amount this reward may discount, leave to 0 for no limit.")
+                                          help="This is the max amount this reward may discount, leave to 0 for no limit.")
     discount_line_product_id = fields.Many2one('product.product', copy=False, ondelete='restrict',
-        help="Product used in the sales order to apply the discount. Each reward has its own product for reporting purpose")
+                                               help="Product used in the sales order to apply the discount. Each reward has its own product for reporting purpose")
     is_global_discount = fields.Boolean(compute='_compute_is_global_discount')
     tax_ids = fields.Many2many(
         string="Taxes",
@@ -112,11 +113,11 @@ class LoyaltyReward(models.Model):
 
     _sql_constraints = [
         ('required_points_positive', 'CHECK (required_points > 0)',
-            'The required points for a reward must be strictly positive.'),
+         'The required points for a reward must be strictly positive.'),
         ('product_qty_positive', "CHECK (reward_type != 'product' OR reward_product_qty > 0)",
-            'The reward product quantity must be strictly positive.'),
+         'The reward product quantity must be strictly positive.'),
         ('discount_positive', "CHECK (reward_type != 'discount' OR discount > 0)",
-            'The discount must be strictly positive.'),
+         'The discount must be strictly positive.'),
     ]
 
     @api.depends('reward_product_id.product_tmpl_id.uom_id', 'reward_product_tag_id')
@@ -151,33 +152,37 @@ class LoyaltyReward(models.Model):
     def _get_active_products_domain(self):
         return [
             '|',
-                ('reward_type', '!=', 'product'),
-                '&',
-                    ('reward_type', '=', 'product'),
-                    '|',
-                        '&',
-                            ('reward_product_tag_id', '=', False),
-                            ('reward_product_id.active', '=', True),
-                        '&',
-                            ('reward_product_tag_id', '!=', False),
-                            ('reward_product_ids.active', '=', True)
+            ('reward_type', '!=', 'product'),
+            '&',
+            ('reward_type', '=', 'product'),
+            '|',
+            '&',
+            ('reward_product_tag_id', '=', False),
+            ('reward_product_id.active', '=', True),
+            '&',
+            ('reward_product_tag_id', '!=', False),
+            ('reward_product_ids.active', '=', True)
         ]
 
     @api.depends('discount_product_domain')
     def _compute_reward_product_domain(self):
-        compute_all_discount_product = self.env['ir.config_parameter'].sudo().get_param('loyalty.compute_all_discount_product_ids', 'enabled')
+        compute_all_discount_product = self.env['ir.config_parameter'].sudo().get_param(
+            'loyalty.compute_all_discount_product_ids', 'enabled')
         for reward in self:
             if compute_all_discount_product == 'enabled':
                 reward.reward_product_domain = "null"
             else:
                 reward.reward_product_domain = json.dumps(reward._get_discount_product_domain())
 
-    @api.depends('discount_product_ids', 'discount_product_category_id', 'discount_product_tag_id', 'discount_product_domain')
+    @api.depends('discount_product_ids', 'discount_product_category_id', 'discount_product_tag_id',
+                 'discount_product_domain')
     def _compute_all_discount_product_ids(self):
-        compute_all_discount_product = self.env['ir.config_parameter'].sudo().get_param('loyalty.compute_all_discount_product_ids', 'enabled')
+        compute_all_discount_product = self.env['ir.config_parameter'].sudo().get_param(
+            'loyalty.compute_all_discount_product_ids', 'enabled')
         for reward in self:
             if compute_all_discount_product == 'enabled':
-                reward.all_discount_product_ids = self.env['product.product'].search(reward._get_discount_product_domain())
+                reward.all_discount_product_ids = self.env['product.product'].search(
+                    reward._get_discount_product_domain())
             else:
                 reward.all_discount_product_ids = self.env['product.product']
 
@@ -213,9 +218,11 @@ class LoyaltyReward(models.Model):
                 if len(products) == 0:
                     reward_string = _('Free Product')
                 elif len(products) == 1:
-                    reward_string = _('Free Product - %s', reward.reward_product_id.with_context(display_default_code=False).display_name)
+                    reward_string = _('Free Product - %s',
+                                      reward.reward_product_id.with_context(display_default_code=False).display_name)
                 else:
-                    reward_string = _('Free Product - [%s]', ', '.join(products.with_context(display_default_code=False).mapped('display_name')))
+                    reward_string = _('Free Product - [%s]', ', '.join(
+                        products.with_context(display_default_code=False).mapped('display_name')))
             elif reward.reward_type == 'discount':
                 format_string = '%(amount)g %(symbol)s'
                 if reward.currency_id.position == 'before':
@@ -232,7 +239,8 @@ class LoyaltyReward(models.Model):
                 elif reward.discount_applicability == 'cheapest':
                     reward_string += _('the cheapest product')
                 elif reward.discount_applicability == 'specific':
-                    product_available = self.env['product.product'].search(reward._get_discount_product_domain(), limit=2)
+                    product_available = self.env['product.product'].search(reward._get_discount_product_domain(),
+                                                                           limit=2)
                     if len(product_available) == 1:
                         reward_string += product_available.with_context(display_default_code=False).display_name
                     else:
@@ -241,7 +249,8 @@ class LoyaltyReward(models.Model):
                     format_string = '%(amount)g %(symbol)s'
                     if reward.currency_id.position == 'before':
                         format_string = '%(symbol)s %(amount)g'
-                    formatted_amount = format_string % {'amount': reward.discount_max_amount, 'symbol': reward.currency_id.symbol}
+                    formatted_amount = format_string % {'amount': reward.discount_max_amount,
+                                                        'symbol': reward.currency_id.symbol}
                     reward_string += _(' (Max %s)', formatted_amount)
             reward.description = reward_string
 
@@ -249,9 +258,9 @@ class LoyaltyReward(models.Model):
     def _compute_is_global_discount(self):
         for reward in self:
             reward.is_global_discount = (
-                reward.reward_type == 'discount'
-                and reward.discount_applicability == 'order'
-                and reward.discount_mode in ['per_order', 'percent']
+                    reward.reward_type == 'discount'
+                    and reward.discount_applicability == 'order'
+                    and reward.discount_mode in ['per_order', 'percent']
             )
 
     @api.depends_context('uid')

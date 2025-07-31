@@ -9,10 +9,10 @@
             <group name="main_fields" position="inside">
                 <group name="ecommerce_main_fields">
                     <field
-                        name="visibility"
-                        string="eCommerce Filter"
-                        widget="radio"
-                        options="{'horizontal': True}"
+                            name="visibility"
+                            string="eCommerce Filter"
+                            widget="radio"
+                            options="{'horizontal': True}"
                     />
                 </group>
             </group>

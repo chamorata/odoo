@@ -3,11 +3,13 @@
 
 from odoo import fields, models, _
 
+
 class Task(models.Model):
     _inherit = 'project.task'
 
     leave_types_count = fields.Integer(compute='_compute_leave_types_count', string="Time Off Types Count")
-    is_timeoff_task = fields.Boolean("Is Time off Task", compute="_compute_is_timeoff_task", search="_search_is_timeoff_task", export_string_translation=False)
+    is_timeoff_task = fields.Boolean("Is Time off Task", compute="_compute_is_timeoff_task",
+                                     search="_search_is_timeoff_task", export_string_translation=False)
 
     def _compute_leave_types_count(self):
         time_off_type_read_group = self.env['hr.leave.type']._read_group(
@@ -20,7 +22,8 @@ class Task(models.Model):
             task.leave_types_count = time_off_type_count_per_task.get(task.id, 0)
 
     def _compute_is_timeoff_task(self):
-        timeoff_tasks = self.filtered(lambda task: task.leave_types_count or task.company_id.leave_timesheet_task_id == task)
+        timeoff_tasks = self.filtered(
+            lambda task: task.leave_types_count or task.company_id.leave_timesheet_task_id == task)
         timeoff_tasks.is_timeoff_task = True
         (self - timeoff_tasks).is_timeoff_task = False
 

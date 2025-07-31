@@ -8,12 +8,12 @@
                     Name:
                 </label>
                 <input
-                    type="text"
-                    class="o_input o_required_modifier o-calendar-quick-create--input"
-                    name="title"
-                    t-ref="title"
-                    t-on-keyup="onInputKeyup"
-                    t-att-value="props.title"
+                        type="text"
+                        class="o_input o_required_modifier o-calendar-quick-create--input"
+                        name="title"
+                        t-ref="title"
+                        t-on-keyup="onInputKeyup"
+                        t-att-value="props.title"
                 />
             </div>
             <t t-set-slot="footer">

@@ -9,5 +9,6 @@ class ProductReplenishMixin(models.AbstractModel):
 
     def _get_allowed_route_domain(self):
         domains = super()._get_allowed_route_domain()
-        route_id = self.env['stock.warehouse']._find_or_create_global_route('mrp_subcontracting.route_resupply_subcontractor_mto', _('Resupply Subcontractor on Order')).id
+        route_id = self.env['stock.warehouse']._find_or_create_global_route(
+            'mrp_subcontracting.route_resupply_subcontractor_mto', _('Resupply Subcontractor on Order')).id
         return expression.AND([domains, [('id', '!=', route_id)]])

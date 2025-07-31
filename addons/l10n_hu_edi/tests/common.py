@@ -1,9 +1,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import Command
+import datetime
+
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 
-import datetime
+from odoo import Command
 
 
 class L10nHuEdiTestCommon(AccountTestInvoicingCommon):
@@ -133,9 +134,10 @@ class L10nHuEdiTestCommon(AccountTestInvoicingCommon):
             'l10n_hu_edi_signature_key': 'some_key',
             'l10n_hu_edi_replacement_key': 'abcdefghijklmnop',
         })
-    
+
     def _create_simple_move(self, move_type='out_invoice', currency=None):
-        journal = self.company_data['default_journal_sale'] if move_type in self.env['account.move'].get_sale_types() else self.company_data['default_journal_purchase']
+        journal = self.company_data['default_journal_sale'] if move_type in self.env[
+            'account.move'].get_sale_types() else self.company_data['default_journal_purchase']
 
         return self.env['account.move'].create({
             'move_type': move_type,
@@ -157,15 +159,15 @@ class L10nHuEdiTestCommon(AccountTestInvoicingCommon):
     def create_invoice_simple(self, currency=None):
         """ Create a really basic invoice - just one line. """
         return self._create_simple_move(move_type='out_invoice', currency=currency)
-    
+
     def create_bill_simple(self, currency=None):
         """ Create a really basic bill - just one line. """
         return self._create_simple_move(move_type='in_invoice', currency=currency)
-    
+
     def create_credit_note_simple(self, currency=None):
         """ Create a really basic credit note - just one line. """
         return self._create_simple_move(move_type='out_refund', currency=currency)
-    
+
     def create_refund_simple(self, currency=None):
         """ Create a really basic bill refund - just one line. """
         return self._create_simple_move(move_type='in_refund', currency=currency)
@@ -351,7 +353,8 @@ class L10nHuEdiTestCommon(AccountTestInvoicingCommon):
     def create_reversal(self, invoice, is_modify=False):
         """ Create a credit note that reverses an invoice. """
         wizard_vals = {'journal_id': invoice.journal_id.id}
-        wizard_reverse = self.env['account.move.reversal'].with_context(active_ids=invoice.ids, active_model='account.move').create(wizard_vals)
+        wizard_reverse = self.env['account.move.reversal'].with_context(active_ids=invoice.ids,
+                                                                        active_model='account.move').create(wizard_vals)
         wizard_reverse.reverse_moves(is_modify=is_modify)
         return wizard_reverse.new_move_ids
 
@@ -360,7 +363,9 @@ class L10nHuEdiTestCommon(AccountTestInvoicingCommon):
         invoice = self.create_invoice_simple()
         invoice.action_post()
         send_and_print = self.create_send_and_print(invoice, sending_methods=[])
-        self.assertTrue(send_and_print.extra_edi_checkboxes and send_and_print.extra_edi_checkboxes.get('hu_nav_30', {}).get('checked'))
+        self.assertTrue(
+            send_and_print.extra_edi_checkboxes and send_and_print.extra_edi_checkboxes.get('hu_nav_30', {}).get(
+                'checked'))
         self.assertFalse(invoice._l10n_hu_edi_check_invoices())
         send_and_print.action_send_and_print()
         cancel_wizard = self.env['l10n_hu_edi.cancellation'].with_context({"default_invoice_id": invoice.id}).create({

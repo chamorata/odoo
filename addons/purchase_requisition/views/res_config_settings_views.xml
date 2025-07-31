@@ -7,7 +7,8 @@
         <field name="priority" eval="25"/>
         <field name="inherit_id" ref="purchase.res_config_settings_view_form_purchase"/>
         <field name="arch" type="xml">
-            <xpath expr="//app[@name='purchase']/block[@name='purchase_setting_container']/setting[@id='manage_purchase_agreements']/div[hasclass('content-group')]" position="after">
+            <xpath expr="//app[@name='purchase']/block[@name='purchase_setting_container']/setting[@id='manage_purchase_agreements']/div[hasclass('content-group')]"
+                   position="after">
                 <div class="row mt-2" invisible="not module_purchase_requisition">
                     <field name="group_purchase_alternatives" class="col flex-grow-0 ml16 mr0 pe-2"/>
                     <div class="col ps-0">

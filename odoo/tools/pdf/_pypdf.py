@@ -13,7 +13,6 @@ __all__ = [
     "generic",
 ]
 
-
 pypdf.PageObject.mergePage = lambda self, page2: self.merge_page(page2)
 pypdf.PageObject.mediaBox = property(lambda self: self.mediabox)
 # use lambdas (rather than copying) to allow overrides of the base method

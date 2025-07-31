@@ -2,8 +2,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import psycopg2
-
 from odoo.addons.mail.tests.common import MailCommon
+
 from odoo.tools import mute_logger
 
 

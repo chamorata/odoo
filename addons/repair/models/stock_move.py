@@ -95,7 +95,8 @@ class StockMove(models.Model):
             move.picking_type_id = move.repair_id.picking_type_id.id
             repair_moves |= move
         no_repair_moves = moves - repair_moves
-        draft_repair_moves = repair_moves.filtered(lambda m: m.state == 'draft' and m.repair_id.state in ('confirmed', 'under_repair'))
+        draft_repair_moves = repair_moves.filtered(
+            lambda m: m.state == 'draft' and m.repair_id.state in ('confirmed', 'under_repair'))
         other_repair_moves = repair_moves - draft_repair_moves
         draft_repair_moves._check_company()
         draft_repair_moves._adjust_procure_method(picking_type_code='repair_operation')
@@ -142,7 +143,8 @@ class StockMove(models.Model):
             so_line_vals.append({
                 'order_id': move.repair_id.sale_order_id.id,
                 'product_id': move.product_id.id,
-                'product_uom_qty': product_qty, # When relying only on so_line compute method, the sol quantity is only updated on next sol creation
+                'product_uom_qty': product_qty,
+                # When relying only on so_line compute method, the sol quantity is only updated on next sol creation
                 'product_uom': move.product_uom.id,
                 'move_ids': [Command.link(move.id)],
                 'qty_delivered': move.quantity if move.state == 'done' else 0.0,
@@ -193,7 +195,8 @@ class StockMove(models.Model):
         return self.repair_id or super()._get_source_document()
 
     def _set_repair_locations(self):
-        moves_per_repair = self.filtered(lambda m: (m.repair_id and m.repair_line_type) is not False).grouped('repair_id')
+        moves_per_repair = self.filtered(lambda m: (m.repair_id and m.repair_line_type) is not False).grouped(
+            'repair_id')
         if not moves_per_repair:
             return
         for moves in moves_per_repair.values():

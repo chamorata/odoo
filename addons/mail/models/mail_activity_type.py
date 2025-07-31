@@ -39,15 +39,16 @@ class MailActivityType(models.Model):
     delay_label = fields.Char(compute='_compute_delay_label')
     delay_from = fields.Selection([
         ('current_date', 'after completion date'),
-        ('previous_activity', 'after previous activity deadline')], string="Delay Type", help="Type of delay", required=True, default='previous_activity')
+        ('previous_activity', 'after previous activity deadline')], string="Delay Type", help="Type of delay",
+        required=True, default='previous_activity')
     icon = fields.Char('Icon', help="Font awesome icon e.g. fa-tasks")
     decoration_type = fields.Selection([
         ('warning', 'Alert'),
         ('danger', 'Error')], string="Decoration Type",
         help="Change the background color of the related activities of this type.")
     res_model = fields.Selection(selection=_get_model_selection, string="Model",
-        help='Specify a model if the activity should be specific to a model'
-             ' and not available when managing activities for other models.')
+                                 help='Specify a model if the activity should be specific to a model'
+                                      ' and not available when managing activities for other models.')
     triggered_next_type_id = fields.Many2one(
         'mail.activity.type', string='Trigger', compute='_compute_triggered_next_type_id',
         inverse='_inverse_triggered_next_type_id', store=True, readonly=False,
@@ -59,7 +60,8 @@ class MailActivityType(models.Model):
     suggested_next_type_ids = fields.Many2many(
         'mail.activity.type', 'mail_activity_rel', 'activity_id', 'recommended_id', string='Suggest',
         domain="['|', ('res_model', '=', False), ('res_model', '=', res_model)]",
-        compute='_compute_suggested_next_type_ids', inverse='_inverse_suggested_next_type_ids', store=True, readonly=False,
+        compute='_compute_suggested_next_type_ids', inverse='_inverse_suggested_next_type_ids', store=True,
+        readonly=False,
         help="Suggest these activities once the current one is marked as done.")
     previous_type_ids = fields.Many2many(
         'mail.activity.type', 'mail_activity_rel', 'recommended_id', 'activity_id',
@@ -76,9 +78,10 @@ class MailActivityType(models.Model):
     default_note = fields.Html(string="Default Note", translate=True)
     keep_done = fields.Boolean(string="Keep Done", help='Keep activities marked as done in the activity view')
 
-    #Fields for display purpose only
-    initial_res_model = fields.Selection(selection=_get_model_selection, string='Initial model', compute="_compute_initial_res_model", store=False,
-            help='Technical field to keep track of the model at the start of editing to support UX related behaviour')
+    # Fields for display purpose only
+    initial_res_model = fields.Selection(selection=_get_model_selection, string='Initial model',
+                                         compute="_compute_initial_res_model", store=False,
+                                         help='Technical field to keep track of the model at the start of editing to support UX related behaviour')
     res_model_change = fields.Boolean(string="Model has change", default=False, store=False)
 
     @api.constrains('res_model')
@@ -88,7 +91,8 @@ class MailActivityType(models.Model):
 
     @api.onchange('res_model')
     def _onchange_res_model(self):
-        self.mail_template_ids = self.sudo().mail_template_ids.filtered(lambda template: template.model_id.model == self.res_model)
+        self.mail_template_ids = self.sudo().mail_template_ids.filtered(
+            lambda template: template.model_id.model == self.res_model)
         self.res_model_change = self.initial_res_model and self.initial_res_model != self.res_model
 
     def _compute_initial_res_model(self):
@@ -147,7 +151,7 @@ class MailActivityType(models.Model):
                 raise exceptions.UserError(
                     _('You cannot modify %(activities_names)s target model as they are are required in various apps.',
                       activities_names=', '.join(act.name for act in modified),
-                ))
+                      ))
         return super().write(values)
 
     @api.ondelete(at_uninstall=False)
@@ -161,11 +165,12 @@ class MailActivityType(models.Model):
             raise exceptions.UserError(
                 _('You cannot delete %(activity_names)s as it is required in various apps.',
                   activity_names=', '.join(act.name for act in master_data),
-            ))
+                  ))
 
     def action_archive(self):
         if self.env.ref('mail.mail_activity_data_todo') in self:
-            raise UserError(_("The 'To-Do' activity type is used to create reminders from the top bar menu and the command palette. Consequently, it cannot be archived or deleted."))
+            raise UserError(
+                _("The 'To-Do' activity type is used to create reminders from the top bar menu and the command palette. Consequently, it cannot be archived or deleted."))
         return super().action_archive()
 
     def _get_date_deadline(self):

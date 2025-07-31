@@ -29,6 +29,7 @@ def convert_field(cr, model, field, target_model):
 
     cr.execute('ALTER TABLE "{0}" DROP COLUMN "{1}" CASCADE'.format(table, field))
 
+
 def migrate(cr, version):
     convert_field(cr, 'res.partner', 'property_purchase_currency_id', 'res.currency')
     convert_field(cr, 'product.template',

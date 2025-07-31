@@ -71,8 +71,8 @@
     <data noupdate="0">
 
         <function model="stock.warehouse" name="write">
-          <value model="stock.warehouse" search="[('partner_id', '=', ref('stock.res_partner_company_1'))]"/>
-          <value eval="{'buy_to_resupply': True}"/>
+            <value model="stock.warehouse" search="[('partner_id', '=', ref('stock.res_partner_company_1'))]"/>
+            <value eval="{'buy_to_resupply': True}"/>
         </function>
 
     </data>

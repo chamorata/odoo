@@ -1,15 +1,16 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from markupsafe import Markup
 from unittest.mock import patch
 
-from odoo import fields
-from odoo.tools.misc import limited_field_access_token
-from odoo.addons.base.tests.common import TransactionCaseWithUserDemo
+from markupsafe import Markup
 from odoo.addons.mail.tests.common import MailCommon
 from odoo.addons.mail.tools.discuss import Store
+
+from odoo import fields
+from odoo.addons.base.tests.common import TransactionCaseWithUserDemo
 from odoo.tests import Form, users, warmup, tagged
 from odoo.tools import mute_logger, formataddr
+from odoo.tools.misc import limited_field_access_token
 
 
 @tagged('mail_performance', 'post_install', '-at_install')
@@ -358,8 +359,8 @@ class TestBaseAPIPerformance(BaseMailPerformance):
 
         with self.assertQueryCount(admin=5, employee=5):
             activity = record.action_start('Test Start')
-            #read activity_type to normalize cache between enterprise and community
-            #voip module read activity_type during create leading to one less query in enterprise on action_close
+            # read activity_type to normalize cache between enterprise and community
+            # voip module read activity_type during create leading to one less query in enterprise on action_close
             _category = activity.activity_type_id.category
 
         record.write({'name': 'Dupe write'})
@@ -763,7 +764,7 @@ class TestBaseAPIPerformance(BaseMailPerformance):
             {'alias_name': 'a.%s.%d' % (self.env.user.name, index),
              'customer_id': self.customer.id,
              'name': 'T_%d' % index,
-            } for index in range(10)
+             } for index in range(10)
         ])
 
         with self.assertQueryCount(admin=1, employee=1):
@@ -876,10 +877,11 @@ class TestMailAPIPerformance(BaseMailPerformance):
         def _patched_unlink(records):
             nonlocal unlinked_mails
             unlinked_mails |= set(records.ids)
+
         unlinked_mails = set()
 
         with self.assertQueryCount(admin=30, employee=30), \
-             patch.object(type(self.env['mail.mail']), 'unlink', _patched_unlink):
+                patch.object(type(self.env['mail.mail']), 'unlink', _patched_unlink):
             self.env['mail.mail'].sudo().browse(mails.ids).send()
 
         for mail in mails[:-2]:
@@ -924,7 +926,8 @@ class TestMailAPIPerformance(BaseMailPerformance):
             )
 
         self.assertEqual(record.message_ids[0].body, '<p>Adding stuff on %s</p>' % record.name)
-        self.assertEqual(record.message_ids[0].notified_partner_ids, self.partners | self.user_portal.partner_id | self.customer)
+        self.assertEqual(record.message_ids[0].notified_partner_ids,
+                         self.partners | self.user_portal.partner_id | self.customer)
 
     @mute_logger('odoo.tests', 'odoo.addons.mail.models.mail_mail', 'odoo.models.unlink')
     @users('admin', 'employee')
@@ -962,7 +965,7 @@ class TestMailAPIPerformance(BaseMailPerformance):
             'customer_id': False,
             'user_id': self.user_portal.id,
         })
-        rec1 = rec.with_context(active_test=False)      # to see inactive records
+        rec1 = rec.with_context(active_test=False)  # to see inactive records
 
         self.assertEqual(rec1.message_partner_ids, self.env.user.partner_id | self.user_portal.partner_id)
 
@@ -973,7 +976,8 @@ class TestMailAPIPerformance(BaseMailPerformance):
                 subtype_ids=subtype_ids
             )
 
-        self.assertEqual(rec1.message_partner_ids, self.env.user.partner_id | self.user_portal.partner_id | self.partners[:4])
+        self.assertEqual(rec1.message_partner_ids,
+                         self.env.user.partner_id | self.user_portal.partner_id | self.partners[:4])
 
         # subscribe existing and new followers with force=False, meaning only some new followers will be added
         with self.assertQueryCount(admin=5, employee=5):
@@ -982,7 +986,8 @@ class TestMailAPIPerformance(BaseMailPerformance):
                 subtype_ids=None
             )
 
-        self.assertEqual(rec1.message_partner_ids, self.env.user.partner_id | self.user_portal.partner_id | self.partners[:6])
+        self.assertEqual(rec1.message_partner_ids,
+                         self.env.user.partner_id | self.user_portal.partner_id | self.partners[:6])
 
         # subscribe existing and new followers with force=True, meaning all will have the same subtypes
         with self.assertQueryCount(admin=4, employee=4):
@@ -991,7 +996,8 @@ class TestMailAPIPerformance(BaseMailPerformance):
                 subtype_ids=subtype_ids
             )
 
-        self.assertEqual(rec1.message_partner_ids, self.env.user.partner_id | self.user_portal.partner_id | self.partners)
+        self.assertEqual(rec1.message_partner_ids,
+                         self.env.user.partner_id | self.user_portal.partner_id | self.partners)
 
     @mute_logger('odoo.tests', 'odoo.addons.mail.models.mail_mail', 'odoo.models.unlink')
     @users('admin', 'employee')
@@ -1004,12 +1010,13 @@ class TestMailAPIPerformance(BaseMailPerformance):
             'customer_id': self.customer.id,
             'user_id': self.env.uid,
         })
-        rec1 = rec.with_context(active_test=False)      # to see inactive records
+        rec1 = rec.with_context(active_test=False)  # to see inactive records
         self.assertEqual(rec1.message_partner_ids, self.partners | self.env.user.partner_id)
 
         with self.assertQueryCount(admin=42, employee=42):
             rec.write({'user_id': self.user_portal.id})
-        self.assertEqual(rec1.message_partner_ids, self.partners | self.env.user.partner_id | self.user_portal.partner_id)
+        self.assertEqual(rec1.message_partner_ids,
+                         self.partners | self.env.user.partner_id | self.user_portal.partner_id)
         # write tracking message
         self.assertEqual(rec1.message_ids[0].subtype_id, self.env.ref('mail.mt_note'))
         self.assertEqual(rec1.message_ids[0].notified_partner_ids, self.env['res.partner'])
@@ -1035,8 +1042,9 @@ class TestMailAPIPerformance(BaseMailPerformance):
                 'user_id': user_id,
             })
 
-        rec1 = rec.with_context(active_test=False)      # to see inactive records
-        self.assertEqual(rec1.message_partner_ids, self.partners | self.env.user.partner_id | self.user_portal.partner_id)
+        rec1 = rec.with_context(active_test=False)  # to see inactive records
+        self.assertEqual(rec1.message_partner_ids,
+                         self.partners | self.env.user.partner_id | self.user_portal.partner_id)
         # creation message
         self.assertEqual(rec1.message_ids[0].subtype_id, self.env.ref('test_mail.st_mail_test_ticket_container_upd'))
         self.assertEqual(rec1.message_ids[0].notified_partner_ids, self.partners | self.user_portal.partner_id)
@@ -1053,7 +1061,7 @@ class TestMailAPIPerformance(BaseMailPerformance):
             'customer_id': False,
             'user_id': self.user_portal.id,
         })
-        rec1 = rec.with_context(active_test=False)      # to see inactive records
+        rec1 = rec.with_context(active_test=False)  # to see inactive records
         self.assertEqual(rec1.message_partner_ids, self.user_portal.partner_id | self.env.user.partner_id)
         self.assertEqual(len(rec1.message_ids), 1)
 
@@ -1063,7 +1071,8 @@ class TestMailAPIPerformance(BaseMailPerformance):
                 'container_id': self.container.id,
             })
 
-        self.assertEqual(rec1.message_partner_ids, self.partners | self.env.user.partner_id | self.user_portal.partner_id)
+        self.assertEqual(rec1.message_partner_ids,
+                         self.partners | self.env.user.partner_id | self.user_portal.partner_id)
         # write tracking message
         self.assertEqual(rec1.message_ids[0].subtype_id, self.env.ref('test_mail.st_mail_test_ticket_container_upd'))
         self.assertEqual(rec1.message_ids[0].notified_partner_ids, self.partners | self.user_portal.partner_id)
@@ -1091,7 +1100,7 @@ class TestMailAPIPerformance(BaseMailPerformance):
             'customer_id': False,
             'user_id': self.user_portal.id,
         })
-        rec1 = rec.with_context(active_test=False)      # to see inactive records
+        rec1 = rec.with_context(active_test=False)  # to see inactive records
         self.assertEqual(rec1.message_partner_ids, self.user_portal.partner_id | self.env.user.partner_id)
 
         with self.assertQueryCount(admin=63, employee=63):
@@ -1101,7 +1110,8 @@ class TestMailAPIPerformance(BaseMailPerformance):
                 'customer_id': customer_id,
             })
 
-        self.assertEqual(rec1.message_partner_ids, self.partners | self.env.user.partner_id | self.user_portal.partner_id)
+        self.assertEqual(rec1.message_partner_ids,
+                         self.partners | self.env.user.partner_id | self.user_portal.partner_id)
         # write tracking message
         self.assertEqual(rec1.message_ids[0].subtype_id, self.env.ref('test_mail.st_mail_test_ticket_container_upd'))
         self.assertEqual(rec1.message_ids[0].notified_partner_ids, self.partners | self.user_portal.partner_id)
@@ -1124,8 +1134,9 @@ class TestMailAPIPerformance(BaseMailPerformance):
             'user_id': self.user_portal.id,
             'mail_template': self.env.ref('test_mail.mail_test_ticket_tracking_tpl').id,
         })
-        rec1 = rec.with_context(active_test=False)      # to see inactive records
-        self.assertEqual(rec1.message_partner_ids, self.partners | self.env.user.partner_id | self.user_portal.partner_id)
+        rec1 = rec.with_context(active_test=False)  # to see inactive records
+        self.assertEqual(rec1.message_partner_ids,
+                         self.partners | self.env.user.partner_id | self.user_portal.partner_id)
 
         with self.assertQueryCount(admin=32, employee=32):
             rec.write({
@@ -1263,7 +1274,7 @@ class TestMessageToStorePerformance(BaseMailPerformance):
         ])
 
     def test_assert_initial_values(self):
-        self.assertEqual(len(self.messages_all), 2*2)
+        self.assertEqual(len(self.messages_all), 2 * 2)
 
     @mute_logger('odoo.tests', 'odoo.addons.mail.models.mail_mail', 'odoo.models.unlink')
     @users('employee')

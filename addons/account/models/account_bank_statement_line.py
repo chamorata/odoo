@@ -1,8 +1,7 @@
-from odoo import api, Command, fields, models, _
-from odoo.exceptions import UserError, ValidationError
-
 from xmlrpc.client import MAXINT
 
+from odoo import api, Command, fields, models, _
+from odoo.exceptions import UserError, ValidationError
 from odoo.tools import create_index, SQL
 from odoo.tools.misc import str2bool
 
@@ -207,8 +206,8 @@ class AccountBankStatementLine(models.Model):
             for company in self.journal_id.company_id
         }
         for journal in self.journal_id:
-            journal_lines_indexes = self.filtered(lambda line: line.journal_id == journal)\
-                .sorted('internal_index')\
+            journal_lines_indexes = self.filtered(lambda line: line.journal_id == journal) \
+                .sorted('internal_index') \
                 .mapped('internal_index')
             min_index, max_index = journal_lines_indexes[0], journal_lines_indexes[-1]
 
@@ -293,8 +292,8 @@ class AccountBankStatementLine(models.Model):
 
         for st_line in self.filtered(lambda line: line._origin.id):
             st_line.internal_index = f'{st_line.date.strftime("%Y%m%d")}' \
-                                      f'{MAXINT - st_line.sequence:0>10}' \
-                                      f'{st_line._origin.id:0>10}'
+                                     f'{MAXINT - st_line.sequence:0>10}' \
+                                     f'{st_line._origin.id:0>10}'
 
     @api.depends('journal_id', 'currency_id', 'amount', 'foreign_currency_id', 'amount_currency',
                  'move_id.checked',
@@ -407,7 +406,7 @@ class AccountBankStatementLine(models.Model):
             # Hack to force different account instead of the suspense account.
             counterpart_account_ids.append(vals.pop('counterpart_account_id', None))
 
-            #Set the amount to 0 if it's not specified.
+            # Set the amount to 0 if it's not specified.
             if 'amount' not in vals:
                 vals['amount'] = 0
 
@@ -460,7 +459,8 @@ class AccountBankStatementLine(models.Model):
         show_running_balance = False
         # We loop over the content of groupby because the groupby date is in the form of "date:granularity"
         for el in groupby:
-            if (el == 'statement_id' or el == 'journal_id' or el.startswith('date')) and self.env.context.get('show_running_balance_latest'):
+            if (el == 'statement_id' or el == 'journal_id' or el.startswith('date')) and self.env.context.get(
+                    'show_running_balance_latest'):
                 show_running_balance = True
                 break
         if show_running_balance:
@@ -522,7 +522,8 @@ class AccountBankStatementLine(models.Model):
             # Base domain.
             ('display_type', 'not in', ('line_section', 'line_note')),
             ('parent_state', '=', 'posted'),
-            ('company_id', 'in', self.env['res.company'].search([('id', 'child_of', self.company_id.id)]).ids),  # allow to match invoices from same or children companies to be consistant with what's shown in the interface
+            ('company_id', 'in', self.env['res.company'].search([('id', 'child_of', self.company_id.id)]).ids),
+            # allow to match invoices from same or children companies to be consistant with what's shown in the interface
             # Reconciliation domain.
             ('reconciled', '=', False),
             # Domain to use the account_move_line__unreconciled_index
@@ -539,9 +540,9 @@ class AccountBankStatementLine(models.Model):
     def _get_default_journal(self):
         journal_type = self.env.context.get('journal_type', 'bank')
         return self.env['account.journal'].search([
-                *self.env['account.journal']._check_company_domain(self.env.company),
-                ('type', '=', journal_type),
-            ], limit=1)
+            *self.env['account.journal']._check_company_domain(self.env.company),
+            ('type', '=', journal_type),
+        ], limit=1)
 
     @api.model
     def _get_default_statement(self, journal_id=None, date=None):
@@ -665,7 +666,7 @@ class AccountBankStatementLine(models.Model):
         elif foreign_currency == company_currency:
             company_amount = transaction_amount
         else:
-            company_amount = journal_currency\
+            company_amount = journal_currency \
                 ._convert(journal_amount, company_currency, self.journal_id.company_id, self.date)
 
         liquidity_line_vals = {
@@ -711,7 +712,8 @@ class AccountBankStatementLine(models.Model):
             else:
                 other_lines += line
         if not liquidity_lines:
-            liquidity_lines = self.move_id.line_ids.filtered(lambda l: l.account_id.account_type in ('asset_cash', 'liability_credit_card'))
+            liquidity_lines = self.move_id.line_ids.filtered(
+                lambda l: l.account_id.account_type in ('asset_cash', 'liability_credit_card'))
             other_lines -= liquidity_lines
         return liquidity_lines, suspense_lines, other_lines
 
@@ -734,7 +736,7 @@ class AccountBankStatementLine(models.Model):
             if 'line_ids' in changed_fields:
                 liquidity_lines, suspense_lines, other_lines = st_line._seek_for_lines()
                 company_currency = st_line.journal_id.company_id.currency_id
-                journal_currency = st_line.journal_id.currency_id if st_line.journal_id.currency_id != company_currency\
+                journal_currency = st_line.journal_id.currency_id if st_line.journal_id.currency_id != company_currency \
                     else False
 
                 if len(liquidity_lines) != 1:
@@ -811,8 +813,8 @@ class AccountBankStatementLine(models.Model):
             return
 
         if not any(field_name in changed_fields for field_name in (
-            'payment_ref', 'amount', 'amount_currency',
-            'foreign_currency_id', 'currency_id', 'partner_id',
+                'payment_ref', 'amount', 'amount_currency',
+                'foreign_currency_id', 'currency_id', 'partner_id',
         )):
             return
 

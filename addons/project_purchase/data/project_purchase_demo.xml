@@ -2,7 +2,8 @@
 <odoo>
     <data noupdate="1">
         <function model="purchase.order.line" name="write">
-            <value model="purchase.order.line" search="[('product_id', 'in', [ref('product.product_delivery_01'), ref('product.product_product_27')]), ('order_id', '=', ref('purchase.purchase_order_1'))]"/>
+            <value model="purchase.order.line"
+                   search="[('product_id', 'in', [ref('product.product_delivery_01'), ref('product.product_product_27')]), ('order_id', '=', ref('purchase.purchase_order_1'))]"/>
             <value eval="{'analytic_distribution': {ref('analytic.analytic_our_super_product'): 100}}"/>
         </function>
 
@@ -50,7 +51,8 @@
 
         <record id="purchase_order_line_for_home_construction_1" model="purchase.order.line">
             <field name="order_id" ref="purchase_order_for_home_construction"/>
-            <field name="name" model="purchase.order.line" eval="obj().env.ref('project_purchase.product_product_cement').partner_ref"/>
+            <field name="name" model="purchase.order.line"
+                   eval="obj().env.ref('project_purchase.product_product_cement').partner_ref"/>
             <field name="product_id" ref="project_purchase.product_product_cement"/>
             <field name="product_uom" ref="uom.product_uom_ton"/>
             <field name="price_unit">150</field>
@@ -61,7 +63,8 @@
 
         <record id="purchase_order_line_for_home_construction_2" model="purchase.order.line">
             <field name="order_id" ref="purchase_order_for_home_construction"/>
-            <field name="name" model="purchase.order.line" eval="obj().env.ref('project_purchase.product_product_sand').partner_ref"/>
+            <field name="name" model="purchase.order.line"
+                   eval="obj().env.ref('project_purchase.product_product_sand').partner_ref"/>
             <field name="product_id" ref="project_purchase.product_product_sand"/>
             <field name="product_uom" ref="uom.product_uom_ton"/>
             <field name="price_unit">100</field>
@@ -72,7 +75,8 @@
 
         <record id="purchase_order_line_for_home_construction_3" model="purchase.order.line">
             <field name="order_id" ref="purchase_order_for_home_construction"/>
-            <field name="name" model="purchase.order.line" eval="obj().env.ref('project_purchase.product_product_bricks').partner_ref"/>
+            <field name="name" model="purchase.order.line"
+                   eval="obj().env.ref('project_purchase.product_product_bricks').partner_ref"/>
             <field name="product_id" ref="project_purchase.product_product_bricks"/>
             <field name="product_uom" ref="uom.product_uom_ton"/>
             <field name="price_unit">50</field>

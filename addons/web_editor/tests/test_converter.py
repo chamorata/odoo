@@ -5,10 +5,10 @@ import textwrap
 
 from lxml import etree, html
 from lxml.builder import E
+from odoo.addons.web_editor.models.ir_qweb_fields import html_to_text
 
 from odoo.tests import common
 from odoo.tests.common import BaseCase
-from odoo.addons.web_editor.models.ir_qweb_fields import html_to_text
 
 
 class TestHTMLToText(BaseCase):

@@ -1,10 +1,12 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.website.tools import MockRequest
+from odoo.addons.website_sale.tests.common import WebsiteSaleCommon
+from odoo.addons.website_sale_loyalty.controllers.main import WebsiteSale
+
 from odoo import http, Command
 from odoo.tests import tagged, HttpCase
-from odoo.addons.website.tools import MockRequest
-from odoo.addons.website_sale_loyalty.controllers.main import WebsiteSale
-from odoo.addons.website_sale.tests.common import WebsiteSaleCommon
+
 
 @tagged('post_install', '-at_install')
 class TestEwallet(HttpCase, WebsiteSaleCommon):

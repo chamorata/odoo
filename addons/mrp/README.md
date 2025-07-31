@@ -32,7 +32,7 @@ you will not be frustrated by a rigid system.
 Schedule Work Orders
 --------------------
 
-Check resources capacities and fix bottlenecks.  Define routings and plan the
+Check resources capacities and fix bottlenecks. Define routings and plan the
 working time and capacity of your resources. Quickly identify resource
 requirements and bottlenecks to ensure your production meets your delivery
 schedule dates.

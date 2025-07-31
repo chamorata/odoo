@@ -3,8 +3,10 @@
 
 from datetime import datetime, timedelta
 
-from odoo.addons.mail.tests.common import  MailCommon
+from odoo.addons.mail.tests.common import MailCommon
+
 from odoo.tests import tagged
+
 
 @tagged('post_install', '-at_install')
 class TestMail(MailCommon):

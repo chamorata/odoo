@@ -32,8 +32,10 @@ class AccountMove(models.Model):
             ('81', '81 - Report for the sales carried out'),
             ('82', '82 - Report for the sales carried out by a special levying procedure'),
             ('91', '91 - Protocol of due tax under Art. 151c, Para 3 of the Act'),
-            ('93', '93 - Protocol of due tax under Art. 151c, Para 7 of the Act with a recipient being a person not applying the special regime'),
-            ('94', '94 - Protocol of due tax under Art. 151c, Para 7 of the Act with a recipient being a person applying the special regime'),
+            ('93',
+             '93 - Protocol of due tax under Art. 151c, Para 7 of the Act with a recipient being a person not applying the special regime'),
+            ('94',
+             '94 - Protocol of due tax under Art. 151c, Para 7 of the Act with a recipient being a person applying the special regime'),
         ]
 
     @api.depends('journal_id', 'move_type')

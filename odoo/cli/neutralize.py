@@ -5,7 +5,6 @@ import sys
 from pathlib import Path
 
 import odoo
-
 from . import Command
 
 _logger = logging.getLogger(__name__)

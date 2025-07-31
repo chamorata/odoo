@@ -1,5 +1,3 @@
-
-
 gordon, 2022-7-14
 
 I hereby agree to the terms of the Odoo Individual Contributor License

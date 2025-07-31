@@ -11,7 +11,6 @@ from odoo.sql_db import close_db, db_connect
 from odoo.tests import HOST, BaseCase, Like, get_db_name, tagged
 from odoo.tools import lazy_property, mute_logger, SQL
 
-
 """
 RCO:
 The other "what could go wrong" I can think about:
@@ -25,6 +24,8 @@ The other "what could go wrong" I can think about:
 * you cannot import some modules (in the Python sense)
 * some modules are marked to be installed/upgraded/uninstalled and that fails (that's part of Registry.new)
 """
+
+
 # TODO: write some tests for those too
 
 
@@ -54,7 +55,7 @@ class TestHttpRegistry(BaseCase):
         cls._db_list = cls.startClassPatcher(patch('odoo.http.db_list'))
         cls._db_list.return_value = ['postgres', get_db_name()]
         cls.startClassPatcher(patch('odoo.http.db_filter',
-            side_effect=lambda dbs, host=None: [db for db in dbs if db in cls._db_list()]))
+                                    side_effect=lambda dbs, host=None: [db for db in dbs if db in cls._db_list()]))
 
     def setUp(self):
         super().setUp()
@@ -154,7 +155,7 @@ class TestHttpRegistry(BaseCase):
 
         # impossible to build a registry, make sure the system recovers
         with self.assertLogs('odoo.modules.registry', logging.ERROR) as capture1, \
-             self.assertLogs('odoo.http', logging.WARNING) as capture2:
+                self.assertLogs('odoo.http', logging.WARNING) as capture2:
             res = self.url_open('/test_http/greeting-public')
             self.assertEqual(res.status_code, 404)
         self.assertEqual(capture1.output, [

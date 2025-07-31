@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from markupsafe import Markup
+
 from odoo import fields, models, _
 
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-import logging
 import json
+import logging
 import re
 from datetime import datetime
 
@@ -10,6 +10,7 @@ from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
+
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
@@ -17,17 +18,18 @@ class AccountMove(models.Model):
     l10n_ke_cu_serial_number = fields.Char(string='CU Serial Number', copy=False)
     l10n_ke_cu_invoice_number = fields.Char(string='CU Invoice Number', copy=False)
     l10n_ke_cu_qrcode = fields.Char(string='CU QR Code', copy=False)
-    l10n_ke_cu_show_send_button = fields.Boolean(string='Show Send to Tremol button', compute='_compute_l10n_ke_cu_show_send_button')
+    l10n_ke_cu_show_send_button = fields.Boolean(string='Show Send to Tremol button',
+                                                 compute='_compute_l10n_ke_cu_show_send_button')
 
     @api.depends('country_code', 'l10n_ke_cu_qrcode', 'state', 'move_type', 'company_id')
     def _compute_l10n_ke_cu_show_send_button(self):
         for move in self:
             move.l10n_ke_cu_show_send_button = (
-                move.country_code == 'KE'
-                and not move.l10n_ke_cu_qrcode
-                and move.state == 'posted'
-                and move.move_type in ['out_invoice', 'out_refund']
-                and not move.company_id.l10n_ke_oscu_is_active
+                    move.country_code == 'KE'
+                    and not move.l10n_ke_cu_qrcode
+                    and move.state == 'posted'
+                    and move.move_type in ['out_invoice', 'out_refund']
+                    and not move.company_id.l10n_ke_oscu_is_active
             )
 
     # -------------------------------------------------------------------------
@@ -60,10 +62,12 @@ class AccountMove(models.Model):
         for move in self:
             move_errors = []
             if move.country_code != 'KE':
-                move_errors.append(_("This invoice is not a Kenyan invoice and therefore can not be sent to the device."))
+                move_errors.append(
+                    _("This invoice is not a Kenyan invoice and therefore can not be sent to the device."))
 
             if move.company_id.currency_id != self.env.ref('base.KES'):
-                move_errors.append(_("This invoice's company currency is not in Kenyan Shillings, conversion to KES is not possible."))
+                move_errors.append(
+                    _("This invoice's company currency is not in Kenyan Shillings, conversion to KES is not possible."))
 
             if move.state != 'posted':
                 move_errors.append(_("This invoice/credit note has not been posted. Please confirm it to continue."))
@@ -71,13 +75,16 @@ class AccountMove(models.Model):
             if move.move_type not in ('out_refund', 'out_invoice'):
                 move_errors.append(_("The document being sent should be an invoice or credit note."))
 
-            if any([move.l10n_ke_cu_invoice_number, move.l10n_ke_cu_serial_number, move.l10n_ke_cu_qrcode, move.l10n_ke_cu_datetime]):
-                move_errors.append(_("The document already has details related to the fiscal device. Please make sure that the invoice has not already been sent."))
+            if any([move.l10n_ke_cu_invoice_number, move.l10n_ke_cu_serial_number, move.l10n_ke_cu_qrcode,
+                    move.l10n_ke_cu_datetime]):
+                move_errors.append(
+                    _("The document already has details related to the fiscal device. Please make sure that the invoice has not already been sent."))
 
             # The credit note should refer to the control unit number (receipt number) of the original
             # invoice to which it relates.
             if move.move_type == 'out_refund' and not move.reversed_entry_id.l10n_ke_cu_invoice_number:
-                move_errors.append(_("This credit note must reference the previous invoice, and this previous invoice must have already been submitted."))
+                move_errors.append(
+                    _("This credit note must reference the previous invoice, and this previous invoice must have already been submitted."))
 
             for line in self.invoice_line_ids.filtered(lambda l: l.display_type == 'product'):
                 vat_taxes = line.tax_ids.filtered(lambda tax: tax.amount in (16, 8, 0))
@@ -85,7 +92,9 @@ class AccountMove(models.Model):
                     move_errors.append(_("On line %s, you must select one and only one VAT tax.", line.name))
                 else:
                     if vat_taxes[0].amount == 0 and not line.tax_ids[0].l10n_ke_item_code_id:
-                        move_errors.append(_("On line %s, a tax with a KRA item code must be selected, since the tax is 0%% or exempt.", line.name))
+                        move_errors.append(
+                            _("On line %s, a tax with a KRA item code must be selected, since the tax is 0%% or exempt.",
+                              line.name))
 
             if move_errors:
                 errors.append((move.name, move_errors))
@@ -117,23 +126,27 @@ class AccountMove(models.Model):
         """
         headquarter_address = (self.commercial_partner_id.street or '') + (self.commercial_partner_id.street2 or '')
         customer_address = (self.partner_id.street or '') + (self.partner_id.street2 or '')
-        postcode_and_city = (self.partner_id.zip or '') + '' +  (self.partner_id.city or '')
-        vat = (self.commercial_partner_id.vat or '').strip() if self.commercial_partner_id.country_id.code == 'KE' else ''
+        postcode_and_city = (self.partner_id.zip or '') + '' + (self.partner_id.city or '')
+        vat = (
+                    self.commercial_partner_id.vat or '').strip() if self.commercial_partner_id.country_id.code == 'KE' else ''
         invoice_elements = [
-            b'1',                                                   # Reserved - 1 symbol with value '1'
-            b'     0',                                              # Reserved - 6 symbols with value ‘     0’
-            b'0',                                                   # Reserved - 1 symbol with value '0'
-            b'1' if self.move_type == 'out_invoice' else b'A',      # 1 symbol with value '1' (new invoice), 'A' (credit note), or '@' (debit note)
-            self._l10n_ke_fmt(self.commercial_partner_id.name, 30), # 30 symbols for Company name
-            self._l10n_ke_fmt(vat, 14),                             # 14 Symbols for the client PIN number
-            self._l10n_ke_fmt(headquarter_address, 30),             # 30 Symbols for customer headquarters
-            self._l10n_ke_fmt(customer_address, 30),                # 30 Symbols for the address
-            self._l10n_ke_fmt(postcode_and_city, 30),               # 30 symbols for the customer post code and city
-            self._l10n_ke_fmt('', 30),                              # 30 symbols for the exemption number
+            b'1',  # Reserved - 1 symbol with value '1'
+            b'     0',  # Reserved - 6 symbols with value ‘     0’
+            b'0',  # Reserved - 1 symbol with value '0'
+            b'1' if self.move_type == 'out_invoice' else b'A',
+            # 1 symbol with value '1' (new invoice), 'A' (credit note), or '@' (debit note)
+            self._l10n_ke_fmt(self.commercial_partner_id.name, 30),  # 30 symbols for Company name
+            self._l10n_ke_fmt(vat, 14),  # 14 Symbols for the client PIN number
+            self._l10n_ke_fmt(headquarter_address, 30),  # 30 Symbols for customer headquarters
+            self._l10n_ke_fmt(customer_address, 30),  # 30 Symbols for the address
+            self._l10n_ke_fmt(postcode_and_city, 30),  # 30 symbols for the customer post code and city
+            self._l10n_ke_fmt('', 30),  # 30 symbols for the exemption number
         ]
         if self.move_type == 'out_refund':
-            invoice_elements.append(self._l10n_ke_fmt(self.reversed_entry_id.l10n_ke_cu_invoice_number, 19)), # 19 symbols for related invoice number
-        invoice_elements.append(re.sub('[^A-Za-z0-9 ]+', '', self.name)[-15:].ljust(15).encode('cp1251'))     # 15 symbols for trader system invoice number
+            invoice_elements.append(self._l10n_ke_fmt(self.reversed_entry_id.l10n_ke_cu_invoice_number,
+                                                      19)),  # 19 symbols for related invoice number
+        invoice_elements.append(re.sub('[^A-Za-z0-9 ]+', '', self.name)[-15:].ljust(15).encode(
+            'cp1251'))  # 15 symbols for trader system invoice number
 
         # Command: Open fiscal record (0x30)
         return [b'\x30' + b';'.join(invoice_elements)]
@@ -151,6 +164,7 @@ class AccountMove(models.Model):
                   <DATA> of the line, which will be sent to the fiscal device
                   in order to add a line to the opened invoice.
         """
+
         def is_discount_line(line):
             return line.price_subtotal < 0.0
 
@@ -179,7 +193,8 @@ class AccountMove(models.Model):
             candidate_vals_list = sorted(candidate_vals_list, key=lambda x: x.price_unit * x.quantity, reverse=True)
             line_to_discount = abs(line.price_unit * line.quantity)
             for candidate in candidate_vals_list:
-                still_to_discount = abs(candidate.price_unit * candidate.quantity * (100.0 - discount_dict[candidate.id]) / 100.0)
+                still_to_discount = abs(
+                    candidate.price_unit * candidate.quantity * (100.0 - discount_dict[candidate.id]) / 100.0)
                 if line_to_discount >= still_to_discount:
                     discount_dict[candidate.id] = 100.0
                     line_to_discount -= still_to_discount
@@ -190,7 +205,9 @@ class AccountMove(models.Model):
 
         msgs = []
         tax_details = self._prepare_invoice_aggregated_taxes()
-        for line in self.invoice_line_ids.filtered(lambda l: l.display_type == 'product' and l.quantity and l.price_total > 0 and not discount_dict.get(l.id) >= 100):
+        for line in self.invoice_line_ids.filtered(
+                lambda l: l.display_type == 'product' and l.quantity and l.price_total > 0 and not discount_dict.get(
+                        l.id) >= 100):
             # Here we use the original discount of the line, since it the distributed discount has not been applied in the price_total
             price_total = 0
             percentage = 0
@@ -198,20 +215,26 @@ class AccountMove(models.Model):
             for tax in tax_details['tax_details_per_record'][line]['tax_details']:
                 if tax.amount in (16, 8, 0):  # This should only occur once
                     line_tax_details = tax_details['tax_details_per_record'][line]['tax_details'][tax]
-                    price_total = abs(line_tax_details['base_amount_currency']) + abs(line_tax_details['tax_amount_currency'])
+                    price_total = abs(line_tax_details['base_amount_currency']) + abs(
+                        line_tax_details['tax_amount_currency'])
                     percentage = tax.amount
-            price = round(price_total / abs(line.quantity) * 100 / (100 - line.discount), line.currency_id.decimal_places) * currency_rate
+            price = round(price_total / abs(line.quantity) * 100 / (100 - line.discount),
+                          line.currency_id.decimal_places) * currency_rate
             price = ('%.5f' % price).rstrip('0').rstrip('.')
             uom = line.product_uom_id and line.product_uom_id.name or ''
 
             line_data = b';'.join([
-                self._l10n_ke_fmt(line.name, 36),                       # 36 symbols for the article's name
-                self._l10n_ke_fmt(item_code.tax_rate or 'A', 1),        # 1 symbol for article's vat class ('A', 'B', 'C', 'D', or 'E')
-                price[:15].encode('cp1251'),                    # 1 to 15 symbols for article's price with up to 5 digits after decimal point
-                self._l10n_ke_fmt(uom, 3),                              # 3 symbols for unit of measure
-                (item_code.code or '').ljust(10).encode('cp1251'),      # 10 symbols for KRA item code in the format xxxx.xx.xx (can be empty)
-                self._l10n_ke_fmt(item_code.description or '', 20),     # 20 symbols for KRA item code description (can be empty)
-                str(percentage).encode('cp1251')[:5]                    # up to 5 symbols for vat rate
+                self._l10n_ke_fmt(line.name, 36),  # 36 symbols for the article's name
+                self._l10n_ke_fmt(item_code.tax_rate or 'A', 1),
+                # 1 symbol for article's vat class ('A', 'B', 'C', 'D', or 'E')
+                price[:15].encode('cp1251'),
+                # 1 to 15 symbols for article's price with up to 5 digits after decimal point
+                self._l10n_ke_fmt(uom, 3),  # 3 symbols for unit of measure
+                (item_code.code or '').ljust(10).encode('cp1251'),
+                # 10 symbols for KRA item code in the format xxxx.xx.xx (can be empty)
+                self._l10n_ke_fmt(item_code.description or '', 20),
+                # 20 symbols for KRA item code description (can be empty)
+                str(percentage).encode('cp1251')[:5]  # up to 5 symbols for vat rate
             ])
             # 1 to 10 symbols for quantity
             line_data += b'*' + str(abs(line.quantity)).encode('cp1251')[:10]
@@ -258,7 +281,8 @@ class AccountMove(models.Model):
             error_msg = ""
             for move, error_list in errors:
                 error_list = '\n'.join(error_list)
-                error_msg += _("Invalid invoice configuration on %(invoice)s:\n%(error_list)s\n\n", invoice=move, error_list=error_list)
+                error_msg += _("Invalid invoice configuration on %(invoice)s:\n%(error_list)s\n\n", invoice=move,
+                               error_list=error_list)
             raise UserError(error_msg)
         return {
             'type': 'ir.actions.client',

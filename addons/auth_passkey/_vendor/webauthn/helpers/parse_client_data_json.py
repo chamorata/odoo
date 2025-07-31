@@ -1,6 +1,5 @@
 import json
 from json.decoder import JSONDecodeError
-from typing import Union
 
 from .base64url_to_bytes import base64url_to_bytes
 from .byteslike_to_bytes import byteslike_to_bytes

@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
+import json
+from collections import defaultdict
+
+from markupsafe import Markup, escape
+
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
-from odoo.tools.misc import format_date, formatLang
-from odoo.tools.float_utils import float_repr
-from odoo.tools import groupby
-
-from collections import defaultdict
-from markupsafe import Markup, escape
 from odoo.tools import frozendict
-import json
+from odoo.tools import groupby
+from odoo.tools.float_utils import float_repr
+from odoo.tools.misc import format_date, formatLang
+
 
 class AutomaticEntryWizard(models.TransientModel):
     _name = 'account.automatic.entry.wizard'
@@ -17,40 +19,48 @@ class AutomaticEntryWizard(models.TransientModel):
 
     # General
     action = fields.Selection([('change_period', 'Change Period'), ('change_account', 'Change Account')], required=True)
-    move_data = fields.Text(compute="_compute_move_data") # JSON value of the moves to be created
-    preview_move_data = fields.Text(compute="_compute_preview_move_data") # JSON value of the data to be displayed in the previewer
+    move_data = fields.Text(compute="_compute_move_data")  # JSON value of the moves to be created
+    preview_move_data = fields.Text(
+        compute="_compute_preview_move_data")  # JSON value of the data to be displayed in the previewer
     move_line_ids = fields.Many2many('account.move.line')
     date = fields.Date(required=True, default=lambda self: fields.Date.context_today(self))
     company_id = fields.Many2one('res.company', required=True, readonly=True)
     company_currency_id = fields.Many2one('res.currency', related='company_id.currency_id')
-    percentage = fields.Float("Percentage", compute='_compute_percentage', readonly=False, store=True, help="Percentage of each line to execute the action on.")
-    total_amount = fields.Monetary(compute='_compute_total_amount', store=True, readonly=False, currency_field='company_currency_id', help="Total amount impacted by the automatic entry.")
+    percentage = fields.Float("Percentage", compute='_compute_percentage', readonly=False, store=True,
+                              help="Percentage of each line to execute the action on.")
+    total_amount = fields.Monetary(compute='_compute_total_amount', store=True, readonly=False,
+                                   currency_field='company_currency_id',
+                                   help="Total amount impacted by the automatic entry.")
     journal_id = fields.Many2one('account.journal', required=True, readonly=False, string="Journal",
-        check_company=True,
-        domain="[('type', '=', 'general')]",
-        compute="_compute_journal_id",
-        inverse="_inverse_journal_id",
-        help="Journal where to create the entry.")
+                                 check_company=True,
+                                 domain="[('type', '=', 'general')]",
+                                 compute="_compute_journal_id",
+                                 inverse="_inverse_journal_id",
+                                 help="Journal where to create the entry.")
 
     # change period
-    account_type = fields.Selection([('income', 'Revenue'), ('expense', 'Expense')], compute='_compute_account_type', store=True)
+    account_type = fields.Selection([('income', 'Revenue'), ('expense', 'Expense')], compute='_compute_account_type',
+                                    store=True)
     expense_accrual_account = fields.Many2one('account.account', readonly=False,
-        check_company=True,
-        domain="[('account_type', 'not in', ('asset_receivable', 'liability_payable', 'off_balance'))]",
-        compute="_compute_expense_accrual_account",
-        inverse="_inverse_expense_accrual_account",
-    )
+                                              check_company=True,
+                                              domain="[('account_type', 'not in', ('asset_receivable', 'liability_payable', 'off_balance'))]",
+                                              compute="_compute_expense_accrual_account",
+                                              inverse="_inverse_expense_accrual_account",
+                                              )
     revenue_accrual_account = fields.Many2one('account.account', readonly=False,
-        check_company=True,
-        domain="[('account_type', 'not in', ('asset_receivable', 'liability_payable', 'off_balance'))]",
-        compute="_compute_revenue_accrual_account",
-        inverse="_inverse_revenue_accrual_account",
-    )
+                                              check_company=True,
+                                              domain="[('account_type', 'not in', ('asset_receivable', 'liability_payable', 'off_balance'))]",
+                                              compute="_compute_revenue_accrual_account",
+                                              inverse="_inverse_revenue_accrual_account",
+                                              )
     lock_date_message = fields.Char(string="Lock Date Message", compute="_compute_lock_date_message")
 
     # change account
-    destination_account_id = fields.Many2one(string="To", comodel_name='account.account', help="Account to transfer to.", check_company=True)
-    display_currency_helper = fields.Boolean(string="Currency Conversion Helper", compute='_compute_display_currency_helper')
+    destination_account_id = fields.Many2one(string="To", comodel_name='account.account',
+                                             help="Account to transfer to.", check_company=True)
+    display_currency_helper = fields.Boolean(string="Currency Conversion Helper",
+                                             compute='_compute_display_currency_helper')
+
     # Technical field. Used to indicate whether or not to display the currency conversion tooltip. The tooltip informs a currency conversion will be performed with the transfer.
 
     @api.depends('company_id')
@@ -96,7 +106,8 @@ class AutomaticEntryWizard(models.TransientModel):
         for record in self:
             total = (sum(record.move_line_ids.mapped('balance')) or record.total_amount)
             if total != 0:
-                record.percentage = min((record.total_amount / total) * 100, 100)  # min() to avoid value being slightly over 100 due to rounding error
+                record.percentage = min((record.total_amount / total) * 100,
+                                        100)  # min() to avoid value being slightly over 100 due to rounding error
             else:
                 record.percentage = 100
 
@@ -180,7 +191,9 @@ class AutomaticEntryWizard(models.TransientModel):
 
             if self.destination_account_id.currency_id and self.destination_account_id.currency_id != self.company_id.currency_id:
                 counterpart_currency = self.destination_account_id.currency_id
-                counterpart_amount_currency = self.company_id.currency_id._convert(line.balance, self.destination_account_id.currency_id, self.company_id, line.date)
+                counterpart_amount_currency = self.company_id.currency_id._convert(line.balance,
+                                                                                   self.destination_account_id.currency_id,
+                                                                                   self.company_id, line.date)
 
             grouping_key = (line.partner_id, counterpart_currency)
 
@@ -191,8 +204,10 @@ class AutomaticEntryWizard(models.TransientModel):
                     # For the counterpart, we will need to make a prorata of the different distribution of the lines
                     # This computes the total balance for each analytic account, for each counterpart line to generate
                     distribution_values = counterpart_distribution_amount[grouping_key]
-                    distribution_values[account_id] = (line.balance * distribution + distribution_values.get(account_id, 0) * 100) / 100
-            counterpart_balances[grouping_key]['analytic_distribution'] = counterpart_distribution_amount[grouping_key] or {}
+                    distribution_values[account_id] = (line.balance * distribution + distribution_values.get(account_id,
+                                                                                                             0) * 100) / 100
+            counterpart_balances[grouping_key]['analytic_distribution'] = counterpart_distribution_amount[
+                                                                              grouping_key] or {}
             grouped_source_lines[(
                 line.partner_id,
                 line.currency_id,
@@ -203,7 +218,8 @@ class AutomaticEntryWizard(models.TransientModel):
         # Generate counterpart lines' vals
         for (counterpart_partner, counterpart_currency), counterpart_vals in counterpart_balances.items():
             source_accounts = self.move_line_ids.mapped('account_id')
-            counterpart_label = len(source_accounts) == 1 and _("Transfer from %s", source_accounts.display_name) or _("Transfer counterpart")
+            counterpart_label = len(source_accounts) == 1 and _("Transfer from %s", source_accounts.display_name) or _(
+                "Transfer counterpart")
 
             # We divide the amount for each account by the total balance to reflect the lines counter-parted
             analytic_distribution = {
@@ -215,14 +231,19 @@ class AutomaticEntryWizard(models.TransientModel):
                 for account_id, distribution_amount in counterpart_vals['analytic_distribution'].items()
             }
 
-            if not counterpart_currency.is_zero(counterpart_vals['amount_currency']) or not self.company_id.currency_id.is_zero(counterpart_vals['balance']):
+            if not counterpart_currency.is_zero(
+                    counterpart_vals['amount_currency']) or not self.company_id.currency_id.is_zero(
+                    counterpart_vals['balance']):
                 line_vals.append({
                     'name': counterpart_label,
-                    'debit': counterpart_vals['balance'] > 0 and self.company_id.currency_id.round(counterpart_vals['balance']) or 0,
-                    'credit': counterpart_vals['balance'] < 0 and self.company_id.currency_id.round(-counterpart_vals['balance']) or 0,
+                    'debit': counterpart_vals['balance'] > 0 and self.company_id.currency_id.round(
+                        counterpart_vals['balance']) or 0,
+                    'credit': counterpart_vals['balance'] < 0 and self.company_id.currency_id.round(
+                        -counterpart_vals['balance']) or 0,
                     'account_id': self.destination_account_id.id,
                     'partner_id': counterpart_partner.id or None,
-                    'amount_currency': counterpart_currency.round((counterpart_vals['balance'] < 0 and -1 or 1) * abs(counterpart_vals['amount_currency'])) or 0,
+                    'amount_currency': counterpart_currency.round(
+                        (counterpart_vals['balance'] < 0 and -1 or 1) * abs(counterpart_vals['amount_currency'])) or 0,
                     'currency_id': counterpart_currency.id,
                     'analytic_distribution': analytic_distribution,
                 })
@@ -255,7 +276,8 @@ class AutomaticEntryWizard(models.TransientModel):
             'journal_id': self.journal_id.id,
             'company_id': lowest_child_company.id,
             'date': fields.Date.to_string(self.date),
-            'ref': self.destination_account_id.display_name and _("Transfer entry to %s", self.destination_account_id.display_name or ''),
+            'ref': self.destination_account_id.display_name and _("Transfer entry to %s",
+                                                                  self.destination_account_id.display_name or ''),
             'line_ids': [(0, 0, line) for line in line_vals],
         }]
 
@@ -315,7 +337,8 @@ class AutomaticEntryWizard(models.TransientModel):
 
     def _get_lock_safe_date(self, date):
         # Use a reference move in the correct journal because _get_accounting_date depends on the journal sequence.
-        reference_move = self.env['account.move'].new({'journal_id': self.journal_id.id, 'move_type': 'entry', 'invoice_date': date})
+        reference_move = self.env['account.move'].new(
+            {'journal_id': self.journal_id.id, 'move_type': 'entry', 'invoice_date': date})
         return reference_move._get_accounting_date(date, False)
 
     def _get_move_dict_vals_change_period(self):
@@ -355,11 +378,13 @@ class AutomaticEntryWizard(models.TransientModel):
         move_vals = [m for m in move_data.values()]
         return move_vals
 
-    @api.depends('move_line_ids', 'journal_id', 'revenue_accrual_account', 'expense_accrual_account', 'percentage', 'date', 'account_type', 'action', 'destination_account_id')
+    @api.depends('move_line_ids', 'journal_id', 'revenue_accrual_account', 'expense_accrual_account', 'percentage',
+                 'date', 'account_type', 'action', 'destination_account_id')
     def _compute_move_data(self):
         for record in self:
             if record.action == 'change_period':
-                if any(line.account_id.account_type != record.move_line_ids[0].account_id.account_type for line in record.move_line_ids):
+                if any(line.account_id.account_type != record.move_line_ids[0].account_id.account_type for line in
+                       record.move_line_ids):
                     raise UserError(_('All accounts on the lines must be of the same type.'))
             if record.action == 'change_period':
                 record.move_data = json.dumps(record._get_move_dict_vals_change_period())
@@ -381,7 +406,8 @@ class AutomaticEntryWizard(models.TransientModel):
             move_vals = json.loads(record.move_data)
             preview_vals = []
             for move in move_vals[:4]:
-                preview_vals += [self.env['account.move']._move_dict_to_preview_vals(move, record.company_id.currency_id)]
+                preview_vals += [
+                    self.env['account.move']._move_dict_to_preview_vals(move, record.company_id.currency_id)]
             preview_discarded = max(0, len(move_vals) - len(preview_vals))
 
             record.preview_move_data = json.dumps({
@@ -416,11 +442,16 @@ class AutomaticEntryWizard(models.TransientModel):
             accrual_move = created_moves[1:].filtered(lambda m: m.date == self._get_lock_safe_date(move.date))
 
             if accrual_account.reconcile and accrual_move.state == 'posted' and destination_move.state == 'posted':
-                destination_move_lines = destination_move.mapped('line_ids').filtered(lambda line: line.account_id == accrual_account)[destination_move_offset:destination_move_offset+2]
+                destination_move_lines = destination_move.mapped('line_ids').filtered(
+                    lambda line: line.account_id == accrual_account)[
+                                         destination_move_offset:destination_move_offset + 2]
                 destination_move_offset += 2
-                accrual_move_lines = accrual_move.mapped('line_ids').filtered(lambda line: line.account_id == accrual_account)[accrual_move_offsets[accrual_move]:accrual_move_offsets[accrual_move]+2]
+                accrual_move_lines = accrual_move.mapped('line_ids').filtered(
+                    lambda line: line.account_id == accrual_account)[
+                                     accrual_move_offsets[accrual_move]:accrual_move_offsets[accrual_move] + 2]
                 accrual_move_offsets[accrual_move] += 2
-                (accrual_move_lines + destination_move_lines).filtered(lambda line: not line.currency_id.is_zero(line.balance)).reconcile()
+                (accrual_move_lines + destination_move_lines).filtered(
+                    lambda line: not line.currency_id.is_zero(line.balance)).reconcile()
             body = Markup("%(title)s<ul><li>%(link1)s %(second)s</li><li>%(link2)s %(third)s</li></ul>") % {
                 'title': _("Adjusting Entries have been created for this invoice:"),
                 'link1': self._format_move_link(accrual_move),
@@ -472,11 +503,13 @@ class AutomaticEntryWizard(models.TransientModel):
         # Reconcile
         for (partner, currency, account), lines in grouped_lines.items():
             if account.reconcile:
-                to_reconcile = lines + new_move.line_ids.filtered(lambda x: x.account_id == account and x.partner_id == partner and x.currency_id == currency)
+                to_reconcile = lines + new_move.line_ids.filtered(
+                    lambda x: x.account_id == account and x.partner_id == partner and x.currency_id == currency)
                 to_reconcile.reconcile()
 
             if destination_lines and self.destination_account_id.reconcile:
-                to_reconcile = destination_lines + new_move.line_ids.filtered(lambda x: x.account_id == self.destination_account_id and x.partner_id == partner and x.currency_id == currency)
+                to_reconcile = destination_lines + new_move.line_ids.filtered(lambda
+                                                                                  x: x.account_id == self.destination_account_id and x.partner_id == partner and x.currency_id == currency)
                 to_reconcile.reconcile()
 
         # Log the operation on source moves
@@ -503,20 +536,22 @@ class AutomaticEntryWizard(models.TransientModel):
     # Transfer utils
     def _format_new_transfer_move_log(self, acc_transfer_per_move):
         transfer_format = Markup("<li>%s, <strong>%%(account_source_name)s</strong></li>") % \
-            _("{amount} ({debit_credit}) from {link}")
+                          _("{amount} ({debit_credit}) from {link}")
         rslt = _(
             "This entry transfers the following amounts to %(destination)s",
             destination=Markup("<strong>%s</strong>") % self.destination_account_id.display_name,
         ) + Markup("<ul>%(transfer_logs)s</ul>") % {
-            "transfer_logs": Markup().join(
-                [
-                    self._format_strings(transfer_format % {"account_source_name": account.display_name}, move, balance)
-                    for move, balances_per_account in acc_transfer_per_move.items()
-                    for account, balance in balances_per_account.items()
-                    if account != self.destination_account_id  # Otherwise, logging it here is confusing for the user
-                ],
-            ),
-        }
+                   "transfer_logs": Markup().join(
+                       [
+                           self._format_strings(transfer_format % {"account_source_name": account.display_name}, move,
+                                                balance)
+                           for move, balances_per_account in acc_transfer_per_move.items()
+                           for account, balance in balances_per_account.items()
+                           if account != self.destination_account_id
+                           # Otherwise, logging it here is confusing for the user
+                       ],
+                   ),
+               }
         return rslt
 
     def _format_transfer_source_log(self, balances_per_account, transfer_move):
@@ -529,7 +564,7 @@ class AutomaticEntryWizard(models.TransientModel):
 
         return Markup("<ul>%s</ul>") % Markup().join([
             Markup("<li>%s</li>") % \
-                self._format_strings(transfer_format, transfer_move, balance, account.display_name)
+            self._format_strings(transfer_format, transfer_move, balance, account.display_name)
             for account, balance in balances_per_account.items()
             if account != self.destination_account_id
         ])

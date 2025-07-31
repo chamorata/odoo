@@ -1,12 +1,14 @@
 import base64
 import io
+
 from markupsafe import Markup
 
-from odoo.tests import common, tagged
-from odoo.tools.misc import file_open, mute_logger, file_path
-from odoo.tools.translate import TranslationModuleReader, TranslationRecordReader, code_translations, CodeTranslations, PYTHON_TRANSLATION_COMMENT, JAVASCRIPT_TRANSLATION_COMMENT, TranslationFileReader
 from odoo import Command
 from odoo.addons.base.models.ir_fields import BOOLEAN_TRANSLATIONS
+from odoo.tests import common, tagged
+from odoo.tools.misc import file_open, mute_logger, file_path
+from odoo.tools.translate import TranslationModuleReader, TranslationRecordReader, code_translations, CodeTranslations, \
+    PYTHON_TRANSLATION_COMMENT, JAVASCRIPT_TRANSLATION_COMMENT, TranslationFileReader
 
 
 class TestImport(common.TransactionCase):
@@ -151,9 +153,12 @@ class TestImport(common.TransactionCase):
         context = {'lang': "tlh"}
         self.assertEqual(str(TRANSLATED_TERM), "Code Lazy, Klingon", "The lazy code translation was not applied")
 
-        self.assertEqual("Do you speak " + TRANSLATED_TERM, "Do you speak Code Lazy, Klingon", "str + _lt concatenation failed")
-        self.assertEqual(TRANSLATED_TERM + ", I speak it", "Code Lazy, Klingon, I speak it", "_lt + str concatenation failed")
-        self.assertEqual(TRANSLATED_TERM + TRANSLATED_TERM, "Code Lazy, KlingonCode Lazy, Klingon", "_lt + _lt concatenation failed")
+        self.assertEqual("Do you speak " + TRANSLATED_TERM, "Do you speak Code Lazy, Klingon",
+                         "str + _lt concatenation failed")
+        self.assertEqual(TRANSLATED_TERM + ", I speak it", "Code Lazy, Klingon, I speak it",
+                         "_lt + str concatenation failed")
+        self.assertEqual(TRANSLATED_TERM + TRANSLATED_TERM, "Code Lazy, KlingonCode Lazy, Klingon",
+                         "_lt + _lt concatenation failed")
 
         # test lazy translation in another module
         self.env['res.lang']._activate_lang('fr_FR')
@@ -242,7 +247,8 @@ class TestTranslationFlow(common.TransactionCase):
 
         with io.BytesIO(base64.b64decode(pot_file_data)) as pot_file:
             pot_file.name = f'{module_name}.pot'
-            for line1, line2 in zip(TranslationFileReader(pot_file, 'po'), TranslationFileReader(file_path(f'{module_name}/i18n/{module_name}.pot'), 'po')):
+            for line1, line2 in zip(TranslationFileReader(pot_file, 'po'),
+                                    TranslationFileReader(file_path(f'{module_name}/i18n/{module_name}.pot'), 'po')):
                 self.assertEqual(line1, line2)
 
     def test_export_import(self):
@@ -270,11 +276,13 @@ class TestTranslationFlow(common.TransactionCase):
 
             def filter_func_for_python(row):
                 return row.get('value') and PYTHON_TRANSLATION_COMMENT in row['comments']
+
             new_code_translations.python_translations[('test_translation_import', 'fr_FR')] = \
                 CodeTranslations._read_code_translations_file(po_file, filter_func_for_python)
 
             def filter_func_for_javascript(row):
                 return row.get('value') and JAVASCRIPT_TRANSLATION_COMMENT in row['comments']
+
             new_code_translations.web_translations[('test_translation_import', 'fr_FR')] = {
                 "messages": tuple(
                     {"id": src, "string": value}
@@ -291,7 +299,8 @@ class TestTranslationFlow(common.TransactionCase):
         new_web = new_code_translations.get_web_translations('test_translation_import', 'fr_FR')
         self.assertEqual(old_web, new_web, 'web client code translations are not exported/imported correctly')
 
-        self.assertNotIn('text node', new_python, 'web client only translations should not be stored as python translations')
+        self.assertNotIn('text node', new_python,
+                         'web client only translations should not be stored as python translations')
         self.assertFalse(
             any(
                 tran['id'] == 'Code Lazy, English'

@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import re
-from lxml import html
+
 import chardet
 import requests
+from lxml import html
 from urllib3.exceptions import LocationParseError
 
 
@@ -40,12 +41,13 @@ def get_link_preview_from_url(url, request_session=None):
     if response.headers['Content-Type'].startswith('image/'):
         return {
             'image_mimetype': content_type[0],
-            'og_image': url, # If the url mimetype is already an image type, set url as preview image
+            'og_image': url,  # If the url mimetype is already an image type, set url as preview image
             'source_url': url,
         }
     elif response.headers['Content-Type'].startswith('text/html'):
         return get_link_preview_from_html(url, response)
     return False
+
 
 def get_link_preview_from_html(url, response):
     """

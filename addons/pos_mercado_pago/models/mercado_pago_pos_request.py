@@ -1,8 +1,8 @@
 import logging
+
 import requests
 
 _logger = logging.getLogger(__name__)
-
 
 REQUEST_TIMEOUT = 10
 MERCADO_PAGO_API_ENDPOINT = 'https://api.mercadopago.com'

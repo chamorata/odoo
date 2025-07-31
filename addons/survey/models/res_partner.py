@@ -8,7 +8,8 @@ class ResPartner(models.Model):
     _inherit = 'res.partner'
 
     certifications_count = fields.Integer('Certifications Count', compute='_compute_certifications_count')
-    certifications_company_count = fields.Integer('Company Certifications Count', compute='_compute_certifications_company_count')
+    certifications_company_count = fields.Integer('Company Certifications Count',
+                                                  compute='_compute_certifications_company_count')
 
     @api.depends('is_company')
     def _compute_certifications_count(self):

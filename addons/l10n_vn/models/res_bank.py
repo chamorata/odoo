@@ -13,13 +13,16 @@ class ResPartnerBank(models.Model):
                                                  ('payment_service', 'Payment Service'),
                                                  ('atm_card', 'ATM Card Number'),
                                                  ('bank_acc', 'Bank Account')],
-                                  ondelete={'merchant_id': 'set default', 'payment_service': 'set default', 'atm_card': 'set default', 'bank_acc': 'set default'})
+                                  ondelete={'merchant_id': 'set default', 'payment_service': 'set default',
+                                            'atm_card': 'set default', 'bank_acc': 'set default'})
 
     @api.constrains('proxy_type')
     def _check_vn_proxy(self):
         for bank in self.filtered(lambda b: b.country_code == 'VN'):
             if bank.proxy_type not in ['merchant_id', 'payment_service', 'atm_card', 'bank_acc', 'none', False]:
-                raise ValidationError(_("The QR Code Type must be either Merchant ID, ATM Card Number or Bank Account to generate a Vietnam Bank QR code for account number %s.", bank.acc_number))
+                raise ValidationError(
+                    _("The QR Code Type must be either Merchant ID, ATM Card Number or Bank Account to generate a Vietnam Bank QR code for account number %s.",
+                      bank.acc_number))
 
     @api.depends('country_code')
     def _compute_display_qr_setting(self):
@@ -64,8 +67,14 @@ class ResPartnerBank(models.Model):
 
         return super()._get_error_messages_for_qr(qr_method, debtor_partner, currency)
 
-    def _check_for_qr_code_errors(self, qr_method, amount, currency, debtor_partner, free_communication, structured_communication):
-        if qr_method == 'emv_qr' and self.country_code == 'VN' and self.proxy_type not in ['merchant_id', 'payment_service', 'atm_card', 'bank_acc']:
-            return _("The proxy type %s is not supported for Vietnamese partners. It must be either Merchant ID, ATM Card Number or Bank Account", self.proxy_type)
+    def _check_for_qr_code_errors(self, qr_method, amount, currency, debtor_partner, free_communication,
+                                  structured_communication):
+        if qr_method == 'emv_qr' and self.country_code == 'VN' and self.proxy_type not in ['merchant_id',
+                                                                                           'payment_service',
+                                                                                           'atm_card', 'bank_acc']:
+            return _(
+                "The proxy type %s is not supported for Vietnamese partners. It must be either Merchant ID, ATM Card Number or Bank Account",
+                self.proxy_type)
 
-        return super()._check_for_qr_code_errors(qr_method, amount, currency, debtor_partner, free_communication, structured_communication)
+        return super()._check_for_qr_code_errors(qr_method, amount, currency, debtor_partner, free_communication,
+                                                 structured_communication)

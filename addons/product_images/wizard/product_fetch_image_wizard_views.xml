@@ -8,10 +8,14 @@
             <form>
                 <sheet>
                     <p>
-                        You selected <field name="nb_products_selected"/> products,
-                        <field name="nb_products_to_process"/> of which will be processed.
+                        You selected
+                        <field name="nb_products_selected"/>
+                        products,
+                        <field name="nb_products_to_process"/>
+                        of which will be processed.
                         <span invisible="nb_products_unable_to_process == 0">
-                            <field name="nb_products_unable_to_process"/> products will not be
+                            <field name="nb_products_unable_to_process"/>
+                            products will not be
                             processed because they either already have an image or their barcode
                             number is not set.
                         </span>

@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from collections import defaultdict
+
 from odoo import fields, models
 from odoo.tools import float_compare, float_is_zero
 
@@ -26,7 +27,9 @@ class ProductLabelLayout(models.TransientModel):
 
         quantities = defaultdict(int)
         uom_unit = self.env.ref('uom.product_uom_categ_unit', raise_if_not_found=False)
-        if self.move_quantity == 'move' and self.move_ids and all(float_is_zero(ml.quantity, precision_rounding=ml.product_uom_id.rounding) for ml in self.move_ids.move_line_ids):
+        if self.move_quantity == 'move' and self.move_ids and all(
+                float_is_zero(ml.quantity, precision_rounding=ml.product_uom_id.rounding) for ml in
+                self.move_ids.move_line_ids):
             for move in self.move_ids:
                 if move.product_uom.category_id == uom_unit:
                     use_reserved = float_compare(move.quantity, 0, precision_rounding=move.product_uom.rounding) > 0
@@ -39,7 +42,8 @@ class ProductLabelLayout(models.TransientModel):
             for line in self.move_ids.move_line_ids:
                 if line.product_uom_id.category_id == uom_unit:
                     if (line.lot_id or line.lot_name) and int(line.quantity):
-                        custom_barcodes[line.product_id.id].append((line.lot_id.name or line.lot_name, int(line.quantity)))
+                        custom_barcodes[line.product_id.id].append(
+                            (line.lot_id.name or line.lot_name, int(line.quantity)))
                         continue
                     quantities[line.product_id.id] += line.quantity
                 else:

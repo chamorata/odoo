@@ -2,11 +2,11 @@ import base64
 from datetime import datetime
 from xml.etree import ElementTree as et
 
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
 from odoo import fields
 from odoo.tests import tagged
 from odoo.tools import file_open
-
-from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 
 
 @tagged('post_install', '-at_install')
@@ -23,7 +23,8 @@ class TestAutoPostBills(AccountTestInvoicingCommon):
                 'name': 'test_file.xml',
                 'datas': base64.encodebytes(et.tostring(tree.getroot())),
             })
-            return self.company_data['default_journal_purchase'].with_context(disable_abnormal_invoice_detection=False)._create_document_from_attachment(attachment.id)
+            return self.company_data['default_journal_purchase'].with_context(
+                disable_abnormal_invoice_detection=False)._create_document_from_attachment(attachment.id)
 
     def assert_wizard(self, post_result, expected_nb_bills):
         self.assertEqual(post_result.get('res_model'), 'account.autopost.bills.wizard')

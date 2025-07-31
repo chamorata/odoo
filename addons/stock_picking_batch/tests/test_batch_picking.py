@@ -4,11 +4,10 @@
 from datetime import datetime, timedelta
 
 from odoo import Command
-from odoo.tools import float_round
-
 from odoo.exceptions import UserError
 from odoo.tests import Form, HttpCase, tagged
 from odoo.tests.common import TransactionCase
+from odoo.tools import float_round
 
 
 class TestBatchPicking(TransactionCase):
@@ -108,11 +107,10 @@ class TestBatchPicking(TransactionCase):
         # view not handling the M2M widget assigned to picking_ids (O2M). Hopefully if this changes then
         # commented parts of this test can be used later.
 
-
         # manually set batch scheduled date => picking's scheduled dates auto update to match (onchange logic test)
         # with Form(self.batch) as batch_form:
-            # batch_form.scheduled_date = now - timedelta(days=1)
-            # batch_form.save()
+        # batch_form.scheduled_date = now - timedelta(days=1)
+        # batch_form.save()
         # self.assertEqual(self.batch.scheduled_date, self.picking_client_1.scheduled_date)
         # self.assertEqual(self.batch.scheduled_date, self.picking_client_2.scheduled_date)
 
@@ -245,8 +243,10 @@ class TestBatchPicking(TransactionCase):
 
         self.assertEqual(self.picking_client_2.state, 'done', 'Picking 2 should be done')
         self.assertEqual(self.picking_client_1.state, 'done', 'Picking 1 should be done')
-        self.assertEqual(self.picking_client_1.move_ids.product_uom_qty, 5, 'initial demand should be 5 after picking split')
-        self.assertTrue(self.env['stock.picking'].search([('backorder_id', '=', self.picking_client_1.id)]), 'no back order created')
+        self.assertEqual(self.picking_client_1.move_ids.product_uom_qty, 5,
+                         'initial demand should be 5 after picking split')
+        self.assertTrue(self.env['stock.picking'].search([('backorder_id', '=', self.picking_client_1.id)]),
+                        'no back order created')
 
         quant_A = self.env['stock.quant']._gather(self.productA, self.stock_location)
         quant_B = self.env['stock.quant']._gather(self.productB, self.stock_location)
@@ -281,8 +281,10 @@ class TestBatchPicking(TransactionCase):
         back_order_wizard.process()
 
         self.assertEqual(self.picking_client_1.state, 'done', 'Picking 1 should be done')
-        self.assertEqual(self.picking_client_1.move_ids.product_uom_qty, 5, 'initial demand should be 5 after picking split')
-        self.assertTrue(self.env['stock.picking'].search([('backorder_id', '=', self.picking_client_1.id)]), 'no back order created')
+        self.assertEqual(self.picking_client_1.move_ids.product_uom_qty, 5,
+                         'initial demand should be 5 after picking split')
+        self.assertTrue(self.env['stock.picking'].search([('backorder_id', '=', self.picking_client_1.id)]),
+                        'no back order created')
 
         quant_A = self.env['stock.quant']._gather(self.productA, self.stock_location)
         quant_B = self.env['stock.quant']._gather(self.productB, self.stock_location)
@@ -320,7 +322,8 @@ class TestBatchPicking(TransactionCase):
         back_order_wizard.process()
 
         self.assertEqual(self.picking_client_1.state, 'done', 'Picking 1 should be done')
-        self.assertEqual(self.picking_client_1.move_ids.product_uom_qty, 5, 'initial demand should be 5 after picking split')
+        self.assertEqual(self.picking_client_1.move_ids.product_uom_qty, 5,
+                         'initial demand should be 5 after picking split')
         self.assertFalse(self.picking_client_2.batch_id)
 
     def test_put_in_pack(self):
@@ -373,7 +376,8 @@ class TestBatchPicking(TransactionCase):
         self.batch.move_line_ids.quantity = 5
         package = self.picking_client_1.action_put_in_pack()
         self.assertEqual(self.picking_client_1.move_line_ids.result_package_id, package)
-        self.assertFalse(self.picking_client_2.move_line_ids.result_package_id, "Other picking in batch shouldn't have been put in a package")
+        self.assertFalse(self.picking_client_2.move_line_ids.result_package_id,
+                         "Other picking in batch shouldn't have been put in a package")
 
     def test_auto_batch(self):
         """ Test a simple auto-batch scenario with new picking type to avoid conflicts with existing picking types.
@@ -542,16 +546,18 @@ class TestBatchPicking(TransactionCase):
         current_batch = procurement_1.stock_move_ids.picking_id.batch_id
         self.assertNotEqual(current_batch.id, False)
         self.assertEqual(len(procurement_1.stock_move_ids.picking_id.batch_id), 1)
-        self.assertEqual(procurement_1.stock_move_ids.picking_id.filtered(lambda p: p.picking_type_code == 'outgoing').batch_id,
-                         procurement_2.stock_move_ids.picking_id.filtered(lambda p: p.picking_type_code == 'outgoing').batch_id)
+        self.assertEqual(
+            procurement_1.stock_move_ids.picking_id.filtered(lambda p: p.picking_type_code == 'outgoing').batch_id,
+            procurement_2.stock_move_ids.picking_id.filtered(lambda p: p.picking_type_code == 'outgoing').batch_id)
 
         # Validate the batch so the next round of pickings become 'ready' -> Incoming pickings to Inter-warehouse -> WH2/Input
         current_batch.move_ids.write({'quantity': 1, 'picked': True})
         current_batch.action_done()
         done_batches = current_batch
         self.assertEqual(len(procurement_1.stock_move_ids.picking_id.batch_id), 2)
-        self.assertEqual(procurement_1.stock_move_ids.picking_id.filtered(lambda p: p.picking_type_code == 'incoming').batch_id,
-                         procurement_2.stock_move_ids.picking_id.filtered(lambda p: p.picking_type_code == 'incoming').batch_id)
+        self.assertEqual(
+            procurement_1.stock_move_ids.picking_id.filtered(lambda p: p.picking_type_code == 'incoming').batch_id,
+            procurement_2.stock_move_ids.picking_id.filtered(lambda p: p.picking_type_code == 'incoming').batch_id)
 
         # Validate the batch so the next round of pickings become 'ready' -> Internal pickings : WH2/Input -> WH2/Quality Control
         current_batch = procurement_1.stock_move_ids.picking_id.batch_id - done_batches
@@ -559,16 +565,20 @@ class TestBatchPicking(TransactionCase):
         current_batch.action_done()
         done_batches += current_batch
         self.assertEqual(len(procurement_1.stock_move_ids.picking_id.batch_id), 3)
-        self.assertEqual(procurement_1.stock_move_ids.picking_id.filtered(lambda p: p.picking_type_code == 'internal' and p.location_id == warehouse_2.in_type_id).batch_id,
-                         procurement_2.stock_move_ids.picking_id.filtered(lambda p: p.picking_type_code == 'internal' and p.location_id == warehouse_2.in_type_id).batch_id)
+        self.assertEqual(procurement_1.stock_move_ids.picking_id.filtered(
+            lambda p: p.picking_type_code == 'internal' and p.location_id == warehouse_2.in_type_id).batch_id,
+                         procurement_2.stock_move_ids.picking_id.filtered(lambda
+                                                                              p: p.picking_type_code == 'internal' and p.location_id == warehouse_2.in_type_id).batch_id)
 
         # Validate the batch so the next round of pickings become 'ready' -> Internal pickings : WH2/Input -> WH2/Quality Control
         current_batch = procurement_1.stock_move_ids.picking_id.batch_id - done_batches
         current_batch.move_ids.write({'quantity': 1, 'picked': True})
         current_batch.action_done()
         self.assertEqual(len(procurement_1.stock_move_ids.picking_id.batch_id), 4)
-        self.assertEqual(procurement_1.stock_move_ids.picking_id.filtered(lambda p: p.picking_type_code == 'internal' and p.location_dest_id == warehouse_2.lot_stock_id).batch_id,
-                         procurement_2.stock_move_ids.picking_id.filtered(lambda p: p.picking_type_code == 'internal' and p.location_dest_id == warehouse_2.lot_stock_id).batch_id)
+        self.assertEqual(procurement_1.stock_move_ids.picking_id.filtered(
+            lambda p: p.picking_type_code == 'internal' and p.location_dest_id == warehouse_2.lot_stock_id).batch_id,
+                         procurement_2.stock_move_ids.picking_id.filtered(lambda
+                                                                              p: p.picking_type_code == 'internal' and p.location_dest_id == warehouse_2.lot_stock_id).batch_id)
 
     def test_remove_all_transfers_from_confirmed_batch(self):
         """
@@ -677,6 +687,7 @@ class TestBatchPicking(TransactionCase):
         receipt03.action_confirm()
         self.assertEqual(batch.picking_ids, backorder | receipt02 | receipt03)
 
+
 @tagged('-at_install', 'post_install')
 class TestBatchPicking02(TransactionCase):
 
@@ -746,7 +757,7 @@ class TestBatchPicking02(TransactionCase):
                 'product_id': self.productB.id,
                 'product_uom': self.productB.uom_id.id,
                 'product_uom_qty': qty,
-            }) ]
+            })]
         } for qty in (3, 7)])
         pickings.action_confirm()
         pickings.action_assign()
@@ -762,9 +773,9 @@ class TestBatchPicking02(TransactionCase):
         pickings.move_line_ids.filtered(lambda l: l.product_id == self.productA).result_package_id = package
 
         batch.action_done()
-        self.assertEqual(batch.estimated_shipping_weight, 10 + 10*10 + 10*15)
+        self.assertEqual(batch.estimated_shipping_weight, 10 + 10 * 10 + 10 * 15)
         precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
-        volume = float_round((500*500*500)/1000**3, precision_digits=precision)
+        volume = float_round((500 * 500 * 500) / 1000 ** 3, precision_digits=precision)
         self.assertEqual(batch.estimated_shipping_volume, volume)
         self.assertRecordValues(pickings.move_ids, [
             {'state': 'done', 'quantity': 3},
@@ -1155,7 +1166,6 @@ class TestBatchPicking02(TransactionCase):
         self.assertEqual(batch.picking_ids, pickings[0])
         self.assertEqual(batch.state, 'done')
         self.assertFalse(pickings[1].batch_id)
-
 
 
 @tagged('post_install', '-at_install')

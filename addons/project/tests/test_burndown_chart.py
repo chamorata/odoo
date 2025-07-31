@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from freezegun import freeze_time
 from datetime import datetime
+
+from freezegun import freeze_time
 
 from odoo import Command
 from odoo.osv.expression import AND, OR
@@ -221,10 +222,12 @@ class TestBurndownChartCommon(TestProjectCommon):
             (cls.task_bis).write({'stage_id': cls.stage_4.id})
             cls.env.cr.flush()
 
+
 class TestBurndownChart(TestBurndownChartCommon):
 
     def map_read_group_result(self, read_group_result):
-        return {(res['date:month'], res['stage_id'][0]): int(res['__count']) for res in read_group_result if res['stage_id'][1]}
+        return {(res['date:month'], res['stage_id'][0]): int(res['__count']) for res in read_group_result if
+                res['stage_id'][1]}
 
     def map_read_group_is_closed_result(self, read_group_result):
         return {(res['date:month'], res['is_closed']): int(res['__count']) for res in read_group_result}
@@ -298,24 +301,30 @@ class TestBurndownChart(TestBurndownChartCommon):
 
         # Check that we get the expected results for the complete data of `self.project`.
         self.check_read_group_results(AND([burndown_chart_domain, project_domain]), project_expected_dict)
-        self.check_read_group_is_closed_results(AND([burndown_chart_domain, project_domain]), project_expected_is_closed_dict)
+        self.check_read_group_is_closed_results(AND([burndown_chart_domain, project_domain]),
+                                                project_expected_is_closed_dict)
 
         # Check that we get the expected results for the complete data of `self.project` & `self.project_2` using an
         # `ilike` in the domain.
         all_projects_domain_with_ilike = OR([project_domain, [('project_id', 'ilike', 'mySearchTag')]])
-        project_expected_dict = {key: val if key[1] != self.todo_stage.id else val + 2 for key, val in project_expected_dict.items()}
-        project_expected_is_closed_dict = {key: val if key[1] == 'closed' else val + 2 for key, val in project_expected_is_closed_dict.items()}
+        project_expected_dict = {key: val if key[1] != self.todo_stage.id else val + 2 for key, val in
+                                 project_expected_dict.items()}
+        project_expected_is_closed_dict = {key: val if key[1] == 'closed' else val + 2 for key, val in
+                                           project_expected_is_closed_dict.items()}
         for i in range(2, 11):
             month_key = f"{months[i]} {self.current_year - 1}"
             project_expected_dict[(month_key, self.todo_stage.id)] = 2
         project_expected_is_closed_dict[(f"{months[11]} {self.current_year - 1}", 'open')] = 2
         for i in range(current_month):
             project_expected_is_closed_dict[(f"{months[i]} {self.current_year}", 'open')] = 2
-        self.check_read_group_results(AND([burndown_chart_domain, all_projects_domain_with_ilike]), project_expected_dict)
-        self.check_read_group_is_closed_results(AND([burndown_chart_domain, all_projects_domain_with_ilike]), project_expected_is_closed_dict)
+        self.check_read_group_results(AND([burndown_chart_domain, all_projects_domain_with_ilike]),
+                                      project_expected_dict)
+        self.check_read_group_is_closed_results(AND([burndown_chart_domain, all_projects_domain_with_ilike]),
+                                                project_expected_is_closed_dict)
 
         date_from, date_to = ('%s-01-01' % (self.current_year - 1), '%s-03-01' % (self.current_year - 1))
-        date_from_is_closed, date_to_is_closed = ('%s-10-01' % (self.current_year - 1), '%s-12-01' % (self.current_year - 1))
+        date_from_is_closed, date_to_is_closed = ('%s-10-01' % (self.current_year - 1),
+                                                  '%s-12-01' % (self.current_year - 1))
 
         date_and_user_domain = [('date', '>=', date_from), ('date', '<', date_to), ('user_ids', 'ilike', 'ProjectUser')]
         complex_domain_expected_dict = {
@@ -326,7 +335,8 @@ class TestBurndownChart(TestBurndownChartCommon):
         complex_domain = AND([burndown_chart_domain, all_projects_domain_with_ilike, date_and_user_domain])
         self.check_read_group_results(complex_domain, complex_domain_expected_dict)
 
-        date_and_user_domain = [('date', '>=', date_from_is_closed), ('date', '<', date_to_is_closed), ('user_ids', 'ilike', 'ProjectUser')]
+        date_and_user_domain = [('date', '>=', date_from_is_closed), ('date', '<', date_to_is_closed),
+                                ('user_ids', 'ilike', 'ProjectUser')]
         complex_domain = AND([burndown_chart_domain, all_projects_domain_with_ilike, date_and_user_domain])
         complex_domain_expected_dict = {
             ('October %s' % (self.current_year - 1), 'closed'): 2.0,
@@ -336,18 +346,22 @@ class TestBurndownChart(TestBurndownChartCommon):
         }
         self.check_read_group_is_closed_results(complex_domain, complex_domain_expected_dict)
 
-        date_and_user_domain = [('date', '>=', date_from), ('date', '<', date_to), ('user_ids', 'ilike', 'ProjectManager')]
+        date_and_user_domain = [('date', '>=', date_from), ('date', '<', date_to),
+                                ('user_ids', 'ilike', 'ProjectManager')]
         milestone_domain = [('milestone_id', 'ilike', 'Test')]
-        complex_domain = AND([burndown_chart_domain, all_projects_domain_with_ilike, date_and_user_domain, milestone_domain])
+        complex_domain = AND(
+            [burndown_chart_domain, all_projects_domain_with_ilike, date_and_user_domain, milestone_domain])
         complex_domain_expected_dict = {
             ('January %s' % (self.current_year - 1), self.todo_stage.id): 1,
             ('February %s' % (self.current_year - 1), self.todo_stage.id): 1,
         }
         self.check_read_group_results(complex_domain, complex_domain_expected_dict)
 
-        date_and_user_domain = [('date', '>=', date_from_is_closed), ('date', '<', date_to_is_closed), ('user_ids', 'ilike', 'ProjectManager')]
+        date_and_user_domain = [('date', '>=', date_from_is_closed), ('date', '<', date_to_is_closed),
+                                ('user_ids', 'ilike', 'ProjectManager')]
         milestone_domain = [('milestone_id', 'ilike', 'Test')]
-        complex_domain = AND([burndown_chart_domain, all_projects_domain_with_ilike, date_and_user_domain, milestone_domain])
+        complex_domain = AND(
+            [burndown_chart_domain, all_projects_domain_with_ilike, date_and_user_domain, milestone_domain])
         complex_domain_expected_dict = {
             ('October %s' % (self.current_year - 1), 'open'): 1.0,
             ('November %s' % (self.current_year - 1), 'closed'): 1.0

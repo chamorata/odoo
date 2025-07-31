@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.tests import Form, tagged
 from odoo.addons.mrp.tests.common import TestMrpCommon
+
 from odoo import Command
+from odoo.tests import Form, tagged
 
 
 @tagged('post_install', '-at_install')
@@ -63,7 +64,8 @@ class TestMultistepManufacturingWarehouse(TestMrpCommon):
         self.assertTrue(self.warehouse.pbm_route_id)
         # Check location should be created and linked to warehouse.
         self.assertTrue(self.warehouse.pbm_loc_id)
-        self.assertEqual(self.warehouse.pbm_loc_id.active, self.warehouse.manufacture_steps != 'mrp_one_step', "Input location must be de-active for single step only.")
+        self.assertEqual(self.warehouse.pbm_loc_id.active, self.warehouse.manufacture_steps != 'mrp_one_step',
+                         "Input location must be de-active for single step only.")
         self.assertTrue(self.warehouse.manu_type_id.active)
 
     def test_00_create_warehouse(self):
@@ -72,7 +74,8 @@ class TestMultistepManufacturingWarehouse(TestMrpCommon):
             warehouse.manufacture_steps = 'mrp_one_step'
         self._check_location_and_routes()
         # Check locations of existing pull rule
-        self.assertFalse(self.warehouse.pbm_route_id.rule_ids, 'only the update of global manufacture route should happen.')
+        self.assertFalse(self.warehouse.pbm_route_id.rule_ids,
+                         'only the update of global manufacture route should happen.')
         self.assertEqual(self.warehouse.manufacture_pull_id.location_dest_id.id, self.warehouse.lot_stock_id.id)
 
     def test_01_warehouse_twostep_manufacturing(self):
@@ -182,13 +185,15 @@ class TestMultistepManufacturingWarehouse(TestMrpCommon):
         self.assertTrue(picking_stock_preprod)
         self.assertFalse(picking_stock_postprod)
         self.assertEqual(picking_stock_preprod.state, 'assigned')
-        self.assertEqual(picking_stock_preprod.origin, production_order.name, 'The pre-prod origin should be the MO name')
+        self.assertEqual(picking_stock_preprod.origin, production_order.name,
+                         'The pre-prod origin should be the MO name')
 
         picking_stock_preprod.action_assign()
         picking_stock_preprod.move_ids.write({'quantity': 4, 'picked': True})
         picking_stock_preprod._action_done()
 
-        self.assertFalse(sum(self.env['stock.quant']._gather(self.raw_product, self.warehouse.lot_stock_id).mapped('quantity')))
+        self.assertFalse(
+            sum(self.env['stock.quant']._gather(self.raw_product, self.warehouse.lot_stock_id).mapped('quantity')))
         self.assertTrue(self.env['stock.quant']._gather(self.raw_product, self.warehouse.pbm_loc_id))
 
         production_order.action_assign()
@@ -199,7 +204,8 @@ class TestMultistepManufacturingWarehouse(TestMrpCommon):
         production_order = produce_form.save()
         production_order.button_mark_done()
 
-        self.assertFalse(sum(self.env['stock.quant']._gather(self.raw_product, self.warehouse.pbm_loc_id).mapped('quantity')))
+        self.assertFalse(
+            sum(self.env['stock.quant']._gather(self.raw_product, self.warehouse.pbm_loc_id).mapped('quantity')))
 
         picking_stock_postprod = self.env['stock.move'].search([
             ('product_id', '=', self.finished_product.id),
@@ -495,7 +501,8 @@ class TestMultistepManufacturingWarehouse(TestMrpCommon):
         backorder = Form(self.env['mrp.production.backorder'].with_context(**action['context']))
         backorder.save().action_backorder()
 
-        self.assertEqual(mo.mrp_production_child_count, 0, "Children MOs counted as existing where there should be none")
+        self.assertEqual(mo.mrp_production_child_count, 0,
+                         "Children MOs counted as existing where there should be none")
         self.assertEqual(mo.mrp_production_source_count, 0, "Source MOs counted as existing where there should be none")
         self.assertEqual(mo.mrp_production_backorder_count, 2)
 
@@ -535,9 +542,9 @@ class TestMultistepManufacturingWarehouse(TestMrpCommon):
         mo = self.env[action['res_model']].browse(action['res_id'])
 
         self.assertEqual(picking_type.default_location_src_id, mo.move_raw_ids.location_id,
-            "The default source location of the merged mo should be the same as the 1st of the original MOs")
+                         "The default source location of the merged mo should be the same as the 1st of the original MOs")
         self.assertEqual(picking_type, mo.picking_type_id,
-            "The operation type of the merged mo should be the same as the 1st of the original MOs")
+                         "The operation type of the merged mo should be the same as the 1st of the original MOs")
 
     def test_manufacturing_bom_from_reordering_rules(self):
         """
@@ -597,89 +604,89 @@ class TestMultistepManufacturingWarehouse(TestMrpCommon):
             ('action', '=', 'manufacture')]).route_id
         products = self.env['product.product'].create([
             {
-            'name': 'FP',
-            'is_storable': True,
-            'route_ids': manufacturing_route,
+                'name': 'FP',
+                'is_storable': True,
+                'route_ids': manufacturing_route,
             },
             {
-            'name': 'P1',
-            'is_storable': True,
-            'route_ids': manufacturing_route,
+                'name': 'P1',
+                'is_storable': True,
+                'route_ids': manufacturing_route,
             },
             {
-            'name': 'P2',
-            'is_storable': True,
-            'route_ids': manufacturing_route,
+                'name': 'P2',
+                'is_storable': True,
+                'route_ids': manufacturing_route,
             },
             {
-            'name': 'P3',
-            'is_storable': True,
-            'route_ids': manufacturing_route,
+                'name': 'P3',
+                'is_storable': True,
+                'route_ids': manufacturing_route,
             },
             {
-            'name': 'P4',
-            'is_storable': True,
-            'route_ids': manufacturing_route,
+                'name': 'P4',
+                'is_storable': True,
+                'route_ids': manufacturing_route,
             },
 
         ])
         self.env['stock.warehouse.orderpoint'].create([
             {
-            'name': 'My orderpoint',
-            'product_id': i,
-            'product_min_qty': 0,
-            'product_max_qty': 0,
+                'name': 'My orderpoint',
+                'product_id': i,
+                'product_min_qty': 0,
+                'product_max_qty': 0,
             } for i in products.ids[1:]
         ])
         self.env['mrp.bom'].create([
             {
-            'product_tmpl_id': products[2].product_tmpl_id.id,
-            'product_qty': 1,
-            'product_uom_id': products[2].uom_id.id,
-            'type': 'normal',
-            'bom_line_ids': [
-                Command.create({
-                    'product_id': products[1].id,
-                    'product_qty': 1,
-                })
-            ]},
+                'product_tmpl_id': products[2].product_tmpl_id.id,
+                'product_qty': 1,
+                'product_uom_id': products[2].uom_id.id,
+                'type': 'normal',
+                'bom_line_ids': [
+                    Command.create({
+                        'product_id': products[1].id,
+                        'product_qty': 1,
+                    })
+                ]},
             {
-            'product_tmpl_id': products[3].product_tmpl_id.id,
-            'product_qty': 1,
-            'product_uom_id': products[3].uom_id.id,
-            'type': 'normal',
-            'bom_line_ids': [
-                Command.create({
-                    'product_id': products[2].id,
-                    'product_qty': 1,
-                })
-            ]},
+                'product_tmpl_id': products[3].product_tmpl_id.id,
+                'product_qty': 1,
+                'product_uom_id': products[3].uom_id.id,
+                'type': 'normal',
+                'bom_line_ids': [
+                    Command.create({
+                        'product_id': products[2].id,
+                        'product_qty': 1,
+                    })
+                ]},
             {
-            'product_tmpl_id': products[4].product_tmpl_id.id,
-            'product_qty': 1,
-            'product_uom_id': products[4].uom_id.id,
-            'type': 'normal',
-            'bom_line_ids': [
-                Command.create({
-                    'product_id': products[3].id,
-                    'product_qty': 1,
-                })
-            ]},
+                'product_tmpl_id': products[4].product_tmpl_id.id,
+                'product_qty': 1,
+                'product_uom_id': products[4].uom_id.id,
+                'type': 'normal',
+                'bom_line_ids': [
+                    Command.create({
+                        'product_id': products[3].id,
+                        'product_qty': 1,
+                    })
+                ]},
             {
-            'product_tmpl_id': products[0].product_tmpl_id.id,
-            'product_qty': 1,
-            'product_uom_id': products[0].uom_id.id,
-            'type': 'normal',
-            'bom_line_ids': [
-                Command.create({
-                    'product_id': products[4].id,
-                    'product_qty': 3,
-                }),
-                Command.create({
-                    'product_id': products[2].id,
-                    'product_qty': 2,
-                }),
-            ]},
+                'product_tmpl_id': products[0].product_tmpl_id.id,
+                'product_qty': 1,
+                'product_uom_id': products[0].uom_id.id,
+                'type': 'normal',
+                'bom_line_ids': [
+                    Command.create({
+                        'product_id': products[4].id,
+                        'product_qty': 3,
+                    }),
+                    Command.create({
+                        'product_id': products[2].id,
+                        'product_qty': 2,
+                    }),
+                ]},
         ])
         mo = self.env['mrp.production'].create({
             'product_id': products[0].id,
@@ -779,11 +786,14 @@ class TestMultistepManufacturingWarehouse(TestMrpCommon):
         self.assertEqual(len(mo.picking_ids), 2, "Should have 2 pickings: Components + (Final product and byproducts)")
         for picking in mo.picking_ids:
             if demo in [m.product_id for m in picking.move_ids_without_package]:
-                self.assertEqual(len(picking.move_ids_without_package), 3, "Should have 3 moves for: Demo, Bprod1 and Bprod2")
-                self.assertEqual([move.product_id for move in picking.move_ids_without_package.sorted('product_id')], [demo, bprod1, bprod2])
+                self.assertEqual(len(picking.move_ids_without_package), 3,
+                                 "Should have 3 moves for: Demo, Bprod1 and Bprod2")
+                self.assertEqual([move.product_id for move in picking.move_ids_without_package.sorted('product_id')],
+                                 [demo, bprod1, bprod2])
             else:
                 self.assertEqual(len(picking.move_ids_without_package), 2, "Should have 2 moves for: Comp1 and Comp2")
-                self.assertEqual([move.product_id for move in picking.move_ids_without_package.sorted('product_id')], [comp1, comp2])
+                self.assertEqual([move.product_id for move in picking.move_ids_without_package.sorted('product_id')],
+                                 [comp1, comp2])
 
     def test_pick_components_uses_shipping_policy_from_picking_type(self):
         self.warehouse.manufacture_steps = "pbm"

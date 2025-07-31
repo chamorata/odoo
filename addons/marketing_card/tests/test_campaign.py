@@ -1,15 +1,15 @@
 import base64
 from datetime import datetime
-from lxml import html
 from unittest.mock import patch
 
-from odoo import exceptions
-from odoo.tools import mute_logger
-from odoo.tests.common import users
-from odoo.tests import Form, HttpCase, tagged, warmup
+from lxml import html
 from odoo.addons.mail.tests.common import MailCase
 from odoo.addons.marketing_card.controllers.marketing_card import SOCIAL_NETWORK_USER_AGENTS
 
+from odoo import exceptions
+from odoo.tests import Form, HttpCase, tagged, warmup
+from odoo.tests.common import users
+from odoo.tools import mute_logger
 from .common import MarketingCardCommon, mock_image_render, VALID_JPEG
 
 
@@ -35,7 +35,8 @@ class TestMarketingCardMail(MailCase, MarketingCardCommon):
     def test_campaign_send_mailing(self):
         campaign = self.campaign.with_user(self.env.user)
         self.env.user.sudo().groups_id += self.env.ref('mass_mailing.group_mass_mailing_user')
-        partners = self.env['res.partner'].sudo().create([{'name': f'Part{n}', 'email': f'partn{n}@test.lan'} for n in range(7)])
+        partners = self.env['res.partner'].sudo().create(
+            [{'name': f'Part{n}', 'email': f'partn{n}@test.lan'} for n in range(7)])
         mailing_context = campaign.action_share().get('context') | {
             'default_email_from': 'test@test.lan',
             'default_mailing_domain': [('id', 'in', partners.ids[:5])],
@@ -49,7 +50,8 @@ class TestMarketingCardMail(MailCase, MarketingCardCommon):
         with self.assertRaises(exceptions.UserError, msg="There are no recipients selected."):
             mailing._action_send_mail()
 
-        with self.assertRaises(exceptions.UserError, msg="You should update all the cards before scheduling a mailing."):
+        with self.assertRaises(exceptions.UserError,
+                               msg="You should update all the cards before scheduling a mailing."):
             mailing.action_launch()
 
         # once cards are updated they can be sent
@@ -65,7 +67,8 @@ class TestMarketingCardMail(MailCase, MarketingCardCommon):
         mailing.mailing_domain = [('id', 'in', partners.ids[1:6])]
         mailing._compute_card_requires_sync_count()
         self.assertTrue(mailing.card_requires_sync_count)
-        with self.assertRaises(exceptions.UserError, msg="You should update all the cards before scheduling a mailing."):
+        with self.assertRaises(exceptions.UserError,
+                               msg="You should update all the cards before scheduling a mailing."):
             mailing.action_launch()
 
         # updating when the campaign was not modified only updates cards that need to be
@@ -148,7 +151,8 @@ class TestMarketingCardRender(MarketingCardCommon):
         self.assertEqual(role_values['sub_section1'].text, 'bob@justbob.me')
         self.assertEqual(role_values['sub_section2'].text, '+32 123 446 789')
         self.assertFalse(role_values['image1'])
-        self.assertEqual(role_values['image2'].attrib['src'], f'data:image/png;base64,{base64.b64encode(VALID_JPEG).decode()}')
+        self.assertEqual(role_values['image2'].attrib['src'],
+                         f'data:image/png;base64,{base64.b64encode(VALID_JPEG).decode()}')
 
         campaign.action_preview()
         cards = self.env['card.card'].search([
@@ -167,7 +171,6 @@ class TestMarketingCardRender(MarketingCardCommon):
 
         with patch('odoo.addons.marketing_card.models.card_campaign.CardCampaign._get_model_selection',
                    lambda Model: [('res.partner', 'Partner'), ('res.users', 'User')]):
-
             # mismatches without cards
             self.assertEqual(self.static_campaign.res_model, 'res.partner')
             self.assertFalse(self.static_campaign.card_ids)
@@ -229,7 +232,8 @@ class TestMarketingCardRouting(HttpCase, MarketingCardCommon):
 
     @mock_image_render
     def test_campaign_stats(self):
-        partners = self.env['res.partner'].create([{'name': f'Part{n}', 'email': f'partn{n}@test.lan'} for n in range(20)])
+        partners = self.env['res.partner'].create(
+            [{'name': f'Part{n}', 'email': f'partn{n}@test.lan'} for n in range(20)])
         cards = self.campaign._update_cards([('id', 'in', partners.ids)]).sorted('res_id')
         self.assertEqual(len(cards), 20)
         self.assertEqual(self.campaign.card_count, 20)
@@ -252,7 +256,8 @@ class TestMarketingCardRouting(HttpCase, MarketingCardCommon):
         self.campaign.flush_recordset()
         self.assertEqual(self.campaign.card_count, 20)
         self.assertEqual(self.campaign.card_click_count, 1)
-        self.assertEqual(self.campaign.card_share_count, 0, 'A regular user fetching the card should not count as a share.')
+        self.assertEqual(self.campaign.card_share_count, 0,
+                         'A regular user fetching the card should not count as a share.')
 
         # user publishes redirect url, prompting social network crawler to check open-graph data
         self.opener.headers['User-Agent'] = f'v1 {SOCIAL_NETWORK_USER_AGENTS[0]} v1.2/'

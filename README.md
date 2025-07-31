@@ -24,7 +24,8 @@ a full-featured [Open Source ERP](https://www.odoo.com) when you install several
 
 ## Getting started with Odoo
 
-For a standard installation please follow the [Setup instructions](https://www.odoo.com/documentation/master/administration/install/install.html)
+For a standard installation please follow
+the [Setup instructions](https://www.odoo.com/documentation/master/administration/install/install.html)
 from the documentation.
 
 To learn the software, we recommend the [Odoo eLearning](https://www.odoo.com/slides),
@@ -33,5 +34,6 @@ Developers can start with [the developer tutorials](https://www.odoo.com/documen
 
 ## Security
 
-If you believe you have found a security issue, check our [Responsible Disclosure page](https://www.odoo.com/security-report)
+If you believe you have found a security issue, check
+our [Responsible Disclosure page](https://www.odoo.com/security-report)
 for details and get in touch with us via email.

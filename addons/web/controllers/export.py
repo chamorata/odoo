@@ -17,7 +17,6 @@ from odoo.http import content_disposition, request
 from odoo.tools import lazy_property, osutil
 from odoo.tools.misc import xlsxwriter
 
-
 _logger = logging.getLogger(__name__)
 
 
@@ -25,6 +24,7 @@ def none_values_filtered(func):
     @functools.wraps(func)
     def wrap(iterable):
         return func(v for v in iterable if v is not None)
+
     return wrap
 
 
@@ -34,6 +34,7 @@ def allow_empty_iterable(func):
     This returns the function `func` such that it returns None if the iterable
     is empty instead of raising a ValueError.
     """
+
     @functools.wraps(func)
     def wrap(iterable):
         iterator = iter(iterable)
@@ -42,6 +43,7 @@ def allow_empty_iterable(func):
             return func(itertools.chain([value], iterator))
         except StopIteration:
             return None
+
     return wrap
 
 
@@ -83,7 +85,8 @@ class GroupsTreeNode:
 
         aggregate_func = OPERATOR_MAPPING.get(aggregator)
         if not aggregate_func:
-            _logger.warning("Unsupported export of aggregator '%s' for field %s on model %s", aggregator, field_name, self._model._name)
+            _logger.warning("Unsupported export of aggregator '%s' for field %s on model %s", aggregator, field_name,
+                            self._model._name)
             return
 
         if self.data:
@@ -138,7 +141,8 @@ class GroupsTreeNode:
         :return: the child node
         """
         if key not in self.children:
-            self.children[key] = GroupsTreeNode(self._model, self._export_field_names, self._groupby, self._groupby_type, self._read_context)
+            self.children[key] = GroupsTreeNode(self._model, self._export_field_names, self._groupby,
+                                                self._groupby_type, self._read_context)
         return self.children[key]
 
     def insert_leaf(self, group):
@@ -154,7 +158,7 @@ class GroupsTreeNode:
 
         # Follow the path from the top level group to the deepest
         # group which actually contains the records' data.
-        node = self # root
+        node = self  # root
         node.count += count
         for node_key in leaf_path:
             # Go down to the next node or create one if it does not exist yet.
@@ -183,18 +187,22 @@ class ExportXlsxWriter:
 
         # FIXME: Should depends of the currency field for each row (also maybe add the currency symbol)
         decimal_places = request.env['res.currency']._read_group([], aggregates=['decimal_places:max'])[0][0]
-        self.monetary_style = self.workbook.add_format({'text_wrap': True, 'num_format': f'#,##0.{(decimal_places or 2) * "0"}'})
+        self.monetary_style = self.workbook.add_format(
+            {'text_wrap': True, 'num_format': f'#,##0.{(decimal_places or 2) * "0"}'})
 
         header_bold_props = {'text_wrap': True, 'bold': True, 'bg_color': '#e9ecef'}
         self.header_bold_style = self.workbook.add_format(header_bold_props)
         self.header_bold_style_float = self.workbook.add_format(dict(**header_bold_props, num_format='#,##0.00'))
-        self.header_bold_style_monetary = self.workbook.add_format(dict(**header_bold_props, num_format=f'#,##0.{(decimal_places or 2) * "0"}'))
+        self.header_bold_style_monetary = self.workbook.add_format(
+            dict(**header_bold_props, num_format=f'#,##0.{(decimal_places or 2) * "0"}'))
 
         self.worksheet = self.workbook.add_worksheet()
         self.value = False
 
         if row_count > self.worksheet.xls_rowmax:
-            raise UserError(request.env._('There are too many rows (%(count)s rows, limit: %(limit)s) to export as Excel 2007-2013 (.xlsx) format. Consider splitting the export.', count=row_count, limit=self.worksheet.xls_rowmax))
+            raise UserError(request.env._(
+                'There are too many rows (%(count)s rows, limit: %(limit)s) to export as Excel 2007-2013 (.xlsx) format. Consider splitting the export.',
+                count=row_count, limit=self.worksheet.xls_rowmax))
 
     def __enter__(self):
         self.write_header()
@@ -228,13 +236,17 @@ class ExportXlsxWriter:
                 # fails note that you can't export
                 cell_value = cell_value.decode()
             except UnicodeDecodeError:
-                raise UserError(request.env._("Binary fields can not be exported to Excel unless their content is base64-encoded. That does not seem to be the case for %s.", self.columns_headers[column])) from None
+                raise UserError(request.env._(
+                    "Binary fields can not be exported to Excel unless their content is base64-encoded. That does not seem to be the case for %s.",
+                    self.columns_headers[column])) from None
         elif isinstance(cell_value, (list, tuple, dict)):
             cell_value = str(cell_value)
 
         if isinstance(cell_value, str):
             if len(cell_value) > self.worksheet.xls_strmax:
-                cell_value = request.env._("The content of this cell is too long for an XLSX file (more than %s characters). Please use the CSV format for this export.", self.worksheet.xls_strmax)
+                cell_value = request.env._(
+                    "The content of this cell is too long for an XLSX file (more than %s characters). Please use the CSV format for this export.",
+                    self.worksheet.xls_strmax)
             else:
                 cell_value = cell_value.replace("\r", " ")
         elif isinstance(cell_value, datetime.datetime):
@@ -274,7 +286,7 @@ class GroupExportXlsxWriter(ExportXlsxWriter):
 
         label = '%s%s (%s)' % ('    ' * group_depth, label, group.count)
         self.write(row, column, label, self.header_bold_style)
-        for field in self.fields[1:]: # No aggregates allowed in the first column because of the group title
+        for field in self.fields[1:]:  # No aggregates allowed in the first column because of the group title
             column += 1
             aggregated_value = aggregates.get(field['name'])
             header_style = self.header_bold_style
@@ -336,11 +348,11 @@ class Export(http.Controller):
                     #     'default': [1337, 'Bob'],
                     # }
                     if (
-                        definition['type'] == 'separator' or
-                        (
-                            definition['type'] in ('many2one', 'many2many')
-                            and definition.get('comodel') not in Model.env
-                        )
+                            definition['type'] == 'separator' or
+                            (
+                                    definition['type'] in ('many2one', 'many2many')
+                                    and definition.get('comodel') not in Model.env
+                            )
                     ):
                         continue
                     id_field = f"{fname}.{definition['name']}"
@@ -595,11 +607,12 @@ class ExportFormat(object):
 
         # TODO: call `clean_filename` directly in `content_disposition`?
         return request.make_response(response_data,
-            headers=[('Content-Disposition',
-                            content_disposition(
-                                osutil.clean_filename(self.filename(model) + self.extension))),
-                     ('Content-Type', self.content_type)],
-        )
+                                     headers=[('Content-Disposition',
+                                               content_disposition(
+                                                   osutil.clean_filename(self.filename(model) + self.extension))),
+                                              ('Content-Type', self.content_type)],
+                                     )
+
 
 class CSVExport(ExportFormat, http.Controller):
 
@@ -648,6 +661,7 @@ class CSVExport(ExportFormat, http.Controller):
             writer.writerow(row)
 
         return fp.getvalue()
+
 
 class ExcelExport(ExportFormat, http.Controller):
 

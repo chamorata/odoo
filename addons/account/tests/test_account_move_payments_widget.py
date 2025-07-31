@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
-from odoo.tests import tagged
+
 from odoo import Command
+from odoo.tests import tagged
 
 
 @tagged('post_install', '-at_install')
@@ -21,8 +22,10 @@ class TestAccountMovePaymentsWidget(AccountTestInvoicingCommon):
         cls.payment_2016_curr_1 = cls.env['account.move'].create({
             'date': '2016-01-01',
             'line_ids': [
-                (0, 0, {'debit': 0.0,       'credit': 500.0,    'amount_currency': -500.0,  'currency_id': cls.curr_1.id,   'account_id': cls.receivable_account.id,    'partner_id': cls.partner_a.id}),
-                (0, 0, {'debit': 500.0,     'credit': 0.0,      'amount_currency': 500.0,   'currency_id': cls.curr_1.id,   'account_id': cls.payable_account.id,       'partner_id': cls.partner_a.id}),
+                (0, 0, {'debit': 0.0, 'credit': 500.0, 'amount_currency': -500.0, 'currency_id': cls.curr_1.id,
+                        'account_id': cls.receivable_account.id, 'partner_id': cls.partner_a.id}),
+                (0, 0, {'debit': 500.0, 'credit': 0.0, 'amount_currency': 500.0, 'currency_id': cls.curr_1.id,
+                        'account_id': cls.payable_account.id, 'partner_id': cls.partner_a.id}),
             ],
         })
         cls.payment_2016_curr_1.action_post()
@@ -30,8 +33,10 @@ class TestAccountMovePaymentsWidget(AccountTestInvoicingCommon):
         cls.payment_2016_curr_2 = cls.env['account.move'].create({
             'date': '2016-01-01',
             'line_ids': [
-                (0, 0, {'debit': 0.0,       'credit': 500.0,    'amount_currency': -1550.0, 'currency_id': cls.curr_2.id,   'account_id': cls.receivable_account.id,    'partner_id': cls.partner_a.id}),
-                (0, 0, {'debit': 500.0,     'credit': 0.0,      'amount_currency': 1550.0,  'currency_id': cls.curr_2.id,   'account_id': cls.payable_account.id,       'partner_id': cls.partner_a.id}),
+                (0, 0, {'debit': 0.0, 'credit': 500.0, 'amount_currency': -1550.0, 'currency_id': cls.curr_2.id,
+                        'account_id': cls.receivable_account.id, 'partner_id': cls.partner_a.id}),
+                (0, 0, {'debit': 500.0, 'credit': 0.0, 'amount_currency': 1550.0, 'currency_id': cls.curr_2.id,
+                        'account_id': cls.payable_account.id, 'partner_id': cls.partner_a.id}),
             ],
         })
         cls.payment_2016_curr_2.action_post()
@@ -39,8 +44,10 @@ class TestAccountMovePaymentsWidget(AccountTestInvoicingCommon):
         cls.payment_2017_curr_2 = cls.env['account.move'].create({
             'date': '2017-01-01',
             'line_ids': [
-                (0, 0, {'debit': 0.0,       'credit': 500.0,    'amount_currency': -950.0, 'currency_id': cls.curr_2.id,   'account_id': cls.receivable_account.id,    'partner_id': cls.partner_a.id}),
-                (0, 0, {'debit': 500.0,     'credit': 0.0,      'amount_currency': 950.0,  'currency_id': cls.curr_2.id,   'account_id': cls.payable_account.id,       'partner_id': cls.partner_a.id}),
+                (0, 0, {'debit': 0.0, 'credit': 500.0, 'amount_currency': -950.0, 'currency_id': cls.curr_2.id,
+                        'account_id': cls.receivable_account.id, 'partner_id': cls.partner_a.id}),
+                (0, 0, {'debit': 500.0, 'credit': 0.0, 'amount_currency': 950.0, 'currency_id': cls.curr_2.id,
+                        'account_id': cls.payable_account.id, 'partner_id': cls.partner_a.id}),
             ],
         })
         cls.payment_2017_curr_2.action_post()
@@ -48,8 +55,10 @@ class TestAccountMovePaymentsWidget(AccountTestInvoicingCommon):
         cls.payment_2016_curr_3 = cls.env['account.move'].create({
             'date': '2016-01-01',
             'line_ids': [
-                (0, 0, {'debit': 0.0,       'credit': 500.0,    'amount_currency': -3050.0, 'currency_id': cls.curr_3.id,   'account_id': cls.receivable_account.id,    'partner_id': cls.partner_a.id}),
-                (0, 0, {'debit': 500.0,     'credit': 0.0,      'amount_currency': 3050.0,  'currency_id': cls.curr_3.id,   'account_id': cls.payable_account.id,       'partner_id': cls.partner_a.id}),
+                (0, 0, {'debit': 0.0, 'credit': 500.0, 'amount_currency': -3050.0, 'currency_id': cls.curr_3.id,
+                        'account_id': cls.receivable_account.id, 'partner_id': cls.partner_a.id}),
+                (0, 0, {'debit': 500.0, 'credit': 0.0, 'amount_currency': 3050.0, 'currency_id': cls.curr_3.id,
+                        'account_id': cls.payable_account.id, 'partner_id': cls.partner_a.id}),
             ],
         })
         cls.payment_2016_curr_3.action_post()
@@ -57,8 +66,10 @@ class TestAccountMovePaymentsWidget(AccountTestInvoicingCommon):
         cls.payment_2017_curr_3 = cls.env['account.move'].create({
             'date': '2017-01-01',
             'line_ids': [
-                (0, 0, {'debit': 0.0,       'credit': 500.0,    'amount_currency': -1950.0, 'currency_id': cls.curr_3.id,   'account_id': cls.receivable_account.id,    'partner_id': cls.partner_a.id}),
-                (0, 0, {'debit': 500.0,     'credit': 0.0,      'amount_currency': 1950.0,  'currency_id': cls.curr_3.id,   'account_id': cls.payable_account.id,       'partner_id': cls.partner_a.id}),
+                (0, 0, {'debit': 0.0, 'credit': 500.0, 'amount_currency': -1950.0, 'currency_id': cls.curr_3.id,
+                        'account_id': cls.receivable_account.id, 'partner_id': cls.partner_a.id}),
+                (0, 0, {'debit': 500.0, 'credit': 0.0, 'amount_currency': 1950.0, 'currency_id': cls.curr_3.id,
+                        'account_id': cls.payable_account.id, 'partner_id': cls.partner_a.id}),
             ],
         })
         cls.payment_2017_curr_3.action_post()
@@ -160,9 +171,9 @@ class TestAccountMovePaymentsWidget(AccountTestInvoicingCommon):
         out_invoice.action_post()
 
         # Payment at exchange rate 2:1. 300 GOL -> 150 USD
-        payment = self.env['account.payment.register']\
-            .with_context(active_model='account.move', active_ids=out_invoice.ids)\
-            .create({'payment_date': '2017-01-01'})\
+        payment = self.env['account.payment.register'] \
+            .with_context(active_model='account.move', active_ids=out_invoice.ids) \
+            .create({'payment_date': '2017-01-01'}) \
             ._create_payments()
 
         expected_amounts = {payment.move_id.id: 300.0}
@@ -192,9 +203,9 @@ class TestAccountMovePaymentsWidget(AccountTestInvoicingCommon):
         out_invoice.action_post()
 
         # Payment at exchange rate 3:1. 300 GOL -> 100 USD
-        payment = self.env['account.payment.register']\
-            .with_context(active_model='account.move', active_ids=out_invoice.ids)\
-            .create({'payment_date': '2016-01-01'})\
+        payment = self.env['account.payment.register'] \
+            .with_context(active_model='account.move', active_ids=out_invoice.ids) \
+            .create({'payment_date': '2016-01-01'}) \
             ._create_payments()
 
         expected_amounts = {payment.move_id.id: 300.0}

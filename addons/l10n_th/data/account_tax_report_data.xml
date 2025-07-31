@@ -15,7 +15,9 @@
         <field name="line_ids">
             <record id="tax_report_out_tax_title" model="account.report.line">
                 <field name="name">Output Tax</field>
-                <field name="aggregation_formula">OUTPUTTAX_SALEAMOUNT.balance + OUTPUTTAX_SALE_ZERO.balance + OUTPUTTAX_EXEMPTED.balance + OUTPUTTAX_TAX.balance</field>
+                <field name="aggregation_formula">OUTPUTTAX_SALEAMOUNT.balance + OUTPUTTAX_SALE_ZERO.balance +
+                    OUTPUTTAX_EXEMPTED.balance + OUTPUTTAX_TAX.balance
+                </field>
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
                     <record id="tax_report_out_tax_sale" model="account.report.line">
@@ -30,13 +32,13 @@
                         </field>
                     </record>
                     <record id="tax_report_out_tax_less_sales_0_rate" model="account.report.line">
-                        <field name="name">2. Less sales subject to 0% tax rate </field>
+                        <field name="name">2. Less sales subject to 0% tax rate</field>
                         <field name="code">OUTPUTTAX_SALE_ZERO</field>
                         <field name="expression_ids">
                             <record id="tax_report_out_tax_less_sales_0_rate_tag" model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
-                                <field name="formula">2. Less sales subject to 0% tax rate </field>
+                                <field name="formula">2. Less sales subject to 0% tax rate</field>
                             </record>
                         </field>
                     </record>
@@ -53,7 +55,9 @@
                     </record>
                     <record id="tax_report_out_tax_taxable_sales_amount" model="account.report.line">
                         <field name="name">4. Taxable sales amount(1. -2. -3.)</field>
-                        <field name="aggregation_formula">OUTPUTTAX_SALEAMOUNT.balance-(OUTPUTTAX_SALE_ZERO.balance+OUTPUTTAX_EXEMPTED.balance)</field>
+                        <field name="aggregation_formula">
+                            OUTPUTTAX_SALEAMOUNT.balance-(OUTPUTTAX_SALE_ZERO.balance+OUTPUTTAX_EXEMPTED.balance)
+                        </field>
                     </record>
                     <record id="tax_report_out_tax" model="account.report.line">
                         <field name="name">5. Output tax</field>
@@ -71,17 +75,27 @@
             <record id="tax_report_input_tax_title" model="account.report.line">
                 <field name="name">Input Tax</field>
                 <field name="code">INPUTTAX</field>
-                <field name="aggregation_formula">6_PURCHASE_AMOUNT_THAT_IS_ENTITLED_TO_DEDUCTION_OF_INPUT_TAX_FROM_OUTPUT_TAX_IN_TAX_COMPUTATION.balance + INPUTTAX_TAX.balance</field>
+                <field name="aggregation_formula">
+                    6_PURCHASE_AMOUNT_THAT_IS_ENTITLED_TO_DEDUCTION_OF_INPUT_TAX_FROM_OUTPUT_TAX_IN_TAX_COMPUTATION.balance
+                    + INPUTTAX_TAX.balance
+                </field>
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
                     <record id="tax_report_input_tax_purchase_from_out_tax" model="account.report.line">
-                        <field name="name">6. Purchase amount that is entitled to deduction of input tax from output tax in tax computation</field>
-                        <field name="code">6_PURCHASE_AMOUNT_THAT_IS_ENTITLED_TO_DEDUCTION_OF_INPUT_TAX_FROM_OUTPUT_TAX_IN_TAX_COMPUTATION</field>
+                        <field name="name">6. Purchase amount that is entitled to deduction of input tax from output tax
+                            in tax computation
+                        </field>
+                        <field name="code">
+                            6_PURCHASE_AMOUNT_THAT_IS_ENTITLED_TO_DEDUCTION_OF_INPUT_TAX_FROM_OUTPUT_TAX_IN_TAX_COMPUTATION
+                        </field>
                         <field name="expression_ids">
-                            <record id="tax_report_input_tax_purchase_from_out_tax_tag" model="account.report.expression">
+                            <record id="tax_report_input_tax_purchase_from_out_tax_tag"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
-                                <field name="formula">6. Purchase amount that is entitled to deduction of input tax from output tax in tax computation</field>
+                                <field name="formula">6. Purchase amount that is entitled to deduction of input tax from
+                                    output tax in tax computation
+                                </field>
                             </record>
                         </field>
                     </record>
@@ -92,7 +106,8 @@
                             <record id="tax_report_input_tax_tag" model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
-                                <field name="formula">7. Input tax (according to invoice of purchase amount in 6.)</field>
+                                <field name="formula">7. Input tax (according to invoice of purchase amount in 6.)
+                                </field>
                             </record>
                         </field>
                     </record>
@@ -141,7 +156,9 @@
             </record>
             <record id="tax_report_net_vat" model="account.report.line">
                 <field name="name">Net Tax</field>
-                <field name="aggregation_formula">11_NET_TAX_PAYABLE_IF_8_IS_GREATER_THAN_10.balance + 12_NET_EXCESS_TAX_PAYABLE_IF_10_IS_GREATER_THAN_8_OR_9_PLUS_10.balance</field>
+                <field name="aggregation_formula">11_NET_TAX_PAYABLE_IF_8_IS_GREATER_THAN_10.balance +
+                    12_NET_EXCESS_TAX_PAYABLE_IF_10_IS_GREATER_THAN_8_OR_9_PLUS_10.balance
+                </field>
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
                     <record id="tax_report_net_vat_payable" model="account.report.line">
@@ -156,13 +173,16 @@
                         </field>
                     </record>
                     <record id="tax_report_net_vat_excess" model="account.report.line">
-                        <field name="name">12. Net excess tax payable ((if 10. is greater than 8.) or (9. plus 10.))</field>
+                        <field name="name">12. Net excess tax payable ((if 10. is greater than 8.) or (9. plus 10.))
+                        </field>
                         <field name="code">12_NET_EXCESS_TAX_PAYABLE_IF_10_IS_GREATER_THAN_8_OR_9_PLUS_10</field>
                         <field name="expression_ids">
                             <record id="tax_report_net_vat_excess_tag" model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
-                                <field name="formula">12. Net excess tax payable ((if 10. is greater than 8.) or (9. plus 10.))</field>
+                                <field name="formula">12. Net excess tax payable ((if 10. is greater than 8.) or (9.
+                                    plus 10.))
+                                </field>
                             </record>
                         </field>
                     </record>
@@ -173,8 +193,8 @@
 
     <record id="tax_report_pnd53" model="account.report">
         <field name="name">PND53</field>
-        <field name="root_report_id" ref="account.generic_tax_report" />
-        <field name="country_id" ref="base.th" />
+        <field name="root_report_id" ref="account.generic_tax_report"/>
+        <field name="country_id" ref="base.th"/>
         <field name="availability_condition">country</field>
         <field name="column_ids">
             <record id="tax_report_pnd53_balance" model="account.report.column">
@@ -231,8 +251,8 @@
 
     <record id="tax_report_pnd3" model="account.report">
         <field name="name">PND3</field>
-        <field name="root_report_id" ref="account.generic_tax_report" />
-        <field name="country_id" ref="base.th" />
+        <field name="root_report_id" ref="account.generic_tax_report"/>
+        <field name="country_id" ref="base.th"/>
         <field name="availability_condition">country</field>
         <field name="column_ids">
             <record id="tax_report_pnd3_balance" model="account.report.column">

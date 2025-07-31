@@ -2,9 +2,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.sale_loyalty.tests.common import TestSaleCouponCommon
-from odoo.exceptions import UserError
-from odoo.tests import tagged
+
 from odoo import Command
+from odoo.tests import tagged
 
 
 @tagged('post_install', '-at_install')
@@ -39,7 +39,6 @@ class TestSaleCouponMultiCompany(TestSaleCouponCommon):
         return self.env['loyalty.program'].browse(p.id for p in order._get_applicable_program_points())
 
     def test_applicable_programs(self):
-
         order = self.empty_order
         order.write({'order_line': [
             (0, False, {
@@ -105,8 +104,8 @@ class TestSaleCouponMultiCompany(TestSaleCouponCommon):
                     'product_uom_qty': 1.0,
                 })
             ],
-            'company_id': branch_a.id,
-            'partner_id': self.partner.id
+                'company_id': branch_a.id,
+                'partner_id': self.partner.id
             }
         )
 

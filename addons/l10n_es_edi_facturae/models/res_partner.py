@@ -34,18 +34,19 @@ class Partner(models.Model):
         string='Physical GLN',
         size=14,
         help="Identification of the connection point to the VAN EDI (Global Location Number). Barcode of 13 standard positions. "
-        "Codes are registered in Spain by AECOC. The code is made up of the country code (2 positions) Spain is '84' "
-        "+ Company code (5 positions) + the remaining positions. The last one is the product + check digit."
+             "Codes are registered in Spain by AECOC. The code is made up of the country code (2 positions) Spain is '84' "
+             "+ Company code (5 positions) + the remaining positions. The last one is the product + check digit."
     )
     l10n_es_edi_facturae_ac_logical_operational_point = fields.Char(
         string='Logical Operational Point',
         size=14,
         help="Code identifying the company. Barcode of 13 standard positions. Codes are registered in Spain by AECOC. "
-        "The code is made up of the country code (2 positions) Spain is '84' + Company code (5 positions) + the remaining positions. "
-        "The last one is the product + check digit.",
+             "The code is made up of the country code (2 positions) Spain is '84' + Company code (5 positions) + the remaining positions. "
+             "The last one is the product + check digit.",
     )
     l10n_es_edi_facturae_residence_type = fields.Char(string='Facturae EDI Residency Type Code',
-        compute='_compute_l10n_es_edi_facturae_residence_type', store=False, readonly=True,)
+                                                      compute='_compute_l10n_es_edi_facturae_residence_type',
+                                                      store=False, readonly=True, )
 
     @api.constrains('l10n_es_edi_facturae_ac_physical_gln')
     def _validate_l10n_es_edi_facturae_ac_physical_gln(self):

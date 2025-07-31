@@ -12,7 +12,7 @@
                 </filter>
             </field>
         </record>
-    
+
         <record id="l10n_es_edi_tbai_certificate_action" model="ir.actions.act_window">
             <field name="name">Certificates for EDI TicketBAI invoices on Spain</field>
             <field name="res_model">certificate.certificate</field>
@@ -22,7 +22,7 @@
                 <p class="oe_view_nocontent_create">Create the first certificate</p>
             </field>
         </record>
-    
+
         <record id="certificate_certificate_view_form" model="ir.ui.view">
             <field name="name">certificate_certificate_view_form.inherit.l10n_es_edi_tbai</field>
             <field name="model">certificate.certificate</field>

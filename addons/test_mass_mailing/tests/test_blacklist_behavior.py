@@ -2,16 +2,16 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import datetime
-
-from freezegun import freeze_time
 from unittest.mock import patch
 
+from freezegun import freeze_time
 from odoo.addons.mass_mailing.models.mail_thread import BLACKLIST_MAX_BOUNCED_LIMIT
 from odoo.addons.test_mass_mailing.tests import common
+
+from odoo.sql_db import Cursor
 from odoo.tests import tagged
 from odoo.tests.common import users
 from odoo.tools import mute_logger
-from odoo.sql_db import Cursor
 
 
 @tagged('mail_blacklist')
@@ -58,11 +58,12 @@ class TestAutoBlacklist(common.TestMassMailCommon):
         traces = self.env['mailing.trace']
         for idx in range(4):
             new_mailing = mailing.copy()
-            new_dt = datetime.datetime.now() - datetime.timedelta(weeks=idx+2)
+            new_dt = datetime.datetime.now() - datetime.timedelta(weeks=idx + 2)
             # Cursor.now() uses transaction's timestamp and not datetime lib -> freeze_time
             # is not sufficient
             with freeze_time(new_dt), patch.object(Cursor, 'now', lambda *args, **kwargs: new_dt):
-                traces += self._create_bounce_trace(new_mailing, target, dt=datetime.datetime.now() - datetime.timedelta(weeks=idx+2))
+                traces += self._create_bounce_trace(new_mailing, target,
+                                                    dt=datetime.datetime.now() - datetime.timedelta(weeks=idx + 2))
                 self.gateway_mail_trace_bounce(new_mailing, target, bounce_base_values)
 
         # mass mail record: ok, not blacklisted yet

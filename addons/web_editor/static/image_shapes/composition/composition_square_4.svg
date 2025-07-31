@@ -5,16 +5,20 @@
         </clipPath>
         <path id="filterPath" d="M.0025.2235.8425.05.8425.85.0025.85Z">
             <animate dur="6s" repeatCount="indefinite" attributeName="d" attributeType="XML"
-            values="
+                     values="
             M.0025.2235.8425.05.8425.85.0025.85Z;
             M.0025.2035.8425.075.8425.85.0025.85Z;
             M.0025.2235.8425.05.8425.85.0025.85Z"
-            calcMode="spline"
-            keySplines=".56 .37 .43 .58; .56 .37 .43 .58"/>
+                     calcMode="spline"
+                     keySplines=".56 .37 .43 .58; .56 .37 .43 .58"/>
         </path>
         <g id="animation">
-            <animateTransform xlink:href="#shape" attributeName="transform" attributeType="XML" type="translate" dur="6s" values="0 0;0 8;0 0" repeatCount="indefinite" calcMode="spline" keySplines=".45 .05 .55 .95;.45 .05 .55 .95"/>
-            <animateTransform xlink:href="#filterPath" attributeName="transform" attributeType="XML" type="translate" dur="6s" values="0 -.02;0 0;0 -.02" repeatCount="indefinite" calcMode="spline" keySplines=".45 .05 .55 .95;.45 .05 .55 .95"/>
+            <animateTransform xlink:href="#shape" attributeName="transform" attributeType="XML" type="translate"
+                              dur="6s" values="0 0;0 8;0 0" repeatCount="indefinite" calcMode="spline"
+                              keySplines=".45 .05 .55 .95;.45 .05 .55 .95"/>
+            <animateTransform xlink:href="#filterPath" attributeName="transform" attributeType="XML" type="translate"
+                              dur="6s" values="0 -.02;0 0;0 -.02" repeatCount="indefinite" calcMode="spline"
+                              keySplines=".45 .05 .55 .95;.45 .05 .55 .95"/>
         </g>
     </defs>
     <svg class="triangle" viewBox="0 0 28.35 28.35" width="95%" height="90%">

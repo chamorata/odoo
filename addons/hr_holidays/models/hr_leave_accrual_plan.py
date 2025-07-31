@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.hr_holidays.models.hr_leave_accrual_plan_level import _get_selection_days
+
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
-
-from odoo.addons.hr_holidays.models.hr_leave_accrual_plan_level import _get_selection_days
 
 DAY_SELECT_VALUES = [str(i) for i in range(1, 29)] + ['last']
 DAY_SELECT_SELECTION_NO_LAST = tuple(zip(DAY_SELECT_VALUES, (str(i) for i in range(1, 29))))
@@ -17,14 +17,14 @@ class AccrualPlan(models.Model):
     active = fields.Boolean(default=True)
     name = fields.Char('Name', required=True)
     time_off_type_id = fields.Many2one('hr.leave.type', string="Time Off Type",
-        check_company=True,
-        help="""Specify if this accrual plan can only be used with this Time Off Type.
+                                       check_company=True,
+                                       help="""Specify if this accrual plan can only be used with this Time Off Type.
                 Leave empty if this accrual plan can be used with any Time Off Type.""")
     employees_count = fields.Integer("Employees", compute='_compute_employee_count')
     level_ids = fields.One2many('hr.leave.accrual.level', 'accrual_plan_id', copy=True, string="Milestone")
     allocation_ids = fields.One2many('hr.leave.allocation', 'accrual_plan_id')
     company_id = fields.Many2one('res.company', string='Company',
-        compute="_compute_company_id", store="True", readonly=False)
+                                 compute="_compute_company_id", store="True", readonly=False)
     transition_mode = fields.Selection([
         ('immediately', 'Immediately'),
         ('end_of_accrual', "After this accrual's period")],
@@ -34,8 +34,9 @@ class AccrualPlan(models.Model):
                 'After this accrual's period' will keep the employee on the same accrual level until the ongoing pay period is complete.
                 After it is complete, the new level will take effect when the next pay period begins.""")
     show_transition_mode = fields.Boolean(compute='_compute_show_transition_mode')
-    is_based_on_worked_time = fields.Boolean("Based on worked time", compute="_compute_is_based_on_worked_time", store=True, readonly=False,
-        help="If checked, the accrual period will be calculated according to the work days, not calendar days.")
+    is_based_on_worked_time = fields.Boolean("Based on worked time", compute="_compute_is_based_on_worked_time",
+                                             store=True, readonly=False,
+                                             help="If checked, the accrual period will be calculated according to the work days, not calendar days.")
     accrued_gain_time = fields.Selection([
         ("start", "At the start of the accrual period"),
         ("end", "At the end of the accrual period")],
@@ -62,7 +63,8 @@ class AccrualPlan(models.Model):
         ("nov", "November"),
         ("dec", "December")
     ], default="jan")
-    added_value_type = fields.Selection([('day', 'Days'), ('hour', 'Hours')], compute='_compute_added_value_type', store=True)
+    added_value_type = fields.Selection([('day', 'Days'), ('hour', 'Hours')], compute='_compute_added_value_type',
+                                        store=True)
 
     @api.depends('level_ids')
     def _compute_show_transition_mode(self):

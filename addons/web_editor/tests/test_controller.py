@@ -2,8 +2,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import binascii
 import json
-
 from io import BytesIO
+
 from PIL import Image
 
 from odoo.tests.common import HttpCase, new_test_user, tagged
@@ -127,13 +127,13 @@ class TestController(HttpCase):
         self.assertEqual('image/gif', mimetype, "Wrong mimetype")
         # Ensure image info can be retrieved.
         response = self.url_open('/web_editor/get_image_info',
-            headers={'Content-Type': 'application/json'},
-            data=json_safe.dumps({
-                "params": {
-                    "src": image_src,
-                }
-            }),
-        ).json()
+                                 headers={'Content-Type': 'application/json'},
+                                 data=json_safe.dumps({
+                                     "params": {
+                                         "src": image_src,
+                                     }
+                                 }),
+                                 ).json()
         self.assertEqual(attachment_id, response['result']['original']['id'], "Wrong id")
         self.assertEqual(image_src, response['result']['original']['image_src'], "Wrong image_src")
         self.assertEqual(mimetype, response['result']['original']['mimetype'], "Wrong mimetype")

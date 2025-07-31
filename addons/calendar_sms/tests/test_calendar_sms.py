@@ -2,8 +2,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import datetime, timedelta
-from odoo import fields
+
 from odoo.addons.sms.tests.common import SMSCommon
+
+from odoo import fields
 from odoo.tests import tagged
 
 
@@ -116,8 +118,8 @@ class TestCalendarSms(SMSCommon):
 
         self.assertEqual(len(self._sms), 3)
         self.assertSMS(self.partner_phone, self.partner_phone.phone_sanitized, 'pending',
-                        content=self.sms_template_1h.body)
+                       content=self.sms_template_1h.body)
         self.assertSMS(self.partner_phone_3, self.partner_phone_3.phone_sanitized, 'pending',
-                        content=self.sms_template_1h.body)
+                       content=self.sms_template_1h.body)
         self.assertSMS(self.partner_phone_2, self.partner_phone_2.phone_sanitized, 'pending',
-                        content=self.sms_template_24h.body)
+                       content=self.sms_template_24h.body)

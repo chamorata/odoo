@@ -5,7 +5,7 @@
         <field name="name">mailing.trace.view.search</field>
         <field name="model">mailing.trace</field>
         <field name="arch" type="xml">
-           <search string="Mail Statistics">
+            <search string="Mail Statistics">
                 <field name="mail_mail_id_int"/>
                 <field name="message_id"/>
                 <field name="email"/>
@@ -15,17 +15,23 @@
                 <filter string="Processing" name="filter_process" domain="[('trace_status', '=', 'process')]"/>
                 <filter string="Sent" name="filter_sent" domain="[('sent_datetime', '!=', False)]"/>
                 <filter string="Clicked" name="filter_clicked" domain="[('links_click_datetime', '!=', False)]"/>
-                <filter string="Delivered" name="filter_delivered" domain="[('sent_datetime', '!=', False), ('trace_status', 'not in', ['error', 'cancel', 'process', 'pending'])]"/>
+                <filter string="Delivered" name="filter_delivered"
+                        domain="[('sent_datetime', '!=', False), ('trace_status', 'not in', ['error', 'cancel', 'process', 'pending'])]"/>
                 <filter string="Opened" name="filter_opened" domain="[('trace_status', 'in', ['open', 'reply'])]"/>
                 <filter string="Replied" name="filter_replied" domain="[('trace_status', '=', 'reply')]"/>
                 <filter string="Bounced" name="filter_bounced" domain="[('trace_status', '=', 'bounce')]"/>
                 <filter string="Failed" name="filter_failed" domain="[('trace_status', '=', 'error')]"/>
                 <group expand="0" string="Group By">
                     <filter string="State" name="state" domain="[]" context="{'group_by': 'trace_status'}"/>
-                    <filter string="Open Date" name="group_open_date" domain="[('trace_status', 'in', ['open', 'reply'])]" context="{'group_by': 'open_datetime:day'}"/>
-                    <filter string="Reply Date" name="group_reply_date" domain="[('trace_status', '=', 'reply')]" context="{'group_by': 'reply_datetime:day'}"/>
-                    <filter string="Last State Update" name="state_update" domain="[]" context="{'group_by': 'write_date'}"/>
-                    <filter string="Mass Mailing" name="mass_mailing" domain="[]" context="{'group_by': 'mass_mailing_id'}"/>
+                    <filter string="Open Date" name="group_open_date"
+                            domain="[('trace_status', 'in', ['open', 'reply'])]"
+                            context="{'group_by': 'open_datetime:day'}"/>
+                    <filter string="Reply Date" name="group_reply_date" domain="[('trace_status', '=', 'reply')]"
+                            context="{'group_by': 'reply_datetime:day'}"/>
+                    <filter string="Last State Update" name="state_update" domain="[]"
+                            context="{'group_by': 'write_date'}"/>
+                    <filter string="Mass Mailing" name="mass_mailing" domain="[]"
+                            context="{'group_by': 'mass_mailing_id'}"/>
                 </group>
             </search>
         </field>
@@ -84,9 +90,9 @@
                     <div class="oe_button_box" name="button_box">
                         <button name="action_view_contact"
                                 type="object" icon="fa-user" class="oe_stat_button">
-                                <div class="o_field_widget o_stat_info">
-                                    <span class="o_stat_text">Open Recipient</span>
-                                </div>
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">Open Recipient</span>
+                            </div>
                         </button>
                     </div>
                     <group>
@@ -96,8 +102,8 @@
                             <field name="links_click_datetime" invisible="not links_click_datetime"/>
                             <field name="open_datetime" invisible="not open_datetime"/>
                             <field name="failure_reason"
-                                invisible="not failure_reason"
-                                class="o_text_overflow"/>
+                                   invisible="not failure_reason"
+                                   class="o_text_overflow"/>
                             <field name="reply_datetime" invisible="not reply_datetime"/>
                         </group>
                         <group string="Mailing">

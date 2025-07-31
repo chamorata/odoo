@@ -44,6 +44,8 @@ class SMSTemplatePreview(models.TransientModel):
     def _compute_sms_template_fields(self):
         for wizard in self:
             if wizard.sms_template_id and wizard.resource_ref:
-                wizard.body = wizard.sms_template_id._render_field('body', [wizard.resource_ref.id], set_lang=wizard.lang)[wizard.resource_ref.id]
+                wizard.body = \
+                wizard.sms_template_id._render_field('body', [wizard.resource_ref.id], set_lang=wizard.lang)[
+                    wizard.resource_ref.id]
             else:
                 wizard.body = wizard.sms_template_id.body

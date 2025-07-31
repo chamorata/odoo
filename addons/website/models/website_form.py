@@ -21,9 +21,13 @@ class website_form_model(models.Model):
     _description = 'Models'
     _inherit = 'ir.model'
 
-    website_form_access = fields.Boolean('Allowed to use in forms', help='Enable the form builder feature for this model.')
-    website_form_default_field_id = fields.Many2one('ir.model.fields', 'Field for custom form data', domain="[('model', '=', model), ('ttype', '=', 'text')]", help="Specify the field which will contain meta and custom form fields datas.")
-    website_form_label = fields.Char("Label for form action", help="Form action label. Ex: crm.lead could be 'Send an e-mail' and project.issue could be 'Create an Issue'.")
+    website_form_access = fields.Boolean('Allowed to use in forms',
+                                         help='Enable the form builder feature for this model.')
+    website_form_default_field_id = fields.Many2one('ir.model.fields', 'Field for custom form data',
+                                                    domain="[('model', '=', model), ('ttype', '=', 'text')]",
+                                                    help="Specify the field which will contain meta and custom form fields datas.")
+    website_form_label = fields.Char("Label for form action",
+                                     help="Form action label. Ex: crm.lead could be 'Send an e-mail' and project.issue could be 'Create an Issue'.")
     website_form_key = fields.Char(help='Used in FormBuilder Registry')
 
     def _get_form_writable_fields(self, property_origins=None):
@@ -92,14 +96,14 @@ class website_form_model(models.Model):
                         properties_definitions = definition_record[definition_record_field]
                         for property_definition in properties_definitions:
                             if ((
-                                property_definition['type'] in ['many2one', 'many2many']
-                                and 'comodel' not in property_definition
+                                    property_definition['type'] in ['many2one', 'many2many']
+                                    and 'comodel' not in property_definition
                             ) or (
-                                property_definition['type'] == 'selection'
-                                and not property_definition['selection']
+                                    property_definition['type'] == 'selection'
+                                    and not property_definition['selection']
                             ) or (
-                                property_definition['type'] == 'tags'
-                                and not property_definition['tags']
+                                    property_definition['type'] == 'tags'
+                                    and not property_definition['tags']
                             ) or (property_definition['type'] == 'separator')):
                                 # Ignore non-fully defined properties
                                 continue
@@ -110,7 +114,8 @@ class website_form_model(models.Model):
                             if 'domain' in property_definition and isinstance(property_definition['domain'], str):
                                 property_definition['domain'] = literal_eval(property_definition['domain'])
                                 try:
-                                    property_definition['domain'] = expression.normalize_domain(property_definition['domain'])
+                                    property_definition['domain'] = expression.normalize_domain(
+                                        property_definition['domain'])
                                 except Exception:
                                     # Ignore non-fully defined properties
                                     continue

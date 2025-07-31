@@ -3,14 +3,15 @@
 
 from datetime import datetime, timedelta, time
 
-from odoo.addons.base.tests.common import HttpCaseWithUserDemo, HttpCaseWithUserPortal
-from odoo.addons.base.tests.test_ir_cron import CronMixinCase
 from odoo.addons.event.tests.common import EventCase
 from odoo.addons.event_crm.tests.common import EventCrmCase
 from odoo.addons.mail.tests.common import mail_new_test_user, MailCommon
 from odoo.addons.sales_team.tests.common import TestSalesCommon
 from odoo.addons.sms.tests.common import SMSCase
 from odoo.addons.website.tests.test_website_visitor import MockVisitor
+
+from odoo.addons.base.tests.common import HttpCaseWithUserDemo, HttpCaseWithUserPortal
+from odoo.addons.base.tests.test_ir_cron import CronMixinCase
 
 
 class TestEventFullCommon(EventCrmCase, TestSalesCommon, MockVisitor):
@@ -100,25 +101,25 @@ class TestEventFullCommon(EventCrmCase, TestSalesCommon, MockVisitor):
             {'description': '<p>Standard</p>',
              'name': 'Standard',
              'product_id': cls.booth_product.id,
-            },
+             },
             {'description': '<p>Premium</p>',
              'name': 'Premium',
              'product_id': cls.booth_product.id,
              'price': 90,
-            }
+             }
         ])
 
         cls.sponsor_types = cls.env['event.sponsor.type'].create([
             {'name': 'GigaTop',
              'sequence': 1,
-            }
+             }
         ])
         cls.sponsor_partners = cls.env['res.partner'].create([
             {'country_id': cls.env.ref('base.be').id,
              'email': 'event.sponsor@example.com',
              'name': 'EventSponsor',
              'phone': '04856112233',
-            }
+             }
         ])
 
         # Event type
@@ -131,81 +132,83 @@ class TestEventFullCommon(EventCrmCase, TestSalesCommon, MockVisitor):
             'event_type_booth_ids': [
                 (0, 0, {'booth_category_id': cls.event_booth_categories[0].id,
                         'name': 'Standard Booth',
-                       }
-                ),
+                        }
+                 ),
                 (0, 0, {'booth_category_id': cls.event_booth_categories[0].id,
                         'name': 'Standard Booth 2',
-                       }
-                ),
+                        }
+                 ),
                 (0, 0, {'booth_category_id': cls.event_booth_categories[1].id,
                         'name': 'Premium Booth',
-                       }
-                ),
+                        }
+                 ),
                 (0, 0, {'booth_category_id': cls.event_booth_categories[1].id,
                         'name': 'Premium Booth 2',
-                       }
-                ),
+                        }
+                 ),
             ],
             'event_type_mail_ids': [
                 (0, 0, {'interval_unit': 'now',  # right at subscription
                         'interval_type': 'after_sub',
                         'template_ref': 'mail.template,%i' % subscription_template.id,
-                       }
-                ),
+                        }
+                 ),
                 (0, 0, {'interval_nbr': 1,  # 1 days before event
                         'interval_unit': 'days',
                         'interval_type': 'before_event',
-                        'template_ref': 'mail.template,%i' % cls.env['ir.model.data']._xmlid_to_res_id('event.event_reminder'),
-                       }
-                ),
+                        'template_ref': 'mail.template,%i' % cls.env['ir.model.data']._xmlid_to_res_id(
+                            'event.event_reminder'),
+                        }
+                 ),
                 (0, 0, {'interval_nbr': 1,  # 1 days after event
                         'interval_unit': 'days',
                         'interval_type': 'after_event',
-                        'template_ref': 'sms.template,%i' % cls.env['ir.model.data']._xmlid_to_res_id('event_sms.sms_template_data_event_reminder'),
-                       }
-                ),
+                        'template_ref': 'sms.template,%i' % cls.env['ir.model.data']._xmlid_to_res_id(
+                            'event_sms.sms_template_data_event_reminder'),
+                        }
+                 ),
             ],
             'event_type_ticket_ids': [
                 (0, 0, {'description': 'Ticket1 Description',
                         'name': 'Ticket1',
                         'product_id': cls.ticket_product.id,
                         'seats_max': 10,
-                       }
-                ),
+                        }
+                 ),
                 (0, 0, {'description': 'Ticket2 Description',
                         'name': 'Ticket2',
                         'product_id': cls.ticket_product.id,
                         'price': 45,
-                       }
-                )
+                        }
+                 )
             ],
             'has_seats_limitation': True,
             'name': 'Test Type',
             'note': '<p>Template note</p>',
             'question_ids': [
                 (0, 0, {'answer_ids':
-                        [(0, 0, {'name': 'Q1-Answer1'}),
-                         (0, 0, {'name': 'Q1-Answer2'}),
-                        ],
+                            [(0, 0, {'name': 'Q1-Answer1'}),
+                             (0, 0, {'name': 'Q1-Answer2'}),
+                             ],
                         'question_type': 'simple_choice',
                         'once_per_order': False,
                         'title': 'Question1',
-                       }
-                ),
+                        }
+                 ),
                 (0, 0, {'answer_ids':
-                        [(0, 0, {'name': 'Q2-Answer1'}),
-                         (0, 0, {'name': 'Q2-Answer2'}),
-                        ],
+                            [(0, 0, {'name': 'Q2-Answer1'}),
+                             (0, 0, {'name': 'Q2-Answer2'}),
+                             ],
                         'question_type': 'simple_choice',
                         'once_per_order': False,
                         'title': 'Question2',
-                       }
-                ),
+                        }
+                 ),
                 (0, 0, {'question_type': 'text_box',
                         'once_per_order': True,
                         'title': 'Question3',
-                       }
-                ),
+                        }
+                 ),
             ],
             'seats_max': 30,
             'tag_ids': [(4, tag.id) for tag in cls.tags],
@@ -256,7 +259,7 @@ class TestEventFullCommon(EventCrmCase, TestSalesCommon, MockVisitor):
              'name': f'My Customer {idx:02d}',
              'partner_id': False,
              'phone': f'04560000{idx:02d}',
-            } for idx in range(0, 10)
+             } for idx in range(0, 10)
         ]
         cls.website_customer_data = [
             {'email': f'website.email.{idx:02d}@test.example.com',
@@ -264,25 +267,25 @@ class TestEventFullCommon(EventCrmCase, TestSalesCommon, MockVisitor):
              'partner_id': cls.env.ref('base.public_partner').id,
              'phone': f'04560000{idx:02d}',
              'registration_answer_ids': [
-                (0, 0, {
-                    'question_id': cls.test_event.question_ids[0].id,
-                    'value_answer_id': cls.test_event.question_ids[0].answer_ids[(idx % 2)].id,
-                }), (0, 0, {
-                    'question_id': cls.test_event.question_ids[1].id,
-                    'value_answer_id': cls.test_event.question_ids[1].answer_ids[(idx % 2)].id,
-                }), (0, 0, {
-                    'question_id': cls.test_event.question_ids[2].id,
-                    'value_text_box': f'CustomerAnswer{idx}',
-                })
+                 (0, 0, {
+                     'question_id': cls.test_event.question_ids[0].id,
+                     'value_answer_id': cls.test_event.question_ids[0].answer_ids[(idx % 2)].id,
+                 }), (0, 0, {
+                     'question_id': cls.test_event.question_ids[1].id,
+                     'value_answer_id': cls.test_event.question_ids[1].answer_ids[(idx % 2)].id,
+                 }), (0, 0, {
+                     'question_id': cls.test_event.question_ids[2].id,
+                     'value_text_box': f'CustomerAnswer{idx}',
+                 })
              ],
-            } for idx in range(0, 10)
+             } for idx in range(0, 10)
         ]
         cls.partners = cls.env['res.partner'].create([
             {'email': f'partner.email.{idx:02d}@test.example.com',
              'name': f'PartnerCustomer {idx:02d}',
              'mobile': f'04569999{idx:02d}',
              'phone': f'04560000{idx:02d}',
-            } for idx in range(0, 10)
+             } for idx in range(0, 10)
         ])
 
     def assertLeadConvertion(self, rule, registrations, partner=None, **expected):

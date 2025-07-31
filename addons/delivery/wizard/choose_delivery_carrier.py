@@ -23,7 +23,8 @@ class ChooseDeliveryCarrier(models.TransientModel):
     display_price = fields.Float(string='Cost', readonly=True)
     currency_id = fields.Many2one('res.currency', related='order_id.currency_id')
     company_id = fields.Many2one('res.company', related='order_id.company_id')
-    available_carrier_ids = fields.Many2many("delivery.carrier", compute='_compute_available_carrier', string="Available Carriers")
+    available_carrier_ids = fields.Many2many("delivery.carrier", compute='_compute_available_carrier',
+                                             string="Available Carriers")
     invoicing_message = fields.Text(compute='_compute_invoicing_message')
     delivery_message = fields.Text(readonly=True)
     total_weight = fields.Float(string='Total Order Weight', related='order_id.shipping_weight', readonly=False)
@@ -61,8 +62,10 @@ class ChooseDeliveryCarrier(models.TransientModel):
     @api.depends('partner_id')
     def _compute_available_carrier(self):
         for rec in self:
-            carriers = self.env['delivery.carrier'].search(self.env['delivery.carrier']._check_company_domain(rec.order_id.company_id))
-            rec.available_carrier_ids = carriers.available_carriers(rec.order_id.partner_shipping_id, rec.order_id) if rec.partner_id else carriers
+            carriers = self.env['delivery.carrier'].search(
+                self.env['delivery.carrier']._check_company_domain(rec.order_id.company_id))
+            rec.available_carrier_ids = carriers.available_carriers(rec.order_id.partner_shipping_id,
+                                                                    rec.order_id) if rec.partner_id else carriers
 
     def _get_delivery_rate(self):
         vals = self.carrier_id.with_context(order_weight=self.total_weight).rate_shipment(self.order_id)

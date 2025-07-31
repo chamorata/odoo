@@ -12,7 +12,8 @@
     </t>
     <t t-name="website.cookies_bar.text_secondary">
         <p class="o_cookies_bar_text_secondary">
-            We use cookies to provide improved experience on this website. You can learn more about our cookies and how we use them in our <a href="/cookie-policy" class="o_cookies_bar_text_policy">Cookie Policy</a>.
+            We use cookies to provide improved experience on this website. You can learn more about our cookies and how we use them in our <a
+                href="/cookie-policy" class="o_cookies_bar_text_policy">Cookie Policy</a>.
         </p>
     </t>
     <t t-name="website.cookies_bar.text_button_all">
@@ -73,7 +74,8 @@
             <div class="container text-center">
                 <div class="row">
                     <div class="col-lg-12">
-                        <img t-attf-src="/web/image/website/#{websiteId}/logo/250x250" class="img img-fluid mb-4" alt="Website Logo"/>
+                        <img t-attf-src="/web/image/website/#{websiteId}/logo/250x250" class="img img-fluid mb-4"
+                             alt="Website Logo"/>
                         <t t-call="website.cookies_bar.text_title"/>
                         <t t-call="website.cookies_bar.text_primary"/>
                         <t t-call="website.cookies_bar.text_secondary"/>

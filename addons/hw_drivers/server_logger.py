@@ -1,12 +1,12 @@
-
 import logging
 import queue
-import requests
 import threading
 import time
-import urllib3.exceptions
 
+import requests
+import urllib3.exceptions
 from odoo.addons.hw_drivers.tools import helpers
+
 from odoo.netsvc import DBFormatter
 
 _logger = logging.getLogger(__name__)
@@ -51,7 +51,8 @@ class AsyncHTTPHandler(logging.Handler):
         self._active = is_active
         if self._active and self._odoo_server_url:
             # Start the thread to periodically flush logs
-            self._flush_thread = threading.Thread(target=self._periodic_flush, name="ThreadServerLogSender", daemon=True)
+            self._flush_thread = threading.Thread(target=self._periodic_flush, name="ThreadServerLogSender",
+                                                  daemon=True)
             self._flush_thread.start()
         else:
             self._flush_thread and self._flush_thread.join()  # let a last flush
@@ -99,10 +100,12 @@ class AsyncHTTPHandler(logging.Handler):
                 timeout=self._REQUEST_TIMEOUT
             ).raise_for_status()
             self._next_disconnection_time = None
-        except (requests.exceptions.ConnectTimeout, requests.exceptions.ConnectionError, urllib3.exceptions.NewConnectionError) as request_errors:
+        except (requests.exceptions.ConnectTimeout, requests.exceptions.ConnectionError,
+                urllib3.exceptions.NewConnectionError) as request_errors:
             now = time.time()
             if not self._next_disconnection_time or now >= self._next_disconnection_time:
-                _logger.info("Connection with the server to send the logs failed. It is likely down: %s", request_errors)
+                _logger.info("Connection with the server to send the logs failed. It is likely down: %s",
+                             request_errors)
                 self._next_disconnection_time = now + self._DELAY_BEFORE_NO_SERVER_LOG
         except Exception as _:
             _logger.exception('Unexpected error happened while sending logs to server')
@@ -148,7 +151,8 @@ def _server_log_sender_handler_filter(log_record):
 
     def _filter_frequent_irrelevant_calls():
         """Filter out this frequent irrelevant HTTP calls, to avoid spamming the server with useless logs"""
-        return log_record.name == 'werkzeug' and log_record.args and len(log_record.args) > 0 and log_record.args[0].startswith('GET /hw_proxy/hello ')
+        return log_record.name == 'werkzeug' and log_record.args and len(log_record.args) > 0 and log_record.args[
+            0].startswith('GET /hw_proxy/hello ')
 
     return not (_filter_my_logs() or _filter_frequent_irrelevant_calls())
 
@@ -157,7 +161,8 @@ def _server_log_sender_handler_filter(log_record):
 # The only other possible case is when the server URL value is "Cleared",
 # in this case we force close the log handler (as it does not make sense anymore)
 _server_log_sender_handler = AsyncHTTPHandler(helpers.get_odoo_server_url(), get_odoo_config_log_to_server_option())
-_server_log_sender_handler.setFormatter(DBFormatter('%(asctime)s %(pid)s %(levelname)s %(dbname)s %(name)s: %(message)s %(perf_info)s'))
+_server_log_sender_handler.setFormatter(
+    DBFormatter('%(asctime)s %(pid)s %(levelname)s %(dbname)s %(name)s: %(message)s %(perf_info)s'))
 _server_log_sender_handler.addFilter(_server_log_sender_handler_filter)
 # Set it in the 'root' logger, on which every logger (including odoo) is a child
 logging.getLogger().addHandler(_server_log_sender_handler)

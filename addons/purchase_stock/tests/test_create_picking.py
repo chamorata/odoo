@@ -5,6 +5,7 @@ from datetime import date, datetime, timedelta
 
 from odoo.addons.mail.tests.common import mail_new_test_user
 from odoo.addons.product.tests import common
+
 from odoo.tests import Form
 
 
@@ -67,7 +68,7 @@ class TestCreatePicking(common.TestProductCommon):
                 'product_qty': 5.0,
                 'product_uom': self.product_id_2.uom_po_id.id,
                 'price_unit': 250.0,
-                })]})
+            })]})
         self.assertEqual(self.po.incoming_picking_count, 2, 'New picking should be created')
         moves = self.po.order_line.mapped('move_ids').filtered(lambda x: x.state not in ('done', 'cancel'))
         self.assertEqual(len(moves), 1, 'One moves should have been created')
@@ -75,7 +76,7 @@ class TestCreatePicking(common.TestProductCommon):
     def test_01_check_double_validation(self):
 
         # make double validation two step
-        self.env.company.write({'po_double_validation': 'two_step','po_double_validation_amount':2000.00})
+        self.env.company.write({'po_double_validation': 'two_step', 'po_double_validation_amount': 2000.00})
 
         # Draft purchase order created
         self.po = self.env['purchase.order'].with_user(self.user_purchase_user).create(self.po_vals)
@@ -117,7 +118,8 @@ class TestCreatePicking(common.TestProductCommon):
         product = self.env['product.product'].create({
             'name': 'product',
             'is_storable': True,
-            'route_ids': [(4, self.ref('stock.route_warehouse0_mto')), (4, self.ref('purchase_stock.route_warehouse0_buy'))],
+            'route_ids': [(4, self.ref('stock.route_warehouse0_mto')),
+                          (4, self.ref('purchase_stock.route_warehouse0_buy'))],
             'seller_ids': [(6, 0, [seller.id])],
             'categ_id': self.env.ref('product.product_category_all').id,
             'supplier_taxes_id': [(6, 0, [])],
@@ -141,10 +143,14 @@ class TestCreatePicking(common.TestProductCommon):
 
         # Check purchase order line data.
         purchase_order_line = purchase_order.order_line
-        self.assertEqual(purchase_order_line.product_id, product, 'The product on the purchase order line is not correct.')
-        self.assertEqual(purchase_order_line.price_unit, seller.price, 'The purchase order line price should be the same as the seller.')
-        self.assertEqual(purchase_order_line.product_qty, customer_move.product_uom_qty, 'The purchase order line qty should be the same as the move.')
-        self.assertEqual(purchase_order_line.price_subtotal, 1200.0, 'The purchase order line subtotal should be equal to the move qty * seller price.')
+        self.assertEqual(purchase_order_line.product_id, product,
+                         'The product on the purchase order line is not correct.')
+        self.assertEqual(purchase_order_line.price_unit, seller.price,
+                         'The purchase order line price should be the same as the seller.')
+        self.assertEqual(purchase_order_line.product_qty, customer_move.product_uom_qty,
+                         'The purchase order line qty should be the same as the move.')
+        self.assertEqual(purchase_order_line.price_subtotal, 1200.0,
+                         'The purchase order line subtotal should be equal to the move qty * seller price.')
 
         purchase_order.button_cancel()
         self.assertEqual(purchase_order.state, 'cancel', 'Purchase order should be cancelled.')
@@ -174,8 +180,10 @@ class TestCreatePicking(common.TestProductCommon):
         picking.button_validate()
 
         # mts move will be automatically assigned
-        self.assertEqual(customer_move.state, 'assigned', 'Automatically assigned due to the incoming move makes it available.')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(product, stock_location), 0.0, 'Wrong quantity in stock.')
+        self.assertEqual(customer_move.state, 'assigned',
+                         'Automatically assigned due to the incoming move makes it available.')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(product, stock_location), 0.0,
+                         'Wrong quantity in stock.')
 
     def test_03_uom(self):
         """ Buy a dozen of products stocked in units. Check that the quantities on the purchase order
@@ -249,7 +257,8 @@ class TestCreatePicking(common.TestProductCommon):
         self.product_id_1 = self.env['product.product'].create({
             'name': 'ProductA',
             'is_storable': True,
-            'route_ids': [(4, self.ref('stock.route_warehouse0_mto')), (4, self.ref('purchase_stock.route_warehouse0_buy'))],
+            'route_ids': [(4, self.ref('stock.route_warehouse0_mto')),
+                          (4, self.ref('purchase_stock.route_warehouse0_buy'))],
             'seller_ids': [(6, 0, [seller.id])],
         })
 
@@ -324,7 +333,8 @@ class TestCreatePicking(common.TestProductCommon):
         product = self.env['product.product'].create({
             'name': 'product',
             'is_storable': True,
-            'route_ids': [(4, self.ref('stock.route_warehouse0_mto')), (4, self.ref('purchase_stock.route_warehouse0_buy'))],
+            'route_ids': [(4, self.ref('stock.route_warehouse0_mto')),
+                          (4, self.ref('purchase_stock.route_warehouse0_buy'))],
             'seller_ids': [(6, 0, [seller.id])],
             'categ_id': self.env.ref('product.product_category_all').id,
         })
@@ -354,9 +364,12 @@ class TestCreatePicking(common.TestProductCommon):
 
         # Check purchase order line data.
         purchase_order_line = purchase_order.order_line
-        self.assertEqual(purchase_order_line.product_id, product, 'The product on the purchase order line is not correct.')
-        self.assertEqual(purchase_order_line.price_unit, seller.price, 'The purchase order line price should be the same as the seller.')
-        self.assertEqual(purchase_order_line.product_qty, customer_move.product_uom_qty, 'The purchase order line qty should be the same as the move.')
+        self.assertEqual(purchase_order_line.product_id, product,
+                         'The product on the purchase order line is not correct.')
+        self.assertEqual(purchase_order_line.price_unit, seller.price,
+                         'The purchase order line price should be the same as the seller.')
+        self.assertEqual(purchase_order_line.product_qty, customer_move.product_uom_qty,
+                         'The purchase order line qty should be the same as the move.')
 
         purchase_order.button_confirm()
 
@@ -389,7 +402,8 @@ class TestCreatePicking(common.TestProductCommon):
         purchase_order_2.picking_ids.move_ids.picked = True
         purchase_order_2.picking_ids.button_validate()
 
-        self.assertEqual(sum(customer_picking.move_ids.mapped('quantity')), 100.0, 'The total quantity for the customer move should be available and reserved.')
+        self.assertEqual(sum(customer_picking.move_ids.mapped('quantity')), 100.0,
+                         'The total quantity for the customer move should be available and reserved.')
 
     def test_04_rounding(self):
         """ We set the Unit(s) rounding to 1.0 and ensure buying 1.2 units in a PO is rounded to 1.0
@@ -597,6 +611,7 @@ class TestCreatePicking(common.TestProductCommon):
         initial demand should also impact the initial move and the
         purchase order if it wasn't yet confirmed.
         """
+
         def create_run_procurement(product, product_qty, values=None):
             if not values:
                 values = {
@@ -627,7 +642,8 @@ class TestCreatePicking(common.TestProductCommon):
         product = self.env['product.product'].create({
             'name': 'product',
             'is_storable': True,
-            'route_ids': [(4, self.ref('stock.route_warehouse0_mto')), (4, self.ref('purchase_stock.route_warehouse0_buy'))],
+            'route_ids': [(4, self.ref('stock.route_warehouse0_mto')),
+                          (4, self.ref('purchase_stock.route_warehouse0_buy'))],
             'seller_ids': [(6, 0, [seller.id])],
             'categ_id': self.env.ref('product.product_category_all').id,
             'supplier_taxes_id': [(6, 0, [])],
@@ -649,31 +665,41 @@ class TestCreatePicking(common.TestProductCommon):
 
         # Check purchase order line data.
         purchase_order_line = purchase_order.order_line
-        self.assertEqual(purchase_order_line.product_id, product, 'The product on the purchase order line is not correct.')
-        self.assertEqual(purchase_order_line.product_qty, 50, 'The purchase order line qty should be the same as the move.')
+        self.assertEqual(purchase_order_line.product_id, product,
+                         'The product on the purchase order line is not correct.')
+        self.assertEqual(purchase_order_line.product_qty, 50,
+                         'The purchase order line qty should be the same as the move.')
 
         # Create procurement to decrease quantity in the initial move and the related RFQ.
         create_run_procurement(product, -10.00)
-        self.assertEqual(customer_move.product_uom_qty, 40, 'The demand on the initial move should have been decreased when merged with the procurement.')
-        self.assertEqual(purchase_order_line.product_qty, 40, 'The demand on the Purchase Order should have been decreased since it is still a RFQ.')
+        self.assertEqual(customer_move.product_uom_qty, 40,
+                         'The demand on the initial move should have been decreased when merged with the procurement.')
+        self.assertEqual(purchase_order_line.product_qty, 40,
+                         'The demand on the Purchase Order should have been decreased since it is still a RFQ.')
 
         # Create procurement to increase quantity on the initial move and the related RFQ.
         create_run_procurement(product, 5.00)
-        self.assertEqual(customer_move.product_uom_qty, 45, 'The demand on the initial move should have been increased when merged with the procurement.')
-        self.assertEqual(purchase_order_line.product_qty, 45, 'The demand on the Purchase Order should have been increased since it is still a RFQ.')
+        self.assertEqual(customer_move.product_uom_qty, 45,
+                         'The demand on the initial move should have been increased when merged with the procurement.')
+        self.assertEqual(purchase_order_line.product_qty, 45,
+                         'The demand on the Purchase Order should have been increased since it is still a RFQ.')
 
         purchase_order.button_confirm()
         # Create procurement to decrease quantity in the initial move but not the confirmed PO.
         create_run_procurement(product, -10.00)
-        self.assertEqual(customer_move.product_uom_qty, 35, 'The demand on the initial move should have been decreased when merged with the procurement.')
-        self.assertEqual(purchase_order_line.product_qty, 45, 'The demand on the Purchase Order should not have been decreased since it is has been confirmed.')
+        self.assertEqual(customer_move.product_uom_qty, 35,
+                         'The demand on the initial move should have been decreased when merged with the procurement.')
+        self.assertEqual(purchase_order_line.product_qty, 45,
+                         'The demand on the Purchase Order should not have been decreased since it is has been confirmed.')
         purchase_orders = self.env['purchase.order'].search([('partner_id', '=', partner.id)])
         self.assertEqual(len(purchase_orders), 1, 'No RFQ should have been created for a negative demand')
 
         # Create procurement to increase quantity on the initial move that will create a new move and a new RFQ for missing demand.
         create_run_procurement(product, 5.00)
-        self.assertEqual(customer_move.product_uom_qty, 35, 'The demand on the initial move should not have been increased since it should be a new move.')
-        self.assertEqual(purchase_order_line.product_qty, 45, 'The demand on the Purchase Order should not have been increased since it is has been confirmed.')
+        self.assertEqual(customer_move.product_uom_qty, 35,
+                         'The demand on the initial move should not have been increased since it should be a new move.')
+        self.assertEqual(purchase_order_line.product_qty, 45,
+                         'The demand on the Purchase Order should not have been increased since it is has been confirmed.')
         purchase_orders = self.env['purchase.order'].search([('partner_id', '=', partner.id)])
         self.assertEqual(len(purchase_orders), 2, 'A new RFQ should have been created for missing demand.')
 

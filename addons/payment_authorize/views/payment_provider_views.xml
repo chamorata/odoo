@@ -9,8 +9,10 @@
             <group name="provider_credentials" position='inside'>
                 <group invisible="code != 'authorize'">
                     <field name="authorize_login" required="code == 'authorize' and state != 'disabled'"/>
-                    <field name="authorize_transaction_key" password="True" required="code == 'authorize' and state != 'disabled'"/>
-                    <field name="authorize_signature_key" password="True" required="code == 'authorize' and state != 'disabled'"/>
+                    <field name="authorize_transaction_key" password="True"
+                           required="code == 'authorize' and state != 'disabled'"/>
+                    <field name="authorize_signature_key" password="True"
+                           required="code == 'authorize' and state != 'disabled'"/>
                     <label for="authorize_client_key"/>
                     <div class="o_row" col="2">
                         <field name="authorize_client_key"/>
@@ -18,7 +20,9 @@
                                 name="action_update_merchant_details"
                                 string="Generate Client Key"/>
                     </div>
-                    <widget colspan="2" name="documentation_link" path="/applications/finance/payment_providers/authorize.html" label="How to get paid with Authorize.Net"/>
+                    <widget colspan="2" name="documentation_link"
+                            path="/applications/finance/payment_providers/authorize.html"
+                            label="How to get paid with Authorize.Net"/>
                 </group>
             </group>
             <div name="available_currencies" position="inside">

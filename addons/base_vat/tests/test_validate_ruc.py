@@ -1,13 +1,14 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo.tests.common import TransactionCase, tagged
-from odoo._monkeypatches.stdnum import new_get_soap_client
-from odoo.exceptions import ValidationError
 from unittest.mock import patch
 
 import stdnum.eu.vat
 from lxml import etree
 from zeep import Client, Transport
 from zeep.wsdl import Document
+
+from odoo._monkeypatches.stdnum import new_get_soap_client
+from odoo.exceptions import ValidationError
+from odoo.tests.common import TransactionCase, tagged
 
 
 class TestStructure(TransactionCase):
@@ -97,7 +98,8 @@ class TestStructure(TransactionCase):
             test_partner.write({'vat': 'EU528003646', 'country_id': self.env.ref('base.be').id})
 
     def test_nif_de(self):
-        test_partner = self.env['res.partner'].create({'name': "Mein Company", 'country_id': self.env.ref('base.de').id})
+        test_partner = self.env['res.partner'].create(
+            {'name': "Mein Company", 'country_id': self.env.ref('base.de').id})
         # Set a valid VAT
         test_partner.write({'vat': "DE123456788"})
         # Set a valid German tax ID (steuernummer)
@@ -133,7 +135,8 @@ class TestStructure(TransactionCase):
             test_partner.vat = "2155 ABC 21750017"
 
     def test_vat_vn(self):
-        test_partner = self.env['res.partner'].create({'name': "DuongDepTrai", 'country_id': self.env.ref('base.vn').id})
+        test_partner = self.env['res.partner'].create(
+            {'name': "DuongDepTrai", 'country_id': self.env.ref('base.vn').id})
         # Valid vn vat
         test_partner.vat = "000012345679"  # individual
         test_partner.vat = "0123457890"  # enterprise

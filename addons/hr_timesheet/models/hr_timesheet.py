@@ -1,8 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+import re
 from collections import defaultdict
 from statistics import mode
-import re
 
 from odoo import api, fields, models
 from odoo.exceptions import UserError, AccessError, ValidationError
@@ -37,7 +37,10 @@ class AccountAnalyticLine(models.Model):
     def default_get(self, field_list):
         result = super(AccountAnalyticLine, self).default_get(field_list)
         if not self.env.context.get('default_employee_id') and 'employee_id' in field_list and result.get('user_id'):
-            result['employee_id'] = self.env['hr.employee'].search([('user_id', '=', result['user_id']), ('company_id', '=', result.get('company_id', self.env.company.id))], limit=1).id
+            result['employee_id'] = self.env['hr.employee'].search([('user_id', '=', result['user_id']),
+                                                                    ('company_id', '=',
+                                                                     result.get('company_id', self.env.company.id))],
+                                                                   limit=1).id
         if not self._context.get('default_project_id') and self._context.get('is_timesheet'):
             employee_id = result.get('employee_id', self.env.context.get('default_employee_id', False))
             favorite_project_id = self._get_favorite_project_id(employee_id)
@@ -49,8 +52,9 @@ class AccountAnalyticLine(models.Model):
         domain = [('allow_timesheets', '=', True)]
         if not self.env.user.has_group('hr_timesheet.group_timesheet_manager'):
             return expression.AND([domain,
-                ['|', ('privacy_visibility', '!=', 'followers'), ('message_partner_ids', 'in', [self.env.user.partner_id.id])]
-            ])
+                                   ['|', ('privacy_visibility', '!=', 'followers'),
+                                    ('message_partner_ids', 'in', [self.env.user.partner_id.id])]
+                                   ])
         return domain
 
     def _domain_employee_id(self):
@@ -69,15 +73,19 @@ class AccountAnalyticLine(models.Model):
         compute='_compute_project_id', store=True, readonly=False)
     user_id = fields.Many2one(compute='_compute_user_id', store=True, readonly=False)
     employee_id = fields.Many2one('hr.employee', "Employee", domain=_domain_employee_id, context={'active_test': False},
-        index=True, help="Define an 'hourly cost' on the employee to track the cost of their time.")
+                                  index=True,
+                                  help="Define an 'hourly cost' on the employee to track the cost of their time.")
     job_title = fields.Char(related='employee_id.job_title', export_string_translation=False)
-    department_id = fields.Many2one('hr.department', "Department", compute='_compute_department_id', store=True, compute_sudo=True)
+    department_id = fields.Many2one('hr.department', "Department", compute='_compute_department_id', store=True,
+                                    compute_sudo=True)
     manager_id = fields.Many2one('hr.employee', "Manager", related='employee_id.parent_id', store=True)
     encoding_uom_id = fields.Many2one('uom.uom', compute='_compute_encoding_uom_id', export_string_translation=False)
     partner_id = fields.Many2one(compute='_compute_partner_id', store=True, readonly=False)
-    readonly_timesheet = fields.Boolean(compute="_compute_readonly_timesheet", compute_sudo=True, export_string_translation=False)
+    readonly_timesheet = fields.Boolean(compute="_compute_readonly_timesheet", compute_sudo=True,
+                                        export_string_translation=False)
     milestone_id = fields.Many2one('project.milestone', related='task_id.milestone_id')
-    message_partner_ids = fields.Many2many('res.partner', compute='_compute_message_partner_ids', search='_search_message_partner_ids')
+    message_partner_ids = fields.Many2many('res.partner', compute='_compute_message_partner_ids',
+                                           search='_search_message_partner_ids')
 
     def _search_message_partner_ids(self, operator, value):
         followed_ids_by_model = dict(self.env['mail.followers']._read_group([
@@ -167,8 +175,8 @@ class AccountAnalyticLine(models.Model):
     def _check_can_write(self, values):
         # If it's a basic user then check if the timesheet is his own.
         if (
-            not (self.env.user.has_group('hr_timesheet.group_hr_timesheet_approver') or self.env.su)
-            and any(analytic_line.user_id != self.env.user for analytic_line in self)
+                not (self.env.user.has_group('hr_timesheet.group_hr_timesheet_approver') or self.env.su)
+                and any(analytic_line.user_id != self.env.user for analytic_line in self)
         ):
             raise AccessError(_("You cannot access timesheets that are not yours."))
 
@@ -219,7 +227,8 @@ class AccountAnalyticLine(models.Model):
         # 2/ Search all employees related to user_ids and employee_ids, in the selected companies
         HrEmployee_sudo = self.env['hr.employee'].sudo()
         employees = HrEmployee_sudo.search([
-            '&', '|', ('user_id', 'in', user_ids), ('id', 'in', employee_ids), ('company_id', 'in', self.env.companies.ids)
+            '&', '|', ('user_id', 'in', user_ids), ('id', 'in', employee_ids),
+            ('company_id', 'in', self.env.companies.ids)
         ])
 
         #                 ┌───── in search results = active/in companies ────────> was found with... ─── employee_id ───> (A) There is nothing to do, we will use this employee_id
@@ -248,21 +257,22 @@ class AccountAnalyticLine(models.Model):
                     company = HrEmployee_sudo.browse(employee_in_id).company_id
                     vals['company_id'] = company.id
                 if not vals.get('product_uom_id'):
-                    vals['product_uom_id'] = company.project_time_mode_id.id if company else self.env['res.company'].browse(vals.get('company_id', self.env.company.id)).project_time_mode_id.id
+                    vals['product_uom_id'] = company.project_time_mode_id.id if company else self.env[
+                        'res.company'].browse(vals.get('company_id', self.env.company.id)).project_time_mode_id.id
                 if employee_in_id in valid_employee_per_id:
-                    vals['user_id'] = valid_employee_per_id[employee_in_id].sudo().user_id.id   # (A) OK
+                    vals['user_id'] = valid_employee_per_id[employee_in_id].sudo().user_id.id  # (A) OK
                     continue
                 else:
-                    raise ValidationError(error_msg)                                            # (C) KO
+                    raise ValidationError(error_msg)  # (C) KO
             else:
-                user_id = vals.get('user_id', default_user_id)                                  # (B)...
+                user_id = vals.get('user_id', default_user_id)  # (B)...
 
             # ...Look for an employee, with ** conditions
             employee_per_company = employee_id_per_company_per_user.get(user_id)
             employee_out_id = False
             if employee_per_company:
-                company_id = list(employee_per_company)[0] if len(employee_per_company) == 1\
-                        else vals.get('company_id', self.env.company.id)
+                company_id = list(employee_per_company)[0] if len(employee_per_company) == 1 \
+                    else vals.get('company_id', self.env.company.id)
                 employee_out_id = employee_per_company.get(company_id, False)
 
             if employee_out_id:
@@ -273,7 +283,8 @@ class AccountAnalyticLine(models.Model):
                     company = HrEmployee_sudo.browse(employee_out_id).company_id
                     vals['company_id'] = company.id
                 if not vals.get('product_uom_id'):
-                    vals['product_uom_id'] = company.project_time_mode_id.id if company else self.env['res.company'].browse(vals.get('company_id', self.env.company.id)).project_time_mode_id.id
+                    vals['product_uom_id'] = company.project_time_mode_id.id if company else self.env[
+                        'res.company'].browse(vals.get('company_id', self.env.company.id)).project_time_mode_id.id
             else:  # ...and raise an error if they fail
                 raise ValidationError(error_msg)
 
@@ -328,7 +339,8 @@ class AccountAnalyticLine(models.Model):
                     if wip_report_id is None and re.search(r'widget="timesheet_uom(\w)*"', view_data['arch']):
                         wip_report_id = get_wip_report_id()
                     if wip_report_id:
-                        view_data['toolbar']['print'] = [print_data for print_data in print_data_list if print_data['id'] != wip_report_id]
+                        view_data['toolbar']['print'] = [print_data for print_data in print_data_list if
+                                                         print_data['id'] != wip_report_id]
         return res
 
     def _timesheet_get_portal_domain(self):
@@ -345,7 +357,8 @@ class AccountAnalyticLine(models.Model):
         if not project:
             return {}
         company = self.env['res.company'].browse(vals.get('company_id'))
-        mandatory_plans = [plan for plan in self._get_mandatory_plans(company, business_domain='timesheet') if plan['column_name'] != 'account_id']
+        mandatory_plans = [plan for plan in self._get_mandatory_plans(company, business_domain='timesheet') if
+                           plan['column_name'] != 'account_id']
         missing_plan_names = [plan['name'] for plan in mandatory_plans if not project[plan['column_name']]]
         if missing_plan_names:
             raise ValidationError(_(
@@ -388,7 +401,8 @@ class AccountAnalyticLine(models.Model):
                 accounts = timesheet._get_analytic_accounts()
                 companies = timesheet.company_id | accounts.company_id | timesheet.task_id.company_id | timesheet.project_id.company_id
                 if len(companies) > 1:
-                    raise ValidationError(_('The project, the task and the analytic accounts of the timesheet must belong to the same company.'))
+                    raise ValidationError(
+                        _('The project, the task and the analytic accounts of the timesheet must belong to the same company.'))
 
                 cost = timesheet._hourly_cost()
                 amount = -timesheet.unit_amount * cost

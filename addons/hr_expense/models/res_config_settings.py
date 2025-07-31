@@ -17,10 +17,11 @@ class ResConfigSettings(models.TransientModel):
         inverse='_inverse_hr_expense_alias_domain_id',
         readonly=False)
     hr_expense_use_mailgateway = fields.Boolean(string='Let your employees record expenses by email',
-                                             config_parameter='hr_expense.use_mailgateway')
+                                                config_parameter='hr_expense.use_mailgateway')
     module_hr_payroll_expense = fields.Boolean(string='Reimburse Expenses in Payslip')
     module_hr_expense_extract = fields.Boolean(string='Send bills to OCR to generate expenses')
-    expense_journal_id = fields.Many2one('account.journal', related='company_id.expense_journal_id', readonly=False, check_company=True, domain="[('type', '=', 'purchase')]")
+    expense_journal_id = fields.Many2one('account.journal', related='company_id.expense_journal_id', readonly=False,
+                                         check_company=True, domain="[('type', '=', 'purchase')]")
     expense_outstanding_account_id = fields.Many2one(
         comodel_name='account.account',
         related='company_id.expense_outstanding_account_id',

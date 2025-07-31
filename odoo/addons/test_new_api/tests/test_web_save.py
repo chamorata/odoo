@@ -1,7 +1,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo.tests.common import TransactionCase
-
 from odoo.addons.base.tests.test_mimetypes import SVG, JPG
+from odoo.tests.common import TransactionCase
 
 
 class TestWebSave(TransactionCase):
@@ -22,7 +21,6 @@ class TestWebSave(TransactionCase):
         person = self.env['test_new_api.person'].browse(result[0]['id'])
         self.assertTrue(person.exists())
         self.assertEqual(result, [{'id': person.id, 'display_name': 'ged'}])
-
 
     def test_web_save_write(self):
         ''' Test the web_save method on an existing record. '''

@@ -9,8 +9,8 @@
                 <label for="survey_id" groups="hr_recruitment.group_hr_recruitment_interviewer"/>
                 <div groups="hr_recruitment.group_hr_recruitment_interviewer">
                     <field name="survey_id"
-                        context="{'default_access_mode': 'token'}"
-                        domain="[('survey_type', '=', 'recruitment')]"/>
+                           context="{'default_access_mode': 'token'}"
+                           domain="[('survey_type', '=', 'recruitment')]"/>
                     <div class="o_link_trackers col-6 text-end">
                         <a type="object" name="action_test_survey">
                         </a>

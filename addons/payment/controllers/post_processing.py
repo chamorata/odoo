@@ -11,7 +11,6 @@ _logger = logging.getLogger(__name__)
 
 
 class PaymentPostProcessing(http.Controller):
-
     """
     This controller is responsible for the monitoring and finalization of the post-processing of
     transactions.
@@ -52,7 +51,7 @@ class PaymentPostProcessing(http.Controller):
             try:
                 monitored_tx._post_process()
             except (
-                psycopg2.OperationalError, psycopg2.IntegrityError
+                    psycopg2.OperationalError, psycopg2.IntegrityError
             ):  # The database cursor could not be committed.
                 request.env.cr.rollback()  # Rollback and try later.
                 raise Exception('retry')

@@ -1,6 +1,7 @@
 import logging
 
 from odoo.addons.auth_totp.tests.test_totp import TestTOTPMixin
+
 from odoo.addons.base.tests.common import HttpCaseWithUserPortal
 from odoo.tests import tagged
 
@@ -12,6 +13,7 @@ class TestTOTPortal(HttpCaseWithUserPortal, TestTOTPMixin):
     """
     Largely replicates TestTOTP
     """
+
     def test_totp(self):
         self.install_totphook()
 

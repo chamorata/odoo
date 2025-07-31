@@ -13,9 +13,12 @@ class LunchOrder(models.Model):
     _display_name = 'product_id'
 
     name = fields.Char(related='product_id.name', string="Product Name", readonly=True)
-    topping_ids_1 = fields.Many2many('lunch.topping', 'lunch_order_topping', 'order_id', 'topping_id', string='Extras 1', domain=[('topping_category', '=', 1)])
-    topping_ids_2 = fields.Many2many('lunch.topping', 'lunch_order_topping', 'order_id', 'topping_id', string='Extras 2', domain=[('topping_category', '=', 2)])
-    topping_ids_3 = fields.Many2many('lunch.topping', 'lunch_order_topping', 'order_id', 'topping_id', string='Extras 3', domain=[('topping_category', '=', 3)])
+    topping_ids_1 = fields.Many2many('lunch.topping', 'lunch_order_topping', 'order_id', 'topping_id',
+                                     string='Extras 1', domain=[('topping_category', '=', 1)])
+    topping_ids_2 = fields.Many2many('lunch.topping', 'lunch_order_topping', 'order_id', 'topping_id',
+                                     string='Extras 2', domain=[('topping_category', '=', 2)])
+    topping_ids_3 = fields.Many2many('lunch.topping', 'lunch_order_topping', 'order_id', 'topping_id',
+                                     string='Extras 3', domain=[('topping_category', '=', 3)])
     product_id = fields.Many2one('lunch.product', string="Product", required=True)
     category_id = fields.Many2one(
         string='Product Category', related='product_id.category_id', store=True)
@@ -33,9 +36,9 @@ class LunchOrder(models.Model):
     price = fields.Monetary('Total Price', compute='_compute_total_price', readonly=True, store=True)
     active = fields.Boolean('Active', default=True)
     state = fields.Selection([('new', 'To Order'),
-                              ('ordered', 'Ordered'),       # "Internally" ordered
-                              ('sent', 'Sent'),             # Order sent to the supplier
-                              ('confirmed', 'Received'),    # Order received
+                              ('ordered', 'Ordered'),  # "Internally" ordered
+                              ('sent', 'Sent'),  # Order sent to the supplier
+                              ('confirmed', 'Received'),  # Order received
                               ('cancelled', 'Cancelled')],
                              'Status', readonly=True, index=True, default='new')
     notified = fields.Boolean(default=False)
@@ -55,9 +58,12 @@ class LunchOrder(models.Model):
     image_1920 = fields.Image(compute='_compute_product_images')
     image_128 = fields.Image(compute='_compute_product_images')
 
-    available_toppings_1 = fields.Boolean(help='Are extras available for this product', compute='_compute_available_toppings')
-    available_toppings_2 = fields.Boolean(help='Are extras available for this product', compute='_compute_available_toppings')
-    available_toppings_3 = fields.Boolean(help='Are extras available for this product', compute='_compute_available_toppings')
+    available_toppings_1 = fields.Boolean(help='Are extras available for this product',
+                                          compute='_compute_available_toppings')
+    available_toppings_2 = fields.Boolean(help='Are extras available for this product',
+                                          compute='_compute_available_toppings')
+    available_toppings_3 = fields.Boolean(help='Are extras available for this product',
+                                          compute='_compute_available_toppings')
     display_reorder_button = fields.Boolean(compute='_compute_display_reorder_button')
     display_add_button = fields.Boolean(compute='_compute_display_add_button')
 
@@ -70,9 +76,12 @@ class LunchOrder(models.Model):
     @api.depends('category_id')
     def _compute_available_toppings(self):
         for order in self:
-            order.available_toppings_1 = bool(order.env['lunch.topping'].search_count([('supplier_id', '=', order.supplier_id.id), ('topping_category', '=', 1)]))
-            order.available_toppings_2 = bool(order.env['lunch.topping'].search_count([('supplier_id', '=', order.supplier_id.id), ('topping_category', '=', 2)]))
-            order.available_toppings_3 = bool(order.env['lunch.topping'].search_count([('supplier_id', '=', order.supplier_id.id), ('topping_category', '=', 3)]))
+            order.available_toppings_1 = bool(order.env['lunch.topping'].search_count(
+                [('supplier_id', '=', order.supplier_id.id), ('topping_category', '=', 1)]))
+            order.available_toppings_2 = bool(order.env['lunch.topping'].search_count(
+                [('supplier_id', '=', order.supplier_id.id), ('topping_category', '=', 2)]))
+            order.available_toppings_3 = bool(order.env['lunch.topping'].search_count(
+                [('supplier_id', '=', order.supplier_id.id), ('topping_category', '=', 3)]))
 
     @api.depends('name')
     def _compute_display_add_button(self):
@@ -114,7 +123,8 @@ class LunchOrder(models.Model):
                 order.order_deadline_passed = False
 
     def init(self):
-        self._cr.execute("""CREATE INDEX IF NOT EXISTS lunch_order_user_product_date ON %s (user_id, product_id, date)"""
+        self._cr.execute(
+            """CREATE INDEX IF NOT EXISTS lunch_order_user_product_date ON %s (user_id, product_id, date)"""
             % self._table)
 
     def _get_topping_ids(self, field, values):
@@ -220,12 +230,14 @@ class LunchOrder(models.Model):
         if values.get('state'):
             domain = AND([domain, [('state', '=', values['state'])]])
         toppings = values.get('toppings', [])
-        return self.search(domain).filtered(lambda line: (line.topping_ids_1 | line.topping_ids_2 | line.topping_ids_3).ids == toppings)
+        return self.search(domain).filtered(
+            lambda line: (line.topping_ids_1 | line.topping_ids_2 | line.topping_ids_3).ids == toppings)
 
     @api.depends('topping_ids_1', 'topping_ids_2', 'topping_ids_3', 'product_id', 'quantity')
     def _compute_total_price(self):
         for line in self:
-            line.price = line.quantity * (line.product_id.price + sum((line.topping_ids_1 | line.topping_ids_2 | line.topping_ids_3).mapped('price')))
+            line.price = line.quantity * (line.product_id.price + sum(
+                (line.topping_ids_1 | line.topping_ids_2 | line.topping_ids_3).mapped('price')))
 
     @api.depends('topping_ids_1', 'topping_ids_2', 'topping_ids_3')
     def _compute_display_toppings(self):
@@ -254,7 +266,8 @@ class LunchOrder(models.Model):
         self.env.flush_all()
         for line in self:
             if self.env['lunch.cashmove'].get_wallet_balance(line.user_id) < 0:
-                raise ValidationError(_('Your wallet does not contain enough money to order that. To add some money to your wallet, please contact your lunch manager.'))
+                raise ValidationError(
+                    _('Your wallet does not contain enough money to order that. To add some money to your wallet, please contact your lunch manager.'))
 
     def action_order(self):
         for order in self:
@@ -304,7 +317,8 @@ class LunchOrder(models.Model):
             _key = (order.company_id, user.lang)
             if _key not in translate_cache:
                 context = {'lang': user.lang}
-                translate_cache[_key] = (_('Lunch notification'), order.company_id.with_context(lang=user.lang).lunch_notify_message)
+                translate_cache[_key] = (_('Lunch notification'),
+                                         order.company_id.with_context(lang=user.lang).lunch_notify_message)
                 del context
             subject, body = translate_cache[_key]
             user.partner_id.message_notify(

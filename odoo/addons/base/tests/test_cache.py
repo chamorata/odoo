@@ -3,12 +3,12 @@
 
 import os
 import platform
-import psutil
 import unittest
+
+import psutil
 
 from odoo.addons.base.tests.common import TransactionCaseWithUserDemo
 from odoo.exceptions import CacheMiss
-from odoo.tests.common import TransactionCase
 
 
 class TestRecordCache(TransactionCaseWithUserDemo):
@@ -99,7 +99,7 @@ class TestRecordCache(TransactionCaseWithUserDemo):
         check(bar2, None, None)
 
     @unittest.skipIf(
-        not(platform.system() == 'Linux' and platform.machine() == 'x86_64'),
+        not (platform.system() == 'Linux' and platform.machine() == 'x86_64'),
         "This test only makes sense on 64-bit Linux-like systems",
     )
     def test_memory(self):
@@ -126,5 +126,5 @@ class TestRecordCache(TransactionCaseWithUserDemo):
         mem_usage = process.memory_info().rss - rss0
         self.assertLess(
             mem_usage, MAX_MEMORY * 1024 * 1024,
-            "Caching %s records must take less than %sMB of memory" % (NB_RECORDS, MAX_MEMORY),
+                       "Caching %s records must take less than %sMB of memory" % (NB_RECORDS, MAX_MEMORY),
         )

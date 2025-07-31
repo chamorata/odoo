@@ -7,17 +7,18 @@
             '|',
             '|',
             '|',
-                ('moderator_ids', 'in', user.id),
-                ('access_mode', '=', 'public'),
-                '&amp;',
-                    ('access_mode', '=', 'groups'),
-                    ('access_group_id', 'in', user.groups_id.ids),
-                '&amp;',
-                    ('access_mode', '=', 'members'),
-                    ('member_partner_ids', 'in', [user.partner_id.id]),
+            ('moderator_ids', 'in', user.id),
+            ('access_mode', '=', 'public'),
+            '&amp;',
+            ('access_mode', '=', 'groups'),
+            ('access_group_id', 'in', user.groups_id.ids),
+            '&amp;',
+            ('access_mode', '=', 'members'),
+            ('member_partner_ids', 'in', [user.partner_id.id]),
             ]
         </field>
-        <field name="groups" eval="[(4, ref('base.group_user')), (4, ref('base.group_portal')), (4, ref('base.group_public'))]"/>
+        <field name="groups"
+               eval="[(4, ref('base.group_user')), (4, ref('base.group_portal')), (4, ref('base.group_public'))]"/>
         <field name="perm_create" eval="False"/>
         <field name="perm_read" eval="True"/>
         <field name="perm_write" eval="False"/>
@@ -48,18 +49,18 @@
         <field name="model_id" ref="model_mail_group_message"/>
         <field name="domain_force">[
             '&amp;',
-                ('moderation_status', '=', 'accepted'),
-                '|',
-                '|',
-                '|',
-                    ('mail_group_id.moderator_ids', 'in', user.id),
-                    ('mail_group_id.access_mode', '=', 'public'),
-                    '&amp;',
-                        ('mail_group_id.access_mode', '=', 'groups'),
-                        ('mail_group_id.access_group_id', 'in', user.groups_id.ids),
-                    '&amp;',
-                        ('mail_group_id.access_mode', '=', 'members'),
-                        ('mail_group_id.member_partner_ids', 'in', [user.partner_id.id]),
+            ('moderation_status', '=', 'accepted'),
+            '|',
+            '|',
+            '|',
+            ('mail_group_id.moderator_ids', 'in', user.id),
+            ('mail_group_id.access_mode', '=', 'public'),
+            '&amp;',
+            ('mail_group_id.access_mode', '=', 'groups'),
+            ('mail_group_id.access_group_id', 'in', user.groups_id.ids),
+            '&amp;',
+            ('mail_group_id.access_mode', '=', 'members'),
+            ('mail_group_id.member_partner_ids', 'in', [user.partner_id.id]),
             ]
         </field>
         <field name="groups" eval="[(4, ref('base.group_public')), (4, ref('base.group_portal'))]"/>
@@ -72,21 +73,21 @@
         <field name="name">Mail Group Message: Non-accepted messages are accessible only by moderators</field>
         <field name="model_id" ref="model_mail_group_message"/>
         <field name="domain_force">[
-                '&amp;',
-                    '|',
-                        ('moderation_status', '=', 'accepted'),
-                        ('mail_group_id.moderator_ids', 'in', user.id),
-                    '|',
-                    '|',
-                    '|',
-                        ('mail_group_id.moderator_ids', 'in', user.id),
-                        ('mail_group_id.access_mode', '=', 'public'),
-                        '&amp;',
-                            ('mail_group_id.access_mode', '=', 'groups'),
-                            ('mail_group_id.access_group_id', 'in', user.groups_id.ids),
-                        '&amp;',
-                            ('mail_group_id.access_mode', '=', 'members'),
-                            ('mail_group_id.member_partner_ids', 'in', [user.partner_id.id]),
+            '&amp;',
+            '|',
+            ('moderation_status', '=', 'accepted'),
+            ('mail_group_id.moderator_ids', 'in', user.id),
+            '|',
+            '|',
+            '|',
+            ('mail_group_id.moderator_ids', 'in', user.id),
+            ('mail_group_id.access_mode', '=', 'public'),
+            '&amp;',
+            ('mail_group_id.access_mode', '=', 'groups'),
+            ('mail_group_id.access_group_id', 'in', user.groups_id.ids),
+            '&amp;',
+            ('mail_group_id.access_mode', '=', 'members'),
+            ('mail_group_id.member_partner_ids', 'in', [user.partner_id.id]),
             ]
         </field>
         <field name="groups" eval="[(4, ref('base.group_user'))]"/>

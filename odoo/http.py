@@ -129,7 +129,6 @@ endpoint
 """
 
 import base64
-import collections
 import collections.abc
 import contextlib
 import functools
@@ -180,8 +179,10 @@ import werkzeug.wsgi
 from werkzeug.urls import URL, url_parse, url_encode, url_quote
 from werkzeug.exceptions import (HTTPException, BadRequest, Forbidden,
                                  NotFound, InternalServerError)
+
 try:
     from werkzeug.middleware.proxy_fix import ProxyFix as ProxyFix_
+
     ProxyFix = functools.partial(ProxyFix_, x_for=1, x_proto=1, x_host=1)
 except ImportError:
     from werkzeug.contrib.fixers import ProxyFix
@@ -204,9 +205,7 @@ from .tools.facade import Proxy, ProxyAttr, ProxyFunc
 from .tools._vendor import sessions
 from .tools._vendor.useragents import UserAgent
 
-
 _logger = logging.getLogger(__name__)
-
 
 # =========================================================
 # Const
@@ -224,6 +223,7 @@ CSRF_TOKEN_SALT = 60 * 60 * 24 * 365
 # The default lang to use when the browser doesn't specify it
 DEFAULT_LANG = 'en_US'
 
+
 # The dictionary to initialise a new session with.
 def get_default_session():
     return {
@@ -235,6 +235,7 @@ def get_default_session():
         'session_token': None,
         '_trace': [],
     }
+
 
 DEFAULT_MAX_CONTENT_LENGTH = 128 * 1024 * 1024  # 128MiB
 
@@ -327,7 +328,7 @@ def content_disposition(filename, disposition_type='attachment'):
         raise ValueError(e)
     return "{}; filename*=UTF-8''{}".format(
         disposition_type,
-        url_quote(filename, safe='', unsafe='()<>@,;:"/[]?={}\\*\'%') # RFC6266
+        url_quote(filename, safe='', unsafe='()<>@,;:"/[]?={}\\*\'%')  # RFC6266
     )
 
 
@@ -376,7 +377,7 @@ def db_filter(dbs, host=None):
 
         dbfilter_re = re.compile(
             config["dbfilter"].replace("%h", re.escape(host))
-                              .replace("%d", re.escape(domain)))
+            .replace("%d", re.escape(domain)))
         return [db for db in dbs if dbfilter_re.match(db)]
 
     if config['db_name']:
@@ -547,11 +548,11 @@ class Stream:
             return file.read()
 
     def get_response(
-        self,
-        as_attachment=None,
-        immutable=None,
-        content_security_policy="default-src 'none'",
-        **send_file_kwargs
+            self,
+            as_attachment=None,
+            immutable=None,
+            content_security_policy="default-src 'none'",
+            **send_file_kwargs
     ):
         """
         Create the corresponding :class:`~Response` for the current stream.
@@ -732,6 +733,7 @@ def route(route=None, **routing):
         Implement a custom behavior if an error occurred when retrieving the record
         from the URL parameters (access error or missing error).
     """
+
     def decorator(endpoint):
         fname = f"<function {endpoint.__module__}.{endpoint.__name__}>"
 
@@ -759,6 +761,7 @@ def route(route=None, **routing):
         route_wrapper.original_routing = routing
         route_wrapper.original_endpoint = endpoint
         return route_wrapper
+
     return decorator
 
 
@@ -770,6 +773,7 @@ def _generate_routing_rules(modules, nodb_only, converters=None):
     arguments of said method with the @route arguments of the method it
     overrides.
     """
+
     def is_valid(cls):
         """ Determine if the class is defined in an addon. """
         path = cls.__module__.split('.')
@@ -809,7 +813,7 @@ def _generate_routing_rules(modules, nodb_only, converters=None):
 
             name = top_ctrl.__name__
             if leaf_controllers != [top_ctrl]:
-                name += ' (extended by %s)' %  ', '.join(
+                name += ' (extended by %s)' % ', '.join(
                     bot_ctrl.__name__
                     for bot_ctrl in leaf_controllers
                     if bot_ctrl is not top_ctrl
@@ -825,6 +829,7 @@ def _generate_routing_rules(modules, nodb_only, converters=None):
             # the hierarchy
             def is_method_a_route(cls):
                 return getattr(getattr(cls, method_name, None), 'original_routing', None) is not None
+
             if not any(map(is_method_a_route, type(ctrl).mro())):
                 continue
 
@@ -841,7 +846,8 @@ def _generate_routing_rules(modules, nodb_only, converters=None):
                 submethod = getattr(cls, method_name)
 
                 if not hasattr(submethod, 'original_routing'):
-                    _logger.warning("The endpoint %s is not decorated by @route(), decorating it myself.", f'{cls.__module__}.{cls.__name__}.{method_name}')
+                    _logger.warning("The endpoint %s is not decorated by @route(), decorating it myself.",
+                                    f'{cls.__module__}.{cls.__name__}.{method_name}')
                     submethod = route()(submethod)
 
                 _check_and_complete_route_definition(cls, submethod, merged_routing)
@@ -849,7 +855,8 @@ def _generate_routing_rules(modules, nodb_only, converters=None):
                 merged_routing.update(submethod.original_routing)
 
             if not merged_routing['routes']:
-                _logger.warning("%s is a controller endpoint without any route, skipping.", f'{cls.__module__}.{cls.__name__}.{method_name}')
+                _logger.warning("%s is a controller endpoint without any route, skipping.",
+                                f'{cls.__module__}.{cls.__name__}.{method_name}')
                 continue
 
             if nodb_only and merged_routing['auth'] != "none":
@@ -910,6 +917,7 @@ _session_identifier_re = re.compile(r'^[A-Za-z0-9_-]{42}$')
 
 class FilesystemSessionStore(sessions.FilesystemSessionStore):
     """ Place where to load and save session objects. """
+
     def get_session_filename(self, sid):
         # scatter sessions across 4096 (64^2) directories
         if not self.is_valid_key(sid):
@@ -1280,6 +1288,7 @@ class GeoIP(collections.abc.Mapping):
 _request_stack = werkzeug.local.LocalStack()
 request = _request_stack()
 
+
 @contextlib.contextmanager
 def borrow_request():
     """ Get the current request and unexpose it from the local stack. """
@@ -1314,7 +1323,8 @@ class HTTPRequest:
         self.environ = self.headers.environ = {
             key: value
             for key, value in self.__environ.items()
-            if (not key.startswith(('werkzeug.', 'wsgi.', 'socket')) or key in ['wsgi.url_scheme', 'werkzeug.proxy_fix.orig'])
+            if (not key.startswith(('werkzeug.', 'wsgi.', 'socket')) or key in ['wsgi.url_scheme',
+                                                                                'werkzeug.proxy_fix.orig'])
         }
 
     def __enter__(self):
@@ -1418,7 +1428,8 @@ class _Response(werkzeug.wrappers.Response):
             self.response.append(self.render())
             self.template = None
 
-    def set_cookie(self, key, value='', max_age=None, expires=-1, path='/', domain=None, secure=False, httponly=False, samesite=None, cookie_type='required'):
+    def set_cookie(self, key, value='', max_age=None, expires=-1, path='/', domain=None, secure=False, httponly=False,
+                   samesite=None, cookie_type='required'):
         """
         The default expires in Werkzeug is None, which means a session cookie.
         We want to continue to support the session cookie, but not by default.
@@ -1430,7 +1441,8 @@ class _Response(werkzeug.wrappers.Response):
 
         if request.db and not request.env['ir.http']._is_allowed_cookie(cookie_type):
             max_age = 0
-        super().set_cookie(key, value=value, max_age=max_age, expires=expires, path=path, domain=domain, secure=secure, httponly=httponly, samesite=samesite)
+        super().set_cookie(key, value=value, max_age=max_age, expires=expires, path=path, domain=domain, secure=secure,
+                           httponly=httponly, samesite=samesite)
 
 
 class Headers(Proxy):
@@ -1582,13 +1594,15 @@ class FutureResponse:
         return self.charset
 
     @functools.wraps(werkzeug.Response.set_cookie)
-    def set_cookie(self, key, value='', max_age=None, expires=-1, path='/', domain=None, secure=False, httponly=False, samesite=None, cookie_type='required'):
+    def set_cookie(self, key, value='', max_age=None, expires=-1, path='/', domain=None, secure=False, httponly=False,
+                   samesite=None, cookie_type='required'):
         if expires == -1:  # not forced value -> default value -> 1 year
             expires = datetime.now() + timedelta(days=365)
 
         if request.db and not request.env['ir.http']._is_allowed_cookie(cookie_type):
             max_age = 0
-        werkzeug.Response.set_cookie(self, key, value=value, max_age=max_age, expires=expires, path=path, domain=domain, secure=secure, httponly=httponly, samesite=samesite)
+        werkzeug.Response.set_cookie(self, key, value=value, max_age=max_age, expires=expires, path=path, domain=domain,
+                                     secure=secure, httponly=httponly, samesite=samesite)
 
 
 class Request:
@@ -1601,7 +1615,7 @@ class Request:
         self.httprequest = httprequest
         self.future_response = FutureResponse()
         self.dispatcher = _dispatchers['http'](self)  # until we match
-        #self.params = {}  # set by the Dispatcher
+        # self.params = {}  # set by the Dispatcher
 
         self.geoip = GeoIP(httprequest.remote_addr)
         self.registry = None
@@ -1969,19 +1983,21 @@ class Request:
 
         cookie_sid = self.cookies.get('session_id')
         if sess.is_dirty or cookie_sid != sess.sid:
-            self.future_response.set_cookie('session_id', sess.sid, max_age=get_session_max_inactivity(self.env), httponly=True)
+            self.future_response.set_cookie('session_id', sess.sid, max_age=get_session_max_inactivity(self.env),
+                                            httponly=True)
 
     def _set_request_dispatcher(self, rule):
         routing = rule.endpoint.routing
         dispatcher_cls = _dispatchers[routing['type']]
         if (not is_cors_preflight(self, rule.endpoint)
-            and not dispatcher_cls.is_compatible_with(self)):
+                and not dispatcher_cls.is_compatible_with(self)):
             compatible_dispatchers = [
                 disp.routing_type
                 for disp in _dispatchers.values()
                 if disp.is_compatible_with(self)
             ]
-            raise BadRequest(f"Request inferred type is compatible with {compatible_dispatchers} but {routing['routes'][0]!r} is type={routing['type']!r}.")
+            raise BadRequest(
+                f"Request inferred type is compatible with {compatible_dispatchers} but {routing['routes'][0]!r} is type={routing['type']!r}.")
         self.dispatcher = dispatcher_cls(self)
 
     # =====================================================
@@ -1994,8 +2010,8 @@ class Request:
             directory = root.statics[module]
             filepath = werkzeug.security.safe_join(directory, path)
             debug = (
-                'assets' in self.session.debug and
-                ' wkhtmltopdf ' not in self.httprequest.user_agent.string
+                    'assets' in self.session.debug and
+                    ' wkhtmltopdf ' not in self.httprequest.user_agent.string
             )
             res = Stream.from_path(filepath, public=True).get_response(
                 max_age=0 if debug else STATIC_CACHE,
@@ -2140,6 +2156,7 @@ class Request:
 
 _dispatchers = {}
 
+
 class Dispatcher(ABC):
     routing_type: str
 
@@ -2270,14 +2287,15 @@ class HttpDispatcher(Dispatcher):
             response = self.request.redirect_query('/web/login', {'redirect': self.request.httprequest.full_path})
             if was_connected:
                 root.session_store.rotate(session, self.request.env)
-                response.set_cookie('session_id', session.sid, max_age=get_session_max_inactivity(self.env), httponly=True)
+                response.set_cookie('session_id', session.sid, max_age=get_session_max_inactivity(self.env),
+                                    httponly=True)
             return response
 
         return (exc if isinstance(exc, HTTPException)
-           else Forbidden(exc.args[0]) if isinstance(exc, (AccessDenied, AccessError))
-           else BadRequest(exc.args[0]) if isinstance(exc, UserError)
-           else InternalServerError()  # hide the real error
-        )
+                else Forbidden(exc.args[0]) if isinstance(exc, (AccessDenied, AccessError))
+        else BadRequest(exc.args[0]) if isinstance(exc, UserError)
+        else InternalServerError()  # hide the real error
+                )
 
 
 class JsonRPCDispatcher(Dispatcher):
@@ -2352,9 +2370,9 @@ class JsonRPCDispatcher(Dispatcher):
         """
         error = {
             'code': 200,  # this code is the JSON-RPC level code, it is
-                          # distinct from the HTTP status code. This
-                          # code is ignored and the value 200 (while
-                          # misleading) is totally arbitrary.
+            # distinct from the HTTP status code. This
+            # code is ignored and the value 200 (while
+            # misleading) is totally arbitrary.
             'message': "Odoo Server Error",
             'data': serialize_exception(exc),
         }
@@ -2383,6 +2401,7 @@ class JsonRPCDispatcher(Dispatcher):
 
 class Application:
     """ Odoo WSGI application """
+
     # See also: https://www.python.org/dev/peps/pep-3333
 
     @lazy_property
@@ -2472,7 +2491,7 @@ class Application:
         try:
             return geoip2.database.Reader(config['geoip_country_db'])
         except (OSError, maxminddb.InvalidDatabaseError) as exc:
-            _logger.debug("Couldn't load Geoip Country file (%s). Fallbacks on Geoip City.", exc,)
+            _logger.debug("Couldn't load Geoip Country file (%s). Fallbacks on Geoip City.", exc, )
             raise
 
     def set_csp(self, response):
@@ -2513,8 +2532,10 @@ class Application:
             # environ, see https://github.com/pallets/werkzeug/pull/2184
             def fake_app(environ, start_response):
                 return []
+
             def fake_start_response(status, headers):
                 return
+
             ProxyFix(fake_app)(environ, fake_start_response)
 
         with HTTPRequest(environ) as httprequest:
@@ -2536,9 +2557,9 @@ class Application:
                         request.db = None
                         request.session.logout()
                         if (httprequest.path.startswith('/odoo/')
-                            or httprequest.path in (
-                                '/odoo', '/web', '/web/login', '/test_http/ensure_db',
-                            )):
+                                or httprequest.path in (
+                                        '/odoo', '/web', '/web/login', '/test_http/ensure_db',
+                                )):
                             # ensure_db() protected routes, remove ?db= from the query string
                             args_nodb = request.httprequest.args.copy()
                             args_nodb.pop('db', None)

@@ -10,16 +10,18 @@
             <xpath expr="//page[@name='public']" position="after">
                 <page string="Received Badges" name="received_badges" invisible="not user_id">
                     <field name="has_badges" invisible="1"/>
-                    <button string="Grant a Badge" type="action" name="%(action_reward_wizard)d"/> to reward this employee for a good action
+                    <button string="Grant a Badge" type="action" name="%(action_reward_wizard)d"/>
+                    to reward this employee for a good action
                     <div class="o_field_nocontent mt-2" invisible="has_badges">
                         <p>
                             Grant this employee his first badge
-                        </p><p class="oe_grey">
+                        </p>
+                        <p class="oe_grey">
                             Badges are rewards of good work. Give them to people you believe deserve it.
                         </p>
                     </div>
                     <div class="mt-2">
-                        <field name="badge_ids" mode="kanban" />
+                        <field name="badge_ids" mode="kanban"/>
                     </div>
                 </page>
             </xpath>
@@ -36,11 +38,13 @@
             <xpath expr="//page[@name='public']" position="after">
                 <page string="Received Badges" name="received_badges" invisible="not user_id">
                     <field name="has_badges" invisible="1"/>
-                    <button string="Grant a Badge" type="action" name="%(action_reward_wizard)d"/> to reward this employee for a good action
+                    <button string="Grant a Badge" type="action" name="%(action_reward_wizard)d"/>
+                    to reward this employee for a good action
                     <div class="o_field_nocontent" invisible="has_badges">
                         <p>
                             Grant this employee his first badge
-                        </p><p class="oe_grey">
+                        </p>
+                        <p class="oe_grey">
                             Badges are rewards of good work. Give them to people you believe deserve it.
                         </p>
                     </div>

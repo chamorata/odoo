@@ -10,6 +10,7 @@ class TestResUsers(TransactionCase):
         user. Ensure that when creating a new user, its calendar default privacy will
         have the same value as defined in the template.
         """
+
         def create_user(name, login, email, privacy=None):
             vals = {'name': name, 'login': login, 'email': email}
             if privacy is not None:

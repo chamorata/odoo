@@ -1,11 +1,10 @@
-
 from unittest.mock import patch
-
-from odoo import Command
-from odoo.tests import tagged
 
 from odoo.addons.account.models.chart_template import AccountChartTemplate
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
+from odoo import Command
+from odoo.tests import tagged
 
 
 def _get_chart_template_mapping(self, get_all=False):
@@ -120,6 +119,7 @@ def data_method_provider(chart_template_name, country_code):
                 }
             },
         }
+
     return test_data_getter
 
 
@@ -134,10 +134,10 @@ def _tax_vals(name, amount, external_id_prefix, cash_basis=False, account_on_rep
         'repartition_line_ids': [
             Command.create({'document_type': 'invoice', 'factor_percent': 100, 'repartition_type': 'base'}),
             Command.create({'document_type': 'invoice', 'factor_percent': 100, 'repartition_type': 'tax',
-                           'account_id': f'{external_id_prefix}test_account_tax_recoverable_template' if account_on_repartition else False}),
+                            'account_id': f'{external_id_prefix}test_account_tax_recoverable_template' if account_on_repartition else False}),
             Command.create({'document_type': 'refund', 'factor_percent': 100, 'repartition_type': 'base'}),
             Command.create({'document_type': 'refund', 'factor_percent': 100, 'repartition_type': 'tax',
-                           'account_id': f'{external_id_prefix}test_account_tax_recoverable_template' if account_on_repartition else False}),
+                            'account_id': f'{external_id_prefix}test_account_tax_recoverable_template' if account_on_repartition else False}),
         ]
     }
 
@@ -245,7 +245,8 @@ class TestMultiVAT(AccountTestInvoicingCommon):
             with self.subTest(xml_id=xml_id):
                 record = self.env["account.chart.template"].ref(xml_id, raise_if_not_found=False)
                 for i, child in enumerate(record.children_tax_ids):
-                    child_tax = self.env["account.chart.template"].ref(children_taxes[xml_id][i], raise_if_not_found=False)
+                    child_tax = self.env["account.chart.template"].ref(children_taxes[xml_id][i],
+                                                                       raise_if_not_found=False)
                     self.assertEqual(child.id, child_tax.id)
 
     def test_multivat_cash_basis(self):
@@ -253,7 +254,8 @@ class TestMultiVAT(AccountTestInvoicingCommon):
             def caba_data_getter(self, template_code):
                 rslt = data_getter(self, template_code)
 
-                rslt['account.tax']['es.caba_0_tax'] = _tax_vals("Dudu 0", 0, 'es', cash_basis=True, account_on_repartition=False)
+                rslt['account.tax']['es.caba_0_tax'] = _tax_vals("Dudu 0", 0, 'es', cash_basis=True,
+                                                                 account_on_repartition=False)
                 rslt['account.tax']['es.caba_42_tax'] = _tax_vals("Dudu 42", 42, 'es', cash_basis=True)
 
                 return rslt
@@ -277,4 +279,5 @@ class TestMultiVAT(AccountTestInvoicingCommon):
             self.assertEqual(tax.tax_exigibility, 'on_payment')
             self.assertEqual(tax.cash_basis_transition_account_id.code, '411005')
 
-        self.assertTrue(self.env.company.tax_exigibility, "Creating foreign cash basis taxes should enable the cash basis setting on the company.")
+        self.assertTrue(self.env.company.tax_exigibility,
+                        "Creating foreign cash basis taxes should enable the cash basis setting on the company.")

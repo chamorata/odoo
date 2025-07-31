@@ -2,12 +2,13 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
 
-from odoo.tests.common import TransactionCase, new_test_user
-from odoo.tests import Form
-from odoo import fields, Command
+from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
+
+from odoo import fields, Command
+from odoo.tests import Form
+from odoo.tests.common import TransactionCase, new_test_user
 
 
 class TestEventNotifications(TransactionCase):
@@ -97,7 +98,8 @@ class TestEventNotifications(TransactionCase):
         self.event.partner_ids -= self.partner
         self.assertEqual(attendee, self.event.attendee_ids, "It should not have re-created an attendee record")
         self.assertNotIn(self.partner, self.event.attendee_ids.partner_id, "It should have removed the attendee")
-        self.assertNotIn(self.partner, self.event.message_follower_ids.partner_id, "It should have unsubscribed the partner")
+        self.assertNotIn(self.partner, self.event.message_follower_ids.partner_id,
+                         "It should have unsubscribed the partner")
         self.assertIn(partner_bis, self.event.attendee_ids.partner_id, "It should have left the attendee")
 
     def test_attendee_without_email(self):
@@ -146,7 +148,7 @@ class TestEventNotifications(TransactionCase):
         attendee = self.env['res.partner'].create({
             'name': "Xavier",
             'email': "xavier@example.com",
-            })
+        })
         event = self.env['calendar.event'].create({
             'name': "Doom's day",
             'attendee_ids': [Command.create({'partner_id': attendee.id})],

@@ -1,10 +1,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.portal.controllers.mail import PortalChatter
 from werkzeug.exceptions import NotFound, Forbidden
 
 from odoo import http
 from odoo.http import request
-from odoo.addons.portal.controllers.mail import PortalChatter
 from odoo.tools import plaintext2html, html2plaintext
 
 
@@ -19,7 +19,7 @@ class SlidesPortalChatter(PortalChatter):
 
     @http.route([
         '/slides/mail/update_comment',
-        ], type='json', auth="user", methods=['POST'])
+    ], type='json', auth="user", methods=['POST'])
     def mail_update_message(self, thread_model, thread_id, message_id, post_data, **post):
         # keep this mechanism intern to slide currently (saas 12.5) as it is
         # considered experimental
@@ -74,6 +74,7 @@ class SlidesPortalChatter(PortalChatter):
             'default_rating_value': message.rating_value,
             'rating_avg': channel.rating_avg,
             'rating_count': channel.rating_count,
-            'default_attachment_ids': message.attachment_ids.sudo().read(['id', 'name', 'mimetype', 'file_size', 'access_token']),
+            'default_attachment_ids': message.attachment_ids.sudo().read(
+                ['id', 'name', 'mimetype', 'file_size', 'access_token']),
             'force_submit_url': '/slides/mail/update_comment',
         }

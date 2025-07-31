@@ -1,10 +1,10 @@
 import logging
 import urllib.parse
 
-from odoo import api, fields, models, modules
-from odoo.exceptions import UserError
 from odoo.addons.l10n_tr_nilvera.lib.nilvera_client import _get_nilvera_client
 
+from odoo import api, fields, models, modules
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -64,7 +64,8 @@ class ResPartner(models.Model):
             return
 
         with _get_nilvera_client(self.env.company) as client:
-            response = client.request("GET", "/general/GlobalCompany/Check/TaxNumber/" + urllib.parse.quote(self.vat), handle_response=False)
+            response = client.request("GET", "/general/GlobalCompany/Check/TaxNumber/" + urllib.parse.quote(self.vat),
+                                      handle_response=False)
             if response.status_code == 200:
                 query_result = response.json()
 

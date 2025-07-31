@@ -1,5 +1,5 @@
-
 from odoo.tests import common
+
 
 class TestRelatedReadGroup(common.TransactionCase):
 

@@ -24,7 +24,9 @@
                 </field>
             </record>
             <record id="tds_report_line_section_192a" model="account.report.line">
-                <field name="name">Section 192A: Payment of accumulated balance of provident fund which is taxable in the hands of an employee</field>
+                <field name="name">Section 192A: Payment of accumulated balance of provident fund which is taxable in
+                    the hands of an employee
+                </field>
                 <field name="expression_ids">
                     <record id="tds_report_line_section_192a_tag" model="account.report.expression">
                         <field name="label">balance</field>
@@ -54,7 +56,9 @@
                 </field>
             </record>
             <record id="tds_report_line_section_194a" model="account.report.line">
-                <field name="name">Section 194A: Income by way of interest other than &quot;Interest on securities&quot;</field>
+                <field name="name">Section 194A: Income by way of interest other than &quot;Interest on
+                    securities&quot;
+                </field>
                 <field name="expression_ids">
                     <record id="tds_report_line_section_194a_tag" model="account.report.expression">
                         <field name="label">balance</field>
@@ -64,7 +68,9 @@
                 </field>
             </record>
             <record id="tds_report_line_section_194b" model="account.report.line">
-                <field name="name">Section 194B: Income by way of winnings from lotteries, crossword puzzles, card games and other games of any sort</field>
+                <field name="name">Section 194B: Income by way of winnings from lotteries, crossword puzzles, card games
+                    and other games of any sort
+                </field>
                 <field name="expression_ids">
                     <record id="tds_report_line_section_194b_tag" model="account.report.expression">
                         <field name="label">balance</field>
@@ -134,7 +140,9 @@
                 </field>
             </record>
             <record id="tds_report_line_section_194f" model="account.report.line">
-                <field name="name">Section 194F: Payment on account of repurchase of unit by Mutual Fund or Unit Trust of India</field>
+                <field name="name">Section 194F: Payment on account of repurchase of unit by Mutual Fund or Unit Trust
+                    of India
+                </field>
                 <field name="expression_ids">
                     <record id="tds_report_line_section_194f_tag" model="account.report.expression">
                         <field name="label">balance</field>
@@ -174,7 +182,9 @@
                 </field>
             </record>
             <record id="tds_report_line_section_194ia" model="account.report.line">
-                <field name="name">Section 194-IA: Payment on transfer of certain immovable property other than agricultural land</field>
+                <field name="name">Section 194-IA: Payment on transfer of certain immovable property other than
+                    agricultural land
+                </field>
                 <field name="expression_ids">
                     <record id="tds_report_line_section_194ia_tag" model="account.report.expression">
                         <field name="label">balance</field>
@@ -194,7 +204,9 @@
                 </field>
             </record>
             <record id="tds_report_line_section_194ic" model="account.report.line">
-                <field name="name">Section 194-IC: Payment of monetary consideration under Joint Development Agreements</field>
+                <field name="name">Section 194-IC: Payment of monetary consideration under Joint Development
+                    Agreements
+                </field>
                 <field name="expression_ids">
                     <record id="tds_report_line_section_194ic_tag" model="account.report.expression">
                         <field name="label">balance</field>
@@ -224,7 +236,8 @@
                 </field>
             </record>
             <record id="tds_report_line_section_194la" model="account.report.line">
-                <field name="name">Section 194LA: Payment of compensation on acquisition of certain immovable property</field>
+                <field name="name">Section 194LA: Payment of compensation on acquisition of certain immovable property
+                </field>
                 <field name="expression_ids">
                     <record id="tds_report_line_section_194la_tag" model="account.report.expression">
                         <field name="label">balance</field>
@@ -234,7 +247,10 @@
                 </field>
             </record>
             <record id="tds_report_line_section_194lba" model="account.report.line">
-                <field name="name">Section 194LBA(1): Business trust shall deduct tax while distributing, any interest received or receivable by it from a SPV or any income received from renting or leasing or letting out any real estate asset owned directly by it, to its unit holders.</field>
+                <field name="name">Section 194LBA(1): Business trust shall deduct tax while distributing, any interest
+                    received or receivable by it from a SPV or any income received from renting or leasing or letting
+                    out any real estate asset owned directly by it, to its unit holders.
+                </field>
                 <field name="expression_ids">
                     <record id="tds_report_line_section_194lba_tag" model="account.report.expression">
                         <field name="label">balance</field>
@@ -254,7 +270,9 @@
                 </field>
             </record>
             <record id="tds_report_line_section_194lbb" model="account.report.line">
-                <field name="name">Section 194LBB: Investment fund paying an income to a unit holder [other than income which is exempt under Section 10(23FBB)]</field>
+                <field name="name">Section 194LBB: Investment fund paying an income to a unit holder [other than income
+                    which is exempt under Section 10(23FBB)]
+                </field>
                 <field name="expression_ids">
                     <record id="tds_report_line_section_194lbb_tag" model="account.report.expression">
                         <field name="label">balance</field>
@@ -264,7 +282,9 @@
                 </field>
             </record>
             <record id="tds_report_line_section_194lbc" model="account.report.line">
-                <field name="name">Section 194LBC: Income in respect of investment made in a securitisation trust (specified in Explanation of section115TCA)</field>
+                <field name="name">Section 194LBC: Income in respect of investment made in a securitisation trust
+                    (specified in Explanation of section115TCA)
+                </field>
                 <field name="expression_ids">
                     <record id="tds_report_line_section_194lbc_tag" model="account.report.expression">
                         <field name="label">balance</field>
@@ -274,7 +294,10 @@
                 </field>
             </record>
             <record id="tds_report_line_section_194m" model="account.report.line">
-                <field name="name">Section 194M: Payment of commission (not being insurance commission), brokerage, contractual fee, professional fee to a resident person by an Individual or a HUF who are not liable to deduct TDS under section 194C, 194H, or 194J.</field>
+                <field name="name">Section 194M: Payment of commission (not being insurance commission), brokerage,
+                    contractual fee, professional fee to a resident person by an Individual or a HUF who are not liable
+                    to deduct TDS under section 194C, 194H, or 194J.
+                </field>
                 <field name="expression_ids">
                     <record id="tds_report_line_section_194m_tag" model="account.report.expression">
                         <field name="label">balance</field>
@@ -284,7 +307,10 @@
                 </field>
             </record>
             <record id="tds_report_line_section_194n" model="account.report.line">
-                <field name="name">Section 194N: Cash withdrawal during the previous year from one or more account maintained by a person with a banking company, co-operative society engaged in business of banking or a post office</field>
+                <field name="name">Section 194N: Cash withdrawal during the previous year from one or more account
+                    maintained by a person with a banking company, co-operative society engaged in business of banking
+                    or a post office
+                </field>
                 <field name="expression_ids">
                     <record id="tds_report_line_section_194n_tag" model="account.report.expression">
                         <field name="label">balance</field>
@@ -294,7 +320,9 @@
                 </field>
             </record>
             <record id="tds_report_line_section_194o" model="account.report.line">
-                <field name="name">Section 194-O: Payment or credit of amount by the e-commerce operator to e-commerce participant</field>
+                <field name="name">Section 194-O: Payment or credit of amount by the e-commerce operator to e-commerce
+                    participant
+                </field>
                 <field name="expression_ids">
                     <record id="tds_report_line_section_194o_tag" model="account.report.expression">
                         <field name="label">balance</field>

@@ -26,10 +26,10 @@ class IrBinary(models.AbstractModel):
 
     def _find_record_check_access(self, record, access_token, field):
         if (
-            'website_published' in record._fields
-            and field in record._fields
-            and not record._fields[field].groups
-            and record.sudo().website_published
+                'website_published' in record._fields
+                and field in record._fields
+                and not record._fields[field].groups
+                and record.sudo().website_published
         ):
             return record.sudo()
 

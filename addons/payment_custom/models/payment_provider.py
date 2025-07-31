@@ -1,9 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.payment_custom import const
+
 from odoo import _, api, fields, models
 from odoo.osv.expression import AND
-
-from odoo.addons.payment_custom import const
 
 
 class PaymentProvider(models.Model):
@@ -44,12 +44,12 @@ class PaymentProvider(models.Model):
                 ]).bank_account_id
                 account_names = "".join(f"<li><pre>{account.display_name}</pre></li>" for account in accounts)
                 provider.pending_msg = f'<div>' \
-                    f'<h5>{_("Please use the following transfer details")}</h5>' \
-                    f'<p><br></p>' \
-                    f'<h6>{_("Bank Account") if len(accounts) == 1 else _("Bank Accounts")}</h6>' \
-                    f'<ul>{account_names}</ul>'\
-                    f'<p><br></p>' \
-                    f'</div>'
+                                       f'<h5>{_("Please use the following transfer details")}</h5>' \
+                                       f'<p><br></p>' \
+                                       f'<h6>{_("Bank Account") if len(accounts) == 1 else _("Bank Accounts")}</h6>' \
+                                       f'<ul>{account_names}</ul>' \
+                                       f'<p><br></p>' \
+                                       f'</div>'
 
     @api.model
     def _get_removal_domain(self, provider_code, custom_mode='', **kwargs):

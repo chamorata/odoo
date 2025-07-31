@@ -2,10 +2,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import datetime
+
 from freezegun import freeze_time
+from odoo.addons.mass_mailing.tests.common import MassMailCommon
 
 from odoo.addons.base.tests.test_ir_cron import CronMixinCase
-from odoo.addons.mass_mailing.tests.common import MassMailCommon
 from odoo.tests import users, Form
 from odoo.tools import mute_logger
 
@@ -20,7 +21,7 @@ class TestMailingScheduleDateWizard(MassMailCommon, CronMixinCase):
         # launch cron job before its schedule nextcall datetime (if scheduled_date < nextcall)
 
         cron_job = self.env.ref('mass_mailing.ir_cron_mass_mailing_queue').sudo()
-        cron_job.write({'nextcall' : datetime(2023, 2, 18, 9, 0)})
+        cron_job.write({'nextcall': datetime(2023, 2, 18, 9, 0)})
         cron_job_id = cron_job.id
 
         # case where user click on "Send" button (action_launch)
@@ -30,7 +31,7 @@ class TestMailingScheduleDateWizard(MassMailCommon, CronMixinCase):
                     'name': 'mailing',
                     'subject': 'some subject',
                     'mailing_model_id': self.env['ir.model']._get('res.partner').id,
-                    'state' : 'draft'
+                    'state': 'draft'
                 })
                 mailing.action_launch()
             capt.records.ensure_one()
@@ -40,7 +41,7 @@ class TestMailingScheduleDateWizard(MassMailCommon, CronMixinCase):
             self.assertIsNot(mailing.schedule_date, cron_job.nextcall)
             self.assertEqual(mailing.schedule_type, 'now')
             self.assertEqual(mailing.state, 'in_queue')
-            self.assertEqual(capt.records.call_at, datetime(2023, 2, 17, 9, 0)) #verify that cron.trigger exists
+            self.assertEqual(capt.records.call_at, datetime(2023, 2, 17, 9, 0))  # verify that cron.trigger exists
 
         # case where client uses schedule wizard to chose a date between now and cron.job nextcall
         with freeze_time(datetime(2023, 2, 17, 9, 0)):
@@ -49,9 +50,9 @@ class TestMailingScheduleDateWizard(MassMailCommon, CronMixinCase):
                     'name': 'mailing',
                     'subject': 'some subject',
                     'mailing_model_id': self.env['ir.model']._get('res.partner').id,
-                    'state' : 'draft',
-                    'schedule_date' : datetime(2023, 2, 17, 11, 0),
-                    'schedule_type' : 'scheduled'
+                    'state': 'draft',
+                    'schedule_date': datetime(2023, 2, 17, 11, 0),
+                    'schedule_type': 'scheduled'
                 })
                 mailing.action_schedule()
             capt.records.ensure_one()
@@ -60,7 +61,7 @@ class TestMailingScheduleDateWizard(MassMailCommon, CronMixinCase):
             self.assertEqual(mailing.next_departure, datetime(2023, 2, 17, 11, 0))
             self.assertEqual(mailing.schedule_type, 'scheduled')
             self.assertEqual(mailing.state, 'in_queue')
-            self.assertEqual(capt.records.call_at, datetime(2023, 2, 17, 11, 0)) #verify that cron.trigger exists
+            self.assertEqual(capt.records.call_at, datetime(2023, 2, 17, 11, 0))  # verify that cron.trigger exists
 
         # case where client uses schedule wizard to chose a date after cron.job nextcall
         # which means mails will get send after that date (datetime(2023, 2, 18, 9, 0))
@@ -70,9 +71,9 @@ class TestMailingScheduleDateWizard(MassMailCommon, CronMixinCase):
                     'name': 'mailing',
                     'subject': 'some subject',
                     'mailing_model_id': self.env['ir.model']._get('res.partner').id,
-                    'state' : 'draft',
-                    'schedule_date' : datetime(2024, 2, 17, 11, 0),
-                    'schedule_type' : 'scheduled'
+                    'state': 'draft',
+                    'schedule_date': datetime(2024, 2, 17, 11, 0),
+                    'schedule_type': 'scheduled'
                 })
                 mailing.action_schedule()
             capt.records.ensure_one()
@@ -81,7 +82,7 @@ class TestMailingScheduleDateWizard(MassMailCommon, CronMixinCase):
             self.assertEqual(mailing.next_departure, datetime(2024, 2, 17, 11, 0))
             self.assertEqual(mailing.schedule_type, 'scheduled')
             self.assertEqual(mailing.state, 'in_queue')
-            self.assertEqual(capt.records.call_at, datetime(2024, 2, 17, 11, 0)) #verify that cron.trigger exists
+            self.assertEqual(capt.records.call_at, datetime(2024, 2, 17, 11, 0))  # verify that cron.trigger exists
 
         # case where client uses schedule wizard to chose a date in the past
         with freeze_time(datetime(2023, 2, 17, 9, 0)):
@@ -90,9 +91,9 @@ class TestMailingScheduleDateWizard(MassMailCommon, CronMixinCase):
                     'name': 'mailing',
                     'subject': 'some subject',
                     'mailing_model_id': self.env['ir.model']._get('res.partner').id,
-                    'state' : 'draft',
-                    'schedule_date' : datetime(2024, 2, 17, 11, 0),
-                    'schedule_type' : 'scheduled'
+                    'state': 'draft',
+                    'schedule_date': datetime(2024, 2, 17, 11, 0),
+                    'schedule_type': 'scheduled'
                 })
                 # create a schedule date wizard
                 # Have to use wizard for this case to simulate schedule date in the past
@@ -109,10 +110,10 @@ class TestMailingScheduleDateWizard(MassMailCommon, CronMixinCase):
             capt.records.ensure_one()
 
             self.assertEqual(mailing.schedule_date, datetime(2022, 2, 17, 11, 0))
-            self.assertEqual(mailing.next_departure, datetime(2023, 2, 17, 9, 0)) #now
+            self.assertEqual(mailing.next_departure, datetime(2023, 2, 17, 9, 0))  # now
             self.assertEqual(mailing.schedule_type, 'scheduled')
             self.assertEqual(mailing.state, 'in_queue')
-            self.assertEqual(capt.records.call_at, datetime(2022, 2, 17, 11, 0)) #verify that cron.trigger exists
+            self.assertEqual(capt.records.call_at, datetime(2022, 2, 17, 11, 0))  # verify that cron.trigger exists
 
     def test_mailing_schedule_date(self):
         mailing = self.env['mailing.mailing'].create({

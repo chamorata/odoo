@@ -1,9 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from freezegun import freeze_time
 from lxml import etree
-
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.addons.l10n_my_edi.tests.test_file_generation import NS_MAP
+
 from odoo.tests import Form, tagged
 
 
@@ -19,7 +19,8 @@ class L10nMyEDITestFileGeneration(AccountTestInvoicingCommon):
         cls.company_data['company'].write({
             'vat': 'C2584563200',
             'l10n_my_edi_mode': 'test',
-            'l10n_my_edi_industrial_classification': cls.env['l10n_my_edi.industry_classification'].search([('code', '=', '01111')]).id,
+            'l10n_my_edi_industrial_classification': cls.env['l10n_my_edi.industry_classification'].search(
+                [('code', '=', '01111')]).id,
             'l10n_my_identification_type': 'BRN',
             'l10n_my_identification_number': '202001234567',
             'state_id': cls.env.ref('base.state_my_jhr').id,
@@ -37,7 +38,8 @@ class L10nMyEDITestFileGeneration(AccountTestInvoicingCommon):
             'city': 'Main city',
             'phone': '+60123456785',
             'l10n_my_edi_malaysian_tin': 'EI00000000020',
-            'l10n_my_edi_industrial_classification': cls.env.ref('l10n_my_edi.class_00000', raise_if_not_found=False).id,
+            'l10n_my_edi_industrial_classification': cls.env.ref('l10n_my_edi.class_00000',
+                                                                 raise_if_not_found=False).id,
         })
         cls.product_a.l10n_my_edi_classification_code = "001"
 
@@ -64,9 +66,13 @@ class L10nMyEDITestFileGeneration(AccountTestInvoicingCommon):
         # We assert that the supplier is the partner of the invoice, with all information present.
         supplier_root = root.xpath('cac:AccountingSupplierParty/cac:Party', namespaces=NS_MAP)[0]
         data_to_check = [
-            ('cac:PartyIdentification/cbc:ID[@schemeID="TIN"]', 'EI00000000030'),  # The partner_b malaysian TIN is set to the customer one, and it will be transformed to supplier during submission
-            ('cac:PartyIdentification/cbc:ID[@schemeID="BRN"]', self.partner_b.commercial_partner_id.l10n_my_identification_number),
-            ('cbc:IndustryClassificationCode', self.partner_b.commercial_partner_id.l10n_my_edi_industrial_classification.code),  # It should use the code on the partner.
+            ('cac:PartyIdentification/cbc:ID[@schemeID="TIN"]', 'EI00000000030'),
+            # The partner_b malaysian TIN is set to the customer one, and it will be transformed to supplier during submission
+            ('cac:PartyIdentification/cbc:ID[@schemeID="BRN"]',
+             self.partner_b.commercial_partner_id.l10n_my_identification_number),
+            ('cbc:IndustryClassificationCode',
+             self.partner_b.commercial_partner_id.l10n_my_edi_industrial_classification.code),
+            # It should use the code on the partner.
             ('cac:PartyName/cbc:Name', self.partner_b.name),
         ]
         for path, expected_value in data_to_check:
@@ -74,8 +80,10 @@ class L10nMyEDITestFileGeneration(AccountTestInvoicingCommon):
         # And that the customer is the company.
         customer_root = root.xpath('cac:AccountingCustomerParty/cac:Party', namespaces=NS_MAP)[0]
         data_to_check = [
-            ('cac:PartyIdentification/cbc:ID[@schemeID="TIN"]', self.company_data['company'].vat),  # We didn't set the new field as the company is malaysian, the vat should be in use.
-            ('cac:PartyIdentification/cbc:ID[@schemeID="BRN"]', self.company_data['company'].l10n_my_identification_number),
+            ('cac:PartyIdentification/cbc:ID[@schemeID="TIN"]', self.company_data['company'].vat),
+            # We didn't set the new field as the company is malaysian, the vat should be in use.
+            ('cac:PartyIdentification/cbc:ID[@schemeID="BRN"]',
+             self.company_data['company'].l10n_my_identification_number),
             ('cac:PartyName/cbc:Name', self.company_data['company'].name),
         ]
         for path, expected_value in data_to_check:
@@ -102,7 +110,8 @@ class L10nMyEDITestFileGeneration(AccountTestInvoicingCommon):
         action = reversal_wizard.reverse_moves()
         credit_note = self.env['account.move'].browse(action['res_id'])
         credit_note.action_post()
-        self.env['account.payment.register'].with_context(active_model='account.move', active_ids=credit_note.ids).create({
+        self.env['account.payment.register'].with_context(active_model='account.move',
+                                                          active_ids=credit_note.ids).create({
             'payment_date': '2019-01-02',
         })._create_payments()
         # Generate the file and assert the type, should be "refund" (04)

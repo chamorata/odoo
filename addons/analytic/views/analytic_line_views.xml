@@ -48,14 +48,17 @@
         <field name="help" type="html">
             <p class="o_view_nocontent_empty_folder">
                 No activity yet on this account
-            </p><p>
+            </p>
+            <p>
                 In Odoo, sales orders and projects are implemented using
                 analytic accounts. You can track costs and revenues to analyse
                 your margins easily.
-            </p><p>
+            </p>
+            <p>
                 Costs will be created automatically when you register supplier
                 invoices, expenses or timesheets.
-            </p><p>
+            </p>
+            <p>
                 Revenues will be created automatically when you create customer
                 invoices. Customer invoices can be created based on sales orders
                 (fixed price invoices), on timesheets (based on the work done) or
@@ -70,24 +73,24 @@
         <field name="priority">1</field>
         <field name="arch" type="xml">
             <form string="Analytic Item">
-            <field name="company_id" invisible="1"/>
-            <sheet>
-                <group>
-                    <group name="analytic_item" string="Analytic Item">
-                        <field name="name"/>
-                        <field name="account_id"/>
-                        <field name="date"/>
-                        <field name="company_id" groups="base.group_multi_company"/>
+                <field name="company_id" invisible="1"/>
+                <sheet>
+                    <group>
+                        <group name="analytic_item" string="Analytic Item">
+                            <field name="name"/>
+                            <field name="account_id"/>
+                            <field name="date"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group name="amount" string="Amount">
+                            <field name="amount"/>
+                            <field name="unit_amount"/>
+                            <field name="product_uom_category_id" invisible="1"/>
+                            <field name="product_uom_id" class="oe_inline"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
                     </group>
-                    <group name="amount" string="Amount">
-                        <field name="amount"/>
-                        <field name="unit_amount"/>
-                        <field name="product_uom_category_id" invisible="1"/>
-                        <field name="product_uom_id" class="oe_inline"/>
-                        <field name="currency_id" invisible="1"/>
-                    </group>
-                </group>
-            </sheet>
+                </sheet>
             </form>
         </field>
     </record>
@@ -125,7 +128,7 @@
                 <field name="currency_id"/>
                 <templates>
                     <t t-name="card">
-                        <div class="d-flex justify-content-between" >
+                        <div class="d-flex justify-content-between">
                             <field class="fw-bold fs-5" name="name"/>
                             <field class="text-end fw-bold fs-5" name="date"/>
                         </div>
@@ -147,15 +150,18 @@
         <field name="search_view_id" ref="analytic.view_account_analytic_line_filter"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_empty_folder">
-               No activity yet
-            </p><p>
+                No activity yet
+            </p>
+            <p>
                 In Odoo, sales orders and projects are implemented using
                 analytic accounts. You can track costs and revenues to analyse
                 your margins easily.
-            </p><p>
+            </p>
+            <p>
                 Costs will be created automatically when you register supplier
                 invoices, expenses or timesheets.
-            </p><p>
+            </p>
+            <p>
                 Revenues will be created automatically when you create customer
                 invoices. Customer invoices can be created based on sales orders
                 (fixed price invoices), on timesheets (based on the work done) or

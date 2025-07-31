@@ -4,10 +4,10 @@
 from psycopg2 import IntegrityError
 from psycopg2.errors import NotNullViolation
 
+from odoo import Command
 from odoo.exceptions import ValidationError
 from odoo.tests import Form, TransactionCase, HttpCase, tagged
 from odoo.tools import mute_logger
-from odoo import Command
 
 
 class TestXMLID(TransactionCase):
@@ -207,7 +207,7 @@ class TestXMLID(TransactionCase):
         xmlid = 'base.test_xmlid_noupdates'
         with self.assertQueryCount(1):
             self.env['ir.model.data']._update_xmlids([
-                {'xml_id': xmlid, 'record': records[3], 'noupdate':True}, # record created as noupdate
+                {'xml_id': xmlid, 'record': records[3], 'noupdate': True},  # record created as noupdate
             ])
 
         assert_xmlid(xmlid, records[3], f'The xmlid {xmlid} should have been created for record {records[2]}')
@@ -222,7 +222,9 @@ class TestXMLID(TransactionCase):
             self.env['ir.model.data']._update_xmlids([
                 {'xml_id': xmlid, 'record': records[5]},
             ])
-        assert_xmlid(xmlid, records[5], f'The xmlid {xmlid} should have been updated with record (not an update) {records[1]}')
+        assert_xmlid(xmlid, records[5],
+                     f'The xmlid {xmlid} should have been updated with record (not an update) {records[1]}')
+
 
 class TestIrModel(TransactionCase):
 
@@ -261,8 +263,8 @@ class TestIrModel(TransactionCase):
                 Command.create({'name': 'x_length', 'ttype': 'float', 'field_description': 'Length'}),
                 Command.create({'name': 'x_color', 'ttype': 'integer', 'field_description': 'Color'}),
                 Command.create({'name': 'x_ripeness_id', 'ttype': 'many2one',
-                        'field_description': 'Ripeness','relation': 'x_banana_ripeness',
-                        'group_expand': True})
+                                'field_description': 'Ripeness', 'relation': 'x_banana_ripeness',
+                                'group_expand': True})
             ]
         })
         # add non-stored field that is not valid in order
@@ -316,14 +318,14 @@ class TestIrModel(TransactionCase):
         self.env['ir.model'].create({
             'name': 'MegaBananas',
             'model': 'x_mega_bananas',
-            'order': 'x_name asc, id desc',         # valid order
+            'order': 'x_name asc, id desc',  # valid order
             'field_id': fields_value,
         })
         with self.assertRaises(ValidationError):
             self.env['ir.model'].create({
                 'name': 'GigaBananas',
                 'model': 'x_giga_bananas',
-                'order': 'x_name asc, x_wat',       # invalid order
+                'order': 'x_name asc, x_wat',  # invalid order
                 'field_id': fields_value,
             })
 
@@ -383,7 +385,8 @@ class TestIrModel(TransactionCase):
 
     def test_monetary_currency_field(self):
         fields_value = [
-            Command.create({'name': 'x_monetary', 'ttype': 'monetary', 'field_description': 'Monetary', 'currency_field': 'test'}),
+            Command.create(
+                {'name': 'x_monetary', 'ttype': 'monetary', 'field_description': 'Monetary', 'currency_field': 'test'}),
         ]
         with self.assertRaises(ValidationError):
             self.env['ir.model'].create({
@@ -393,8 +396,10 @@ class TestIrModel(TransactionCase):
             })
 
         fields_value = [
-            Command.create({'name': 'x_monetary', 'ttype': 'monetary', 'field_description': 'Monetary', 'currency_field': 'x_falsy_currency'}),
-            Command.create({'name': 'x_falsy_currency', 'ttype': 'one2many', 'field_description': 'Currency', 'relation': 'res.currency'}),
+            Command.create({'name': 'x_monetary', 'ttype': 'monetary', 'field_description': 'Monetary',
+                            'currency_field': 'x_falsy_currency'}),
+            Command.create({'name': 'x_falsy_currency', 'ttype': 'one2many', 'field_description': 'Currency',
+                            'relation': 'res.currency'}),
         ]
         with self.assertRaises(ValidationError):
             self.env['ir.model'].create({
@@ -404,8 +409,10 @@ class TestIrModel(TransactionCase):
             })
 
         fields_value = [
-            Command.create({'name': 'x_monetary', 'ttype': 'monetary', 'field_description': 'Monetary', 'currency_field': 'x_falsy_currency'}),
-            Command.create({'name': 'x_falsy_currency', 'ttype': 'many2one', 'field_description': 'Currency', 'relation': 'res.partner'}),
+            Command.create({'name': 'x_monetary', 'ttype': 'monetary', 'field_description': 'Monetary',
+                            'currency_field': 'x_falsy_currency'}),
+            Command.create({'name': 'x_falsy_currency', 'ttype': 'many2one', 'field_description': 'Currency',
+                            'relation': 'res.partner'}),
         ]
         with self.assertRaises(ValidationError):
             self.env['ir.model'].create({
@@ -415,8 +422,10 @@ class TestIrModel(TransactionCase):
             })
 
         fields_value = [
-            Command.create({'name': 'x_monetary', 'ttype': 'monetary', 'field_description': 'Monetary', 'currency_field': 'x_good_currency'}),
-            Command.create({'name': 'x_good_currency', 'ttype': 'many2one', 'field_description': 'Currency', 'relation': 'res.currency'}),
+            Command.create({'name': 'x_monetary', 'ttype': 'monetary', 'field_description': 'Monetary',
+                            'currency_field': 'x_good_currency'}),
+            Command.create({'name': 'x_good_currency', 'ttype': 'many2one', 'field_description': 'Currency',
+                            'relation': 'res.currency'}),
         ]
         model = self.env['ir.model'].create({
             'name': 'Paper Company Model',
@@ -428,6 +437,7 @@ class TestIrModel(TransactionCase):
                          "Should have the monetary field in the created ir.model")
         self.assertEqual(monetary_field.currency_field, "x_good_currency",
                          "The currency field in monetary should have x_good_currency as name")
+
 
 @tagged('-at_install', 'post_install')
 class TestIrModelEdition(TransactionCase):
@@ -452,9 +462,9 @@ class TestIrModelEdition(TransactionCase):
                     "ttype": "char",
                 }),
                 Command.create({
-                  "name": "active",
-                  "ttype": "boolean",
-                  "state": "base",
+                    "name": "active",
+                    "ttype": "boolean",
+                    "state": "base",
                 })
             ]
         })
@@ -467,9 +477,9 @@ class TestIrModelEdition(TransactionCase):
                     "ttype": "char",
                 }),
                 Command.create({
-                  "name": "active",
-                  "ttype": "boolean",
-                  "state": "base",
+                    "name": "active",
+                    "ttype": "boolean",
+                    "state": "base",
                 })
             ]
         })
@@ -514,6 +524,7 @@ class TestEvalContext(TransactionCase):
                         "dateutil.relativedelta.relativedelta(hours=1)")
         })
         self.env['res.partner'].create({'name': 'foo'}).x_foo_bar_baz
+
 
 @tagged('-at_install', 'post_install')
 class TestIrModelFieldsTranslation(HttpCase):

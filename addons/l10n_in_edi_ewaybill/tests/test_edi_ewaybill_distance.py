@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 from odoo.addons.l10n_in_edi.tests.test_edi_json import TestEdiJson
 from odoo.addons.l10n_in_edi_ewaybill.models.account_edi_format import AccountEdiFormat
+
 from odoo.tests import tagged
 
 
@@ -31,7 +32,8 @@ class TestEdiEwaybillJson(TestEdiJson):
                 }
             }
 
-        with patch.object(AccountEdiFormat, "_l10n_in_edi_ewaybill_generate", side_effect=_l10n_in_edi_ewaybill_generate):
+        with patch.object(AccountEdiFormat, "_l10n_in_edi_ewaybill_generate",
+                          side_effect=_l10n_in_edi_ewaybill_generate):
             yield
 
     @contextmanager
@@ -52,7 +54,8 @@ class TestEdiEwaybillJson(TestEdiJson):
                 }
             }
 
-        with patch.object(AccountEdiFormat, "_l10n_in_edi_ewaybill_generate", side_effect=_l10n_in_edi_ewaybill_generate):
+        with patch.object(AccountEdiFormat, "_l10n_in_edi_ewaybill_generate",
+                          side_effect=_l10n_in_edi_ewaybill_generate):
             yield
 
     def test_edi_distance(self):

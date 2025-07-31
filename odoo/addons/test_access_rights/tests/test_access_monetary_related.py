@@ -17,7 +17,7 @@ class TestMonetaryAccess(TransactionCaseWithUserDemo):
         user_demo = self.user_demo.with_user(user_admin)
 
         # this would raise without the fix introduced in this commit
-        new_user = user_demo.copy({'monetary': 1/3})
+        new_user = user_demo.copy({'monetary': 1 / 3})
         new_user.partner_id.company_id = new_user.company_id
 
         # The following is here to document how the ORM behaves, not really part of the test;
@@ -27,7 +27,7 @@ class TestMonetaryAccess(TransactionCaseWithUserDemo):
         # by using more careful field definitions and testing)
         self.assertEqual(new_user.currency_id.id, False,
                          "The cache contains the wrong value for currency.")
-        self.assertEqual(new_user.monetary, 1/3,
+        self.assertEqual(new_user.monetary, 1 / 3,
                          "Because of previous point, no rounding was done.")
 
         self.env.invalidate_all()

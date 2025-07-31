@@ -16,7 +16,8 @@ class TestRepair(common.TransactionCase):
 
         # Partners
         cls.res_partner_1 = cls.env['res.partner'].create({'name': 'Wood Corner'})
-        cls.res_partner_address_1 = cls.env['res.partner'].create({'name': 'Willie Burke', 'parent_id': cls.res_partner_1.id})
+        cls.res_partner_address_1 = cls.env['res.partner'].create(
+            {'name': 'Willie Burke', 'parent_id': cls.res_partner_1.id})
         cls.res_partner_12 = cls.env['res.partner'].create({'name': 'Partner 12'})
 
         # Products
@@ -24,7 +25,7 @@ class TestRepair(common.TransactionCase):
         cls.product_product_11 = cls.env['product.product'].create({
             'name': 'Conference Chair',
             'lst_price': 30.0,
-            })
+        })
         cls.product_product_5 = cls.env['product.product'].create({'name': 'Product 5'})
         cls.product_product_6 = cls.env['product.product'].create({'name': 'Large Cabinet'})
         cls.product_product_12 = cls.env['product.product'].create({'name': 'Office Chair Black'})
@@ -173,12 +174,12 @@ class TestRepair(common.TransactionCase):
         repair = self._create_simple_repair_order()
         # Draft -> Confirmed -> Cancel -> Draft -> Done -> Failing Cancel
         # draft -> confirmed (action_validate -> _action_repair_confirm)
-            # PRE
-                # lines' qty >= 0 !-> UserError
-                # product's qty IS available !-> Warning w/ choice
-            # POST
-                # state = confirmed
-                # move_ids in (partially reserved, fully reserved, waiting availability)
+        # PRE
+        # lines' qty >= 0 !-> UserError
+        # product's qty IS available !-> Warning w/ choice
+        # POST
+        # state = confirmed
+        # move_ids in (partially reserved, fully reserved, waiting availability)
 
         #  Line A with qty < 0 --> UserError
         lineA = self._create_simple_part_move(repair.id, -1.0, self.product_storable_no)
@@ -204,11 +205,12 @@ class TestRepair(common.TransactionCase):
         warn_qty_wizard = Form(
             self.env['stock.warn.insufficient.qty.repair']
             .with_context(**validate_action['context'])
-            ).save()
+        ).save()
         warn_qty_wizard.action_done()
 
         self.assertEqual(repair.state, "confirmed", 'Repair order should be in "Confirmed" state.')
-        self.assertEqual(lineA.state, "partially_available", 'Repair line #1 should be in "Partial Availability" state.')
+        self.assertEqual(lineA.state, "partially_available",
+                         'Repair line #1 should be in "Partial Availability" state.')
         self.assertEqual(lineB.state, "assigned", 'Repair line #2 should be in "Available" state.')
         self.assertEqual(lineC.state, "confirmed", 'Repair line #3 should be in "Waiting Availability" state.')
 
@@ -230,12 +232,12 @@ class TestRepair(common.TransactionCase):
             repair.action_create_sale_order()
 
         # (*) -> cancel (action_repair_cancel)
-            # PRE
-                # state != done !-> UserError (cf. end of this test)
-            # POST
-                # moves_ids state == cancelled
-                # 'Lines" SOL product_uom_qty == 0
-                # state == cancel
+        # PRE
+        # state != done !-> UserError (cf. end of this test)
+        # POST
+        # moves_ids state == cancelled
+        # 'Lines" SOL product_uom_qty == 0
+        # state == cancel
 
         self.assertNotEqual(repair.state, "done")
         repair.action_repair_cancel()
@@ -244,19 +246,19 @@ class TestRepair(common.TransactionCase):
         self.assertTrue(all(float_is_zero(sol.product_uom_qty, 2) for sol in repair.sale_order_id.order_line))
 
         # (*)/cancel -> draft (action_repair_cancel_draft)
-            # PRE
-                # state == cancel !-> action_repair_cancel()
-                # state != done !~> UserError (transitive..., don't care)
-            # POST
-                # move_ids.state == draft
-                # state == draft
+        # PRE
+        # state == cancel !-> action_repair_cancel()
+        # state != done !~> UserError (transitive..., don't care)
+        # POST
+        # move_ids.state == draft
+        # state == draft
 
         repair.action_repair_cancel_draft()
         self.assertEqual(repair.state, "draft")
         self.assertTrue(all(m.state == "draft" for m in repair.move_ids))
 
         # draft -> confirmed
-            # Enforce product_id availability to skip warning
+        # Enforce product_id availability to skip warning
         quant = self.create_quant(self.product_storable_serial, 1)
         quant.action_apply_inventory()
         repair.lot_id = quant.lot_id
@@ -264,21 +266,21 @@ class TestRepair(common.TransactionCase):
         self.assertEqual(repair.state, "confirmed")
 
         # confirmed -> under_repair (action_repair_start)
-            # Purely informative state
+        # Purely informative state
         repair.action_repair_start()
         self.assertEqual(repair.state, "under_repair")
 
         # under_repair -> done (action_repair_end -> action_repair_done)
-            # PRE
-                # state == under_repair !-> UserError
-                # lines' quantity >= lines' product_uom_qty !-> Warning
-                # line tracked => line has lot_ids !-> ValidationError
-            # POST
-                # lines with quantity == 0 are cancelled (related sol product_uom_qty is consequently set to 0)
-                # repair.product_id => repair.move_id
-                # move_ids.state == (done || cancel)
-                # state == done
-                # move_ids with quantity (LOWER or HIGHER than) product_uom_qty MUST NOT be splitted
+        # PRE
+        # state == under_repair !-> UserError
+        # lines' quantity >= lines' product_uom_qty !-> Warning
+        # line tracked => line has lot_ids !-> ValidationError
+        # POST
+        # lines with quantity == 0 are cancelled (related sol product_uom_qty is consequently set to 0)
+        # repair.product_id => repair.move_id
+        # move_ids.state == (done || cancel)
+        # state == done
+        # move_ids with quantity (LOWER or HIGHER than) product_uom_qty MUST NOT be splitted
         # Any line with quantity < product_uom_qty => Warning
         repair.move_ids.picked = True
         self.assertTrue(repair.has_uncomplete_moves)
@@ -304,15 +306,15 @@ class TestRepair(common.TransactionCase):
         self.assertFalse((repair.move_id | repair.move_ids).picking_id, "No picking for repair moves")
         self.assertEqual(repair.state, "done")
         done_moves = repair.move_ids - lineD
-        #line a,b,c are 'done', line d is 'cancel'
+        # line a,b,c are 'done', line d is 'cancel'
         self.assertTrue(all(m.state == 'done' for m in done_moves))
         self.assertEqual(lineD.state, 'cancel')
         self.assertEqual(len(repair.move_id), 1)
         self.assertEqual(len(repair.move_ids), num_of_lines)  # No split
 
         # (*) -> cancel (action_repair_cancel)
-            # PRE
-                # state != done !-> UserError
+        # PRE
+        # state != done !-> UserError
         with self.assertRaises(UserError) as err:
             repair.action_repair_cancel()
 
@@ -326,7 +328,7 @@ class TestRepair(common.TransactionCase):
         #   RO Parts SOL
         #     - SOL qty change is NOT propagated to RO
         #     - However, these changes FROM RO are propagated to SO
-        #----------------------------------------------------------------------------------
+        # ----------------------------------------------------------------------------------
         #  Binding from RO to SO
         so_form = Form(self.env['sale.order'])
         so_form.partner_id = self.res_partner_1
@@ -534,7 +536,7 @@ class TestRepair(common.TransactionCase):
         })
         self.env['stock.quant']._update_available_quantity(product, self.stock_location_14, 1)
         picking_form = Form(self.env['stock.picking'])
-        #create a delivery order
+        # create a delivery order
         picking_form.picking_type_id = self.stock_warehouse.out_type_id
         picking_form.partner_id = self.res_partner_1
         with picking_form.move_ids_without_package.new() as move:
@@ -548,8 +550,8 @@ class TestRepair(common.TransactionCase):
         self.assertEqual(picking.state, 'done')
         # Create a return
         stock_return_picking_form = Form(self.env['stock.return.picking']
-            .with_context(active_ids=picking.ids, active_id=picking.ids[0],
-            active_model='stock.picking'))
+                                         .with_context(active_ids=picking.ids, active_id=picking.ids[0],
+                                                       active_model='stock.picking'))
         stock_return_picking = stock_return_picking_form.save()
         stock_return_picking.product_return_moves.quantity = 1.0
         stock_return_picking_action = stock_return_picking.action_create_returns()
@@ -573,9 +575,12 @@ class TestRepair(common.TransactionCase):
         repair.action_repair_start()
         repair.action_repair_end()
         self.assertEqual(repair.state, 'done')
-        self.assertEqual(len(return_picking.move_ids), 1, "Parts added to the repair order shoudln't be added to the return picking")
-        self.assertEqual(repair.location_id, return_picking.location_dest_id, "Repair location should have defaulted to return destination location")
-        self.assertEqual(repair.partner_id, return_picking.partner_id, "Repair customer should have defaulted to return customer")
+        self.assertEqual(len(return_picking.move_ids), 1,
+                         "Parts added to the repair order shoudln't be added to the return picking")
+        self.assertEqual(repair.location_id, return_picking.location_dest_id,
+                         "Repair location should have defaulted to return destination location")
+        self.assertEqual(repair.partner_id, return_picking.partner_id,
+                         "Repair customer should have defaulted to return customer")
         self.assertEqual(repair.picking_type_id, return_picking.picking_type_id.warehouse_id.repair_type_id)
 
     def test_repair_with_product_in_package(self):
@@ -593,8 +598,10 @@ class TestRepair(common.TransactionCase):
         package_2 = self.env['stock.quant.package'].create({'name': 'Package-test-2'})
 
         # update the quantity of the product in the stock
-        self.env['stock.quant']._update_available_quantity(self.product_product_3, self.stock_warehouse.lot_stock_id, 1, lot_id=sn_1, package_id=package_1)
-        self.env['stock.quant']._update_available_quantity(self.product_product_3, self.stock_warehouse.lot_stock_id, 1, lot_id=sn_2, package_id=package_2)
+        self.env['stock.quant']._update_available_quantity(self.product_product_3, self.stock_warehouse.lot_stock_id, 1,
+                                                           lot_id=sn_1, package_id=package_1)
+        self.env['stock.quant']._update_available_quantity(self.product_product_3, self.stock_warehouse.lot_stock_id, 1,
+                                                           lot_id=sn_2, package_id=package_2)
         self.assertEqual(self.product_product_3.qty_available, 2)
         # create a repair order
         repair_order = self.env['repair.order'].create({
@@ -743,7 +750,8 @@ class TestRepair(common.TransactionCase):
         invoice.action_post()
         res = invoice._get_invoiced_lot_values()
         self.assertEqual(len(res), 1, "The invoice should have one line")
-        self.assertEqual(res[0]['product_name'], self.product_storable_serial.display_name, "The product name should be the same")
+        self.assertEqual(res[0]['product_name'], self.product_storable_serial.display_name,
+                         "The product name should be the same")
         self.assertEqual(res[0]['lot_name'], quant.lot_id.name, "The lot name should be the same")
 
     def test_create_repair_order_from_cross_company_sn(self):
@@ -870,7 +878,7 @@ class TestRepair(common.TransactionCase):
         warn_qty_wizard = Form(
             self.env['stock.warn.insufficient.qty.repair']
             .with_context(**validate_action['context'])
-            ).save()
+        ).save()
         warn_qty_wizard.action_done()
         self.assertEqual(repair_order.state, "confirmed", 'Repair order should be in "Confirmed" state.')
         move = self.env['stock.move'].search([
@@ -894,7 +902,8 @@ class TestRepair(common.TransactionCase):
             'is_storable': True,
             'tracking': 'serial',
         })
-        tracked_product_sn = self.env['stock.lot'].create({'name': 'tracked_product_sn1', 'product_id': tracked_product_repair_line.id})
+        tracked_product_sn = self.env['stock.lot'].create(
+            {'name': 'tracked_product_sn1', 'product_id': tracked_product_repair_line.id})
         repair_order = self.env['repair.order'].with_context(context).create({
             'product_id': self.product_storable_serial.id,
             'product_uom': self.product_storable_serial.uom_id.id,
@@ -922,7 +931,8 @@ class TestRepair(common.TransactionCase):
         company.name = "ELCT Co."
         company = company.save()
         # mimic missing production location with intentional misconfiguration
-        prod_location = self.env['stock.location'].search([('usage', '=', 'production'), ('company_id', '=', company.id)], limit=1)
+        prod_location = self.env['stock.location'].search(
+            [('usage', '=', 'production'), ('company_id', '=', company.id)], limit=1)
         if prod_location:
             prod_location.usage = "internal"
         with self.assertRaises(UserError):

@@ -2,16 +2,15 @@
 
 from unittest.mock import patch
 
-from werkzeug.urls import url_encode
-
-from odoo.tests import tagged
-from odoo.tools import mute_logger
-
 from odoo.addons.payment import utils as payment_utils
 from odoo.addons.payment.tests.http_common import PaymentHttpCommon
 from odoo.addons.payment_xendit.controllers.main import XenditController
 from odoo.addons.payment_xendit.models.payment_provider import PaymentProvider
 from odoo.addons.payment_xendit.tests.common import XenditCommon
+from werkzeug.urls import url_encode
+
+from odoo.tests import tagged
+from odoo.tools import mute_logger
 
 
 @tagged('post_install', '-at_install')
@@ -36,8 +35,8 @@ class TestPaymentTransaction(PaymentHttpCommon, XenditCommon):
         card_pm = self.env.ref('payment.payment_method_card').id
         tx = self._create_transaction('direct', payment_method_id=card_pm)
         with patch(
-            'odoo.addons.payment_xendit.models.payment_provider.PaymentProvider'
-            '._xendit_make_request', return_value={'data': {'link': 'https://dummy.com'}}
+                'odoo.addons.payment_xendit.models.payment_provider.PaymentProvider'
+                '._xendit_make_request', return_value={'data': {'link': 'https://dummy.com'}}
         ) as mock:
             rendering_values = tx._get_specific_rendering_values(None)
             self.assertEqual(mock.call_count, 0)
@@ -48,8 +47,8 @@ class TestPaymentTransaction(PaymentHttpCommon, XenditCommon):
         """ Test that the `api_url` key is not omitted from the rendering values. """
         tx = self._create_transaction('redirect')
         with patch(
-            'odoo.addons.payment_xendit.models.payment_transaction.PaymentTransaction'
-            '._get_specific_rendering_values', return_value={'api_url': 'https://dummy.com'}
+                'odoo.addons.payment_xendit.models.payment_transaction.PaymentTransaction'
+                '._get_specific_rendering_values', return_value={'api_url': 'https://dummy.com'}
         ):
             processing_values = tx._get_processing_values()
         form_info = self._extract_values_from_html_form(processing_values['redirect_form_html'])
@@ -71,7 +70,7 @@ class TestPaymentTransaction(PaymentHttpCommon, XenditCommon):
         })
 
         with patch(
-            'odoo.addons.payment.utils.generate_access_token', new=self._generate_test_access_token
+                'odoo.addons.payment.utils.generate_access_token', new=self._generate_test_access_token
         ):
             request_payload = tx._xendit_prepare_invoice_request_payload()
         self.assertDictEqual(request_payload, {
@@ -109,8 +108,8 @@ class TestPaymentTransaction(PaymentHttpCommon, XenditCommon):
         currency_idr = self.env.ref('base.IDR')
         tx = self._create_transaction('redirect', amount=1000.50, currency_id=currency_idr.id)
         with patch(
-            'odoo.addons.payment_xendit.models.payment_provider.PaymentProvider'
-            '._xendit_make_request', return_value=self.charge_notification_data
+                'odoo.addons.payment_xendit.models.payment_provider.PaymentProvider'
+                '._xendit_make_request', return_value=self.charge_notification_data
         ) as mock_req:
             tx._xendit_create_charge('dummytoken')
             payload = mock_req.call_args.kwargs.get('payload')
@@ -137,8 +136,8 @@ class TestPaymentTransaction(PaymentHttpCommon, XenditCommon):
         transaction that saves payment details. """
         tx = self._create_transaction('direct', tokenize=True)
         with patch(
-            'odoo.addons.payment_xendit.models.payment_provider.PaymentProvider'
-            '._xendit_make_request', return_value=self.charge_notification_data
+                'odoo.addons.payment_xendit.models.payment_provider.PaymentProvider'
+                '._xendit_make_request', return_value=self.charge_notification_data
         ), patch(
             'odoo.addons.payment_xendit.models.payment_transaction.PaymentTransaction'
             '._xendit_tokenize_from_notification_data'
@@ -152,8 +151,8 @@ class TestPaymentTransaction(PaymentHttpCommon, XenditCommon):
         transaction that doesn't save the payment details. """
         tx = self._create_transaction('direct')
         with patch(
-            'odoo.addons.payment_xendit.models.payment_provider.PaymentProvider.'
-            '_xendit_make_request', return_value=self.charge_notification_data
+                'odoo.addons.payment_xendit.models.payment_provider.PaymentProvider.'
+                '_xendit_make_request', return_value=self.charge_notification_data
         ), patch(
             'odoo.addons.payment_xendit.models.payment_transaction.PaymentTransaction.'
             '_xendit_tokenize_from_notification_data'

@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import logging
-import serial
-import time
-import struct
 import json
+import logging
+import struct
+import time
 from functools import reduce
 
-from odoo import http
+import serial
 from odoo.addons.hw_drivers.iot_handlers.drivers.SerialBaseDriver import SerialDriver, SerialProtocol, serial_connection
 from odoo.addons.hw_drivers.main import iot_devices
+
+from odoo import http
 
 _logger = logging.getLogger(__name__)
 
@@ -156,7 +157,8 @@ class TremolG03Driver(SerialDriver):
             for msg in msgs:
                 self.message_number += 1
                 core_message = struct.pack('BB%ds' % (len(msg)), len(msg) + 34, self.message_number + 32, msg)
-                request = struct.pack('B%ds2sB' % (len(core_message)), STX, core_message, self.generate_checksum(core_message), ETX)
+                request = struct.pack('B%ds2sB' % (len(core_message)), STX, core_message,
+                                      self.generate_checksum(core_message), ETX)
                 time.sleep(self._protocol.commandDelay)
                 self._connection.write(request)
                 _logger.debug('Debug send request: %s', request)
@@ -226,7 +228,8 @@ class TremolG03Driver(SerialDriver):
 
 class TremolG03Controller(http.Controller):
 
-    @http.route('/hw_proxy/l10n_ke_cu_send', type='http', auth='none', cors='*', csrf=False, save_session=False, methods=['POST'])
+    @http.route('/hw_proxy/l10n_ke_cu_send', type='http', auth='none', cors='*', csrf=False, save_session=False,
+                methods=['POST'])
     def l10n_ke_cu_send(self, messages, company_vat):
         """ Posts the messages sent to this endpoint to the fiscal device connected to the server
 
@@ -247,7 +250,8 @@ class TremolG03Controller(http.Controller):
                 return json.dumps({'status': 'The company vat number does not match that of the device'})
             messages = json.loads(messages)
             device.message_number = 0
-            resp = json.dumps({**device.send([msg.encode('cp1251') for msg in messages]), 'serial_number': serial_number})
+            resp = json.dumps(
+                {**device.send([msg.encode('cp1251') for msg in messages]), 'serial_number': serial_number})
             return resp
         else:
             return json.dumps({'status': 'The fiscal device is not connected to the proxy server'})

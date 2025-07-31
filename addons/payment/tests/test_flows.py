@@ -1,15 +1,14 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from urllib.parse import urlparse, parse_qs
 from unittest.mock import patch
+from urllib.parse import urlparse, parse_qs
 
 from freezegun import freeze_time
+from odoo.addons.payment.controllers.portal import PaymentPortal
+from odoo.addons.payment.tests.http_common import PaymentHttpCommon
 
 from odoo.tests import tagged, JsonRpcException
 from odoo.tools import mute_logger
-
-from odoo.addons.payment.controllers.portal import PaymentPortal
-from odoo.addons.payment.tests.http_common import PaymentHttpCommon
 
 
 @tagged('post_install', '-at_install')
@@ -265,7 +264,8 @@ class TestFlows(PaymentHttpCommon):
 
     def test_pay_wrong_currency(self):
         # Pay with a wrong currency --> Not found (404)
-        self.currency = self.env['res.currency'].browse(self.env['res.currency'].search([], order='id desc', limit=1).id + 1000)
+        self.currency = self.env['res.currency'].browse(
+            self.env['res.currency'].search([], order='id desc', limit=1).id + 1000)
         route_values = self._prepare_pay_values()
         response = self._portal_pay(**route_values)
         self.assertEqual(response.status_code, 404)
@@ -288,8 +288,8 @@ class TestFlows(PaymentHttpCommon):
         })
         # Transaction step with a wrong flow --> UserError
         with mute_logger("odoo.http"), self.assertRaises(
-            JsonRpcException,
-            msg='odoo.exceptions.UserError: The payment should either be direct, with redirection, or made by a token.',
+                JsonRpcException,
+                msg='odoo.exceptions.UserError: The payment should either be direct, with redirection, or made by a token.',
         ):
             self._portal_transaction(**transaction_values)
 
@@ -307,7 +307,8 @@ class TestFlows(PaymentHttpCommon):
         route_values['access_token'] = "abcde"
 
         # Transaction step with a wrong access token --> ValidationError
-        with mute_logger('odoo.http'), self.assertRaises(JsonRpcException, msg='odoo.exceptions.ValidationError: The access token is invalid.'):
+        with mute_logger('odoo.http'), self.assertRaises(JsonRpcException,
+                                                         msg='odoo.exceptions.ValidationError: The access token is invalid.'):
             self._portal_transaction(**route_values)
 
     def test_access_disabled_providers_tokens(self):
@@ -346,8 +347,8 @@ class TestFlows(PaymentHttpCommon):
         self.partner = self.portal_partner
         self.user = self.portal_user
         with patch(
-            'odoo.addons.payment.models.payment_transaction.PaymentTransaction'
-            '._send_payment_request'
+                'odoo.addons.payment.models.payment_transaction.PaymentTransaction'
+                '._send_payment_request'
         ) as patched:
             self._portal_transaction(
                 **self._prepare_transaction_values(self.payment_method_id, None, 'direct')
@@ -360,8 +361,8 @@ class TestFlows(PaymentHttpCommon):
         self.partner = self.portal_partner
         self.user = self.portal_user
         with patch(
-            'odoo.addons.payment.models.payment_transaction.PaymentTransaction'
-            '._send_payment_request'
+                'odoo.addons.payment.models.payment_transaction.PaymentTransaction'
+                '._send_payment_request'
         ) as patched:
             self._portal_transaction(
                 **self._prepare_transaction_values(self.payment_method_id, None, 'redirect')
@@ -374,8 +375,8 @@ class TestFlows(PaymentHttpCommon):
         self.partner = self.portal_partner
         self.user = self.portal_user
         with patch(
-            'odoo.addons.payment.models.payment_transaction.PaymentTransaction'
-            '._send_payment_request'
+                'odoo.addons.payment.models.payment_transaction.PaymentTransaction'
+                '._send_payment_request'
         ) as patched:
             self._portal_transaction(
                 **self._prepare_transaction_values(None, self._create_token().id, 'token')

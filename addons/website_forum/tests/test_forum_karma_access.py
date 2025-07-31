@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.website_forum.tests.common import KARMA, TestForumCommon
 from psycopg2 import IntegrityError
 
-from odoo.addons.website_forum.tests.common import KARMA, TestForumCommon
 from odoo.exceptions import UserError, AccessError
 from odoo.tools import mute_logger
 
@@ -61,7 +61,8 @@ class TestForumCRUD(TestForumCommon):
         self.employee_vote_on_admin_post.with_user(self.user_employee).write({
             'user_id': 1,
         })
-        self.assertEqual(self.employee_vote_on_admin_post.user_id, self.user_employee, 'User employee should not be able to give its vote ownership to someone else')
+        self.assertEqual(self.employee_vote_on_admin_post.user_id, self.user_employee,
+                         'User employee should not be able to give its vote ownership to someone else')
         # One should not be able to change his vote's post to a post of his own (would be self voting)
         with self.assertRaises(UserError):
             self.employee_vote_on_admin_post.with_user(self.user_employee).write({
@@ -72,7 +73,8 @@ class TestForumCRUD(TestForumCommon):
         self.portal_vote_on_admin_post.with_user(self.user_portal).write({
             'user_id': 1,
         })
-        self.assertEqual(self.portal_vote_on_admin_post.user_id, self.user_portal, 'User portal should not be able to give its vote ownership to someone else')
+        self.assertEqual(self.portal_vote_on_admin_post.user_id, self.user_portal,
+                         'User portal should not be able to give its vote ownership to someone else')
         # One should not be able to change his vote's post to a post of his own (would be self voting)
         with self.assertRaises(UserError):
             self.portal_vote_on_admin_post.with_user(self.user_portal).write({
@@ -114,14 +116,16 @@ class TestForumCRUD(TestForumCommon):
             'user_id': 1,
             'vote': '1',
         })
-        self.assertEqual(new_employee_vote.user_id, self.user_employee, 'Creating a vote for someone else should not be allowed. It should create it for yourself instead')
+        self.assertEqual(new_employee_vote.user_id, self.user_employee,
+                         'Creating a vote for someone else should not be allowed. It should create it for yourself instead')
         # One should not be able to create a vote for someone else
         new_portal_vote = Vote.with_user(self.user_portal).create({
             'post_id': self.employee_post.id,
             'user_id': 1,
             'vote': '1',
         })
-        self.assertEqual(new_portal_vote.user_id, self.user_portal, 'Creating a vote for someone else should not be allowed. It should create it for yourself instead')
+        self.assertEqual(new_portal_vote.user_id, self.user_portal,
+                         'Creating a vote for someone else should not be allowed. It should create it for yourself instead')
 
 
 class TestForumKarma(TestForumCommon):
@@ -145,7 +149,8 @@ class TestForumKarma(TestForumCommon):
             'forum_id': self.forum.id,
             'parent_id': self.post.id,
         })
-        self.assertEqual(self.user_employee.karma, KARMA['ans'], 'website_forum: wrong karma generation when answering question')
+        self.assertEqual(self.user_employee.karma, KARMA['ans'],
+                         'website_forum: wrong karma generation when answering question')
 
     @mute_logger('odoo.addons.base.models.ir_model', 'odoo.models')
     def test_ask_question(self):
@@ -173,7 +178,8 @@ class TestForumKarma(TestForumCommon):
             'forum_id': self.forum.id,
             'tag_ids': [(0, 0, {'name': 'Tag1', 'forum_id': self.forum.id})]
         })
-        self.assertEqual(self.user_portal.karma, KARMA['tag_create'], 'website_forum: wrong karma generation when asking question')
+        self.assertEqual(self.user_portal.karma, KARMA['tag_create'],
+                         'website_forum: wrong karma generation when asking question')
 
         self.user_portal.karma = KARMA['post']
         Post.with_user(self.user_portal).create({
@@ -181,7 +187,8 @@ class TestForumKarma(TestForumCommon):
             'forum_id': self.forum.id,
             'tag_ids': [(0, 0, {'name': 'Tag42', 'forum_id': self.forum.id})]
         })
-        self.assertEqual(self.user_portal.karma, KARMA['post'] + KARMA['gen_que_new'], 'website_forum: wrong karma generation when asking question')
+        self.assertEqual(self.user_portal.karma, KARMA['post'] + KARMA['gen_que_new'],
+                         'website_forum: wrong karma generation when asking question')
 
         # check karma done on right forum, using context values
         self.user_portal.karma = KARMA['post']
@@ -191,14 +198,17 @@ class TestForumKarma(TestForumCommon):
         ]:
             with self.subTest(karma_value=karma_value):
                 self.forum.karma_dofollow = karma_value
-                post = Post.with_user(self.user_portal).with_context(default_content='<p>Super <a href="www.link.com">Link</a></p>').create({
+                post = Post.with_user(self.user_portal).with_context(
+                    default_content='<p>Super <a href="www.link.com">Link</a></p>').create({
                     'name': "Bypass",
                     'forum_id': self.forum.id,
                 })
                 if has_nofollow:
-                    self.assertTrue("nofollow" in post.content, 'website_forum: default_content in context should not bypass karma check.')
+                    self.assertTrue("nofollow" in post.content,
+                                    'website_forum: default_content in context should not bypass karma check.')
                 else:
-                    self.assertFalse("nofollow" in post.content, 'website_forum: default_content in context should not bypass karma check.')
+                    self.assertFalse("nofollow" in post.content,
+                                     'website_forum: default_content in context should not bypass karma check.')
                 # reset karma
                 self.user_portal.karma = KARMA['post']
 
@@ -207,9 +217,11 @@ class TestForumKarma(TestForumCommon):
                     'content': '<p>Super <a href="www.link.com">Link</a></p>',
                 })
                 if has_nofollow:
-                    self.assertTrue("nofollow" in post.content, 'website_forum: default_forum_id in context should not bypass karma check.')
+                    self.assertTrue("nofollow" in post.content,
+                                    'website_forum: default_forum_id in context should not bypass karma check.')
                 else:
-                    self.assertFalse("nofollow" in post.content, 'website_forum: default_forum_id in context should not bypass karma check.')
+                    self.assertFalse("nofollow" in post.content,
+                                     'website_forum: default_forum_id in context should not bypass karma check.')
                 # reset karma
                 self.user_portal.karma = KARMA['post']
 
@@ -249,7 +261,8 @@ class TestForumKarma(TestForumCommon):
         # converting a question does nothing
         new_msg = self.post.with_user(self.user_portal).convert_answer_to_comment()
         self.assertEqual(new_msg.id, False, 'website_forum: question to comment conversion failed')
-        self.assertEqual(Post.search([('name', '=', 'TestQuestion')])[0].forum_id.name, 'TestForum', 'website_forum: question to comment conversion failed')
+        self.assertEqual(Post.search([('name', '=', 'TestQuestion')])[0].forum_id.name, 'TestForum',
+                         'website_forum: question to comment conversion failed')
 
         with self.assertRaises(AccessError):
             self.answer.with_user(self.user_portal).convert_answer_to_comment()
@@ -270,7 +283,8 @@ class TestForumKarma(TestForumCommon):
         self.post.create_uid.karma = 50
         self.user_portal.karma = KARMA['dwv']
         self.post.with_user(self.user_portal).vote(upvote=False)
-        self.assertEqual(self.post.create_uid.karma, 50 + KARMA['gen_que_dwv'], 'website_forum: wrong karma generation of downvoted question author')
+        self.assertEqual(self.post.create_uid.karma, 50 + KARMA['gen_que_dwv'],
+                         'website_forum: wrong karma generation of downvoted question author')
 
     @mute_logger('odoo.addons.base.models.ir_model', 'odoo.models')
     def test_downvote_crash(self):
@@ -335,7 +349,8 @@ class TestForumKarma(TestForumCommon):
         init_karma = post.create_uid.karma
         post.with_user(self.user_portal)._mark_as_offensive(12)
         self.assertEqual(post.state, 'offensive', 'website_forum: wrong state when marking a post as offensive')
-        self.assertEqual(post.create_uid.karma, init_karma + KARMA['gen_ans_flag'], 'website_forum: wrong karma when marking a post as offensive')
+        self.assertEqual(post.create_uid.karma, init_karma + KARMA['gen_ans_flag'],
+                         'website_forum: wrong karma when marking a post as offensive')
 
     def test_refuse_a_post(self):
         Post = self.env['forum.post']
@@ -387,7 +402,8 @@ class TestForumKarma(TestForumCommon):
         init_karma = post.create_uid.karma
         post.with_user(self.user_portal).validate()
         self.assertEqual(post.state, 'active', 'website_forum: wrong state when validate a post after pending')
-        self.assertEqual(post.create_uid.karma, init_karma + KARMA['gen_que_new'], 'website_forum: wrong karma when validate a post after pending')
+        self.assertEqual(post.create_uid.karma, init_karma + KARMA['gen_que_new'],
+                         'website_forum: wrong karma when validate a post after pending')
 
         # portal user validate a flagged post: ok if enough karma
         self.user_portal.karma = KARMA['moderate']
@@ -404,7 +420,8 @@ class TestForumKarma(TestForumCommon):
 
     def test_vote(self):
         def check_vote_records_count_and_integrity(expected_total_votes_count):
-            groups = self.env['forum.post.vote'].read_group([], fields=['__count'], groupby=['post_id', 'user_id'], lazy=False)
+            groups = self.env['forum.post.vote'].read_group([], fields=['__count'], groupby=['post_id', 'user_id'],
+                                                            lazy=False)
             self.assertEqual(len(groups), expected_total_votes_count)
             for post_user_group in groups:
                 self.assertEqual(post_user_group['__count'], 1)

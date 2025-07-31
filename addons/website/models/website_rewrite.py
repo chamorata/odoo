@@ -1,12 +1,13 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+import logging
 import re
+
 import werkzeug
 
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 
-import logging
 _logger = logging.getLogger(__name__)
 
 
@@ -31,7 +32,8 @@ class WebsiteRoute(models.Model):
         ir_http = self.env['ir.http']
         tocreate = []
         paths = {rec.path: rec for rec in self.search([])}
-        for url, endpoint in ir_http._generate_routing_rules(self.pool._init_modules, converters=ir_http._get_converters()):
+        for url, endpoint in ir_http._generate_routing_rules(self.pool._init_modules,
+                                                             converters=ir_http._get_converters()):
             if 'GET' in (endpoint.routing.get('methods') or ['GET']):
                 if paths.get(url):
                     paths.pop(url)
@@ -99,16 +101,18 @@ class WebsiteRewrite(models.Model):
                         raise ValidationError(_('"URL to" must contain parameter %s used in "URL from".', param))
                 for param in re.findall('/<.*?>', rewrite.url_to):
                     if param not in rewrite.url_from:
-                        raise ValidationError(_('"URL to" cannot contain parameter %s which is not used in "URL from".', param))
+                        raise ValidationError(
+                            _('"URL to" cannot contain parameter %s which is not used in "URL from".', param))
 
                 if rewrite.url_to == '/':
-                    raise ValidationError(_('"URL to" cannot be set to "/". To change the homepage content, use the "Homepage URL" field in the website settings or the page properties on any custom page.'))
+                    raise ValidationError(
+                        _('"URL to" cannot be set to "/". To change the homepage content, use the "Homepage URL" field in the website settings or the page properties on any custom page.'))
 
                 if any(
-                    rule for rule in self.env['ir.http'].routing_map().iter_rules()
-                    # Odoo routes are normally always defined without trailing
-                    # slashes + strict_slashes=False, but there are exceptions.
-                    if rule.rule.rstrip('/') == rewrite.url_to.rstrip('/')
+                        rule for rule in self.env['ir.http'].routing_map().iter_rules()
+                        # Odoo routes are normally always defined without trailing
+                        # slashes + strict_slashes=False, but there are exceptions.
+                        if rule.rule.rstrip('/') == rewrite.url_to.rstrip('/')
                 ):
                     raise ValidationError(_('"URL to" cannot be set to an existing page.'))
 

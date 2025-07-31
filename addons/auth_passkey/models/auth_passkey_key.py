@@ -1,18 +1,19 @@
 import base64
 import json
 import logging
+
 from werkzeug.urls import url_parse
 
 from odoo import api, Command, fields, models, _
+from odoo.addons.base.models.res_users import check_identity
 from odoo.exceptions import AccessDenied
 from odoo.http import request
 from odoo.tools import sql, SQL
-
-from odoo.addons.base.models.res_users import check_identity
-
-from .._vendor.webauthn import base64url_to_bytes, generate_authentication_options, generate_registration_options, options_to_json, verify_authentication_response, verify_registration_response
+from .._vendor.webauthn import base64url_to_bytes, generate_authentication_options, generate_registration_options, \
+    options_to_json, verify_authentication_response, verify_registration_response
 from .._vendor.webauthn.helpers import bytes_to_base64url
-from .._vendor.webauthn.helpers.structs import AuthenticatorSelectionCriteria, ResidentKeyRequirement, UserVerificationRequirement
+from .._vendor.webauthn.helpers.structs import AuthenticatorSelectionCriteria, ResidentKeyRequirement, \
+    UserVerificationRequirement
 
 _logger = logging.getLogger(__name__)
 
@@ -24,7 +25,8 @@ class PassKey(models.Model):
 
     name = fields.Char(required=True)
     credential_identifier = fields.Char(required=True, groups='base.group_system')
-    public_key = fields.Char(required=True, groups='base.group_system', compute='_compute_public_key', inverse='_inverse_public_key')
+    public_key = fields.Char(required=True, groups='base.group_system', compute='_compute_public_key',
+                             inverse='_inverse_public_key')
     sign_count = fields.Integer(default=0, groups='base.group_system')
 
     _sql_constraints = [

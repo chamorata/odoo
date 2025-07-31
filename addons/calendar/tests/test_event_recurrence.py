@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import pytz
 from datetime import datetime, date
-from dateutil.relativedelta import relativedelta
-from odoo.exceptions import UserError
 
-from odoo.tests import Form, TransactionCase
+import pytz
+from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
+
+from odoo.exceptions import UserError
+from odoo.tests import Form, TransactionCase
 
 
 class TestRecurrentEvents(TransactionCase):
@@ -301,8 +302,10 @@ class TestCreateRecurrentEvents(TestRecurrentEvents):
         recurrent_events = self.event.recurrence_id.calendar_event_ids
         detached_events = self.event.recurrence_id.calendar_event_ids - self.event
         rec_events_videocall_locations = recurrent_events.mapped('videocall_location')
-        self.assertEqual(len(rec_events_videocall_locations), len(set(rec_events_videocall_locations)), 'Recurrent events should have different videocall locations')
-        self.assertEqual(not any(recurrent_events.videocall_channel_id), True, 'No channel should be set before the route is accessed')
+        self.assertEqual(len(rec_events_videocall_locations), len(set(rec_events_videocall_locations)),
+                         'Recurrent events should have different videocall locations')
+        self.assertEqual(not any(recurrent_events.videocall_channel_id), True,
+                         'No channel should be set before the route is accessed')
         # create the first channel
         detached_events[0]._create_videocall_channel()
         # after channel is created, all other events should have the same channel
@@ -325,13 +328,14 @@ class TestCreateRecurrentEvents(TestRecurrentEvents):
         self.event.stop = dt + relativedelta(hours=1)
 
         # Check before apply the recurrence
-        self.assertEqual(self.event.start, datetime(2023, 3, 27, 7, 0, 00)) # Because 2023-03-27 in Europe/Brussels is UTC+2
+        self.assertEqual(self.event.start,
+                         datetime(2023, 3, 27, 7, 0, 00))  # Because 2023-03-27 in Europe/Brussels is UTC+2
 
         self.event._apply_recurrence_values({
-            'rrule_type': 'monthly', # Because we will take the first day of the month (jump back)
+            'rrule_type': 'monthly',  # Because we will take the first day of the month (jump back)
             'interval': 1,
             'end_type': 'count',
-            'count': 2, # To have the base event and the unique recurrence event
+            'count': 2,  # To have the base event and the unique recurrence event
             'month_by': 'date',
             'day': 27,
             'event_tz': timezone,
@@ -375,7 +379,8 @@ class TestCreateRecurrentEvents(TestRecurrentEvents):
         }).recurrence_id
         events = recurrence.calendar_event_ids
         self.assertEqual(events[0].start_date, date(2019, 10, 22), "The first event has the initial start date")
-        self.assertEqual(events[1].start_date, date(2019, 10, 29), "The start date of the second event is one week later")
+        self.assertEqual(events[1].start_date, date(2019, 10, 29),
+                         "The start date of the second event is one week later")
 
     def test_recurrency_with_this_event(self):
         """
@@ -391,7 +396,7 @@ class TestCreateRecurrentEvents(TestRecurrentEvents):
             'recurrency': True,
             'start': datetime(2023, 7, 28, 1, 0),
             'stop': datetime(2023, 7, 29, 18, 0),
-            })
+        })
         events = self.env['calendar.recurrence'].search([('base_event_id', '=', event.id)]).calendar_event_ids
         self.assertEqual(len(events), 10, "It should have 10 events in the recurrence")
 
@@ -403,9 +408,11 @@ class TestCreateRecurrentEvents(TestRecurrentEvents):
             'recurrence_update': 'future_events',
             'count': 2,
         })
-        updated_events = self.env['calendar.recurrence'].search([('base_event_id', '=', events[5].id)]).calendar_event_ids
+        updated_events = self.env['calendar.recurrence'].search(
+            [('base_event_id', '=', events[5].id)]).calendar_event_ids
         self.assertEqual(len(updated_events), 2, "It should have 2 events in the recurrence")
         self.assertTrue(updated_events[1].recurrency, "It should have recurrency in the updated events")
+
 
 class TestUpdateRecurrentEvents(TestRecurrentEvents):
 
@@ -519,7 +526,7 @@ class TestUpdateRecurrentEvents(TestRecurrentEvents):
 
     def test_change_week_day_rrule(self):
         recurrence = self.events.recurrence_id
-        recurrence.rrule = 'FREQ=WEEKLY;COUNT=3;BYDAY=WE' # from TU to WE
+        recurrence.rrule = 'FREQ=WEEKLY;COUNT=3;BYDAY=WE'  # from TU to WE
         self.assertFalse(self.recurrence.tue)
         self.assertTrue(self.recurrence.wed)
 
@@ -581,15 +588,16 @@ class TestUpdateRecurrentEvents(TestRecurrentEvents):
 
         self.assertEventDates(event.recurrence_id.calendar_event_ids, [
             (datetime(2019, 10, 29, 1, 0), datetime(2019, 10, 31, 18, 0)),  # Tu
-            (datetime(2019, 11, 1, 1, 0), datetime(2019, 11, 3, 18, 0)),    # Fr
-            (datetime(2019, 11, 5, 1, 0), datetime(2019, 11, 7, 18, 0)),    # Tu
-            (datetime(2019, 11, 8, 1, 0), datetime(2019, 11, 10, 18, 0)),   # Fr
+            (datetime(2019, 11, 1, 1, 0), datetime(2019, 11, 3, 18, 0)),  # Fr
+            (datetime(2019, 11, 5, 1, 0), datetime(2019, 11, 7, 18, 0)),  # Tu
+            (datetime(2019, 11, 8, 1, 0), datetime(2019, 11, 10, 18, 0)),  # Fr
         ])
 
         events = event.recurrence_id.calendar_event_ids.sorted('start')
         self.assertEqual(events[0], self.events[1], "Events on Tuesdays should not have changed")
         self.assertEqual(events[2].start, self.events[2].start, "Events on Tuesdays should not have changed")
-        self.assertNotEqual(events.recurrence_id, self.recurrence, "Events should no longer be linked to the original recurrence")
+        self.assertNotEqual(events.recurrence_id, self.recurrence,
+                            "Events should no longer be linked to the original recurrence")
         self.assertEqual(events.recurrence_id.count, 4, "The new recurrence should have 4")
         self.assertTrue(event.recurrence_id.tue)
         self.assertTrue(event.recurrence_id.fri)
@@ -666,7 +674,8 @@ class TestUpdateRecurrentEvents(TestRecurrentEvents):
         event.write({
             'recurrence_update': 'all_events',
             'recurrency': False,
-            'count': 0,  # In practice, JS framework sends updated recurrency fields, since they have been recomputed, triggered by the `recurrency` change
+            'count': 0,
+            # In practice, JS framework sends updated recurrency fields, since they have been recomputed, triggered by the `recurrency` change
         })
         self.assertFalse(self.events[0].exists())
         self.assertTrue(event.active)
@@ -807,6 +816,7 @@ class TestUpdateRecurrentEvents(TestRecurrentEvents):
             (datetime(2019, 10, 30, 1, 0), datetime(2019, 10, 30, 2, 0)),
             (datetime(2019, 11, 6, 1, 0), datetime(2019, 11, 6, 2, 0)),
         ])
+
 
 class TestUpdateMultiDayWeeklyRecurrentEvents(TestRecurrentEvents):
 
@@ -1057,9 +1067,11 @@ class TestUpdateMonthlyByDate(TestRecurrentEvents):
         for event in first_event.recurrence_id.calendar_event_ids:
             for attendee in event.attendee_ids:
                 if attendee.partner_id == organizer.partner_id:
-                    self.assertEqual(attendee.state, "accepted", "Organizer must remain accepted after time values update.")
+                    self.assertEqual(attendee.state, "accepted",
+                                     "Organizer must remain accepted after time values update.")
                 else:
-                    self.assertEqual(attendee.state, "needsAction", "Attendees state except organizer must be pending after update.")
+                    self.assertEqual(attendee.state, "needsAction",
+                                     "Attendees state except organizer must be pending after update.")
 
         # Accept all events again for all attendes.
         for event in first_event.recurrence_id.calendar_event_ids:
@@ -1076,11 +1088,15 @@ class TestUpdateMonthlyByDate(TestRecurrentEvents):
         second_event = self.env['calendar.recurrence'].search([('id', '>', recurrence_id)]).base_event_id
 
         # Ensure that first event is accepted for everyone and also from the second event on, the state in pending for attendees except organizer.
-        self.assertTrue(first_event.active, "Event from previous recurrence must remain active after the second event got updated.")
-        self.assertTrue(all(attendee.state == 'accepted' for attendee in first_event.attendee_ids), "Attendees state from previous event must remain accepted.")
+        self.assertTrue(first_event.active,
+                        "Event from previous recurrence must remain active after the second event got updated.")
+        self.assertTrue(all(attendee.state == 'accepted' for attendee in first_event.attendee_ids),
+                        "Attendees state from previous event must remain accepted.")
         for event in second_event.recurrence_id.calendar_event_ids:
             for attendee in event.attendee_ids:
                 if attendee.partner_id == organizer.partner_id:
-                    self.assertEqual(attendee.state, "accepted", "Current user must remain accepted after time values update.")
+                    self.assertEqual(attendee.state, "accepted",
+                                     "Current user must remain accepted after time values update.")
                 else:
-                    self.assertEqual(attendee.state, "needsAction", "Attendees state except current user must be pending after update.")
+                    self.assertEqual(attendee.state, "needsAction",
+                                     "Attendees state except current user must be pending after update.")

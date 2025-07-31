@@ -3,6 +3,7 @@
 
 from odoo.tests.common import TransactionCase
 
+
 class TestResourceSkills(TransactionCase):
     def test_availability_skills_infos_resource(self):
         """ Ensure that all the infos related to skill needed to display the avatar

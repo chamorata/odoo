@@ -1,8 +1,8 @@
 import codecs
-import encodings.aliases
 import re
 
 import babel.core
+import encodings.aliases
 
 
 def patch_codecs():

@@ -2,8 +2,8 @@
 
 from odoo import models, _
 
-
-SG_TAX_CATEGORIES = {'SR', 'SRCA-S', 'SRCA-C', 'SROVR-RS', 'SROVR-LVG', 'SRLVG', 'ZR', 'ES33', 'ESN33', 'DS', 'OS', 'NG', 'NA'}
+SG_TAX_CATEGORIES = {'SR', 'SRCA-S', 'SRCA-C', 'SROVR-RS', 'SROVR-LVG', 'SRLVG', 'ZR', 'ES33', 'ESN33', 'DS', 'OS',
+                     'NG', 'NA'}
 
 
 class AccountEdiXmlUBLPINTSG(models.AbstractModel):
@@ -97,6 +97,7 @@ class AccountEdiXmlUBLPINTSG(models.AbstractModel):
         for tax_total_val in vals['vals']['tax_total_vals']:
             for tax_subtotal_val in tax_total_val.get('tax_subtotal_vals', ()):
                 if tax_subtotal_val['tax_category_vals']['tax_category_code'] not in SG_TAX_CATEGORIES:
-                    constraints['sg_vat_category_required'] = _("You must set a Singaporean tax category on each taxes of the invoice.")
+                    constraints['sg_vat_category_required'] = _(
+                        "You must set a Singaporean tax category on each taxes of the invoice.")
 
         return constraints

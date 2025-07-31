@@ -1,5 +1,5 @@
 {
-    'name' : 'IM Bus',
+    'name': 'IM Bus',
     'version': '1.0',
     'category': 'Hidden',
     'description': "Instant Messaging Bus allow you to send messages to users, in live.",
@@ -27,7 +27,7 @@
         # Unit test files
         'web.assets_unit_tests': [
             'bus/static/tests/**/*',
-            ('remove', 'bus/static/tests/legacy/**/*'), # to remove when all legacy tests are ported
+            ('remove', 'bus/static/tests/legacy/**/*'),  # to remove when all legacy tests are ported
         ],
         'web.tests_assets': [
             'bus/static/tests/legacy/helpers/**/*',

@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
+import os
+from unittest import skipIf
+
 from odoo.tests.common import TransactionCase, tagged
 from odoo.tools.misc import file_open
-from unittest import skipIf
-import os
 
 directory = os.path.dirname(__file__)
 

@@ -14,7 +14,8 @@ class AuthOAuthProvider(models.Model):
     client_id = fields.Char(string='Client ID')  # Our identifier
     auth_endpoint = fields.Char(string='Authorization URL', required=True)  # OAuth provider URL to authenticate users
     scope = fields.Char(default='openid profile email')  # OAUth user data desired to access
-    validation_endpoint = fields.Char(string='UserInfo URL', required=True)  # OAuth provider URL to get user information
+    validation_endpoint = fields.Char(string='UserInfo URL',
+                                      required=True)  # OAuth provider URL to get user information
     data_endpoint = fields.Char()
     enabled = fields.Boolean(string='Allowed')
     css_class = fields.Char(string='CSS class', default='fa fa-fw fa-sign-in text-primary')

@@ -88,7 +88,8 @@ class PurchaseOrder(models.Model):
                 name += '\n' + product_lang.description_purchase
 
             # Compute taxes
-            taxes_ids = fpos.map_tax(line.product_id.supplier_taxes_id.filtered(lambda tax: tax.company_id == requisition.company_id)).ids
+            taxes_ids = fpos.map_tax(
+                line.product_id.supplier_taxes_id.filtered(lambda tax: tax.company_id == requisition.company_id)).ids
 
             # Compute quantity and price_unit
             if line.product_uom_id != line.product_id.uom_po_id:
@@ -110,7 +111,8 @@ class PurchaseOrder(models.Model):
 
     def button_confirm(self):
         if self.alternative_po_ids and not self.env.context.get('skip_alternative_check', False):
-            alternative_po_ids = self.alternative_po_ids.filtered(lambda po: po.state in ['draft', 'sent', 'to approve'] and po.id not in self.ids)
+            alternative_po_ids = self.alternative_po_ids.filtered(
+                lambda po: po.state in ['draft', 'sent', 'to approve'] and po.id not in self.ids)
             if alternative_po_ids:
                 view = self.env.ref('purchase_requisition.purchase_requisition_alternative_warning_form')
                 return {
@@ -120,7 +122,8 @@ class PurchaseOrder(models.Model):
                     'res_model': 'purchase.requisition.alternative.warning',
                     'views': [(view.id, 'form')],
                     'target': 'new',
-                    'context': dict(self.env.context, default_alternative_po_ids=alternative_po_ids.ids, default_po_ids=self.ids),
+                    'context': dict(self.env.context, default_alternative_po_ids=alternative_po_ids.ids,
+                                    default_po_ids=self.ids),
                 }
         res = super(PurchaseOrder, self).button_confirm()
         return res
@@ -160,7 +163,8 @@ class PurchaseOrder(models.Model):
             if not self.purchase_group_id and len(self.alternative_po_ids + self) > len(self):
                 # this can create a new group + delete an existing one (or more) when linking to already linked PO(s), but this is
                 # simplier than additional logic checking if exactly 1 exists or merging multiple groups if > 1
-                self.env['purchase.order.group'].create({'order_ids': [Command.set(self.ids + self.alternative_po_ids.ids)]})
+                self.env['purchase.order.group'].create(
+                    {'order_ids': [Command.set(self.ids + self.alternative_po_ids.ids)]})
             elif self.purchase_group_id and len(self.alternative_po_ids + self) <= 1:
                 # write in purchase group isn't called so we have to manually unlink obsolete groups here
                 self.purchase_group_id.unlink()
@@ -222,7 +226,8 @@ class PurchaseOrder(models.Model):
                 price_subtotal = line.price_total_cc
                 price_unit = line.price_total_cc / line.product_qty
                 current_price_subtotal = product_to_best_price_line[line.product_id][0].price_total_cc
-                current_price_unit = product_to_best_price_unit[line.product_id][0].price_total_cc / product_to_best_price_unit[line.product_id][0].product_qty
+                current_price_unit = product_to_best_price_unit[line.product_id][0].price_total_cc / \
+                                     product_to_best_price_unit[line.product_id][0].product_qty
 
                 if current_price_subtotal > price_subtotal:
                     product_to_best_price_line[line.product_id] = line
@@ -233,7 +238,8 @@ class PurchaseOrder(models.Model):
                 elif current_price_unit == price_unit:
                     product_to_best_price_unit[line.product_id] |= line
 
-            if not product_to_best_date_line[line.product_id] or product_to_best_date_line[line.product_id][0].date_planned > line.date_planned:
+            if not product_to_best_date_line[line.product_id] or product_to_best_date_line[line.product_id][
+                0].date_planned > line.date_planned:
                 product_to_best_date_line[line.product_id] = line
             elif product_to_best_date_line[line.product_id][0].date_planned == line.date_planned:
                 product_to_best_date_line[line.product_id] |= line
@@ -262,7 +268,8 @@ class PurchaseOrder(models.Model):
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
 
-    price_total_cc = fields.Monetary(compute='_compute_price_total_cc', string="Company Subtotal", currency_field="company_currency_id", store=True)
+    price_total_cc = fields.Monetary(compute='_compute_price_total_cc', string="Company Subtotal",
+                                     currency_field="company_currency_id", store=True)
     company_currency_id = fields.Many2one(related="company_id.currency_id", string="Company Currency")
 
     @api.depends('price_subtotal', 'order_id.currency_rate')
@@ -316,7 +323,8 @@ class PurchaseOrderLine(models.Model):
 
     def action_choose(self):
         order_lines = (self.order_id | self.order_id.alternative_po_ids).mapped('order_line')
-        order_lines = order_lines.filtered(lambda l: l.product_qty and l.product_id.id in self.product_id.ids and l.id not in self.ids)
+        order_lines = order_lines.filtered(
+            lambda l: l.product_qty and l.product_id.id in self.product_id.ids and l.id not in self.ids)
         if order_lines:
             return order_lines.action_clear_quantities()
         return {

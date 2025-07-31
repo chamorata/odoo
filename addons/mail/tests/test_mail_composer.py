@@ -4,6 +4,7 @@
 import re
 
 from odoo.addons.mail.tests.common import MailCommon
+
 from odoo.exceptions import AccessError
 from odoo.tests import Form, HttpCase, tagged, users
 from odoo.tools import mute_logger
@@ -39,6 +40,7 @@ class TestMailComposer(MailCommon):
             'subject': 'MSO FTW',
             'name': 'Test template with mso conditionals',
         })
+
 
 @tagged('mail_composer')
 class TestMailComposerForm(TestMailComposer):
@@ -284,7 +286,8 @@ class TestMailComposerUI(MailCommon, HttpCase):
                 login=self.user_employee.login
             )
 
-        message_1, message_2, message_3 = self._new_msgs.filtered(lambda message: message.author_id == self.user_employee.partner_id)
+        message_1, message_2, message_3 = self._new_msgs.filtered(
+            lambda message: message.author_id == self.user_employee.partner_id)
         self.assertIn(user.partner_id, message_1.partner_ids)
         self.assertEqual(
             sorted(message_1.attachment_ids.mapped('raw')),

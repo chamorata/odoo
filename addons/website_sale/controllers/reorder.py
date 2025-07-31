@@ -1,9 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.sale.controllers import portal as sale_portal
+
 from odoo.exceptions import AccessError, MissingError
 from odoo.http import request, route
-
-from odoo.addons.sale.controllers import portal as sale_portal
 
 
 class CustomerPortal(sale_portal.CustomerPortal):
@@ -13,8 +13,8 @@ class CustomerPortal(sale_portal.CustomerPortal):
 
     def _get_common_order_line_data(self, line, add_to_cart_allowed=True):
         combination = (
-            line.product_id.product_template_attribute_value_ids
-            | line.product_no_variant_attribute_value_ids
+                line.product_id.product_template_attribute_value_ids
+                | line.product_no_variant_attribute_value_ids
         )
         return {
             'product_template_id': line.product_id.product_tmpl_id.id,

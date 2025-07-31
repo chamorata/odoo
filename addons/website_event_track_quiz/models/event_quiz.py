@@ -16,7 +16,7 @@ class Quiz(models.Model):
         'event.event', related='event_track_id.event_id',
         readonly=True, store=True)
     repeatable = fields.Boolean('Unlimited Tries',
-        help='Let attendees reset the quiz and try again.')
+                                help='Let attendees reset the quiz and try again.')
 
 
 class QuizQuestion(models.Model):
@@ -47,7 +47,9 @@ class QuizQuestion(models.Model):
             if len(question.correct_answer_id) != 1:
                 raise ValidationError(_('Question "%s" must have 1 correct answer to be valid.', question.name))
             if len(question.answer_ids) < 2:
-                raise ValidationError(_('Question "%s" must have 1 correct answer and at least 1 incorrect answer to be valid.', question.name))
+                raise ValidationError(
+                    _('Question "%s" must have 1 correct answer and at least 1 incorrect answer to be valid.',
+                      question.name))
 
 
 class QuizAnswer(models.Model):

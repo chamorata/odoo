@@ -1,12 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import logging
-import pprint
 
-from odoo import _, fields, models
-from odoo.exceptions import UserError
-
-from .authorize_request import AuthorizeAPI
+from odoo import fields, models
 
 _logger = logging.getLogger(__name__)
 

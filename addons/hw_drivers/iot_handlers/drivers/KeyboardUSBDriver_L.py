@@ -2,26 +2,26 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import ctypes
-import evdev
 import json
 import logging
-from lxml import etree
 import os
-from pathlib import Path
-from queue import Queue, Empty
 import re
 import subprocess
-from threading import Lock
 import time
-import urllib3
-from usb import util
+from queue import Queue, Empty
+from threading import Lock
 
-from odoo import http
+import evdev
+import urllib3
+from lxml import etree
 from odoo.addons.hw_drivers.controllers.proxy import proxy_drivers
 from odoo.addons.hw_drivers.driver import Driver
 from odoo.addons.hw_drivers.event_manager import event_manager
 from odoo.addons.hw_drivers.main import iot_devices
 from odoo.addons.hw_drivers.tools import helpers
+from usb import util
+
+from odoo import http
 
 _logger = logging.getLogger(__name__)
 xlib = ctypes.cdll.LoadLibrary('libX11.so.6')
@@ -63,7 +63,7 @@ class KeyboardUSBDriver(Driver):
             54: 'right_shift',
             58: 'caps_lock',
             69: 'num_lock',
-            100: 'alt_gr', # right alt
+            100: 'alt_gr',  # right alt
         }
         self._tracked_modifiers = {modifier: False for modifier in self._scancode_to_modifier.values()}
 
@@ -149,7 +149,8 @@ class KeyboardUSBDriver(Driver):
                                 if data.keystate == 1:
                                     self._tracked_modifiers[modifier_name] = not self._tracked_modifiers[modifier_name]
                             else:
-                                self._tracked_modifiers[modifier_name] = bool(data.keystate)  # 1 for keydown, 0 for keyup
+                                self._tracked_modifiers[modifier_name] = bool(
+                                    data.keystate)  # 1 for keydown, 0 for keyup
                         elif data.keystate == 1:
                             self.key_input(data.scancode)
 
@@ -322,7 +323,8 @@ class KeyboardUSBDriver(Driver):
 
         # Translate Keysym to a character
         key_pressed = ctypes.create_string_buffer(5)
-        xlib.XkbTranslateKeySym(KeyboardUSBDriver.display, ctypes.byref(keysym), 0, ctypes.byref(key_pressed), 5, ctypes.byref(ctypes.c_int()))
+        xlib.XkbTranslateKeySym(KeyboardUSBDriver.display, ctypes.byref(keysym), 0, ctypes.byref(key_pressed), 5,
+                                ctypes.byref(ctypes.c_int()))
         if key_pressed.value:
             return key_pressed.value.decode('utf-8')
         return ''
@@ -341,8 +343,10 @@ class KeyboardUSBDriver(Driver):
                 3 -- Highercase + AltGr
         """
         modifiers = 0
-        uppercase = (self._tracked_modifiers['right_shift'] or self._tracked_modifiers['left_shift']) ^ self._tracked_modifiers['caps_lock']
-        if uppercase or (scancode in [71, 72, 73, 75, 76, 77, 79, 80, 81, 82, 83] and self._tracked_modifiers['num_lock']):
+        uppercase = (self._tracked_modifiers['right_shift'] or self._tracked_modifiers['left_shift']) ^ \
+                    self._tracked_modifiers['caps_lock']
+        if uppercase or (
+                scancode in [71, 72, 73, 75, 76, 77, 79, 80, 81, 82, 83] and self._tracked_modifiers['num_lock']):
             modifiers += 1
 
         if self._tracked_modifiers['alt_gr']:
@@ -370,6 +374,7 @@ class KeyboardUSBDriver(Driver):
                     return barcode
             except Empty:
                 return ''
+
 
 proxy_drivers['scanner'] = KeyboardUSBDriver
 

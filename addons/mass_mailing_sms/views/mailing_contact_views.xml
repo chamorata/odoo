@@ -10,20 +10,21 @@
                 <field name="phone_sanitized" invisible="1"/>
             </xpath>
             <xpath expr="//filter[@name='filter_blacklisted']" position="attributes">
-                <attribute name="domain">['|', ('is_blacklisted','=',True), ('phone_sanitized_blacklisted','=',True)]</attribute>
+                <attribute name="domain">['|', ('is_blacklisted','=',True), ('phone_sanitized_blacklisted','=',True)]
+                </attribute>
             </xpath>
             <xpath expr="//filter[@name='filter_valid_email_recipient']" position="after">
                 <separator/>
                 <filter string="Valid SMS Recipients"
-                    name="filter_valid_sms_recipient"
-                    domain="[('opt_out', '=', False), ('phone_sanitized_blacklisted', '=', False), ('phone_sanitized', '!=', False)]"
-                    invisible="not context.get('default_list_ids')"/>
+                        name="filter_valid_sms_recipient"
+                        domain="[('opt_out', '=', False), ('phone_sanitized_blacklisted', '=', False), ('phone_sanitized', '!=', False)]"
+                        invisible="not context.get('default_list_ids')"/>
             </xpath>
             <xpath expr="//filter[@name='filter_not_email_bl']" position="after">
                 <separator/>
                 <filter string="Exclude Blacklisted Phone"
-                    name="filter_not_phone_bl"
-                    domain="[('phone_sanitized_blacklisted', '=', False)]"/>
+                        name="filter_not_phone_bl"
+                        domain="[('phone_sanitized_blacklisted', '=', False)]"/>
             </xpath>
         </field>
     </record>
@@ -51,9 +52,9 @@
                 <label for="mobile" class="oe_inline"/>
                 <div class="o_row o_row_readonly" name="phone_details">
                     <button name="phone_action_blacklist_remove" class="fa fa-ban text-danger"
-                        title="This phone number is blacklisted for SMS Marketing. Click to unblacklist."
-                        type="object" context="{'default_phone': mobile}" groups="base.group_user"
-                        invisible="not mobile_blacklisted"/>
+                            title="This phone number is blacklisted for SMS Marketing. Click to unblacklist."
+                            type="object" context="{'default_phone': mobile}" groups="base.group_user"
+                            invisible="not mobile_blacklisted"/>
                     <field name="mobile" widget="phone" options="{'enable_sms': True}"/>
                     <field name="phone_sanitized" invisible="1"/>
                     <field name="mobile_blacklisted" invisible="1"/>
@@ -82,7 +83,8 @@
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create a mailing contact
-            </p><p>
+            </p>
+            <p>
                 Mailing contacts allow you to separate your marketing audience from your contact directory.
             </p>
         </field>

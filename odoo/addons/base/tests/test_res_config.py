@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from collections import defaultdict
-from lxml import etree
 import logging
+from collections import defaultdict
+
+from lxml import etree
 
 from odoo import exceptions, Command
 from odoo.tests import Form, TransactionCase, tagged

@@ -8,7 +8,9 @@
                 <field name="product_ids" invisible="1"/>
                 <field name="quant_ids" invisible="1"/>
                 <p>
-                    Those products you added are tracked but lots/serials were not defined. Once applied those can't be changed.<br/>
+                    Those products you added are tracked but lots/serials were not defined. Once applied those can't be
+                    changed.
+                    <br/>
                     Apply anyway?
                 </p>
                 <strong>Tracked product(s):</strong>

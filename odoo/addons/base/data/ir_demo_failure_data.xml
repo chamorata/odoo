@@ -4,19 +4,19 @@
         <field name="model_id" ref="base.model_ir_demo_failure_wizard"/>
         <field name="state">code</field>
         <field name="code">
-failures = env['ir.demo_failure'].search([
-    ('wizard_id', '=', False),
-])
-record = model.create({
-    'failure_ids': [Command.set(failures.ids)],
-})
-action = {
-    'type': 'ir.actions.act_window',
-    'res_id': record.id,
-    'res_model': 'ir.demo_failure.wizard',
-    'target': 'new',
-    'views': [(env.ref('base.demo_failures_dialog').id, 'form')],
-}
+            failures = env['ir.demo_failure'].search([
+            ('wizard_id', '=', False),
+            ])
+            record = model.create({
+            'failure_ids': [Command.set(failures.ids)],
+            })
+            action = {
+            'type': 'ir.actions.act_window',
+            'res_id': record.id,
+            'res_model': 'ir.demo_failure.wizard',
+            'target': 'new',
+            'views': [(env.ref('base.demo_failures_dialog').id, 'form')],
+            }
         </field>
     </record>
 
@@ -26,7 +26,8 @@ action = {
         <field name="arch" type="xml">
             <form>
                 <h3>
-                    The demonstration data of <field name="failures_count"/>
+                    The demonstration data of
+                    <field name="failures_count"/>
                     module(s) failed to install and were disabled
                 </h3>
                 <field name="failure_ids">

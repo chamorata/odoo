@@ -3,10 +3,10 @@ from datetime import datetime
 
 from freezegun import freeze_time
 from lxml import etree
-
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
-from odoo.tools import file_open
+
 from odoo.tests import tagged
+from odoo.tools import file_open
 
 NS_MAP = {
     'cac': 'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2',
@@ -35,7 +35,8 @@ class L10nMyEDITestFileGeneration(AccountTestInvoicingCommon):
         cls.company_data['company'].write({
             'vat': 'C2584563200',
             'l10n_my_edi_mode': 'test',
-            'l10n_my_edi_industrial_classification': cls.env['l10n_my_edi.industry_classification'].search([('code', '=', '01111')]).id,
+            'l10n_my_edi_industrial_classification': cls.env['l10n_my_edi.industry_classification'].search(
+                [('code', '=', '01111')]).id,
             'l10n_my_identification_type': 'BRN',
             'l10n_my_identification_number': '202001234567',
             'state_id': cls.env.ref('base.state_my_jhr').id,
@@ -161,7 +162,8 @@ class L10nMyEDITestFileGeneration(AccountTestInvoicingCommon):
         Simply ensure that in a multi currency environment, the rate is found in the file and is the expected one.
         """
         basic_invoice = self.init_invoice(
-            'out_invoice', currency=self.other_currency, taxes=self.company_data['default_tax_sale'], products=self.product_a
+            'out_invoice', currency=self.other_currency, taxes=self.company_data['default_tax_sale'],
+            products=self.product_a
         )
         basic_invoice.action_post()
 

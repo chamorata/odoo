@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-import uuid
 import base64
 import logging
-
+import uuid
 from collections import defaultdict
+
 from odoo import api, fields, models, _
 from odoo.addons.base.models.res_partner import _tz_get
 from odoo.exceptions import UserError
-from odoo.tools.misc import clean_context
 from odoo.tools import split_every
+from odoo.tools.misc import clean_context
 
 _logger = logging.getLogger(__name__)
 
@@ -40,7 +40,8 @@ class Attendee(models.Model):
     phone = fields.Char('Phone', related='partner_id.phone')
     common_name = fields.Char('Common name', compute='_compute_common_name', store=True)
     access_token = fields.Char('Invitation Token', default=_default_access_token)
-    mail_tz = fields.Selection(_tz_get, compute='_compute_mail_tz', help='Timezone used for displaying time in the mail template')
+    mail_tz = fields.Selection(_tz_get, compute='_compute_mail_tz',
+                               help='Timezone used for displaying time in the mail template')
     # state
     state = fields.Selection(STATE_SELECTION, string='Status', default='needsAction')
     availability = fields.Selection(
@@ -117,7 +118,8 @@ class Attendee(models.Model):
         notified_attendees = self.browse(notified_attendees_ids)
         if isinstance(mail_template, str):
             raise ValueError('Template should be a template record, not an XML ID anymore.')
-        if self.env['ir.config_parameter'].sudo().get_param('calendar.block_mail') or self._context.get("no_mail_to_attendees"):
+        if self.env['ir.config_parameter'].sudo().get_param('calendar.block_mail') or self._context.get(
+                "no_mail_to_attendees"):
             return False
         if not mail_template:
             _logger.warning("No template passed to %s notification process. Skipped.", self)
@@ -128,15 +130,16 @@ class Attendee(models.Model):
 
         # If the mail template has attachments, prepare copies for each attendee (to be added to each attendee's mail)
         if mail_template.attachment_ids:
-
             # Setting res_model to ensure attachments are linked to the msg (otherwise only internal users are allowed link attachments)
-            attachments_values = [a.copy_data({'res_id': 0, 'res_model': 'mail.compose.message'})[0] for a in mail_template.attachment_ids]
+            attachments_values = [a.copy_data({'res_id': 0, 'res_model': 'mail.compose.message'})[0] for a in
+                                  mail_template.attachment_ids]
             attachments_values *= len(self)
             attendee_attachment_ids = self.env['ir.attachment'].create(attachments_values).ids
 
             # Map attendees to their respective attachments
             template_attachment_count = len(mail_template.attachment_ids)
-            attendee_id_attachment_id_map = dict(zip(self.ids, split_every(template_attachment_count, attendee_attachment_ids, list)))
+            attendee_id_attachment_id_map = dict(
+                zip(self.ids, split_every(template_attachment_count, attendee_attachment_ids, list)))
 
         mail_messages = self.env['mail.message']
         for attendee in notified_attendees:

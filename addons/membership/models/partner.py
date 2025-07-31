@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import date
+
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
 from . import membership
@@ -11,31 +12,31 @@ class Partner(models.Model):
     _inherit = 'res.partner'
 
     associate_member = fields.Many2one('res.partner', string='Associate Member',
-        help="A member with whom you want to associate your membership."
-             "It will consider the membership state of the associated member.")
+                                       help="A member with whom you want to associate your membership."
+                                            "It will consider the membership state of the associated member.")
     member_lines = fields.One2many('membership.membership_line', 'partner', string='Membership')
     free_member = fields.Boolean(string='Free Member',
-        help="Select if you want to give free membership.")
+                                 help="Select if you want to give free membership.")
     membership_amount = fields.Float(string='Membership Amount', digits=(16, 2),
-        help='The price negotiated by the partner')
+                                     help='The price negotiated by the partner')
     membership_state = fields.Selection(membership.STATE, compute='_compute_membership_state',
-        string='Current Membership Status', store=True, recursive=True,
-        help='It indicates the membership state.\n'
-             '-Non Member: A partner who has not applied for any membership.\n'
-             '-Cancelled Member: A member who has cancelled his membership.\n'
-             '-Old Member: A member whose membership date has expired.\n'
-             '-Waiting Member: A member who has applied for the membership and whose invoice is going to be created.\n'
-             '-Invoiced Member: A member whose invoice has been created.\n'
-             '-Paying member: A member who has paid the membership fee.')
+                                        string='Current Membership Status', store=True, recursive=True,
+                                        help='It indicates the membership state.\n'
+                                             '-Non Member: A partner who has not applied for any membership.\n'
+                                             '-Cancelled Member: A member who has cancelled his membership.\n'
+                                             '-Old Member: A member whose membership date has expired.\n'
+                                             '-Waiting Member: A member who has applied for the membership and whose invoice is going to be created.\n'
+                                             '-Invoiced Member: A member whose invoice has been created.\n'
+                                             '-Paying member: A member who has paid the membership fee.')
     membership_start = fields.Date(compute='_compute_membership_state',
-        string ='Membership Start Date', store=True,
-        help="Date from which membership becomes active.")
+                                   string='Membership Start Date', store=True,
+                                   help="Date from which membership becomes active.")
     membership_stop = fields.Date(compute='_compute_membership_state',
-        string ='Membership End Date', store=True,
-        help="Date until which membership remains active.")
+                                  string='Membership End Date', store=True,
+                                  help="Date until which membership remains active.")
     membership_cancel = fields.Date(compute='_compute_membership_state',
-        string ='Cancel Membership Date', store=True,
-        help="Date on which membership has been cancelled")
+                                    string='Cancel Membership Date', store=True,
+                                    help="Date on which membership has been cancelled")
 
     @api.depends('member_lines.account_invoice_line',
                  'member_lines.account_invoice_line.move_id.state',
@@ -112,9 +113,10 @@ class Partner(models.Model):
                             'product_id': product.id,
                             'quantity': 1,
                             'price_unit': amount,
-                            'tax_ids': [(6, 0, product.taxes_id.filtered_domain(self.env['account.tax']._check_company_domain(self.env.company)).ids)]
+                            'tax_ids': [(6, 0, product.taxes_id.filtered_domain(
+                                self.env['account.tax']._check_company_domain(self.env.company)).ids)]
                         }
-                     )
+                    )
                 ]
             })
 

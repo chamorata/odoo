@@ -9,7 +9,7 @@
     'depends': ['base_setup', 'web_editor', 'html_editor'],
     'data': [
         'views/res_config_settings_view.xml',
-        ],
+    ],
     'auto_install': True,
     'assets': {
         'web.assets_frontend': [

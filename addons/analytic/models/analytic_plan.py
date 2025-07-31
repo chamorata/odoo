@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import re
-
 from random import randint
 
 from odoo import api, fields, models, _
+from odoo.addons.base.models.ir_model import MODULE_UNINSTALL_FLAG
 from odoo.exceptions import UserError
 from odoo.tools import ormcache, make_index_name, create_index
-
-from odoo.addons.base.models.ir_model import MODULE_UNINSTALL_FLAG
 
 
 class AccountAnalyticPlan(models.Model):
@@ -93,19 +91,22 @@ class AccountAnalyticPlan(models.Model):
 
     def _auto_init(self):
         super()._auto_init()
+
         def precommit():
             self.env['ir.default'].set(
                 self._name,
                 'default_applicability',
                 'optional',
             )
+
         self.env.cr.precommit.add(precommit)
 
     @ormcache()
     def __get_all_plans(self):
         project_plan = self.browse(int(self.env['ir.config_parameter'].sudo().get_param('analytic.project_plan', 0)))
         if not project_plan:
-            raise UserError(_("A 'Project' plan needs to exist and its id needs to be set as `analytic.project_plan` in the system variables"))
+            raise UserError(
+                _("A 'Project' plan needs to exist and its id needs to be set as `analytic.project_plan` in the system variables"))
         other_plans = self.sudo().search([('parent_id', '=', False)]) - project_plan
         return project_plan.id, other_plans.ids
 
@@ -214,9 +215,9 @@ class AccountAnalyticPlan(models.Model):
         record_account_ids = kwargs.get('existing_account_ids', [])
         project_plan, other_plans = self.env['account.analytic.plan']._get_all_plans()
         root_plans = (project_plan + other_plans).filtered(lambda p: (
-            p.all_account_count > 0
-            and not p.parent_id
-            and p._get_applicability(**kwargs) != 'unavailable'
+                p.all_account_count > 0
+                and not p.parent_id
+                and p._get_applicability(**kwargs) != 'unavailable'
         ))
         # If we have accounts that are already selected (before the applicability rules changed or from a model),
         # we want the plans that were unavailable to be shown in the list (and in optional, because the previous
@@ -300,7 +301,8 @@ class AccountAnalyticPlan(models.Model):
         return self.env['ir.model.fields'].sudo().search(domain)
 
     def _sync_all_plan_column(self):
-        model_names = self.env.registry.descendants(['analytic.plan.fields.mixin'], '_inherit') - {'analytic.plan.fields.mixin'}
+        model_names = self.env.registry.descendants(['analytic.plan.fields.mixin'], '_inherit') - {
+            'analytic.plan.fields.mixin'}
         for model in model_names:
             self._sync_plan_column(model)
 

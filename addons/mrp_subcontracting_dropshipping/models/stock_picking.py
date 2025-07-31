@@ -9,7 +9,8 @@ class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
     def _compute_is_dropship(self):
-        dropship_subcontract_pickings = self.filtered(lambda p: p.location_dest_id.is_subcontracting_location and p.location_id.usage == 'supplier')
+        dropship_subcontract_pickings = self.filtered(
+            lambda p: p.location_dest_id.is_subcontracting_location and p.location_id.usage == 'supplier')
         dropship_subcontract_pickings.is_dropship = True
         super(StockPicking, self - dropship_subcontract_pickings)._compute_is_dropship()
 
@@ -73,6 +74,7 @@ class StockPicking(models.Model):
             # confirms a PO with a subcontracted product that should be delivered to a
             # customer (dropshipping). In that case, we can use a default warehouse to
             # get the picking type
-            default_warehouse = self.env['stock.warehouse'].search([('company_id', '=', subcontract_move.company_id.id)], limit=1)
+            default_warehouse = self.env['stock.warehouse'].search(
+                [('company_id', '=', subcontract_move.company_id.id)], limit=1)
             res['picking_type_id'] = default_warehouse.subcontracting_type_id.id,
         return res

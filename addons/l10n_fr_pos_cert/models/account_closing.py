@@ -2,12 +2,13 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from datetime import datetime, timedelta
 
-from odoo import models, api, fields
-from odoo.fields import Datetime as FieldDateTime
 from dateutil.relativedelta import relativedelta
-from odoo.tools.translate import _
+
+from odoo import models, api, fields
 from odoo.exceptions import UserError
+from odoo.fields import Datetime as FieldDateTime
 from odoo.osv.expression import AND
+from odoo.tools.translate import _
 
 
 class AccountClosing(models.Model):
@@ -23,15 +24,25 @@ class AccountClosing(models.Model):
 
     name = fields.Char(help="Frequency and unique sequence number", required=True)
     company_id = fields.Many2one('res.company', string='Company', readonly=True, required=True)
-    date_closing_stop = fields.Datetime(string="Closing Date", help='Date to which the values are computed', readonly=True, required=True)
-    date_closing_start = fields.Datetime(string="Starting Date", help='Date from which the total interval is computed', readonly=True, required=True)
-    frequency = fields.Selection(string='Closing Type', selection=[('daily', 'Daily'), ('monthly', 'Monthly'), ('annually', 'Annual')], readonly=True, required=True)
-    total_interval = fields.Monetary(string="Period Total", help='Total in receivable accounts during the interval, excluding overlapping periods', readonly=True, required=True)
-    cumulative_total = fields.Monetary(string="Cumulative Grand Total", help='Total in receivable accounts since the beginnig of times', readonly=True, required=True)
+    date_closing_stop = fields.Datetime(string="Closing Date", help='Date to which the values are computed',
+                                        readonly=True, required=True)
+    date_closing_start = fields.Datetime(string="Starting Date", help='Date from which the total interval is computed',
+                                         readonly=True, required=True)
+    frequency = fields.Selection(string='Closing Type',
+                                 selection=[('daily', 'Daily'), ('monthly', 'Monthly'), ('annually', 'Annual')],
+                                 readonly=True, required=True)
+    total_interval = fields.Monetary(string="Period Total",
+                                     help='Total in receivable accounts during the interval, excluding overlapping periods',
+                                     readonly=True, required=True)
+    cumulative_total = fields.Monetary(string="Cumulative Grand Total",
+                                       help='Total in receivable accounts since the beginnig of times', readonly=True,
+                                       required=True)
     sequence_number = fields.Integer('Sequence #', readonly=True, required=True)
-    last_order_id = fields.Many2one('pos.order', string='Last Pos Order', help='Last Pos order included in the grand total', readonly=True)
+    last_order_id = fields.Many2one('pos.order', string='Last Pos Order',
+                                    help='Last Pos order included in the grand total', readonly=True)
     last_order_hash = fields.Char(string='Last Order entry\'s inalteralbility hash', readonly=True)
-    currency_id = fields.Many2one('res.currency', string='Currency', help="The company's currency", readonly=True, related='company_id.currency_id', store=True)
+    currency_id = fields.Many2one('res.currency', string='Currency', help="The company's currency", readonly=True,
+                                  related='company_id.currency_id', store=True)
 
     def _query_for_aml(self, company, first_move_sequence_number, date_start):
         params = {'company_id': company.id}
@@ -52,7 +63,7 @@ class AccountClosing(models.Model):
             params['first_move_sequence_number'] = first_move_sequence_number
             query += '''AND m.secure_sequence_number > %(first_move_sequence_number)s'''
         elif date_start:
-            #the first time we compute the closing, we consider only from the installation of the module
+            # the first time we compute the closing, we consider only from the installation of the module
             params['date_start'] = date_start
             query += '''AND m.date >= %(date_start)s'''
 
@@ -90,9 +101,10 @@ class AccountClosing(models.Model):
 
         domain = [('company_id', '=', company.id), ('state', 'in', ('paid', 'done', 'invoiced'))]
         if first_order.l10n_fr_secure_sequence_number is not False and first_order.l10n_fr_secure_sequence_number is not None:
-            domain = AND([domain, [('l10n_fr_secure_sequence_number', '>', first_order.l10n_fr_secure_sequence_number)]])
+            domain = AND(
+                [domain, [('l10n_fr_secure_sequence_number', '>', first_order.l10n_fr_secure_sequence_number)]])
         elif date_start:
-            #the first time we compute the closing, we consider only from the installation of the module
+            # the first time we compute the closing, we consider only from the installation of the module
             domain = AND([domain, [('date_order', '>=', date_start)]])
 
         orders = self.env['pos.order'].search(domain, order='date_order desc')

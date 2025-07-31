@@ -1,9 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details
 
+from odoo.addons.point_of_sale.tests.test_frontend import TestPointOfSaleHttpCommon
+
 from odoo import Command
 from odoo.tests import tagged
-
-from odoo.addons.point_of_sale.tests.test_frontend import TestPointOfSaleHttpCommon
 
 
 @tagged('post_install', '-at_install')
@@ -37,4 +37,4 @@ class TestPOSLoyaltyHistory(TestPointOfSaleHttpCommon):
         self.start_pos_tour("LoyaltyHistoryTour")
         loyalty_card = loyalty_program.coupon_ids.filtered(lambda coupon: coupon.partner_id.id == partner_aaa.id)
         self.assertEqual(len(loyalty_card.history_ids), 1,
-                        "Loyalty History line should be created on pos oder confirmation")
+                         "Loyalty History line should be created on pos oder confirmation")

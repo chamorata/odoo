@@ -6,7 +6,7 @@
         <field name="model">loyalty.card</field>
         <field name="inherit_id" ref="loyalty.loyalty_card_view_form"/>
         <field name="arch" type="xml">
-            <field name="partner_id"  position="after">
+            <field name="partner_id" position="after">
                 <field name="order_id" invisible="not order_id"/>
             </field>
         </field>

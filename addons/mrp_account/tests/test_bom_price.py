@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.exceptions import UserError
 from odoo.tests import common, Form
 from odoo.tools.float_utils import float_round, float_compare
 
@@ -181,7 +180,6 @@ class TestBomPrice(TestBomPriceCommon):
             ],
         }),
 
-
         # -----------------------------------------------------------------
         # Dinning Table Operation Cost(1 Unit)
         # -----------------------------------------------------------------
@@ -193,7 +191,6 @@ class TestBomPrice(TestBomPriceCommon):
         # ----------------------------------------
         # Operation Cost  1 unit = 321.25
         # -----------------------------------------------------------------
-
 
         # --------------------------------------------------------------------------
         # Table Head Operation Cost (1 Dozen)
@@ -207,14 +204,15 @@ class TestBomPrice(TestBomPriceCommon):
         # Operation Cost 1 dozen (306.25 + 15 = 321.25 per dozen) and 25.52 for 1 Unit
         # --------------------------------------------------------------------------
 
-
         self.assertEqual(self.dining_table.standard_price, 1000, "Initial price of the Product should be 1000")
         self.dining_table.button_bom_cost()
         # Total cost of Dining Table = (550) + Total cost of operations (321.25) = 871.25
-        self.assertEqual(float_round(self.dining_table.standard_price, precision_digits=2), 871.25, "After computing price from BoM price should be 871.25")
+        self.assertEqual(float_round(self.dining_table.standard_price, precision_digits=2), 871.25,
+                         "After computing price from BoM price should be 871.25")
         self.Product.browse([self.dining_table.id, self.table_head.id]).action_bom_cost()
         # Total cost of Dining Table = (718.75) + Total cost of all operations (321.25 + 25.52) = 1065.52
-        self.assertEqual(float_compare(self.dining_table.standard_price, 1065.52, precision_digits=2), 0, "After computing price from BoM price should be 1065.52")
+        self.assertEqual(float_compare(self.dining_table.standard_price, 1065.52, precision_digits=2), 0,
+                         "After computing price from BoM price should be 1065.52")
 
     def test_02_compute_byproduct_price(self):
         """Test BoM cost when byproducts with cost share"""
@@ -251,6 +249,7 @@ class TestBomPrice(TestBomPriceCommon):
         self.assertEqual(self.dining_table.standard_price, 1000, "Initial price of the Product should be 1000")
         self.assertEqual(scrap_wood.standard_price, 30, "Initial price of the By-Product should be 30")
         self.dining_table.button_bom_cost()
-        self.assertEqual(self.dining_table.standard_price, 137.5, "After computing price from BoM price should be 137.5")
+        self.assertEqual(self.dining_table.standard_price, 137.5,
+                         "After computing price from BoM price should be 137.5")
         scrap_wood.button_bom_cost()
         self.assertEqual(scrap_wood.standard_price, 20.63, "After computing price from BoM price should be 20.63")

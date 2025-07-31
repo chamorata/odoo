@@ -40,6 +40,7 @@ class PosConfig(models.Model):
         if len(self.basic_employee_ids) > 0:
             domain = AND([
                 domain,
-                ['|', ('user_id', '=', user_id), ('id', 'in', self.basic_employee_ids.ids + self.advanced_employee_ids.ids)]
+                ['|', ('user_id', '=', user_id),
+                 ('id', 'in', self.basic_employee_ids.ids + self.advanced_employee_ids.ids)]
             ])
         return domain

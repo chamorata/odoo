@@ -2,16 +2,16 @@
 <odoo>
 
     <template
-        id="website_sale.s_mega_menu_multi_menus"
-        name="eCommerce: Multi-Menus"
-        groups="base.group_user"
+            id="website_sale.s_mega_menu_multi_menus"
+            name="eCommerce: Multi-Menus"
+            groups="base.group_user"
     >
         <section class="s_mega_menu_multi_menus py-4 o_colored_level o_cc o_cc1">
             <div class="container">
                 <div class="row">
                     <t
-                        t-set="categories"
-                        t-value="request.env['product.public.category'].search([
+                            t-set="categories"
+                            t-value="request.env['product.public.category'].search([
                             ('parent_id', '=', False)
                         ])[:4]"
                     />
@@ -19,17 +19,17 @@
                         <div class="col-12 col-sm py-2 text-center">
                             <h4 class="o_default_snippet_text">
                                 <a
-                                    t-att-href="'/shop/category/%s' % category.id"
-                                    class="nav-link o_default_snippet_text p-0 text-black"
-                                    t-esc="category.name"
+                                        t-att-href="'/shop/category/%s' % category.id"
+                                        class="nav-link o_default_snippet_text p-0 text-black"
+                                        t-esc="category.name"
                                 />
                             </h4>
                             <nav class="nav flex-column">
                                 <t t-foreach="category.child_id" t-as="sub_category">
                                     <a
-                                        t-att-href="'/shop/category/%s' % sub_category.id"
-                                        class="nav-link o_default_snippet_text"
-                                        t-esc="sub_category.name"
+                                            t-att-href="'/shop/category/%s' % sub_category.id"
+                                            class="nav-link o_default_snippet_text"
+                                            t-esc="sub_category.name"
                                     />
                                 </t>
                             </nav>

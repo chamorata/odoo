@@ -1,15 +1,14 @@
-import re
 import sys
 import traceback
 import xmlrpc.client
+from collections import defaultdict
 from datetime import date, datetime
 
-from collections import defaultdict
 from markupsafe import Markup
 
 import odoo
-from odoo.http import Controller, route, dispatch_rpc, request, Response
 from odoo.fields import Date, Datetime, Command
+from odoo.http import Controller, route, dispatch_rpc, request, Response
 from odoo.tools import lazy
 from odoo.tools.misc import frozendict
 
@@ -21,7 +20,7 @@ from odoo.tools.misc import frozendict
 # constants are also defined client-side and must remain in sync.
 # User code must use the exceptions defined in ``odoo.exceptions`` (not
 # create directly ``xmlrpc.client.Fault`` objects).
-RPC_FAULT_CODE_CLIENT_ERROR = 1 # indistinguishable from app. error.
+RPC_FAULT_CODE_CLIENT_ERROR = 1  # indistinguishable from app. error.
 RPC_FAULT_CODE_APPLICATION_ERROR = 1
 RPC_FAULT_CODE_WARNING = 2
 RPC_FAULT_CODE_ACCESS_DENIED = 3
@@ -59,7 +58,7 @@ def xmlrpc_handle_exception_string(e):
         fault = xmlrpc.client.Fault('AccessDenied', str(e))
     elif isinstance(e, odoo.exceptions.UserError):
         fault = xmlrpc.client.Fault('warning -- UserError\n\n' + str(e), '')
-    #InternalError
+    # InternalError
     else:
         info = sys.exc_info()
         formatted_info = "".join(traceback.format_exception(*info))
@@ -119,6 +118,7 @@ def dumps(params: list | tuple | xmlrpc.client.Fault) -> str:
 </methodResponse>
 """
 
+
 # ==========================================================
 # RPC Controller
 # ==========================================================
@@ -127,6 +127,7 @@ def dumps(params: list | tuple | xmlrpc.client.Fault) -> str:
 def _check_request():
     if request.db:
         request.env.cr.close()
+
 
 class RPC(Controller):
     """Handle RPC connections."""

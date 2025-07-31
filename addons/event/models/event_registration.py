@@ -3,10 +3,12 @@
 import logging
 import os
 
-from odoo import _, api, fields, models, SUPERUSER_ID
 from odoo.addons.event.tools.esc_label_tools import print_event_attendees, setup_printer, layout_96x82, layout_96x134
-from odoo.tools import email_normalize, email_normalize_all
+
+from odoo import _, api, fields, models, SUPERUSER_ID
 from odoo.exceptions import AccessError, ValidationError
+from odoo.tools import email_normalize, email_normalize_all
+
 _logger = logging.getLogger(__name__)
 
 
@@ -74,8 +76,9 @@ class EventRegistration(models.Model):
              'Cancelled: registrations cancelled manually')
     # questions
     registration_answer_ids = fields.One2many('event.registration.answer', 'registration_id', string='Attendee Answers')
-    registration_answer_choice_ids = fields.One2many('event.registration.answer', 'registration_id', string='Attendee Selection Answers',
-        domain=[('question_type', '=', 'simple_choice')])
+    registration_answer_choice_ids = fields.One2many('event.registration.answer', 'registration_id',
+                                                     string='Attendee Selection Answers',
+                                                     domain=[('question_type', '=', 'simple_choice')])
     # scheduled mails
     mail_registration_ids = fields.One2many(
         'event.mail.registration', 'registration_id',
@@ -159,7 +162,8 @@ class EventRegistration(models.Model):
 
     @api.constrains('event_id', 'event_ticket_id')
     def _check_event_ticket(self):
-        if any(registration.event_id != registration.event_ticket_id.event_id for registration in self if registration.event_ticket_id):
+        if any(registration.event_id != registration.event_ticket_id.event_id for registration in self if
+               registration.event_ticket_id):
             raise ValidationError(_('Invalid event / ticket choice'))
 
     def _synchronize_partner_values(self, partner, fnames=None):
@@ -216,9 +220,11 @@ class EventRegistration(models.Model):
 
             related_country = self.env['res.country']
             if values.get('partner_id'):
-                related_country = self.env['res.partner'].with_prefetch(all_partner_ids).browse(values['partner_id']).country_id
+                related_country = self.env['res.partner'].with_prefetch(all_partner_ids).browse(
+                    values['partner_id']).country_id
             if not related_country and values.get('event_id'):
-                related_country = self.env['event.event'].with_prefetch(all_event_ids).browse(values['event_id']).country_id
+                related_country = self.env['event.event'].with_prefetch(all_event_ids).browse(
+                    values['event_id']).country_id
             if not related_country:
                 related_country = self.env.company.country_id
             values['phone'] = self._phone_format(number=values['phone'], country=related_country) or values['phone']
@@ -357,12 +363,13 @@ class EventRegistration(models.Model):
         if public_groups:
             public_users = public_groups.sudo().with_context(active_test=False).mapped("users")
         try:
-            is_public = self.sudo().with_context(active_test=False).partner_id.user_ids in public_users if public_users else False
+            is_public = self.sudo().with_context(
+                active_test=False).partner_id.user_ids in public_users if public_users else False
             if self.partner_id and not is_public:
                 self._message_add_suggested_recipient(recipients, partner=self.partner_id, reason=_('Customer'))
             elif self.email:
                 self._message_add_suggested_recipient(recipients, email=self.email, reason=_('Customer Email'))
-        except AccessError:     # no read access rights -> ignore suggested recipients
+        except AccessError:  # no read access rights -> ignore suggested recipients
             pass
         return recipients
 
@@ -384,7 +391,8 @@ class EventRegistration(models.Model):
             # suggested recipients. This heuristic allows to avoid ugly hacks in JS.
             email_normalized = email_normalize(self.email)
             new_partner = message.partner_ids.filtered(
-                lambda partner: partner.email == self.email or (email_normalized and partner.email_normalized == email_normalized)
+                lambda partner: partner.email == self.email or (
+                            email_normalized and partner.email_normalized == email_normalized)
             )
             if new_partner:
                 if new_partner[0].email_normalized:

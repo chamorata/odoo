@@ -1,6 +1,7 @@
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
 from odoo import Command
 from odoo.tools import misc
-from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 
 
 class JoEdiCommon(AccountTestInvoicingCommon):
@@ -82,7 +83,8 @@ class JoEdiCommon(AccountTestInvoicingCommon):
 
     def _l10n_jo_create_refund(self, invoice, return_reason, refund_vals):
         invoice = self._l10n_jo_create_invoice(invoice) if isinstance(invoice, dict) else invoice
-        reversal = self.env['account.move.reversal'].with_context(active_model="account.move", active_ids=invoice.ids).create({
+        reversal = self.env['account.move.reversal'].with_context(active_model="account.move",
+                                                                  active_ids=invoice.ids).create({
             'reason': return_reason,
             'journal_id': invoice.journal_id.id,
         }).refund_moves()

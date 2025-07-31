@@ -1,11 +1,12 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import json
 
-from odoo.exceptions import UserError
-from odoo.tests.common import users, HttpCase, tagged
+from odoo.addons.mail.controllers.thread import ThreadController
 from odoo.addons.website.tools import MockRequest
 from odoo.addons.website_blog.tests.common import TestWebsiteBlogCommon
-from odoo.addons.mail.controllers.thread import ThreadController
+
+from odoo.exceptions import UserError
+from odoo.tests.common import users, HttpCase, tagged
 
 
 class TestWebsiteBlogFlow(TestWebsiteBlogCommon):
@@ -49,7 +50,8 @@ class TestWebsiteBlogFlow(TestWebsiteBlogCommon):
         self.test_blog_post.write({'website_published': True})
 
         # Check publish message has been sent to blog followers
-        publish_message = next((m for m in self.test_blog_post.blog_id.message_ids if m.subtype_id.id == self.ref('website_blog.mt_blog_blog_published')), None)
+        publish_message = next((m for m in self.test_blog_post.blog_id.message_ids if
+                                m.subtype_id.id == self.ref('website_blog.mt_blog_blog_published')), None)
         self.assertEqual(
             publish_message.notified_partner_ids,
             self.user_employee.partner_id | self.user_public.partner_id,
@@ -118,7 +120,7 @@ class TestWebsiteBlogFlow(TestWebsiteBlogCommon):
 
 @tagged('-at_install', 'post_install')
 class TestWebsiteBlogTranslationFlow(HttpCase, TestWebsiteBlogCommon):
-    
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -184,7 +186,8 @@ class TestWebsiteBlogTranslationFlow(HttpCase, TestWebsiteBlogCommon):
         # Modifying content should be reflected in teaser if not manually set
         blog_post_parseltongue.content = "New Parseltongue Content"
         self.assertEqual(self.test_blog_post.teaser, "English Teaser Manual")
-        self.assertEqual(blog_post_parseltongue.teaser, "New Parseltongue Content...", "Should still fallback to content")
+        self.assertEqual(blog_post_parseltongue.teaser, "New Parseltongue Content...",
+                         "Should still fallback to content")
         self.assertEqual(self.test_blog_post.teaser_manual, "English Teaser Manual")
         self.assertFalse(blog_post_parseltongue.teaser_manual, "Should still be empty")
 
@@ -195,25 +198,25 @@ class TestWebsiteBlogTranslationFlow(HttpCase, TestWebsiteBlogCommon):
         # Setup
         br_lang = self.env['res.lang']._activate_lang('pt_BR')
         en_lang = self.env['res.lang']._activate_lang('en_US')
-        
+
         website = self.env['website'].browse(1)
         website.language_ids += br_lang
         website.default_lang_id = br_lang
 
         blog_post = self.env['blog.post'].with_context(lang=br_lang.code).create({
-            'name':'Test Blog',
-            'content':'Todos os blogs', 
+            'name': 'Test Blog',
+            'content': 'Todos os blogs',
         })
         # sha256 encoding of 'Todos os blogs'
         sha = 'c10cb3d9aeec6fe03ed86f24efb262c65ed9de7e9263db1605e3196c343de7a3'
 
         # Ensure that initial translations for 'en_US' and 'pt_BR' are different
         blog_post.update_field_translations('content', {
-            en_lang.code: {'Todos os blogs' : 'All blogs'}
+            en_lang.code: {'Todos os blogs': 'All blogs'}
         })
         self.assertEqual('Todos os blogs', blog_post.with_context(lang=br_lang.code).content)
         self.assertEqual('All blogs', blog_post.with_context(lang=en_lang.code).content)
-        
+
         # Test updating translation
         payload = self._build_payload({
             'model': blog_post._name,

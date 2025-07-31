@@ -21,7 +21,8 @@ class TestWebsitePageManager(odoo.tests.HttpCase):
         })
 
         website.domain = self.base_url()
-        self.start_tour('/odoo#action=website.action_website_pages_list', 'website_page_manager_direct_access', login='admin')
+        self.start_tour('/odoo#action=website.action_website_pages_list', 'website_page_manager_direct_access',
+                        login='admin')
 
     def test_generic_page_diverged_not_shown(self):
         Page = self.env['website.page']
@@ -46,7 +47,8 @@ class TestWebsitePageManager(odoo.tests.HttpCase):
         self.assertEqual(len(list(locs)), 1, "Specific page should be shown as same url")
         specific_page.url = '/something_else'
         locs = website.with_context(website_id=website.id)._enumerate_pages(query_string="/test_diverged")
-        self.assertEqual(len(list(locs)), 0, "Specific page should not be shown as not matching the requested URL and generic should not be shown either as it is shadowed by specific")
+        self.assertEqual(len(list(locs)), 0,
+                         "Specific page should not be shown as not matching the requested URL and generic should not be shown either as it is shadowed by specific")
 
         # test that generic is still shown on other website
         website_2 = Website.create({'name': 'website 2'})

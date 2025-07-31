@@ -3,8 +3,9 @@
 
 import logging
 
-from odoo import api, Command, models, fields
 from odoo.addons.sms.tools.sms_tools import sms_content_to_rendered_html
+
+from odoo import api, Command, models, fields
 from odoo.tools import html2plaintext
 
 _logger = logging.getLogger(__name__)
@@ -40,7 +41,8 @@ class MailThread(models.AbstractModel):
 
     @api.model
     def _search_message_has_sms_error(self, operator, operand):
-        return ['&', ('message_ids.has_sms_error', operator, operand), ('message_ids.author_id', '=', self.env.user.partner_id.id)]
+        return ['&', ('message_ids.has_sms_error', operator, operand),
+                ('message_ids.author_id', '=', self.env.user.partner_id.id)]
 
     @api.returns('mail.message', lambda value: value.id)
     def message_post(self, *args, body='', message_type='notification', **kwargs):
@@ -75,7 +77,8 @@ class MailThread(models.AbstractModel):
         composer = self.env['sms.composer'].with_context(**composer_context).create(create_vals)
         return composer._action_send_sms()
 
-    def _message_sms_with_template(self, template=False, template_xmlid=False, template_fallback='', partner_ids=False, **kwargs):
+    def _message_sms_with_template(self, template=False, template_xmlid=False, template_fallback='', partner_ids=False,
+                                   **kwargs):
         """ Shortcut method to perform a _message_sms with an sms.template.
 
         :param template: a valid sms.template record;
@@ -244,15 +247,18 @@ class MailThread(models.AbstractModel):
                 'is_read': True,  # discard Inbox notification
                 'notification_status': 'ready' if sms.state == 'outgoing' else 'exception',
                 'failure_type': '' if sms.state == 'outgoing' else sms.failure_type,
-            } for sms in sms_all if (sms.partner_id and sms.partner_id.id not in existing_pids) or (not sms.partner_id and sms.number not in existing_numbers)]
+            } for sms in sms_all if (sms.partner_id and sms.partner_id.id not in existing_pids) or (
+                        not sms.partner_id and sms.number not in existing_numbers)]
             if notif_create_values:
                 self.env['mail.notification'].sudo().create(notif_create_values)
 
             if existing_pids or existing_numbers:
                 for sms in sms_all:
                     notif = next((n for n in existing if
-                                 (n.res_partner_id.id in existing_pids and n.res_partner_id.id == sms.partner_id.id) or
-                                 (not n.res_partner_id and n.sms_number in existing_numbers and n.sms_number == sms.number)), False)
+                                  (n.res_partner_id.id in existing_pids and n.res_partner_id.id == sms.partner_id.id) or
+                                  (
+                                              not n.res_partner_id and n.sms_number in existing_numbers and n.sms_number == sms.number)),
+                                 False)
                     if notif:
                         notif.write({
                             'notification_type': 'sms',

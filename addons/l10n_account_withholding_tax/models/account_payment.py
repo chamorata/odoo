@@ -46,7 +46,8 @@ class AccountPayment(models.Model):
             ])
             for payment in self:
                 # To avoid displaying things for nothing, also ensure to only consider withholding taxes matching the payment type.
-                payment_domain = self.env['account.withholding.line']._get_withholding_tax_domain(company=payment.company_id, payment_type=payment.payment_type)
+                payment_domain = self.env['account.withholding.line']._get_withholding_tax_domain(
+                    company=payment.company_id, payment_type=payment.payment_type)
                 payment_withholding_taxes = withholding_taxes.filtered_domain(payment_domain)
 
                 payment.display_withholding = bool(payment_withholding_taxes)
@@ -83,8 +84,8 @@ class AccountPayment(models.Model):
         """
         self.ensure_one()
         if (
-            not self.display_withholding
-            or not self.withholding_line_ids._need_update_withholding_lines_placeholder()
+                not self.display_withholding
+                or not self.withholding_line_ids._need_update_withholding_lines_placeholder()
         ):
             return
 
@@ -105,7 +106,8 @@ class AccountPayment(models.Model):
         if not any(field_name in changed_fields for field_name in self._get_trigger_fields_to_synchronize()):
             return
 
-        withholding_payments = self.filtered(lambda payment: payment.withholding_line_ids and payment.should_withhold_tax)
+        withholding_payments = self.filtered(
+            lambda payment: payment.withholding_line_ids and payment.should_withhold_tax)
         for pay in withholding_payments:
             liquidity_lines, counterpart_lines, write_off_lines = pay._seek_for_lines()
 
@@ -132,24 +134,28 @@ class AccountPayment(models.Model):
             liquidity_line_values['amount_currency'] = liquidity_line_amount_currency
 
             line_ids_commands = [
-                Command.update(liquidity_lines.id, liquidity_line_values) if liquidity_lines else Command.create(liquidity_line_values),
-                Command.update(counterpart_lines.id, counterpart_line_values) if counterpart_lines else Command.create(counterpart_line_values),
-            ] + [
-                Command.delete(line.id)
-                for line in write_off_lines
-            ] + write_off_line_ids_commands
+                                    Command.update(liquidity_lines.id,
+                                                   liquidity_line_values) if liquidity_lines else Command.create(
+                                        liquidity_line_values),
+                                    Command.update(counterpart_lines.id,
+                                                   counterpart_line_values) if counterpart_lines else Command.create(
+                                        counterpart_line_values),
+                                ] + [
+                                    Command.delete(line.id)
+                                    for line in write_off_lines
+                                ] + write_off_line_ids_commands
 
             pay.move_id \
                 .with_context(skip_invoice_sync=True) \
                 .write({
-                    'name': '/',  # Set the name to '/' to allow it to be changed
-                    'date': pay.date,
-                    'partner_id': pay.partner_id.id,
-                    'currency_id': pay.currency_id.id,
-                    'partner_bank_id': pay.partner_bank_id.id,
-                    'line_ids': line_ids_commands,
-                    'journal_id': pay.journal_id.id,
-                })
+                'name': '/',  # Set the name to '/' to allow it to be changed
+                'date': pay.date,
+                'partner_id': pay.partner_id.id,
+                'currency_id': pay.currency_id.id,
+                'partner_bank_id': pay.partner_bank_id.id,
+                'line_ids': line_ids_commands,
+                'journal_id': pay.journal_id.id,
+            })
 
         # All other payments will use the original logic
         super(AccountPayment, self - withholding_payments)._synchronize_to_moves(changed_fields)
@@ -157,7 +163,8 @@ class AccountPayment(models.Model):
     def _generate_move_vals(self, write_off_line_vals=None, force_balance=None, line_ids=None):
         """ Ensure that the generated payment entry takes into account the withholding lines. """
         # EXTEND account
-        move_vals = super()._generate_move_vals(write_off_line_vals=write_off_line_vals, force_balance=force_balance, line_ids=line_ids)
+        move_vals = super()._generate_move_vals(write_off_line_vals=write_off_line_vals, force_balance=force_balance,
+                                                line_ids=line_ids)
         if not self.withholding_line_ids or not self.should_withhold_tax:
             return move_vals
 

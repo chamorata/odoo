@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import models
 from odoo.addons.account.models.chart_template import template
+
+from odoo import models
 
 
 class AccountChartTemplate(models.AbstractModel):

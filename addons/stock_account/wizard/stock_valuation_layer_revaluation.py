@@ -45,10 +45,12 @@ class StockValuationLayerRevaluation(models.TransientModel):
                 res['account_journal_id'] = accounts['stock_journal'].id
         return res
 
-    company_id = fields.Many2one('res.company', "Company", readonly=True, required=True, default=lambda self: self.env.company)
+    company_id = fields.Many2one('res.company', "Company", readonly=True, required=True,
+                                 default=lambda self: self.env.company)
     currency_id = fields.Many2one('res.currency', "Currency", related='company_id.currency_id', required=True)
 
-    adjusted_layer_ids = fields.Many2many('stock.valuation.layer', string="Valuation Layers", help="Valuations layers being adjusted")
+    adjusted_layer_ids = fields.Many2many('stock.valuation.layer', string="Valuation Layers",
+                                          help="Valuations layers being adjusted")
     product_id = fields.Many2one('product.product', "Related product", required=True, check_company=True)
     lot_id = fields.Many2one('stock.lot', "Related lot/serial number", check_company=True)
     property_valuation = fields.Selection(related='product_id.categ_id.property_valuation')
@@ -62,7 +64,8 @@ class StockValuationLayerRevaluation(models.TransientModel):
     reason = fields.Char("Reason", help="Reason of the revaluation")
 
     account_journal_id = fields.Many2one('account.journal', "Journal", check_company=True)
-    account_id = fields.Many2one('account.account', "Counterpart Account", domain=[('deprecated', '=', False)], check_company=True)
+    account_id = fields.Many2one('account.account', "Counterpart Account", domain=[('deprecated', '=', False)],
+                                 check_company=True)
     date = fields.Date("Accounting Date")
 
     @api.depends('current_value_svl', 'current_quantity_svl', 'added_value')
@@ -162,8 +165,10 @@ class StockValuationLayerRevaluation(models.TransientModel):
                 taken_remaining_value = remaining_value
             else:
                 taken_remaining_value = remaining_value_unit_cost * svl.remaining_qty
-            if float_compare(svl.remaining_value + taken_remaining_value, 0, precision_rounding=self.product_id.uom_id.rounding) < 0:
-                raise UserError(_('The value of a stock valuation layer cannot be negative. Landed cost could be use to correct a specific transfer.'))
+            if float_compare(svl.remaining_value + taken_remaining_value, 0,
+                             precision_rounding=self.product_id.uom_id.rounding) < 0:
+                raise UserError(
+                    _('The value of a stock valuation layer cannot be negative. Landed cost could be use to correct a specific transfer.'))
 
             svl.remaining_value += taken_remaining_value
             remaining_value -= taken_remaining_value
@@ -196,13 +201,14 @@ class StockValuationLayerRevaluation(models.TransientModel):
             debit_account_id = accounts.get('stock_valuation') and accounts['stock_valuation'].id
             credit_account_id = self.account_id.id
 
-        move_description = _('%(user)s changed stock valuation from  %(previous)s to %(new_value)s - %(product)s\n%(reason)s',
+        move_description = _(
+            '%(user)s changed stock valuation from  %(previous)s to %(new_value)s - %(product)s\n%(reason)s',
             user=self.env.user.name,
             previous=previous_value_svl,
             new_value=previous_value_svl + self.added_value,
             product=product_id.display_name,
             reason=description,
-        )
+            )
 
         if self.adjusted_layer_ids:
             adjusted_layer_descriptions = [f"{layer.reference} (id: {layer.id})" for layer in self.adjusted_layer_ids]

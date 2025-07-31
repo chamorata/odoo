@@ -3,6 +3,7 @@
 
 from odoo.addons.crm.tests.common import TestCrmCommon
 from odoo.addons.iap.tests.common import MockIAPEnrich
+
 from odoo.tests.common import users
 
 

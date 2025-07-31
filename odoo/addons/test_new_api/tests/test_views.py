@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.tests import common, Form
+from lxml import etree
+
 from odoo.addons.base.tests.test_views import ViewCase
 from odoo.exceptions import ValidationError
-from lxml import etree
+from odoo.tests import common, Form
 
 
 class TestDefaultView(common.TransactionCase):
@@ -70,9 +71,9 @@ class TestViewGroups(ViewCase):
                     <field name="a" readonly="j"/>
                 </form>
             """,
-            expected_message="- field “j” is accessible for groups: Only super user has access<br/>"
-                """- element “&lt;field name=&#34;a&#34; readonly=&#34;j&#34;/&gt;” is shown in the view for groups: &#39;base.group_system&#39; | &#39;base.group_public&#39;""",
-            model='test_new_api.model.some_access')
+                           expected_message="- field “j” is accessible for groups: Only super user has access<br/>"
+                                            """- element “&lt;field name=&#34;a&#34; readonly=&#34;j&#34;/&gt;” is shown in the view for groups: &#39;base.group_system&#39; | &#39;base.group_public&#39;""",
+                           model='test_new_api.model.some_access')
 
         # a: base.group_public,base.group_system > -
         # d: base.group_public,base.group_system > base.group_erp_manager
@@ -81,9 +82,9 @@ class TestViewGroups(ViewCase):
                     <field name="a" readonly="d"/>
                 </form>
             """,
-            expected_message="- field “d” is accessible for groups: &#39;base.group_system&#39;<br/>"
-                """- element “&lt;field name=&#34;a&#34; readonly=&#34;d&#34;/&gt;” is shown in the view for groups: &#39;base.group_system&#39; | &#39;base.group_public&#39;""",
-            model='test_new_api.model.some_access')
+                           expected_message="- field “d” is accessible for groups: &#39;base.group_system&#39;<br/>"
+                                            """- element “&lt;field name=&#34;a&#34; readonly=&#34;d&#34;/&gt;” is shown in the view for groups: &#39;base.group_system&#39; | &#39;base.group_public&#39;""",
+                           model='test_new_api.model.some_access')
 
         # e: base.group_public,base.group_system > base.group_erp_manager,base.group_portal
         # d: base.group_public,base.group_system > base.group_erp_manager
@@ -93,9 +94,9 @@ class TestViewGroups(ViewCase):
                     <field name="e" readonly="d"/>
                 </form>
             """,
-            expected_message="- field “d” is accessible for groups: &#39;base.group_system&#39;<br/>"
-                """- element “&lt;field name=&#34;e&#34; readonly=&#34;d&#34;/&gt;” is shown in the view for groups: &#39;base.group_system&#39; | (&#39;base.group_multi_company&#39; &amp; &#39;base.group_public&#39;)""",
-            model='test_new_api.model.some_access')
+                           expected_message="- field “d” is accessible for groups: &#39;base.group_system&#39;<br/>"
+                                            """- element “&lt;field name=&#34;e&#34; readonly=&#34;d&#34;/&gt;” is shown in the view for groups: &#39;base.group_system&#39; | (&#39;base.group_multi_company&#39; &amp; &#39;base.group_public&#39;)""",
+                           model='test_new_api.model.some_access')
 
         # i: base.group_public,base.group_system > !base.group_portal
         # h: base.group_public,base.group_system > base.group_erp_manager,!base.group_portal
@@ -104,7 +105,7 @@ class TestViewGroups(ViewCase):
                     <field name="i" readonly="h"/>
                 </form>
             """,
-            model='test_new_api.model.some_access')
+                           model='test_new_api.model.some_access')
 
         # i: base.group_public,base.group_system > !base.group_portal
         # j: base.group_public,base.group_system > base.group_portal
@@ -113,7 +114,7 @@ class TestViewGroups(ViewCase):
                     <field name="i" readonly="j"/>
                 </form>
             """,
-            model='test_new_api.model.some_access')
+                           model='test_new_api.model.some_access')
 
         # i: public,portal,user,system > !base.group_portal
         # h: public,portal,user,system > base.group_portal
@@ -122,10 +123,11 @@ class TestViewGroups(ViewCase):
                     <field name="ab" readonly="cd"/>
                 </form>
             """,
-            model='test_new_api.model.all_access')
+                           model='test_new_api.model.all_access')
 
         # must raise for does not exists error
-        with self.assertRaisesRegex(ValidationError, 'Field "ab" does not exist in model "test_new_api.model.some_access"'):
+        with self.assertRaisesRegex(ValidationError,
+                                    'Field "ab" does not exist in model "test_new_api.model.some_access"'):
             self.env['ir.ui.view'].create({
                 'name': 'stuff',
                 'model': 'test_new_api.model.some_access',
@@ -149,7 +151,8 @@ class TestViewGroups(ViewCase):
 
         nodes = form.xpath("//field[@name='ef'][@invisible='True'][@readonly='True']")
         self.assertTrue(nodes, "form should contains the missing field 'ef'")
-        self.assertFalse(nodes[0].get('groups'), "The missing field 'ef' should not have groups (groups equal to the model groups)")
+        self.assertFalse(nodes[0].get('groups'),
+                         "The missing field 'ef' should not have groups (groups equal to the model groups)")
 
     def test_tree(self):
         view = self.env.ref('test_new_api.view_model_some_access_tree')
@@ -169,8 +172,8 @@ class TestViewGroups(ViewCase):
                     <field name="g_id"/>
                 </form>
             """,
-            expected_message="&#39;base.group_erp_manager&#39; &amp; &#39;base.group_multi_company&#39;",
-            model='test_new_api.model2.some_access')
+                           expected_message="&#39;base.group_erp_manager&#39; &amp; &#39;base.group_multi_company&#39;",
+                           model='test_new_api.model2.some_access')
 
         # should not fail, the domain is not applied on xxx_sub_id
         self.env['ir.ui.view'].create({
@@ -185,16 +188,16 @@ class TestViewGroups(ViewCase):
 
     def test_computed_invisible_modifier(self):
         self.env['ir.ui.view'].create({
-                'name': 'stuff',
-                'model': 'test_new_api.computed.modifier',
-                'arch': """
+            'name': 'stuff',
+            'model': 'test_new_api.computed.modifier',
+            'arch': """
                     <form>
                         <field name="foo"/>
                         <field name="bar"/>
                         <field name="name" readonly="sub_foo or sub_bar"/>
                     </form>
                 """,
-            })
+        })
 
         with Form(self.env['test_new_api.computed.modifier']) as form:
             form.name = 'toto'
@@ -225,6 +228,7 @@ class TestViewGroups(ViewCase):
         arch = views['views']['form']['arch']
         form = etree.fromstring(arch)
         discussion_node = form.find("field[@name='discussion']")
-        self.assertIsNotNone(discussion_node, "the properties definition field `discussion` should be added automatically")
+        self.assertIsNotNone(discussion_node,
+                             "the properties definition field `discussion` should be added automatically")
         self.assertEqual(discussion_node.get("invisible"), "True")
         self.assertEqual(discussion_node.get("data-used-by"), "fieldname='attributes' (field,attributes)")

@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from lxml import etree
+from odoo.addons.mail.tests.common import MailCommon
+from odoo.addons.survey.tests import common
 
 from odoo import fields, Command
-from odoo.addons.survey.tests import common
-from odoo.addons.mail.tests.common import MailCommon
 from odoo.exceptions import UserError
 from odoo.tests import Form
 from odoo.tests.common import users
@@ -39,12 +38,14 @@ class TestSurveyInvite(common.TestSurveyCommon, MailCommon):
 
         bad_cases = [
             {},  # empty
-            {   # no question
-                'question_and_page_ids': [Command.create({'is_page': True, 'question_type': False, 'title': 'P0', 'sequence': 1})],
+            {  # no question
+                'question_and_page_ids': [
+                    Command.create({'is_page': True, 'question_type': False, 'title': 'P0', 'sequence': 1})],
             }, {
                 # scored without positive score obtainable
                 'scoring_type': 'scoring_with_answers',
-                'question_and_page_ids': [Command.create({'question_type': 'numerical_box', 'title': 'Q0', 'sequence': 1})],
+                'question_and_page_ids': [
+                    Command.create({'question_type': 'numerical_box', 'title': 'Q0', 'sequence': 1})],
             }, {
                 # scored without positive score obtainable from simple choice
                 'scoring_type': 'scoring_with_answers',
@@ -63,7 +64,7 @@ class TestSurveyInvite(common.TestSurveyCommon, MailCommon):
                     Command.create({'is_page': True, 'question_type': False, 'title': 'P0', 'sequence': 1}),
                     Command.create({'title': 'Q0', 'sequence': 2, 'question_type': 'text_box'})
                 ],
-             },
+            },
         ]
         good_cases = [
             {
@@ -84,7 +85,7 @@ class TestSurveyInvite(common.TestSurveyCommon, MailCommon):
                             Command.create({'value': '2', 'answer_score': 0}),
                         ],
                     }),
-                    Command.create({    # sufficient even if not 'is_correct'
+                    Command.create({  # sufficient even if not 'is_correct'
                         'question_type': 'simple_choice',
                         'title': 'Q1', 'sequence': 2,
                         'suggested_answer_ids': [
@@ -193,7 +194,8 @@ class TestSurveyInvite(common.TestSurveyCommon, MailCommon):
         self.assertEqual(
             set(answers.mapped('email')),
             set([self.customer.email, self.user_emp.email, self.user_portal.email]))
-        self.assertEqual(answers.mapped('partner_id'), self.customer | self.user_emp.partner_id | self.user_portal.partner_id)
+        self.assertEqual(answers.mapped('partner_id'),
+                         self.customer | self.user_emp.partner_id | self.user_portal.partner_id)
 
     @users('survey_manager')
     def test_survey_invite_email_from(self):
@@ -202,7 +204,7 @@ class TestSurveyInvite(common.TestSurveyCommon, MailCommon):
         action['context']['default_send_email'] = True
         invite_form = Form.from_action(self.env, action)
         invite_form.partner_ids.add(self.survey_user.partner_id)
-        invite_form.template_id.write({'email_from':'{{ object.partner_id.email_formatted }}'})
+        invite_form.template_id.write({'email_from': '{{ object.partner_id.email_formatted }}'})
         invite = invite_form.save()
         with self.mock_mail_gateway():
             invite.action_invite()

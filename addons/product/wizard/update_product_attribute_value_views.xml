@@ -12,10 +12,10 @@
                 <footer>
                     <button string="Cancel" special="cancel"/>
                     <button
-                        name="action_confirm"
-                        string="Confirm"
-                        class="btn-primary"
-                        type="object"
+                            name="action_confirm"
+                            string="Confirm"
+                            class="btn-primary"
+                            type="object"
                     />
                 </footer>
             </form>

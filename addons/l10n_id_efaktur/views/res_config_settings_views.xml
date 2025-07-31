@@ -10,7 +10,8 @@
                 <block title="Indonesian Localization" id="l10n_cl_section" invisible="country_code != 'ID'">
                     <setting id="l10n_id_efaktur">
                         <div class="content-group">
-                            <button type="action" name="%(l10n_id_efaktur.efaktur_invoice_action)d" string="Configure Your e-Faktur Ranges" class="btn-link" icon="oi-arrow-right"/>
+                            <button type="action" name="%(l10n_id_efaktur.efaktur_invoice_action)d"
+                                    string="Configure Your e-Faktur Ranges" class="btn-link" icon="oi-arrow-right"/>
                         </div>
                     </setting>
                 </block>

@@ -1,5 +1,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.payment.controllers import portal as payment_portal
 from psycopg2.errors import LockNotAvailable
 
 from odoo import _
@@ -8,7 +9,6 @@ from odoo.fields import Command
 from odoo.http import request, route
 from odoo.tools import SQL
 
-from odoo.addons.payment.controllers import portal as payment_portal
 
 # TODO ANVFE part of payment routes ? /shop/payment ? express_checkout ?
 

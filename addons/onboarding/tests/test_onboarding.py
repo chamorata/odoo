@@ -3,11 +3,11 @@
 
 import unittest
 
+from odoo.addons.mail.tests.common import mail_new_test_user
+from odoo.addons.onboarding.tests.common import TestOnboardingCommon
 from psycopg2 import IntegrityError
 
 from odoo import Command
-from odoo.addons.mail.tests.common import mail_new_test_user
-from odoo.addons.onboarding.tests.common import TestOnboardingCommon
 from odoo.exceptions import ValidationError
 from odoo.tools import mute_logger
 
@@ -41,7 +41,8 @@ class TestOnboarding(TestOnboardingCommon):
         # Once onboarding is done, a key 'onboarding_state' is added to the rendering values
         self.assertDictEqual(
             self.onboarding_1.current_progress_id._get_and_update_onboarding_state(),
-            {self.onboarding_1_step_1.id: 'done', self.onboarding_1_step_2.id: 'just_done', 'onboarding_state': 'just_done'})
+            {self.onboarding_1_step_1.id: 'done', self.onboarding_1_step_2.id: 'just_done',
+             'onboarding_state': 'just_done'})
         # Consolidate values
         self.assertDictEqual(
             self.onboarding_1.current_progress_id._get_and_update_onboarding_state(),

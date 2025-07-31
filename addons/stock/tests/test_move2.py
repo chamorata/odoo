@@ -1,17 +1,16 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from datetime import datetime
 from datetime import timedelta
 
+from dateutil.relativedelta import relativedelta
 from odoo.addons.stock.tests.common import TestStockCommon
-from odoo.exceptions import UserError
 
 from odoo import Command
+from odoo.exceptions import UserError
 from odoo.tests import Form
-from odoo.tools import float_is_zero, float_compare
 
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
 
 class TestPickShip(TestStockCommon):
     def create_pick_ship(self):
@@ -146,7 +145,6 @@ class TestPickShip(TestStockCommon):
         move_2._action_done()
         quants = self.env['stock.quant']._gather(product_unreserve, stock_location, strict=True)
         self.assertEqual(quants[0].reserved_quantity, 2)
-
 
     def test_mto_moves(self):
         """
@@ -291,8 +289,8 @@ class TestPickShip(TestStockCommon):
 
         # return a part of what we've done
         stock_return_picking_form = Form(self.env['stock.return.picking']
-            .with_context(active_ids=picking_pick.ids, active_id=picking_pick.ids[0],
-            active_model='stock.picking'))
+                                         .with_context(active_ids=picking_pick.ids, active_id=picking_pick.ids[0],
+                                                       active_model='stock.picking'))
         stock_return_picking = stock_return_picking_form.save()
         stock_return_picking = stock_return_picking_form.save()
         stock_return_picking.product_return_moves.quantity = 2.0  # Return only 2
@@ -344,10 +342,10 @@ class TestPickShip(TestStockCommon):
 
         # return more than we've done
         stock_return_picking_form = Form(self.env['stock.return.picking']
-            .with_context(active_ids=picking_pick.ids, active_id=picking_pick.ids[0],
-            active_model='stock.picking'))
+                                         .with_context(active_ids=picking_pick.ids, active_id=picking_pick.ids[0],
+                                                       active_model='stock.picking'))
         stock_return_picking = stock_return_picking_form.save()
-        stock_return_picking.product_return_moves.quantity = 12.0 # Return 2 extra
+        stock_return_picking.product_return_moves.quantity = 12.0  # Return 2 extra
         stock_return_picking_action = stock_return_picking.action_create_returns()
         return_pick = self.env['stock.picking'].browse(stock_return_picking_action['res_id'])
 
@@ -374,7 +372,8 @@ class TestPickShip(TestStockCommon):
         warehouse_1.write({
             'resupply_wh_ids': [(6, 0, [warehouse_2.id])]
         })
-        resupply_route = self.env['stock.route'].search([('supplier_wh_id', '=', warehouse_2.id), ('supplied_wh_id', '=', warehouse_1.id)])
+        resupply_route = self.env['stock.route'].search(
+            [('supplier_wh_id', '=', warehouse_2.id), ('supplied_wh_id', '=', warehouse_1.id)])
         self.assertTrue(resupply_route)
         self.productA.write({'route_ids': [(4, resupply_route.id), (4, self.env.ref('stock.route_warehouse0_mto').id)]})
 
@@ -394,12 +393,13 @@ class TestPickShip(TestStockCommon):
         picking_ship.move_ids.write({'procure_method': 'make_to_order'})
 
         self.env['procurement.group'].run_scheduler()
-        next_activity = self.env['mail.activity'].search([('res_model', '=', 'product.template'), ('res_id', '=', self.productA.product_tmpl_id.id)])
+        next_activity = self.env['mail.activity'].search(
+            [('res_model', '=', 'product.template'), ('res_id', '=', self.productA.product_tmpl_id.id)])
         self.assertEqual(picking_ship.state, 'cancel')
         self.assertFalse(next_activity, 'If a next activity has been created if means that scheduler failed\
         and the end of this test do not have sense.')
         self.assertEqual(len(picking_ship.move_ids.mapped('move_orig_ids')), 0,
-        'Scheduler should not create picking pack and pick since ship has been manually cancelled.')
+                         'Scheduler should not create picking pack and pick since ship has been manually cancelled.')
 
     def test_no_backorder_1(self):
         """ Check the behavior of doing less than asked in the picking pick and chosing not to
@@ -586,7 +586,8 @@ class TestPickShip(TestStockCommon):
         picking_ship.move_ids.picked = True
         picking_ship._action_done()
 
-        customer_quantity = self.env['stock.quant']._get_available_quantity(self.productA, customer_location, lot_id=lot)
+        customer_quantity = self.env['stock.quant']._get_available_quantity(self.productA, customer_location,
+                                                                            lot_id=lot)
         self.assertEqual(customer_quantity, 10, 'It should be one product in customer')
 
         # First we create the return picking for pick picking.
@@ -595,8 +596,8 @@ class TestPickShip(TestStockCommon):
         # picking pick as origin move.
 
         stock_return_picking_form = Form(self.env['stock.return.picking']
-            .with_context(active_ids=picking_pick.ids, active_id=picking_pick.ids[0],
-            active_model='stock.picking'))
+                                         .with_context(active_ids=picking_pick.ids, active_id=picking_pick.ids[0],
+                                                       active_model='stock.picking'))
         stock_return_picking = stock_return_picking_form.save()
         stock_return_picking.product_return_moves.quantity = 10.0
         stock_return_picking_action = stock_return_picking.action_create_returns()
@@ -605,8 +606,8 @@ class TestPickShip(TestStockCommon):
         self.assertEqual(return_pick_picking.state, 'waiting')
 
         stock_return_picking_form = Form(self.env['stock.return.picking']
-            .with_context(active_ids=picking_ship.ids, active_id=picking_ship.ids[0],
-            active_model='stock.picking'))
+                                         .with_context(active_ids=picking_ship.ids, active_id=picking_ship.ids[0],
+                                                       active_model='stock.picking'))
         stock_return_picking = stock_return_picking_form.save()
         stock_return_picking.product_return_moves.quantity = 10.0
         stock_return_picking_action = stock_return_picking.action_create_returns()
@@ -631,7 +632,8 @@ class TestPickShip(TestStockCommon):
         self.assertEqual(return_ship_picking.state, 'done')
         self.assertEqual(return_pick_picking.state, 'assigned')
 
-        customer_quantity = self.env['stock.quant']._get_available_quantity(self.productA, customer_location, lot_id=lot)
+        customer_quantity = self.env['stock.quant']._get_available_quantity(self.productA, customer_location,
+                                                                            lot_id=lot)
         self.assertEqual(customer_quantity, 0, 'It should be one product in customer')
 
         pack_quantity = self.env['stock.quant']._get_available_quantity(self.productA, pack_location, lot_id=lot)
@@ -677,8 +679,8 @@ class TestPickShip(TestStockCommon):
         picking_ship._action_done()
 
         stock_return_picking_form = Form(self.env['stock.return.picking']
-            .with_context(active_ids=picking_ship.ids, active_id=picking_ship.ids[0],
-            active_model='stock.picking'))
+                                         .with_context(active_ids=picking_ship.ids, active_id=picking_ship.ids[0],
+                                                       active_model='stock.picking'))
         stock_return_picking = stock_return_picking_form.save()
         stock_return_picking.product_return_moves.quantity = 1.0
         stock_return_picking_action = stock_return_picking.action_create_returns()
@@ -753,7 +755,8 @@ class TestPickShip(TestStockCommon):
         picking_pick.move_ids.quantity = 5.0
         picking_pick.move_ids.picked = True
         backorder_wizard_values = picking_pick.button_validate()
-        backorder_wizard = self.env[(backorder_wizard_values.get('res_model'))].browse(backorder_wizard_values.get('res_id')).with_context(backorder_wizard_values['context'])
+        backorder_wizard = self.env[(backorder_wizard_values.get('res_model'))].browse(
+            backorder_wizard_values.get('res_id')).with_context(backorder_wizard_values['context'])
         backorder_wizard.process()
 
         self.assertTrue(picking_client.move_line_ids, 'A move line should be created.')
@@ -763,7 +766,8 @@ class TestPickShip(TestStockCommon):
         # Should do the same behavior than unreserve
         picking_client.move_line_ids.unlink()
 
-        self.assertEqual(picking_client.move_ids.state, 'waiting', 'The move state should be waiting since nothing is reserved and another origin move still in progess.')
+        self.assertEqual(picking_client.move_ids.state, 'waiting',
+                         'The move state should be waiting since nothing is reserved and another origin move still in progess.')
         self.assertEqual(picking_client.state, 'waiting', 'The picking state should not be ready anymore.')
 
         picking_client.action_assign()
@@ -773,11 +777,14 @@ class TestPickShip(TestStockCommon):
         back_order.move_ids.picked = True
         back_order.button_validate()
 
-        self.assertEqual(picking_client.move_ids.quantity, 10, 'The total quantity should be reserved since everything is available.')
+        self.assertEqual(picking_client.move_ids.quantity, 10,
+                         'The total quantity should be reserved since everything is available.')
         picking_client.move_line_ids.unlink()
 
-        self.assertEqual(picking_client.move_ids.state, 'confirmed', 'The move should be confirmed since all the origin moves are processed.')
-        self.assertEqual(picking_client.state, 'confirmed', 'The picking should be confirmed since all the moves are confirmed.')
+        self.assertEqual(picking_client.move_ids.state, 'confirmed',
+                         'The move should be confirmed since all the origin moves are processed.')
+        self.assertEqual(picking_client.state, 'confirmed',
+                         'The picking should be confirmed since all the moves are confirmed.')
 
     def test_unreserve(self):
         picking_pick, picking_client = self.create_pick_ship()
@@ -815,12 +822,12 @@ class TestPickShip(TestStockCommon):
             }) for i, p in enumerate((self.productA, self.productB, self.productC))]
         })
         for move in picking_client.move_ids:
-            move.quantity = move.product_uom_qty 
+            move.quantity = move.product_uom_qty
         picking_client.move_ids.picked = True
         picking_client.button_validate()
         stock_return_picking_form = Form(self.env['stock.return.picking']
-            .with_context(active_ids=picking_client.ids, active_id=picking_client.ids[0],
-            active_model='stock.picking'))
+                                         .with_context(active_ids=picking_client.ids, active_id=picking_client.ids[0],
+                                                       active_model='stock.picking'))
         return1 = stock_return_picking_form.save()
         return1.product_return_moves.filtered(lambda l: l.product_id.id == self.productB.id).quantity = 5.0
         return_pick = return1.action_create_returns()
@@ -829,8 +836,8 @@ class TestPickShip(TestStockCommon):
         self.assertEqual(return_pick.move_ids.product_id, self.productB)
         self.assertEqual(return_pick.move_ids.product_uom_qty, 5)
         stock_return_picking_form = Form(self.env['stock.return.picking']
-            .with_context(active_ids=picking_client.ids, active_id=picking_client.ids[0],
-            active_model='stock.picking'))
+                                         .with_context(active_ids=picking_client.ids, active_id=picking_client.ids[0],
+                                                       active_model='stock.picking'))
         return2 = stock_return_picking_form.save()
         return_pick_leftorvers = return2.action_create_returns_all()
         return_pick_leftorvers = self.env['stock.picking'].browse(return_pick_leftorvers['res_id'])
@@ -867,8 +874,8 @@ class TestPickShip(TestStockCommon):
 
         # return half in the pick location
         stock_return_picking_form = Form(self.env['stock.return.picking']
-            .with_context(active_ids=picking_client.ids, active_id=picking_client.ids[0],
-            active_model='stock.picking'))
+                                         .with_context(active_ids=picking_client.ids, active_id=picking_client.ids[0],
+                                                       active_model='stock.picking'))
         return1 = stock_return_picking_form.save()
         return1.product_return_moves.quantity = 5.0
         return_to_pick_picking_action = return1.action_create_returns()
@@ -880,8 +887,8 @@ class TestPickShip(TestStockCommon):
 
         # return the remainig products in the return warehouse
         stock_return_picking_form = Form(self.env['stock.return.picking']
-            .with_context(active_ids=picking_client.ids, active_id=picking_client.ids[0],
-            active_model='stock.picking'))
+                                         .with_context(active_ids=picking_client.ids, active_id=picking_client.ids[0],
+                                                       active_model='stock.picking'))
         return2 = stock_return_picking_form.save()
         return2.product_return_moves.quantity = 5.0
         return_to_return_picking_action = return2.action_create_returns()
@@ -894,7 +901,8 @@ class TestPickShip(TestStockCommon):
 
         self.assertEqual(self.env['stock.quant']._get_available_quantity(self.productA, pick_location), 5.0)
         self.assertEqual(self.env['stock.quant']._get_available_quantity(self.productA, return_location), 5.0)
-        self.assertEqual(len(self.env['stock.quant'].search([('product_id', '=', self.productA.id), ('quantity', '!=', 0)])), 2)
+        self.assertEqual(
+            len(self.env['stock.quant'].search([('product_id', '=', self.productA.id), ('quantity', '!=', 0)])), 2)
 
     def test_return_lot(self):
         """ With two distinct deliveries for the same product tracked by lot, ensure that the
@@ -958,6 +966,7 @@ class TestPickShip(TestStockCommon):
         self.assertEqual(return_pick.move_line_ids[1].lot_id, lot3)
         self.assertEqual(return_pick.move_line_ids[1].quantity, 6)
         self.assertEqual(return_pick.picking_type_id, picking_client.location_id.warehouse_id.in_type_id)
+
 
 class TestSinglePicking(TestStockCommon):
     def test_backorder_1(self):
@@ -1262,7 +1271,8 @@ class TestSinglePicking(TestStockCommon):
         delivery_order.move_ids[0].picked = True
         delivery_order._action_done()
         self.assertEqual(self.env['stock.quant']._get_available_quantity(self.productA, pack_location), 0.0)
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(self.productA, pack_location, allow_negative=True), -1.0)
+        self.assertEqual(
+            self.env['stock.quant']._get_available_quantity(self.productA, pack_location, allow_negative=True), -1.0)
 
         self.assertEqual(move1.product_qty, 1.0)
         self.assertEqual(move1.quantity, 2.0)
@@ -1306,7 +1316,8 @@ class TestSinglePicking(TestStockCommon):
         delivery_order.move_ids[0].picked = True
         delivery_order._action_done()
         self.assertEqual(self.env['stock.quant']._get_available_quantity(self.productA, pack_location), 0.0)
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(self.productA, pack_location, allow_negative=True), -2.0)
+        self.assertEqual(
+            self.env['stock.quant']._get_available_quantity(self.productA, pack_location, allow_negative=True), -2.0)
 
         self.assertEqual(move1.product_qty, 1.0)
         self.assertEqual(move1.quantity, 3.0)
@@ -1399,7 +1410,8 @@ class TestSinglePicking(TestStockCommon):
         product with one move line. After adding a second unit in stock and recheck availability.
         The DO should have 2 reserved unit, be in available state and have only one move line.
         """
-        self.env['stock.quant']._update_available_quantity(self.productA, self.env['stock.location'].browse(self.stock_location), 1.0)
+        self.env['stock.quant']._update_available_quantity(self.productA,
+                                                           self.env['stock.location'].browse(self.stock_location), 1.0)
         delivery_order = self.env['stock.picking'].create({
             'location_id': self.stock_location,
             'location_dest_id': self.customer_location,
@@ -1613,12 +1625,12 @@ class TestSinglePicking(TestStockCommon):
         """ Check the behavior of a picking when `use_create_lot` and `use_existing_lot` are
         set to False and there's a move for a tracked product.
         """
-        self.env['stock.picking.type']\
-            .browse(self.picking_type_out)\
+        self.env['stock.picking.type'] \
+            .browse(self.picking_type_out) \
             .write({
-                'use_create_lots': False,
-                'use_existing_lots': False,
-            })
+            'use_create_lots': False,
+            'use_existing_lots': False,
+        })
         self.productA.tracking = 'lot'
 
         delivery_order = self.env['stock.picking'].create({
@@ -1648,12 +1660,12 @@ class TestSinglePicking(TestStockCommon):
         """ Check the behavior of a picking when `use_create_lot` and `use_existing_lot` are
         set to True and there's a move for a tracked product.
         """
-        self.env['stock.picking.type']\
-            .browse(self.picking_type_out)\
+        self.env['stock.picking.type'] \
+            .browse(self.picking_type_out) \
             .write({
-                'use_create_lots': True,
-                'use_existing_lots': True,
-            })
+            'use_create_lots': True,
+            'use_existing_lots': True,
+        })
         self.productA.tracking = 'lot'
 
         delivery_order = self.env['stock.picking'].create({
@@ -1690,12 +1702,12 @@ class TestSinglePicking(TestStockCommon):
         """ Check the behavior of a picking when `use_create_lot` is set to True and
         `use_existing_lot` is set to False and there's a move for a tracked product.
         """
-        self.env['stock.picking.type']\
-            .browse(self.picking_type_out)\
+        self.env['stock.picking.type'] \
+            .browse(self.picking_type_out) \
             .write({
-                'use_create_lots': True,
-                'use_existing_lots': False,
-            })
+            'use_create_lots': True,
+            'use_existing_lots': False,
+        })
         self.productA.tracking = 'lot'
 
         delivery_order = self.env['stock.picking'].create({
@@ -1732,12 +1744,12 @@ class TestSinglePicking(TestStockCommon):
         """ Check the behavior of a picking when `use_create_lot` is set to False and
         `use_existing_lot` is set to True and there's a move for a tracked product.
         """
-        self.env['stock.picking.type']\
-            .browse(self.picking_type_out)\
+        self.env['stock.picking.type'] \
+            .browse(self.picking_type_out) \
             .write({
-                'use_create_lots': False,
-                'use_existing_lots': True,
-            })
+            'use_create_lots': False,
+            'use_existing_lots': True,
+        })
         self.productA.tracking = 'lot'
 
         delivery_order = self.env['stock.picking'].create({
@@ -1768,12 +1780,12 @@ class TestSinglePicking(TestStockCommon):
 
         # creating a lot from the view should raise
         with self.assertRaises(UserError):
-            self.env['stock.lot']\
-                .with_context(active_picking_id=delivery_order.id)\
+            self.env['stock.lot'] \
+                .with_context(active_picking_id=delivery_order.id) \
                 .create({
-                    'name': 'lot1',
-                    'product_id': self.productA.id,
-                })
+                'name': 'lot1',
+                'product_id': self.productA.id,
+            })
 
         # enter an existing lot_id, should work
         lot1 = self.env['stock.lot'].create({
@@ -1786,12 +1798,12 @@ class TestSinglePicking(TestStockCommon):
     def test_use_create_lot_use_existing_lot_5(self):
         """Check if a quant without lot exist, it will be decrease even if a
         quant with the right lot exists but is empty"""
-        self.env['stock.picking.type']\
-            .browse(self.picking_type_in)\
+        self.env['stock.picking.type'] \
+            .browse(self.picking_type_in) \
             .write({
-                'use_create_lots': False,
-                'use_existing_lots': False,
-            })
+            'use_create_lots': False,
+            'use_existing_lots': False,
+        })
         self.productA.tracking = 'lot'
 
         receipt = self.env['stock.picking'].create({
@@ -1895,8 +1907,10 @@ class TestSinglePicking(TestStockCommon):
         })
         receipt.action_confirm()
         self.assertEqual(len(receipt.move_ids), 2, 'Moves were not merged')
-        self.assertEqual(receipt.move_ids.filtered(lambda m: m.product_id == self.productA).product_uom_qty, 9, 'Merged quantity is not correct')
-        self.assertEqual(receipt.move_ids.filtered(lambda m: m.product_id == self.productB).product_uom_qty, 5, 'Merge should not impact product B reserved quantity')
+        self.assertEqual(receipt.move_ids.filtered(lambda m: m.product_id == self.productA).product_uom_qty, 9,
+                         'Merged quantity is not correct')
+        self.assertEqual(receipt.move_ids.filtered(lambda m: m.product_id == self.productB).product_uom_qty, 5,
+                         'Merge should not impact product B reserved quantity')
 
     def test_merge_moves_2(self):
         receipt = self.env['stock.picking'].create({
@@ -2044,7 +2058,10 @@ class TestSinglePicking(TestStockCommon):
         receipt.action_confirm()
         self.assertEqual(len(receipt.move_ids), 3, 'Moves were not merged')
         self.assertEqual(receipt.move_ids.filtered(lambda m: m.product_id == self.productA
-            and m.never_product_template_attribute_value_ids == tmpl_attr_lines.product_template_value_ids[1]).product_uom_qty, 6, 'Merged quantity is not correct')
+                                                             and m.never_product_template_attribute_value_ids ==
+                                                             tmpl_attr_lines.product_template_value_ids[
+                                                                 1]).product_uom_qty, 6,
+                         'Merged quantity is not correct')
 
     def test_merge_chained_moves(self):
         """ Imagine multiple step reception. Two different receipt picking for the same product should only generate
@@ -2095,7 +2112,8 @@ class TestSinglePicking(TestStockCommon):
         # Check following move has been created and grouped in one picking.
         self.assertTrue(move_receipt_1.move_dest_ids, 'No move created from push rules')
         self.assertTrue(move_receipt_2.move_dest_ids, 'No move created from push rules')
-        self.assertEqual(move_receipt_1.move_dest_ids.picking_id, move_receipt_2.move_dest_ids.picking_id, 'Destination moves should be in the same picking')
+        self.assertEqual(move_receipt_1.move_dest_ids.picking_id, move_receipt_2.move_dest_ids.picking_id,
+                         'Destination moves should be in the same picking')
 
         # Check link for input move are correct.
         input_move = move_receipt_2.move_dest_ids
@@ -2110,7 +2128,8 @@ class TestSinglePicking(TestStockCommon):
         # Check link for quality check move are also correct.
         qc_move = input_move.move_dest_ids
         self.assertEqual(len(qc_move), 1)
-        self.assertTrue(qc_move.move_orig_ids == input_move, 'Move between QC and stock should only have the input move as origin')
+        self.assertTrue(qc_move.move_orig_ids == input_move,
+                        'Move between QC and stock should only have the input move as origin')
 
     def test_merge_chained_moves_multi_confirm(self):
         """ Imagine multiple step reception. A receipt picking for the same product should by add to
@@ -2151,7 +2170,7 @@ class TestSinglePicking(TestStockCommon):
             'product_uom': self.productB.uom_id.id,
             'picking_id': receipt2.id,
             'location_id': warehouse.wh_input_stock_loc_id.id,
-            'location_dest_id':  warehouse.wh_qc_stock_loc_id.id,
+            'location_dest_id': warehouse.wh_qc_stock_loc_id.id,
         })
         move2_receipt_2 = self.MoveObj.create({
             'name': self.productB.name,
@@ -2169,17 +2188,22 @@ class TestSinglePicking(TestStockCommon):
 
         # Check following move has been created
         self.assertTrue(move_receipt_1.move_dest_ids, 'No move created from push rules')
-        self.assertFalse((move1_receipt_2 | move2_receipt_2).exists().move_dest_ids, 'Push rule shoudn\'t be triggered yet')
-        self.assertEqual(len((move1_receipt_2 | move2_receipt_2).exists()), 1, 'Move has been merged with the other one')
-        self.assertEqual(move_receipt_1.move_dest_ids.picking_id, receipt2, 'Dest Move of receipt1 should be in the receipt2')
+        self.assertFalse((move1_receipt_2 | move2_receipt_2).exists().move_dest_ids,
+                         'Push rule shoudn\'t be triggered yet')
+        self.assertEqual(len((move1_receipt_2 | move2_receipt_2).exists()), 1,
+                         'Move has been merged with the other one')
+        self.assertEqual(move_receipt_1.move_dest_ids.picking_id, receipt2,
+                         'Dest Move of receipt1 should be in the receipt2')
 
         # Check no move is still in draft
         self.assertTrue("draft" not in (receipt1 | receipt2).move_ids.mapped("state"))
 
         # Check the content of the pickings
         self.assertEqual(receipt1.move_ids.mapped("product_uom_qty"), [5])
-        self.assertEqual(receipt2.move_ids.filtered(lambda m: m.product_id == self.productB).mapped("product_uom_qty"), [3])
-        self.assertEqual(receipt2.move_ids.filtered(lambda m: m.product_id == self.productA).mapped("product_uom_qty"), [5])
+        self.assertEqual(receipt2.move_ids.filtered(lambda m: m.product_id == self.productB).mapped("product_uom_qty"),
+                         [3])
+        self.assertEqual(receipt2.move_ids.filtered(lambda m: m.product_id == self.productA).mapped("product_uom_qty"),
+                         [5])
 
     def test_empty_moves_validation_1(self):
         """ Use button validate on a picking that contains only moves
@@ -2548,10 +2572,12 @@ class TestSinglePicking(TestStockCommon):
         })
         picking.action_confirm()
         self.assertFalse(picking.move_line_ids)
-        self.env['stock.quant']._update_available_quantity(product, self.env['stock.location'].browse(self.stock_location), 5)
+        self.env['stock.quant']._update_available_quantity(product,
+                                                           self.env['stock.location'].browse(self.stock_location), 5)
         self.env['procurement.group'].run_scheduler()
         self.assertRecordValues(picking.move_line_ids, [{'state': 'partially_available', 'quantity': 5.0}])
-        self.env['stock.quant']._update_available_quantity(product, self.env['stock.location'].browse(self.stock_location), 10)
+        self.env['stock.quant']._update_available_quantity(product,
+                                                           self.env['stock.location'].browse(self.stock_location), 10)
         self.env['procurement.group'].run_scheduler()
         self.assertRecordValues(picking.move_line_ids, [{'state': 'assigned', 'quantity': 10.0}])
 
@@ -2637,41 +2663,45 @@ class TestSinglePicking(TestStockCommon):
         })
         delivery.picking_type_id.reservation_method = 'at_confirm'
         delivery.action_confirm()
-        self.assertEqual(delivery.move_line_ids.mapped(lambda sml: (sml.location_id.name, sml.lot_id.name, sml.quantity)), [
-            ('Shell 1', 'LOT005', 10.0),
-            ('Shell 2', 'LOT004', 10.0),
-            ('Shell 3', 'LOT003', 10.0),
-            ('Shell 4', 'LOT002', 10.0),
-            ('Shell 5', 'LOT001', 10.0),
-        ])
+        self.assertEqual(
+            delivery.move_line_ids.mapped(lambda sml: (sml.location_id.name, sml.lot_id.name, sml.quantity)), [
+                ('Shell 1', 'LOT005', 10.0),
+                ('Shell 2', 'LOT004', 10.0),
+                ('Shell 3', 'LOT003', 10.0),
+                ('Shell 4', 'LOT002', 10.0),
+                ('Shell 5', 'LOT001', 10.0),
+            ])
         # Decrease the quantity to 45 units
         with Form(delivery) as delivery_form:
             with delivery_form.move_ids_without_package.edit(0) as move:
                 move.quantity = 45
-        self.assertEqual(delivery.move_line_ids.mapped(lambda sml: (sml.location_id.name, sml.lot_id.name, sml.quantity)), [
-            ('Shell 1', 'LOT005', 10.0),
-            ('Shell 2', 'LOT004', 10.0),
-            ('Shell 3', 'LOT003', 10.0),
-            ('Shell 4', 'LOT002', 10.0),
-            ('Shell 5', 'LOT001', 5.0),
-        ])
+        self.assertEqual(
+            delivery.move_line_ids.mapped(lambda sml: (sml.location_id.name, sml.lot_id.name, sml.quantity)), [
+                ('Shell 1', 'LOT005', 10.0),
+                ('Shell 2', 'LOT004', 10.0),
+                ('Shell 3', 'LOT003', 10.0),
+                ('Shell 4', 'LOT002', 10.0),
+                ('Shell 5', 'LOT001', 5.0),
+            ])
         # Decrease the quantity to 25 units
         with Form(delivery) as delivery_form:
             with delivery_form.move_ids_without_package.edit(0) as move:
                 move.quantity = 25
-        self.assertEqual(delivery.move_line_ids.mapped(lambda sml: (sml.location_id.name, sml.lot_id.name, sml.quantity)), [
-            ('Shell 1', 'LOT005', 10.0),
-            ('Shell 2', 'LOT004', 10.0),
-            ('Shell 3', 'LOT003', 5.0),
-        ])
+        self.assertEqual(
+            delivery.move_line_ids.mapped(lambda sml: (sml.location_id.name, sml.lot_id.name, sml.quantity)), [
+                ('Shell 1', 'LOT005', 10.0),
+                ('Shell 2', 'LOT004', 10.0),
+                ('Shell 3', 'LOT003', 5.0),
+            ])
         # Decrease the quantity to 12 units
         with Form(delivery) as delivery_form:
             with delivery_form.move_ids_without_package.edit(0) as move:
                 move.quantity = 12
-        self.assertEqual(delivery.move_line_ids.mapped(lambda sml: (sml.location_id.name, sml.lot_id.name, sml.quantity)), [
-            ('Shell 1', 'LOT005', 10.0),
-            ('Shell 2', 'LOT004', 2.0),
-        ])
+        self.assertEqual(
+            delivery.move_line_ids.mapped(lambda sml: (sml.location_id.name, sml.lot_id.name, sml.quantity)), [
+                ('Shell 1', 'LOT005', 10.0),
+                ('Shell 2', 'LOT004', 2.0),
+            ])
 
     def test_onchange_picking_locations(self):
         """
@@ -2698,7 +2728,7 @@ class TestSinglePicking(TestStockCommon):
             picking_form.location_dest_id = new_destination
         picking = picking_form.save()
         self.assertRecordValues(picking.move_ids, [
-            { 'location_id': new_location.id, 'location_dest_id': new_destination.id }
+            {'location_id': new_location.id, 'location_dest_id': new_destination.id}
         ])
 
     def test_validate_picking_twice(self):
@@ -3018,12 +3048,14 @@ class TestRoutes(TestStockCommon):
         warehouse_1.write({
             'resupply_wh_ids': [(6, 0, [warehouse_2.id])]
         })
-        resupply_route = self.env['stock.route'].search([('supplier_wh_id', '=', warehouse_2.id), ('supplied_wh_id', '=', warehouse_1.id)])
+        resupply_route = self.env['stock.route'].search(
+            [('supplier_wh_id', '=', warehouse_2.id), ('supplied_wh_id', '=', warehouse_1.id)])
         self.assertTrue(resupply_route, "Ressuply route not found")
         self.product1.write({'route_ids': [(4, resupply_route.id), (4, self.env.ref('stock.route_warehouse0_mto').id)]})
         self.wh = warehouse_1
 
-        replenish_wizard = self.env['product.replenish'].with_context(default_product_tmpl_id=self.product1.product_tmpl_id.id).create({
+        replenish_wizard = self.env['product.replenish'].with_context(
+            default_product_tmpl_id=self.product1.product_tmpl_id.id).create({
             'product_id': self.product1.id,
             'product_tmpl_id': self.product1.product_tmpl_id.id,
             'product_uom_id': self.uom_unit.id,
@@ -3041,7 +3073,7 @@ class TestRoutes(TestStockCommon):
             last_picking_id = self.env[model_name].browse(int(picking_id))
         self.assertTrue(last_picking_id, 'Picking not found')
         move_line = last_picking_id.move_ids.search([('product_id', '=', self.product1.id)])
-        self.assertTrue(move_line,'The product is not in the picking')
+        self.assertTrue(move_line, 'The product is not in the picking')
         self.assertEqual(move_line[0].product_uom_qty, self.product_uom_qty, 'Quantities does not match')
         self.assertEqual(move_line[1].product_uom_qty, self.product_uom_qty, 'Quantities does not match')
 
@@ -3325,7 +3357,6 @@ class TestRoutes(TestStockCommon):
             'route_ids': [(4, route_on_packaging.id, 0)]
         })
 
-
         move1 = self.env['stock.move'].create({
             'name': 'move with a route',
             'location_id': stock_location.id,
@@ -3517,7 +3548,8 @@ class TestAutoAssign(TestStockCommon):
         # 'by_date' picking w/ 1 day before scheduled date auto-assign setting, set to 5 days in advance => shouldn't auto-assign
         customer_picking2 = customer_picking1.copy({'name': "Delivery 2",
                                                     'picking_type_id': picking_type_out2.id,
-                                                    'scheduled_date': customer_picking1.scheduled_date + timedelta(days=5)})
+                                                    'scheduled_date': customer_picking1.scheduled_date + timedelta(
+                                                        days=5)})
         # 'by_date' picking w/ 10 days before scheduled date auto-assign setting, set to 5 days in advance => should auto-assign
         customer_picking3 = customer_picking2.copy({'name': "Delivery 3", 'picking_type_id': picking_type_out3.id})
         customer_picking4 = customer_picking3.copy({'name': "Delivery 4", 'picking_type_id': picking_type_out3.id})
@@ -3558,14 +3590,20 @@ class TestAutoAssign(TestStockCommon):
         customer_picking1.action_assign()
         customer_picking2.action_assign()
         customer_picking3.action_assign()
-        self.assertEqual(customer_picking1.move_ids.quantity, 0, "There should be no products available to reserve yet.")
-        self.assertEqual(customer_picking2.move_ids.quantity, 0, "There should be no products available to reserve yet.")
-        self.assertEqual(customer_picking3.move_ids.quantity, 0, "There should be no products available to reserve yet.")
+        self.assertEqual(customer_picking1.move_ids.quantity, 0,
+                         "There should be no products available to reserve yet.")
+        self.assertEqual(customer_picking2.move_ids.quantity, 0,
+                         "There should be no products available to reserve yet.")
+        self.assertEqual(customer_picking3.move_ids.quantity, 0,
+                         "There should be no products available to reserve yet.")
 
-        self.assertFalse(customer_picking1.move_ids.reservation_date, "Reservation Method: 'manual' shouldn't have a reservation_date")
-        self.assertEqual(customer_picking2.move_ids.reservation_date, (customer_picking2.scheduled_date - timedelta(days=1)).date(),
+        self.assertFalse(customer_picking1.move_ids.reservation_date,
+                         "Reservation Method: 'manual' shouldn't have a reservation_date")
+        self.assertEqual(customer_picking2.move_ids.reservation_date,
+                         (customer_picking2.scheduled_date - timedelta(days=1)).date(),
                          "Reservation Method: 'by_date' should have a reservation_date = scheduled_date - reservation_days_before")
-        self.assertFalse(customer_picking5.move_ids.reservation_date, "Reservation Method: 'at_confirm' shouldn't have a reservation_date until confirmed")
+        self.assertFalse(customer_picking5.move_ids.reservation_date,
+                         "Reservation Method: 'at_confirm' shouldn't have a reservation_date until confirmed")
 
         # create supplier picking and move
         supplier_picking = self.env['stock.picking'].create({
@@ -3587,15 +3625,20 @@ class TestAutoAssign(TestStockCommon):
         supplier_move.picked = True
         supplier_picking._action_done()
 
-        self.assertEqual(customer_picking1.move_ids.quantity, 0, "Reservation Method: 'manual' shouldn't ever auto-assign")
-        self.assertEqual(customer_picking2.move_ids.quantity, 0, "Reservation Method: 'by_date' shouldn't auto-assign when not within reservation date range")
-        self.assertEqual(customer_picking3.move_ids.quantity, 10, "Reservation Method: 'by_date' should auto-assign when within reservation date range")
+        self.assertEqual(customer_picking1.move_ids.quantity, 0,
+                         "Reservation Method: 'manual' shouldn't ever auto-assign")
+        self.assertEqual(customer_picking2.move_ids.quantity, 0,
+                         "Reservation Method: 'by_date' shouldn't auto-assign when not within reservation date range")
+        self.assertEqual(customer_picking3.move_ids.quantity, 10,
+                         "Reservation Method: 'by_date' should auto-assign when within reservation date range")
         self.assertEqual(self.env['stock.quant']._get_available_quantity(self.productA, stock_location), 40)
 
         customer_picking4.action_confirm()
         customer_picking5.action_confirm()
-        self.assertEqual(customer_picking4.move_ids.quantity, 10, "Reservation Method: 'by_date' should auto-assign when within reservation date range at confirmation")
-        self.assertEqual(customer_picking5.move_ids.quantity, 10, "Reservation Method: 'at_confirm' should auto-assign at confirmation")
+        self.assertEqual(customer_picking4.move_ids.quantity, 10,
+                         "Reservation Method: 'by_date' should auto-assign when within reservation date range at confirmation")
+        self.assertEqual(customer_picking5.move_ids.quantity, 10,
+                         "Reservation Method: 'at_confirm' should auto-assign at confirmation")
 
     def test_serial_lot_ids(self):
         self.stock_location = self.env.ref('stock.stock_location_stock')
@@ -3649,7 +3692,7 @@ class TestAutoAssign(TestStockCommon):
         move.lot_ids = [(4, lot1.id)]
         move.lot_ids = [(4, lot2.id)]
         move.lot_ids = [(4, lot3.id)]
-        self.assertEqual(move.quantity, 3.0/12.0)
+        self.assertEqual(move.quantity, 3.0 / 12.0)
 
     def test_do_not_merge_deliveries_with_different_partner(self):
         """
@@ -3698,7 +3741,8 @@ class TestAutoAssign(TestStockCommon):
         for move in pick_1.move_ids:
             move.quantity = move.product_uom_qty
         pick_1.button_validate()
-        delivery_order_1 = self.env['stock.picking'].search([('partner_id', '=', partner_1.id), ('picking_type_id', '=', warehouse.out_type_id.id)], limit=1)
+        delivery_order_1 = self.env['stock.picking'].search(
+            [('partner_id', '=', partner_1.id), ('picking_type_id', '=', warehouse.out_type_id.id)], limit=1)
         self.assertEqual(delivery_order_1.partner_id, partner_1)
         self.assertEqual(delivery_order_1.move_ids.mapped('product_id'), self.productA | self.productB)
         self.assertEqual(delivery_order_1.move_ids.mapped('product_uom_qty'), [2.0, 3.0])
@@ -3719,8 +3763,10 @@ class TestAutoAssign(TestStockCommon):
         pick_2.action_confirm()
         pick_2.move_ids.quantity = 1
         pick_2.button_validate()
-        self.assertEqual(delivery_order_1, self.env['stock.picking'].search([('partner_id', '=', partner_1.id), ('picking_type_id', '=', warehouse.out_type_id.id)], limit=1))
-        delivery_order_2 = self.env['stock.picking'].search([('partner_id', '=', partner_2.id), ('picking_type_id', '=', warehouse.out_type_id.id)], limit=1)
+        self.assertEqual(delivery_order_1, self.env['stock.picking'].search(
+            [('partner_id', '=', partner_1.id), ('picking_type_id', '=', warehouse.out_type_id.id)], limit=1))
+        delivery_order_2 = self.env['stock.picking'].search(
+            [('partner_id', '=', partner_2.id), ('picking_type_id', '=', warehouse.out_type_id.id)], limit=1)
         self.assertEqual(delivery_order_2.partner_id, partner_2)
         self.assertEqual(delivery_order_2.move_ids.mapped('product_id'), self.productA)
         self.assertEqual(delivery_order_2.move_ids.product_uom_qty, 1.0)

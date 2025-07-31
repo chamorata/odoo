@@ -1,14 +1,15 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import models
 from odoo.addons.mail.tools.discuss import Store
+
+from odoo import models
 
 
 class BusListenerMixin(models.AbstractModel):
     _inherit = "bus.listener.mixin"
 
     def _bus_send_store(
-        self, /, *args, notification_type="mail.record/insert", subchannel=None, **kwargs
+            self, /, *args, notification_type="mail.record/insert", subchannel=None, **kwargs
     ):
         """Use the given Store or create a Store from the given params and send this
         Store to ``self`` bus listener."""

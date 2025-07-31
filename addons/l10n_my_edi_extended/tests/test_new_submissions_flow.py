@@ -1,15 +1,15 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from datetime import datetime
+from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
-
-from odoo import Command
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.addons.account.tests.test_account_move_send import TestAccountMoveSendCommon
+
+from odoo import Command
 from odoo.exceptions import UserError
 from odoo.tests import tagged
-from unittest.mock import patch
 
 CONTACT_PROXY_METHOD = 'odoo.addons.l10n_my_edi.models.account_edi_proxy_user.AccountEdiProxyClientUser._l10n_my_edi_contact_proxy'
 
@@ -30,7 +30,8 @@ class L10nMyEDITestNewSubmission(TestAccountMoveSendCommon):
         cls.company_data['company'].write({
             'vat': 'C2584563200',
             'l10n_my_edi_mode': 'test',
-            'l10n_my_edi_industrial_classification': cls.env['l10n_my_edi.industry_classification'].search([('code', '=', '01111')]).id,
+            'l10n_my_edi_industrial_classification': cls.env['l10n_my_edi.industry_classification'].search(
+                [('code', '=', '01111')]).id,
             'l10n_my_identification_type': 'BRN',
             'l10n_my_identification_number': '202001234567',
             'state_id': cls.env.ref('base.state_my_jhr').id,
@@ -57,7 +58,8 @@ class L10nMyEDITestNewSubmission(TestAccountMoveSendCommon):
         cls.basic_invoice.action_post()
 
         # For simplicity, we will test everything using a 'test' mode user, but we create it using demo to avoid triggering any api calls.
-        cls.proxy_user = cls.env['account_edi_proxy_client.user']._register_proxy_user(cls.company_data['company'], 'l10n_my_edi', 'demo')
+        cls.proxy_user = cls.env['account_edi_proxy_client.user']._register_proxy_user(cls.company_data['company'],
+                                                                                       'l10n_my_edi', 'demo')
         cls.proxy_user.edi_mode = 'test'
 
         cls.env['ir.config_parameter'].set_param('l10n_my_edi.disable.send_and_print.first', 'True')
@@ -95,7 +97,8 @@ class L10nMyEDITestNewSubmission(TestAccountMoveSendCommon):
         As we submit a single invoice, we expect a UserError to be raised.
         """
         with patch(CONTACT_PROXY_METHOD, new=self._test_02_mock):
-            with self.assertRaisesRegex(UserError, 'Server error; If the problem persists, please contact the Odoo support.'):
+            with self.assertRaisesRegex(UserError,
+                                        'Server error; If the problem persists, please contact the Odoo support.'):
                 self.basic_invoice.action_l10n_my_edi_send_invoice()
 
     @freeze_time('2024-07-15 10:00:00')
@@ -160,10 +163,12 @@ class L10nMyEDITestNewSubmission(TestAccountMoveSendCommon):
         with patch(CONTACT_PROXY_METHOD, new=self._test_05_mock):
             self.basic_invoice.action_l10n_my_edi_send_invoice()
 
-            self.basic_invoice.l10n_my_edi_validation_time = datetime.strptime('2024-07-12 10:00:00', '%Y-%m-%d %H:%M:%S')
+            self.basic_invoice.l10n_my_edi_validation_time = datetime.strptime('2024-07-12 10:00:00',
+                                                                               '%Y-%m-%d %H:%M:%S')
 
             # More than 72h, it failed
-            with self.assertRaises(UserError, msg='It has been more than 72h since the invoice validation, you can no longer cancel it.\nInstead, you should issue a debit or credit note.'):
+            with self.assertRaises(UserError,
+                                   msg='It has been more than 72h since the invoice validation, you can no longer cancel it.\nInstead, you should issue a debit or credit note.'):
                 self.basic_invoice.button_request_cancel()
 
             self.basic_invoice.l10n_my_edi_validation_time = datetime.now()
@@ -173,7 +178,8 @@ class L10nMyEDITestNewSubmission(TestAccountMoveSendCommon):
             })
             # Cancel the invoice. It failed during cancellation and logged an error.
             wizard.button_request_update()
-            self.assertEqual(self.basic_invoice.message_ids[0].preview, 'You do not have the permission to update this invoice.')
+            self.assertEqual(self.basic_invoice.message_ids[0].preview,
+                             'You do not have the permission to update this invoice.')
 
     @freeze_time('2024-07-15 10:00:00')
     def test_06_new_invalid_reset(self):
@@ -271,7 +277,7 @@ class L10nMyEDITestNewSubmission(TestAccountMoveSendCommon):
         self.submission_invoice |= self.basic_invoice
 
         with patch(CONTACT_PROXY_METHOD, new=self._test_08_mock), \
-             patch('odoo.addons.l10n_my_edi.models.account_move.SUBMISSION_MAX_SIZE', 2):
+                patch('odoo.addons.l10n_my_edi.models.account_move.SUBMISSION_MAX_SIZE', 2):
             self.submission_invoice.action_l10n_my_edi_send_invoice()
 
         # we have 10 invoices, with a max size of 2 we expect 5 different submissions.
@@ -347,7 +353,7 @@ class L10nMyEDITestNewSubmission(TestAccountMoveSendCommon):
         self.submission_invoice |= self.basic_invoice
 
         with patch(CONTACT_PROXY_METHOD, new=self._test_12_mock), \
-             patch('odoo.addons.l10n_my_edi.models.account_move.SUBMISSION_MAX_SIZE', 1):
+                patch('odoo.addons.l10n_my_edi.models.account_move.SUBMISSION_MAX_SIZE', 1):
             self.submission_invoice.action_l10n_my_edi_send_invoice()
 
         self.assertEqual(self.submission_count, 5)
@@ -418,7 +424,8 @@ class L10nMyEDITestNewSubmission(TestAccountMoveSendCommon):
 
             with freeze_time('2024-07-15 10:01:00'):
                 # We have more invoices to process, the cron got triggered again. Our invoice won't trigger an API call
-                self.env['account.move']._cron_l10n_my_edi_synchronize_myinvois()  # If failed to avoid the query, the mock method will raise.
+                self.env[
+                    'account.move']._cron_l10n_my_edi_synchronize_myinvois()  # If failed to avoid the query, the mock method will raise.
                 self.submission_status_count += 1
 
             with freeze_time('2024-07-15 11:00:00'):
@@ -435,7 +442,6 @@ class L10nMyEDITestNewSubmission(TestAccountMoveSendCommon):
                         'l10n_my_edi_retry_at': '2024-07-15 12:00:00',
                     }]
                 )
-
 
     # -------------------------------------------------------------------------
     # Patched methods

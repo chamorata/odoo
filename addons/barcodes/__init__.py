@@ -4,7 +4,7 @@ from . import models
 
 
 def _assign_default_nomeclature_id(env):
-    company_ids_without_default_nomenclature_id  = env['res.company'].search([
+    company_ids_without_default_nomenclature_id = env['res.company'].search([
         ('nomenclature_id', '=', False)
     ])
     default_nomenclature_id = env.ref('barcodes.default_barcode_nomenclature', raise_if_not_found=False)

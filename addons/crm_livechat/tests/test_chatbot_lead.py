@@ -1,6 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.crm_livechat.tests import chatbot_common
+
 from odoo.tests.common import tagged, users
 
 

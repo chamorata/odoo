@@ -4,11 +4,13 @@
 from http import HTTPStatus
 from urllib.parse import parse_qs
 
-from odoo import fields
 from odoo.addons.mail.tests.common import mail_new_test_user
-from odoo.addons.base.tests.common import HttpCaseWithUserPortal
 from odoo.addons.website_slides.tests import common
+
+from odoo import fields
+from odoo.addons.base.tests.common import HttpCaseWithUserPortal
 from odoo.tests import tagged, users
+
 
 @tagged('post_install', '-at_install')
 class TestAttendee(common.SlidesCase):
@@ -84,7 +86,8 @@ class TestAttendee(common.SlidesCase):
         self.slide_channel_invite_wizard.action_invite()
 
         # The partner should be in the attendees as 'joined'
-        user_portal_channel_partner = self.channel.channel_partner_all_ids.filtered(lambda p: p.partner_id.id == user_portal_partner.id)
+        user_portal_channel_partner = self.channel.channel_partner_all_ids.filtered(
+            lambda p: p.partner_id.id == user_portal_partner.id)
         self.assertTrue(user_portal_channel_partner)
         self.assertFalse(self.channel.with_user(self.user_portal).is_member_invited)
         self.assertIn(user_portal_channel_partner.id, self.channel.channel_partner_ids.ids)
@@ -108,7 +111,8 @@ class TestAttendee(common.SlidesCase):
         self.slide_channel_invite_wizard.action_invite()
 
         # The partner should be in the attendees as 'invited'
-        user_portal_channel_partner = self.channel.channel_partner_all_ids.filtered(lambda p: p.partner_id.id == user_portal_partner.id)
+        user_portal_channel_partner = self.channel.channel_partner_all_ids.filtered(
+            lambda p: p.partner_id.id == user_portal_partner.id)
         self.assertTrue(user_portal_channel_partner)
         self.assertTrue(self.channel.with_user(self.user_portal).is_member_invited)
         self.assertFalse(user_portal_channel_partner.id in self.channel.channel_partner_ids.ids)
@@ -245,6 +249,7 @@ class TestAttendee(common.SlidesCase):
         member_after = self.env['slide.channel.partner'].search_count([])
         self.assertEqual(member_before, member_after, "Duplicating the contact should not create a new member")
 
+
 @tagged('-at_install', 'post_install')
 class TestAttendeeCase(HttpCaseWithUserPortal):
 
@@ -299,11 +304,11 @@ class TestAttendeeCase(HttpCaseWithUserPortal):
         url = self.parse_http_location(res.headers.get('Location'))
         query = parse_qs(url.query)
         self.assertEqual((res.status_code, url.path), (HTTPStatus.SEE_OTHER, '/web/login'),
-            "Should redirect to login page if not logged in.")
+                         "Should redirect to login page if not logged in.")
         self.assertEqual(query['auth_login'], ['user_emp'],
-            "The login should correspond to the invited partner.")
+                         "The login should correspond to the invited partner.")
         self.assertEqual(query['redirect'], [f'/slides/{self.channel.id}'],
-            "Login should redirect to the course.")
+                         "Login should redirect to the course.")
 
         # No user logged. Partner has no user. Redirects to a prepared signup. Decode is used because of signup prepare.
         res = self.url_open(invite_url_no_user, allow_redirects=False)
@@ -311,9 +316,9 @@ class TestAttendeeCase(HttpCaseWithUserPortal):
         url = self.parse_http_location(res.headers.get('Location'))
         query = parse_qs(url.query)
         self.assertEqual((res.status_code, url.path), (HTTPStatus.SEE_OTHER, '/web/signup'),
-            "Should redirect to signup page if not logged in and without user.")
+                         "Should redirect to signup page if not logged in and without user.")
         self.assertEqual(query['redirect'], [f'/slides/{self.channel.id}'],
-            "Signup should redirect to the course.")
+                         "Signup should redirect to the course.")
 
         # Logged user is an attendee of the course
         self.authenticate("user_emp", "user_emp")
@@ -322,14 +327,15 @@ class TestAttendeeCase(HttpCaseWithUserPortal):
         url = self.parse_http_location(res.url)
         self.assertEqual(res.status_code, 200)
         self.assertEqual(url.path, f'/slides/{self.env["ir.http"]._slug(self.channel)}',
-            "Should redirect the logged attendee to the course page")
+                         "Should redirect the logged attendee to the course page")
 
         # Logged user is not an attendee of the course, and has no rights to see it.
         self.channel_partner_emp.sudo().unlink()
         self.channel.visibility = 'members'
         res = self.url_open(invite_url_emp)
         self.assertEqual(res.status_code, 200)
-        self.assertFalse(f'slides/{self.env["ir.http"]._slug(self.channel)}' in res.url, "Should not redirect the logged attendee to the course page")
+        self.assertFalse(f'slides/{self.env["ir.http"]._slug(self.channel)}' in res.url,
+                         "Should not redirect the logged attendee to the course page")
 
     def test_direct_invite_link_members_visibility_as_archived(self):
         ''' Check that archived attendees are not given access to the course with the link, whatever their status.'''
@@ -341,7 +347,7 @@ class TestAttendeeCase(HttpCaseWithUserPortal):
         res = self.url_open(invite_url_emp)
         self.assertEqual(res.status_code, 200)
         self.assertURLEqual(res.url, '/slides?invite_error=expired',
-            "Archived 'joined' attendees cannot access 'members only' courses")
+                            "Archived 'joined' attendees cannot access 'members only' courses")
 
         # No user logged, 'invited' and archived
         self.channel_partner_emp.member_status = 'invited'
@@ -349,7 +355,7 @@ class TestAttendeeCase(HttpCaseWithUserPortal):
         res = self.url_open(invite_url_emp)
         self.assertEqual(res.status_code, 200)
         self.assertURLEqual(res.url, '/slides?invite_error=expired',
-            "Archived 'invited' attendees cannot access 'members only' courses")
+                            "Archived 'invited' attendees cannot access 'members only' courses")
 
     def test_direct_invite_link_public_visibility(self):
         ''' Check that 'invited' attendees will be redirected to the course with public visibility'''
@@ -362,7 +368,7 @@ class TestAttendeeCase(HttpCaseWithUserPortal):
         self.assertEqual(res.status_code, 200)
         url = self.parse_http_location(res.url)
         self.assertEqual(url.path, f'/slides/{self.channel.id}',
-            "Invited partners should always see the public course page")
+                         "Invited partners should always see the public course page")
 
     def test_direct_invite_link_not_public_visibility(self):
         ''' Check that 'invited' attendees are redirected to courses with 'members' and 'connected' visibilities.'''
@@ -376,21 +382,21 @@ class TestAttendeeCase(HttpCaseWithUserPortal):
         self.assertEqual(res.status_code, 200)
         url = self.parse_http_location(res.url)
         self.assertEqual(url.path, f'/slides/{self.channel.id}',
-            "Partners being invited to the course can access the course page")
+                         "Partners being invited to the course can access the course page")
 
         self.channel.visibility = 'members'
         res = self.url_open(invite_url_emp)
         self.assertEqual(res.status_code, 200)
         url = self.parse_http_location(res.url)
         self.assertEqual(url.path, f'/slides/{self.channel.id}',
-            "Partners being invited to the course can access the course page")
+                         "Partners being invited to the course can access the course page")
 
         # Courses must still be published to access.
         self.channel.sudo().is_published = False
         res = self.url_open(invite_url_emp)
         self.assertEqual(res.status_code, 200)
         self.assertURLEqual(res.url, '/slides?invite_error=no_rights',
-            "Invited partners cannot access non published courses")
+                            "Invited partners cannot access non published courses")
 
         # If removed from invited attendees, the link is not valid anymore.
         self.channel.sudo().is_published = True
@@ -398,7 +404,7 @@ class TestAttendeeCase(HttpCaseWithUserPortal):
         res = self.url_open(invite_url_emp)
         self.assertEqual(res.status_code, 200)
         self.assertURLEqual(res.url, '/slides?invite_error=expired',
-            "Using an expired link should redirect to the main /slides page")
+                            "Using an expired link should redirect to the main /slides page")
 
     def test_generic_invite_link_members_visiblity_as_archived_connected(self):
         ''' Check that connected archived attendees are not given access to 'members' courses, whatever their status.'''
@@ -410,14 +416,14 @@ class TestAttendeeCase(HttpCaseWithUserPortal):
         res = self.url_open(f'/slides/{self.channel.id}')
         self.assertEqual(res.status_code, 200)
         self.assertURLEqual(res.url, '/slides?invite_error=no_rights',
-            "Archived 'invited' attendees cannot access 'members only' courses")
+                            "Archived 'invited' attendees cannot access 'members only' courses")
 
         # Connected, 'joined' and archived
         self.channel_partner_emp.member_status = 'joined'
         res = self.url_open(f'/slides/{self.channel.id}')
         self.assertEqual(res.status_code, 200)
         self.assertURLEqual(res.url, '/slides?invite_error=no_rights',
-            "Archived 'joined' attendees cannot access 'members only' courses")
+                            "Archived 'joined' attendees cannot access 'members only' courses")
 
     def test_generic_invite_link_public_visibility(self):
         ''' Check that generic invite link for public course is accessible, even if not logged.'''
@@ -425,7 +431,7 @@ class TestAttendeeCase(HttpCaseWithUserPortal):
         res = self.url_open(invite_url)
         self.assertEqual(res.status_code, 200)
         self.assertURLEqual(res.url, invite_url,
-            "Public course should be accessible from its invitation link.")
+                            "Public course should be accessible from its invitation link.")
 
     def test_generic_invite_link_not_public_visibility(self):
         ''' Check that generic route properly the (not) logged user for courses with 'members' and 'connected' visibilities.'''
@@ -436,21 +442,21 @@ class TestAttendeeCase(HttpCaseWithUserPortal):
         res = self.url_open(invite_url)
         self.assertEqual(res.status_code, 200)
         self.assertURLEqual(res.url, '/slides?invite_error=no_rights',
-            "The public user has no access to connected-only courses.")
+                            "The public user has no access to connected-only courses.")
 
         # No user logged
         self.channel.visibility = 'members'
         res = self.url_open(invite_url)
         self.assertEqual(res.status_code, 200)
         self.assertURLEqual(res.url, '/slides?invite_error=no_rights',
-            "The public user has no access to members-only courses.")
+                            "The public user has no access to members-only courses.")
 
         # User logged but not invited nor enrolled
         self.authenticate("portal", "portal")
         res = self.url_open(invite_url)
         self.assertEqual(res.status_code, 200)
         self.assertURLEqual(res.url, '/slides?invite_error=no_rights',
-            "An external user has no access to members-only courses.")
+                            "An external user has no access to members-only courses.")
 
         # Logged user now has a pending invitation to the course
         self.env['slide.channel.partner'].create({
@@ -463,7 +469,7 @@ class TestAttendeeCase(HttpCaseWithUserPortal):
         res = self.url_open(invite_url)
         self.assertEqual(res.status_code, 200)
         self.assertURLEqual(res.url, invite_url,
-            "Invited partner should be allowed the access to the course page")
+                            "Invited partner should be allowed the access to the course page")
 
     def test_invite_route_errors_handling(self):
         ''' Check that the /invite route redirects properly when an error is encountered, and current user has no rights to the course.'''
@@ -476,14 +482,14 @@ class TestAttendeeCase(HttpCaseWithUserPortal):
         res = self.url_open(invite_url_false_hash)
         self.assertEqual(res.status_code, 200)
         self.assertURLEqual(res.url, '/slides?invite_error=hash_fail',
-            "A wrong hash should redirect to the main /slides page")
+                            "A wrong hash should redirect to the main /slides page")
 
         # Link is for another user
         self.authenticate("user_emp", "user_emp")
         res = self.url_open(invite_url_no_user)
         self.assertEqual(res.status_code, 200)
         self.assertURLEqual(res.url, '/slides?invite_error=partner_fail',
-            "Using an other user's invitation link should redirect to the course page")
+                            "Using an other user's invitation link should redirect to the course page")
 
         # slugification can give: "/slides/-ID" which should work, despite resulting in a negative ID
         invite_url = f'/slides/-{self.channel.id}'
@@ -497,14 +503,14 @@ class TestAttendeeCase(HttpCaseWithUserPortal):
         res = self.url_open(invite_url)
         self.assertEqual(res.status_code, 200)
         self.assertIn('/slides?invite_error=no_channel', res.url,
-            "Should have redirected to the 'no_channel' page as this channel ID does not exist")
+                      "Should have redirected to the 'no_channel' page as this channel ID does not exist")
 
         # Expired Link. Redirects to the main slides page.
         self.channel_partner_emp.sudo().unlink()
         res = self.url_open(invite_url_emp)
         self.assertEqual(res.status_code, 200)
         self.assertURLEqual(res.url, '/slides?invite_error=expired',
-            "Using an expired link should redirect to the main /slides page for non public courses")
+                            "Using an expired link should redirect to the main /slides page for non public courses")
 
     def test_members_invitation_expiration(self):
         ''' Check invitations are expired after 3 months, and that garbage collector remove appropriate records.'''
@@ -522,7 +528,7 @@ class TestAttendeeCase(HttpCaseWithUserPortal):
         res = self.url_open(self.channel_partner_emp.invitation_link)
         self.assertEqual(res.status_code, 200)
         self.assertURLEqual(res.url, '/slides?invite_error=expired',
-            "Using an expired link should redirect to the main /slides page")
+                            "Using an expired link should redirect to the main /slides page")
 
         # Let user_portal be invited, with completion = 0, outdated
         outdated_portal_membership_values = {
@@ -536,7 +542,8 @@ class TestAttendeeCase(HttpCaseWithUserPortal):
         # Clean expired records with no progress and 'invited'
         self.env['slide.channel.partner']._gc_slide_channel_partner()
         self.assertTrue(self.channel_partner_emp.exists(), 'Memberships with progress should never be removed.')
-        self.assertFalse(channel_partner_portal.exists(), 'Expired invitations with no progress should be removed by the GC.')
+        self.assertFalse(channel_partner_portal.exists(),
+                         'Expired invitations with no progress should be removed by the GC.')
         self.assertTrue(self.channel_partner_no_user.exists(), 'Joined members should never be removed.')
 
         channel_partner_portal = self.env['slide.channel.partner'].create(outdated_portal_membership_values)
@@ -547,8 +554,10 @@ class TestAttendeeCase(HttpCaseWithUserPortal):
         # Clean outdated archived records as well, and ones 'invited' with no last_invitation_date
         self.env['slide.channel.partner']._gc_slide_channel_partner()
         self.assertFalse(channel_partner_portal.exists(), 'Expired invitations should be removed, even if archived')
-        self.assertTrue(self.channel_partner_emp.exists(), 'Memberships with progress should never be removed, even archived.')
-        self.assertFalse(self.channel_partner_no_user.exists(), 'No Last Invitation Date is considered as expired for invited members')
+        self.assertTrue(self.channel_partner_emp.exists(),
+                        'Memberships with progress should never be removed, even archived.')
+        self.assertFalse(self.channel_partner_no_user.exists(),
+                         'No Last Invitation Date is considered as expired for invited members')
 
     def test_invite_email_translation(self):
         "Make sure that invitation emails are translated if unchanged when adding attendees to a course"

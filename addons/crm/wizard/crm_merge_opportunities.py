@@ -32,7 +32,8 @@ class MergeOpportunity(models.TransientModel):
 
         return result
 
-    opportunity_ids = fields.Many2many('crm.lead', 'merge_opportunity_rel', 'merge_id', 'opportunity_id', string='Leads/Opportunities')
+    opportunity_ids = fields.Many2many('crm.lead', 'merge_opportunity_rel', 'merge_id', 'opportunity_id',
+                                       string='Leads/Opportunities')
     user_id = fields.Many2one('res.users', 'Salesperson', domain="[('share', '=', False)]")
     team_id = fields.Many2one(
         'crm.team', 'Sales Team',
@@ -51,6 +52,9 @@ class MergeOpportunity(models.TransientModel):
             if wizard.user_id:
                 user_in_team = False
                 if wizard.team_id:
-                    user_in_team = wizard.env['crm.team'].search_count([('id', '=', wizard.team_id.id), '|', ('user_id', '=', wizard.user_id.id), ('member_ids', '=', wizard.user_id.id)])
+                    user_in_team = wizard.env['crm.team'].search_count(
+                        [('id', '=', wizard.team_id.id), '|', ('user_id', '=', wizard.user_id.id),
+                         ('member_ids', '=', wizard.user_id.id)])
                 if not user_in_team:
-                    wizard.team_id = wizard.env['crm.team'].search(['|', ('user_id', '=', wizard.user_id.id), ('member_ids', '=', wizard.user_id.id)], limit=1)                    
+                    wizard.team_id = wizard.env['crm.team'].search(
+                        ['|', ('user_id', '=', wizard.user_id.id), ('member_ids', '=', wizard.user_id.id)], limit=1)

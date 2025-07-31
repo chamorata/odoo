@@ -1,23 +1,24 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.mail.tests.test_controller_common import TestControllerCommon
+
 import odoo
 from odoo.tests import JsonRpcException
-from odoo.addons.mail.tests.test_controller_common import TestControllerCommon
 
 
 class MessagePostSubTestData:
     def __init__(
-        self,
-        user,
-        allowed,
-        /,
-        *,
-        partners=None,
-        partner_emails=None,
-        route_kw=None,
-        exp_author=None,
-        exp_partners=None,
-        exp_emails=None,
+            self,
+            user,
+            allowed,
+            /,
+            *,
+            partners=None,
+            partner_emails=None,
+            route_kw=None,
+            exp_author=None,
+            exp_partners=None,
+            exp_emails=None,
     ):
         self.user = user if user._name == "res.users" else user.env.ref("base.public_user")
         self.guest = user if user._name == "mail.guest" else user.env["mail.guest"]
@@ -46,7 +47,7 @@ class TestThreadControllerCommon(TestControllerCommon):
         for test in tests:
             self._authenticate_user(user=test.user, guest=test.guest)
             with self.subTest(
-                record=record, user=test.user.name, guest=test.guest.name, route_kw=test.route_kw
+                    record=record, user=test.user.name, guest=test.guest.name, route_kw=test.route_kw
             ):
                 if test.allowed:
                     self._message_post(record, test.post_data, test.route_kw)
@@ -107,7 +108,7 @@ class TestThreadController(TestThreadControllerCommon):
         """Test partner_ids of message_post on partner record."""
         record = self.env["res.partner"].create({"name": "Test Partner"})
         partners = (
-            self.user_portal + self.user_employee + self.user_demo + self.user_admin
+                self.user_portal + self.user_employee + self.user_demo + self.user_admin
         ).partner_id
         no_partner = self.env["res.partner"]
 

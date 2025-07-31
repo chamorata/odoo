@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.mail.tests.common import mail_new_test_user
+
 from odoo.tests import common
 
 
@@ -17,14 +18,17 @@ class TestHrHolidaysCommon(common.TransactionCase):
         cls.env.user.company_id = cls.company
 
         # Test users to use through the various tests
-        cls.user_hruser = mail_new_test_user(cls.env, login='armande', groups='base.group_user,hr_holidays.group_hr_holidays_user')
+        cls.user_hruser = mail_new_test_user(cls.env, login='armande',
+                                             groups='base.group_user,hr_holidays.group_hr_holidays_user')
         cls.user_hruser_id = cls.user_hruser.id
 
-        cls.user_hrmanager = mail_new_test_user(cls.env, login='bastien', groups='base.group_user,hr_holidays.group_hr_holidays_manager')
+        cls.user_hrmanager = mail_new_test_user(cls.env, login='bastien',
+                                                groups='base.group_user,hr_holidays.group_hr_holidays_manager')
         cls.user_hrmanager_id = cls.user_hrmanager.id
         cls.user_hrmanager.tz = 'Europe/Brussels'
 
-        cls.user_employee = mail_new_test_user(cls.env, login='enguerran', password='enguerran', groups='base.group_user')
+        cls.user_employee = mail_new_test_user(cls.env, login='enguerran', password='enguerran',
+                                               groups='base.group_user')
         cls.user_employee_id = cls.user_employee.id
 
         # Hr Data

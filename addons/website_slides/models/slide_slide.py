@@ -6,8 +6,8 @@ import datetime
 import io
 import logging
 import re
-import requests
 
+import requests
 from dateutil.relativedelta import relativedelta
 from markupsafe import Markup
 from werkzeug import urls
@@ -41,11 +41,11 @@ class SlidePartnerRelation(models.Model):
         ('slide_partner_uniq',
          'unique(slide_id, partner_id)',
          'A partner membership to a slide must be unique!'
-        ),
+         ),
         ('check_vote',
          'CHECK(vote IN (-1, 0, 1))',
          'The vote must be 1, 0 or -1.'
-        ),
+         ),
     ]
 
     @api.model_create_multi
@@ -122,17 +122,21 @@ class Slide(models.Model):
     description = fields.Html('Description', translate=True, sanitize_attributes=False, sanitize_overridable=True)
     channel_id = fields.Many2one('slide.channel', string="Course", required=True, ondelete='cascade')
     tag_ids = fields.Many2many('slide.tag', 'rel_slide_tag', 'slide_id', 'tag_id', string='Tags')
-    is_preview = fields.Boolean('Allow Preview', default=False, help="The course is accessible by anyone : the users don't need to join the channel to access the content of the course.")
+    is_preview = fields.Boolean('Allow Preview', default=False,
+                                help="The course is accessible by anyone : the users don't need to join the channel to access the content of the course.")
     is_new_slide = fields.Boolean('Is New Slide', compute='_compute_is_new_slide')
-    completion_time = fields.Float('Duration', digits=(10, 4), compute='_compute_category_completion_time', recursive=True, readonly=False, store=True)
+    completion_time = fields.Float('Duration', digits=(10, 4), compute='_compute_category_completion_time',
+                                   recursive=True, readonly=False, store=True)
     # Categories
     is_category = fields.Boolean('Is a category', default=False)
     category_id = fields.Many2one('slide.slide', string="Section", compute="_compute_category_id", store=True)
     slide_ids = fields.One2many('slide.slide', "category_id", string="Content")
     # subscribers
     partner_ids = fields.Many2many('res.partner', 'slide_slide_partner', 'slide_id', 'partner_id',
-                                   string='Subscribers', groups='website_slides.group_website_slides_officer', copy=False)
-    slide_partner_ids = fields.One2many('slide.slide.partner', 'slide_id', string='Subscribers information', groups='website_slides.group_website_slides_officer', copy=False)
+                                   string='Subscribers', groups='website_slides.group_website_slides_officer',
+                                   copy=False)
+    slide_partner_ids = fields.One2many('slide.slide.partner', 'slide_id', string='Subscribers information',
+                                        groups='website_slides.group_website_slides_officer', copy=False)
     user_membership_id = fields.Many2one(
         'slide.slide.partner', string="Subscriber information",
         compute='_compute_user_membership_id', compute_sudo=False,
@@ -146,13 +150,13 @@ class Slide(models.Model):
     questions_count = fields.Integer(string="Numbers of Questions", compute='_compute_questions_count')
     quiz_first_attempt_reward = fields.Integer("Reward: first attempt", default=10)
     quiz_second_attempt_reward = fields.Integer("Reward: second attempt", default=7)
-    quiz_third_attempt_reward = fields.Integer("Reward: third attempt", default=5,)
+    quiz_third_attempt_reward = fields.Integer("Reward: third attempt", default=5, )
     quiz_fourth_attempt_reward = fields.Integer("Reward: every attempt after the third try", default=2)
     # content
     can_self_mark_completed = fields.Boolean('Can Mark Completed', compute='_compute_mark_complete_actions',
-        help='The slide can be marked as completed even without opening it')
+                                             help='The slide can be marked as completed even without opening it')
     can_self_mark_uncompleted = fields.Boolean('Can Mark Uncompleted', compute='_compute_mark_complete_actions',
-        help='The slide can be marked as not completed and the progression')
+                                               help='The slide can be marked as not completed and the progression')
     slide_category = fields.Selection([
         ('infographic', 'Image'),
         ('article', 'Article'),
@@ -168,8 +172,10 @@ class Slide(models.Model):
     # generic
     url = fields.Char('External URL', help="URL of the Google Drive file or URL of the YouTube video")
     binary_content = fields.Binary('File', attachment=True)
-    slide_resource_ids = fields.One2many('slide.slide.resource', 'slide_id', string="Additional Resource for this slide", copy=True)
-    slide_resource_downloadable = fields.Boolean('Allow Download', default=False, help="Allow the user to download the content of the slide.")
+    slide_resource_ids = fields.One2many('slide.slide.resource', 'slide_id',
+                                         string="Additional Resource for this slide", copy=True)
+    slide_resource_downloadable = fields.Boolean('Allow Download', default=False,
+                                                 help="Allow the user to download the content of the slide.")
     # google
     google_drive_id = fields.Char('Google Drive ID of the external URL', compute='_compute_google_drive_id')
     # content - webpage
@@ -178,9 +184,10 @@ class Slide(models.Model):
         sanitize_attributes=False, sanitize_form=False, sanitize_overridable=True,
         help="Custom HTML content for slides of category 'Article'.")
     # content - images
-    image_binary_content = fields.Binary('Image Content', related='binary_content', readonly=False) # Used to filter file input to images only
+    image_binary_content = fields.Binary('Image Content', related='binary_content',
+                                         readonly=False)  # Used to filter file input to images only
     image_google_url = fields.Char('Image Link', related='url', readonly=False,
-        help="Link of the image (we currently only support Google Drive as source)")
+                                   help="Link of the image (we currently only support Google Drive as source)")
     # content - documents
     slide_icon_class = fields.Char('Slide Icon fa-class', compute='_compute_slide_icon_class')
     slide_type = fields.Selection([
@@ -197,11 +204,12 @@ class Slide(models.Model):
         string="Slide Type", compute='_compute_slide_type', store=True, readonly=False,
         help="Subtype of the slide category, allows more precision on the actual file type / source type.")
     document_google_url = fields.Char('Document Link', related='url', readonly=False,
-        help="Link of the document (we currently only support Google Drive as source)")
-    document_binary_content = fields.Binary('PDF Content', related='binary_content', readonly=False) # Used to filter file input to PDF only
+                                      help="Link of the document (we currently only support Google Drive as source)")
+    document_binary_content = fields.Binary('PDF Content', related='binary_content',
+                                            readonly=False)  # Used to filter file input to PDF only
     # content - videos
     video_url = fields.Char('Video Link', related='url', readonly=False,
-        help="Link of the video (we support YouTube, Google Drive and Vimeo as sources)")
+                            help="Link of the video (we support YouTube, Google Drive and Vimeo as sources)")
     video_source_type = fields.Selection([
         ('youtube', 'YouTube'),
         ('google_drive', 'Google Drive'),
@@ -215,8 +223,9 @@ class Slide(models.Model):
     likes = fields.Integer('Likes', compute='_compute_like_info', store=True, compute_sudo=False)
     dislikes = fields.Integer('Dislikes', compute='_compute_like_info', store=True, compute_sudo=False)
     embed_code = fields.Html('Embed Code', readonly=True, compute='_compute_embed_code', sanitize=False)
-    embed_code_external = fields.Html('External Embed Code', readonly=True, compute='_compute_embed_code', sanitize=False,
-        help="Same as 'Embed Code' but used to embed the content on an external website.")
+    embed_code_external = fields.Html('External Embed Code', readonly=True, compute='_compute_embed_code',
+                                      sanitize=False,
+                                      help="Same as 'Embed Code' but used to embed the content on an external website.")
     website_share_url = fields.Char('Share URL', compute='_compute_website_share_url')
     # views
     embed_ids = fields.One2many('slide.embed', 'slide_id', string="External Slide Embeds")
@@ -240,7 +249,8 @@ class Slide(models.Model):
     website_published = fields.Boolean(tracking=False)
 
     _sql_constraints = [
-        ('exclusion_html_content_and_url', "CHECK(html_content IS NULL OR url IS NULL)", "A slide is either filled with a url or HTML content. Not both.")
+        ('exclusion_html_content_and_url', "CHECK(html_content IS NULL OR url IS NULL)",
+         "A slide is either filled with a url or HTML content. Not both.")
     ]
 
     @api.depends('slide_category', 'source_type', 'image_binary_content')
@@ -254,7 +264,8 @@ class Slide(models.Model):
     @api.depends('date_published', 'is_published')
     def _compute_is_new_slide(self):
         for slide in self:
-            slide.is_new_slide = slide.date_published > fields.Datetime.now() - relativedelta(days=7) if slide.is_published else False
+            slide.is_new_slide = slide.date_published > fields.Datetime.now() - relativedelta(
+                days=7) if slide.is_published else False
 
     def _get_placeholder_filename(self, field):
         return self.channel_id._get_placeholder_filename(field)
@@ -296,10 +307,10 @@ class Slide(models.Model):
         for slide in self:
             slide.can_self_mark_uncompleted = slide.website_published and slide.channel_id.is_member
             slide.can_self_mark_completed = (
-                slide.website_published
-                and slide.channel_id.is_member
-                and slide.slide_category != 'quiz'
-                and not slide.question_ids
+                    slide.website_published
+                    and slide.channel_id.is_member
+                    and slide.slide_category != 'quiz'
+                    and not slide.question_ids
             )
 
     @api.depends('question_ids')
@@ -359,15 +370,18 @@ class Slide(models.Model):
         for slide in self:
             slide.embed_count = mapped_data.get(slide.id, 0)
 
-    @api.depends('slide_ids.sequence', 'slide_ids.active', 'slide_ids.slide_category', 'slide_ids.is_published', 'slide_ids.is_category')
+    @api.depends('slide_ids.sequence', 'slide_ids.active', 'slide_ids.slide_category', 'slide_ids.is_published',
+                 'slide_ids.is_category')
     def _compute_slides_statistics(self):
         # Do not use dict.fromkeys(self.ids, dict()) otherwise it will use the same dictionnary for all keys.
         # Therefore, when updating the dict of one key, it updates the dict of all keys.
-        keys = ['nbr_%s' % slide_category for slide_category in self.env['slide.slide']._fields['slide_category'].get_values(self.env)]
+        keys = ['nbr_%s' % slide_category for slide_category in
+                self.env['slide.slide']._fields['slide_category'].get_values(self.env)]
         default_vals = dict((key, 0) for key in keys + ['total_slides'])
 
         res = self.env['slide.slide']._read_group(
-            [('is_published', '=', True), ('category_id', 'in', self.filtered('is_category').ids), ('is_category', '=', False)],
+            [('is_published', '=', True), ('category_id', 'in', self.filtered('is_category').ids),
+             ('is_category', '=', False)],
             ['category_id', 'slide_category'], ['__count'])
 
         result = {category_id: dict(default_vals) for category_id in self.ids}
@@ -386,7 +400,8 @@ class Slide(models.Model):
             else:
                 slide.user_has_completed_category = all(slide.category_id.slide_ids.mapped('user_has_completed'))
 
-    @api.depends('slide_ids.sequence', 'slide_ids.active', 'slide_ids.completion_time', 'slide_ids.is_published', 'slide_ids.is_category')
+    @api.depends('slide_ids.sequence', 'slide_ids.active', 'slide_ids.completion_time', 'slide_ids.is_published',
+                 'slide_ids.is_category')
     def _compute_category_completion_time(self):
         # We don't use read_group() function, otherwise we will have issue with flushing the
         # data as completion_time is recursive and when it'll try to flush data before it is calculated
@@ -470,9 +485,13 @@ class Slide(models.Model):
                 if slide.video_source_type == 'youtube':
                     query_params = urls.url_parse(slide.video_url).query
                     query_params = query_params + '&theme=light' if query_params else 'theme=light'
-                    embed_code = Markup('<iframe src="//www.youtube-nocookie.com/embed/%s?%s" allowFullScreen="true" frameborder="0" aria-label="%s"></iframe>') % (slide.youtube_id, query_params, _('YouTube'))
+                    embed_code = Markup(
+                        '<iframe src="//www.youtube-nocookie.com/embed/%s?%s" allowFullScreen="true" frameborder="0" aria-label="%s"></iframe>') % (
+                                     slide.youtube_id, query_params, _('YouTube'))
                 elif slide.video_source_type == 'google_drive':
-                    embed_code = Markup('<iframe src="//drive.google.com/file/d/%s/preview" allowFullScreen="true" frameborder="0" aria-label="%s"></iframe>') % (slide.google_drive_id, _('Google Drive'))
+                    embed_code = Markup(
+                        '<iframe src="//drive.google.com/file/d/%s/preview" allowFullScreen="true" frameborder="0" aria-label="%s"></iframe>') % (
+                                     slide.google_drive_id, _('Google Drive'))
                 elif slide.video_source_type == 'vimeo':
                     if '/' in slide.vimeo_id:
                         # in case of privacy 'with URL only', vimeo adds a token after the video ID
@@ -481,17 +500,23 @@ class Slide(models.Model):
                         embed_code = Markup("""
                             <iframe src="https://player.vimeo.com/video/%s?h=%s&badge=0&amp;autopause=0&amp;player_id=0"
                                 frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen aria-label="%s"></iframe>""") % (
-                                vimeo_id, vimeo_token, _('Vimeo'))
+                            vimeo_id, vimeo_token, _('Vimeo'))
                     else:
                         embed_code = Markup("""
                             <iframe src="https://player.vimeo.com/video/%s?badge=0&amp;autopause=0&amp;player_id=0"
-                                frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen aria-label="%s"></iframe>""") % (slide.vimeo_id, _('Vimeo'))
-            elif slide.slide_category in ['infographic', 'document'] and slide.source_type == 'external' and slide.google_drive_id:
-                embed_code = Markup('<iframe src="//drive.google.com/file/d/%s/preview" allowFullScreen="true" frameborder="0" aria-label="%s"></iframe>') % (slide.google_drive_id, _('Google Drive'))
+                                frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen aria-label="%s"></iframe>""") % (
+                            slide.vimeo_id, _('Vimeo'))
+            elif slide.slide_category in ['infographic',
+                                          'document'] and slide.source_type == 'external' and slide.google_drive_id:
+                embed_code = Markup(
+                    '<iframe src="//drive.google.com/file/d/%s/preview" allowFullScreen="true" frameborder="0" aria-label="%s"></iframe>') % (
+                                 slide.google_drive_id, _('Google Drive'))
             elif slide.slide_category == 'document' and slide.source_type == 'local_file':
                 slide_url = base_url + self.env['ir.http']._url_for('/slides/embed/%s?page=1' % slide.id)
-                slide_url_external = base_url + self.env['ir.http']._url_for('/slides/embed_external/%s?page=1' % slide.id)
-                base_embed_code = Markup('<iframe src="%s" class="o_wslides_iframe_viewer" allowFullScreen="true" height="%s" width="%s" frameborder="0" aria-label="%s"></iframe>')
+                slide_url_external = base_url + self.env['ir.http']._url_for(
+                    '/slides/embed_external/%s?page=1' % slide.id)
+                base_embed_code = Markup(
+                    '<iframe src="%s" class="o_wslides_iframe_viewer" allowFullScreen="true" height="%s" width="%s" frameborder="0" aria-label="%s"></iframe>')
                 iframe_aria_label = _('Embed code')
                 embed_code = base_embed_code % (slide_url, 315, 420, iframe_aria_label)
                 embed_code_external = base_embed_code % (slide_url_external, 315, 420, iframe_aria_label)
@@ -506,7 +531,8 @@ class Slide(models.Model):
             youtube_match = re.match(self.YOUTUBE_VIDEO_ID_REGEX, slide.video_url) if slide.video_url else False
             if youtube_match and len(youtube_match.groups()) == 2 and len(youtube_match.group(2)) == 11:
                 video_source_type = 'youtube'
-            if slide.video_url and not video_source_type and re.match(self.GOOGLE_DRIVE_DOCUMENT_ID_REGEX, slide.video_url):
+            if slide.video_url and not video_source_type and re.match(self.GOOGLE_DRIVE_DOCUMENT_ID_REGEX,
+                                                                      slide.video_url):
                 video_source_type = 'google_drive'
             vimeo_match = re.search(self.VIMEO_VIDEO_ID_REGEX, slide.video_url) if slide.video_url else False
             if not video_source_type and vimeo_match and len(vimeo_match.groups()) == 3:
@@ -612,7 +638,8 @@ class Slide(models.Model):
 
     @api.model
     def _get_can_publish_error_message(self):
-        return _("Publishing is restricted to the responsible of training courses or members of the publisher group for documentation courses")
+        return _(
+            "Publishing is restricted to the responsible of training courses or members of the publisher group for documentation courses")
 
     # ---------------------------------------------------------
     # ORM Overrides
@@ -640,8 +667,8 @@ class Slide(models.Model):
             # avoid fetching external metadata when installing the module (i.e. for demo data)
             # we also support a context key if you don't want to fetch the metadata when creating a slide
             if any(vals.get(url_param) for url_param in ['url', 'video_url', 'document_google_url', 'image_google_url']) \
-               and not self.env.context.get('install_mode') \
-               and not self.env.context.get('website_slides_skip_fetch_metadata'):
+                    and not self.env.context.get('install_mode') \
+                    and not self.env.context.get('website_slides_skip_fetch_metadata'):
                 slide_metadata, _error = slide._fetch_external_metadata()
                 if slide_metadata:
                     # only update keys that are not set in the incoming vals
@@ -677,8 +704,8 @@ class Slide(models.Model):
         # avoid fetching external metadata when installing the module (i.e. for demo data)
         # we also support a context key if you don't want to fetch the metadata when modifying a slide
         if any(values.get(url_param) for url_param in ['url', 'video_url', 'document_google_url', 'image_google_url']) \
-           and not self.env.context.get('install_mode') \
-           and not self.env.context.get('website_slides_skip_fetch_metadata'):
+                and not self.env.context.get('install_mode') \
+                and not self.env.context.get('website_slides_skip_fetch_metadata'):
             slide_metadata, _error = self._fetch_external_metadata()
             if slide_metadata:
                 # only update keys that are not set in the incoming values and for which we don't have a value yet
@@ -790,7 +817,8 @@ class Slide(models.Model):
     def _post_publication(self):
         for slide in self.filtered(lambda slide: slide.website_published and slide.channel_id.publish_template_id):
             publish_template = slide.channel_id.publish_template_id
-            html_body = publish_template.with_context(base_url=slide.get_base_url())._render_field('body_html', slide.ids)[slide.id]
+            html_body = \
+            publish_template.with_context(base_url=slide.get_base_url())._render_field('body_html', slide.ids)[slide.id]
             subject = publish_template._render_field('subject', slide.ids)[slide.id]
             # We want to use the 'reply_to' of the template if set. However, `mail.message` will check
             # if the key 'reply_to' is in the kwargs before calling _get_reply_to. If the value is
@@ -821,7 +849,7 @@ class Slide(models.Model):
         courses_without_templates = self.channel_id.filtered(lambda channel: not channel.share_slide_template_id)
         if courses_without_templates:
             raise UserError(_('Impossible to send emails. Select a "Share Template" for courses %(course_names)s first',
-                                 course_names=', '.join(courses_without_templates.mapped('name'))))
+                              course_names=', '.join(courses_without_templates.mapped('name'))))
         mail_ids = []
         for record in self:
             template = record.channel_id.share_slide_template_id.with_context(
@@ -835,7 +863,8 @@ class Slide(models.Model):
                 template = template.sudo()
                 email_values['email_from'] = self.env.company.catchall_formatted or self.env.company.email_formatted
 
-            mail_ids.append(template.send_mail(record.id, email_layout_xmlid='mail.mail_notification_light', email_values=email_values))
+            mail_ids.append(template.send_mail(record.id, email_layout_xmlid='mail.mail_notification_light',
+                                               email_values=email_values))
         return mail_ids
 
     def action_like(self):
@@ -949,16 +978,17 @@ class Slide(models.Model):
         if any(not slide.channel_id.is_member or not slide.website_published for slide in self):
             raise UserError(
                 _('You cannot mark a slide quiz as completed if you are not among its members or it is unpublished.') if completed
-                else _('You cannot mark a slide quiz as not completed if you are not among its members or it is unpublished.')
+                else _(
+                    'You cannot mark a slide quiz as not completed if you are not among its members or it is unpublished.')
             )
 
         points = 0
         for slide in self:
             user_membership_sudo = slide.user_membership_id.sudo()
             if not user_membership_sudo \
-               or user_membership_sudo.completed == completed \
-               or not user_membership_sudo.quiz_attempts_count \
-               or not slide.question_ids:
+                    or user_membership_sudo.completed == completed \
+                    or not user_membership_sudo.quiz_attempts_count \
+                    or not slide.question_ids:
                 continue
 
             gains = [slide.quiz_first_attempt_reward,
@@ -1006,10 +1036,13 @@ class Slide(models.Model):
             }
             slide_partner = slide_partners_map.get(slide.id)
             if slide.question_ids and slide_partner and slide_partner.quiz_attempts_count:
-                result[slide.id]['quiz_karma_gain'] = gains[slide_partner.quiz_attempts_count] if slide_partner.quiz_attempts_count < len(gains) else gains[-1]
+                result[slide.id]['quiz_karma_gain'] = gains[
+                    slide_partner.quiz_attempts_count] if slide_partner.quiz_attempts_count < len(gains) else gains[-1]
                 result[slide.id]['quiz_attempts_count'] = slide_partner.quiz_attempts_count
                 if quiz_done or slide_partner.completed:
-                    result[slide.id]['quiz_karma_won'] = gains[slide_partner.quiz_attempts_count-1] if slide_partner.quiz_attempts_count < len(gains) else gains[-1]
+                    result[slide.id]['quiz_karma_won'] = gains[
+                        slide_partner.quiz_attempts_count - 1] if slide_partner.quiz_attempts_count < len(gains) else \
+                    gains[-1]
         return result
 
     # --------------------------------------------------
@@ -1069,7 +1102,8 @@ class Slide(models.Model):
             if 'application/json' in e.response.headers.get('content-type'):
                 json_response = e.response.json()
                 if json_response.get('error', {}).get('code') == 404:
-                    return {}, _('Your video could not be found on YouTube, please check the link and/or privacy settings')
+                    return {}, _(
+                        'Your video could not be found on YouTube, please check the link and/or privacy settings')
         except requests.exceptions.ConnectionError as e:
             error_message = str(e)
 
@@ -1079,7 +1113,8 @@ class Slide(models.Model):
                 error_message = response.get('error', {}).get('errors', [{}])[0].get('reason')
 
             if not response.get('items'):
-                error_message = _('Your video could not be found on YouTube, please check the link and/or privacy settings')
+                error_message = _(
+                    'Your video could not be found on YouTube, please check the link and/or privacy settings')
 
         if error_message:
             _logger.warning('Could not fetch YouTube metadata: %s', error_message)
@@ -1093,7 +1128,7 @@ class Slide(models.Model):
             if parsed_duration:
                 slide_metadata['completion_time'] = (int(parsed_duration.group(1) or 0)) + \
                                                     (int(parsed_duration.group(2) or 0) / 60) + \
-                                                    (round(int(parsed_duration.group(3) or 0) /60) / 60)
+                                                    (round(int(parsed_duration.group(3) or 0) / 60) / 60)
 
         if youtube_values.get('snippet'):
             snippet = youtube_values['snippet']
@@ -1157,7 +1192,8 @@ class Slide(models.Model):
                 json_response = e.response.json()
                 if json_response.get('error', {}).get('code') == 404:
                     # in case we don't find the file on GDrive, we want to give some feedback to our user
-                    return {}, _('Your file could not be found on Google Drive, please check the link and/or privacy settings')
+                    return {}, _(
+                        'Your file could not be found on Google Drive, please check the link and/or privacy settings')
         except requests.exceptions.ConnectionError as e:
             error_message = str(e)
 
@@ -1235,7 +1271,7 @@ class Slide(models.Model):
         elif self.slide_category == 'video':
             completion_time = round(float(
                 google_drive_values.get('videoMediaMetadata', {}).get('durationMillis', 0)
-                ) / (60 * 1000)) / 60  # millis to hours conversion rounded to the minute
+            ) / (60 * 1000)) / 60  # millis to hours conversion rounded to the minute
             if completion_time:
                 slide_metadata['completion_time'] = completion_time
 
@@ -1311,8 +1347,10 @@ class Slide(models.Model):
     def _default_website_meta(self):
         res = super(Slide, self)._default_website_meta()
         res['default_opengraph']['og:title'] = res['default_twitter']['twitter:title'] = self.name
-        res['default_opengraph']['og:description'] = res['default_twitter']['twitter:description'] = html2plaintext(self.description)
-        res['default_opengraph']['og:image'] = res['default_twitter']['twitter:image'] = self.env['website'].image_url(self, 'image_1024')
+        res['default_opengraph']['og:description'] = res['default_twitter']['twitter:description'] = html2plaintext(
+            self.description)
+        res['default_opengraph']['og:image'] = res['default_twitter']['twitter:image'] = self.env['website'].image_url(
+            self, 'image_1024')
         res['default_meta_description'] = html2plaintext(self.description)
         return res
 
@@ -1339,12 +1377,13 @@ class Slide(models.Model):
             return self.env['slide.slide']
         # If current slide is uncategorized and all the channel uncategorized slides are completed, return the first category
         if not self.category_id and all(self.channel_id.slide_ids.filtered(
-            lambda s: not s.is_category and not s.category_id).mapped('user_has_completed')):
+                lambda s: not s.is_category and not s.category_id).mapped('user_has_completed')):
             return self.env['slide.slide'].browse(channel_category_ids[0])
         # If current category is completed and current category is not the last one, get next category
-        elif self.user_has_completed_category and self.category_id.id in channel_category_ids and self.category_id.id != channel_category_ids[-1]:
+        elif self.user_has_completed_category and self.category_id.id in channel_category_ids and self.category_id.id != \
+                channel_category_ids[-1]:
             index_current_category = channel_category_ids.index(self.category_id.id)
-            return self.env['slide.slide'].browse(channel_category_ids[index_current_category+1])
+            return self.env['slide.slide'].browse(channel_category_ids[index_current_category + 1])
         return self.env['slide.slide']
 
     def get_backend_menu_id(self):
@@ -1383,7 +1422,7 @@ class Slide(models.Model):
             'document': 'fa-file-pdf-o',
             'video': 'fa-play-circle',
             'quiz': 'fa-question-circle',
-            'link': 'fa-file-code-o', # appears in template "slide_icon"
+            'link': 'fa-file-code-o',  # appears in template "slide_icon"
         }
         results_data = super()._search_render_results(fetch_fields, mapping, icon, limit)
         for slide, data in zip(self, results_data):

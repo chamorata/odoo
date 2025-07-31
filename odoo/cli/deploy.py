@@ -1,16 +1,19 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import argparse
 import os
-import requests
 import sys
 import tempfile
 import zipfile
 from pathlib import Path
 
+import requests
+
 from . import Command
+
 
 class Deploy(Command):
     """Deploy a module on an Odoo instance"""
+
     def __init__(self):
         super(Deploy, self).__init__()
         self.session = requests.session()
@@ -66,12 +69,14 @@ class Deploy(Command):
             description=self.__doc__
         )
         parser.add_argument('path', help="Path of the module to deploy")
-        parser.add_argument('url', nargs='?', help='Url of the server (default=http://localhost:8069)', default="http://localhost:8069")
+        parser.add_argument('url', nargs='?', help='Url of the server (default=http://localhost:8069)',
+                            default="http://localhost:8069")
         parser.add_argument('--db', dest='db', help='Database to use if server does not use db-filter.')
         parser.add_argument('--login', dest='login', default="admin", help='Login (default=admin)')
         parser.add_argument('--password', dest='password', default="admin", help='Password (default=admin)')
         parser.add_argument('--verify-ssl', action='store_true', help='Verify SSL certificate')
-        parser.add_argument('--force', action='store_true', help='Force init even if module is already installed. (will update `noupdate="1"` records)')
+        parser.add_argument('--force', action='store_true',
+                            help='Force init even if module is already installed. (will update `noupdate="1"` records)')
         if not cmdargs:
             sys.exit(parser.print_help())
 

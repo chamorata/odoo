@@ -31,49 +31,49 @@ class SurveyTemplate(models.Model):
             'progression_mode': 'number',
             'questions_layout': 'page_per_question',
             'question_and_page_ids': [
-                (0, 0, { # survey.question
+                (0, 0, {  # survey.question
                     'title': _('How frequently do you use our products?'),
                     'question_type': 'simple_choice',
                     'constr_mandatory': True,
                     'suggested_answer_ids': [
-                        (0, 0, { # survey.question.answer
+                        (0, 0, {  # survey.question.answer
                             'value': _('Often (1-3 times per week)')
                         }),
-                        (0, 0, { # survey.question.answer
+                        (0, 0, {  # survey.question.answer
                             'value': _('Rarely (1-3 times per month)')
                         }),
-                        (0, 0, { # survey.question.answer
+                        (0, 0, {  # survey.question.answer
                             'value': _('Never (less than once a month)')
                         })
                     ]
                 }),
-                (0, 0, { # survey.question
+                (0, 0, {  # survey.question
                     'title': _('How many orders did you pass during the last 6 months?'),
                     'question_type': 'numerical_box',
                 }),
-                (0, 0, { # survey.question
+                (0, 0, {  # survey.question
                     'title': _('How likely are you to recommend the following products to a friend?'),
                     'question_type': 'matrix',
                     'matrix_subtype': 'simple',
                     'suggested_answer_ids': [
-                        (0, 0, { # survey.question.answer
+                        (0, 0, {  # survey.question.answer
                             'value': _('Unlikely')
                         }),
-                        (0, 0, { # survey.question.answer
+                        (0, 0, {  # survey.question.answer
                             'value': _('Neutral')
                         }),
-                        (0, 0, { # survey.question.answer
+                        (0, 0, {  # survey.question.answer
                             'value': _('Likely')
                         }),
                     ],
                     'matrix_row_ids': [
-                        (0, 0, { # survey.question.answer
+                        (0, 0, {  # survey.question.answer
                             'value': _('Red Pen')
                         }),
-                        (0, 0, { # survey.question.answer
+                        (0, 0, {  # survey.question.answer
                             'value': _('Blue Pen')
                         }),
-                        (0, 0, { # survey.question.answer
+                        (0, 0, {  # survey.question.answer
                             'value': _('Yellow Pen')
                         })
                     ]
@@ -89,7 +89,7 @@ class SurveyTemplate(models.Model):
             'certification': True,
             'access_mode': 'token',
             'is_time_limited': True,
-            'time_limit': 15, # 15 minutes
+            'time_limit': 15,  # 15 minutes
             'is_attempts_limited': True,
             'attempts_limit': 1,
             'progression_mode': 'number',
@@ -106,62 +106,62 @@ class SurveyTemplate(models.Model):
             'questions_layout': 'page_per_section',
             'questions_selection': 'random',
             'question_and_page_ids': [
-                (0, 0, { # survey.question
+                (0, 0, {  # survey.question
                     'title': _('Odoo Certification'),
                     'is_page': True,
                     'question_type': False,
                     'random_questions_count': 2
                 }),
-                (0, 0, { # survey.question
+                (0, 0, {  # survey.question
                     'title': _('What does "ODOO" stand for?'),
                     'question_type': 'simple_choice',
                     'suggested_answer_ids': [
-                        (0, 0, { # survey.question.answer
+                        (0, 0, {  # survey.question.answer
                             'value': _('It\'s a Belgian word for "Management"')
                         }),
-                        (0, 0, { # survey.question.answer
+                        (0, 0, {  # survey.question.answer
                             'value': _('Object-Directed Open Organization')
                         }),
-                        (0, 0, { # survey.question.answer
+                        (0, 0, {  # survey.question.answer
                             'value': _('Organizational Development for Operation Officers')
                         }),
-                        (0, 0, { # survey.question.answer
+                        (0, 0, {  # survey.question.answer
                             'value': _('It does not mean anything specific'),
                             'is_correct': True,
                             'answer_score': 10
                         }),
                     ]
                 }),
-                (0, 0, { # survey.question
+                (0, 0, {  # survey.question
                     'title': _('On Survey questions, one can define "placeholders". But what are they for?'),
                     'question_type': 'simple_choice',
                     'suggested_answer_ids': [
-                        (0, 0, { # survey.question.answer
+                        (0, 0, {  # survey.question.answer
                             'value': _('They are a default answer, used if the participant skips the question')
                         }),
-                        (0, 0, { # survey.question.answer
+                        (0, 0, {  # survey.question.answer
                             'value': _('It is a small bit of text, displayed to help participants answer'),
                             'is_correct': True,
                             'answer_score': 10
                         }),
-                        (0, 0, { # survey.question.answer
+                        (0, 0, {  # survey.question.answer
                             'value': _('They are technical parameters that guarantees the responsiveness of the page')
                         })
                     ]
                 }),
-                (0, 0, { # survey.question
+                (0, 0, {  # survey.question
                     'title': _('What does one need to get to pass an Odoo Survey?'),
                     'question_type': 'simple_choice',
                     'suggested_answer_ids': [
-                        (0, 0, { # survey.question.answer
+                        (0, 0, {  # survey.question.answer
                             'value': _('It is an option that can be different for each Survey'),
                             'is_correct': True,
                             'answer_score': 10
                         }),
-                        (0, 0, { # survey.question.answer
+                        (0, 0, {  # survey.question.answer
                             'value': _('One needs to get 50% of the total score')
                         }),
-                        (0, 0, { # survey.question.answer
+                        (0, 0, {  # survey.question.answer
                             'value': _('One needs to answer at least half the questions correctly')
                         })
                     ]
@@ -191,55 +191,55 @@ class SurveyTemplate(models.Model):
             'session_speed_rating': True,
             'session_speed_rating_time_limit': 90,
             'question_and_page_ids': [
-                (0, 0, { # survey.question
+                (0, 0, {  # survey.question
                     'title': _('What is the best way to catch the attention of an audience?'),
                     'question_type': 'simple_choice',
                     'suggested_answer_ids': [
-                        (0, 0, { # survey.question.answer
+                        (0, 0, {  # survey.question.answer
                             'value': _('Speak softly so that they need to focus to hear you')
                         }),
-                        (0, 0, { # survey.question.answer
+                        (0, 0, {  # survey.question.answer
                             'value': _('Use a fun visual support, like a live presentation'),
                             'is_correct': True,
                             'answer_score': 20
                         }),
-                        (0, 0, { # survey.question.answer
+                        (0, 0, {  # survey.question.answer
                             'value': _('Show them slides with a ton of text they need to read fast')
                         })
                     ]
                 }),
-                (0, 0, { # survey.question
+                (0, 0, {  # survey.question
                     'title': _('What is a frequent mistake public speakers do?'),
                     'question_type': 'simple_choice',
                     'suggested_answer_ids': [
-                        (0, 0, { # survey.question.answer
+                        (0, 0, {  # survey.question.answer
                             'value': _('Practice in front of a mirror')
                         }),
-                        (0, 0, { # survey.question.answer
+                        (0, 0, {  # survey.question.answer
                             'value': _('Speak too fast'),
                             'is_correct': True,
                             'answer_score': 20
                         }),
-                        (0, 0, { # survey.question.answer
+                        (0, 0, {  # survey.question.answer
                             'value': _('Use humor and make jokes')
                         })
                     ]
                 }),
-                (0, 0, { # survey.question
+                (0, 0, {  # survey.question
                     'title': _('Why should you consider making your presentation more fun with a small quiz?'),
                     'question_type': 'multiple_choice',
                     'suggested_answer_ids': [
-                        (0, 0, { # survey.question.answer
+                        (0, 0, {  # survey.question.answer
                             'value': _('It helps attendees focus on what you are saying'),
                             'is_correct': True,
                             'answer_score': 20
                         }),
-                        (0, 0, { # survey.question.answer
+                        (0, 0, {  # survey.question.answer
                             'value': _('It is more engaging for your audience'),
                             'is_correct': True,
                             'answer_score': 20
                         }),
-                        (0, 0, { # survey.question.answer
+                        (0, 0, {  # survey.question.answer
                             'value': _('It helps attendees remember the content of your presentation'),
                             'is_correct': True,
                             'answer_score': 20
@@ -262,6 +262,6 @@ class SurveyTemplate(models.Model):
         action['views'] = [[self.env.ref('survey.survey_survey_view_form').id, 'form']]
         action['res_id'] = self.id
         action['context'] = dict(ast.literal_eval(action.get('context', {})),
-            create=False
-        )
+                                 create=False
+                                 )
         return action

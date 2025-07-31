@@ -1,14 +1,13 @@
 # -*- encoding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import base64
 import contextlib
 import logging
 import re
-import requests
-
-from markupsafe import Markup
 from urllib.parse import parse_qs
+
+import requests
+from markupsafe import Markup
 from werkzeug.urls import url_encode
 
 from odoo import _
@@ -44,8 +43,8 @@ def get_video_source_data(video_url):
         if youtube_match:
             return ('youtube', youtube_match[2], youtube_match)
         vimeo_match = (
-            re.search(player_regexes['vimeo'], video_url) or
-            re.search(player_regexes['vimeo_player'], video_url))
+                re.search(player_regexes['vimeo'], video_url) or
+                re.search(player_regexes['vimeo_player'], video_url))
         if vimeo_match:
             return ('vimeo', vimeo_match.group('id'), vimeo_match)
         dailymotion_match = re.search(player_regexes['dailymotion'], video_url)
@@ -60,7 +59,8 @@ def get_video_source_data(video_url):
     return None
 
 
-def get_video_url_data(video_url, autoplay=False, loop=False, hide_controls=False, hide_fullscreen=False, hide_dm_logo=False, hide_dm_share=False):
+def get_video_url_data(video_url, autoplay=False, loop=False, hide_controls=False, hide_fullscreen=False,
+                       hide_dm_logo=False, hide_dm_share=False):
     """ Computes the platform name, the embed_url, the video id and the video params of the given URL
         (or error message in case of invalid URL).
     """
@@ -145,7 +145,9 @@ def get_video_embed_code(video_url):
     data = get_video_url_data(video_url)
     if 'error' in data:
         return None
-    return Markup('<iframe class="embed-responsive-item" src="%s" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowFullScreen="true" frameborder="0"></iframe>') % data['embed_url']
+    return Markup(
+        '<iframe class="embed-responsive-item" src="%s" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowFullScreen="true" frameborder="0"></iframe>') % \
+        data['embed_url']
 
 
 def get_video_thumbnail(video_url):
@@ -175,7 +177,10 @@ def get_video_thumbnail(video_url):
         return image_process(response.content)
     return None
 
+
 diverging_history_regex = 'data-last-history-steps="([0-9,]+)"'
+
+
 # This method must be called in a context that has write access to the record as
 # it will write to the bus.
 def handle_history_divergence(record, html_field_name, vals):
@@ -223,7 +228,9 @@ def handle_history_divergence(record, html_field_name, vals):
         if server_history_matches:
             server_last_history_id = server_history_matches[1].split(',')[-1]
             if server_last_history_id not in incoming_history_ids:
-                logger.warning('The document was already saved from someone with a different history for model %r, field %r with id %r.', record._name, html_field_name, record.id)
+                logger.warning(
+                    'The document was already saved from someone with a different history for model %r, field %r with id %r.',
+                    record._name, html_field_name, record.id)
                 raise ValidationError(_(
                     'The document was already saved from someone with a different history for model "%(model)s", field "%(field)s" with id "%(id)d".',
                     model=record._name,
@@ -232,4 +239,6 @@ def handle_history_divergence(record, html_field_name, vals):
                 ))
 
     # Save only the latest id.
-    vals[html_field_name] = incoming_html[0:incoming_history_matches.start(1)] + last_step_id + incoming_html[incoming_history_matches.end(1):]
+    vals[html_field_name] = incoming_html[0:incoming_history_matches.start(1)] + last_step_id + incoming_html[
+                                                                                                incoming_history_matches.end(
+                                                                                                    1):]

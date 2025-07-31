@@ -6,8 +6,8 @@ import re
 from lxml import etree
 from lxml.builder import E
 
-from odoo.tools.translate import LazyTranslate
 from odoo.exceptions import ValidationError
+from odoo.tools.translate import LazyTranslate
 from .misc import SKIPPED_ELEMENT_TYPES, html_escape
 
 __all__ = []
@@ -201,7 +201,8 @@ def apply_inheritance_specs(source, specs_tree, inherit_branding=False, pre_loca
                         # branding is distributed (and those processing instructions
                         # removed).
                         if inherit_branding and not node.get('data-oe-xpath'):
-                            node.addprevious(etree.ProcessingInstruction('apply-inheritance-specs-node-removal', node.tag))
+                            node.addprevious(
+                                etree.ProcessingInstruction('apply-inheritance-specs-node-removal', node.tag))
 
                         for child in spec:
                             if child.get('position') == 'move':
@@ -230,7 +231,7 @@ def apply_inheritance_specs(source, specs_tree, inherit_branding=False, pre_loca
                         key
                         for key in child.attrib
                         if key not in ('name', 'add', 'remove', 'separator')
-                        and not key.startswith('data-oe-')
+                           and not key.startswith('data-oe-')
                     ]
                     if unknown:
                         raise ValueError(_lt(
@@ -282,7 +283,7 @@ def apply_inheritance_specs(source, specs_tree, inherit_branding=False, pre_loca
                             if separator is None:
                                 separator = ','
                             elif separator == ' ':
-                                separator = None    # squash spaces
+                                separator = None  # squash spaces
                             values = (s.strip() for s in value.split(separator))
                             to_add = filter(None, (s.strip() for s in add.split(separator)))
                             to_remove = {s.strip() for s in remove.split(separator)}

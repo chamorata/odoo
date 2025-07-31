@@ -3,6 +3,7 @@
 
 from odoo import fields, models, _
 
+
 class MailingContactToList(models.TransientModel):
     _name = "mailing.contact.to.list"
     _description = "Add Contacts to Mailing List"
@@ -36,7 +37,7 @@ class MailingContactToList(models.TransientModel):
                 (4, contact.id)
                 for contact in self.contact_ids
                 if contact not in self.mailing_list_id.contact_ids]
-            })
+        })
 
         return {
             'type': 'ir.actions.client',
@@ -45,7 +46,7 @@ class MailingContactToList(models.TransientModel):
                 'type': 'info',
                 'message': _("%s Mailing Contacts have been added. ",
                              len(self.mailing_list_id.contact_ids) - previous_count
-                            ),
+                             ),
                 'sticky': False,
                 'next': action,
             }

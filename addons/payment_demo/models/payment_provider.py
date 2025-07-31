@@ -1,9 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.payment_demo import const
+
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
-
-from odoo.addons.payment_demo import const
 
 
 class PaymentProvider(models.Model):
@@ -11,7 +11,7 @@ class PaymentProvider(models.Model):
 
     code = fields.Selection(selection_add=[('demo', 'Demo')], ondelete={'demo': 'set default'})
 
-    #=== COMPUTE METHODS ===#
+    # === COMPUTE METHODS ===#
 
     def _compute_feature_support_fields(self):
         """ Override of `payment` to enable additional features. """

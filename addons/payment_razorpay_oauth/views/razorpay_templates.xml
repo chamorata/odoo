@@ -11,7 +11,9 @@
                 <div class="container">
                     <h1>An error occurred</h1>
                     <p>An error occurred while linking your Razorpay account with Odoo.</p>
-                    <p><t t-out="error_message"/></p>
+                    <p>
+                        <t t-out="error_message"/>
+                    </p>
                     <a t-att-href="provider_url" class="btn btn-primary mt-2">
                         Back to the Razorpay provider
                     </a>

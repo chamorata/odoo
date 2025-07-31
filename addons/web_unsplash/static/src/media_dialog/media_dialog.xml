@@ -4,15 +4,15 @@
         <xpath expr="//t[@t-if]" position="after">
             <t t-elif="record.mediaType === 'unsplashRecord'">
                 <AutoResizeImage src="record.url"
-                    author="record.user.name"
-                    authorLink="record.user.links.html"
-                    name="record.user.name"
-                    title="record.user.name"
-                    altDescription="record.alt_description"
-                    selected="this.selectedRecordIds.includes(record.id)"
-                    onImageClick="() => this.onClickRecord(record)"
-                    minRowHeight="MIN_ROW_HEIGHT"
-                    onLoaded="(imgEl) => this.onImageLoaded(imgEl, record)"/>
+                                 author="record.user.name"
+                                 authorLink="record.user.links.html"
+                                 name="record.user.name"
+                                 title="record.user.name"
+                                 altDescription="record.alt_description"
+                                 selected="this.selectedRecordIds.includes(record.id)"
+                                 onImageClick="() => this.onClickRecord(record)"
+                                 minRowHeight="MIN_ROW_HEIGHT"
+                                 onLoaded="(imgEl) => this.onImageLoaded(imgEl, record)"/>
             </t>
         </xpath>
     </t>
@@ -31,11 +31,11 @@
         <xpath expr="//div[@name='load_more_attachments']" position="before">
             <div t-if="unsplashState?.unsplashError" class="d-flex mt-2 unsplash_error">
                 <UnsplashError
-                    title="errorTitle"
-                    subtitle="errorSubtitle"
-                    showCredentials="['key_not_found', 401].includes(unsplashState.unsplashError)"
-                    submitCredentials="(key, appId)  => this.submitCredentials(key, appId)"
-                    hasCredentialsError="unsplashState.unsplashError === 401"/>
+                        title="errorTitle"
+                        subtitle="errorSubtitle"
+                        showCredentials="['key_not_found', 401].includes(unsplashState.unsplashError)"
+                        submitCredentials="(key, appId)  => this.submitCredentials(key, appId)"
+                        hasCredentialsError="unsplashState.unsplashError === 401"/>
             </div>
         </xpath>
     </t>

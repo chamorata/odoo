@@ -12,7 +12,8 @@
             <div t-if="o.vehicle_category_id">
                 <strong>Vehicle Category:</strong>
                 <span t-field="o.vehicle_category_id"/>
-            </div><br/>
+            </div>
+            <br/>
         </xpath>
         <xpath expr="//table[hasclass('table')]//thead//tr//th" position="before">
             <th>Sequence</th>

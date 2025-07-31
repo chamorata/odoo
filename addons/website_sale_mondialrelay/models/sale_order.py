@@ -9,8 +9,8 @@ class SaleOrder(models.Model):
 
     def _check_cart_is_ready_to_be_paid(self):
         if (
-            self.partner_shipping_id.is_mondialrelay and self.delivery_set
-            and self.carrier_id and not self.carrier_id.is_mondialrelay
+                self.partner_shipping_id.is_mondialrelay and self.delivery_set
+                and self.carrier_id and not self.carrier_id.is_mondialrelay
         ):
             raise ValidationError(_(
                 "Point Relais® can only be used with the delivery method Mondial Relay."

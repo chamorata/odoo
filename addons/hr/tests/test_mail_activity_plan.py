@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import Command
 from odoo.addons.mail.tests.common import mail_new_test_user
 from odoo.addons.mail.tests.test_mail_activity import ActivityScheduleCase
+
+from odoo import Command
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests import tagged, users
 
@@ -132,10 +133,11 @@ class TestActivitySchedule(ActivityScheduleHRCase):
             } for department in self.department_a + self.department_b
         ])
         for employees, expected_department, authorized_plans, non_authorized_plans in (
-            (self.employee_1 + self.employee_dep_b, False, self.plan_onboarding, no_plan),
-            (self.employee_1 + self.employee_2, self.department_a, self.plan_onboarding + plan_department_a, plan_department_b),
-            (self.employee_1, self.department_a, self.plan_onboarding + plan_department_a, plan_department_b),
-            (self.employee_dep_b, self.department_b, self.plan_onboarding + plan_department_b, plan_department_a),
+                (self.employee_1 + self.employee_dep_b, False, self.plan_onboarding, no_plan),
+                (self.employee_1 + self.employee_2, self.department_a, self.plan_onboarding + plan_department_a,
+                 plan_department_b),
+                (self.employee_1, self.department_a, self.plan_onboarding + plan_department_a, plan_department_b),
+                (self.employee_dep_b, self.department_b, self.plan_onboarding + plan_department_b, plan_department_a),
         ):
             with self._instantiate_activity_schedule_wizard(employees) as form:
                 if expected_department:

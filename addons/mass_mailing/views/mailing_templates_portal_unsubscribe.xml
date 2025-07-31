@@ -43,7 +43,9 @@
                                         <li class="list-group-item d-flex align-items-center">
                                             <strong>
                                                 <t t-if="mailing_list.is_public" t-esc="mailing_list.name"/>
-                                                <t t-else="">Mailing List #<t t-esc="mailing_list.id"/></t>
+                                                <t t-else="">Mailing List #
+                                                    <t t-esc="mailing_list.id"/>
+                                                </t>
                                             </strong>
                                         </li>
                                     </t>
@@ -111,9 +113,11 @@
                                 </button>
                                 <div class="btn btn-link me-2 text-uppercase d-none"
                                      t-if="blocklist_enabled and blocklist_possible"
-                                     id="button_blocklist_add">Exclude Me</div>
+                                     id="button_blocklist_add">Exclude Me
+                                </div>
                                 <div class="btn btn-link text-uppercase d-none"
-                                     id="button_blocklist_remove">Come Back</div>
+                                     id="button_blocklist_remove">Come Back
+                                </div>
                                 <div id="o_mailing_subscription_update_info" class="d-none"/>
                             </div>
                         </form>
@@ -152,7 +156,8 @@
                                 <textarea class="form-control d-none" name="feedback" cols="60" rows="3"></textarea>
                                 <div class="d-flex align-items-center mt-2">
                                     <button type="submit" id="button_feedback"
-                                            class="btn btn-primary text-start me-2">Send</button>
+                                            class="btn btn-primary text-start me-2">Send
+                                    </button>
                                     <div id="o_mailing_subscription_feedback_info" class="d-none"/>
                                 </div>
                             </form>

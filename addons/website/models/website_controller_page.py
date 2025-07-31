@@ -1,5 +1,4 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from ast import literal_eval
 from odoo import api, fields, models
 
 
@@ -23,14 +22,15 @@ class WebsiteControllerPage(models.Model):
     website_id = fields.Many2one(related='view_id.website_id', store=True, readonly=False, ondelete='cascade')
 
     name = fields.Char(string="The name is used to generate the URL and is shown in the browser title bar",
-        compute="_compute_name",
-        inverse="_inverse_name",
-        required=True,
-        store=True)
+                       compute="_compute_name",
+                       inverse="_inverse_name",
+                       required=True,
+                       store=True)
     # Bindings to model/records, to expose the page on the website.
     # Route: /model/<string:page_name_slugified>
     name_slugified = fields.Char(compute="_compute_name_slugified", store=True,
-        string="URL", help="The name of the page usable in a URL", inverse="_inverse_name_slugified")
+                                 string="URL", help="The name of the page usable in a URL",
+                                 inverse="_inverse_name_slugified")
     url_demo = fields.Char(string="Demo URL", compute="_compute_url_demo")
 
     record_domain = fields.Char(string="Domain", help="Domain to restrict records that can be viewed publicly")

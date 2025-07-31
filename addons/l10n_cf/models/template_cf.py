@@ -1,5 +1,6 @@
-from odoo import models, _
 from odoo.addons.account.models.chart_template import template
+
+from odoo import models, _
 
 
 class AccountChartTemplate(models.AbstractModel):
@@ -28,4 +29,3 @@ class AccountChartTemplate(models.AbstractModel):
     @template('cf', 'account.account')
     def _get_cf_account_account(self):
         return self._parse_csv('cf', 'account.account', module='l10n_syscohada')
-

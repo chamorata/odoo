@@ -8,7 +8,8 @@ from odoo.exceptions import ValidationError
 class PaymentTransaction(models.Model):
     _inherit = 'payment.transaction'
 
-    pos_order_id = fields.Many2one('pos.order', string='POS Order', help='The Point of Sale order linked to the payment transaction', readonly=True)
+    pos_order_id = fields.Many2one('pos.order', string='POS Order',
+                                   help='The Point of Sale order linked to the payment transaction', readonly=True)
 
     @api.model
     def _compute_reference_prefix(self, provider_code, separator, **values):
@@ -36,7 +37,7 @@ class PaymentTransaction(models.Model):
                 if tools.float_compare(tx.amount, 0.0, precision_rounding=pos_order.currency_id.rounding) <= 0:
                     raise ValidationError(_('The payment transaction (%d) has a negative amount.', tx.id))
 
-                if not tx.payment_id: # the payment could already have been created by account_payment module
+                if not tx.payment_id:  # the payment could already have been created by account_payment module
                     tx._create_payment()
                 if not tx.payment_id:
                     raise ValidationError(_('The POS online payment (tx.id=%d) could not be saved correctly', tx.id))
@@ -44,9 +45,12 @@ class PaymentTransaction(models.Model):
                 payment_method = pos_order.online_payment_method_id
                 if not payment_method:
                     pos_config = pos_order.config_id
-                    payment_method = self.env['pos.payment.method'].sudo()._get_or_create_online_payment_method(pos_config.company_id.id, pos_config.id)
+                    payment_method = self.env['pos.payment.method'].sudo()._get_or_create_online_payment_method(
+                        pos_config.company_id.id, pos_config.id)
                     if not payment_method:
-                        raise ValidationError(_('The POS online payment (tx.id=%d) could not be saved correctly because the online payment method could not be found', tx.id))
+                        raise ValidationError(
+                            _('The POS online payment (tx.id=%d) could not be saved correctly because the online payment method could not be found',
+                              tx.id))
 
                 pos_order.add_payment({
                     'amount': tx.amount,

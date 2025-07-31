@@ -2,25 +2,25 @@
 
 import contextlib
 import logging
-
 from ast import literal_eval
+
 from dateutil.relativedelta import relativedelta
-
-from odoo import api, fields, models, _
-from odoo.exceptions import UserError
-from odoo.osv import expression
-from odoo.http import request
-
-from odoo.addons.base.models.ir_mail_server import MailDeliveryException
 from odoo.addons.auth_signup.models.res_partner import SignupError
 
+from odoo import api, fields, models, _
+from odoo.addons.base.models.ir_mail_server import MailDeliveryException
+from odoo.exceptions import UserError
+from odoo.http import request
+from odoo.osv import expression
+
 _logger = logging.getLogger(__name__)
+
 
 class ResUsers(models.Model):
     _inherit = 'res.users'
 
     state = fields.Selection(compute='_compute_state', search='_search_state', string='Status',
-                 selection=[('new', 'Never Connected'), ('active', 'Confirmed')])
+                             selection=[('new', 'Never Connected'), ('active', 'Confirmed')])
 
     def _search_state(self, operator, value):
         negative = operator in expression.NEGATIVE_TERM_OPERATORS
@@ -136,7 +136,8 @@ class ResUsers(models.Model):
             )
 
     def _create_user_from_template(self, values):
-        template_user_id = literal_eval(self.env['ir.config_parameter'].sudo().get_param('base.template_portal_user_id', 'False'))
+        template_user_id = literal_eval(
+            self.env['ir.config_parameter'].sudo().get_param('base.template_portal_user_id', 'False'))
         template_user = self.browse(template_user_id)
         if not template_user.exists():
             raise ValueError(_('Signup: invalid template user'))
@@ -176,9 +177,11 @@ class ResUsers(models.Model):
                 return self._action_reset_password(signup_type="reset")
         except MailDeliveryException as mde:
             if len(mde.args) == 2 and isinstance(mde.args[1], ConnectionRefusedError):
-                raise UserError(_("Could not contact the mail server, please check your outgoing email server configuration")) from mde
+                raise UserError(
+                    _("Could not contact the mail server, please check your outgoing email server configuration")) from mde
             else:
-                raise UserError(_("There was an error when trying to deliver your Email, please check your configuration")) from mde
+                raise UserError(
+                    _("There was an error when trying to deliver your Email, please check your configuration")) from mde
 
     def _action_reset_password(self, signup_type="reset"):
         """ create signup token for each user, and send their signup url by email """
@@ -249,7 +252,8 @@ class ResUsers(models.Model):
     def send_unregistered_user_reminder(self, *, after_days=5, batch_size=100):
         email_template = self.env.ref('auth_signup.mail_template_data_unregistered_users', raise_if_not_found=False)
         if not email_template:
-            _logger.warning("Template 'auth_signup.mail_template_data_unregistered_users' was not found. Cannot send reminder notifications.")
+            _logger.warning(
+                "Template 'auth_signup.mail_template_data_unregistered_users' was not found. Cannot send reminder notifications.")
             self.env['ir.cron']._commit_progress(deactivate=True)
             return
         datetime_min = fields.Datetime.today() - relativedelta(days=after_days)
@@ -290,10 +294,10 @@ class ResUsers(models.Model):
             }
 
             body = self.env['mail.render.mixin']._render_template(
-                    'auth_signup.alert_login_new_device',
-                    model='res.users', res_ids=self.ids,
-                    engine='qweb_view', options={'post_process': True},
-                    add_context=self._prepare_new_device_notice_values())[self.id]
+                'auth_signup.alert_login_new_device',
+                model='res.users', res_ids=self.ids,
+                engine='qweb_view', options={'post_process': True},
+                add_context=self._prepare_new_device_notice_values())[self.id]
             mail = self.env['mail.mail'].sudo().create({
                 'subject': _('New Connection to your Account'),
                 'email_from': self.company_id.email_formatted or self.email_formatted,
@@ -320,7 +324,8 @@ class ResUsers(models.Model):
         country = request.geoip.get('country') or False
         if country:
             if region and city:
-                values['location_address'] = _("Near %(city)s, %(region)s, %(country)s", city=city, region=region, country=country)
+                values['location_address'] = _("Near %(city)s, %(region)s, %(country)s", city=city, region=region,
+                                               country=country)
             elif region:
                 values['location_address'] = _("Near %(region)s, %(country)s", region=region, country=country)
             else:

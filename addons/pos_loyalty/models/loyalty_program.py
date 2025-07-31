@@ -3,17 +3,22 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
+
 class LoyaltyProgram(models.Model):
     _name = 'loyalty.program'
     _inherit = ['loyalty.program', 'pos.load.mixin']
 
     # NOTE: `pos_config_ids` satisfies an excpeptional use case: when no PoS is specified, the loyalty program is
     # applied to every PoS. You can access the loyalty programs of a PoS using _get_program_ids() of pos.config
-    pos_config_ids = fields.Many2many('pos.config', compute="_compute_pos_config_ids", store=True, readonly=False, string="Point of Sales", help="Restrict publishing to those shops.")
+    pos_config_ids = fields.Many2many('pos.config', compute="_compute_pos_config_ids", store=True, readonly=False,
+                                      string="Point of Sales", help="Restrict publishing to those shops.")
     pos_order_count = fields.Integer("PoS Order Count", compute='_compute_pos_order_count')
     pos_ok = fields.Boolean("Point of Sale", default=True)
-    pos_report_print_id = fields.Many2one('ir.actions.report', string="Print Report", domain=[('model', '=', 'loyalty.card')], compute='_compute_pos_report_print_id', inverse='_inverse_pos_report_print_id', readonly=False,
-        help="This is used to print the generated gift cards from PoS.")
+    pos_report_print_id = fields.Many2one('ir.actions.report', string="Print Report",
+                                          domain=[('model', '=', 'loyalty.card')],
+                                          compute='_compute_pos_report_print_id',
+                                          inverse='_inverse_pos_report_print_id', readonly=False,
+                                          help="This is used to print the generated gift cards from PoS.")
 
     @api.model
     def _load_pos_data_domain(self, data):
@@ -41,7 +46,8 @@ class LoyaltyProgram(models.Model):
             if program.pos_report_print_id:
                 if not program.mail_template_id:
                     mail_template_label = program._fields.get('mail_template_id').get_description(self.env)['string']
-                    pos_report_print_label = program._fields.get('pos_report_print_id').get_description(self.env)['string']
+                    pos_report_print_label = program._fields.get('pos_report_print_id').get_description(self.env)[
+                        'string']
                     raise UserError(_(
                         "You must set '%(mail_template)s' before setting '%(report)s'.",
                         mail_template=mail_template_label,

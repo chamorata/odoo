@@ -1,10 +1,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import Command
-from odoo.tests import Form, tagged
-
 from odoo.addons.delivery.tests.common import DeliveryCommon
 from odoo.addons.sale.tests.common import SaleCommon
+
+from odoo import Command
+from odoo.tests import Form, tagged
 
 
 @tagged('post_install', '-at_install')
@@ -47,7 +47,8 @@ class TestDeliveryAvailability(DeliveryCommon, SaleCommon):
             'default_carrier_id': self.non_restricted_carrier.id,
         }))
         choose_delivery_carrier = delivery_wizard.save()
-        self.assertFalse(self.carrier.id in choose_delivery_carrier.available_carrier_ids.ids, "Product weight exceeds carrier's max weight")
+        self.assertFalse(self.carrier.id in choose_delivery_carrier.available_carrier_ids.ids,
+                         "Product weight exceeds carrier's max weight")
 
     def test_01_order_with_heavy_product_different_uom(self):
         self.carrier.write({
@@ -73,7 +74,8 @@ class TestDeliveryAvailability(DeliveryCommon, SaleCommon):
             'default_carrier_id': self.non_restricted_carrier.id,
         }))
         choose_delivery_carrier = delivery_wizard.save()
-        self.assertFalse(self.carrier.id in choose_delivery_carrier.available_carrier_ids.ids, "Order lines should be converted to the default UoM before checking weight")
+        self.assertFalse(self.carrier.id in choose_delivery_carrier.available_carrier_ids.ids,
+                         "Order lines should be converted to the default UoM before checking weight")
 
     def test_02_order_with_big_product_simple(self):
         self.carrier.write({
@@ -98,7 +100,8 @@ class TestDeliveryAvailability(DeliveryCommon, SaleCommon):
             'default_carrier_id': self.non_restricted_carrier.id,
         }))
         choose_delivery_carrier = delivery_wizard.save()
-        self.assertFalse(self.carrier.id in choose_delivery_carrier.available_carrier_ids.ids, "Product volume exceeds carrier's max volume")
+        self.assertFalse(self.carrier.id in choose_delivery_carrier.available_carrier_ids.ids,
+                         "Product volume exceeds carrier's max volume")
 
     def test_03_order_with_big_product_different_uom(self):
         self.carrier.write({
@@ -124,7 +127,8 @@ class TestDeliveryAvailability(DeliveryCommon, SaleCommon):
             'default_carrier_id': self.non_restricted_carrier.id,
         }))
         choose_delivery_carrier = delivery_wizard.save()
-        self.assertFalse(self.carrier.id in choose_delivery_carrier.available_carrier_ids.ids, "Order lines should be converted to the default UoM before checking volume")
+        self.assertFalse(self.carrier.id in choose_delivery_carrier.available_carrier_ids.ids,
+                         "Order lines should be converted to the default UoM before checking volume")
 
     def test_04_check_must_have_tag(self):
         self.carrier.must_have_tag_ids = [
@@ -137,7 +141,8 @@ class TestDeliveryAvailability(DeliveryCommon, SaleCommon):
             'default_carrier_id': self.non_restricted_carrier.id,
         }))
         choose_delivery_carrier = delivery_wizard.save()
-        self.assertFalse(self.carrier.id in choose_delivery_carrier.available_carrier_ids.ids, "Carrier must have tag is not set on any product in the order")
+        self.assertFalse(self.carrier.id in choose_delivery_carrier.available_carrier_ids.ids,
+                         "Carrier must have tag is not set on any product in the order")
 
         self.product.write({
             'product_tag_ids': [self.must_have_tag.id],
@@ -147,7 +152,8 @@ class TestDeliveryAvailability(DeliveryCommon, SaleCommon):
             'default_carrier_id': self.non_restricted_carrier.id,
         }))
         choose_delivery_carrier = delivery_wizard.save()
-        self.assertTrue(self.carrier.id in choose_delivery_carrier.available_carrier_ids.ids, "Carrier must have tag is set on one product in the order")
+        self.assertTrue(self.carrier.id in choose_delivery_carrier.available_carrier_ids.ids,
+                        "Carrier must have tag is set on one product in the order")
 
     def test_05_check_excluded_tag(self):
         self.carrier.write({
@@ -168,7 +174,8 @@ class TestDeliveryAvailability(DeliveryCommon, SaleCommon):
             'default_carrier_id': self.non_restricted_carrier.id,
         }))
         choose_delivery_carrier = delivery_wizard.save()
-        self.assertTrue(self.carrier.id in choose_delivery_carrier.available_carrier_ids.ids, "Carrier excluded tag is not set on any product in the order")
+        self.assertTrue(self.carrier.id in choose_delivery_carrier.available_carrier_ids.ids,
+                        "Carrier excluded tag is not set on any product in the order")
 
         self.product.write({
             'product_tag_ids': [self.exclude_tag.id],
@@ -178,7 +185,8 @@ class TestDeliveryAvailability(DeliveryCommon, SaleCommon):
             'default_carrier_id': self.non_restricted_carrier.id,
         }))
         choose_delivery_carrier = delivery_wizard.save()
-        self.assertFalse(self.carrier.id in choose_delivery_carrier.available_carrier_ids.ids, "Carrier excluded tag is set on one product in the order")
+        self.assertFalse(self.carrier.id in choose_delivery_carrier.available_carrier_ids.ids,
+                         "Carrier excluded tag is set on one product in the order")
 
     def test_06_check_tags_complex(self):
         self.carrier.write({
@@ -206,7 +214,8 @@ class TestDeliveryAvailability(DeliveryCommon, SaleCommon):
             'default_carrier_id': self.non_restricted_carrier.id,
         }))
         choose_delivery_carrier = delivery_wizard.save()
-        self.assertFalse(self.carrier.id in choose_delivery_carrier.available_carrier_ids.ids, "Carrier must have tag is not set on any product in the order")
+        self.assertFalse(self.carrier.id in choose_delivery_carrier.available_carrier_ids.ids,
+                         "Carrier must have tag is not set on any product in the order")
 
         self.product.write({
             'product_tag_ids': [self.must_have_tag.id],
@@ -216,7 +225,8 @@ class TestDeliveryAvailability(DeliveryCommon, SaleCommon):
             'default_carrier_id': self.non_restricted_carrier.id,
         }))
         choose_delivery_carrier = delivery_wizard.save()
-        self.assertTrue(self.carrier.id in choose_delivery_carrier.available_carrier_ids.ids, "Carrier must have tag is set on one product in the order")
+        self.assertTrue(self.carrier.id in choose_delivery_carrier.available_carrier_ids.ids,
+                        "Carrier must have tag is set on one product in the order")
 
         self.product.write({
             'product_tag_ids': [self.exclude_tag.id, self.must_have_tag.id],
@@ -226,7 +236,8 @@ class TestDeliveryAvailability(DeliveryCommon, SaleCommon):
             'default_carrier_id': self.non_restricted_carrier.id,
         }))
         choose_delivery_carrier = delivery_wizard.save()
-        self.assertFalse(self.carrier.id in choose_delivery_carrier.available_carrier_ids.ids, "Carrier excluded tag is set on one product in the order")
+        self.assertFalse(self.carrier.id in choose_delivery_carrier.available_carrier_ids.ids,
+                         "Carrier excluded tag is set on one product in the order")
 
         self.product.write({
             'product_tag_ids': [self.must_have_tag.id],
@@ -239,4 +250,5 @@ class TestDeliveryAvailability(DeliveryCommon, SaleCommon):
             'default_carrier_id': self.non_restricted_carrier.id,
         }))
         choose_delivery_carrier = delivery_wizard.save()
-        self.assertFalse(self.carrier.id in choose_delivery_carrier.available_carrier_ids.ids, "Carrier excluded tag is set on one product in the order")
+        self.assertFalse(self.carrier.id in choose_delivery_carrier.available_carrier_ids.ids,
+                         "Carrier excluded tag is set on one product in the order")

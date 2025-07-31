@@ -6,11 +6,10 @@ from odoo.exceptions import UserError
 
 
 class ResConfigSettings(models.TransientModel):
-
     _inherit = 'res.config.settings'
 
     company_id = fields.Many2one('res.company', string='Company', required=True,
-        default=lambda self: self.env.company)
+                                 default=lambda self: self.env.company)
     is_root_company = fields.Boolean(compute='_compute_is_root_company')
     user_default_rights = fields.Boolean(
         "Default Access Rights",
@@ -33,10 +32,11 @@ class ResConfigSettings(models.TransientModel):
     module_base_geolocalize = fields.Boolean("GeoLocalize")
     module_google_recaptcha = fields.Boolean("reCAPTCHA")
     module_website_cf_turnstile = fields.Boolean("Cloudflare Turnstile")
-    report_footer = fields.Html(related="company_id.report_footer", string='Custom Report Footer', help="Footer text displayed at the bottom of all reports.", readonly=False)
+    report_footer = fields.Html(related="company_id.report_footer", string='Custom Report Footer',
+                                help="Footer text displayed at the bottom of all reports.", readonly=False)
     group_multi_currency = fields.Boolean(string='Multi-Currencies',
-            implied_group='base.group_multi_currency',
-            help="Allows to work in a multi currency environment")
+                                          implied_group='base.group_multi_currency',
+                                          help="Allows to work in a multi currency environment")
     external_report_layout_id = fields.Many2one(related="company_id.external_report_layout_id")
     show_effect = fields.Boolean(string="Show Effect", config_parameter='base_setup.show_effect')
     company_count = fields.Integer('Number of Companies', compute="_compute_company_count")
@@ -44,8 +44,10 @@ class ResConfigSettings(models.TransientModel):
     language_count = fields.Integer('Number of Languages', compute="_compute_language_count")
     company_name = fields.Char(related="company_id.display_name", string="Company Name")
     company_informations = fields.Text(compute="_compute_company_informations")
-    company_country_code = fields.Char(related="company_id.country_id.code", string="Company Country Code", readonly=True)
-    profiling_enabled_until = fields.Datetime("Profiling enabled until", config_parameter='base.profiling_enabled_until')
+    company_country_code = fields.Char(related="company_id.country_id.code", string="Company Country Code",
+                                       readonly=True)
+    profiling_enabled_until = fields.Datetime("Profiling enabled until",
+                                              config_parameter='base.profiling_enabled_until')
     module_product_images = fields.Boolean("Get product pictures using barcode")
 
     def open_company(self):

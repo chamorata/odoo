@@ -2,13 +2,14 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
-from freezegun import freeze_time
 from itertools import chain, repeat
 from unittest.mock import patch
 
-from odoo import exceptions, fields, _
+from dateutil.relativedelta import relativedelta
+from freezegun import freeze_time
 from odoo.addons.mail.tests.common import mail_new_test_user
+
+from odoo import exceptions, fields, _
 from odoo.tests import common
 
 
@@ -62,7 +63,9 @@ class TestKarmaTrackingCommon(common.TransactionCase):
         self.assertEqual(results[1]['karma_gain_total'], 40)
         self.assertEqual(results[1]['karma_position'], 2)
 
-        results = (self.test_user | self.test_user_2)._get_tracking_karma_gain_position([], to_date=self.test_date + relativedelta(day=2))
+        results = (self.test_user | self.test_user_2)._get_tracking_karma_gain_position([],
+                                                                                        to_date=self.test_date + relativedelta(
+                                                                                            day=2))
         self.assertEqual(results[0]['user_id'], self.test_user.id)
         self.assertEqual(results[0]['karma_gain_total'], 20)
         self.assertEqual(results[0]['karma_position'], 1)
@@ -70,7 +73,9 @@ class TestKarmaTrackingCommon(common.TransactionCase):
         self.assertEqual(results[1]['karma_gain_total'], 10)
         self.assertEqual(results[1]['karma_position'], 2)
 
-        results = (self.test_user | self.test_user_2)._get_tracking_karma_gain_position([], from_date=self.test_date + relativedelta(months=1, day=1))
+        results = (self.test_user | self.test_user_2)._get_tracking_karma_gain_position([],
+                                                                                        from_date=self.test_date + relativedelta(
+                                                                                            months=1, day=1))
         self.assertEqual(results[0]['user_id'], self.test_user_2.id)
         self.assertEqual(results[0]['karma_gain_total'], 50)
         self.assertEqual(results[0]['karma_position'], 1)
@@ -105,7 +110,8 @@ class TestKarmaTrackingCommon(common.TransactionCase):
             Tracking._consolidate_cron()
 
         # consolidation should not change user karma
-        self.assertFalse(patched_user_write.called, "User karma didn't change during consolidation, it should not be updated")
+        self.assertFalse(patched_user_write.called,
+                         "User karma didn't change during consolidation, it should not be updated")
         self.assertEqual(self.test_user.karma, 40)
         self.assertEqual(self.test_user_2.karma, 200)
 
@@ -159,14 +165,16 @@ class TestKarmaTrackingCommon(common.TransactionCase):
         self.assertEqual(len(consolidated), 1)
         self.assertTrue(consolidated.consolidated)
         self.assertEqual(consolidated.old_value, base_test_user_2_karma)
-        self.assertEqual(consolidated.new_value, base_test_user_2_karma + 150)  # 15 2-days span, from 1 to 29 included = 15 steps -> 150 karma
+        self.assertEqual(consolidated.new_value,
+                         base_test_user_2_karma + 150)  # 15 2-days span, from 1 to 29 included = 15 steps -> 150 karma
 
         remaining = Tracking.search([
             ('user_id', '=', self.test_user_2.id),
             ('consolidated', '=', False)
         ])
         self.assertEqual(len(remaining), 5)  # 15 steps consolidated, remaining 5
-        self.assertEqual(remaining[0].tracking_date, self.test_date + relativedelta(months=1, day=9))  # ordering: last first
+        self.assertEqual(remaining[0].tracking_date,
+                         self.test_date + relativedelta(months=1, day=9))  # ordering: last first
         self.assertEqual(remaining[-1].tracking_date, self.test_date + relativedelta(months=1, day=1))
 
         Tracking._process_consolidate(self.test_date + relativedelta(months=1))
@@ -175,10 +183,13 @@ class TestKarmaTrackingCommon(common.TransactionCase):
             ('consolidated', '=', True),
         ])
         self.assertEqual(len(consolidated), 2)
-        self.assertEqual(consolidated[0].new_value, base_test_user_2_karma + 200)  # 5 remaining 2-days span, from 1 to 9 included = 5 steps -> 50 karma
+        self.assertEqual(consolidated[0].new_value,
+                         base_test_user_2_karma + 200)  # 5 remaining 2-days span, from 1 to 9 included = 5 steps -> 50 karma
         self.assertEqual(consolidated[0].old_value, base_test_user_2_karma + 150)  # coming from previous iteration
-        self.assertEqual(consolidated[0].tracking_date.date(), self.test_date.date() + relativedelta(months=1))  # tracking set at beginning of month
-        self.assertEqual(consolidated[-1].new_value, base_test_user_2_karma + 150)  # previously created one still present
+        self.assertEqual(consolidated[0].tracking_date.date(),
+                         self.test_date.date() + relativedelta(months=1))  # tracking set at beginning of month
+        self.assertEqual(consolidated[-1].new_value,
+                         base_test_user_2_karma + 150)  # previously created one still present
         self.assertEqual(consolidated[-1].old_value, base_test_user_2_karma)  # previously created one still present
 
         remaining = Tracking.search([
@@ -394,7 +405,8 @@ class TestComputeRankCommon(common.TransactionCase):
         def _patched_check_in_bulk(*args, **kwargs):
             raise
 
-        patch_bulk = patch('odoo.addons.gamification.models.res_users.Users._recompute_rank_bulk', _patched_check_in_bulk)
+        patch_bulk = patch('odoo.addons.gamification.models.res_users.Users._recompute_rank_bulk',
+                           _patched_check_in_bulk)
         self.startPatcher(patch_bulk)
 
         # call on 5 users should not trigger the bulk function

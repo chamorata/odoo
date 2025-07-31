@@ -2,11 +2,12 @@
 
 import re
 
-import odoo
+from odoo.addons.mail.tools.discuss import Store
+
 from odoo import _, api, fields, models, tools
 from odoo.osv import expression
 from odoo.tools.misc import limited_field_access_token
-from odoo.addons.mail.tools.discuss import Store
+
 
 class Partner(models.Model):
     """ Update partner to add a field about notification preferences. Add a generic opt-out field that can be used
@@ -24,7 +25,8 @@ class Partner(models.Model):
     vat = fields.Char(tracking=5)
     # tracked field used for chatter logging purposes
     # we need this to be readable inline as tracking messages use inline HTML nodes
-    contact_address_inline = fields.Char(compute='_compute_contact_address_inline', string='Inlined Complete Address', tracking=True)
+    contact_address_inline = fields.Char(compute='_compute_contact_address_inline', string='Inlined Complete Address',
+                                         tracking=True)
     starred_message_ids = fields.Many2many('mail.message', 'mail_message_res_partner_starred_rel')
 
     @api.depends('contact_address')
@@ -68,10 +70,10 @@ class Partner(models.Model):
     def _message_get_default_recipients(self):
         return {
             r.id:
-            {'partner_ids': [r.id],
-             'email_to': False,
-             'email_cc': False
-            }
+                {'partner_ids': [r.id],
+                 'email_to': False,
+                 'email_cc': False
+                 }
             for r in self
         }
 
@@ -93,7 +95,8 @@ class Partner(models.Model):
 
         parsed_name, parsed_email_normalized = tools.parse_contact_from_email(email)
         if not parsed_email_normalized and assert_valid_email:
-            raise ValueError(_('%(email)s is not recognized as a valid email. This is required to create a new customer.'))
+            raise ValueError(
+                _('%(email)s is not recognized as a valid email. This is required to create a new customer.'))
         if parsed_email_normalized:
             partners = self.search([('email_normalized', '=', parsed_email_normalized)], limit=1)
             if partners:
@@ -165,7 +168,8 @@ class Partner(models.Model):
         # 'norbert@gmail.com'), ('Norbert With Surname', 'norbert@gmail.com')'
         # -> a single partner is created for email 'norbert@gmail.com'
         seen = set()
-        notfound_emails = (emails_normalized - set(partners.mapped('email_normalized'))) if partners else emails_normalized
+        notfound_emails = (
+                    emails_normalized - set(partners.mapped('email_normalized'))) if partners else emails_normalized
         notfound_name_emails = [
             name_email
             for name_email in name_emails
@@ -199,10 +203,10 @@ class Partner(models.Model):
         return [
             next(
                 (partner for partner in partners
-                    if (email_normalized and partner.email_normalized == email_normalized)
-                    or (not email_normalized and email and partner.email == email)
-                    or (not email_normalized and name and partner.name == name)
-                ),
+                 if (email_normalized and partner.email_normalized == email_normalized)
+                 or (not email_normalized and email and partner.email == email)
+                 or (not email_normalized and name and partner.name == name)
+                 ),
                 self.env['res.partner']
             )
             for (name, email_normalized), email in zip(name_emails, emails)
@@ -223,15 +227,15 @@ class Partner(models.Model):
                     field
                     for field in fields
                     if field
-                    not in [
-                        "avatar_128",
-                        "country",
-                        "display_name",
-                        "isAdmin",
-                        "notification_type",
-                        "signature",
-                        "user",
-                    ]
+                       not in [
+                           "avatar_128",
+                           "country",
+                           "display_name",
+                           "isAdmin",
+                           "notification_type",
+                           "signature",
+                           "user",
+                       ]
                 ],
                 load=False,
             )[0]
@@ -288,7 +292,8 @@ class Partner(models.Model):
     def _search_mention_suggestions(self, domain, limit, extra_domain=None):
         domain_is_user = expression.AND([[('user_ids', '!=', False)], [('user_ids.active', '=', True)], domain])
         priority_conditions = [
-            expression.AND([domain_is_user, [('partner_share', '=', False)]]),  # Search partners that are internal users
+            expression.AND([domain_is_user, [('partner_share', '=', False)]]),
+            # Search partners that are internal users
             domain_is_user,  # Search partners that are users
             domain,  # Search partners that are not users
         ]

@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.im_livechat.controllers.main import LivechatController
+
 from odoo import http, _
 from odoo.http import request
-from odoo.addons.im_livechat.controllers.main import LivechatController
 
 
 class WebsiteLivechat(LivechatController):
@@ -17,7 +18,8 @@ class WebsiteLivechat(LivechatController):
         }
         return request.render('website_livechat.channel_list_page', values)
 
-    @http.route('/livechat/channel/<model("im_livechat.channel"):channel>', type='http', auth='public', website=True, sitemap=True)
+    @http.route('/livechat/channel/<model("im_livechat.channel"):channel>', type='http', auth='public', website=True,
+                sitemap=True)
     def channel_rating(self, channel, **kw):
         # get the last 100 ratings and the repartition per grade
         domain = [
@@ -30,7 +32,8 @@ class WebsiteLivechat(LivechatController):
         # compute percentage
         percentage = dict.fromkeys(['great', 'okay', 'bad'], 0)
         for grade in repartition:
-            percentage[grade] = round(repartition[grade] * 100.0 / sum(repartition.values()), 1) if sum(repartition.values()) else 0
+            percentage[grade] = round(repartition[grade] * 100.0 / sum(repartition.values()), 1) if sum(
+                repartition.values()) else 0
 
         # filter only on the team users that worked on the last 100 ratings and get their detailed stat
         ratings_per_partner = {partner_id: dict(great=0, okay=0, bad=0)
@@ -65,9 +68,13 @@ class WebsiteLivechat(LivechatController):
         return _('Visitor #%d', visitor_sudo.id) if visitor_sudo else super()._get_guest_name()
 
     @http.route()
-    def get_session(self, channel_id, anonymous_name, previous_operator_id=None, chatbot_script_id=None, persisted=True, **kwargs):
+    def get_session(self, channel_id, anonymous_name, previous_operator_id=None, chatbot_script_id=None, persisted=True,
+                    **kwargs):
         """ Override to use visitor name instead of 'Visitor' whenever a visitor start a livechat session. """
         visitor_sudo = request.env['website.visitor']._get_visitor_from_request()
         if visitor_sudo:
             anonymous_name = _('Visitor #%s', visitor_sudo.id)
-        return super(WebsiteLivechat, self).get_session(channel_id, anonymous_name, previous_operator_id=previous_operator_id, chatbot_script_id=chatbot_script_id, persisted=persisted, **kwargs)
+        return super(WebsiteLivechat, self).get_session(channel_id, anonymous_name,
+                                                        previous_operator_id=previous_operator_id,
+                                                        chatbot_script_id=chatbot_script_id, persisted=persisted,
+                                                        **kwargs)

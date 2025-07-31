@@ -14,6 +14,7 @@ from odoo.tools import mute_logger
 class CustomError(Exception):
     ...
 
+
 class TestBasic(common.TransactionCase):
     def test_assertRecordValues(self):
         X1 = {'f1': "X", 'f2': 1}
@@ -128,7 +129,7 @@ First differing element 0:
         """
         # ensure we catch the error with the "base" method to avoid any interference
         with mock.patch.object(BaseCursor, 'flush', side_effect=CustomError), \
-             TestCase.assertRaises(self, CustomError):
+                TestCase.assertRaises(self, CustomError):
             with self.assertRaises(CustomError):
                 raise NotImplementedError
 
@@ -154,6 +155,7 @@ First differing element 0:
         follows the initialisation of the savepoint iff we're expecting an
         AccessError.
         """
+
         # on the first `clear` call, break the current transaction with nonsense
         # (on further calls do nothing as savepoint() needs to clear() for its
         # own recovery)
@@ -161,8 +163,8 @@ First differing element 0:
             if next(call_count) == 0:
                 self.env.cr.execute('select nonsense')
 
-        with mock.patch.object(BaseCursor, 'clear', side_effect=clear),\
-             TestCase.assertRaises(self, psycopg2.Error):
+        with mock.patch.object(BaseCursor, 'clear', side_effect=clear), \
+                TestCase.assertRaises(self, psycopg2.Error):
             with self.assertRaises(AccessError):
                 raise NotImplementedError
 

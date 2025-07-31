@@ -2,11 +2,11 @@
 
 from datetime import datetime, timedelta
 
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+from odoo.addons.mail.tests.common import mail_new_test_user
+
 from odoo import fields
 from odoo.tests import HttpCase, tagged
-
-from odoo.addons.mail.tests.common import mail_new_test_user
-from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 
 
 @tagged('post_install', '-at_install')
@@ -110,7 +110,7 @@ class TestEventProductConfiguratorUi(AccountTestInvoicingCommon, HttpCase):
                 'list_price': 16.50,
             })
 
-            cls.event_product_template.optional_product_ids = [cls.product_product_memorabilia.id,]
+            cls.event_product_template.optional_product_ids = [cls.product_product_memorabilia.id, ]
 
     def test_event_using_product_configurator(self):
         self.start_tour("/odoo", 'event_sale_with_product_configurator_tour', login='salesman')

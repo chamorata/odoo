@@ -1,13 +1,14 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import logging
-import requests
 import uuid
-from markupsafe import Markup
 from datetime import timedelta
 
-from odoo import api, fields, models, _
+import requests
+from markupsafe import Markup
 from odoo.addons.mail.tools.discuss import Store
+
+from odoo import api, fields, models, _
 from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.osv import expression
 from ...tools import jwt, discuss
@@ -33,21 +34,28 @@ class ChannelMember(models.Model):
     custom_channel_name = fields.Char('Custom channel name')
     fetched_message_id = fields.Many2one('mail.message', string='Last Fetched', index="btree_not_null")
     seen_message_id = fields.Many2one('mail.message', string='Last Seen', index="btree_not_null")
-    new_message_separator = fields.Integer(help="Message id before which the separator should be displayed", default=0, required=True)
-    message_unread_counter = fields.Integer('Unread Messages Counter', compute='_compute_message_unread', compute_sudo=True)
-    fold_state = fields.Selection([('open', 'Open'), ('folded', 'Folded'), ('closed', 'Closed')], string='Conversation Fold State', default='closed')
+    new_message_separator = fields.Integer(help="Message id before which the separator should be displayed", default=0,
+                                           required=True)
+    message_unread_counter = fields.Integer('Unread Messages Counter', compute='_compute_message_unread',
+                                            compute_sudo=True)
+    fold_state = fields.Selection([('open', 'Open'), ('folded', 'Folded'), ('closed', 'Closed')],
+                                  string='Conversation Fold State', default='closed')
     custom_notifications = fields.Selection(
         [("all", "All Messages"), ("mentions", "Mentions Only"), ("no_notif", "Nothing")],
         "Customized Notifications",
         help="Use default from user settings if not specified. This setting will only be applied to channels.",
     )
-    mute_until_dt = fields.Datetime("Mute notifications until", help="If set, the member will not receive notifications from the channel until this date.")
+    mute_until_dt = fields.Datetime("Mute notifications until",
+                                    help="If set, the member will not receive notifications from the channel until this date.")
     is_pinned = fields.Boolean("Is pinned on the interface", compute="_compute_is_pinned", search="_search_is_pinned")
-    unpin_dt = fields.Datetime("Unpin date", index=True, help="Contains the date and time when the channel was unpinned by the user.")
-    last_interest_dt = fields.Datetime("Last Interest", index=True, default=fields.Datetime.now, help="Contains the date and time of the last interesting event that happened in this channel for this user. This includes: creating, joining, pinning")
+    unpin_dt = fields.Datetime("Unpin date", index=True,
+                               help="Contains the date and time when the channel was unpinned by the user.")
+    last_interest_dt = fields.Datetime("Last Interest", index=True, default=fields.Datetime.now,
+                                       help="Contains the date and time of the last interesting event that happened in this channel for this user. This includes: creating, joining, pinning")
     last_seen_dt = fields.Datetime("Last seen date")
     # RTC
-    rtc_session_ids = fields.One2many(string="RTC Sessions", comodel_name='discuss.channel.rtc.session', inverse_name='channel_member_id')
+    rtc_session_ids = fields.One2many(string="RTC Sessions", comodel_name='discuss.channel.rtc.session',
+                                      inverse_name='channel_member_id')
     rtc_inviting_session_id = fields.Many2one('discuss.channel.rtc.session', string='Ringing session')
 
     @api.autovacuum
@@ -155,23 +163,27 @@ class ChannelMember(models.Model):
     def _compute_is_pinned(self):
         for member in self:
             member.is_pinned = (
-                not member.unpin_dt
-                or (
-                    member.last_interest_dt
-                    and member.last_interest_dt >= member.unpin_dt
-                )
-                or (
-                    member.channel_id.last_interest_dt
-                    and member.channel_id.last_interest_dt >= member.unpin_dt
-                )
+                    not member.unpin_dt
+                    or (
+                            member.last_interest_dt
+                            and member.last_interest_dt >= member.unpin_dt
+                    )
+                    or (
+                            member.channel_id.last_interest_dt
+                            and member.channel_id.last_interest_dt >= member.unpin_dt
+                    )
             )
 
     def init(self):
-        self.env.cr.execute("CREATE UNIQUE INDEX IF NOT EXISTS discuss_channel_member_partner_unique ON %s (channel_id, partner_id) WHERE partner_id IS NOT NULL" % self._table)
-        self.env.cr.execute("CREATE UNIQUE INDEX IF NOT EXISTS discuss_channel_member_guest_unique ON %s (channel_id, guest_id) WHERE guest_id IS NOT NULL" % self._table)
+        self.env.cr.execute(
+            "CREATE UNIQUE INDEX IF NOT EXISTS discuss_channel_member_partner_unique ON %s (channel_id, partner_id) WHERE partner_id IS NOT NULL" % self._table)
+        self.env.cr.execute(
+            "CREATE UNIQUE INDEX IF NOT EXISTS discuss_channel_member_guest_unique ON %s (channel_id, guest_id) WHERE guest_id IS NOT NULL" % self._table)
 
     _sql_constraints = [
-        ("partner_or_guest_exists", "CHECK((partner_id IS NOT NULL AND guest_id IS NULL) OR (partner_id IS NULL AND guest_id IS NOT NULL))", "A channel member must be a partner or a guest."),
+        ("partner_or_guest_exists",
+         "CHECK((partner_id IS NOT NULL AND guest_id IS NULL) OR (partner_id IS NULL AND guest_id IS NOT NULL))",
+         "A channel member must be a partner or a guest."),
     ]
 
     @api.model_create_multi
@@ -233,7 +245,8 @@ class ChannelMember(models.Model):
             :param is_typing: (boolean) tells whether the members are typing or not
         """
         for member in self:
-            member.channel_id._bus_send_store(Store(member).add(member, {"isTyping": is_typing, "is_typing_dt": fields.Datetime.now()}))
+            member.channel_id._bus_send_store(
+                Store(member).add(member, {"isTyping": is_typing, "is_typing_dt": fields.Datetime.now()}))
 
     def _notify_mute(self):
         for member in self:
@@ -323,6 +336,7 @@ class ChannelMember(models.Model):
                 "model": "discuss.channel",
             },
         )
+
     # --------------------------------------------------------------------------
     # RTC (voice/video)
     # --------------------------------------------------------------------------
@@ -332,8 +346,10 @@ class ChannelMember(models.Model):
         check_rtc_session_ids = (check_rtc_session_ids or []) + self.rtc_session_ids.ids
         self.channel_id._rtc_cancel_invitations(member_ids=self.ids)
         self.rtc_session_ids.unlink()
-        rtc_session = self.env['discuss.channel.rtc.session'].create({'channel_member_id': self.id, 'is_camera_on': camera})
-        current_rtc_sessions, outdated_rtc_sessions = self._rtc_sync_sessions(check_rtc_session_ids=check_rtc_session_ids)
+        rtc_session = self.env['discuss.channel.rtc.session'].create(
+            {'channel_member_id': self.id, 'is_camera_on': camera})
+        current_rtc_sessions, outdated_rtc_sessions = self._rtc_sync_sessions(
+            check_rtc_session_ids=check_rtc_session_ids)
         ice_servers = self.env["mail.ice.server"]._get_ice_servers()
         self._join_sfu(ice_servers)
         if store:
@@ -351,7 +367,9 @@ class ChannelMember(models.Model):
                 },
             )
         if len(self.channel_id.rtc_session_ids) == 1 and self.channel_id.channel_type != "channel":
-            self.channel_id.message_post(body=_("%s started a live conference", self.partner_id.name or self.guest_id.name), message_type='notification')
+            self.channel_id.message_post(
+                body=_("%s started a live conference", self.partner_id.name or self.guest_id.name),
+                message_type='notification')
             self._rtc_invite_members()
 
     def _join_sfu(self, ice_servers=None):
@@ -426,7 +444,8 @@ class ChannelMember(models.Model):
         """
         self.ensure_one()
         self.channel_id.rtc_session_ids._delete_inactive_rtc_sessions()
-        check_rtc_sessions = self.env['discuss.channel.rtc.session'].browse([int(check_rtc_session_id) for check_rtc_session_id in (check_rtc_session_ids or [])])
+        check_rtc_sessions = self.env['discuss.channel.rtc.session'].browse(
+            [int(check_rtc_session_id) for check_rtc_session_id in (check_rtc_session_ids or [])])
         return self.channel_id.rtc_session_ids, check_rtc_sessions - self.channel_id.rtc_session_ids
 
     def _get_rtc_invite_members_domain(self, member_ids=None):

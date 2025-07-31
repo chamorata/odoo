@@ -6,9 +6,9 @@ import io
 
 from PIL import Image, ImageDraw, PngImagePlugin
 
-from odoo.tools import image as tools
 from odoo.exceptions import UserError
 from odoo.tests.common import TransactionCase
+from odoo.tools import image as tools
 
 
 def img_open(data):
@@ -17,12 +17,14 @@ def img_open(data):
 
 class TestImage(TransactionCase):
     """Tests for the different image tools helpers."""
+
     def setUp(self):
         super(TestImage, self).setUp()
         self.bg_color = (135, 90, 123)
         self.fill_color = (0, 160, 157)
 
-        self.img_1x1_png = base64.b64decode(b'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGNgYGAAAAAEAAH2FzhVAAAAAElFTkSuQmCC')
+        self.img_1x1_png = base64.b64decode(
+            b'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGNgYGAAAAAEAAH2FzhVAAAAAElFTkSuQmCC')
         self.img_svg = b'<svg></svg>'
         self.img_1920x1080_jpeg = tools.image_apply_opt(Image.new('RGB', (1920, 1080)), 'JPEG')
         # The following image contains a tag `Lens Info` with a value of `3.99mm f/1.8`
@@ -73,10 +75,12 @@ class TestImage(TransactionCase):
         self.assertEqual(type(image), PngImagePlugin.PngImageFile, "base64 as bytes, correct format")
         self.assertEqual(image.size, (1, 1), "base64 as bytes, correct size")
 
-        with self.assertRaises(UserError, msg="This file could not be decoded as an image file. Please try with a different file."):
+        with self.assertRaises(UserError,
+                               msg="This file could not be decoded as an image file. Please try with a different file."):
             image = tools.base64_to_image(b'oazdazpodazdpok')
 
-        with self.assertRaises(UserError, msg="This file could not be decoded as an image file. Please try with a different file."):
+        with self.assertRaises(UserError,
+                               msg="This file could not be decoded as an image file. Please try with a different file."):
             image = tools.base64_to_image(b'oazdazpodazdpokd')
 
     def test_01_image_to_base64(self):
@@ -111,9 +115,9 @@ class TestImage(TransactionCase):
     def test_03_image_fix_orientation_exif(self):
         """Test that a jpg image with exif orientation tag gets rotated"""
         image = img_open(self.img_exif_jpg)
-        self.assertEqual(image.size, (6,3))
+        self.assertEqual(image.size, (6, 3))
         image = tools.image_fix_orientation(image)
-        self.assertEqual(image.size, (3,6))
+        self.assertEqual(image.size, (3, 6))
 
     def test_10_image_process_source(self):
         """Test the source parameter of image_process."""
@@ -121,7 +125,8 @@ class TestImage(TransactionCase):
         self.assertEqual(tools.image_process(self.img_svg), self.img_svg, "return source if format is SVG")
 
         # in the following tests, pass `quality` to force the processing
-        with self.assertRaises(UserError, msg="This file could not be decoded as an image file. Please try with a different file."):
+        with self.assertRaises(UserError,
+                               msg="This file could not be decoded as an image file. Please try with a different file."):
             tools.image_process(b'oazdazpodazdpokd', quality=95)
 
         image = img_open(tools.image_process(self.img_1920x1080_jpeg, quality=95))
@@ -208,26 +213,41 @@ class TestImage(TransactionCase):
         # Format of `tests`: (original base64 image, size parameter, crop parameter, res size, res color (top, bottom, left, right), text)
         tests = [
             (self.img_1920x1080_png, None, None, (1920, 1080), (fill, fill, bg, bg), "horizontal, verify initial"),
-            (self.img_1920x1080_png, (2000, 2000), 'center', (1080, 1080), (fill, fill, fill, fill), "horizontal, crop biggest possible"),
-            (self.img_1920x1080_png, (2000, 4000), 'center', (540, 1080), (fill, fill, fill, fill), "horizontal, size vertical, limit height"),
-            (self.img_1920x1080_png, (4000, 2000), 'center', (1920, 960), (fill, fill, bg, bg), "horizontal, size horizontal, limit width"),
-            (self.img_1920x1080_png, (512, 512), 'center', (512, 512), (fill, fill, fill, fill), "horizontal, type center"),
+            (self.img_1920x1080_png, (2000, 2000), 'center', (1080, 1080), (fill, fill, fill, fill),
+             "horizontal, crop biggest possible"),
+            (self.img_1920x1080_png, (2000, 4000), 'center', (540, 1080), (fill, fill, fill, fill),
+             "horizontal, size vertical, limit height"),
+            (self.img_1920x1080_png, (4000, 2000), 'center', (1920, 960), (fill, fill, bg, bg),
+             "horizontal, size horizontal, limit width"),
+            (self.img_1920x1080_png, (512, 512), 'center', (512, 512), (fill, fill, fill, fill),
+             "horizontal, type center"),
             (self.img_1920x1080_png, (512, 512), 'top', (512, 512), (fill, fill, fill, fill), "horizontal, type top"),
-            (self.img_1920x1080_png, (512, 512), 'bottom', (512, 512), (fill, fill, fill, fill), "horizontal, type bottom"),
-            (self.img_1920x1080_png, (512, 512), 'wrong', (512, 512), (fill, fill, fill, fill), "horizontal, wrong crop value, use center"),
-            (self.img_1920x1080_png, (192, 0), None, (192, 108), (fill, fill, bg, bg), "horizontal, not cropped, just do resize"),
-            (small_height, (25, 50), 'center', (1, 1), (fill, fill, fill, fill), "horizontal, small height, size vertical"),
+            (self.img_1920x1080_png, (512, 512), 'bottom', (512, 512), (fill, fill, fill, fill),
+             "horizontal, type bottom"),
+            (self.img_1920x1080_png, (512, 512), 'wrong', (512, 512), (fill, fill, fill, fill),
+             "horizontal, wrong crop value, use center"),
+            (self.img_1920x1080_png, (192, 0), None, (192, 108), (fill, fill, bg, bg),
+             "horizontal, not cropped, just do resize"),
+            (small_height, (25, 50), 'center', (1, 1), (fill, fill, fill, fill),
+             "horizontal, small height, size vertical"),
 
             (self.img_1080x1920_png, None, None, (1080, 1920), (bg, bg, fill, fill), "vertical, verify initial"),
-            (self.img_1080x1920_png, (2000, 2000), 'center', (1080, 1080), (fill, fill, fill, fill), "vertical, crop biggest possible"),
-            (self.img_1080x1920_png, (2000, 4000), 'center', (960, 1920), (bg, bg, fill, fill), "vertical, size vertical, limit height"),
-            (self.img_1080x1920_png, (4000, 2000), 'center', (1080, 540), (fill, fill, fill, fill), "vertical, size horizontal, limit width"),
-            (self.img_1080x1920_png, (512, 512), 'center', (512, 512), (fill, fill, fill, fill), "vertical, type center"),
+            (self.img_1080x1920_png, (2000, 2000), 'center', (1080, 1080), (fill, fill, fill, fill),
+             "vertical, crop biggest possible"),
+            (self.img_1080x1920_png, (2000, 4000), 'center', (960, 1920), (bg, bg, fill, fill),
+             "vertical, size vertical, limit height"),
+            (self.img_1080x1920_png, (4000, 2000), 'center', (1080, 540), (fill, fill, fill, fill),
+             "vertical, size horizontal, limit width"),
+            (self.img_1080x1920_png, (512, 512), 'center', (512, 512), (fill, fill, fill, fill),
+             "vertical, type center"),
             (self.img_1080x1920_png, (512, 512), 'top', (512, 512), (bg, fill, fill, fill), "vertical, type top"),
             (self.img_1080x1920_png, (512, 512), 'bottom', (512, 512), (fill, bg, fill, fill), "vertical, type bottom"),
-            (self.img_1080x1920_png, (512, 512), 'wrong', (512, 512), (fill, fill, fill, fill), "vertical, wrong crop value, use center"),
-            (self.img_1080x1920_png, (108, 0), None, (108, 192), (bg, bg, fill, fill), "vertical, not cropped, just do resize"),
-            (small_width, (50, 25), 'center', (1, 1), (fill, fill, fill, fill), "vertical, small width, size horizontal"),
+            (self.img_1080x1920_png, (512, 512), 'wrong', (512, 512), (fill, fill, fill, fill),
+             "vertical, wrong crop value, use center"),
+            (self.img_1080x1920_png, (108, 0), None, (108, 192), (bg, bg, fill, fill),
+             "vertical, not cropped, just do resize"),
+            (small_width, (50, 25), 'center', (1, 1), (fill, fill, fill, fill),
+             "vertical, small width, size horizontal"),
         ]
 
         count = 0
@@ -307,7 +327,8 @@ class TestImage(TransactionCase):
 
     def test_20_image_data_uri(self):
         """Test that image_data_uri is working as expected."""
-        self.assertEqual(tools.image_data_uri(base64.b64encode(self.img_1x1_png)), 'data:image/png;base64,' + base64.b64encode(self.img_1x1_png).decode('ascii'))
+        self.assertEqual(tools.image_data_uri(base64.b64encode(self.img_1x1_png)),
+                         'data:image/png;base64,' + base64.b64encode(self.img_1x1_png).decode('ascii'))
 
     def test_21_image_guess_size_from_field_name(self):
         f = tools.image_guess_size_from_field_name
@@ -344,12 +365,13 @@ class TestImage(TransactionCase):
         draw = ImageDraw.Draw(image)
         # Paint the colors on the 4 corners, to be able to test which colors
         # move on which corners.
-        draw.rectangle(xy=[(0, 0), (size // 2, size // 2)], fill=colors[0])        # top/left
-        draw.rectangle(xy=[(size // 2, 0), (size, size // 2)], fill=colors[1])     # top/right
-        draw.rectangle(xy=[(0, size // 2), (size // 2, size)], fill=colors[2])     # bottom/left
+        draw.rectangle(xy=[(0, 0), (size // 2, size // 2)], fill=colors[0])  # top/left
+        draw.rectangle(xy=[(size // 2, 0), (size, size // 2)], fill=colors[1])  # top/right
+        draw.rectangle(xy=[(0, size // 2), (size // 2, size)], fill=colors[2])  # bottom/left
         draw.rectangle(xy=[(size // 2, size // 2), (size, size)], fill=colors[3])  # bottom/right
         # Set the proper exif tag based on orientation params.
-        exif = b'Exif\x00\x00II*\x00\x08\x00\x00\x00\x01\x00\x12\x01\x03\x00\x01\x00\x00\x00' + bytes([orientation]) + b'\x00\x00\x00\x00\x00\x00\x00'
+        exif = b'Exif\x00\x00II*\x00\x08\x00\x00\x00\x01\x00\x12\x01\x03\x00\x01\x00\x00\x00' + bytes(
+            [orientation]) + b'\x00\x00\x00\x00\x00\x00\x00'
         # The image image is saved with the exif tag.
         return tools.image_apply_opt(image, 'JPEG', exif=exif)
 
@@ -359,9 +381,9 @@ class TestImage(TransactionCase):
         # The image is read again now that it has orientation added.
         fixed_image = tools.image_fix_orientation(img_open(image))
         # Ensure colors are in the right order (blue, yellow, green, pink).
-        self._assertAlmostEqualSequence(fixed_image.getpixel((0, 0)), expected[0])                # top/left
-        self._assertAlmostEqualSequence(fixed_image.getpixel((size - 1, 0)), expected[1])         # top/right
-        self._assertAlmostEqualSequence(fixed_image.getpixel((0, size - 1)), expected[2])         # bottom/left
+        self._assertAlmostEqualSequence(fixed_image.getpixel((0, 0)), expected[0])  # top/left
+        self._assertAlmostEqualSequence(fixed_image.getpixel((size - 1, 0)), expected[1])  # top/right
+        self._assertAlmostEqualSequence(fixed_image.getpixel((0, size - 1)), expected[2])  # bottom/left
         self._assertAlmostEqualSequence(fixed_image.getpixel((size - 1, size - 1)), expected[3])  # bottom/right
 
     def test_ptype_image_to_jpeg(self):

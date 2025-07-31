@@ -8,7 +8,6 @@ from odoo.exceptions import ValidationError
 from odoo.tools import format_list
 
 
-
 class Survey(models.Model):
     _inherit = 'survey.survey'
 
@@ -19,7 +18,8 @@ class Survey(models.Model):
         'slide.channel', string="Certification Courses", compute='_compute_slide_channel_data',
         help="The courses this survey is linked to through the e-learning application",
         groups='website_slides.group_website_slides_officer')
-    slide_channel_count = fields.Integer("Courses Count", compute='_compute_slide_channel_data', groups='website_slides.group_website_slides_officer')
+    slide_channel_count = fields.Integer("Courses Count", compute='_compute_slide_channel_data',
+                                         groups='website_slides.group_website_slides_officer')
 
     @api.depends('slide_ids.channel_id')
     def _compute_slide_channel_data(self):
@@ -31,7 +31,8 @@ class Survey(models.Model):
     def _unlink_except_linked_to_course(self):
         # we consider it's ok to show certification names for people trying to delete courses
         # even if they don't have access to those surveys hence the sudo usage
-        certifications = self.sudo().slide_ids.filtered(lambda slide: slide.slide_type == "certification").mapped('survey_id').exists()
+        certifications = self.sudo().slide_ids.filtered(lambda slide: slide.slide_type == "certification").mapped(
+            'survey_id').exists()
         if certifications:
             certifications_course_mapping = [
                 _(

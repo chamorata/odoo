@@ -6,7 +6,7 @@
         </xpath>
         <xpath expr='//t[@t-call="sale.report_saleorder_document"]' position="after">
             <t t-elif="doc.company_id.country_code == 'BR'"
-                t-call="l10n_br_sales.report_saleorder_document_brazil" t-lang="doc.partner_id.lang"/>
+               t-call="l10n_br_sales.report_saleorder_document_brazil" t-lang="doc.partner_id.lang"/>
         </xpath>
     </template>
 

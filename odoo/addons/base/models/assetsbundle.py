@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from contextlib import closing
-from collections import OrderedDict
-from lxml import etree
-from subprocess import Popen, PIPE
 import hashlib
 import io
 import logging
@@ -10,6 +6,11 @@ import os
 import re
 import textwrap
 import uuid
+from collections import OrderedDict
+from contextlib import closing
+from subprocess import Popen, PIPE
+
+from lxml import etree
 
 try:
     import sass as libsass
@@ -23,7 +24,7 @@ from rjsmin import jsmin as rjsmin
 from odoo import release, SUPERUSER_ID, _
 from odoo.http import request
 from odoo.tools import (func, misc, transpile_javascript,
-    is_odoo_module, SourceMapGenerator, profiler, OrderedSet)
+                        is_odoo_module, SourceMapGenerator, profiler, OrderedSet)
 from odoo.tools.json import scriptsafe as json
 from odoo.tools.constants import SCRIPT_EXTENSIONS, STYLE_EXTENSIONS
 from odoo.tools.misc import file_open, file_path
@@ -33,7 +34,9 @@ _logger = logging.getLogger(__name__)
 ANY_UNIQUE = '_' * 7
 EXTENSIONS = (".js", ".css", ".scss", ".sass", ".less", ".xml")
 
+
 class CompileError(RuntimeError): pass
+
 
 class AssetError(Exception):
     pass
@@ -42,8 +45,10 @@ class AssetError(Exception):
 class AssetNotFound(AssetError):
     pass
 
+
 class XMLAssetError(Exception):
     pass
+
 
 class AssetsBundle(object):
     rx_css_import = re.compile("(@import[^;{]+;?)", re.M)
@@ -52,7 +57,8 @@ class AssetsBundle(object):
 
     TRACKED_BUNDLES = ['web.assets_web']
 
-    def __init__(self, name, files, external_assets=(), env=None, css=True, js=True, debug_assets=False, rtl=False, assets_params=None):
+    def __init__(self, name, files, external_assets=(), env=None, css=True, js=True, debug_assets=False, rtl=False,
+                 assets_params=None):
         """
         :param name: bundle name
         :param files: files to be added to the bundle
@@ -75,7 +81,8 @@ class AssetsBundle(object):
         self.external_assets = [
             url
             for url in external_assets
-            if (css and url.rpartition('.')[2] in STYLE_EXTENSIONS) or (js and url.rpartition('.')[2] in SCRIPT_EXTENSIONS)
+            if
+            (css and url.rpartition('.')[2] in STYLE_EXTENSIONS) or (js and url.rpartition('.')[2] in SCRIPT_EXTENSIONS)
         ]
 
         # asset-wide html "media" attribute
@@ -192,7 +199,8 @@ class AssetsBundle(object):
         # avoid to invalidate cache if it's already empty (mainly useful for test)
 
         if attachments:
-            _logger.info('Deleting attachments %s (matching %s) because it was replaced with %s', attachments.ids, to_clean_pattern, keep_url)
+            _logger.info('Deleting attachments %s (matching %s) because it was replaced with %s', attachments.ids,
+                         to_clean_pattern, keep_url)
             self._unlink_attachments(attachments)
             # clear_cache was removed
 
@@ -307,7 +315,7 @@ class AssetsBundle(object):
         # to invite the user to refresh their browser
         if self.env and 'bus.bus' in self.env and self.name in self.TRACKED_BUNDLES:
             self.env['bus.bus']._sendone('broadcast', 'bundle_changed', {
-                'server_version': release.version # Needs to be dynamically imported
+                'server_version': release.version  # Needs to be dynamically imported
             })
             _logger.debug('Asset Changed: bundle: %s -- version: %s', self.name, unique)
 
@@ -352,11 +360,11 @@ class AssetsBundle(object):
         :return ir.attachment representing the un-minified content of the bundleJS
         """
         sourcemap_attachment = self.get_attachments('js.map') \
-                        or self.save_attachment('js.map', '')
+                               or self.save_attachment('js.map', '')
         generator = SourceMapGenerator(
             source_root="/".join(
                 [".." for i in range(0, len(self.get_asset_url().split("/")) - 2)]
-                ) + "/",
+            ) + "/",
         )
         content_bundle_list = []
         content_line_count = 0
@@ -424,7 +432,8 @@ class AssetsBundle(object):
             content.append(f'checkPrimaryTemplateParents({json.dumps(list(missing_names_for_primary))});')
         missing_names_for_extension = extension_parents - names
         if missing_names_for_extension:
-            content.append(f'console.error("Missing (extension) parent templates: {", ".join(missing_names_for_extension)}");')
+            content.append(
+                f'console.error("Missing (extension) parent templates: {", ".join(missing_names_for_extension)}");')
 
         return '\n'.join(content)
 
@@ -483,7 +492,6 @@ class AssetsBundle(object):
                     return asset.generate_error(_("Template name is missing."))
         return blocks
 
-
     def css(self):
         is_minified = not self.is_debug_assets
         extension = 'min.css' if is_minified else 'css'
@@ -538,12 +546,12 @@ css_error_message {
         :return ir.attachment representing the un-minified content of the bundleCSS
         """
         sourcemap_attachment = self.get_attachments('css.map') \
-                                or self.save_attachment('css.map', '')
+                               or self.save_attachment('css.map', '')
         debug_asset_url = self.get_asset_url(unique='debug')
         generator = SourceMapGenerator(
             source_root="/".join(
                 [".." for i in range(0, len(debug_asset_url.split("/")) - 2)]
-                ) + "/",
+            ) + "/",
         )
 
         # adds the @import rules at the beginning of the bundle
@@ -586,7 +594,9 @@ css_error_message {
 
             # We want to run rtlcss on normal css, so merge it in compiled
             if self.rtl:
-                stylesheet_assets = [asset for asset in self.stylesheets if not isinstance(asset, (SassStylesheetAsset, ScssStylesheetAsset, LessStylesheetAsset))]
+                stylesheet_assets = [asset for asset in self.stylesheets if not isinstance(asset, (SassStylesheetAsset,
+                                                                                                   ScssStylesheetAsset,
+                                                                                                   LessStylesheetAsset))]
                 compiled += '\n'.join([asset.get_source() for asset in stylesheet_assets])
                 compiled = self.run_rtlcss(compiled)
 
@@ -609,11 +619,13 @@ css_error_message {
     def compile_css(self, compiler, source):
         """Sanitizes @import rules, remove duplicates @import rules, then compile"""
         imports = []
+
         def handle_compile_error(e, source):
             error = self.get_preprocessor_error(str(e), source=source)
             _logger.warning(error)
             self.css_errors.append(error)
             return ''
+
         def sanitize(matchobj):
             ref = matchobj.group(2)
             line = '@import "%s"%s' % (ref, matchobj.group(3))
@@ -624,6 +636,7 @@ css_error_message {
             _logger.warning(msg)
             self.css_errors.append(msg)
             return ''
+
         source = re.sub(self.rx_preprocess_imports, sanitize, source)
 
         try:
@@ -637,10 +650,13 @@ css_error_message {
         compiled = re.sub(r'(appearance: (\w+);)', r'-webkit-appearance: \2; -moz-appearance: \2; \1', compiled)
 
         # Most of those are only useful for wkhtmltopdf (some for old PhantomJS)
-        compiled = re.sub(r'(display: ((?:inline-)?)flex((?: ?!important)?);)', r'display: -webkit-\2box\3; display: -webkit-\2flex\3; \1', compiled)
+        compiled = re.sub(r'(display: ((?:inline-)?)flex((?: ?!important)?);)',
+                          r'display: -webkit-\2box\3; display: -webkit-\2flex\3; \1', compiled)
         compiled = re.sub(r'(justify-content: flex-(\w+)((?: ?!important)?);)', r'-webkit-box-pack: \2\3; \1', compiled)
         compiled = re.sub(r'(flex-flow: (\w+ \w+);)', r'-webkit-flex-flow: \2; \1', compiled)
-        compiled = re.sub(r'(flex-direction: (column);)', r'-webkit-box-orient: vertical; -webkit-box-direction: normal; -webkit-flex-direction: \2; \1', compiled)
+        compiled = re.sub(r'(flex-direction: (column);)',
+                          r'-webkit-box-orient: vertical; -webkit-box-direction: normal; -webkit-flex-direction: \2; \1',
+                          compiled)
         compiled = re.sub(r'(flex-wrap: (\w+);)', r'-webkit-flex-wrap: \2; \1', compiled)
         compiled = re.sub(r'(flex: ((\d)+ \d+ (?:\d+|auto));)', r'-webkit-box-flex: \3; -webkit-flex: \2; \1', compiled)
 
@@ -666,7 +682,8 @@ css_error_message {
                     ['rtlcss', '--version'], stdout=PIPE, stderr=PIPE
                 )
             except (OSError, IOError):
-                _logger.warning('You need https://rtlcss.com/ to convert css file to right to left compatiblity. Use: npm install -g rtlcss')
+                _logger.warning(
+                    'You need https://rtlcss.com/ to convert css file to right to left compatiblity. Use: npm install -g rtlcss')
                 return source
 
             msg = "Could not execute command %r" % cmd[0]
@@ -677,7 +694,8 @@ css_error_message {
         out, err = rtlcss.communicate(input=source)
         if rtlcss.returncode or (source and not out):
             if rtlcss.returncode:
-                error = self.get_rtlcss_error(err or f"Process exited with return code {rtlcss.returncode}", source=source)
+                error = self.get_rtlcss_error(err or f"Process exited with return code {rtlcss.returncode}",
+                                              source=source)
             else:
                 error = "rtlcss: error processing payload\n"
             _logger.warning("%s", error)
@@ -830,7 +848,6 @@ class JavascriptAsset(WebAsset):
             return super()._fetch_content()
         except AssetError as e:
             return self.generate_error(str(e))
-
 
     def with_header(self, content=None, minimal=True):
         if minimal:
@@ -987,6 +1004,7 @@ class PreprocessedCSS(StylesheetAsset):
             raise CompileError(cmd_output)
         return out
 
+
 class SassStylesheetAsset(PreprocessedCSS):
     rx_indent = re.compile(r'^( +|\t+)', re.M)
     indent = None
@@ -1062,7 +1080,8 @@ class ScssStylesheetAsset(PreprocessedCSS):
             sassc = misc.find_in_path('sassc')
         except IOError:
             sassc = 'sassc'
-        return [sassc, '--stdin', '--precision', str(self.precision), '--load-path', self.bootstrap_path, '-t', self.output_style]
+        return [sassc, '--stdin', '--precision', str(self.precision), '--load-path', self.bootstrap_path, '-t',
+                self.output_style]
 
 
 class LessStylesheetAsset(PreprocessedCSS):

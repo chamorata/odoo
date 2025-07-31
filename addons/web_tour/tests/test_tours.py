@@ -1,7 +1,8 @@
-from odoo.tests import tagged
+from markupsafe import Markup
+
 from odoo import Command
 from odoo.addons.base.tests.common import BaseCommon
-from markupsafe import Markup
+from odoo.tests import tagged
 
 
 @tagged('post_install', '-at_install')
@@ -30,10 +31,10 @@ class TestTour(BaseCommon):
             "custom": True,
             "sequence": 3,
             "step_ids": [Command.create({
-                    "content": "Click here",
-                    "trigger": "button",
-                    "run": "click",
-                }),
+                "content": "Click here",
+                "trigger": "button",
+                "run": "click",
+            }),
                 Command.create({
                     "content": "Edit here",
                     "trigger": "input",

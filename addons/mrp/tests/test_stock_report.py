@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.tests import Form
 from odoo.addons.stock.tests.test_report import TestReportsCommon
+
 from odoo import Command
+from odoo.tests import Form
 
 
 class TestMrpStockReports(TestReportsCommon):
@@ -66,7 +67,8 @@ class TestMrpStockReports(TestReportsCommon):
         mo_form.product_qty = 2
         mo_2 = mo_form.save()
 
-        report_values, docs, lines = self.get_report_forecast(product_template_ids=product_chococake.product_tmpl_id.ids)
+        report_values, docs, lines = self.get_report_forecast(
+            product_template_ids=product_chococake.product_tmpl_id.ids)
         draft_picking_qty = docs['draft_picking_qty']
         draft_production_qty = docs['draft_production_qty']
         self.assertEqual(len(lines), 0, "Must have 0 line.")
@@ -78,7 +80,8 @@ class TestMrpStockReports(TestReportsCommon):
         # Confirms the MO and checks the report lines.
         mo_1.action_confirm()
         mo_2.action_confirm()
-        report_values, docs, lines = self.get_report_forecast(product_template_ids=product_chococake.product_tmpl_id.ids)
+        report_values, docs, lines = self.get_report_forecast(
+            product_template_ids=product_chococake.product_tmpl_id.ids)
         draft_picking_qty = docs['draft_picking_qty']
         draft_production_qty = docs['draft_production_qty']
         self.assertEqual(len(lines), 2, "Must have two line.")
@@ -166,7 +169,8 @@ class TestMrpStockReports(TestReportsCommon):
 
         mo_2 = (mo_1.procurement_group_id.mrp_production_ids - mo_1)
         # Checks the forecast report.
-        report_values, docs, lines = self.get_report_forecast(product_template_ids=product_apple_pie.product_tmpl_id.ids)
+        report_values, docs, lines = self.get_report_forecast(
+            product_template_ids=product_apple_pie.product_tmpl_id.ids)
         self.assertEqual(len(lines), 1, "Must have only one line about the backorder")
         self.assertEqual(lines[0]['document_in']['id'], mo_2.id)
         self.assertEqual(lines[0]['quantity'], 1)
@@ -178,7 +182,8 @@ class TestMrpStockReports(TestReportsCommon):
         mo_2 = mo_form.save()
         mo_2.button_mark_done()
         # Checks the forecast report.
-        report_values, docs, lines = self.get_report_forecast(product_template_ids=product_apple_pie.product_tmpl_id.ids)
+        report_values, docs, lines = self.get_report_forecast(
+            product_template_ids=product_apple_pie.product_tmpl_id.ids)
         self.assertEqual(len(lines), 0, "Must have no line")
 
     def test_report_forecast_3_report_line_corresponding_to_mo_highlighted(self):
@@ -207,12 +212,15 @@ class TestMrpStockReports(TestReportsCommon):
         # Check for both MO if the highlight (is_matched) corresponds to the correct MO
         for mo in [mo_1, mo_2]:
             context = mo.action_product_forecast_report()['context']
-            _, _, lines = self.get_report_forecast(product_template_ids=product_banana.product_tmpl_id.ids, context=context)
+            _, _, lines = self.get_report_forecast(product_template_ids=product_banana.product_tmpl_id.ids,
+                                                   context=context)
             for line in lines:
                 if line['document_in']['id'] == mo.id:
-                    self.assertTrue(line['is_matched'], "The corresponding MO line should be matched in the forecast report.")
+                    self.assertTrue(line['is_matched'],
+                                    "The corresponding MO line should be matched in the forecast report.")
                 else:
-                    self.assertFalse(line['is_matched'], "A line of the forecast report not linked to the MO shoud not be matched.")
+                    self.assertFalse(line['is_matched'],
+                                     "A line of the forecast report not linked to the MO shoud not be matched.")
 
     def test_kit_packaging_delivery_slip(self):
         superkit = self.env['product.product'].create({
@@ -260,7 +268,9 @@ class TestMrpStockReports(TestReportsCommon):
             self.assertFalse(non_kit_aggregate_values)
             aggregate_values = picking.move_line_ids._get_aggregated_product_quantities(kit_name=superkit.display_name)
             for line in aggregate_values.values():
-                self.assertItemsEqual([line[val] for val in ['qty_ordered', 'quantity', 'packaging_qty', 'packaging_quantity']], expected_vals)
+                self.assertItemsEqual(
+                    [line[val] for val in ['qty_ordered', 'quantity', 'packaging_qty', 'packaging_quantity']],
+                    expected_vals)
 
             html_report = self.env['ir.actions.report']._render_qweb_html('stock.report_deliveryslip', picking.ids)[0]
             self.assertTrue(html_report, "report generated successfully")
@@ -335,7 +345,6 @@ class TestMrpStockReports(TestReportsCommon):
             if keys[0] in line:
                 keys = keys[1:]
 
-
         self.assertFalse(keys, "All keys should be in the report with the defined order")
 
     def test_mo_overview(self):
@@ -401,10 +410,10 @@ class TestMrpStockReports(TestReportsCommon):
             'product_qty': 1.0,
             'bom_line_ids': [
                 Command.create({'product_id': self.product1.id, 'product_qty': 1.0}),
-                ],
+            ],
             'byproduct_ids': [
                 Command.create({'product_id': self.product1.id, 'product_qty': 1.0})
-                ]
+            ]
         })
 
         mo = self.env['mrp.production'].create({
@@ -474,8 +483,8 @@ class TestMrpStockReports(TestReportsCommon):
                 'product_qty': 1.0,
                 'type': 'normal',
                 'bom_line_ids': [
-                    Command.create({'product_id': part.id, 'product_qty': 1.0})
-                ] * 2,
+                                    Command.create({'product_id': part.id, 'product_qty': 1.0})
+                                ] * 2,
             }
         ])
         # Put 2 parts in stock
@@ -488,12 +497,12 @@ class TestMrpStockReports(TestReportsCommon):
             'location_dest_id': self.stock_location.id,
             'move_type': 'one',
             'move_ids_without_package': [Command.create({
-                    'name': 'test_out_1',
-                    'product_id': part.id,
-                    'product_uom_qty': 20,
-                    'location_id': self.env.ref('stock.stock_location_suppliers').id,
-                    'location_dest_id': self.stock_location.id,
-                }),
+                'name': 'test_out_1',
+                'product_id': part.id,
+                'product_uom_qty': 20,
+                'location_id': self.env.ref('stock.stock_location_suppliers').id,
+                'location_dest_id': self.stock_location.id,
+            }),
             ],
         }).action_confirm()
 
@@ -525,9 +534,9 @@ class TestMrpStockReports(TestReportsCommon):
         # Create a color variant, which will be used to create a Product
         attribute_color = self.env['product.attribute'].create({'name': 'Color'})
         value_black, value_white = self.env['product.attribute.value'].create({
-            'name': name,
-            'attribute_id': attribute_color.id,
-        } for name in ['Black', 'White'])
+                                                                                  'name': name,
+                                                                                  'attribute_id': attribute_color.id,
+                                                                              } for name in ['Black', 'White'])
         # Create 3 product templates, one for the variants, to check to not all variants are used
         # to compute the cost of the MO, another one to make sure the 'missing components' are still
         # taken into account (they are the product that were removed from the MO but are still present
@@ -570,10 +579,10 @@ class TestMrpStockReports(TestReportsCommon):
                     'product_id': missing_product.product_variant_id.id,
                     'product_qty': 1,
                 }),
-                Command.create({
-                    'product_id': kit_product.product_variant_id.id,
-                    'product_qty': 1,
-                })],
+                    Command.create({
+                        'product_id': kit_product.product_variant_id.id,
+                        'product_qty': 1,
+                    })],
             },
             {
                 'product_tmpl_id': kit_product.id,
@@ -584,13 +593,15 @@ class TestMrpStockReports(TestReportsCommon):
                 })]
             },
         ])
-        white_tmpl = bom_normal.product_tmpl_id.product_variant_ids.product_template_attribute_value_ids.filtered(lambda tmpl: tmpl.product_attribute_value_id == value_white)
-        black_tmpl = bom_normal.product_tmpl_id.product_variant_ids.product_template_attribute_value_ids.filtered(lambda tmpl: tmpl.product_attribute_value_id == value_black)
+        white_tmpl = bom_normal.product_tmpl_id.product_variant_ids.product_template_attribute_value_ids.filtered(
+            lambda tmpl: tmpl.product_attribute_value_id == value_white)
+        black_tmpl = bom_normal.product_tmpl_id.product_variant_ids.product_template_attribute_value_ids.filtered(
+            lambda tmpl: tmpl.product_attribute_value_id == value_black)
         black_white_product, black_product, white_product = self.env['product.product'].create([{
-                'name': 'Black White',
-                'type': 'consu',
-                'standard_price': 25,
-            },
+            'name': 'Black White',
+            'type': 'consu',
+            'standard_price': 25,
+        },
             {
                 'name': 'Black Only',
                 'type': 'consu',
@@ -603,18 +614,18 @@ class TestMrpStockReports(TestReportsCommon):
             },
         ])
         self.env['mrp.bom.line'].create([{
-                'bom_id': bom_normal.id,
-                'product_id': black_white_product.id,
-                'product_qty': 1,
-                'bom_product_template_attribute_value_ids': [Command.set([black_tmpl.id, white_tmpl.id])],
-            },
+            'bom_id': bom_normal.id,
+            'product_id': black_white_product.id,
+            'product_qty': 1,
+            'bom_product_template_attribute_value_ids': [Command.set([black_tmpl.id, white_tmpl.id])],
+        },
             {
                 'bom_id': bom_normal.id,
                 'product_id': black_product.id,
                 'product_qty': 1,
                 'bom_product_template_attribute_value_ids': [Command.set([black_tmpl.id])],
             },
-                        {
+            {
                 'bom_id': bom_normal.id,
                 'product_id': white_product.id,
                 'product_qty': 1,
@@ -627,11 +638,16 @@ class TestMrpStockReports(TestReportsCommon):
             'bom_id': bom_normal.id,
         })
         mo_report = self.env['report.mrp.report_mo_overview'].get_report_values(mo.id)
-        self.assertEqual(mo_report['data']['extras']['unit_bom_cost'], mo_report['data']['extras']['unit_mo_cost'], 'The BoM unit cost should be equal to the sum of the products of said BoM')
+        self.assertEqual(mo_report['data']['extras']['unit_bom_cost'], mo_report['data']['extras']['unit_mo_cost'],
+                         'The BoM unit cost should be equal to the sum of the products of said BoM')
         # Check that the missing components (the components that were removed from the MO but are still in the BoM)
         # are taken into account when computing the BoM cost
-        mo.move_raw_ids.filtered(lambda m: m.product_id == missing_product.product_variant_id and m.bom_line_id.bom_id.type != 'phantom').unlink()
+        mo.move_raw_ids.filtered(lambda
+                                     m: m.product_id == missing_product.product_variant_id and m.bom_line_id.bom_id.type != 'phantom').unlink()
         # When a product has two possible variants, and then is deleted, it should be taken in the missing components
-        mo.move_raw_ids.filtered(lambda m: m.product_id == black_white_product and m.bom_line_id.bom_id.type != 'phantom').unlink()
+        mo.move_raw_ids.filtered(
+            lambda m: m.product_id == black_white_product and m.bom_line_id.bom_id.type != 'phantom').unlink()
         mo_report = self.env['report.mrp.report_mo_overview'].get_report_values(mo.id)
-        self.assertEqual(mo_report['data']['extras']['unit_bom_cost'], mo_report['data']['extras']['unit_mo_cost'] + missing_product.standard_price + black_white_product.standard_price, 'The BoM unit cost should take the missing components into account, which are the deleted MO lines')
+        self.assertEqual(mo_report['data']['extras']['unit_bom_cost'], mo_report['data']['extras'][
+            'unit_mo_cost'] + missing_product.standard_price + black_white_product.standard_price,
+                         'The BoM unit cost should take the missing components into account, which are the deleted MO lines')

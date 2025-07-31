@@ -2,14 +2,14 @@
 <odoo>
     <!-- This menu is display in CRM app when crm_iap_lead is installed-->
     <menuitem
-        id="crm_menu_lead_generation"
-        name="Lead Generation"
-        parent="crm.crm_menu_config"
-        sequence="20"/>
+            id="crm_menu_lead_generation"
+            name="Lead Generation"
+            parent="crm.crm_menu_config"
+            sequence="20"/>
 
     <menuitem
-        id="crm_iap_lead_mining_request_menu_action"
-        action="crm_iap_lead_mining_request_action"
-        parent="crm_menu_lead_generation"
-        sequence="0"/>
+            id="crm_iap_lead_mining_request_menu_action"
+            action="crm_iap_lead_mining_request_action"
+            parent="crm_menu_lead_generation"
+            sequence="0"/>
 </odoo>

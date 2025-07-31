@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.addons.hr_holidays.tests.common import TestHrHolidaysCommon
-from odoo.exceptions import AccessError, UserError
 import time
+
+from odoo.addons.hr_holidays.tests.common import TestHrHolidaysCommon
+
+from odoo.exceptions import AccessError, UserError
 
 
 class TestAllocationRights(TestHrHolidaysCommon):
@@ -135,6 +137,7 @@ class TestAccessRightsEmployeeManager(TestAllocationRights):
         allocation = self.request_allocation(self.user_employee.id, values)
         with self.assertRaises(UserError):
             allocation.action_validate()
+
 
 class TestAccessRightsHolidayUser(TestAllocationRights):
 

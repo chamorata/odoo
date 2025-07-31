@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, fields, models, _
-from odoo.tools import float_is_zero
+from odoo import fields, models, _
 from odoo.exceptions import UserError
+from odoo.tools import float_is_zero
 
 
 class PosMakePayment(models.TransientModel):
@@ -22,7 +22,8 @@ class PosMakePayment(models.TransientModel):
             order = self.env['pos.order'].browse(active_id)
             amount_total = order.amount_total
             # If we refund the entire order, we refund what was paid originally, else we refund the value of the items returned
-            if float_is_zero(order.refunded_order_id.amount_total + order.amount_total, precision_rounding=order.currency_id.rounding):
+            if float_is_zero(order.refunded_order_id.amount_total + order.amount_total,
+                             precision_rounding=order.currency_id.rounding):
                 amount_total = -order.refunded_order_id.amount_paid
             return amount_total - order.amount_paid
         return False
@@ -34,9 +35,11 @@ class PosMakePayment(models.TransientModel):
             return order_id.session_id.payment_method_ids.sorted(lambda pm: pm.is_cash_count, reverse=True)[:1]
         return False
 
-    config_id = fields.Many2one('pos.config', string='Point of Sale Configuration', required=True, default=_default_config)
+    config_id = fields.Many2one('pos.config', string='Point of Sale Configuration', required=True,
+                                default=_default_config)
     amount = fields.Float(digits=0, required=True, default=_default_amount)
-    payment_method_id = fields.Many2one('pos.payment.method', string='Payment Method', required=True, default=_default_payment_method)
+    payment_method_id = fields.Many2one('pos.payment.method', string='Payment Method', required=True,
+                                        default=_default_payment_method)
     payment_name = fields.Char(string='Payment Reference')
     payment_date = fields.Datetime(string='Payment Date', required=True, default=lambda self: fields.Datetime.now())
 
@@ -61,7 +64,8 @@ class PosMakePayment(models.TransientModel):
         if not float_is_zero(init_data['amount'], precision_rounding=currency.rounding):
             order.add_payment({
                 'pos_order_id': order.id,
-                'amount': order._get_rounded_amount(init_data['amount'], payment_method.is_cash_count or not self.config_id.only_round_cash_method),
+                'amount': order._get_rounded_amount(init_data['amount'],
+                                                    payment_method.is_cash_count or not self.config_id.only_round_cash_method),
                 'name': init_data['payment_name'],
                 'payment_method_id': init_data['payment_method_id'][0],
             })

@@ -21,18 +21,24 @@ class Project(models.Model):
             ('partner_id', '=?', partner_id),
         ]"""
     )
-    analytic_account_active = fields.Boolean("Active Account", related="account_id.active", export_string_translation=False)
+    analytic_account_active = fields.Boolean("Active Account", related="account_id.active",
+                                             export_string_translation=False)
 
-    timesheet_ids = fields.One2many('account.analytic.line', 'project_id', 'Associated Timesheets', export_string_translation=False)
-    timesheet_encode_uom_id = fields.Many2one('uom.uom', compute='_compute_timesheet_encode_uom_id', export_string_translation=False)
+    timesheet_ids = fields.One2many('account.analytic.line', 'project_id', 'Associated Timesheets',
+                                    export_string_translation=False)
+    timesheet_encode_uom_id = fields.Many2one('uom.uom', compute='_compute_timesheet_encode_uom_id',
+                                              export_string_translation=False)
     total_timesheet_time = fields.Integer(
         compute='_compute_total_timesheet_time', groups='hr_timesheet.group_hr_timesheet_user',
         string="Total number of time (in the proper UoM) recorded in the project, rounded to the unit.",
         compute_sudo=True, export_string_translation=False)
     encode_uom_in_days = fields.Boolean(compute='_compute_encode_uom_in_days', export_string_translation=False)
-    is_internal_project = fields.Boolean(compute='_compute_is_internal_project', search='_search_is_internal_project', export_string_translation=False)
+    is_internal_project = fields.Boolean(compute='_compute_is_internal_project', search='_search_is_internal_project',
+                                         export_string_translation=False)
     remaining_hours = fields.Float(compute='_compute_remaining_hours', string='Time Remaining', compute_sudo=True)
-    is_project_overtime = fields.Boolean('Project in Overtime', compute='_compute_remaining_hours', search='_search_is_project_overtime', compute_sudo=True, export_string_translation=False)
+    is_project_overtime = fields.Boolean('Project in Overtime', compute='_compute_remaining_hours',
+                                         search='_search_is_project_overtime', compute_sudo=True,
+                                         export_string_translation=False)
     allocated_hours = fields.Float(string='Allocated Time')
     effective_hours = fields.Float(string='Time Spent', compute='_compute_remaining_hours', compute_sudo=True)
 
@@ -152,13 +158,14 @@ class Project(models.Model):
         analytic_accounts_vals = [
             vals for vals in vals_list
             if (
-                vals.get('allow_timesheets', defaults.get('allow_timesheets')) and
-                not vals.get('account_id', defaults.get('account_id'))
+                    vals.get('allow_timesheets', defaults.get('allow_timesheets')) and
+                    not vals.get('account_id', defaults.get('account_id'))
             )
         ]
 
         if analytic_accounts_vals:
-            analytic_accounts = self.env['account.analytic.account'].create(self._get_values_analytic_account_batch(analytic_accounts_vals))
+            analytic_accounts = self.env['account.analytic.account'].create(
+                self._get_values_analytic_account_batch(analytic_accounts_vals))
             for vals, analytic_account in zip(analytic_accounts_vals, analytic_accounts):
                 vals['account_id'] = analytic_account.id
         return super().create(vals_list)
@@ -197,9 +204,11 @@ class Project(models.Model):
         projects_with_timesheets = self.filtered(lambda p: p.timesheet_ids)
         if projects_with_timesheets:
             if len(projects_with_timesheets) > 1:
-                warning_msg = _("These projects have some timesheet entries referencing them. Before removing these projects, you have to remove these timesheet entries.")
+                warning_msg = _(
+                    "These projects have some timesheet entries referencing them. Before removing these projects, you have to remove these timesheet entries.")
             else:
-                warning_msg = _("This project has some timesheet entries referencing it. Before removing this project, you have to remove these timesheet entries.")
+                warning_msg = _(
+                    "This project has some timesheet entries referencing it. Before removing this project, you have to remove these timesheet entries.")
             raise RedirectWarning(
                 warning_msg, self.env.ref('hr_timesheet.timesheet_action_project').id,
                 _('See timesheet entries'), {'active_ids': projects_with_timesheets.ids})
@@ -258,10 +267,10 @@ class Project(models.Model):
                     color = "text-success"
         else:
             number = self.env._(
-                    "%(effective)s %(uom_name)s",
-                    effective=round(effective),
-                    uom_name=encode_uom.name,
-                )
+                "%(effective)s %(uom_name)s",
+                effective=round(effective),
+                uom_name=encode_uom.name,
+            )
 
         buttons.append({
             "icon": f"clock-o {color}",

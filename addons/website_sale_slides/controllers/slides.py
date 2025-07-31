@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.website_slides.controllers.main import WebsiteSlides
+
 from odoo.http import request, route
 from odoo.tools import format_amount
 
@@ -23,7 +24,8 @@ class WebsiteSaleSlides(WebsiteSlides):
         channel = values['channel']
         if channel.enroll == 'payment':
             # search the product to apply ACLs, notably on published status, to avoid access errors
-            product = request.env['product.product'].search([('id', '=', channel.product_id.id)]) if channel.product_id else request.env['product.product']
+            product = request.env['product.product'].search(
+                [('id', '=', channel.product_id.id)]) if channel.product_id else request.env['product.product']
             if product:
                 values['product_info'] = product._get_combination_info_variant()
             else:

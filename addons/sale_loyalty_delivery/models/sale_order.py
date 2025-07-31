@@ -39,7 +39,8 @@ class SaleOrder(models.Model):
             'name': _('Free Shipping - %s', reward.description),
             'reward_id': reward.id,
             'coupon_id': coupon.id,
-            'points_cost': reward.required_points if not reward.clear_wallet else self._get_real_points_for_coupon(coupon),
+            'points_cost': reward.required_points if not reward.clear_wallet else self._get_real_points_for_coupon(
+                coupon),
             'product_id': reward.discount_line_product_id.id,
             'price_unit': -min(max_discount, delivery_line.price_unit or 0),
             'product_uom_qty': 1,

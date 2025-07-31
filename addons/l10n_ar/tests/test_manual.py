@@ -1,8 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from . import common
 from odoo import Command
 from odoo.tests import Form, tagged
 from odoo.tools.float_utils import float_split_str
+from . import common
 
 
 @tagged('post_install_l10n', '-at_install', 'post_install')
@@ -26,10 +26,12 @@ class TestManual(common.TestAr):
         self.assertEqual(invoice.company_id, self.company_ri, 'created with wrong company')
         self.assertEqual(invoice.amount_tax, 21, 'invoice taxes are not properly set')
         self.assertEqual(invoice.amount_total, 121.0, 'invoice taxes has not been applied to the total')
-        self.assertEqual(invoice.l10n_latam_document_type_id, self.document_type['invoice_a'], 'selected document type should be Factura A')
+        self.assertEqual(invoice.l10n_latam_document_type_id, self.document_type['invoice_a'],
+                         'selected document type should be Factura A')
         self._post(invoice)
         self.assertEqual(invoice.state, 'posted', 'invoice has not been validate in Odoo')
-        self.assertEqual(invoice.name, 'FA-A %05d-00000001' % self.journal.l10n_ar_afip_pos_number, 'Invoice number is wrong')
+        self.assertEqual(invoice.name, 'FA-A %05d-00000001' % self.journal.l10n_ar_afip_pos_number,
+                         'Invoice number is wrong')
         self.assertEqual(invoice.sequence_prefix, 'FA-A %05d-' % self.journal.l10n_ar_afip_pos_number)
         self.assertEqual(invoice.sequence_number, 1)
 
@@ -145,7 +147,8 @@ class TestManual(common.TestAr):
 
         # By default purchase journals ar not AFIP POS journal
         purchase_not_pos_journal = self.env["account.journal"].search([
-            ('type', '=', 'purchase'), ('company_id', '=', self.env.company.id), ('l10n_latam_use_documents', '=', True)])
+            ('type', '=', 'purchase'), ('company_id', '=', self.env.company.id),
+            ('l10n_latam_use_documents', '=', True)])
         self.assertFalse(purchase_not_pos_journal.l10n_ar_is_pos)
 
         doc_60_lp_a = self.env.ref('l10n_ar.dc_a_cvl')
@@ -184,7 +187,8 @@ class TestManual(common.TestAr):
         invoice_line_ids = self.demo_invoices['test_invoice_4'].invoice_line_ids
         for line in invoice_line_ids:
             l10n_ar_line_prices = line._l10n_ar_prices_and_taxes()
-            _unitary_part, l10n_ar_price_unit_decimal_part = float_split_str(l10n_ar_line_prices['price_unit'], decimal_price_digits_setting)
+            _unitary_part, l10n_ar_price_unit_decimal_part = float_split_str(l10n_ar_line_prices['price_unit'],
+                                                                             decimal_price_digits_setting)
             len_l10n_ar_price_unit_digits = len(l10n_ar_price_unit_decimal_part)
             _unitary_part, line_price_unit_decimal_part = float_split_str(line.price_unit, decimal_price_digits_setting)
             len_line_price_unit_digits = len(line_price_unit_decimal_part)
@@ -298,7 +302,7 @@ class TestManual(common.TestAr):
             "invoice_date": "2021-03-20",
             "invoice_line_ids": [
                 {'product_id': self.product_iva_105_perc, 'price_unit': 10000.0, 'quantity': 1,
-                    'tax_ids': [(6, 0, [self.tax_no_gravado.id])]},
+                 'tax_ids': [(6, 0, [self.tax_no_gravado.id])]},
             ],
         })
         results = invoice._l10n_ar_get_invoice_custom_tax_summary_for_report()

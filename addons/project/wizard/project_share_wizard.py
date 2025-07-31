@@ -20,7 +20,8 @@ class ProjectShareWizard(models.TransientModel):
         if active_model == 'project.collaborator':
             active_model = 'project.project'
             active_id = self._context.get('default_project_id', False)
-        result = super(ProjectShareWizard, self.with_context(active_model=active_model, active_id=active_id)).default_get(fields)
+        result = super(ProjectShareWizard,
+                       self.with_context(active_model=active_model, active_id=active_id)).default_get(fields)
         if result['res_model'] and result['res_id']:
             project = self.env[result['res_model']].browse(result['res_id'])
             collaborator_vals_list = []
@@ -42,7 +43,9 @@ class ProjectShareWizard(models.TransientModel):
             if collaborator_vals_list:
                 collaborator_vals_list.sort(key=operator.itemgetter('partner_name'))
                 result['collaborator_ids'] = [
-                    Command.create({'partner_id': collaborator['partner_id'], 'access_mode': collaborator['access_mode'], 'send_invitation': False})
+                    Command.create(
+                        {'partner_id': collaborator['partner_id'], 'access_mode': collaborator['access_mode'],
+                         'send_invitation': False})
                     for collaborator in collaborator_vals_list
                 ]
         return result
@@ -54,7 +57,8 @@ class ProjectShareWizard(models.TransientModel):
 
     share_link = fields.Char("Public Link", help="Anyone with this link can access the project in read mode.")
     collaborator_ids = fields.One2many('project.share.collaborator.wizard', 'parent_wizard_id', string='Collaborators')
-    existing_partner_ids = fields.Many2many('res.partner', compute='_compute_existing_partner_ids', export_string_translation=False)
+    existing_partner_ids = fields.Many2many('res.partner', compute='_compute_existing_partner_ids',
+                                            export_string_translation=False)
 
     @api.depends('res_model', 'res_id')
     def _compute_resource_ref(self):
@@ -92,7 +96,8 @@ class ProjectShareWizard(models.TransientModel):
             project_collaborator_per_partner_id = {c.partner_id.id: c for c in project.collaborator_ids}
             for collaborator in wizard.collaborator_ids:
                 partner_id = collaborator.partner_id.id
-                project_collaborator = project_collaborator_per_partner_id.get(partner_id, self.env['project.collaborator'])
+                project_collaborator = project_collaborator_per_partner_id.get(partner_id,
+                                                                               self.env['project.collaborator'])
                 if collaborator.access_mode in ("edit", "edit_limited"):
                     limited_access = collaborator.access_mode == "edit_limited"
                     if not project_collaborator:
@@ -113,14 +118,17 @@ class ProjectShareWizard(models.TransientModel):
                     project_followers_to_add.append(partner_id)
             if collaborator_ids_to_add:
                 partners = project._get_new_collaborators(self.env['res.partner'].browse(collaborator_ids_to_add))
-                collaborator_ids_vals_list.extend(Command.create({'partner_id': partner_id}) for partner_id in partners.ids)
+                collaborator_ids_vals_list.extend(
+                    Command.create({'partner_id': partner_id}) for partner_id in partners.ids)
             if collaborator_ids_to_add_with_limited_access:
-                partners = project._get_new_collaborators(self.env['res.partner'].browse(collaborator_ids_to_add_with_limited_access))
+                partners = project._get_new_collaborators(
+                    self.env['res.partner'].browse(collaborator_ids_to_add_with_limited_access))
                 collaborator_ids_vals_list.extend(
                     Command.create({'partner_id': partner_id, 'limited_access': True}) for partner_id in partners.ids
                 )
             if project_collaborator_ids_to_remove:
-                collaborator_ids_vals_list.extend(Command.delete(collaborator_id) for collaborator_id in project_collaborator_ids_to_remove)
+                collaborator_ids_vals_list.extend(
+                    Command.delete(collaborator_id) for collaborator_id in project_collaborator_ids_to_remove)
             project_vals = {}
             if collaborator_ids_vals_list:
                 project_vals['collaborator_ids'] = collaborator_ids_vals_list
@@ -138,7 +146,8 @@ class ProjectShareWizard(models.TransientModel):
         if not self.collaborator_ids:
             return
         on_invite = self.env['res.users']._get_signup_invitation_scope() == 'b2b'
-        new_portal_user = self.collaborator_ids.filtered(lambda c: c.send_invitation and not c.partner_id.user_ids) and on_invite
+        new_portal_user = self.collaborator_ids.filtered(
+            lambda c: c.send_invitation and not c.partner_id.user_ids) and on_invite
         if not new_portal_user:
             return self.action_send_mail()
         return {

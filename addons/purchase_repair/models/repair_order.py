@@ -5,7 +5,8 @@ from odoo import api, models, fields, _
 class RepairOrder(models.Model):
     _inherit = 'repair.order'
 
-    purchase_count = fields.Integer(string="Count of generated POs", compute="_compute_purchase_count", groups="purchase.group_purchase_user")
+    purchase_count = fields.Integer(string="Count of generated POs", compute="_compute_purchase_count",
+                                    groups="purchase.group_purchase_user")
 
     @api.depends('move_ids.created_purchase_line_ids.order_id')
     def _compute_purchase_count(self):

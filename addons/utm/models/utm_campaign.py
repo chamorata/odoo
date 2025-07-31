@@ -25,7 +25,8 @@ class UtmCampaign(models.Model):
         'utm.tag', 'utm_tag_rel',
         'tag_id', 'campaign_id', string='Tags')
 
-    is_auto_campaign = fields.Boolean(default=False, string="Automatically Generated Campaign", help="Allows us to filter relevant Campaigns")
+    is_auto_campaign = fields.Boolean(default=False, string="Automatically Generated Campaign",
+                                      help="Allows us to filter relevant Campaigns")
     color = fields.Integer(string='Color Index')
 
     _sql_constraints = [

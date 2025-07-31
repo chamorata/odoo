@@ -2,19 +2,18 @@
 
 from unittest.mock import Mock, patch
 
-from werkzeug import urls
-
-from odoo.http import root
-from odoo.tests import HttpCase, tagged
-
-from odoo.addons.base.tests.common import BaseUsersCommon
 from odoo.addons.payment import utils as payment_utils
 from odoo.addons.website.tools import MockRequest
-from odoo.addons.website_sale.controllers.main import WebsiteSale
 from odoo.addons.website_sale.controllers.delivery import (
     Delivery as WebsiteSaleDeliveryController,
 )
+from odoo.addons.website_sale.controllers.main import WebsiteSale
 from odoo.addons.website_sale.tests.common import WebsiteSaleCommon
+from werkzeug import urls
+
+from odoo.addons.base.tests.common import BaseUsersCommon
+from odoo.http import root
+from odoo.tests import HttpCase, tagged
 
 
 @tagged('post_install', '-at_install')
@@ -142,8 +141,8 @@ class TestWebsiteSaleDeliveryExpressCheckoutFlows(BaseUsersCommon, WebsiteSaleCo
         session['sale_order_id'] = self.sale_order.id
         root.session_store.save(session)
         with patch(
-            'odoo.addons.delivery.models.delivery_carrier.DeliveryCarrier.rate_shipment',
-            return_value=self.rate_shipment_result
+                'odoo.addons.delivery.models.delivery_carrier.DeliveryCarrier.rate_shipment',
+                return_value=self.rate_shipment_result
         ):
             self.make_jsonrpc_request(
                 urls.url_join(
@@ -169,8 +168,8 @@ class TestWebsiteSaleDeliveryExpressCheckoutFlows(BaseUsersCommon, WebsiteSaleCo
         session['sale_order_id'] = self.sale_order.id
         root.session_store.save(session)
         with patch(
-            'odoo.addons.delivery.models.delivery_carrier.DeliveryCarrier.rate_shipment',
-            return_value=self.rate_shipment_result
+                'odoo.addons.delivery.models.delivery_carrier.DeliveryCarrier.rate_shipment',
+                return_value=self.rate_shipment_result
         ):
             self.make_jsonrpc_request(
                 urls.url_join(
@@ -202,8 +201,8 @@ class TestWebsiteSaleDeliveryExpressCheckoutFlows(BaseUsersCommon, WebsiteSaleCo
         session['sale_order_id'] = self.sale_order.id
         root.session_store.save(session)
         with patch(
-            'odoo.addons.delivery.models.delivery_carrier.DeliveryCarrier.rate_shipment',
-            return_value=self.rate_shipment_result
+                'odoo.addons.delivery.models.delivery_carrier.DeliveryCarrier.rate_shipment',
+                return_value=self.rate_shipment_result
         ):
             self.make_jsonrpc_request(
                 urls.url_join(
@@ -224,8 +223,8 @@ class TestWebsiteSaleDeliveryExpressCheckoutFlows(BaseUsersCommon, WebsiteSaleCo
         session['sale_order_id'] = self.sale_order.id
         root.session_store.save(session)
         with patch(
-            'odoo.addons.delivery.models.delivery_carrier.DeliveryCarrier.rate_shipment',
-            return_value=self.rate_shipment_result
+                'odoo.addons.delivery.models.delivery_carrier.DeliveryCarrier.rate_shipment',
+                return_value=self.rate_shipment_result
         ):
             self.make_jsonrpc_request(
                 urls.url_join(
@@ -253,8 +252,8 @@ class TestWebsiteSaleDeliveryExpressCheckoutFlows(BaseUsersCommon, WebsiteSaleCo
         session['sale_order_id'] = self.sale_order.id
         root.session_store.save(session)
         with patch(
-            'odoo.addons.delivery.models.delivery_carrier.DeliveryCarrier.rate_shipment',
-            return_value=self.rate_shipment_result
+                'odoo.addons.delivery.models.delivery_carrier.DeliveryCarrier.rate_shipment',
+                return_value=self.rate_shipment_result
         ):
             self.make_jsonrpc_request(
                 urls.url_join(
@@ -304,8 +303,8 @@ class TestWebsiteSaleDeliveryExpressCheckoutFlows(BaseUsersCommon, WebsiteSaleCo
         session['sale_order_id'] = self.sale_order.id
         root.session_store.save(session)
         with patch(
-            'odoo.addons.delivery.models.delivery_carrier.DeliveryCarrier.rate_shipment',
-            return_value=self.rate_shipment_result
+                'odoo.addons.delivery.models.delivery_carrier.DeliveryCarrier.rate_shipment',
+                return_value=self.rate_shipment_result
         ):
             shipping_options_data = self.make_jsonrpc_request(
                 urls.url_join(
@@ -316,11 +315,12 @@ class TestWebsiteSaleDeliveryExpressCheckoutFlows(BaseUsersCommon, WebsiteSaleCo
             )
             self.assertEqual(self.sale_order.partner_id.id, self.user_demo.partner_id.id)
 
-            self.make_jsonrpc_request(urls.url_join(self.base_url(), WebsiteSaleDeliveryController._express_checkout_route), params={
-                'billing_address': dict(self.express_checkout_billing_values),
-                'shipping_address': dict(self.express_checkout_demo_shipping_values),
-                'shipping_option': shipping_options_data['delivery_methods'][0],
-            })
+            self.make_jsonrpc_request(
+                urls.url_join(self.base_url(), WebsiteSaleDeliveryController._express_checkout_route), params={
+                    'billing_address': dict(self.express_checkout_billing_values),
+                    'shipping_address': dict(self.express_checkout_demo_shipping_values),
+                    'shipping_option': shipping_options_data['delivery_methods'][0],
+                })
             self.assertEqual(self.sale_order.partner_id.id, self.user_demo.partner_id.id)
 
     def test_express_checkout_registered_user_with_shipping_option_new_address(self):
@@ -332,8 +332,8 @@ class TestWebsiteSaleDeliveryExpressCheckoutFlows(BaseUsersCommon, WebsiteSaleCo
         session['sale_order_id'] = self.sale_order.id
         root.session_store.save(session)
         with patch(
-            'odoo.addons.delivery.models.delivery_carrier.DeliveryCarrier.rate_shipment',
-            return_value=self.rate_shipment_result
+                'odoo.addons.delivery.models.delivery_carrier.DeliveryCarrier.rate_shipment',
+                return_value=self.rate_shipment_result
         ):
             # Won't create a new partner because the partial information are the same the an
             # exisiting partner linked to the SO

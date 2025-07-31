@@ -20,9 +20,9 @@
     </xpath>
     <xpath expr="//div[@id='snippets_menu']" position="inside">
         <button type="button" tabindex="3"
-            t-att-class="{ 'active': state.currentTab === constructor.tabs.DESIGN }"
-            class="o_we_customize_design_btn text-uppercase" accesskey="2"
-            t-on-click="_onDesignTabClick">
+                t-att-class="{ 'active': state.currentTab === constructor.tabs.DESIGN }"
+                class="o_we_customize_design_btn text-uppercase" accesskey="2"
+                t-on-click="_onDesignTabClick">
             <span>Design</span>
         </button>
     </xpath>

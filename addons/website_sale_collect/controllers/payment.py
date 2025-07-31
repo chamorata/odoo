@@ -1,9 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.website_sale.controllers.payment import PaymentPortal
+
 from odoo import _
 from odoo.exceptions import ValidationError
-
-from odoo.addons.website_sale.controllers.payment import PaymentPortal
 
 
 class OnSitePaymentPortal(PaymentPortal):
@@ -25,9 +25,9 @@ class OnSitePaymentPortal(PaymentPortal):
         # This should never be triggered unless the user intentionally forges a request.
         provider = transaction.provider_id
         if (
-            sale_order.carrier_id.delivery_type != 'in_store'
-            and provider.code == 'custom'
-            and provider.custom_mode == 'on_site'
+                sale_order.carrier_id.delivery_type != 'in_store'
+                and provider.code == 'custom'
+                and provider.custom_mode == 'on_site'
         ):
             raise ValidationError(
                 _("You can only pay on site when selecting the pick up in store delivery method.")

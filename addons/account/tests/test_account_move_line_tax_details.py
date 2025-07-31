@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-#pylint: disable=too-many-lines
+# pylint: disable=too-many-lines
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
-from odoo.tests import tagged
+
 from odoo import Command
+from odoo.tests import tagged
 
 
 @tagged('post_install', '-at_install')
@@ -15,11 +16,11 @@ class TestAccountTaxDetailsReport(AccountTestInvoicingCommon):
         cls.other_currency = cls.setup_other_currency('EUR', rounding=0.001)
 
     def _dispatch_move_lines(self, moves):
-        base_lines = moves.line_ids\
-            .filtered(lambda x: x.tax_ids and not x.tax_line_id)\
+        base_lines = moves.line_ids \
+            .filtered(lambda x: x.tax_ids and not x.tax_line_id) \
             .sorted(lambda x: (x.move_id.id, x.id, -abs(x.amount_currency)))
-        tax_lines = moves.line_ids\
-            .filtered(lambda x: x.tax_line_id)\
+        tax_lines = moves.line_ids \
+            .filtered(lambda x: x.tax_line_id) \
             .sorted(lambda x: (x.move_id.id, x.tax_line_id.id, x.tax_ids.ids, x.tax_repartition_line_id.id))
         return base_lines, tax_lines
 
@@ -606,7 +607,7 @@ class TestAccountTaxDetailsReport(AccountTestInvoicingCommon):
                     'price_unit': 0.01,
                     'tax_ids': [Command.set(tax_50.ids)],
                 })
-            for i in range(7)]
+                for i in range(7)]
         })
         base_lines, tax_lines = self._dispatch_move_lines(invoice)
 
@@ -1096,7 +1097,7 @@ class TestAccountTaxDetailsReport(AccountTestInvoicingCommon):
                     'base_amount': 1200.0,
                     'tax_amount': 10.91,
                     'base_amount_currency': 2400.0,
-                    'tax_amount_currency': 102.857, # (2400.0 / 8400.0) * (360.0 / 560.0) * 560.0
+                    'tax_amount_currency': 102.857,  # (2400.0 / 8400.0) * (360.0 / 560.0) * 560.0
                 },
                 {
                     'base_line_id': base_lines[0].id,
@@ -1104,7 +1105,7 @@ class TestAccountTaxDetailsReport(AccountTestInvoicingCommon):
                     'base_amount': 1200.0,
                     'tax_amount': 109.09,
                     'base_amount_currency': 2400.0,
-                    'tax_amount_currency': 57.143, # (2400.0 / 8400.0) * (200.0 / 560.0) * 560.0
+                    'tax_amount_currency': 57.143,  # (2400.0 / 8400.0) * (200.0 / 560.0) * 560.0
                 },
                 {
                     'base_line_id': base_lines[1].id,
@@ -1112,7 +1113,7 @@ class TestAccountTaxDetailsReport(AccountTestInvoicingCommon):
                     'base_amount': 12000.0,
                     'tax_amount': 109.09,
                     'base_amount_currency': 6000.0,
-                    'tax_amount_currency': 257.143, # (6000.0 / 8400.0) * (360.0 / 560.0) * 560.0
+                    'tax_amount_currency': 257.143,  # (6000.0 / 8400.0) * (360.0 / 560.0) * 560.0
                 },
                 {
                     'base_line_id': base_lines[1].id,
@@ -1120,7 +1121,7 @@ class TestAccountTaxDetailsReport(AccountTestInvoicingCommon):
                     'base_amount': 12000.0,
                     'tax_amount': 1090.91,
                     'base_amount_currency': 6000.0,
-                    'tax_amount_currency': 142.857, # (6000.0 / 8400.0) * (200.0 / 560.0) * 560.0
+                    'tax_amount_currency': 142.857,  # (6000.0 / 8400.0) * (200.0 / 560.0) * 560.0
                 },
             ],
         )
@@ -1283,7 +1284,7 @@ class TestAccountTaxDetailsReport(AccountTestInvoicingCommon):
                                 'price_unit': amount,
                                 'tax_ids': [Command.set(tax.ids)],
                             })
-                        for amount in amounts],
+                            for amount in amounts],
                     })
                     _base_lines, tax_lines = self._dispatch_move_lines(invoice)
 
@@ -1296,7 +1297,7 @@ class TestAccountTaxDetailsReport(AccountTestInvoicingCommon):
                                 'base_amount': amount,
                                 'tax_amount': tax_sign * amount * 0.1,
                             }
-                        for amount in amounts],
+                            for amount in amounts],
                     )
                     self.assertTotalAmounts(invoice, tax_details)
 

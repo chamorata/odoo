@@ -5,8 +5,8 @@ import datetime
 import logging
 import random
 import threading
-
 from ast import literal_eval
+
 from markupsafe import Markup
 
 from odoo import api, exceptions, fields, models, _
@@ -22,9 +22,12 @@ class Team(models.Model):
     _inherit = ['mail.alias.mixin', 'crm.team']
     _description = 'Sales Team'
 
-    use_leads = fields.Boolean('Leads', help="Check this box to filter and qualify incoming requests as leads before converting them into opportunities and assigning them to a salesperson.")
-    use_opportunities = fields.Boolean('Pipeline', default=True, help="Check this box to manage a presales process with opportunities.")
-    alias_id = fields.Many2one(help="The email address associated with this channel. New emails received will automatically create new leads assigned to the channel.")
+    use_leads = fields.Boolean('Leads',
+                               help="Check this box to filter and qualify incoming requests as leads before converting them into opportunities and assigning them to a salesperson.")
+    use_opportunities = fields.Boolean('Pipeline', default=True,
+                                       help="Check this box to manage a presales process with opportunities.")
+    alias_id = fields.Many2one(
+        help="The email address associated with this channel. New emails received will automatically create new leads assigned to the channel.")
     # assignment
     assignment_enabled = fields.Boolean('Lead Assign', compute='_compute_assignment_enabled')
     assignment_auto_enabled = fields.Boolean('Auto Assignment', compute='_compute_assignment_enabled')
@@ -41,9 +44,10 @@ class Team(models.Model):
     lead_all_assigned_month_count = fields.Integer(
         string='# Leads/Opps assigned this month', compute='_compute_lead_all_assigned_month_count',
         help="Number of leads and opportunities assigned this last month.")
-    lead_all_assigned_month_exceeded = fields.Boolean('Exceed monthly lead assignement', compute="_compute_lead_all_assigned_month_count",
-        help="True if the monthly lead assignment count is greater than the maximum assignment limit, false otherwise."
-    )
+    lead_all_assigned_month_exceeded = fields.Boolean('Exceed monthly lead assignement',
+                                                      compute="_compute_lead_all_assigned_month_count",
+                                                      help="True if the monthly lead assignment count is greater than the maximum assignment limit, false otherwise."
+                                                      )
     opportunities_count = fields.Integer(
         string='# Opportunities', compute='_compute_opportunities_data')
     opportunities_amount = fields.Monetary(
@@ -51,7 +55,7 @@ class Team(models.Model):
     opportunities_overdue_count = fields.Integer(
         string='# Overdue Opportunities', compute='_compute_opportunities_overdue_data')
     opportunities_overdue_amount = fields.Monetary(
-        string='Overdue Opportunities Revenues', compute='_compute_opportunities_overdue_data',)
+        string='Overdue Opportunities Revenues', compute='_compute_opportunities_overdue_data', )
     # properties
     lead_properties_definition = fields.PropertiesDefinition('Lead Properties')
 
@@ -91,7 +95,8 @@ class Team(models.Model):
             ('probability', '<', 100),
             ('type', '=', 'opportunity'),
         ], ['team_id'], ['__count', 'expected_revenue:sum'])
-        counts_amounts = {team.id: (count, expected_revenue_sum) for team, count, expected_revenue_sum in opportunity_data}
+        counts_amounts = {team.id: (count, expected_revenue_sum) for team, count, expected_revenue_sum in
+                          opportunity_data}
         for team in self:
             team.opportunities_count, team.opportunities_amount = counts_amounts.get(team.id, (0, 0))
 
@@ -102,7 +107,8 @@ class Team(models.Model):
             ('type', '=', 'opportunity'),
             ('date_deadline', '<', fields.Date.to_string(fields.Datetime.now()))
         ], ['team_id'], ['__count', 'expected_revenue:sum'])
-        counts_amounts = {team.id: (count, expected_revenue_sum) for team, count, expected_revenue_sum in opportunity_data}
+        counts_amounts = {team.id: (count, expected_revenue_sum) for team, count, expected_revenue_sum in
+                          opportunity_data}
         for team in self:
             team.opportunities_overdue_count, team.opportunities_overdue_amount = counts_amounts.get(team.id, (0, 0))
 
@@ -119,7 +125,8 @@ class Team(models.Model):
                 if domain:
                     self.env['crm.lead'].search(domain, limit=1)
             except Exception:
-                raise exceptions.ValidationError(_('Assignment domain for team %(team)s is incorrectly formatted', team=team.name))
+                raise exceptions.ValidationError(
+                    _('Assignment domain for team %(team)s is incorrectly formatted', team=team.name))
 
     # ------------------------------------------------------------
     # ORM
@@ -150,7 +157,8 @@ class Team(models.Model):
                 if float_compare(frequency.won_count, 0.1, 2) != 1 and float_compare(frequency.lost_count, 0.1, 2) != 1:
                     continue
 
-                match = existing_noteam.filtered(lambda frequ_nt: frequ_nt.variable == frequency.variable and frequ_nt.value == frequency.value)
+                match = existing_noteam.filtered(
+                    lambda frequ_nt: frequ_nt.variable == frequency.variable and frequ_nt.value == frequency.value)
                 if match:
                     # remove extra .1 that may exist in db as those are artifacts of initializing
                     # frequency table. Final value of 0 will be set to 0.1.
@@ -271,7 +279,8 @@ class Team(models.Model):
           and ``CrmTeam._assign_and_convert_leads``;
         """
         if not (self.env.user.has_group('sales_team.group_sale_manager') or self.env.is_system()):
-            raise exceptions.UserError(_('Lead/Opportunities automatic assignment is limited to managers or administrators'))
+            raise exceptions.UserError(
+                _('Lead/Opportunities automatic assignment is limited to managers or administrators'))
 
         _logger.info(
             '### START Lead Assignment (%d teams, %d sales persons, force daily quota: %s)',
@@ -475,7 +484,8 @@ class Team(models.Model):
             team = random.choices(population, weights=weights, k=1)[0]
 
             # filter remaining leads, remove team if no more leads for it
-            teams_data[team]["leads"] = teams_data[team]["leads"].filtered(lambda l: l.id not in leads_done_ids).exists()
+            teams_data[team]["leads"] = teams_data[team]["leads"].filtered(
+                lambda l: l.id not in leads_done_ids).exists()
             if not teams_data[team]["leads"]:
                 population_index = population.index(team)
                 population.pop(population_index)
@@ -602,7 +612,8 @@ class Team(models.Model):
         result_data = {}
         commit_bundle_size = int(self.env['ir.config_parameter'].sudo().get_param('crm.assignment.commit.bundle', 100))
         teams_with_members = self.filtered(lambda team: team.crm_team_member_ids)
-        quota_per_member = {member: member._get_assignment_quota(force_quota=force_quota) for member in self.crm_team_member_ids}
+        quota_per_member = {member: member._get_assignment_quota(force_quota=force_quota) for member in
+                            self.crm_team_member_ids}
         counter = 0
         leads_per_team = dict(self.env['crm.lead']._read_group(
             teams_with_members._get_lead_to_assign_domain(),
@@ -614,8 +625,10 @@ class Team(models.Model):
         ))
         for team, leads_to_assign_ids in leads_per_team.items():
             members_to_assign = list(team.crm_team_member_ids.filtered(lambda member:
-                not member.assignment_optout and quota_per_member.get(member, 0) > 0
-            ).sorted(key=lambda member: quota_per_member.get(member, 0), reverse=True))
+                                                                       not member.assignment_optout and quota_per_member.get(
+                                                                           member, 0) > 0
+                                                                       ).sorted(
+                key=lambda member: quota_per_member.get(member, 0), reverse=True))
             if not members_to_assign:
                 continue
             result_data.update({
@@ -654,16 +667,18 @@ class Team(models.Model):
             # Try to avoid to explode memory usage
             self.env.invalidate_all()
 
-        _logger.info('Assigned %s leads to %s salesmen', sum(len(r['assigned']) for r in result_data.values()), len(result_data))
+        _logger.info('Assigned %s leads to %s salesmen', sum(len(r['assigned']) for r in result_data.values()),
+                     len(result_data))
         for member, member_info in result_data.items():
-            _logger.info('-> member %s of team %s: assigned %d/%d leads (%s)', member.id, member.crm_team_id.id, len(member_info["assigned"]), member_info["quota"], member_info["assigned"])
+            _logger.info('-> member %s of team %s: assigned %d/%d leads (%s)', member.id, member.crm_team_id.id,
+                         len(member_info["assigned"]), member_info["quota"], member_info["assigned"])
         return result_data
 
     # ------------------------------------------------------------
     # ACTIONS
     # ------------------------------------------------------------
 
-    #TODO JEM : refactor this stuff with xml action, proper customization,
+    # TODO JEM : refactor this stuff with xml action, proper customization,
     @api.model
     def action_your_pipeline(self):
         action = self.env["ir.actions.actions"]._for_xml_id("crm.crm_lead_action_pipeline")
@@ -685,7 +700,7 @@ class Team(models.Model):
                 if self.env.user.has_group('sales_team.group_sale_manager'):
                     action['help'] += "<p>%s</p>" % _("""As you are a member of no Sales Team, you are showed the Pipeline of the <b>first team by default.</b>
                                         To work with the CRM, you should <a name="%d" type="action" tabindex="-1">join a team.</a>""",
-                                        self.env.ref('sales_team.crm_team_action_config').id)
+                                                      self.env.ref('sales_team.crm_team_action_config').id)
                 else:
                     action['help'] += "<p>%s</p>" % _("""As you are a member of no Sales Team, you are showed the Pipeline of the <b>first team by default.</b>
                                         To work with the CRM, you should join a team.""")
@@ -707,29 +722,29 @@ class Team(models.Model):
             }
             action['help'] = self.env['ir.ui.view']._render_template('crm.crm_action_helper', values=rcontext)
             return action
-        return super(Team,self).action_primary_channel_button()
+        return super(Team, self).action_primary_channel_button()
 
     def _graph_get_model(self):
         if self.use_opportunities:
             return 'crm.lead'
-        return super(Team,self)._graph_get_model()
+        return super(Team, self)._graph_get_model()
 
     def _graph_date_column(self):
         if self.use_opportunities:
             return SQL('create_date')
-        return super(Team,self)._graph_date_column()
+        return super(Team, self)._graph_date_column()
 
     def _graph_y_query(self):
         if self.use_opportunities:
             return SQL('count(*)')
-        return super(Team,self)._graph_y_query()
+        return super(Team, self)._graph_y_query()
 
     def _extra_sql_conditions(self):
         if self.use_opportunities:
             return SQL("type LIKE 'opportunity'")
-        return super(Team,self)._extra_sql_conditions()
+        return super(Team, self)._extra_sql_conditions()
 
     def _graph_title_and_key(self):
         if self.use_opportunities:
-            return ['', _('New Opportunities')] # no more title
+            return ['', _('New Opportunities')]  # no more title
         return super(Team, self)._graph_title_and_key()

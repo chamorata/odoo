@@ -26,7 +26,7 @@ class ResConfigSettings(models.TransientModel):
         'Restrict Template Rendering',
         config_parameter='mail.restrict.template.rendering',
         help='Users will still be able to render templates.\n'
-        'However only Mail Template Editors will be able to create new dynamic templates or modify existing ones.')
+             'However only Mail Template Editors will be able to create new dynamic templates or modify existing ones.')
     use_twilio_rtc_servers = fields.Boolean(
         'Use Twilio ICE servers',
         help="If you want to use twilio as TURN/STUN server provider",
@@ -52,9 +52,9 @@ class ResConfigSettings(models.TransientModel):
     )
     tenor_content_filter = fields.Selection(
         [('high', 'High'),
-        ('medium', 'Medium'),
-        ('low', 'Low'),
-        ('off', 'Off')],
+         ('medium', 'Medium'),
+         ('low', 'Low'),
+         ('off', 'Off')],
         string='Tenor content filter',
         help="https://developers.google.com/tenor/guides/content-filtering",
         config_parameter='discuss.tenor_content_filter',

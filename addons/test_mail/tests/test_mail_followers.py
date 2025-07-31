@@ -6,15 +6,15 @@ from unittest.mock import patch
 from urllib.parse import urlparse, urlencode, parse_qsl
 
 from markupsafe import Markup
-
-from odoo import fields
 from odoo.addons.mail.models.mail_mail import _UNFOLLOW_REGEX
 from odoo.addons.mail.tests.common import MailCommon
+
+from odoo import fields
 from odoo.exceptions import AccessError
-from odoo.tools.misc import limited_field_access_token
 from odoo.tests import tagged, users
 from odoo.tests.common import HttpCase
-from odoo.tools import email_normalize, mail, mute_logger, parse_contact_from_email
+from odoo.tools import email_normalize, mute_logger, parse_contact_from_email
+from odoo.tools.misc import limited_field_access_token
 
 
 @tagged('mail_followers')
@@ -23,7 +23,8 @@ class BaseFollowersTest(MailCommon):
     @classmethod
     def setUpClass(cls):
         super(BaseFollowersTest, cls).setUpClass()
-        cls.test_record = cls.env['mail.test.simple'].with_context(cls._test_context).create({'name': 'Test', 'email_from': 'ignasse@example.com'})
+        cls.test_record = cls.env['mail.test.simple'].with_context(cls._test_context).create(
+            {'name': 'Test', 'email_from': 'ignasse@example.com'})
         cls._create_portal_user()
 
         # allow employee to update partners
@@ -36,12 +37,16 @@ class BaseFollowersTest(MailCommon):
         # mail.test.simple
         cls.mt_mg_def = Subtype.create({'name': 'mt_mg_def', 'default': True, 'res_model': 'mail.test.simple'})
         cls.mt_mg_nodef = Subtype.create({'name': 'mt_mg_nodef', 'default': False, 'res_model': 'mail.test.simple'})
-        cls.mt_mg_def_int = Subtype.create({'name': 'mt_mg_def', 'default': True, 'res_model': 'mail.test.simple', 'internal': True})
+        cls.mt_mg_def_int = Subtype.create(
+            {'name': 'mt_mg_def', 'default': True, 'res_model': 'mail.test.simple', 'internal': True})
         # mail.test.container
         cls.mt_cl_def = Subtype.create({'name': 'mt_cl_def', 'default': True, 'res_model': 'mail.test.container'})
 
-        cls.default_group_subtypes = Subtype.search([('default', '=', True), '|', ('res_model', '=', 'mail.test.simple'), ('res_model', '=', False)])
-        cls.default_group_subtypes_portal = Subtype.search([('internal', '=', False), ('default', '=', True), '|', ('res_model', '=', 'mail.test.simple'), ('res_model', '=', False)])
+        cls.default_group_subtypes = Subtype.search(
+            [('default', '=', True), '|', ('res_model', '=', 'mail.test.simple'), ('res_model', '=', False)])
+        cls.default_group_subtypes_portal = Subtype.search(
+            [('internal', '=', False), ('default', '=', True), '|', ('res_model', '=', 'mail.test.simple'),
+             ('res_model', '=', False)])
 
     def test_field_message_is_follower(self):
         test_record = self.test_record.with_user(self.user_employee)
@@ -63,7 +68,8 @@ class BaseFollowersTest(MailCommon):
         self.assertTrue(partner in test_record.message_partner_ids)
         self.assertEqual(followed_before + test_record, followed_after)
         with self.assertRaisesRegex(AccessError, 'Portal users can only filter threads'):
-            self.env['mail.test.simple'].with_user(self.user_portal).search([('message_partner_ids', 'in', partner.ids)])
+            self.env['mail.test.simple'].with_user(self.user_portal).search(
+                [('message_partner_ids', 'in', partner.ids)])
 
     def test_field_followers(self):
         test_record = self.test_record.with_user(self.user_employee)
@@ -113,7 +119,8 @@ class BaseFollowersTest(MailCommon):
         self.assertEqual(test_record.message_partner_ids, self.user_admin.partner_id)
         self.assertEqual(test_record.message_follower_ids.subtype_ids, self.mt_mg_nodef)
 
-        test_record.message_subscribe(partner_ids=[self.user_admin.partner_id.id], subtype_ids=[self.mt_mg_nodef.id, self.mt_al_nodef.id])
+        test_record.message_subscribe(partner_ids=[self.user_admin.partner_id.id],
+                                      subtype_ids=[self.mt_mg_nodef.id, self.mt_al_nodef.id])
         self.assertEqual(test_record.message_partner_ids, self.user_admin.partner_id)
         self.assertEqual(test_record.message_follower_ids.subtype_ids, self.mt_mg_nodef | self.mt_al_nodef)
 
@@ -121,7 +128,8 @@ class BaseFollowersTest(MailCommon):
         """ Calling message_subscribe without subtypes on an existing subscription should not do anything (default < existing) """
         test_record = self.test_record.with_user(self.user_employee)
 
-        test_record.message_subscribe(partner_ids=[self.user_admin.partner_id.id], subtype_ids=[self.mt_mg_nodef.id, self.mt_al_nodef.id])
+        test_record.message_subscribe(partner_ids=[self.user_admin.partner_id.id],
+                                      subtype_ids=[self.mt_mg_nodef.id, self.mt_al_nodef.id])
         self.assertEqual(test_record.message_partner_ids, self.user_admin.partner_id)
         self.assertEqual(test_record.message_follower_ids.subtype_ids, self.mt_mg_nodef | self.mt_al_nodef)
 
@@ -133,7 +141,8 @@ class BaseFollowersTest(MailCommon):
     def test_followers_multiple_subscription_update(self):
         """ Calling message_subscribe with subtypes on an existing subscription should replace them (new > existing) """
         test_record = self.test_record.with_user(self.user_employee)
-        test_record.message_subscribe(partner_ids=[self.user_employee.partner_id.id], subtype_ids=[self.mt_mg_def.id, self.mt_cl_def.id])
+        test_record.message_subscribe(partner_ids=[self.user_employee.partner_id.id],
+                                      subtype_ids=[self.mt_mg_def.id, self.mt_cl_def.id])
         self.assertEqual(test_record.message_partner_ids, self.user_employee.partner_id)
         follower = self.env['mail.followers'].search([
             ('res_model', '=', 'mail.test.simple'),
@@ -143,7 +152,8 @@ class BaseFollowersTest(MailCommon):
         self.assertEqual(follower.subtype_ids, self.mt_mg_def | self.mt_cl_def)
 
         # remove one subtype `mt_mg_def` and set new subtype `mt_al_def`
-        test_record.message_subscribe(partner_ids=[self.user_employee.partner_id.id], subtype_ids=[self.mt_cl_def.id, self.mt_al_def.id])
+        test_record.message_subscribe(partner_ids=[self.user_employee.partner_id.id],
+                                      subtype_ids=[self.mt_cl_def.id, self.mt_al_def.id])
         self.assertEqual(follower.subtype_ids, self.mt_cl_def | self.mt_al_def)
 
     @users('employee')
@@ -259,11 +269,13 @@ class BaseFollowersTest(MailCommon):
         test_record_copy = self.test_record.copy()
         test_records = test_record + test_record_copy
         test_record.message_subscribe([self.user_employee.partner_id.id])
-        subscription_data = self.env['mail.followers']._get_subscription_data([(test_records._name, test_records.ids)], None)
+        subscription_data = self.env['mail.followers']._get_subscription_data([(test_records._name, test_records.ids)],
+                                                                              None)
         self.assertEqual(len(subscription_data), 1)
         self.assertEqual(subscription_data[0][1], test_record.id)
         self.env['mail.followers'].browse(subscription_data[0][0]).sudo().res_id = test_record_copy
-        subscription_data = self.env['mail.followers']._get_subscription_data([(test_records._name, test_records.ids)], None)
+        subscription_data = self.env['mail.followers']._get_subscription_data([(test_records._name, test_records.ids)],
+                                                                              None)
         self.assertEqual(len(subscription_data), 1)
         self.assertEqual(subscription_data[0][1], test_record_copy.id)
 
@@ -371,12 +383,14 @@ class AdvancedFollowersTest(MailCommon):
     def test_auto_subscribe_post(self):
         """ People posting a message are automatically added as followers """
         self.test_track.with_user(self.user_admin).message_post(body='Coucou hibou', message_type='comment')
-        self.assertEqual(self.test_track.message_partner_ids, self.user_employee.partner_id | self.user_admin.partner_id)
+        self.assertEqual(self.test_track.message_partner_ids,
+                         self.user_employee.partner_id | self.user_admin.partner_id)
 
     def test_auto_subscribe_post_email(self):
         """ People posting an email are automatically added as followers """
         self.test_track.with_user(self.user_admin).message_post(body='Coucou hibou', message_type='email_outgoing')
-        self.assertEqual(self.test_track.message_partner_ids, self.user_employee.partner_id | self.user_admin.partner_id)
+        self.assertEqual(self.test_track.message_partner_ids,
+                         self.user_employee.partner_id | self.user_admin.partner_id)
 
     def test_auto_subscribe_not_on_notification(self):
         """ People posting an automatic notification are not subscribed """
@@ -416,7 +430,8 @@ class AdvancedFollowersTest(MailCommon):
         self.assertFalse(user_root.partner_id.active)
 
         container.message_subscribe(partner_ids=(self.partner_portal | user_root.partner_id).ids)
-        container.message_subscribe(partner_ids=self.partner_admin.ids, subtype_ids=(self.sub_comment | self.umb_autosub_nodef | self.sub_generic_int_nodef).ids)
+        container.message_subscribe(partner_ids=self.partner_admin.ids, subtype_ids=(
+                    self.sub_comment | self.umb_autosub_nodef | self.sub_generic_int_nodef).ids)
         self.assertEqual(container.message_partner_ids, self.partner_portal | self.partner_admin)
         follower_por = container.message_follower_ids.filtered(lambda f: f.partner_id == self.partner_portal)
         follower_adm = container.message_follower_ids.filtered(lambda f: f.partner_id == self.partner_admin)
@@ -559,12 +574,12 @@ class RecipientsNotificationTest(MailCommon):
              'login': '_login_portal',
              'notification_type': 'email',
              'partner_id': cls.common_partner.id,
-            },
+             },
             {'groups_id': [(4, cls.env.ref('base.group_user').id)],
              'login': '_login_internal',
              'notification_type': 'inbox',
              'partner_id': cls.common_partner.id,
-            }
+             }
         ])
         cls.env.flush_all()
 
@@ -581,7 +596,7 @@ class RecipientsNotificationTest(MailCommon):
             self.assertEqual(set(record_data.keys()), set(partners.ids))
             for partner in partners:
                 partner_data = record_data[partner.id]
-                if partner_to_users and partner_to_users.get(partner.id):  #helps making test explicit
+                if partner_to_users and partner_to_users.get(partner.id):  # helps making test explicit
                     user = partner_to_users[partner.id]
                 else:
                     user = next((user for user in partner.user_ids if not user.share), self.env['res.users'])
@@ -669,21 +684,21 @@ class RecipientsNotificationTest(MailCommon):
              'login': '_login2_portal',
              'notification_type': 'email',
              'partner_id': shared_partner.id,
-            },
+             },
             {'company_ids': [(6, 0, cids)],
              'company_id': self.company_admin.id,
              'groups_id': [(4, self.env.ref('base.group_user').id)],
              'login': '_login2_internal',
              'notification_type': 'inbox',
              'partner_id': shared_partner.id,
-            },
+             },
             {'company_ids': [(6, 0, cids)],
              'company_id': company_other.id,
              'groups_id': [(4, self.env.ref('base.group_user').id), (4, self.env.ref('base.group_partner_manager').id)],
              'login': '_login2_manager',
              'notification_type': 'inbox',
              'partner_id': shared_partner.id,
-            }
+             }
         ])
         (user_2_1 + user_2_2 + user_2_3).flush_recordset()
 
@@ -717,7 +732,7 @@ class RecipientsNotificationTest(MailCommon):
         test_records = self.env['mail.test.simple'].create([
             {'email_from': 'ignasse@example.com',
              'name': 'Test %s' % idx,
-            } for idx in range(5)
+             } for idx in range(5)
         ])
         # make followers listen to notes to use it and check portal will never be notified of it (internal)
         test_records.message_follower_ids.sudo().write({'subtype_ids': [(4, self.env.ref('mail.mt_note').id)]})
@@ -727,7 +742,8 @@ class RecipientsNotificationTest(MailCommon):
         test_records[0].message_subscribe(self.partner_portal.ids)
         self.assertNotIn(
             self.env.ref('mail.mt_note'),
-            test_records[0].message_follower_ids.filtered(lambda fol: fol.partner_id == self.partner_portal).subtype_ids,
+            test_records[0].message_follower_ids.filtered(
+                lambda fol: fol.partner_id == self.partner_portal).subtype_ids,
             'Portal user should not follow notes by default')
 
         # just fetch followers
@@ -746,14 +762,16 @@ class RecipientsNotificationTest(MailCommon):
                                   self.env.user.partner_id + self.partner_portal + self.customer + self.common_partner + self.partner_admin)
 
         # ensure filtering on internal: should exclude Portal even if misconfiguration
-        follower_portal = test_records[0].message_follower_ids.filtered(lambda fol: fol.partner_id == self.partner_portal).sudo()
+        follower_portal = test_records[0].message_follower_ids.filtered(
+            lambda fol: fol.partner_id == self.partner_portal).sudo()
         follower_portal.write({'subtype_ids': [(4, self.env.ref('mail.mt_note').id)]})
         follower_portal.flush_recordset()
         recipients_data = self.env['mail.followers']._get_recipient_data(
             test_records[0], 'comment', self.env.ref('mail.mt_note').id,
             pids=(self.common_partner + self.partner_admin).ids
         )
-        self.assertRecipientsData(recipients_data, test_records[0], self.env.user.partner_id + self.common_partner + self.partner_admin)
+        self.assertRecipientsData(recipients_data, test_records[0],
+                                  self.env.user.partner_id + self.common_partner + self.partner_admin)
 
         # ensure filtering on subtype: should exclude Portal as it does not follow comment anymore
         follower_portal.write({'subtype_ids': [(3, self.env.ref('mail.mt_comment').id)]})
@@ -761,7 +779,8 @@ class RecipientsNotificationTest(MailCommon):
             test_records[0], 'comment', self.env.ref('mail.mt_comment').id,
             pids=(self.common_partner + self.partner_admin).ids
         )
-        self.assertRecipientsData(recipients_data, test_records[0], self.env.user.partner_id + self.common_partner + self.partner_admin)
+        self.assertRecipientsData(recipients_data, test_records[0],
+                                  self.env.user.partner_id + self.common_partner + self.partner_admin)
 
         # check without subtype
         recipients_data = self.env['mail.followers']._get_recipient_data(
@@ -778,16 +797,19 @@ class RecipientsNotificationTest(MailCommon):
             pids=self.partner_admin.ids
         )
         # 0: portal is follower but does not follow comment + common partner (+ admin as pid)
-        recipients_data_1 = dict((r, recipients_data[r]) for r in recipients_data if r in  test_records[0:1].ids)
-        self.assertRecipientsData(recipients_data_1, test_records[0:1], self.env.user.partner_id + self.common_partner + self.partner_admin)
+        recipients_data_1 = dict((r, recipients_data[r]) for r in recipients_data if r in test_records[0:1].ids)
+        self.assertRecipientsData(recipients_data_1, test_records[0:1],
+                                  self.env.user.partner_id + self.common_partner + self.partner_admin)
         # 1: portal is follower with comment + common partner (+ admin as pid)
-        recipients_data_1 = dict((r, recipients_data[r]) for r in recipients_data if r in  test_records[1:2].ids)
-        self.assertRecipientsData(recipients_data_1, test_records[1:2], self.env.user.partner_id + self.common_partner + self.partner_portal + self.partner_admin)
+        recipients_data_1 = dict((r, recipients_data[r]) for r in recipients_data if r in test_records[1:2].ids)
+        self.assertRecipientsData(recipients_data_1, test_records[1:2],
+                                  self.env.user.partner_id + self.common_partner + self.partner_portal + self.partner_admin)
         # 2-3: common partner (+ admin as pid)
-        recipients_data_2 = dict((r, recipients_data[r]) for r in recipients_data if r in  test_records[2:4].ids)
-        self.assertRecipientsData(recipients_data_2, test_records[2:4], self.env.user.partner_id + self.common_partner + self.partner_admin)
+        recipients_data_2 = dict((r, recipients_data[r]) for r in recipients_data if r in test_records[2:4].ids)
+        self.assertRecipientsData(recipients_data_2, test_records[2:4],
+                                  self.env.user.partner_id + self.common_partner + self.partner_admin)
         # 4+: env user partner (+ admin as pid)
-        recipients_data_3 = dict((r, recipients_data[r]) for r in recipients_data if r in  test_records[4:].ids)
+        recipients_data_3 = dict((r, recipients_data[r]) for r in recipients_data if r in test_records[4:].ids)
         self.assertRecipientsData(recipients_data_3, test_records[4:], self.env.user.partner_id + self.partner_admin)
 
         # multi mode, pids only

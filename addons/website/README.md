@@ -101,11 +101,9 @@ Integrated With Odoo Apps
 
 Promote products, sell online, optimize visitors' shopping experience.
 
-
 ### Blog
 
 Write news, attract new visitors, build customer loyalty.
-
 
 ### Online Events
 

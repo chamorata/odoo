@@ -3,19 +3,15 @@
 import base64
 import json
 import os
-
 from io import BytesIO
+from unittest.mock import patch
 from zipfile import ZipFile
 
 import odoo.tests
-from odoo.tests import new_test_user
-
-
-from unittest.mock import patch
-
 from odoo import release
 from odoo.addons import __path__ as __addons_path__
 from odoo.exceptions import UserError
+from odoo.tests import new_test_user
 from odoo.tools import mute_logger
 
 
@@ -41,9 +37,9 @@ class TestImportModule(odoo.tests.TransactionCase):
                 </data>
             """),
             ('foo/res.partner.csv',
-                b'"id","name"\n' \
-                b'bar,bar'
-            ),
+             b'"id","name"\n' \
+             b'bar,bar'
+             ),
             ('foo/data.sql', b"INSERT INTO res_currency (name, symbol, active) VALUES ('New Currency', 'NCU', TRUE);"),
             ('foo/static/css/style.css', b".foo{color: black;}"),
             ('foo/static/js/foo.js', b"console.log('foo')"),
@@ -66,7 +62,8 @@ class TestImportModule(odoo.tests.TransactionCase):
         self.env['res.lang']._activate_lang('fr_FR')
         with self.assertLogs('odoo.addons.base.models.ir_module') as log_catcher:
             self.import_zipfile(files)
-            self.assertIn('INFO:odoo.addons.base.models.ir_module:module foo: no translation for language fr_FR', log_catcher.output)
+            self.assertIn('INFO:odoo.addons.base.models.ir_module:module foo: no translation for language fr_FR',
+                          log_catcher.output)
         self.assertEqual(self.env.ref('foo.foo')._name, 'res.partner')
         self.assertEqual(self.env.ref('foo.foo').name, 'foo')
         self.assertEqual(self.env.ref('foo.bar')._name, 'res.partner')
@@ -154,14 +151,17 @@ class TestImportModule(odoo.tests.TransactionCase):
         files = [
             ('foo/__manifest__.py', b"{'data': ['res.partner.xls']}"),
             ('foo/res.partner.xls',
-                b'"id","name"\n' \
-                b'foo,foo'
-            ),
+             b'"id","name"\n' \
+             b'foo,foo'
+             ),
         ]
         with self.assertLogs('odoo.addons.base_import_module.models.ir_module') as log_catcher:
             self.import_zipfile(files)
-            self.assertIn("INFO:odoo.addons.base_import_module.models.ir_module:module foo: skip unsupported file res.partner.xls", log_catcher.output)
-            self.assertIn("INFO:odoo.addons.base_import_module.models.ir_module:Successfully imported module 'foo'", log_catcher.output)
+            self.assertIn(
+                "INFO:odoo.addons.base_import_module.models.ir_module:module foo: skip unsupported file res.partner.xls",
+                log_catcher.output)
+            self.assertIn("INFO:odoo.addons.base_import_module.models.ir_module:Successfully imported module 'foo'",
+                          log_catcher.output)
             self.assertFalse(self.env.ref('foo.foo', raise_if_not_found=False))
 
     def test_import_zip_extract_only_useful(self):
@@ -176,15 +176,16 @@ class TestImportModule(odoo.tests.TransactionCase):
                 </data>
             """),
             ('foo/res.partner.xls',
-                b'"id","name"\n' \
-                b'foo,foo'
-            ),
+             b'"id","name"\n' \
+             b'foo,foo'
+             ),
             ('foo/static/css/style.css', b".foo{color: black;}"),
             ('foo/foo.py', b"foo = 42"),
         ]
         extracted_files = []
         addons_path = []
         origin_import_module = type(self.env['ir.module.module'])._import_module
+
         def _import_module(self, *args, **kwargs):
             _module, path = args
             for root, _dirs, files in os.walk(path):
@@ -192,6 +193,7 @@ class TestImportModule(odoo.tests.TransactionCase):
                     extracted_files.append(os.path.relpath(os.path.join(root, file), path))
             addons_path.extend(__addons_path__)
             return origin_import_module(self, *args, **kwargs)
+
         with patch.object(type(self.env['ir.module.module']), '_import_module', _import_module):
             self.import_zipfile(files)
         self.assertIn(
@@ -424,9 +426,9 @@ class TestImportModuleHttp(TestImportModule, odoo.tests.HttpCase):
                 zipf.writestr(path, data)
         modules_dependencies, _not_found = self.env['ir.module.module']._get_missing_dependencies(archive.getvalue())
         import_module = self.env['base.import.module'].create({
-                'module_file': base64.b64encode(archive.getvalue()),
-                'state': 'init',
-                'modules_dependencies': modules_dependencies,
-            })
+            'module_file': base64.b64encode(archive.getvalue()),
+            'state': 'init',
+            'modules_dependencies': modules_dependencies,
+        })
         dependencies_names = import_module.get_dependencies_to_install_names()
         self.assertEqual(dependencies_names, [])

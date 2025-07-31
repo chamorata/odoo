@@ -3,12 +3,13 @@
 import json
 import re
 
-import odoo
-from odoo.tools.misc import file_open
 from odoo.addons.cloud_storage_google.tests.test_cloud_storage_google import (
     TestCloudStorageGoogleCommon,
 )
 from odoo.addons.mail.tests.test_attachment_controller import TestAttachmentControllerCommon
+
+import odoo
+from odoo.tools.misc import file_open
 
 
 @odoo.tests.tagged("-at_install", "post_install")

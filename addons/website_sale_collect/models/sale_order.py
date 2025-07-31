@@ -15,7 +15,7 @@ class SaleOrder(models.Model):
         when the warehouse was set by the pickup_location_data"""
         in_store_orders_with_pickup_data = self.filtered(
             lambda so: (
-                so.carrier_id.delivery_type == 'in_store' and so.pickup_location_data
+                    so.carrier_id.delivery_type == 'in_store' and so.pickup_location_data
             )
         )
         super(SaleOrder, self - in_store_orders_with_pickup_data)._compute_warehouse_id()
@@ -27,7 +27,7 @@ class SaleOrder(models.Model):
         delivery method is not in-store anymore. """
         in_store_orders = self.filtered(
             lambda so: (
-                so.carrier_id.delivery_type == 'in_store' and carrier.delivery_type != 'in_store'
+                    so.carrier_id.delivery_type == 'in_store' and carrier.delivery_type != 'in_store'
             )
         )
         res = super().set_delivery_line(carrier, amount)
@@ -90,9 +90,9 @@ class SaleOrder(models.Model):
         """ Override of `website_sale` to check if all products are in stock in the selected
         warehouse. """
         if (
-            self._has_deliverable_products()
-            and self.carrier_id.delivery_type == 'in_store'
-            and not self._is_in_stock(self.warehouse_id.id)
+                self._has_deliverable_products()
+                and self.carrier_id.delivery_type == 'in_store'
+                and not self._is_in_stock(self.warehouse_id.id)
         ):
             raise ValidationError(_("Some products are not available in the selected store."))
         return super()._check_cart_is_ready_to_be_paid()
@@ -132,9 +132,9 @@ class SaleOrder(models.Model):
         self.ensure_one()
         product = self.env['product.product'].browse(product_id)
         if (
-            product.is_storable
-            and not product.allow_out_of_stock_order
-            and self.website_id.in_store_dm_id
+                product.is_storable
+                and not product.allow_out_of_stock_order
+                and self.website_id.in_store_dm_id
         ):
             return new_qty, ''
         return super()._verify_updated_quantity(order_line, product_id, new_qty, **kwargs)

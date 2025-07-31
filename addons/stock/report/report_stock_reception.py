@@ -16,8 +16,10 @@ class ReceptionReport(models.AbstractModel):
         report_values = self._get_report_values(docids, data)
         report_values['docs'] = self._format_html_docs(report_values.get('docs', False))
         report_values['sources_info'] = self._format_html_sources_info(report_values.get('sources_to_lines', {}))
-        report_values['sources_to_lines'] = self._format_html_sources_to_lines(report_values.get('sources_to_lines', {}))
-        report_values['sources_to_formatted_scheduled_date'] = self._format_html_sources_to_date(report_values.get('sources_to_formatted_scheduled_date', {}))
+        report_values['sources_to_lines'] = self._format_html_sources_to_lines(
+            report_values.get('sources_to_lines', {}))
+        report_values['sources_to_formatted_scheduled_date'] = self._format_html_sources_to_date(
+            report_values.get('sources_to_formatted_scheduled_date', {}))
         report_values['show_uom'] = self.env.user.has_group('uom.group_uom')
         return report_values
 
@@ -51,8 +53,8 @@ class ReceptionReport(models.AbstractModel):
 
         for move in move_ids:
             move_quantity = (
-                move.product_qty or
-                move.product_uom._compute_quantity(move.quantity, move.product_id.uom_id, rounding_method='HALF-UP')
+                    move.product_qty or
+                    move.product_uom._compute_quantity(move.quantity, move.product_id.uom_id, rounding_method='HALF-UP')
             )
             qty_already_assigned = 0
             if move.move_dest_ids:
@@ -70,7 +72,8 @@ class ReceptionReport(models.AbstractModel):
 
         # only match for non-mto moves in same warehouse
         warehouse = docs[0].picking_type_id.warehouse_id
-        wh_location_ids = self.env['stock.location']._search([('id', 'child_of', warehouse.view_location_id.id), ('usage', '!=', 'supplier')])
+        wh_location_ids = self.env['stock.location']._search(
+            [('id', 'child_of', warehouse.view_location_id.id), ('usage', '!=', 'supplier')])
 
         allowed_states = ['confirmed', 'partially_available', 'waiting']
         if 'done' in doc_states:
@@ -84,7 +87,7 @@ class ReceptionReport(models.AbstractModel):
                 ('location_id', 'in', wh_location_ids),
                 ('move_orig_ids', '=', False),
                 ('product_id', 'in',
-                    [p.id for p in list(product_to_qty_to_assign.keys()) + list(product_to_qty_draft.keys())]),
+                 [p.id for p in list(product_to_qty_to_assign.keys()) + list(product_to_qty_draft.keys())]),
             ] + self._get_extra_domain(docs),
             order='reservation_date, priority desc, date, id')
 
@@ -111,7 +114,8 @@ class ReceptionReport(models.AbstractModel):
                 quantity = 0
                 for move_in_qty, move_in in product_to_qty_to_assign[out.product_id]:
                     moves_in_ids.append(move_in.id)
-                    if float_compare(quantity + move_in_qty, qty_to_reserve, precision_rounding=product_uom.rounding) <= 0:
+                    if float_compare(quantity + move_in_qty, qty_to_reserve,
+                                     precision_rounding=product_uom.rounding) <= 0:
                         qty_to_add = move_in_qty
                         move_in_qty = 0
                     else:
@@ -126,14 +130,17 @@ class ReceptionReport(models.AbstractModel):
                         break
 
                 if not float_is_zero(quantity, precision_rounding=product_uom.rounding):
-                    sources_to_lines[source].append(self._prepare_report_line(quantity, product_id, out, source[0], move_ins=self.env['stock.move'].browse(moves_in_ids)))
+                    sources_to_lines[source].append(self._prepare_report_line(quantity, product_id, out, source[0],
+                                                                              move_ins=self.env['stock.move'].browse(
+                                                                                  moves_in_ids)))
 
                 # draft qtys can be shown but not assigned
                 qty_expected = product_to_qty_draft.get(product_id, 0)
-                if float_compare(qty_to_reserve, quantity, precision_rounding=product_uom.rounding) > 0 and\
+                if float_compare(qty_to_reserve, quantity, precision_rounding=product_uom.rounding) > 0 and \
                         not float_is_zero(qty_expected, precision_rounding=product_uom.rounding):
                     to_expect = min(qty_expected, qty_to_reserve - quantity)
-                    sources_to_lines[source].append(self._prepare_report_line(to_expect, product_id, out, source[0], is_qty_assignable=False))
+                    sources_to_lines[source].append(
+                        self._prepare_report_line(to_expect, product_id, out, source[0], is_qty_assignable=False))
                     product_to_qty_draft[product_id] -= to_expect
 
         # show already assigned moves
@@ -154,7 +161,8 @@ class ReceptionReport(models.AbstractModel):
                     source = (out_move.picking_id, source[0])
                 qty_assigned = min(total_assigned, out_move.product_qty)
                 sources_to_lines[source].append(
-                    self._prepare_report_line(qty_assigned, product_id, out_move, source[0], is_assigned=True, move_ins=moves_in))
+                    self._prepare_report_line(qty_assigned, product_id, out_move, source[0], is_assigned=True,
+                                              move_ins=moves_in))
 
         # dates aren't auto-formatted when printed in report :(
         sources_to_formatted_scheduled_date = defaultdict(list)
@@ -171,7 +179,8 @@ class ReceptionReport(models.AbstractModel):
             'sources_to_formatted_scheduled_date': sources_to_formatted_scheduled_date,
         }
 
-    def _prepare_report_line(self, quantity, product, move_out, source=False, is_assigned=False, is_qty_assignable=True, move_ins=False):
+    def _prepare_report_line(self, quantity, product, move_out, source=False, is_assigned=False, is_qty_assignable=True,
+                             move_ins=False):
         return {
             'source': source,
             'product': {
@@ -188,7 +197,8 @@ class ReceptionReport(models.AbstractModel):
 
     def _get_docs(self, docids):
         docids = self.env.context.get('default_picking_ids', docids)
-        return self.env['stock.picking'].search([('id', 'in', docids), ('picking_type_code', '!=', 'outgoing'), ('state', '!=', 'cancel')])
+        return self.env['stock.picking'].search(
+            [('id', 'in', docids), ('picking_type_code', '!=', 'outgoing'), ('state', '!=', 'cancel')])
 
     def _get_doc_model(self):
         return 'stock.picking'
@@ -251,17 +261,23 @@ class ReceptionReport(models.AbstractModel):
                         if assigned_amount + move_line_id.quantity_product_uom > qty_to_link:
                             new_move_line = move_line_id.copy({'quantity': 0})
                             new_move_line.quantity = move_line_id.quantity
-                            move_line_id.quantity = out.product_id.uom_id._compute_quantity(qty_to_link - assigned_amount, out.product_uom, rounding_method='HALF-UP')
-                            new_move_line.quantity -= out.product_id.uom_id._compute_quantity(move_line_id.quantity_product_uom, out.product_uom, rounding_method='HALF-UP')
+                            move_line_id.quantity = out.product_id.uom_id._compute_quantity(
+                                qty_to_link - assigned_amount, out.product_uom, rounding_method='HALF-UP')
+                            new_move_line.quantity -= out.product_id.uom_id._compute_quantity(
+                                move_line_id.quantity_product_uom, out.product_uom, rounding_method='HALF-UP')
                         move_line_id.move_id = out
                         assigned_amount += move_line_id.quantity_product_uom
-                        if float_compare(assigned_amount, qty_to_link, precision_rounding=out.product_id.uom_id.rounding) == 0:
+                        if float_compare(assigned_amount, qty_to_link,
+                                         precision_rounding=out.product_id.uom_id.rounding) == 0:
                             break
 
             for in_move in reversed(potential_ins):
-                move_quantity = in_move.product_qty or in_move.product_uom._compute_quantity(in_move.quantity, in_move.product_id.uom_id, rounding_method='HALF-UP')
+                move_quantity = in_move.product_qty or in_move.product_uom._compute_quantity(in_move.quantity,
+                                                                                             in_move.product_id.uom_id,
+                                                                                             rounding_method='HALF-UP')
                 quantity_remaining = move_quantity - sum(in_move.move_dest_ids.mapped('product_qty'))
-                if in_move.product_id != out.product_id or float_compare(0, quantity_remaining, precision_rounding=in_move.product_id.uom_id.rounding) >= 0:
+                if in_move.product_id != out.product_id or float_compare(0, quantity_remaining,
+                                                                         precision_rounding=in_move.product_id.uom_id.rounding) >= 0:
                     # in move is already completely linked (e.g. during another assign click) => don't count it again
                     potential_ins = potential_ins[1:]
                     continue
@@ -293,7 +309,9 @@ class ReceptionReport(models.AbstractModel):
         for in_move in ins:
             if out.id not in in_move.move_dest_ids.ids:
                 continue
-            move_quantity = in_move.product_qty or in_move.product_uom._compute_quantity(in_move.quantity, in_move.product_id.uom_id, rounding_method='HALF-UP')
+            move_quantity = in_move.product_qty or in_move.product_uom._compute_quantity(in_move.quantity,
+                                                                                         in_move.product_id.uom_id,
+                                                                                         rounding_method='HALF-UP')
             in_move.move_dest_ids -= out
             self._action_unassign(in_move, out)
             amount_unassigned += min(qty, move_quantity)
@@ -321,7 +339,9 @@ class ReceptionReport(models.AbstractModel):
                             break
                         if move_line_id.quantity_product_uom > reserved_amount_to_remain:
                             new_move_line = move_line_id.copy({'quantity': 0})
-                            new_move_line.quantity = out.product_id.uom_id._compute_quantity(move_line_id.quantity_product_uom - reserved_amount_to_remain, move_line_id.product_uom_id, rounding_method='HALF-UP')
+                            new_move_line.quantity = out.product_id.uom_id._compute_quantity(
+                                move_line_id.quantity_product_uom - reserved_amount_to_remain,
+                                move_line_id.product_uom_id, rounding_method='HALF-UP')
                             move_line_id.quantity -= new_move_line.quantity
                             move_line_id.move_id = out
                             break
@@ -365,7 +385,8 @@ class ReceptionReport(models.AbstractModel):
 
     def _format_html_sources_info(self, sources_to_lines):
         """ Format used info from sources of sources_to_lines to be sent in an html request. """
-        return {str(source): [self._format_html_source(s, s._name == 'stock.picking')for s in source] for source in sources_to_lines.keys()}
+        return {str(source): [self._format_html_source(s, s._name == 'stock.picking') for s in source] for source in
+                sources_to_lines.keys()}
 
     def _format_html_source(self, source, is_picking=False):
         """ Format used info from a single source to be sent in an html request. """

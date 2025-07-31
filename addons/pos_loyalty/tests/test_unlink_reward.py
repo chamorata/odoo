@@ -1,7 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import Command
 from odoo.addons.point_of_sale.tests.common import TestPointOfSaleCommon
+
+from odoo import Command
 from odoo.tests.common import tagged
 
 

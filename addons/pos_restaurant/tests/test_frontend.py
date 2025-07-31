@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import odoo.tests
-from odoo.addons.point_of_sale.tests.common_setup_methods import setup_product_combo_items
 from odoo.addons.point_of_sale.tests.common import archive_products
+from odoo.addons.point_of_sale.tests.common_setup_methods import setup_product_combo_items
 from odoo.addons.point_of_sale.tests.test_frontend import TestPointOfSaleHttpCommon
+
+import odoo.tests
 from odoo import Command
+
 
 @odoo.tests.tagged('post_install', '-at_install')
 class TestFrontendCommon(TestPointOfSaleHttpCommon):
@@ -31,7 +33,7 @@ class TestFrontendCommon(TestPointOfSaleHttpCommon):
             'code': 'TSJ2',
             'type': 'sale',
             'company_id': main_company.id
-            })
+        })
         cash_journal_2 = cls.env['account.journal'].create({
             'name': 'Cash 2',
             'type': 'cash',
@@ -86,29 +88,29 @@ class TestFrontendCommon(TestPointOfSaleHttpCommon):
             'position_h': 350,
             'position_v': 100,
         },
-        {
-            'table_number': 2,
-            'floor_id': main_floor.id,
-            'seats': 4,
-            'position_h': 250,
-            'position_v': 100,
-        },
-        {
+            {
+                'table_number': 2,
+                'floor_id': main_floor.id,
+                'seats': 4,
+                'position_h': 250,
+                'position_v': 100,
+            },
+            {
 
-            'table_number': 1,
-            'floor_id': second_floor.id,
-            'seats': 4,
-            'shape': 'square',
-            'position_h': 100,
-            'position_v': 150,
-        },
-        {
-            'table_number': 3,
-            'floor_id': second_floor.id,
-            'seats': 4,
-            'position_h': 100,
-            'position_v': 250,
-        }])
+                'table_number': 1,
+                'floor_id': second_floor.id,
+                'seats': 4,
+                'shape': 'square',
+                'position_h': 100,
+                'position_v': 150,
+            },
+            {
+                'table_number': 3,
+                'floor_id': second_floor.id,
+                'seats': 4,
+                'position_h': 100,
+                'position_v': 250,
+            }])
 
         cls.env['ir.default'].set(
             'res.partner',
@@ -253,7 +255,8 @@ class TestFrontend(TestFrontendCommon):
         self.start_pos_tour('PosResTicketScreenTour')
 
     def test_05_tip_screen(self):
-        self.pos_config.write({'set_tip_after_payment': True, 'iface_tipproduct': True, 'tip_product_id': self.env.ref('point_of_sale.product_product_tip')})
+        self.pos_config.write({'set_tip_after_payment': True, 'iface_tipproduct': True,
+                               'tip_product_id': self.env.ref('point_of_sale.product_product_tip')})
         self.pos_config.with_user(self.pos_user).open_ui()
         self.start_pos_tour('PosResTipScreenTour')
 
@@ -292,8 +295,10 @@ class TestFrontend(TestFrontendCommon):
         self.pos_config.write({'printer_ids': False})
         self.pos_config.with_user(self.pos_user).open_ui()
         self.start_pos_tour('SaveLastPreparationChangesTour')
-        self.assertTrue(self.pos_config.current_session_id.order_ids.last_order_preparation_change, "There should be a last order preparation change")
-        self.assertTrue("Coca" in self.pos_config.current_session_id.order_ids.last_order_preparation_change, "The last order preparation change should contain 'Coca'")
+        self.assertTrue(self.pos_config.current_session_id.order_ids.last_order_preparation_change,
+                        "There should be a last order preparation change")
+        self.assertTrue("Coca" in self.pos_config.current_session_id.order_ids.last_order_preparation_change,
+                        "The last order preparation change should contain 'Coca'")
 
     def test_11_bill_screen_qrcode_data(self):
         self.pos_config.write({'printer_ids': False})
@@ -330,9 +335,11 @@ class TestFrontend(TestFrontendCommon):
     def test_14_pos_payment_sync(self):
         self.pos_config.write({'printer_ids': False})
         self.pos_config.with_user(self.pos_user).open_ui()
+
         def assert_payment(lines_count, amount):
             self.assertEqual(len(order.payment_ids), lines_count)
             self.assertEqual(round(sum(payment.amount for payment in order.payment_ids), 2), amount)
+
         self.start_pos_tour('PoSPaymentSyncTour1')
         order = self.pos_config.current_session_id.order_ids
         self.assertEqual(len(order), 1)
@@ -351,7 +358,7 @@ class TestFrontend(TestFrontendCommon):
         })
 
         self.main_pos_config.write({
-            'is_order_printer' : True,
+            'is_order_printer': True,
             'printer_ids': [Command.set(self.env['pos.printer'].search([]).ids)],
         })
 
@@ -417,7 +424,7 @@ class TestFrontend(TestFrontendCommon):
         })
 
         self.main_pos_config.write({
-            'is_order_printer' : True,
+            'is_order_printer': True,
             'printer_ids': [Command.set(self.env['pos.printer'].search([]).ids)],
         })
 
@@ -430,12 +437,18 @@ class TestFrontend(TestFrontendCommon):
         })
 
         self.main_pos_config.with_user(self.pos_user).open_ui()
-        self.start_tour(f"/pos/ui?config_id={self.main_pos_config.id}", 'TableTransferPreparationChange1', login="pos_user")
-        self.start_tour(f"/pos/ui?config_id={self.main_pos_config.id}", 'TableTransferPreparationChange2', login="pos_user")
-        self.start_tour(f"/pos/ui?config_id={self.main_pos_config.id}", 'TableTransferPreparationChange3', login="pos_user")
-        self.start_tour(f"/pos/ui?config_id={self.main_pos_config.id}", 'TableTransferPreparationChange4', login="pos_user")
-        self.start_tour(f"/pos/ui?config_id={self.main_pos_config.id}", 'TableTransferPreparationChange5', login="pos_user")
-        self.start_tour(f"/pos/ui?config_id={self.main_pos_config.id}", 'TableTransferPreparationChange6', login="pos_user")
+        self.start_tour(f"/pos/ui?config_id={self.main_pos_config.id}", 'TableTransferPreparationChange1',
+                        login="pos_user")
+        self.start_tour(f"/pos/ui?config_id={self.main_pos_config.id}", 'TableTransferPreparationChange2',
+                        login="pos_user")
+        self.start_tour(f"/pos/ui?config_id={self.main_pos_config.id}", 'TableTransferPreparationChange3',
+                        login="pos_user")
+        self.start_tour(f"/pos/ui?config_id={self.main_pos_config.id}", 'TableTransferPreparationChange4',
+                        login="pos_user")
+        self.start_tour(f"/pos/ui?config_id={self.main_pos_config.id}", 'TableTransferPreparationChange5',
+                        login="pos_user")
+        self.start_tour(f"/pos/ui?config_id={self.main_pos_config.id}", 'TableTransferPreparationChange6',
+                        login="pos_user")
 
     def test_combo_preparation_receipt(self):
         setup_product_combo_items(self)
@@ -446,7 +459,7 @@ class TestFrontend(TestFrontendCommon):
             'product_categories_ids': [Command.set(self.env['pos.category'].search([]).ids)],
         })
         self.pos_config.write({
-            'is_order_printer' : True,
+            'is_order_printer': True,
             'printer_ids': [Command.set(pos_printer.ids)],
         })
         self.pos_config.with_user(self.pos_user).open_ui()
@@ -474,9 +487,8 @@ class TestFrontend(TestFrontendCommon):
             'product_categories_ids': [Command.set(pos_category_1.ids)],
         })
 
-
         self.main_pos_config.write({
-            'is_order_printer' : True,
+            'is_order_printer': True,
             'printer_ids': [Command.set([printer_1.id, printer_2.id])],
         })
 
@@ -506,7 +518,8 @@ class TestFrontend(TestFrontendCommon):
 
     def test_combo_preparation_receipt_layout(self):
         setup_product_combo_items(self)
-        self.env['product.product'].search([('name', 'ilike', 'Combo')]).write({'pos_categ_ids': [(Command.set(self.env['pos.category'].search([], limit=1).ids))]})
+        self.env['product.product'].search([('name', 'ilike', 'Combo')]).write(
+            {'pos_categ_ids': [(Command.set(self.env['pos.category'].search([], limit=1).ids))]})
         self.env['pos.printer'].create({
             'name': 'Printer',
             'printer_type': 'epson_epos',
@@ -518,7 +531,8 @@ class TestFrontend(TestFrontendCommon):
             'printer_ids': [Command.set(self.env['pos.printer'].search([]).ids)],
         })
         self.pos_config.with_user(self.pos_admin).open_ui()
-        self.start_tour(f"/pos/ui?config_id={self.pos_config.id}", 'test_combo_preparation_receipt_layout', login="pos_admin")
+        self.start_tour(f"/pos/ui?config_id={self.pos_config.id}", 'test_combo_preparation_receipt_layout',
+                        login="pos_admin")
 
     def test_book_and_release_table(self):
         self.pos_config.with_user(self.pos_user).open_ui()

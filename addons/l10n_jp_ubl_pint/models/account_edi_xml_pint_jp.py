@@ -91,7 +91,8 @@ class AccountEdiXmlUBLPINTJP(models.AbstractModel):
         # the tax ID must be the new "Registration Number for Qualified Invoice purpose in Japan" which shouldn't have JP added at the start.
         # Checked here as the partner methods don't have reference to the invoice.
         if invoice.invoice_date > fields.Date.from_string('2023-10-01'):
-            for party_vals in [vals['vals']['accounting_supplier_party_vals'], vals['vals']['accounting_customer_party_vals']]:
+            for party_vals in [vals['vals']['accounting_supplier_party_vals'],
+                               vals['vals']['accounting_customer_party_vals']]:
                 partner = party_vals['party_vals']['partner']
                 if partner.country_id.code == "JP" and partner.vat:
                     party_vals['party_vals']['party_tax_scheme_vals'][0]['company_id'] = partner.vat

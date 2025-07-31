@@ -1,9 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <InvoiceData xmlns:base="http://schemas.nav.gov.hu/OSA/3.0/base"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:common="http://schemas.nav.gov.hu/NTCA/1.0/common"
-    xmlns="http://schemas.nav.gov.hu/OSA/3.0/data"
-    xsi:schemaLocation="http://schemas.nav.gov.hu/OSA/3.0/data invoiceData.xsd">
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns="http://schemas.nav.gov.hu/OSA/3.0/data"
+             xsi:schemaLocation="http://schemas.nav.gov.hu/OSA/3.0/data invoiceData.xsd">
     <invoiceNumber>INV/2024/00002</invoiceNumber>
     <invoiceIssueDate>2024-02-01</invoiceIssueDate>
     <completenessIndicator>false</completenessIndicator>

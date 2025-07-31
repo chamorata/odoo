@@ -6,7 +6,6 @@ from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 from odoo.tools.safe_eval import safe_eval
 
-
 REGEX_FORMULA_OBJECT = re.compile(r'((?:product\[\')(?P<field>\w+)(?:\'\]))+')
 
 FORMULA_ALLOWED_TOKENS = {
@@ -70,7 +69,8 @@ class AccountTaxPython(models.Model):
                 field_name = group[1]
                 if field_name in Product and not Product._fields[field_name].relational:
                     product_fields.add(field_name)
-                    formula_decoded_info['py_formula'] = formula_decoded_info['py_formula'].replace(f"product.{field_name}", f"product['{field_name}']")
+                    formula_decoded_info['py_formula'] = formula_decoded_info['py_formula'].replace(
+                        f"product.{field_name}", f"product['{field_name}']")
 
             formula_decoded_info['product_fields'] = list(product_fields)
             tax.formula_decoded_info = formula_decoded_info
@@ -95,7 +95,8 @@ class AccountTaxPython(models.Model):
             return i - starting_i
 
         formula_decoded_info = self.formula_decoded_info
-        allowed_tokens = FORMULA_ALLOWED_TOKENS.union(f"product['{field_name}']" for field_name in formula_decoded_info['product_fields'])
+        allowed_tokens = FORMULA_ALLOWED_TOKENS.union(
+            f"product['{field_name}']" for field_name in formula_decoded_info['product_fields'])
         formula = formula_decoded_info['py_formula']
 
         i = 0
@@ -119,7 +120,8 @@ class AccountTaxPython(models.Model):
                 i += number_size
                 continue
 
-            raise ValidationError(_("Malformed formula '%(formula)s' at position %(position)s", formula=formula, position=i))
+            raise ValidationError(
+                _("Malformed formula '%(formula)s' at position %(position)s", formula=formula, position=i))
 
     @api.model
     def _eval_tax_amount_formula(self, raw_base, evaluation_context):

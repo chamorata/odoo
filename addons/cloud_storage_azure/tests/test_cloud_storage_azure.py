@@ -1,18 +1,17 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import json
-import requests
-
 from datetime import datetime, timezone, timedelta
-from requests import Response
 from unittest.mock import patch
 
-from odoo.tests.common import TransactionCase
-from odoo.exceptions import ValidationError, UserError
+import requests
+from requests import Response
 
-from ..utils.cloud_storage_azure_utils import UserDelegationKey
+from odoo.exceptions import ValidationError, UserError
+from odoo.tests.common import TransactionCase
 from .. import uninstall_hook
 from ..models.ir_attachment import CloudStorageAzureUserDelegationKeys, get_cloud_storage_azure_user_delegation_key
+from ..utils.cloud_storage_azure_utils import UserDelegationKey
 
 
 class TestCloudStorageAzureCommon(TransactionCase):
@@ -34,7 +33,8 @@ class TestCloudStorageAzureCommon(TransactionCase):
         self.DUMMY_USER_DELEGATION_KEY.signed_oid = 'signed_oid'
         self.DUMMY_USER_DELEGATION_KEY.signed_tid = 'signed_tid'
         self.DUMMY_USER_DELEGATION_KEY.signed_start = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
-        self.DUMMY_USER_DELEGATION_KEY.signed_expiry = (datetime.now(timezone.utc) + timedelta(days=7)).strftime('%Y-%m-%dT%H:%M:%SZ')
+        self.DUMMY_USER_DELEGATION_KEY.signed_expiry = (datetime.now(timezone.utc) + timedelta(days=7)).strftime(
+            '%Y-%m-%dT%H:%M:%SZ')
         self.DUMMY_USER_DELEGATION_KEY.signed_service = 'b'
         self.DUMMY_USER_DELEGATION_KEY.signed_version = '2023-11-03'
         self.DUMMY_USER_DELEGATION_KEY.value = 'KEHG9q+1y6XGLHkDNv3pR2DhmbOfxeTf5KAJ5/ssNpU='
@@ -84,7 +84,8 @@ class TestCloudStorageAzure(TestCloudStorageAzureCommon):
             self.env['ir.config_parameter'].set_param('cloud_storage_azure_account_name', 'newaccountname2')
             self.env.registry.clear_cache()
             get_cloud_storage_azure_user_delegation_key(self.env)
-            self.assertEqual(request_num, 4, '2 requests to create new user_delegation_key when the configuration is changed')
+            self.assertEqual(request_num, 4,
+                             '2 requests to create new user_delegation_key when the configuration is changed')
 
     def test_get_user_delegation_key_wrong_info(self):
         request_num = 0
@@ -149,7 +150,8 @@ class TestCloudStorageAzure(TestCloudStorageAzureCommon):
             get_cloud_storage_azure_user_delegation_key(self.env)
 
     def test_generate_sas_url(self):
-        with patch('odoo.addons.cloud_storage_azure.models.ir_attachment.get_cloud_storage_azure_user_delegation_key', return_value=self.DUMMY_USER_DELEGATION_KEY):
+        with patch('odoo.addons.cloud_storage_azure.models.ir_attachment.get_cloud_storage_azure_user_delegation_key',
+                   return_value=self.DUMMY_USER_DELEGATION_KEY):
             # create test cloud attachment like route "/mail/attachment/upload"
             # with dummy binary
             attachment = self.env['ir.attachment'].create([{

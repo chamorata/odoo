@@ -20,7 +20,7 @@
                     <record id="l10n_my_sst_taxable_5" model="account.report.line">
                         <field name="name">a) Taxable Goods at 5% Rate</field>
                         <field name="code">SST_5</field>
-                       <field name="expression_ids">
+                        <field name="expression_ids">
                             <record id="l10n_my_sst_taxable_5_tag" model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
@@ -31,7 +31,7 @@
                     <record id="l10n_my_sst_taxable_10" model="account.report.line">
                         <field name="name">b) Taxable Goods at 10% Rate</field>
                         <field name="code">SST_10</field>
-                       <field name="expression_ids">
+                        <field name="expression_ids">
                             <record id="l10n_my_sst_taxable_10_tag" model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
@@ -42,7 +42,7 @@
                     <record id="l10n_my_sst_services_other_than_group_h" model="account.report.line">
                         <field name="name">c) Taxable Services other than from Group H</field>
                         <field name="code">SST_6</field>
-                       <field name="expression_ids">
+                        <field name="expression_ids">
                             <record id="l10n_my_sst_services_other_than_group_h_tag" model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
@@ -53,7 +53,7 @@
                     <record id="l10n_my_sst_services_group_h" model="account.report.line">
                         <field name="name">d) Taxable Services from Group H</field>
                         <field name="code">SST_H</field>
-                       <field name="expression_ids">
+                        <field name="expression_ids">
                             <record id="l10n_my_sst_services_group_h_tag" model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
@@ -76,7 +76,7 @@
                     <record id="l10n_my_sst_tax_deduction_from_cn" model="account.report.line">
                         <field name="name">a) Tax Deduction from Credit Note</field>
                         <field name="code">SST_CN</field>
-                       <field name="expression_ids">
+                        <field name="expression_ids">
                             <record id="l10n_my_sst_tax_deduction_cn_tag" model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
@@ -87,7 +87,7 @@
                     <record id="l10n_my_sst_sale_tax_deduction" model="account.report.line">
                         <field name="name">b) Sales Tax Deduction</field>
                         <field name="code">SST_SAD</field>
-                       <field name="expression_ids">
+                        <field name="expression_ids">
                             <record id="l10n_my_sst_sale_tax_deduction_tag" model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
@@ -98,7 +98,7 @@
                     <record id="l10n_my_sst_service_tax_deduction" model="account.report.line">
                         <field name="name">c) Service Tax Deduction</field>
                         <field name="code">SST_SED</field>
-                       <field name="expression_ids">
+                        <field name="expression_ids">
                             <record id="l10n_my_sst_service_tax_deduction_tag" model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
@@ -124,7 +124,9 @@
                 <field name="name">14) Total Tax Payable Before Penalty Imposed</field>
                 <field name="hierarchy_level">0</field>
                 <field name="code">SST_PTBP</field>
-                <field name="aggregation_formula">SST_PTV.balance - SST_CN.balance + SST_SAD.balance + SST_SED.balance + SST_TDA.balance</field>
+                <field name="aggregation_formula">SST_PTV.balance - SST_CN.balance + SST_SAD.balance + SST_SED.balance +
+                    SST_TDA.balance
+                </field>
             </record>
             <record id="l10n_my_sst_penalty_amount" model="account.report.line">
                 <field name="name">15) Penalty Rate / Penalty Amount</field>

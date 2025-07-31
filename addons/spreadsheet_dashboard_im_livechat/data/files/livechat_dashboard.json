@@ -7,26 +7,62 @@
       "colNumber": 5,
       "rowNumber": 35,
       "rows": {
-        "6": { "size": 40 },
-        "22": { "size": 40 },
-        "23": { "size": 40 },
-        "24": { "size": 29 },
-        "25": { "size": 29 },
-        "26": { "size": 29 },
-        "27": { "size": 29 },
-        "28": { "size": 29 },
-        "29": { "size": 29 },
-        "30": { "size": 29 },
-        "31": { "size": 29 },
-        "32": { "size": 29 },
-        "33": { "size": 29 }
+        "6": {
+          "size": 40
+        },
+        "22": {
+          "size": 40
+        },
+        "23": {
+          "size": 40
+        },
+        "24": {
+          "size": 29
+        },
+        "25": {
+          "size": 29
+        },
+        "26": {
+          "size": 29
+        },
+        "27": {
+          "size": 29
+        },
+        "28": {
+          "size": 29
+        },
+        "29": {
+          "size": 29
+        },
+        "30": {
+          "size": 29
+        },
+        "31": {
+          "size": 29
+        },
+        "32": {
+          "size": 29
+        },
+        "33": {
+          "size": 29
+        }
       },
       "cols": {
-        "0": { "size": 372 },
-        "1": { "size": 100 },
-        "2": { "size": 50 },
-        "3": { "size": 209 },
-        "4": { "size": 260 }
+        "0": {
+          "size": 372
+        },
+        "1": {
+          "size": 100
+        },
+        "2": {
+          "size": 50
+        },
+        "3": {
+          "size": 209
+        },
+        "4": {
+          "size": 260
+        }
       },
       "merges": [],
       "cells": {
@@ -36,18 +72,42 @@
         "A23": {
           "content": "[Top Operators](odoo://view/{\"viewType\":\"pivot\",\"action\":{\"domain\":[],\"context\":{\"group_by\":[],\"pivot_measures\":[\"nbr_channel\",\"time_to_answer\",\"duration\"],\"pivot_column_groupby\":[],\"pivot_row_groupby\":[\"partner_id\"]},\"modelName\":\"im_livechat.report.operator\",\"views\":[[false,\"graph\"],[false,\"pivot\"],[false,\"search\"]]},\"threshold\":0,\"name\":\"Operator Analysis\"})"
         },
-        "A24": { "content": "=_t(\"Operator\")" },
-        "A25": { "content": "=PIVOT.HEADER(3,\"#partner_id\",1)" },
-        "A26": { "content": "=PIVOT.HEADER(3,\"#partner_id\",2)" },
-        "A27": { "content": "=PIVOT.HEADER(3,\"#partner_id\",3)" },
-        "A28": { "content": "=PIVOT.HEADER(3,\"#partner_id\",4)" },
-        "A29": { "content": "=PIVOT.HEADER(3,\"#partner_id\",5)" },
-        "A30": { "content": "=PIVOT.HEADER(3,\"#partner_id\",6)" },
-        "A31": { "content": "=PIVOT.HEADER(3,\"#partner_id\",7)" },
-        "A32": { "content": "=PIVOT.HEADER(3,\"#partner_id\",8)" },
-        "A33": { "content": "=PIVOT.HEADER(3,\"#partner_id\",9)" },
-        "A34": { "content": "=PIVOT.HEADER(3,\"#partner_id\",10)" },
-        "B24": { "content": "=_t(\"Sessions\")" },
+        "A24": {
+          "content": "=_t(\"Operator\")"
+        },
+        "A25": {
+          "content": "=PIVOT.HEADER(3,\"#partner_id\",1)"
+        },
+        "A26": {
+          "content": "=PIVOT.HEADER(3,\"#partner_id\",2)"
+        },
+        "A27": {
+          "content": "=PIVOT.HEADER(3,\"#partner_id\",3)"
+        },
+        "A28": {
+          "content": "=PIVOT.HEADER(3,\"#partner_id\",4)"
+        },
+        "A29": {
+          "content": "=PIVOT.HEADER(3,\"#partner_id\",5)"
+        },
+        "A30": {
+          "content": "=PIVOT.HEADER(3,\"#partner_id\",6)"
+        },
+        "A31": {
+          "content": "=PIVOT.HEADER(3,\"#partner_id\",7)"
+        },
+        "A32": {
+          "content": "=PIVOT.HEADER(3,\"#partner_id\",8)"
+        },
+        "A33": {
+          "content": "=PIVOT.HEADER(3,\"#partner_id\",9)"
+        },
+        "A34": {
+          "content": "=PIVOT.HEADER(3,\"#partner_id\",10)"
+        },
+        "B24": {
+          "content": "=_t(\"Sessions\")"
+        },
         "B25": {
           "content": "=PIVOT.VALUE(3,\"nbr_channel\",\"#partner_id\",1)"
         },
@@ -81,7 +141,9 @@
         "D7": {
           "content": "[Sessions by Operator](odoo://view/{\"viewType\":\"graph\",\"action\":{\"domain\":[],\"context\":{\"group_by\":[\"partner_id\"],\"graph_measure\":\"nbr_channel\",\"graph_mode\":\"bar\",\"graph_groupbys\":[\"partner_id\"]},\"modelName\":\"im_livechat.report.operator\",\"views\":[[false,\"graph\"],[false,\"pivot\"],[false,\"search\"]]},\"threshold\":0,\"name\":\"Operator Analysis\"})"
         },
-        "D24": { "content": "=_t(\"Time to answer (seconds)\")" },
+        "D24": {
+          "content": "=_t(\"Time to answer (seconds)\")"
+        },
         "D25": {
           "content": "=PIVOT.VALUE(3,\"time_to_answer\",\"#partner_id\",1)"
         },
@@ -112,17 +174,39 @@
         "D34": {
           "content": "=PIVOT.VALUE(3,\"time_to_answer\",\"#partner_id\",10)"
         },
-        "E24": { "content": "=_t(\"Average session (seconds)\")" },
-        "E25": { "content": "=PIVOT.VALUE(3,\"duration\",\"#partner_id\",1)" },
-        "E26": { "content": "=PIVOT.VALUE(3,\"duration\",\"#partner_id\",2)" },
-        "E27": { "content": "=PIVOT.VALUE(3,\"duration\",\"#partner_id\",3)" },
-        "E28": { "content": "=PIVOT.VALUE(3,\"duration\",\"#partner_id\",4)" },
-        "E29": { "content": "=PIVOT.VALUE(3,\"duration\",\"#partner_id\",5)" },
-        "E30": { "content": "=PIVOT.VALUE(3,\"duration\",\"#partner_id\",6)" },
-        "E31": { "content": "=PIVOT.VALUE(3,\"duration\",\"#partner_id\",7)" },
-        "E32": { "content": "=PIVOT.VALUE(3,\"duration\",\"#partner_id\",8)" },
-        "E33": { "content": "=PIVOT.VALUE(3,\"duration\",\"#partner_id\",9)" },
-        "E34": { "content": "=PIVOT.VALUE(3,\"duration\",\"#partner_id\",10)" }
+        "E24": {
+          "content": "=_t(\"Average session (seconds)\")"
+        },
+        "E25": {
+          "content": "=PIVOT.VALUE(3,\"duration\",\"#partner_id\",1)"
+        },
+        "E26": {
+          "content": "=PIVOT.VALUE(3,\"duration\",\"#partner_id\",2)"
+        },
+        "E27": {
+          "content": "=PIVOT.VALUE(3,\"duration\",\"#partner_id\",3)"
+        },
+        "E28": {
+          "content": "=PIVOT.VALUE(3,\"duration\",\"#partner_id\",4)"
+        },
+        "E29": {
+          "content": "=PIVOT.VALUE(3,\"duration\",\"#partner_id\",5)"
+        },
+        "E30": {
+          "content": "=PIVOT.VALUE(3,\"duration\",\"#partner_id\",6)"
+        },
+        "E31": {
+          "content": "=PIVOT.VALUE(3,\"duration\",\"#partner_id\",7)"
+        },
+        "E32": {
+          "content": "=PIVOT.VALUE(3,\"duration\",\"#partner_id\",8)"
+        },
+        "E33": {
+          "content": "=PIVOT.VALUE(3,\"duration\",\"#partner_id\",9)"
+        },
+        "E34": {
+          "content": "=PIVOT.VALUE(3,\"duration\",\"#partner_id\",10)"
+        }
       },
       "styles": {
         "A7": 1,
@@ -158,7 +242,9 @@
             "rangeValues": "B25:B34"
           },
           "id": "e2eeb59b-247b-4b2e-9327-4b53b2933b02",
-          "ranges": ["A25:A34"]
+          "ranges": [
+            "A25:A34"
+          ]
         }
       ],
       "figures": [
@@ -173,7 +259,11 @@
             "baselineColorDown": "#DC6965",
             "baselineColorUp": "#00A04A",
             "baselineMode": "percentage",
-            "title": { "text": "Sessions", "bold": true, "color": "#434343" },
+            "title": {
+              "text": "Sessions",
+              "bold": true,
+              "color": "#434343"
+            },
             "type": "scorecard",
             "background": "#EFF6FF",
             "baseline": "Data!E2",
@@ -190,11 +280,15 @@
           "height": 343,
           "tag": "chart",
           "data": {
-            "title": { "text": "" },
+            "title": {
+              "text": ""
+            },
             "background": "#FFFFFF",
             "legendPosition": "none",
             "metaData": {
-              "groupBy": ["start_date:day"],
+              "groupBy": [
+                "start_date:day"
+              ],
               "measure": "__count",
               "order": null,
               "resModel": "im_livechat.report.channel",
@@ -204,7 +298,9 @@
               "comparison": null,
               "context": {},
               "domain": [],
-              "groupBy": ["start_date:day"],
+              "groupBy": [
+                "start_date:day"
+              ],
               "orderBy": []
             },
             "type": "odoo_bar",
@@ -231,11 +327,15 @@
           "height": 345,
           "tag": "chart",
           "data": {
-            "title": { "text": "" },
+            "title": {
+              "text": ""
+            },
             "background": "#FFFFFF",
             "legendPosition": "none",
             "metaData": {
-              "groupBy": ["partner_id"],
+              "groupBy": [
+                "partner_id"
+              ],
               "measure": "nbr_channel",
               "order": "DESC",
               "resModel": "im_livechat.report.operator",
@@ -245,7 +345,9 @@
               "comparison": null,
               "context": {},
               "domain": [],
-              "groupBy": ["partner_id"],
+              "groupBy": [
+                "partner_id"
+              ],
               "orderBy": []
             },
             "type": "odoo_bar",
@@ -329,8 +431,14 @@
               },
               "rangeMin": "0",
               "rangeMax": "5",
-              "lowerInflectionPoint": { "type": "number", "value": "1" },
-              "upperInflectionPoint": { "type": "number", "value": "3" }
+              "lowerInflectionPoint": {
+                "type": "number",
+                "value": "1"
+              },
+              "upperInflectionPoint": {
+                "type": "number",
+                "value": "3"
+              }
             },
             "title": {
               "text": "Average Rating",
@@ -345,7 +453,10 @@
       "tables": [],
       "areGridLinesVisible": true,
       "isVisible": true,
-      "headerGroups": { "ROW": [], "COL": [] },
+      "headerGroups": {
+        "ROW": [],
+        "COL": []
+      },
       "dataValidationRules": [],
       "comments": {}
     },
@@ -356,39 +467,99 @@
       "rowNumber": 95,
       "rows": {},
       "cols": {
-        "0": { "size": 136 },
-        "1": { "size": 110 },
-        "2": { "size": 110 },
-        "3": { "size": 110 },
-        "4": { "size": 110 }
+        "0": {
+          "size": 136
+        },
+        "1": {
+          "size": 110
+        },
+        "2": {
+          "size": 110
+        },
+        "3": {
+          "size": 110
+        },
+        "4": {
+          "size": 110
+        }
       },
       "merges": [],
       "cells": {
-        "A1": { "content": "=_t(\"KPI\")" },
-        "A2": { "content": "=_t(\"Sessions\")" },
-        "A3": { "content": "=_t(\"Avg. time to answer\")" },
-        "A4": { "content": "=_t(\"Avg. session duration\")" },
-        "A5": { "content": "=_t(\"Rating\")" },
-        "B1": { "content": "=_t(\"Current\")" },
-        "B2": { "content": "=PIVOT.VALUE(4,\"__count\")" },
-        "B3": { "content": "=PIVOT.VALUE(1,\"time_to_answer\")" },
-        "B4": { "content": "=PIVOT.VALUE(1,\"duration\")" },
-        "B5": { "content": "=PIVOT.VALUE(1,\"rating\")" },
-        "C1": { "content": "=_t(\"Previous\")" },
-        "C2": { "content": "=PIVOT.VALUE(5,\"__count\")" },
-        "C3": { "content": "=PIVOT.VALUE(2,\"time_to_answer\")" },
-        "C4": { "content": "=PIVOT.VALUE(2,\"duration\")" },
-        "D1": { "content": "=_t(\"Current\")" },
-        "D2": { "content": "=FORMAT.LARGE.NUMBER(B2)" },
-        "D3": { "content": "=CONCATENATE(-ROUND(B3/60),\"min\")" },
-        "D4": { "content": "=CONCATENATE(ROUND(B4/60),\"min\")" },
-        "D5": { "content": "=B5" },
-        "E1": { "content": "=_t(\"Previous\")" },
-        "E2": { "content": "=FORMAT.LARGE.NUMBER(C2)" },
-        "E3": { "content": "=-ROUND(C3/60)" },
-        "E4": { "content": "=ROUND(C4/60)" }
+        "A1": {
+          "content": "=_t(\"KPI\")"
+        },
+        "A2": {
+          "content": "=_t(\"Sessions\")"
+        },
+        "A3": {
+          "content": "=_t(\"Avg. time to answer\")"
+        },
+        "A4": {
+          "content": "=_t(\"Avg. session duration\")"
+        },
+        "A5": {
+          "content": "=_t(\"Rating\")"
+        },
+        "B1": {
+          "content": "=_t(\"Current\")"
+        },
+        "B2": {
+          "content": "=PIVOT.VALUE(4,\"__count\")"
+        },
+        "B3": {
+          "content": "=PIVOT.VALUE(1,\"time_to_answer\")"
+        },
+        "B4": {
+          "content": "=PIVOT.VALUE(1,\"duration\")"
+        },
+        "B5": {
+          "content": "=PIVOT.VALUE(1,\"rating\")"
+        },
+        "C1": {
+          "content": "=_t(\"Previous\")"
+        },
+        "C2": {
+          "content": "=PIVOT.VALUE(5,\"__count\")"
+        },
+        "C3": {
+          "content": "=PIVOT.VALUE(2,\"time_to_answer\")"
+        },
+        "C4": {
+          "content": "=PIVOT.VALUE(2,\"duration\")"
+        },
+        "D1": {
+          "content": "=_t(\"Current\")"
+        },
+        "D2": {
+          "content": "=FORMAT.LARGE.NUMBER(B2)"
+        },
+        "D3": {
+          "content": "=CONCATENATE(-ROUND(B3/60),\"min\")"
+        },
+        "D4": {
+          "content": "=CONCATENATE(ROUND(B4/60),\"min\")"
+        },
+        "D5": {
+          "content": "=B5"
+        },
+        "E1": {
+          "content": "=_t(\"Previous\")"
+        },
+        "E2": {
+          "content": "=FORMAT.LARGE.NUMBER(C2)"
+        },
+        "E3": {
+          "content": "=-ROUND(C3/60)"
+        },
+        "E4": {
+          "content": "=ROUND(C4/60)"
+        }
       },
-      "styles": { "A1:E1": 5, "D2:D5": 6, "E2:E4": 6 },
+      "styles": {
+        "A1:E1": 5,
+        "D2:D5": 6,
+        "E2:E4": 6
+      },
       "formats": {},
       "borders": {},
       "conditionalFormats": [],
@@ -396,57 +567,141 @@
       "tables": [],
       "areGridLinesVisible": true,
       "isVisible": true,
-      "headerGroups": { "ROW": [], "COL": [] },
+      "headerGroups": {
+        "ROW": [],
+        "COL": []
+      },
       "dataValidationRules": [],
       "comments": {}
     }
   ],
   "styles": {
-    "1": { "textColor": "#01666b", "bold": true, "fontSize": 16 },
-    "2": { "textColor": "#434343", "fontSize": 11, "bold": true },
-    "3": { "textColor": "#434343", "verticalAlign": "middle" },
+    "1": {
+      "textColor": "#01666b",
+      "bold": true,
+      "fontSize": 16
+    },
+    "2": {
+      "textColor": "#434343",
+      "fontSize": 11,
+      "bold": true
+    },
+    "3": {
+      "textColor": "#434343",
+      "verticalAlign": "middle"
+    },
     "4": {
       "textColor": "#434343",
       "fontSize": 11,
       "bold": true,
       "align": "center"
     },
-    "5": { "bold": true },
-    "6": { "fillColor": "#f2f2f2" }
+    "5": {
+      "bold": true
+    },
+    "6": {
+      "fillColor": "#f2f2f2"
+    }
   },
   "formats": {},
   "borders": {
-    "1": { "bottom": { "style": "thin", "color": "#CCCCCC" } },
-    "2": { "top": { "style": "thin", "color": "#CCCCCC" } },
+    "1": {
+      "bottom": {
+        "style": "thin",
+        "color": "#CCCCCC"
+      }
+    },
+    "2": {
+      "top": {
+        "style": "thin",
+        "color": "#CCCCCC"
+      }
+    },
     "3": {
-      "bottom": { "style": "thick", "color": "#FFFFFF" },
-      "right": { "style": "thick", "color": "#FFFFFF" }
+      "bottom": {
+        "style": "thick",
+        "color": "#FFFFFF"
+      },
+      "right": {
+        "style": "thick",
+        "color": "#FFFFFF"
+      }
     },
     "4": {
-      "top": { "style": "thick", "color": "#FFFFFF" },
-      "bottom": { "style": "thick", "color": "#FFFFFF" },
-      "right": { "style": "thick", "color": "#FFFFFF" }
+      "top": {
+        "style": "thick",
+        "color": "#FFFFFF"
+      },
+      "bottom": {
+        "style": "thick",
+        "color": "#FFFFFF"
+      },
+      "right": {
+        "style": "thick",
+        "color": "#FFFFFF"
+      }
     },
-    "5": { "top": { "style": "thick", "color": "#FFFFFF" } },
+    "5": {
+      "top": {
+        "style": "thick",
+        "color": "#FFFFFF"
+      }
+    },
     "6": {
-      "bottom": { "style": "thick", "color": "#FFFFFF" },
-      "left": { "style": "thick", "color": "#FFFFFF" },
-      "right": { "style": "thick", "color": "#FFFFFF" }
+      "bottom": {
+        "style": "thick",
+        "color": "#FFFFFF"
+      },
+      "left": {
+        "style": "thick",
+        "color": "#FFFFFF"
+      },
+      "right": {
+        "style": "thick",
+        "color": "#FFFFFF"
+      }
     },
     "7": {
-      "top": { "style": "thick", "color": "#FFFFFF" },
-      "bottom": { "style": "thick", "color": "#FFFFFF" },
-      "left": { "style": "thick", "color": "#FFFFFF" },
-      "right": { "style": "thick", "color": "#FFFFFF" }
+      "top": {
+        "style": "thick",
+        "color": "#FFFFFF"
+      },
+      "bottom": {
+        "style": "thick",
+        "color": "#FFFFFF"
+      },
+      "left": {
+        "style": "thick",
+        "color": "#FFFFFF"
+      },
+      "right": {
+        "style": "thick",
+        "color": "#FFFFFF"
+      }
     },
     "8": {
-      "bottom": { "style": "thick", "color": "#FFFFFF" },
-      "left": { "style": "thick", "color": "#FFFFFF" }
+      "bottom": {
+        "style": "thick",
+        "color": "#FFFFFF"
+      },
+      "left": {
+        "style": "thick",
+        "color": "#FFFFFF"
+      }
     },
     "9": {
-      "top": { "style": "thick", "color": "#FFFFFF" },
-      "bottom": { "style": "thick", "color": "#FFFFFF" },
-      "left": { "style": "thick", "color": "#FFFFFF" }
+      "top": {
+        "style": "thick",
+        "color": "#FFFFFF"
+      },
+      "bottom": {
+        "style": "thick",
+        "color": "#FFFFFF"
+      },
+      "left": {
+        "style": "thick",
+        "color": "#FFFFFF"
+      }
     }
   },
   "revisionId": "START_REVISION",
@@ -481,9 +736,18 @@
       "domain": [],
       "id": "1",
       "measures": [
-        { "id": "duration", "fieldName": "duration" },
-        { "id": "time_to_answer", "fieldName": "time_to_answer" },
-        { "id": "rating", "fieldName": "rating" }
+        {
+          "id": "duration",
+          "fieldName": "duration"
+        },
+        {
+          "id": "time_to_answer",
+          "fieldName": "time_to_answer"
+        },
+        {
+          "id": "rating",
+          "fieldName": "rating"
+        }
       ],
       "model": "im_livechat.report.channel",
       "name": "stats 2 - current",
@@ -509,9 +773,18 @@
       "domain": [],
       "id": "2",
       "measures": [
-        { "id": "duration", "fieldName": "duration" },
-        { "id": "time_to_answer", "fieldName": "time_to_answer" },
-        { "id": "rating", "fieldName": "rating" }
+        {
+          "id": "duration",
+          "fieldName": "duration"
+        },
+        {
+          "id": "time_to_answer",
+          "fieldName": "time_to_answer"
+        },
+        {
+          "id": "rating",
+          "fieldName": "rating"
+        }
       ],
       "model": "im_livechat.report.channel",
       "name": "stats 2 - previous",
@@ -537,20 +810,36 @@
       "domain": [],
       "id": "3",
       "measures": [
-        { "id": "nbr_channel", "fieldName": "nbr_channel" },
-        { "id": "time_to_answer", "fieldName": "time_to_answer" },
-        { "id": "duration", "fieldName": "duration" }
+        {
+          "id": "nbr_channel",
+          "fieldName": "nbr_channel"
+        },
+        {
+          "id": "time_to_answer",
+          "fieldName": "time_to_answer"
+        },
+        {
+          "id": "duration",
+          "fieldName": "duration"
+        }
       ],
       "model": "im_livechat.report.operator",
       "name": "Livechat Support Statistics by Operator",
       "sortedColumn": {
-        "groupId": [[], []],
+        "groupId": [
+          [],
+          []
+        ],
         "measure": "nbr_channel",
         "order": "desc"
       },
       "formulaId": "3",
       "columns": [],
-      "rows": [{ "fieldName": "partner_id" }]
+      "rows": [
+        {
+          "fieldName": "partner_id"
+        }
+      ]
     },
     "4": {
       "type": "ODOO",
@@ -568,7 +857,12 @@
       "context": {},
       "domain": [],
       "id": "4",
-      "measures": [{ "id": "__count", "fieldName": "__count" }],
+      "measures": [
+        {
+          "id": "__count",
+          "fieldName": "__count"
+        }
+      ],
       "model": "im_livechat.report.channel",
       "name": "sessions count - current",
       "sortedColumn": null,
@@ -592,7 +886,12 @@
       "context": {},
       "domain": [],
       "id": "5",
-      "measures": [{ "id": "__count", "fieldName": "__count" }],
+      "measures": [
+        {
+          "id": "__count",
+          "fieldName": "__count"
+        }
+      ],
       "model": "im_livechat.report.channel",
       "name": "sessions count - previous",
       "sortedColumn": null,

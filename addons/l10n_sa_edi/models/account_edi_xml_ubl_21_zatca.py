@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
-from hashlib import sha256
+import re
 from base64 import b64encode
+from hashlib import sha256
+
 from lxml import etree
+
 from odoo import models, fields
 from odoo.tools.misc import file_path
-import re
 
 TAX_EXEMPTION_CODES = ['VATEX-SA-29', 'VATEX-SA-29-7', 'VATEX-SA-30']
 TAX_ZERO_RATE_CODES = ['VATEX-SA-32', 'VATEX-SA-33', 'VATEX-SA-34-1', 'VATEX-SA-34-2', 'VATEX-SA-34-3', 'VATEX-SA-34-4',
@@ -92,7 +94,8 @@ class AccountEdiXmlUBL21Zatca(models.AbstractModel):
         """ Override to include/update values specific to ZATCA's UBL 2.1 specs """
         shipping_address = invoice.partner_shipping_id
         return [{'actual_delivery_date': invoice.delivery_date or invoice.invoice_date,
-                 'delivery_address_vals': self._get_partner_address_vals(shipping_address) if shipping_address else {},}]
+                 'delivery_address_vals': self._get_partner_address_vals(
+                     shipping_address) if shipping_address else {}, }]
 
     def _get_partner_contact_vals(self, partner):
         res = super()._get_partner_contact_vals(partner)
@@ -127,7 +130,8 @@ class AccountEdiXmlUBL21Zatca(models.AbstractModel):
     def _get_invoice_payment_means_vals_list(self, invoice):
         """ Override to include/update values specific to ZATCA's UBL 2.1 specs """
         res = super()._get_invoice_payment_means_vals_list(invoice)
-        res[0]['payment_means_code'] = PAYMENT_MEANS_CODE.get(self._l10n_sa_get_payment_means_code(invoice), PAYMENT_MEANS_CODE['unknown'])
+        res[0]['payment_means_code'] = PAYMENT_MEANS_CODE.get(self._l10n_sa_get_payment_means_code(invoice),
+                                                              PAYMENT_MEANS_CODE['unknown'])
         res[0]['payment_means_code_attrs'] = {'listID': 'UN/ECE 4461'}
         res[0]['adjustment_reason'] = invoice.ref
         return res
@@ -148,7 +152,8 @@ class AccountEdiXmlUBL21Zatca(models.AbstractModel):
         """
         vat = invoice.company_id.partner_id.commercial_partner_id.vat
         invoice_number = re.sub(r'[^a-zA-Z0-9 -]+', '-', invoice.name)
-        invoice_date = fields.Datetime.context_timestamp(self.with_context(tz='Asia/Riyadh'), invoice.l10n_sa_confirmation_datetime)
+        invoice_date = fields.Datetime.context_timestamp(self.with_context(tz='Asia/Riyadh'),
+                                                         invoice.l10n_sa_confirmation_datetime)
         file_name = f"{vat}_{invoice_date.strftime('%Y%m%dT%H%M%S')}_{invoice_number}"
         file_format = self.env.context.get('l10n_sa_file_format', 'xml')
         if file_format:
@@ -186,7 +191,8 @@ class AccountEdiXmlUBL21Zatca(models.AbstractModel):
         """ Get the billing reference vals required to render the BillingReference for credit/debit notes """
         if self._l10n_sa_get_invoice_type(invoice) != 388:
             return {
-                'id': (invoice.reversed_entry_id.name or invoice.ref) if invoice.move_type == 'out_refund' else invoice.debit_origin_id.name,
+                'id': (
+                            invoice.reversed_entry_id.name or invoice.ref) if invoice.move_type == 'out_refund' else invoice.debit_origin_id.name,
                 'issue_date': None,
             }
         return {}
@@ -222,13 +228,17 @@ class AccountEdiXmlUBL21Zatca(models.AbstractModel):
 
     def _l10n_sa_get_prepaid_amount(self, invoice, vals):
         """ Calculate the down-payment amount according to ZATCA rules """
-        downpayment_lines = False if invoice._is_downpayment() else invoice.line_ids.filtered(lambda l: l._get_downpayment_lines())
+        downpayment_lines = False if invoice._is_downpayment() else invoice.line_ids.filtered(
+            lambda l: l._get_downpayment_lines())
         if downpayment_lines:
             tax_vals = invoice._prepare_invoice_aggregated_taxes(
-                filter_tax_values_to_apply=lambda l, t: not self.env['account.tax'].browse(t.get('id')).l10n_sa_is_retention
+                filter_tax_values_to_apply=lambda l, t: not self.env['account.tax'].browse(
+                    t.get('id')).l10n_sa_is_retention
             )
-            base_amount = abs(sum(tax_vals['tax_details_per_record'][l]['base_amount_currency'] for l in downpayment_lines))
-            tax_amount = abs(sum(tax_vals['tax_details_per_record'][l]['tax_amount_currency'] for l in downpayment_lines))
+            base_amount = abs(
+                sum(tax_vals['tax_details_per_record'][l]['base_amount_currency'] for l in downpayment_lines))
+            tax_amount = abs(
+                sum(tax_vals['tax_details_per_record'][l]['tax_amount_currency'] for l in downpayment_lines))
             return {
                 'total_amount': base_amount + tax_amount,
                 'base_amount': base_amount,
@@ -374,8 +384,10 @@ class AccountEdiXmlUBL21Zatca(models.AbstractModel):
             If an invoice line is linked to a down payment invoice, we need to return the proper values
             to be included in the UBL
         """
-        if not line.move_id._is_downpayment() and line.sale_line_ids and all(sale_line.is_downpayment for sale_line in line.sale_line_ids):
-            prepayment_move_id = line.sale_line_ids.invoice_lines.move_id.filtered(lambda m: m.move_type == 'out_invoice' and m._is_downpayment())
+        if not line.move_id._is_downpayment() and line.sale_line_ids and all(
+                sale_line.is_downpayment for sale_line in line.sale_line_ids):
+            prepayment_move_id = line.sale_line_ids.invoice_lines.move_id.filtered(
+                lambda m: m.move_type == 'out_invoice' and m._is_downpayment())
             return {
                 'prepayment_id': prepayment_move_id.name,
                 'issue_date': fields.Datetime.context_timestamp(self.with_context(tz='Asia/Riyadh'),

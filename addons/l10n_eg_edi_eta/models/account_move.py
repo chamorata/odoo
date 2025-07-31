@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-import logging
 import json
+import logging
+from datetime import datetime
 
 from odoo import api, models, fields, _
 from odoo.exceptions import ValidationError, UserError
 from odoo.tools import float_is_zero
 from odoo.tools.sql import column_exists, create_column
-from datetime import datetime
 
 _logger = logging.getLogger(__name__)
 
@@ -17,7 +17,8 @@ class AccountMove(models.Model):
 
     l10n_eg_long_id = fields.Char(string='ETA Long ID', compute='_compute_eta_long_id')
     l10n_eg_qr_code = fields.Char(string='ETA QR Code', compute='_compute_eta_qr_code_str')
-    l10n_eg_submission_number = fields.Char(string='Submission ID', compute='_compute_eta_response_data', store=True, copy=False)
+    l10n_eg_submission_number = fields.Char(string='Submission ID', compute='_compute_eta_response_data', store=True,
+                                            copy=False)
     l10n_eg_uuid = fields.Char(string='Document UUID', compute='_compute_eta_response_data', store=True, copy=False)
     l10n_eg_eta_json_doc_id = fields.Many2one('ir.attachment', copy=False)
     l10n_eg_signing_time = fields.Datetime('Signing Time', copy=False)
@@ -68,7 +69,9 @@ class AccountMove(models.Model):
 
     def action_post_sign_invoices(self):
         # only sign invoices that are confirmed and not yet sent to the ETA.
-        invoices = self.filtered(lambda r: r.country_code == 'EG' and r.state == 'posted' and not r.l10n_eg_submission_number and r.edi_document_ids.filtered(lambda e: e.edi_format_id.code == 'eg_eta'))
+        invoices = self.filtered(lambda
+                                     r: r.country_code == 'EG' and r.state == 'posted' and not r.l10n_eg_submission_number and r.edi_document_ids.filtered(
+            lambda e: e.edi_format_id.code == 'eg_eta'))
         if not invoices:
             return
 
@@ -92,14 +95,14 @@ class AccountMove(models.Model):
         for invoice in invoices:
             eta_invoice = self.env['account.edi.format']._l10n_eg_eta_prepare_eta_invoice(invoice)
             attachment = self.env['ir.attachment'].create({
-                    'name': _('ETA_INVOICE_DOC_%s', invoice.name),
-                    'res_id': invoice.id,
-                    'res_model': invoice._name,
-                    'type': 'binary',
-                    'raw': json.dumps(dict(request=eta_invoice)),
-                    'mimetype': 'application/json',
-                    'description': _('Egyptian Tax authority JSON invoice generated for %s.', invoice.name),
-                })
+                'name': _('ETA_INVOICE_DOC_%s', invoice.name),
+                'res_id': invoice.id,
+                'res_model': invoice._name,
+                'type': 'binary',
+                'raw': json.dumps(dict(request=eta_invoice)),
+                'mimetype': 'application/json',
+                'description': _('Egyptian Tax authority JSON invoice generated for %s.', invoice.name),
+            })
             invoice.l10n_eg_eta_json_doc_id = attachment.id
         return drive_id.action_sign_invoices(invoices)
 

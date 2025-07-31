@@ -1,6 +1,7 @@
 import base64
-import requests
 import uuid
+
+import requests
 from werkzeug.urls import url_encode
 
 from odoo import _, api, fields, models
@@ -56,8 +57,8 @@ class AccountMove(models.Model):
     def _compute_l10n_jo_edi_is_needed(self):
         for move in self:
             move.l10n_jo_edi_is_needed = (
-                move.country_code == "JO"
-                and move.move_type in ("out_invoice", "out_refund")
+                    move.country_code == "JO"
+                    and move.move_type in ("out_invoice", "out_refund")
             )
 
     @api.depends("l10n_jo_edi_state")
@@ -83,7 +84,8 @@ class AccountMove(models.Model):
 
     def download_l10n_jo_edi_computed_xml(self):
         if error_message := self._l10n_jo_validate_config() or self._l10n_jo_validate_fields():
-            raise ValidationError(_("The following errors have to be fixed in order to create an XML:\n") + error_message)
+            raise ValidationError(
+                _("The following errors have to be fixed in order to create an XML:\n") + error_message)
         params = url_encode({
             'model': self._name,
             'id': self.id,
@@ -216,7 +218,8 @@ class AccountMove(models.Model):
     def _l10n_jo_validate_fields(self):
         def has_non_digit_vat(partner, partner_type, error_msgs):
             if partner.vat and not partner.vat.isdigit():
-                error_msgs.append(_("JoFotara portal cannot process %s VAT with non-digit characters in it", partner_type))
+                error_msgs.append(
+                    _("JoFotara portal cannot process %s VAT with non-digit characters in it", partner_type))
 
         error_msgs = []
 
@@ -230,25 +233,29 @@ class AccountMove(models.Model):
             if not self.reversed_entry_id:
                 error_msgs.append(_('Please use "Reversal of" to link this credit note with an Invoice'))
             elif self.currency_id != self.reversed_entry_id.currency_id:
-                error_msgs.append(_("Please make sure the currency of the credit note is the same as the related invoice"))
+                error_msgs.append(
+                    _("Please make sure the currency of the credit note is the same as the related invoice"))
 
             if not self.ref:
                 error_msgs.append(_('Please make sure the "Customer Reference" contains the reason for the return'))
 
         if any(
-            line.display_type not in ('line_note', 'line_section')
-            and (line.quantity < 0 or line.price_unit < 0)
-            for line in self.invoice_line_ids
+                line.display_type not in ('line_note', 'line_section')
+                and (line.quantity < 0 or line.price_unit < 0)
+                for line in self.invoice_line_ids
         ):
             error_msgs.append(_("JoFotara portal cannot process negative quantity nor negative price on invoice lines"))
 
         for line in self.invoice_line_ids.filtered(lambda line: line.display_type not in ('line_note', 'line_section')):
             if self.company_id.l10n_jo_edi_taxpayer_type == 'income' and len(line.tax_ids) != 0:
-                error_msgs.append(_("No taxes are allowed on invoice lines for taxpayers unregistered in the sales tax"))
+                error_msgs.append(
+                    _("No taxes are allowed on invoice lines for taxpayers unregistered in the sales tax"))
             elif self.company_id.l10n_jo_edi_taxpayer_type == 'sales' and len(line.tax_ids) != 1:
-                error_msgs.append(_("One general tax per invoice line is expected for taxpayers registered in the sales tax"))
+                error_msgs.append(
+                    _("One general tax per invoice line is expected for taxpayers registered in the sales tax"))
             elif self.company_id.l10n_jo_edi_taxpayer_type == 'special' and len(line.tax_ids) != 2:
-                error_msgs.append(_("One special and one general tax per invoice line is expected for taxpayers registered in the special tax"))
+                error_msgs.append(
+                    _("One special and one general tax per invoice line is expected for taxpayers registered in the special tax"))
 
         return "\n".join(error_msgs)
 

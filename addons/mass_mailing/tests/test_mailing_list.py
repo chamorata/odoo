@@ -2,11 +2,12 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import datetime
-from freezegun import freeze_time
 from unittest.mock import patch
 
-from odoo import exceptions
+from freezegun import freeze_time
 from odoo.addons.mass_mailing.tests.common import MassMailCommon
+
+from odoo import exceptions
 from odoo.tests import Form, tagged, users
 
 
@@ -106,7 +107,7 @@ class TestMailingListMerge(MassMailCommon):
             self.assertFalse(any(contact.opt_out for contact in new))
 
         with freeze_time('2022-01-01 12:00'), \
-             patch.object(self.env.cr, 'now', lambda: datetime(2022, 1, 1, 12, 0, 0)):
+                patch.object(self.env.cr, 'now', lambda: datetime(2022, 1, 1, 12, 0, 0)):
             contact_form = Form(self.env['mailing.contact'])
             contact_form.name = 'Contact_test'
             with contact_form.subscription_ids.new() as subscription:
@@ -116,7 +117,8 @@ class TestMailingListMerge(MassMailCommon):
                 subscription.list_id = self.mailing_list_2
                 subscription.opt_out = False
             contact = contact_form.save()
-        self.assertEqual(contact.subscription_ids.filtered(lambda s: s.list_id == self.mailing_list_1).opt_out_datetime, datetime(2022, 1, 1, 12, 0, 0))
+        self.assertEqual(contact.subscription_ids.filtered(lambda s: s.list_id == self.mailing_list_1).opt_out_datetime,
+                         datetime(2022, 1, 1, 12, 0, 0))
         self.assertFalse(contact.subscription_ids.filtered(lambda s: s.list_id == self.mailing_list_2).opt_out_datetime)
 
     @users('user_marketing')
@@ -170,7 +172,8 @@ class TestMailingListMerge(MassMailCommon):
         # Assert there's no duplicated email address
         self.assertEqual(
             len(list(set(result_list.contact_ids.mapped('email')))), 5,
-            'Duplicates have been merged into the destination mailing list. Check %s' % (result_list.contact_ids.mapped('email')))
+            'Duplicates have been merged into the destination mailing list. Check %s' % (
+                result_list.contact_ids.mapped('email')))
 
     @users('user_marketing')
     def test_mailing_list_merge_cornercase(self):
@@ -270,7 +273,8 @@ class TestMailingContactImport(MassMailCommon):
         self.assertEqual(len(second_list.contact_ids), 2, 'Should have ignored default_list_ids')
         self.assertNotIn(('Test', 'bob@example.com'), contacts, 'Should have ignored duplicated')
         self.assertNotIn(('', 'bob@example.com'), contacts, 'Should have ignored duplicated')
-        self.assertNotIn(('Test', 'already_exists_list_1_and_2@example.com'), contacts, 'Should have ignored duplicated')
+        self.assertNotIn(('Test', 'already_exists_list_1_and_2@example.com'), contacts,
+                         'Should have ignored duplicated')
         self.assertEqual(len(contacts), 5, 'Should have imported 2 new contacts')
 
         # Check the contact of the third mailing list
@@ -283,8 +287,10 @@ class TestMailingContactImport(MassMailCommon):
         self.assertIn(
             ('', 'already_exists_list_2@example.com'), contacts,
             'The email already exists but in a different list. The contact must be imported.')
-        self.assertIn(('Already Exists', 'already_exists_list_1@example.com'), contacts, 'This contact exists in the first mailing list, but not in the third mailing list')
-        self.assertNotIn(('Test', 'already_exists_list_1_and_2@example.com'), contacts, 'Should have ignored duplicated')
+        self.assertIn(('Already Exists', 'already_exists_list_1@example.com'), contacts,
+                      'This contact exists in the first mailing list, but not in the third mailing list')
+        self.assertNotIn(('Test', 'already_exists_list_1_and_2@example.com'), contacts,
+                         'Should have ignored duplicated')
 
         contact = self.env['mailing.contact'].search([('email', '=', 'already_exists_list_1@example.com')])
         self.assertEqual(len(contact), 1, 'Should have updated the existing contact instead of creating a new one')

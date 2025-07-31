@@ -5,7 +5,6 @@ from odoo.tests import TransactionCase
 from odoo.tools import file_path, file_open, file_open_temporary_directory
 from odoo.tools.config import conf, configmanager, _get_default_datadir
 
-
 IS_POSIX = 'workers' in odoo.tools.config.options
 ROOT_PATH = odoo.tools.config.options['root_path'].removesuffix('/odoo')
 
@@ -136,7 +135,7 @@ class TestConfigManager(TransactionCase):
                     'limit_time_cpu': 60,
                     'limit_time_real': 120,
                     'limit_time_real_cron': -1,
-                    'limit_request': 2**16,
+                    'limit_request': 2 ** 16,
                 }
             )
 

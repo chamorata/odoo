@@ -1,5 +1,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from datetime import date, datetime, timedelta
+
 from dateutil.relativedelta import relativedelta
 
 from odoo import Command
@@ -51,7 +52,8 @@ class TestInventory(TransactionCase):
 
         # check
         self.assertEqual(self.env['stock.quant']._get_available_quantity(self.product1, self.stock_location), 0.0)
-        self.assertEqual(sum(self.env['stock.quant']._gather(self.product1, self.stock_location).mapped('quantity')), 0.0)
+        self.assertEqual(sum(self.env['stock.quant']._gather(self.product1, self.stock_location).mapped('quantity')),
+                         0.0)
 
     def test_inventory_2(self):
         """ Check that adding a tracked product through an inventory adjustment works as expected.
@@ -80,7 +82,8 @@ class TestInventory(TransactionCase):
         inventory_quant.action_apply_inventory()
 
         # check
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(self.product2, self.stock_location, lot_id=lot1), 1.0)
+        self.assertEqual(
+            self.env['stock.quant']._get_available_quantity(self.product2, self.stock_location, lot_id=lot1), 1.0)
         self.assertEqual(len(self.env['stock.quant']._gather(self.product2, self.stock_location, lot_id=lot1)), 1.0)
         self.assertEqual(lot1.product_qty, 1.0)
 
@@ -153,10 +156,15 @@ class TestInventory(TransactionCase):
         stock_confirmation_wizard.action_confirm()
 
         # check
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(self.product2, self.stock_location, lot_id=lot1, strict=False), 11.0)
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(self.product2, self.stock_location, strict=True), 10.0)
+        self.assertEqual(
+            self.env['stock.quant']._get_available_quantity(self.product2, self.stock_location, lot_id=lot1,
+                                                            strict=False), 11.0)
+        self.assertEqual(
+            self.env['stock.quant']._get_available_quantity(self.product2, self.stock_location, strict=True), 10.0)
         self.assertEqual(self.env['stock.quant']._get_available_quantity(self.product2, self.stock_location), 11.0)
-        self.assertEqual(len(self.env['stock.quant']._gather(self.product2, self.stock_location, lot_id=lot1, strict=True).filtered(lambda q: q.lot_id)), 1.0)
+        self.assertEqual(len(
+            self.env['stock.quant']._gather(self.product2, self.stock_location, lot_id=lot1, strict=True).filtered(
+                lambda q: q.lot_id)), 1.0)
         self.assertEqual(len(self.env['stock.quant']._gather(self.product2, self.stock_location, strict=True)), 1.0)
         self.assertEqual(len(self.env['stock.quant']._gather(self.product2, self.stock_location)), 2.0)
 
@@ -425,7 +433,8 @@ class TestInventory(TransactionCase):
         self.assertEqual(inventory_quant.quantity, 4)
 
         conflict_wizard_values = inventory_quant.action_apply_inventory()
-        conflict_wizard_form = Form(self.env['stock.inventory.conflict'].with_context(conflict_wizard_values['context']))
+        conflict_wizard_form = Form(
+            self.env['stock.inventory.conflict'].with_context(conflict_wizard_values['context']))
         conflict_wizard = conflict_wizard_form.save()
         conflict_wizard.quant_to_fix_ids.inventory_quantity = 5
         conflict_wizard.action_keep_counted_quantity()
@@ -545,7 +554,8 @@ class TestInventory(TransactionCase):
             'usage': 'internal',
             'location_id': self.stock_location.id,
         })
-        no_cyclic_loc.company_id.write({'annual_inventory_day': str(today.day), 'annual_inventory_month': str(today.month)})
+        no_cyclic_loc.company_id.write(
+            {'annual_inventory_day': str(today.day), 'annual_inventory_month': str(today.month)})
         new_loc_form = Form(new_loc)
         new_loc_form.cyclic_inventory_frequency = 2
         new_loc = new_loc_form.save()
@@ -570,10 +580,12 @@ class TestInventory(TransactionCase):
         self.assertEqual(quant_existing_loc.inventory_date, existing_loc2.next_inventory_date)
         # quant without a cyclic inventory location should default to the company's annual inventory date
         quant_non_cyclic_loc = self.env['stock.quant'].search([('location_id', '=', no_cyclic_loc.id)])
-        self.assertEqual(quant_non_cyclic_loc.inventory_date.month, int(no_cyclic_loc.company_id.annual_inventory_month))
+        self.assertEqual(quant_non_cyclic_loc.inventory_date.month,
+                         int(no_cyclic_loc.company_id.annual_inventory_month))
         # in case of leap year, ensure we select a feasiable day for next year since inventory_date should default to last
         # day of the month if annual_inventory_day is greater than number of days in that month
-        next_annual_inventory_day = min((today + relativedelta(years=1)).day, no_cyclic_loc.company_id.annual_inventory_day)
+        next_annual_inventory_day = min((today + relativedelta(years=1)).day,
+                                        no_cyclic_loc.company_id.annual_inventory_day)
         self.assertEqual(quant_non_cyclic_loc.inventory_date.day, next_annual_inventory_day)
 
         quant_new_loc.inventory_quantity = 10

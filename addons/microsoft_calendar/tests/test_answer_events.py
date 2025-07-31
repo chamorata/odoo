@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
-from unittest.mock import patch, ANY
+import json
 from datetime import datetime, timedelta
+from unittest.mock import patch
 
+from freezegun import freeze_time
+from odoo.addons.microsoft_calendar.models.res_users import User
+from odoo.addons.microsoft_calendar.tests.common import TestCommon, mock_get_token, _modified_date_in_the_future, \
+    patch_api
 from odoo.addons.microsoft_calendar.utils.microsoft_calendar import MicrosoftCalendarService
 from odoo.addons.microsoft_calendar.utils.microsoft_event import MicrosoftEvent
-from odoo.addons.microsoft_calendar.models.res_users import User
-from odoo.addons.microsoft_calendar.tests.common import TestCommon, mock_get_token, _modified_date_in_the_future, patch_api
-from odoo.tests import users
 
-import json
-from freezegun import freeze_time
+from odoo.tests import users
 
 
 @patch.object(User, '_get_microsoft_calendar_token', mock_get_token)
@@ -29,7 +30,8 @@ class TestAnswerEvents(TestCommon):
                     ms_universal_event_id="456",
                 )
             )
-        (self.organizer_user | self.attendee_user).microsoft_calendar_token_validity = datetime.now() + timedelta(hours=1)
+        (self.organizer_user | self.attendee_user).microsoft_calendar_token_validity = datetime.now() + timedelta(
+            hours=1)
 
     @patch.object(MicrosoftCalendarService, '_get_single_event')
     @patch.object(MicrosoftCalendarService, 'answer')

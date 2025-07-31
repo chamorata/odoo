@@ -4,7 +4,7 @@
         <field name="name">Withholding Vendor Tax Account</field>
     </record>
 
-	<record id="account_tag_dividend_account" model="account.account.tag">
+    <record id="account_tag_dividend_account" model="account.account.tag">
         <field name="name">Dividend Account</field>
     </record>
 

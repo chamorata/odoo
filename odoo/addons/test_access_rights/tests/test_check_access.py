@@ -20,7 +20,7 @@ class TestAccess(odoo.tests.HttpCase):
         self.document = self.env['test_access_right.ticket'].create({
             'name': 'Need help here',
             'message_partner_ids': [Command.set([self.portal_user.partner_id.id,
-                                            self.internal_user_partner.id])],
+                                                 self.internal_user_partner.id])],
         })
 
     def test_check_access(self):

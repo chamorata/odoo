@@ -9,11 +9,12 @@
             <p class="mt-2">
                 The error occurred during the execution of the automation rule
                 "<t t-esc="automationName"/>"
-                (ID: <t t-esc="automationId"/>).
+                (ID:<t t-esc="automationId"/>).
                 <br/>
             </p>
             <p t-if="isUserAdmin">
-                You can disable this automation rule or edit it to solve the issue.<br/>
+                You can disable this automation rule or edit it to solve the issue.
+                <br/>
                 Disabling this automation rule will enable you to continue your workflow
                 but any data created after this could potentially be corrupted,
                 as you are effectively disabling a customization that may set
@@ -25,7 +26,8 @@
         </xpath>
         <xpath expr="//div[@role='alert']//button" position="after">
             <t t-if="isUserAdmin">
-                <button class="btn btn-secondary mt4 o_disable_action_button me-3" t-on-click.prevent="disableAutomation">
+                <button class="btn btn-secondary mt4 o_disable_action_button me-3"
+                        t-on-click.prevent="disableAutomation">
                     <i class="fa fa-ban mr8"/>Disable Automation Rule
                 </button>
                 <button class="btn btn-secondary mt4 o_edit_action_button" t-on-click.prevent="editAutomation">

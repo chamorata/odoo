@@ -1,9 +1,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import datetime, date
+
+from odoo.addons.hr_holidays_contract.tests.common import TestHolidayContract
+
 from odoo.exceptions import ValidationError
 from odoo.tests import tagged, freeze_time
-from odoo.addons.hr_holidays_contract.tests.common import TestHolidayContract
 
 
 @tagged('multi_contract')
@@ -29,7 +31,8 @@ class TestHolidaysMultiContract(TestHolidayContract):
         # test create contract such that a leave is across two contracts
         start = datetime.strptime('2015-11-05 07:00:00', '%Y-%m-%d %H:%M:%S')
         end = datetime.strptime('2015-12-15 18:00:00', '%Y-%m-%d %H:%M:%S')
-        self.contract_cdi.date_start = datetime.strptime('2015-12-30', '%Y-%m-%d').date()  # remove this contract to be able to create the leave
+        self.contract_cdi.date_start = datetime.strptime('2015-12-30',
+                                                         '%Y-%m-%d').date()  # remove this contract to be able to create the leave
         # begins during contract, ends after contract
         leave = self.create_leave(start, end, name="Doctor Appointment", employee_id=self.jules_emp.id)
         leave.action_approve()
@@ -87,7 +90,8 @@ class TestHolidaysMultiContract(TestHolidayContract):
     def test_leave_multi_contracts_same_schedule(self):
         # Allow leaves overlapping multiple contracts if same
         # resource calendar
-        leave = self.create_leave(datetime(2022, 6, 1, 7, 0, 0), datetime(2022, 6, 30, 18, 0, 0), name="Doctor Appointment", employee_id=self.jules_emp.id)
+        leave = self.create_leave(datetime(2022, 6, 1, 7, 0, 0), datetime(2022, 6, 30, 18, 0, 0),
+                                  name="Doctor Appointment", employee_id=self.jules_emp.id)
         leave.action_approve()
         self.contract_cdi.date_end = date(2022, 6, 15)
 
@@ -107,7 +111,8 @@ class TestHolidaysMultiContract(TestHolidayContract):
         # splits the existing time off for this employee that
         # are ovelapping with another contract with another
         # working schedule
-        leave = self.create_leave(date(2022, 6, 1), date(2022, 6, 30), name="Doctor Appointment", employee_id=self.jules_emp.id)
+        leave = self.create_leave(date(2022, 6, 1), date(2022, 6, 30), name="Doctor Appointment",
+                                  employee_id=self.jules_emp.id)
         leave.action_approve()
         self.assertEqual(leave.number_of_days, 22)
         self.assertEqual(leave.state, 'validate')
@@ -149,15 +154,23 @@ class TestHolidaysMultiContract(TestHolidayContract):
             {
                 'name': 'Partial time (4/5)',
                 'attendance_ids': [
-                    (0, 0, {'name': 'Monday Morning', 'dayofweek': '0', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-                    (0, 0, {'name': 'Monday Evening', 'dayofweek': '0', 'hour_from': 13, 'hour_to': 17, 'day_period': 'afternoon'}),
-                    (0, 0, {'name': 'Tuesday Morning', 'dayofweek': '1', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-                    (0, 0, {'name': 'Tuesday Evening', 'dayofweek': '1', 'hour_from': 13, 'hour_to': 17, 'day_period': 'afternoon'}),
+                    (0, 0, {'name': 'Monday Morning', 'dayofweek': '0', 'hour_from': 8, 'hour_to': 12,
+                            'day_period': 'morning'}),
+                    (0, 0, {'name': 'Monday Evening', 'dayofweek': '0', 'hour_from': 13, 'hour_to': 17,
+                            'day_period': 'afternoon'}),
+                    (0, 0, {'name': 'Tuesday Morning', 'dayofweek': '1', 'hour_from': 8, 'hour_to': 12,
+                            'day_period': 'morning'}),
+                    (0, 0, {'name': 'Tuesday Evening', 'dayofweek': '1', 'hour_from': 13, 'hour_to': 17,
+                            'day_period': 'afternoon'}),
                     # Does not work on Wednesdays
-                    (0, 0, {'name': 'Thursday Morning', 'dayofweek': '3', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-                    (0, 0, {'name': 'Thursday Evening', 'dayofweek': '3', 'hour_from': 13, 'hour_to': 17, 'day_period': 'afternoon'}),
-                    (0, 0, {'name': 'Friday Morning', 'dayofweek': '4', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-                    (0, 0, {'name': 'Friday Evening', 'dayofweek': '4', 'hour_from': 13, 'hour_to': 17, 'day_period': 'afternoon'})
+                    (0, 0, {'name': 'Thursday Morning', 'dayofweek': '3', 'hour_from': 8, 'hour_to': 12,
+                            'day_period': 'morning'}),
+                    (0, 0, {'name': 'Thursday Evening', 'dayofweek': '3', 'hour_from': 13, 'hour_to': 17,
+                            'day_period': 'afternoon'}),
+                    (0, 0, {'name': 'Friday Morning', 'dayofweek': '4', 'hour_from': 8, 'hour_to': 12,
+                            'day_period': 'morning'}),
+                    (0, 0, {'name': 'Friday Evening', 'dayofweek': '4', 'hour_from': 13, 'hour_to': 17,
+                            'day_period': 'afternoon'})
                 ]
             },
         ])
@@ -173,7 +186,7 @@ class TestHolidaysMultiContract(TestHolidayContract):
                 'date_end': datetime.strptime('2023-06-30', '%Y-%m-%d').date(),
                 'resource_calendar_id': calendar_full.id,
                 'wage': 1000.0,
-                'state': 'close', # Old contract
+                'state': 'close',  # Old contract
             },
             {
                 'name': 'Partial time (4/5)',
@@ -182,7 +195,7 @@ class TestHolidaysMultiContract(TestHolidayContract):
                 'date_end': datetime.strptime('2023-12-31', '%Y-%m-%d').date(),
                 'resource_calendar_id': calendar_partial.id,
                 'wage': 1000.0,
-                'state': 'open', # Current contract
+                'state': 'open',  # Current contract
             },
         ])
         leave_type = self.env['hr.leave.type'].create({
@@ -244,14 +257,22 @@ class TestHolidaysMultiContract(TestHolidayContract):
             {
                 'name': 'Partial time (4/5)',
                 'attendance_ids': [
-                    (0, 0, {'name': 'Monday Morning', 'dayofweek': '0', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-                    (0, 0, {'name': 'Monday Evening', 'dayofweek': '0', 'hour_from': 13, 'hour_to': 17, 'day_period': 'afternoon'}),
-                    (0, 0, {'name': 'Tuesday Morning', 'dayofweek': '1', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-                    (0, 0, {'name': 'Tuesday Evening', 'dayofweek': '1', 'hour_from': 13, 'hour_to': 17, 'day_period': 'afternoon'}),
-                    (0, 0, {'name': 'Wednesday Morning', 'dayofweek': '2', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-                    (0, 0, {'name': 'Wednesday Evening', 'dayofweek': '2', 'hour_from': 13, 'hour_to': 17, 'day_period': 'afternoon'}),
-                    (0, 0, {'name': 'Thursday Morning', 'dayofweek': '3', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-                    (0, 0, {'name': 'Thursday Evening', 'dayofweek': '3', 'hour_from': 13, 'hour_to': 17, 'day_period': 'afternoon'})
+                    (0, 0, {'name': 'Monday Morning', 'dayofweek': '0', 'hour_from': 8, 'hour_to': 12,
+                            'day_period': 'morning'}),
+                    (0, 0, {'name': 'Monday Evening', 'dayofweek': '0', 'hour_from': 13, 'hour_to': 17,
+                            'day_period': 'afternoon'}),
+                    (0, 0, {'name': 'Tuesday Morning', 'dayofweek': '1', 'hour_from': 8, 'hour_to': 12,
+                            'day_period': 'morning'}),
+                    (0, 0, {'name': 'Tuesday Evening', 'dayofweek': '1', 'hour_from': 13, 'hour_to': 17,
+                            'day_period': 'afternoon'}),
+                    (0, 0, {'name': 'Wednesday Morning', 'dayofweek': '2', 'hour_from': 8, 'hour_to': 12,
+                            'day_period': 'morning'}),
+                    (0, 0, {'name': 'Wednesday Evening', 'dayofweek': '2', 'hour_from': 13, 'hour_to': 17,
+                            'day_period': 'afternoon'}),
+                    (0, 0, {'name': 'Thursday Morning', 'dayofweek': '3', 'hour_from': 8, 'hour_to': 12,
+                            'day_period': 'morning'}),
+                    (0, 0, {'name': 'Thursday Evening', 'dayofweek': '3', 'hour_from': 13, 'hour_to': 17,
+                            'day_period': 'afternoon'})
                 ]
             },
         ])

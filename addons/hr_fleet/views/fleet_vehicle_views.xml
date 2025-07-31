@@ -3,7 +3,7 @@
     <record id="fleet_vehicle_odometer_view_tree" model="ir.ui.view">
         <field name="name">fleet.vehicle.odometer.view.list.inherit.hr.fleet</field>
         <field name="model">fleet.vehicle.odometer</field>
-        <field name="inherit_id" ref="fleet.fleet_vehicle_odometer_view_tree" />
+        <field name="inherit_id" ref="fleet.fleet_vehicle_odometer_view_tree"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='driver_id']" position="after">
                 <field name="driver_employee_id" widget="many2one_avatar_user" optional="hide"/>
@@ -16,7 +16,7 @@
         <field name="name">fleet.vehicle.assignation.log.view.list.inherit.hr.fleet</field>
         <field name="model">fleet.vehicle.assignation.log</field>
         <field name="mode">primary</field>
-        <field name="inherit_id" ref="fleet.fleet_vehicle_assignation_log_view_list" />
+        <field name="inherit_id" ref="fleet.fleet_vehicle_assignation_log_view_list"/>
         <field name="arch" type="xml">
             <field name="vehicle_id" position="attributes">
                 <attribute name="optional">hide</attribute>
@@ -25,7 +25,7 @@
                 <field name="driver_employee_id" widget="many2one_avatar_user"/>
             </field>
             <field name="date_end" position="after">
-                <field name="attachment_number" optional="show" />
+                <field name="attachment_number" optional="show"/>
                 <button name="action_get_attachment_view" string="Attachments" type="object" icon="fa-paperclip"/>
             </field>
         </field>
@@ -36,13 +36,13 @@
         <field name="name">fleet.vehicle.assignation.log.view.list.inherit.hr.fleet</field>
         <field name="model">fleet.vehicle.assignation.log</field>
         <field name="mode">primary</field>
-        <field name="inherit_id" ref="fleet.fleet_vehicle_assignation_log_view_list" />
+        <field name="inherit_id" ref="fleet.fleet_vehicle_assignation_log_view_list"/>
         <field name="arch" type="xml">
-            <field name="driver_id" position="replace" />
+            <field name="driver_id" position="replace"/>
             <field name="date_end" position="after">
                 <field name="driver_id" string="Current Driver" optional="hide"/>
-                <field name="attachment_number" optional="show" />
-                <button name="action_get_attachment_view" string="Attachments" type="object" icon="fa-paperclip" />
+                <field name="attachment_number" optional="show"/>
+                <button name="action_get_attachment_view" string="Attachments" type="object" icon="fa-paperclip"/>
             </field>
         </field>
     </record>
@@ -60,7 +60,8 @@
                 <field name="future_driver_employee_id" invisible="1"/>
             </xpath>
             <button name="open_assignation_logs" position="before">
-                <button name="action_open_employee" type="object" class="oe_stat_button" icon="fa-id-card-o" groups="hr.group_hr_user" invisible="not driver_employee_id">
+                <button name="action_open_employee" type="object" class="oe_stat_button" icon="fa-id-card-o"
+                        groups="hr.group_hr_user" invisible="not driver_employee_id">
                     <div class="o_field_widget o_stat_info">
                         <span class="o_stat_value">1</span>
                         <span class="o_stat_text">Employee</span>
@@ -87,7 +88,8 @@
                     ('future_driver_id.name', 'ilike', self),
                     ('driver_employee_id.name', 'ilike', self),
                     ('future_driver_employee_id.name', 'ilike', self),
-                ]</attribute>
+                    ]
+                </attribute>
             </xpath>
         </field>
     </record>
@@ -106,14 +108,14 @@
     </record>
 
     <record id="view_attachment_kanban_inherit_hr" model="ir.ui.view">
-       <field name="name">ir.attachment.kanban.inherit.hr</field>
-       <field name="model">ir.attachment</field>
-       <field name="inherit_id" ref="mail.view_document_file_kanban"/>
-       <field name="mode">primary</field>
-       <field name="arch" type="xml">
-           <xpath expr="//kanban" position="attributes">
+        <field name="name">ir.attachment.kanban.inherit.hr</field>
+        <field name="model">ir.attachment</field>
+        <field name="inherit_id" ref="mail.view_document_file_kanban"/>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <xpath expr="//kanban" position="attributes">
                 <attribute name="js_class">hr_fleet_kanban_view</attribute>
             </xpath>
-       </field>
-   </record>
+        </field>
+    </record>
 </odoo>

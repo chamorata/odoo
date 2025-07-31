@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import logging
 
 from odoo import api, models
 
@@ -11,9 +10,9 @@ class AccountChartTemplate(models.AbstractModel):
     def _get_demo_data(self, company=False):
         demo_data = super()._get_demo_data(company)
         if company in (
-            self.env.ref('base.company_mono', raise_if_not_found=False),
-            self.env.ref('base.company_exento', raise_if_not_found=False),
-            self.env.ref('base.company_ri', raise_if_not_found=False),
+                self.env.ref('base.company_mono', raise_if_not_found=False),
+                self.env.ref('base.company_exento', raise_if_not_found=False),
+                self.env.ref('base.company_ri', raise_if_not_found=False),
         ):
             # Do not load generic demo data on these companies
             return {}
@@ -41,9 +40,9 @@ class AccountChartTemplate(models.AbstractModel):
 
     def _post_load_demo_data(self, company=False):
         if company not in (
-            self.env.ref('base.company_mono', raise_if_not_found=False),
-            self.env.ref('base.company_exento', raise_if_not_found=False),
-            self.env.ref('base.company_ri', raise_if_not_found=False),
+                self.env.ref('base.company_mono', raise_if_not_found=False),
+                self.env.ref('base.company_exento', raise_if_not_found=False),
+                self.env.ref('base.company_ri', raise_if_not_found=False),
         ):
             # Do not load generic demo data on these companies
             return super()._post_load_demo_data(company)

@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
+from odoo.addons.point_of_sale.tests.common import TestPoSCommon
+
 import odoo
 
-from odoo.addons.point_of_sale.tests.common import TestPoSCommon
 
 @odoo.tests.tagged('post_install', '-at_install')
 class TestReportPoSOrder(TestPoSCommon):
@@ -62,7 +63,7 @@ class TestReportPoSOrder(TestPoSCommon):
                 'qty': 1.0,
                 'price_subtotal': 150,
                 'price_subtotal_incl': 165,
-            }),],
+            }), ],
             'amount_total': 165.0,
             'amount_tax': 15.0,
             'amount_paid': 0.0,

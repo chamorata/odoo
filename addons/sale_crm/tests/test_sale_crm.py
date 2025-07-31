@@ -1,4 +1,5 @@
 from odoo.addons.crm.tests.common import TestCrmCommon
+
 from odoo.fields import Command
 
 

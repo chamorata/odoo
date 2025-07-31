@@ -21,7 +21,8 @@
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create a new badge
-            </p><p>
+            </p>
+            <p>
                 A badge is a symbolic token granted to a user as a sign of reward.
                 It can be deserved automatically when some conditions are met or manually by users.
                 Some badges are harder than others to get with specific conditions.
@@ -29,7 +30,7 @@
         </field>
     </record>
 
-    
+
     <record id="badge_list_view" model="ir.ui.view">
         <field name="name">Badge List</field>
         <field name="model">gamification.badge</field>
@@ -50,7 +51,8 @@
         <field name="arch" type="xml">
             <form string="Badge">
                 <header>
-                    <button string="Grant this Badge" type="action" name="%(action_grant_wizard)d" class="oe_highlight" invisible="remaining_sending == 0" />
+                    <button string="Grant this Badge" type="action" name="%(action_grant_wizard)d" class="oe_highlight"
+                            invisible="remaining_sending == 0"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box"/>
@@ -67,20 +69,24 @@
                     </group>
                     <group string="Granting">
                         <div class="oe_grey" colspan="2">
-                            Security rules to define who is allowed to manually grant badges. Not enforced for administrator.
+                            Security rules to define who is allowed to manually grant badges. Not enforced for
+                            administrator.
                         </div>
                         <group>
                             <field name="active" invisible="1"/>
                             <field name="rule_auth" widget="radio"/>
-                            <field name="rule_auth_user_ids" invisible="rule_auth != 'users'" widget="many2many_tags" />
-                            <field name="rule_auth_badge_ids" invisible="rule_auth != 'having'" widget="many2many_tags" />
-                            <field name="rule_max" invisible="rule_auth == 'nobody'" />
+                            <field name="rule_auth_user_ids" invisible="rule_auth != 'users'" widget="many2many_tags"/>
+                            <field name="rule_auth_badge_ids" invisible="rule_auth != 'having'"
+                                   widget="many2many_tags"/>
+                            <field name="rule_max" invisible="rule_auth == 'nobody'"/>
                             <field name="rule_max_number" invisible="not rule_max or rule_auth == 'nobody'"/>
                             <label for="stat_my_monthly_sending"/>
                             <div>
-                                <field name="stat_my_monthly_sending" invisible="rule_auth == 'nobody'" />
+                                <field name="stat_my_monthly_sending" invisible="rule_auth == 'nobody'"/>
                                 <div invisible="remaining_sending == -1" class="oe_grey">
-                                    You can still grant <field name="remaining_sending" class="oe_inline"/> badges this month
+                                    You can still grant
+                                    <field name="remaining_sending" class="oe_inline"/>
+                                    badges this month
                                 </div>
                                 <div invisible="remaining_sending != -1" class="oe_grey">
                                     No monthly sending limit
@@ -89,7 +95,8 @@
                         </group>
                     </group>
                     <group string="Rewards for challenges">
-                        <field name="challenge_ids" mode="kanban" widget="many2many" nolabel="1" context="{'default_reward_id': id}" colspan="2"/>
+                        <field name="challenge_ids" mode="kanban" widget="many2many" nolabel="1"
+                               context="{'default_reward_id': id}" colspan="2"/>
                         <field name="level" colspan="2"/>
                     </group>
                     <group id="badge_statistics" string="Statistics">
@@ -109,12 +116,12 @@
     </record>
 
 
-    <record id="badge_kanban_view" model="ir.ui.view" >
+    <record id="badge_kanban_view" model="ir.ui.view">
         <field name="name">Badge Kanban View</field>
         <field name="model">gamification.badge</field>
         <field name="arch" type="xml">
             <kanban>
-                <field name="remaining_sending" />
+                <field name="remaining_sending"/>
                 <templates>
                     <t t-name="card" class="row g-0">
                         <aside class="col-2">
@@ -124,7 +131,8 @@
                             <span>
                                 <field class="fw-bold fs-5 me-1" name="name"/>
                                 <t t-if="record.remaining_sending.value != -1">
-                                    <field name="stat_my_monthly_sending"/>/<field name="rule_max_number"/>
+                                    <field name="stat_my_monthly_sending"/>/
+                                    <field name="rule_max_number"/>
                                 </t>
                                 <t t-else="">
                                     <field name="stat_my_monthly_sending"/>/∞
@@ -132,15 +140,19 @@
                             </span>
                             <div t-if="record.remaining_sending.value == 0">Can not grant</div>
                             <div>
-                                <field class="fw-bold" name="granted_count"/> granted,
-                                <field class="fw-bold" name="stat_this_month"/> this month
+                                <field class="fw-bold" name="granted_count"/>
+                                granted,
+                                <field class="fw-bold" name="stat_this_month"/>
+                                this month
                             </div>
                             <div>
                                 <field class="fst-italic" name="description"/>
                                 <field name="unique_owner_ids" widget="many2many_avatar_user"/>
                             </div>
                             <footer t-if="record.remaining_sending.value != 0 and !selection_mode">
-                                <button type="action" name="%(action_grant_wizard)d" class="btn btn-primary ms-auto">Grant</button>
+                                <button type="action" name="%(action_grant_wizard)d" class="btn btn-primary ms-auto">
+                                    Grant
+                                </button>
                             </footer>
                         </main>
                     </t>

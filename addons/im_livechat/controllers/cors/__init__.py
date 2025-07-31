@@ -2,8 +2,8 @@
 
 from . import attachment
 from . import binary
-from . import chatbot
 from . import channel
+from . import chatbot
 from . import link_preview
 from . import main
 from . import message_reaction

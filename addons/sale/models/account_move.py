@@ -9,7 +9,6 @@ class AccountMove(models.Model):
     _name = 'account.move'
     _inherit = ['account.move', 'utm.mixin']
 
-
     team_id = fields.Many2one(
         'crm.team', string='Sales Team',
         compute='_compute_team_id', store=True, readonly=False,
@@ -23,7 +22,8 @@ class AccountMove(models.Model):
     sale_order_count = fields.Integer(compute="_compute_origin_so_count", string='Sale Order Count')
 
     def unlink(self):
-        downpayment_lines = self.mapped('line_ids.sale_line_ids').filtered(lambda line: line.is_downpayment and line.invoice_lines <= self.mapped('line_ids'))
+        downpayment_lines = self.mapped('line_ids.sale_line_ids').filtered(
+            lambda line: line.is_downpayment and line.invoice_lines <= self.mapped('line_ids'))
         res = super(AccountMove, self).unlink()
         if downpayment_lines:
             downpayment_lines.unlink()
@@ -33,8 +33,8 @@ class AccountMove(models.Model):
     def _compute_team_id(self):
         sale_moves = self.filtered(lambda move: move.is_sale_document(include_receipts=True))
         for ((user_id, company_id), moves) in groupby(
-            sale_moves,
-            key=lambda m: (m.invoice_user_id.id, m.company_id.id)
+                sale_moves,
+                key=lambda m: (m.invoice_user_id.id, m.company_id.id)
         ):
             self.env['account.move'].concat(*moves).team_id = self.env['crm.team'].with_context(
                 allowed_company_ids=[company_id],
@@ -99,7 +99,8 @@ class AccountMove(models.Model):
 
         for invoice in posted.filtered(lambda move: move.is_invoice()):
             payments = invoice.mapped('transaction_ids.payment_id').filtered(lambda x: x.state == 'in_process')
-            move_lines = payments.move_id.line_ids.filtered(lambda line: line.account_type in ('asset_receivable', 'liability_payable') and not line.reconciled)
+            move_lines = payments.move_id.line_ids.filtered(
+                lambda line: line.account_type in ('asset_receivable', 'liability_payable') and not line.reconciled)
             for line in move_lines:
                 invoice.js_assign_outstanding_line(line.id)
         return posted
@@ -143,7 +144,8 @@ class AccountMove(models.Model):
     def _is_downpayment(self):
         # OVERRIDE
         self.ensure_one()
-        return self.line_ids.sale_line_ids and all(sale_line.is_downpayment for sale_line in self.line_ids.sale_line_ids) or False
+        return self.line_ids.sale_line_ids and all(
+            sale_line.is_downpayment for sale_line in self.line_ids.sale_line_ids) or False
 
     def _get_sale_order_invoiced_amount(self, order):
         """

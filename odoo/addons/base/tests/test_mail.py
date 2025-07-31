@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from markupsafe import Markup
-
 import re
+
+from markupsafe import Markup
 
 from odoo.addons.base.models.ir_mail_server import extract_rfc2822_addresses
 from odoo.addons.base.models.ir_qweb_fields import nl2br_enclose
@@ -19,7 +19,6 @@ from odoo.tools.mail import (
     email_anonymize,
     prepend_html_content,
 )
-
 from . import test_mail_examples
 
 
@@ -50,7 +49,7 @@ class TestSanitizer(BaseCase):
             ("yop", "<p>yop</p>"),  # simple
             ("lala<p>yop</p>xxx", "<p>lala</p><p>yop</p>xxx"),  # trailing text
             ("Merci à l'intérêt pour notre produit.nous vous contacterons bientôt. Merci",
-                u"<p>Merci à l'intérêt pour notre produit.nous vous contacterons bientôt. Merci</p>"),  # unicode
+             u"<p>Merci à l'intérêt pour notre produit.nous vous contacterons bientôt. Merci</p>"),  # unicode
         ]
         for content, expected in cases:
             html = html_sanitize(content)
@@ -74,8 +73,12 @@ class TestSanitizer(BaseCase):
         # taken from https://www.owasp.org/index.php/XSS_Filter_Evasion_Cheat_Sheet#Tests
         cases = [
             ("<IMG SRC=javascript:alert('XSS')>"),  # no quotes and semicolons
-            ("<IMG SRC=&#106;&#97;&#118;&#97;&#115;&#99;&#114;&#105;&#112;&#116;&#58;&#97;&#108;&#101;&#114;&#116;&#40;&#39;&#88;&#83;&#83;&#39;&#41;>"),  # UTF-8 Unicode encoding
-            ("<IMG SRC=&#x6A&#x61&#x76&#x61&#x73&#x63&#x72&#x69&#x70&#x74&#x3A&#x61&#x6C&#x65&#x72&#x74&#x28&#x27&#x58&#x53&#x53&#x27&#x29>"),  # hex encoding
+            (
+                "<IMG SRC=&#106;&#97;&#118;&#97;&#115;&#99;&#114;&#105;&#112;&#116;&#58;&#97;&#108;&#101;&#114;&#116;&#40;&#39;&#88;&#83;&#83;&#39;&#41;>"),
+            # UTF-8 Unicode encoding
+            (
+                "<IMG SRC=&#x6A&#x61&#x76&#x61&#x73&#x63&#x72&#x69&#x70&#x74&#x3A&#x61&#x6C&#x65&#x72&#x74&#x28&#x27&#x58&#x53&#x53&#x27&#x29>"),
+            # hex encoding
             ("<IMG SRC=\"jav&#x0D;ascript:alert('XSS');\">"),  # embedded carriage return
             ("<IMG SRC=\"jav&#x0A;ascript:alert('XSS');\">"),  # embedded newline
             ("<IMG SRC=\"jav   ascript:alert('XSS');\">"),  # embedded tab
@@ -94,7 +97,9 @@ class TestSanitizer(BaseCase):
             ("<TABLE BACKGROUND=\"javascript:alert('XSS')\">"),  # table
             ("<TABLE><TD BACKGROUND=\"javascript:alert('XSS')\">"),  # td
             ("<DIV STYLE=\"background-image: url(javascript:alert('XSS'))\">"),  # div background
-            ("<DIV STYLE=\"background-image:\0075\0072\006C\0028'\006a\0061\0076\0061\0073\0063\0072\0069\0070\0074\003a\0061\006c\0065\0072\0074\0028.1027\0058.1053\0053\0027\0029'\0029\">"),  # div background with unicoded exploit
+            (
+                "<DIV STYLE=\"background-image:\0075\0072\006C\0028'\006a\0061\0076\0061\0073\0063\0072\0069\0070\0074\003a\0061\006c\0065\0072\0074\0028.1027\0058.1053\0053\0027\0029'\0029\">"),
+            # div background with unicoded exploit
             ("<DIV STYLE=\"background-image: url(&#1;javascript:alert('XSS'))\">"),  # div background + extra characters
             ("<IMG SRC='vbscript:msgbox(\"XSS\")'>"),  # VBscrip in an image
             ("<BODY ONLOAD=alert('XSS')>"),  # event handler
@@ -102,14 +107,17 @@ class TestSanitizer(BaseCase):
             ("<LINK REL=\"stylesheet\" HREF=\"javascript:alert('XSS');\">"),  # style sheet
             ("<LINK REL=\"stylesheet\" HREF=\"http://ha.ckers.org/xss.css\">"),  # remote style sheet
             ("<STYLE>@import'http://ha.ckers.org/xss.css';</STYLE>"),  # remote style sheet 2
-            ("<META HTTP-EQUIV=\"Link\" Content=\"<http://ha.ckers.org/xss.css>; REL=stylesheet\">"),  # remote style sheet 3
+            ("<META HTTP-EQUIV=\"Link\" Content=\"<http://ha.ckers.org/xss.css>; REL=stylesheet\">"),
+            # remote style sheet 3
             ("<STYLE>BODY{-moz-binding:url(\"http://ha.ckers.org/xssmoz.xml#xss\")}</STYLE>"),  # remote style sheet 4
-            ("<IMG STYLE=\"xss:expr/*XSS*/ession(alert('XSS'))\">"),  # style attribute using a comment to break up expression
+            ("<IMG STYLE=\"xss:expr/*XSS*/ession(alert('XSS'))\">"),
+            # style attribute using a comment to break up expression
         ]
         for content in cases:
             html = html_sanitize(content)
             self.assertNotIn('javascript', html, 'html_sanitize did not remove a malicious javascript')
-            self.assertTrue('ha.ckers.org' not in html or 'http://ha.ckers.org/xss.css' in html, 'html_sanitize did not remove a malicious code in %s (%s)' % (content, html))
+            self.assertTrue('ha.ckers.org' not in html or 'http://ha.ckers.org/xss.css' in html,
+                            'html_sanitize did not remove a malicious code in %s (%s)' % (content, html))
 
         content = "<!--[if gte IE 4]><SCRIPT>alert('XSS');</SCRIPT><![endif]-->"  # down-level hidden block
         self.assertEqual(html_sanitize(content, silent=False), '')
@@ -167,7 +175,8 @@ class TestSanitizer(BaseCase):
             '<img alt="@github-login" class="avatar" src="/web/image/pi" height="36" width="36">']
         for not_email in not_emails:
             sanitized = html_sanitize(not_email)
-            left_part = not_email.split('>')[0]  # take only left part, as the sanitizer could add data information on node
+            left_part = not_email.split('>')[
+                0]  # take only left part, as the sanitizer could add data information on node
             self.assertNotIn(misc.html_escape(not_email), sanitized, 'html_sanitize stripped emails of original html')
             self.assertIn(left_part, sanitized)
 
@@ -193,7 +202,8 @@ class TestSanitizer(BaseCase):
         ]
 
         for test, in_lst, out_lst in test_data:
-            new_html = html_sanitize(test, sanitize_attributes=False, sanitize_style=True, strip_style=False, strip_classes=False)
+            new_html = html_sanitize(test, sanitize_attributes=False, sanitize_style=True, strip_style=False,
+                                     strip_classes=False)
             for text in in_lst:
                 self.assertIn(text, new_html)
             for text in out_lst:
@@ -204,18 +214,20 @@ class TestSanitizer(BaseCase):
         self.assertEqual(new_html, u'<span>Coin coin </span>')
 
     def test_style_class(self):
-        html = html_sanitize(test_mail_examples.REMOVE_CLASS, sanitize_attributes=True, sanitize_style=True, strip_classes=True)
+        html = html_sanitize(test_mail_examples.REMOVE_CLASS, sanitize_attributes=True, sanitize_style=True,
+                             strip_classes=True)
         for ext in test_mail_examples.REMOVE_CLASS_IN:
             self.assertIn(ext, html)
         for ext in test_mail_examples.REMOVE_CLASS_OUT:
-            self.assertNotIn(ext, html,)
+            self.assertNotIn(ext, html, )
 
     def test_style_class_only(self):
-        html = html_sanitize(test_mail_examples.REMOVE_CLASS, sanitize_attributes=False, sanitize_style=True, strip_classes=True)
+        html = html_sanitize(test_mail_examples.REMOVE_CLASS, sanitize_attributes=False, sanitize_style=True,
+                             strip_classes=True)
         for ext in test_mail_examples.REMOVE_CLASS_IN:
             self.assertIn(ext, html)
         for ext in test_mail_examples.REMOVE_CLASS_OUT:
-            self.assertNotIn(ext, html,)
+            self.assertNotIn(ext, html, )
 
     def test_edi_source(self):
         html = html_sanitize(test_mail_examples.EDI_LIKE_HTML_SOURCE)
@@ -371,7 +383,8 @@ class TestSanitizer(BaseCase):
         self.assertEqual(html, False)
 
         # Message with xml and doctype tags don't crash
-        html = html_sanitize(u'<?xml version="1.0" encoding="iso-8859-1"?>\n<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"\n         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">\n <head>\n  <title>404 - Not Found</title>\n </head>\n <body>\n  <h1>404 - Not Found</h1>\n </body>\n</html>\n')
+        html = html_sanitize(
+            u'<?xml version="1.0" encoding="iso-8859-1"?>\n<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"\n         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">\n <head>\n  <title>404 - Not Found</title>\n </head>\n <body>\n  <h1>404 - Not Found</h1>\n </body>\n</html>\n')
         self.assertNotIn('encoding', html)
         self.assertNotIn('<title>404 - Not Found</title>', html)
         self.assertIn('<h1>404 - Not Found</h1>', html)
@@ -426,11 +439,13 @@ class TestHtmlTools(BaseCase):
              '<!DOCTYPE...><html encoding="blah">some <b>content</b>\n<p>--<br/>Yours truly</p>\n</html>'),
             ('<html><body>some <b>content</b></body></html>', '--\nYours & <truly>', True, True, False,
              '<html><body>some <b>content</b>\n<pre>--\nYours &amp; &lt;truly&gt;</pre>\n</body></html>'),
-            ('<html><body>some <b>content</b></body></html>', '<!DOCTYPE...>\n<html><body>\n<p>--</p>\n<p>Yours truly</p>\n</body>\n</html>', False, False, False,
+            ('<html><body>some <b>content</b></body></html>',
+             '<!DOCTYPE...>\n<html><body>\n<p>--</p>\n<p>Yours truly</p>\n</body>\n</html>', False, False, False,
              '<html><body>some <b>content</b>\n\n\n<p>--</p>\n<p>Yours truly</p>\n\n\n</body></html>'),
         ]
         for html, content, plaintext_flag, preserve_flag, container_tag, expected in test_samples:
-            self.assertEqual(append_content_to_html(html, content, plaintext_flag, preserve_flag, container_tag), expected, 'append_content_to_html is broken')
+            self.assertEqual(append_content_to_html(html, content, plaintext_flag, preserve_flag, container_tag),
+                             expected, 'append_content_to_html is broken')
 
     def test_is_html_empty(self):
         void_strings_samples = ['', False, ' ']
@@ -588,8 +603,10 @@ class TestEmailTools(BaseCase):
             '"Super Déboulonneur" <deboulonneur@example.com>',  # formatted
             'Déboulonneur deboulonneur@example.com',  # wrong formatting
             'deboulonneur@example.com Déboulonneur',  # wrong formatting (happens, alas)
-            '"Super Déboulonneur" <DEBOULONNEUR@example.com>, "Super Déboulonneur 2" <deboulonneur2@EXAMPLE.com>',  # multi + case
-            ' Déboulonneur deboulonneur@example.com déboulonneur deboulonneur2@example.com',  # wrong formatting + wrong multi
+            '"Super Déboulonneur" <DEBOULONNEUR@example.com>, "Super Déboulonneur 2" <deboulonneur2@EXAMPLE.com>',
+            # multi + case
+            ' Déboulonneur deboulonneur@example.com déboulonneur deboulonneur2@example.com',
+            # wrong formatting + wrong multi
             '"Déboulonneur 😊" <deboulonneur.😊@example.com>',  # unicode in name and email left-part
             '"Déboulonneur" <déboulonneur@examplé.com>',  # utf-8
             '"Déboulonneur" <DéBoulonneur@Examplé.com>',  # utf-8
@@ -624,7 +641,9 @@ class TestEmailTools(BaseCase):
             f'{format_name_ascii} <déboulonneur@xn--exampl-gva.com>',
             f'{format_name_ascii} <DéBoulonneur@xn--exampl-gva.com>',
         ]
-        for source, expected, expected_utf8_fmt, expected_ascii_fmt in zip(sources, expected_list, expected_fmt_utf8_list, expected_fmt_ascii_list):
+        for source, expected, expected_utf8_fmt, expected_ascii_fmt in zip(sources, expected_list,
+                                                                           expected_fmt_utf8_list,
+                                                                           expected_fmt_ascii_list):
             with self.subTest(source=source):
                 self.assertEqual(email_normalize(source, strict=True), expected)
                 # standard usage of formataddr
@@ -677,7 +696,8 @@ class TestEmailTools(BaseCase):
             # email address when going through 'getaddresses'
             # - multi @
             ('fr@ncois.th@notgmail.com', ['fr@ncois.th']),
-            ('f@r@nc.gz,ois@notgmail.com', ['r@nc.gz', 'ois@notgmail.com']),  # still failing, but differently from 'getaddresses' alone
+            ('f@r@nc.gz,ois@notgmail.com', ['r@nc.gz', 'ois@notgmail.com']),
+            # still failing, but differently from 'getaddresses' alone
             ('@notgmail.com esteban_gnole@coldmail.com@notgmail.com', ['esteban_gnole@coldmail.com']),
             # - multi emails (with invalid)
             (
@@ -737,7 +757,8 @@ class TestEmailTools(BaseCase):
             # multi
             'Déboulonneur, deboulonneur@example.com',  # multi-like with errors
             'deboulonneur@example.com, deboulonneur2@example.com',  # multi
-            ' Déboulonneur deboulonneur@example.com déboulonneur deboulonneur2@example.com',  # wrong formatting + wrong multi
+            ' Déboulonneur deboulonneur@example.com déboulonneur deboulonneur2@example.com',
+            # wrong formatting + wrong multi
             # format / misc
             '"Déboulonneur" <"Déboulonneur Encapsulated" <deboulonneur@example.com>>',  # double formatting
             '"Super Déboulonneur" <deboulonneur@example.com>, "Super Déboulonneur 2" <deboulonneur2@example.com>',
@@ -781,7 +802,8 @@ class TestEmailTools(BaseCase):
             [('Fredo The Great', 'alfred.astaire@test.example.com')],
             # multiple emails
             [('', 'alfred.astaire@test.example.com'), ('', 'evelyne.gargouillis@test.example.com')],
-            [('Fredo The Great', 'alfred.astaire@test.example.com'), ('Evelyne The Goat', 'evelyne.gargouillis@test.example.com')],
+            [('Fredo The Great', 'alfred.astaire@test.example.com'),
+             ('Evelyne The Goat', 'evelyne.gargouillis@test.example.com')],
             [('Fredo The Great', 'alfred.astaire@test.example.com'), ('', 'evelyne.gargouillis@test.example.com')],
             [('Fredo The Great', 'alfred.astaire@test.example.com'), ('', 'evelyne.gargouillis@test.example.com')],
             # text containing email -> fallback on parsing to extract text from email
@@ -807,17 +829,17 @@ class TestEmailTools(BaseCase):
         email_idna = 'joe@examplé.com'
         cases = [
             # (name, address),          charsets            expected
-            (('', email_base),          ['ascii', 'utf-8'], 'joe@example.com'),
-            (('joe', email_base),       ['ascii', 'utf-8'], '"joe" <joe@example.com>'),
-            (('joe doe', email_base),   ['ascii', 'utf-8'], '"joe doe" <joe@example.com>'),
-            (('joe"doe', email_base),   ['ascii', 'utf-8'], '"joe\\"doe" <joe@example.com>'),
-            (('joé', email_base),       ['ascii'],          '=?utf-8?b?am/DqQ==?= <joe@example.com>'),
-            (('joé', email_base),       ['utf-8'],          '"joé" <joe@example.com>'),
-            (('', email_idna),          ['ascii'],          'joe@xn--exampl-gva.com'),
-            (('', email_idna),          ['utf-8'],          'joe@examplé.com'),
-            (('joé', email_idna),       ['ascii'],          '=?utf-8?b?am/DqQ==?= <joe@xn--exampl-gva.com>'),
-            (('joé', email_idna),       ['utf-8'],          '"joé" <joe@examplé.com>'),
-            (('', 'joé@example.com'),   ['ascii', 'utf-8'], 'joé@example.com'),
+            (('', email_base), ['ascii', 'utf-8'], 'joe@example.com'),
+            (('joe', email_base), ['ascii', 'utf-8'], '"joe" <joe@example.com>'),
+            (('joe doe', email_base), ['ascii', 'utf-8'], '"joe doe" <joe@example.com>'),
+            (('joe"doe', email_base), ['ascii', 'utf-8'], '"joe\\"doe" <joe@example.com>'),
+            (('joé', email_base), ['ascii'], '=?utf-8?b?am/DqQ==?= <joe@example.com>'),
+            (('joé', email_base), ['utf-8'], '"joé" <joe@example.com>'),
+            (('', email_idna), ['ascii'], 'joe@xn--exampl-gva.com'),
+            (('', email_idna), ['utf-8'], 'joe@examplé.com'),
+            (('joé', email_idna), ['ascii'], '=?utf-8?b?am/DqQ==?= <joe@xn--exampl-gva.com>'),
+            (('joé', email_idna), ['utf-8'], '"joé" <joe@examplé.com>'),
+            (('', 'joé@example.com'), ['ascii', 'utf-8'], 'joé@example.com'),
         ]
 
         for pair, charsets, expected in cases:
@@ -859,7 +881,7 @@ class TestEmailTools(BaseCase):
         expected = [
             # single email
             ['alfred.astaire@test.example.com'],
-            [], [], [], [], # formatting issue for single email re
+            [], [], [], [],  # formatting issue for single email re
             # multiple emails -> couic
             [], [], [], [],
             # text containing email -> couic
@@ -931,7 +953,8 @@ Paragraph /with/ *bold*
 table element 1
 table element 2
 0 < 10 & \N{NO-BREAK SPACE} 10 > 0""")
-        self.assertEqual(html2plaintext('<p><img src="/web/image/428-c064ab1b/test-image.jpg?access_token=f72b5ec5-a363-45fb-b9ad-81fc794d6d7b" class="img img-fluid o_we_custom_image"><br></p>'),
+        self.assertEqual(html2plaintext(
+            '<p><img src="/web/image/428-c064ab1b/test-image.jpg?access_token=f72b5ec5-a363-45fb-b9ad-81fc794d6d7b" class="img img-fluid o_we_custom_image"><br></p>'),
                          """test-image [1]
 
 

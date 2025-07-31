@@ -37,16 +37,21 @@
                                 <field name="state_required"/>
                             </group>
                         </group>
-                        <group name="advanced_address_formatting" string="Advanced Address Formatting" groups="base.group_no_one">
+                        <group name="advanced_address_formatting" string="Advanced Address Formatting"
+                               groups="base.group_no_one">
                             <label for="address_view_id"/>
                             <div class="o_row">
                                 <field name="address_view_id"/>
-                                <div class="text-muted ms-2">Choose a subview of partners that includes only address fields, to change the way users can input addresses.</div>
+                                <div class="text-muted ms-2">Choose a subview of partners that includes only address
+                                    fields, to change the way users can input addresses.
+                                </div>
                             </div>
                             <label for="address_format"/>
                             <div class="o_row">
                                 <field name="address_format" placeholder="Address format..."/>
-                                <div name="div_address_format ms-2" class="text-muted">Change the way addresses are displayed in reports</div>
+                                <div name="div_address_format ms-2" class="text-muted">Change the way addresses are
+                                    displayed in reports
+                                </div>
                             </div>
                             <field name="name_position" class="oe_inline"/>
                         </group>
@@ -79,7 +84,8 @@
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
                     No Country Found!
-                </p><p>
+                </p>
+                <p>
                     Manage the list of countries that can be set on your contacts.
                 </p>
             </field>
@@ -103,10 +109,13 @@
                     <sheet>
                         <div class="oe_title">
                             <label for="name" string="Group Name"/>
-                            <h1><field name="name" placeholder="e.g. Europe"/></h1>
+                            <h1>
+                                <field name="name" placeholder="e.g. Europe"/>
+                            </h1>
                         </div>
                         <group name="country_group">
-                            <field name="country_ids" widget="many2many_tags" options="{'no_open': True, 'no_create': True}"/>
+                            <field name="country_ids" widget="many2many_tags"
+                                   options="{'no_open': True, 'no_create': True}"/>
                         </group>
                     </sheet>
                 </form>
@@ -119,8 +128,10 @@
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
                     Create a Country Group
-                </p><p>
-                    Use groups to organize countries that are frequently selected together (e.g. "LATAM", "BeNeLux", "ASEAN").
+                </p>
+                <p>
+                    Use groups to organize countries that are frequently selected together (e.g. "LATAM", "BeNeLux",
+                    "ASEAN").
                 </p>
             </field>
         </record>
@@ -175,7 +186,8 @@
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
                     Create a State
-                </p><p>
+                </p>
+                <p>
                     Federal States belong to countries and are part of your contacts' addresses.
                 </p>
             </field>

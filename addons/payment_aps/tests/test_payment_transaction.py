@@ -1,11 +1,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.tests import tagged
-from odoo.tools import mute_logger
-
 from odoo.addons.payment import utils as payment_utils
 from odoo.addons.payment_aps.controllers.main import APSController
 from odoo.addons.payment_aps.tests.common import APSCommon
+
+from odoo.tests import tagged
+from odoo.tools import mute_logger
 
 
 @tagged('post_install', '-at_install')

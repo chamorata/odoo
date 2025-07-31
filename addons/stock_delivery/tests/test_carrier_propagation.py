@@ -1,6 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from unittest.mock import patch, DEFAULT
+
 from odoo import Command
 from odoo.exceptions import UserError
 from odoo.tests import Form
@@ -53,7 +54,8 @@ class TestCarrierPropagation(TransactionCase):
             'invoice_policy': 'delivery',
             'route_ids': [(6, 0, mto_route.ids)],
         })
-        cls.rule_pack = cls.warehouse.delivery_route_id.rule_ids.filtered(lambda r: r.picking_type_id == cls.warehouse.pack_type_id)
+        cls.rule_pack = cls.warehouse.delivery_route_id.rule_ids.filtered(
+            lambda r: r.picking_type_id == cls.warehouse.pack_type_id)
 
     def test_carrier_no_propagation(self):
         """
@@ -69,7 +71,8 @@ class TestCarrierPropagation(TransactionCase):
             'partner_id': self.partner_propagation.id,
             'partner_invoice_id': self.partner_propagation.id,
             'order_line': [
-                (0, 0, {'name': self.super_product.name, 'product_id': self.super_product.id, 'product_uom_qty': 1, 'price_unit': 1,}),
+                (0, 0, {'name': self.super_product.name, 'product_id': self.super_product.id, 'product_uom_qty': 1,
+                        'price_unit': 1, }),
             ]
         })
         delivery_wizard = Form(self.env['choose.delivery.carrier'].with_context({
@@ -103,7 +106,7 @@ class TestCarrierPropagation(TransactionCase):
                 'partner_id': self.partner_propagation.id,
                 'partner_invoice_id': self.partner_propagation.id,
                 'order_line': [
-                    (0, 0, {'name': product.name, 'product_id': product.id, 'product_uom_qty': 1, 'price_unit': 1,}),
+                    (0, 0, {'name': product.name, 'product_id': product.id, 'product_uom_qty': 1, 'price_unit': 1, }),
                 ]
             })
             delivery_wizard = Form(self.env['choose.delivery.carrier'].with_context({
@@ -133,7 +136,7 @@ class TestCarrierPropagation(TransactionCase):
         """
         route1 = self.env['stock.route'].create({
             'name': 'Route1',
-            'sale_selectable' : True,
+            'sale_selectable': True,
             'shipping_selectable': True,
             'warehouse_ids': [Command.link(self.env.ref("stock.warehouse0").id)],
             'rule_ids': [Command.create({
@@ -153,8 +156,8 @@ class TestCarrierPropagation(TransactionCase):
         })
         route2 = self.env['stock.route'].create({
             'name': 'Route2',
-            'sale_selectable' : True,
-            'shipping_selectable':True,
+            'sale_selectable': True,
+            'shipping_selectable': True,
             'warehouse_ids': [Command.link(self.env.ref("stock.warehouse0").id)],
             'rule_ids': [Command.create({
                 'name': 'rule2',
@@ -178,7 +181,7 @@ class TestCarrierPropagation(TransactionCase):
                 'product_uom_qty': 2,
                 'product_uom': self.product_uom_unit.id,
                 'price_unit': 750.00,
-                'route_id' : route1.id,
+                'route_id': route1.id,
             })],
         })
 
@@ -262,9 +265,11 @@ class TestCarrierPropagation(TransactionCase):
             # side effect to throw an error for a given picking but resolve the normal call for the other
             def _throw_error_on_chosen_picking(self):
                 if self == pick:
-                    raise UserError("Something went wrong, parcel not returned from Sendcloud: {'weight': ['The weight must be less than 10.001 kg']}")
+                    raise UserError(
+                        "Something went wrong, parcel not returned from Sendcloud: {'weight': ['The weight must be less than 10.001 kg']}")
                 else:
                     return DEFAULT
+
             return _throw_error_on_chosen_picking
 
         sale_orders.action_confirm()
@@ -278,4 +283,6 @@ class TestCarrierPropagation(TransactionCase):
             pickings.with_user(alien).button_validate()
         # both pickings should be validated but and activity should have been created for the invalid picking
         self.assertEqual(pickings.mapped('state'), ['done', 'done'])
-        self.assertTrue(self.env['mail.activity'].search([('res_model', '=', 'stock.picking'), ('res_id', '=', pickings[1].id), ('user_id', '=', alien.id)], limit=1))
+        self.assertTrue(self.env['mail.activity'].search(
+            [('res_model', '=', 'stock.picking'), ('res_id', '=', pickings[1].id), ('user_id', '=', alien.id)],
+            limit=1))

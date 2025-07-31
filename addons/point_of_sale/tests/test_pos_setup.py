@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import tools
-import odoo
 from odoo.addons.point_of_sale.tests.common import TestPoSCommon
+
+import odoo
 from odoo.exceptions import ValidationError
+
 
 @odoo.tests.tagged('post_install', '-at_install')
 class TestPoSSetup(TestPoSCommon):
@@ -13,6 +14,7 @@ class TestPoSSetup(TestPoSCommon):
 
     If a test fails here, then it means there are inconsistencies in what we expect in the setup.
     """
+
     def setUp(self):
         super(TestPoSSetup, self).setUp()
 
@@ -47,7 +49,6 @@ class TestPoSSetup(TestPoSCommon):
     def test_product_price(self):
         def get_price(pricelist, product):
             return pricelist._get_product_price(product, 1)
-
 
         # check usd pricelist
         pricelist = self.basic_config.pricelist_id

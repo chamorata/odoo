@@ -36,7 +36,7 @@ class GoogleEvent(abc.Set):
                 raise ValueError("Only %s or iterable of dict are supported" % self.__class__.__name__)
         self._events = ReadonlyDict(_events)
 
-    def __iter__(self) ->  Iterator['GoogleEvent']:
+    def __iter__(self) -> Iterator['GoogleEvent']:
         return iter(GoogleEvent([vals]) for vals in self._events.values())
 
     def __contains__(self, google_event):
@@ -79,7 +79,8 @@ class GoogleEvent(abc.Set):
         """Returns the Odoo id stored in the Google Event metadata.
         This id might not actually exists in the database.
         """
-        properties = self.extendedProperties and (self.extendedProperties.get('shared', {}) or self.extendedProperties.get('private', {})) or {}
+        properties = self.extendedProperties and (
+                    self.extendedProperties.get('shared', {}) or self.extendedProperties.get('private', {})) or {}
         o_id = properties.get('%s_odoo_id' % dbname)
         if o_id:
             return int(o_id)
@@ -120,7 +121,6 @@ class GoogleEvent(abc.Set):
                 e._events[e.id]['_odoo_id'] = odoo_id
         return self.filter(lambda e: e.id in existing_google_ids)
 
-
     def owner(self, env):
         # Owner/organizer could be desynchronised between Google and Odoo.
         # Let userA, userB be two new users (never synced to Google before).
@@ -130,7 +130,8 @@ class GoogleEvent(abc.Set):
         # (they are the organizer in Google). The "real" owner (in Odoo) is stored as an
         # extended property. There is currently no support to "transfert" ownership when
         # userA syncs their calendar the first time.
-        real_owner_id = self.extendedProperties and self.extendedProperties.get('shared', {}).get('%s_owner_id' % env.cr.dbname)
+        real_owner_id = self.extendedProperties and self.extendedProperties.get('shared', {}).get(
+            '%s_owner_id' % env.cr.dbname)
         try:
             # If we create an event without user_id, the event properties will be 'false'
             # and python will interpret this a a NoneType, that's why we have the 'except TypeError'
@@ -162,7 +163,8 @@ class GoogleEvent(abc.Set):
 
     def is_recurrence(self):
         if self._is_type_ambiguous():
-            _logger.warning("Ambiguous event type: cannot accurately tell whether a cancelled event is a recurrence or not")
+            _logger.warning(
+                "Ambiguous event type: cannot accurately tell whether a cancelled event is a recurrence or not")
         return bool(self.recurrence)
 
     def is_recurrent(self):
@@ -236,7 +238,8 @@ class GoogleEvent(abc.Set):
     def get_meeting_url(self):
         if not self.conferenceData:
             return False
-        video_meeting = list(filter(lambda entryPoints: entryPoints.get('entryPointType') == 'video', self.conferenceData.get('entryPoints', [])))
+        video_meeting = list(filter(lambda entryPoints: entryPoints.get('entryPointType') == 'video',
+                                    self.conferenceData.get('entryPoints', [])))
         return video_meeting[0].get('uri') if video_meeting else False
 
     def is_available(self):

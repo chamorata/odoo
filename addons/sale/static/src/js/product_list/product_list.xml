@@ -2,21 +2,21 @@
 <templates xml:space="preserve">
     <t t-name="sale.ProductList">
         <span
-            name="sale_product_configurator_list_title"
-            class="d-inline-block mt-4 mb-3 h4"
-            t-if="this.props.areProductsOptional"
-            t-out="optionalProductsTitle"/>
+                name="sale_product_configurator_list_title"
+                class="d-inline-block mt-4 mb-3 h4"
+                t-if="this.props.areProductsOptional"
+                t-out="optionalProductsTitle"/>
         <table
-            class="o_sale_product_configurator_table table table-sm position-relative mb-0"
-            t-att-class="{'o_sale_product_configurator_table_optional': this.props.areProductsOptional}">
+                class="o_sale_product_configurator_table table table-sm position-relative mb-0"
+                t-att-class="{'o_sale_product_configurator_table_optional': this.props.areProductsOptional}">
             <thead t-if="!this.props.areProductsOptional">
                 <tr>
                     <th class="px-0 border-bottom-0" colspan="2">Product</th>
                     <th class="px-0 text-center border-bottom-0" t-if="env.showQuantity">Quantity</th>
                     <th
-                        class="px-0 text-end border-bottom-0"
-                        t-if="env.showPrice"
-                        t-att-colspan="env.showQuantity ? 1 : 2"
+                            class="px-0 text-end border-bottom-0"
+                            t-if="env.showPrice"
+                            t-att-colspan="env.showQuantity ? 1 : 2"
                     >
                         Price
                     </th>
@@ -29,9 +29,9 @@
                 <tr t-if="!this.props.areProductsOptional &amp;&amp; env.showPrice">
                     <td colspan="4" class="text-end">
                         <span
-                            name="sale_product_configurator_list_total"
-                            class="h4"
-                            t-out="totalMessage"
+                                name="sale_product_configurator_list_total"
+                                class="h4"
+                                t-out="totalMessage"
                         />
                     </td>
                 </tr>

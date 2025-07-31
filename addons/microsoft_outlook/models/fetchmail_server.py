@@ -13,7 +13,8 @@ class FetchmailServer(models.Model):
 
     _OUTLOOK_SCOPE = 'https://outlook.office.com/IMAP.AccessAsUser.All'
 
-    server_type = fields.Selection(selection_add=[('outlook', 'Outlook OAuth Authentication')], ondelete={'outlook': 'set default'})
+    server_type = fields.Selection(selection_add=[('outlook', 'Outlook OAuth Authentication')],
+                                   ondelete={'outlook': 'set default'})
 
     def _compute_server_type_info(self):
         outlook_servers = self.filtered(lambda server: server.server_type == 'outlook')

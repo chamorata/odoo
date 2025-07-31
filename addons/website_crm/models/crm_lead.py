@@ -53,7 +53,8 @@ class Lead(models.Model):
         values['user_id'] = values.get('user_id') or \
                             request.website.crm_default_user_id.id
         if values.get('team_id'):
-            values['type'] = 'lead' if self.env['crm.team'].sudo().browse(values['team_id']).use_leads else 'opportunity'
+            values['type'] = 'lead' if self.env['crm.team'].sudo().browse(
+                values['team_id']).use_leads else 'opportunity'
         else:
             values['type'] = 'lead' if self.env.user.has_group('crm.group_use_lead') else 'opportunity'
 

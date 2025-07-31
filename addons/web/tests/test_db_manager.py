@@ -148,7 +148,7 @@ class TestDatabaseOperations(BaseCase):
 
         # upload the backup under a new name (create a duplicate)
         with self.subTest(DEFAULT_MAX_CONTENT_LENGTH=None), \
-             patch.object(odoo.http, 'DEFAULT_MAX_CONTENT_LENGTH', None):
+                patch.object(odoo.http, 'DEFAULT_MAX_CONTENT_LENGTH', None):
             backup_file.seek(0)
             self.session.post(
                 self.url('/web/database/restore'),
@@ -169,7 +169,7 @@ class TestDatabaseOperations(BaseCase):
         # too large under the default size limit, the default size limit
         # shouldn't apply to /web/database URLs
         with self.subTest(DEFAULT_MAX_CONTENT_LENGTH=1024), \
-             patch.object(odoo.http, 'DEFAULT_MAX_CONTENT_LENGTH', 1024):
+                patch.object(odoo.http, 'DEFAULT_MAX_CONTENT_LENGTH', 1024):
             backup_file.seek(0)
             self.session.post(
                 self.url('/web/database/restore'),
@@ -185,7 +185,6 @@ class TestDatabaseOperations(BaseCase):
             ).raise_for_status()
         self.assertDbs([test_db_name])
         self.url_open_drop(test_db_name)
-
 
     def test_database_http_registries(self):
         # This test is about dropping a connection inside one worker and
@@ -242,7 +241,6 @@ class TestDatabaseOperations(BaseCase):
                 "INFO:odoo.sql_db:Connection to the database failed",
             ])
 
-
         # The other worker has a registry in its LRU cache for that
         # session database. But it doesn't have a connection to the sql
         # database.
@@ -250,7 +248,7 @@ class TestDatabaseOperations(BaseCase):
             session_store.save(session)
             registries[test_db_name] = registry
             with self.assertLogs('odoo.sql_db', logging.INFO) as capture, \
-                 patch.object(Registry, '__new__', return_value=registry):
+                    patch.object(Registry, '__new__', return_value=registry):
                 res = self.session.get(self.url('/web/health'))
             self.assertEqual(res.status_code, 200)
             self.assertEqual(session_store.get(session.sid)['db'], None)
@@ -265,8 +263,8 @@ class TestDatabaseOperations(BaseCase):
             session_store.save(session)
             registries[test_db_name] = registry
             with self.assertLogs('odoo.sql_db', logging.ERROR) as capture, \
-                 patch.object(Registry, '__new__', return_value=registry), \
-                 patch.object(Registry, 'cursor', return_value=cr):
+                    patch.object(Registry, '__new__', return_value=registry), \
+                    patch.object(Registry, 'cursor', return_value=cr):
                 res = self.session.get(self.url('/web/health'))
             self.assertEqual(res.status_code, 200)
             self.assertEqual(session_store.get(session.sid)['db'], None)

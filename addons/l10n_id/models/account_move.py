@@ -116,7 +116,8 @@ class AccountMove(models.Model):
         super()._compute_tax_totals()
         for move in self.filtered(lambda m: m.is_sale_document()):
             # invoice might be coming from different companies, each tax group with unique XML ID
-            non_luxury_tax_group = self.env['account.chart.template'].with_company(move.company_id.id).ref("l10n_id_tax_group_non_luxury_goods", raise_if_not_found=False)
+            non_luxury_tax_group = self.env['account.chart.template'].with_company(move.company_id.id).ref(
+                "l10n_id_tax_group_non_luxury_goods", raise_if_not_found=False)
 
             if not non_luxury_tax_group or move.invoice_date and move.invoice_date < fields.Date.to_date('2025-01-01'):
                 continue

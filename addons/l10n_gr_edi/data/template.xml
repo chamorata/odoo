@@ -6,7 +6,7 @@
                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                      xmlns:icls="https://www.aade.gr/myDATA/incomeClassificaton/v1.0"
                      xmlns:ecls="https://www.aade.gr/myDATA/expensesClassificaton/v1.0"
-                     xsi:schemaLocation="http://www.aade.gr/myDATA/invoice/v1.0/InvoicesDoc-v0.6.xsd">
+        >
             <invoice t-foreach="invoice_values_list" t-as="invoice_vals">
                 <issuer>
                     <vatNumber t-out="invoice_vals['issuer_vat_number']"/>

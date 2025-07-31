@@ -9,7 +9,8 @@
                 <field name="user_id"/>
                 <filter name='is_payment' string="Payment" domain="[('amount', '>', 0)]"/>
                 <separator/>
-                <filter name='is_mine_group' string="My Account grouped" domain="[('user_id','=',uid)]" context="{'group_by':'user_id'}"/>
+                <filter name='is_mine_group' string="My Account grouped" domain="[('user_id','=',uid)]"
+                        context="{'group_by':'user_id'}"/>
                 <filter name="group_by_user" string="By User" context="{'group_by':'user_id'}"/>
             </search>
         </field>
@@ -85,15 +86,17 @@
                     <t t-name="card">
                         <div class="row mb4">
                             <div class="col-8 fw-bold fs-5">
-                                <field name="description" />
+                                <field name="description"/>
                             </div>
                             <div class="col-4 text-end badge rounded-pill fw-bolder pe-3 pt-1">
-                                <i class="fa fa-money" role="img" aria-label="Amount" title="Amount"/> <field name="amount" widget="monetary"/>
+                                <i class="fa fa-money" role="img" aria-label="Amount" title="Amount"/>
+                                <field name="amount" widget="monetary"/>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-6">
-                                <i class="fa fa-clock-o" role="img" aria-label="Date" title="Date"/> <field name="date"/>
+                                <i class="fa fa-clock-o" role="img" aria-label="Date" title="Date"/>
+                                <field name="date"/>
                             </div>
                             <div class="col-6">
                                 <field name="user_id" widget="many2one_avatar_user" class="float-end"/>
@@ -113,12 +116,14 @@
         <field name="domain">[('user_id','=',uid)]</field>
         <field name="view_id" ref="lunch_cashmove_report_view_tree_2"/>
         <field name="help" type="html">
-          <p class="o_view_nocontent_empty_folder">
-            No cash move yet
-          </p><p>
-            Here you can see your cash moves.<br/>A cash move can either be an expense or a payment.
-            An expense is automatically created when an order is received while a payment is a reimbursement to the company encoded by the manager.
-          </p>
+            <p class="o_view_nocontent_empty_folder">
+                No cash move yet
+            </p>
+            <p>
+                Here you can see your cash moves.<br/>A cash move can either be an expense or a payment.
+                An expense is automatically created when an order is received while a payment is a reimbursement to the
+                company encoded by the manager.
+            </p>
         </field>
     </record>
 
@@ -130,13 +135,16 @@
         <field name="context">{"search_default_group_by_user":1}</field>
         <field name="view_id" ref="lunch_cashmove_report_view_tree"/>
         <field name="help" type="html">
-          <p class="o_view_nocontent_smiling_face">
-            Create a new payment
-          </p><p>
-            A cashmove can either be an expense or a payment.<br/>
-            An expense is automatically created at the order receipt.<br/>
-            A payment represents the employee reimbursement to the company.
-          </p>
+            <p class="o_view_nocontent_smiling_face">
+                Create a new payment
+            </p>
+            <p>
+                A cashmove can either be an expense or a payment.
+                <br/>
+                An expense is automatically created at the order receipt.
+                <br/>
+                A payment represents the employee reimbursement to the company.
+            </p>
         </field>
     </record>
 </odoo>

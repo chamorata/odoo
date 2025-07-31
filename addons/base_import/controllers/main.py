@@ -5,7 +5,6 @@ import json
 
 from odoo import http
 from odoo.http import request
-from odoo.tools import misc
 
 
 class ImportController(http.Controller):

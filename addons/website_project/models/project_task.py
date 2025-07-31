@@ -9,11 +9,13 @@ class ProjectTask(models.Model):
     # Need this field to check there is no email loops when Odoo reply automatically
     email_from = fields.Char('Email From')
     # Used to submit tasks from a contact form
-    partner_name = fields.Char(string='Customer Name', related="partner_id.name", store=True, readonly=False, tracking=False)
+    partner_name = fields.Char(string='Customer Name', related="partner_id.name", store=True, readonly=False,
+                               tracking=False)
     partner_phone = fields.Char(
         compute='_compute_partner_phone', inverse='_inverse_partner_phone',
         string="Contact Number", readonly=False, store=True, copy=False)
-    partner_company_name = fields.Char(string='Company Name', related="partner_id.company_name", store=True, readonly=False, tracking=False)
+    partner_company_name = fields.Char(string='Company Name', related="partner_id.company_name", store=True,
+                                       readonly=False, tracking=False)
 
     @api.depends('partner_id.phone', 'partner_id.mobile')
     def _compute_partner_phone(self):

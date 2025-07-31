@@ -2,11 +2,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import json
 
-from odoo.tests import tagged
-
 from odoo.addons.survey.controllers.main import Survey
 from odoo.addons.survey.tests import common
 from odoo.addons.website.tools import MockRequest
+
+from odoo.tests import tagged
 
 
 @tagged("is_query_count")
@@ -162,7 +162,7 @@ class TestSurveyResults(common.TestSurveyResultsCommon):
         """ Check that, depending on the URL filters, the _extract_filters_data method
         is correctly returning the expected user input lines.
         """
-        self.env.invalidate_all() # clear env cache to not impact the query count
+        self.env.invalidate_all()  # clear env cache to not impact the query count
         with MockRequest(self.env), self.assertQueryCount(expected_query_count):
             found_user_input_lines, _ = self.SurveyController._extract_filters_data(self.survey, post)
         self.assertEqual(expected_user_input_lines, found_user_input_lines)

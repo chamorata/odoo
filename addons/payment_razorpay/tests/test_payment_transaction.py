@@ -5,13 +5,12 @@ from datetime import datetime
 from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
+from odoo.addons.payment import utils as payment_utils
+from odoo.addons.payment_razorpay.tests.common import RazorpayCommon
 
 from odoo.exceptions import UserError
 from odoo.tests import tagged
 from odoo.tools import mute_logger
-
-from odoo.addons.payment import utils as payment_utils
-from odoo.addons.payment_razorpay.tests.common import RazorpayCommon
 
 
 @tagged('post_install', '-at_install')
@@ -76,9 +75,9 @@ class TestPaymentTransaction(RazorpayCommon):
             tx1.state = state
             for other_tx in other_txs:
                 with patch(
-                    'odoo.addons.payment_razorpay.models.payment_provider.PaymentProvider'
-                    '._razorpay_make_request',
-                    return_value={'status': 'created', 'id': '12345', 'amount': other_tx.amount}
+                        'odoo.addons.payment_razorpay.models.payment_provider.PaymentProvider'
+                        '._razorpay_make_request',
+                        return_value={'status': 'created', 'id': '12345', 'amount': other_tx.amount}
                 ):
                     self._assert_does_not_raise(UserError, other_tx._send_payment_request)
                 other_tx.state = 'draft'
@@ -134,7 +133,7 @@ class TestPaymentTransaction(RazorpayCommon):
             tx.provider_reference,
             self.payment_id,
             msg="The provider reference should not be updated if the transaction is already"
-            " confirmed.",
+                " confirmed.",
         )
         self.assertEqual(
             tx.payment_method_id,
@@ -149,8 +148,8 @@ class TestPaymentTransaction(RazorpayCommon):
         tx1 = self._create_transaction('direct', reference='tx1', tokenize=True)
         tx1._process_notification_data(self.tokenize_payment_data)
         with patch(
-            'odoo.addons.payment_razorpay.models.payment_transaction.PaymentTransaction'
-            '._razorpay_tokenize_from_notification_data'
+                'odoo.addons.payment_razorpay.models.payment_transaction.PaymentTransaction'
+                '._razorpay_tokenize_from_notification_data'
         ) as tokenize_mock:
             # Create the second transaction with the first transaction's token.
             tx2 = self._create_transaction('token', reference='tx2', token_id=tx1.token_id.id)
@@ -166,8 +165,8 @@ class TestPaymentTransaction(RazorpayCommon):
         include token data. """
         tx = self._create_transaction('direct', tokenize=True)
         with patch(
-            'odoo.addons.payment_razorpay.models.payment_transaction.PaymentTransaction'
-            '._razorpay_tokenize_from_notification_data'
+                'odoo.addons.payment_razorpay.models.payment_transaction.PaymentTransaction'
+                '._razorpay_tokenize_from_notification_data'
         ) as tokenize_mock:
             tx._process_notification_data(self.tokenize_payment_data)
             self.assertEqual(tokenize_mock.call_count, 1)

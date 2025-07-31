@@ -1,8 +1,9 @@
 import io
-import requests
 import zipfile
 
+import requests
 from lxml import etree
+
 from odoo import models, fields, api, _
 
 NS_UPLOAD = {"ns": "mfp:anaf:dgti:spv:respUploadFisier:v1"}
@@ -69,7 +70,7 @@ class L10nRoEdiDocument(models.Model):
     attachment_id = fields.Many2one(comodel_name='ir.attachment')
     message = fields.Char()
     key_loading = fields.Char(string="E-Factura Index")  # To be used to fetch the status of previously sent XML
-    key_signature = fields.Char()    # Received from a successful response: to be saved for government purposes
+    key_signature = fields.Char()  # Received from a successful response: to be saved for government purposes
     key_certificate = fields.Char()  # Received from a successful response: to be saved for government purposes
 
     @api.model
@@ -86,7 +87,8 @@ class L10nRoEdiDocument(models.Model):
         result = make_efactura_request(
             session=requests,
             company=company,
-            endpoint='upload' if self.env.context.get('is_b2b') else 'uploadb2c',  # TODO: change the context value into a method parameter in master
+            endpoint='upload' if self.env.context.get('is_b2b') else 'uploadb2c',
+            # TODO: change the context value into a method parameter in master
             method='POST',
             params={'standard': 'UBL' if move_type == 'out_invoice' else 'CN',
                     'cif': company.vat.replace('RO', '')},

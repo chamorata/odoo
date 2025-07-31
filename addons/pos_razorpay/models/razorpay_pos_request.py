@@ -1,10 +1,13 @@
-import requests
 import logging
 
+import requests
+
 from odoo import _
+
 REQUEST_TIMEOUT = 10
 
 _logger = logging.getLogger(__name__)
+
 
 class RazorpayPosRequest:
     def __init__(self, payment_method):
@@ -30,7 +33,8 @@ class RazorpayPosRequest:
         :rtype: dict
         """
         endpoint = f'{self._razorpay_get_endpoint()}{endpoint}'
-        request_timeout = self.payment_method.env['ir.config_parameter'].sudo().get_param('pos_razorpay.timeout', REQUEST_TIMEOUT)
+        request_timeout = self.payment_method.env['ir.config_parameter'].sudo().get_param('pos_razorpay.timeout',
+                                                                                          REQUEST_TIMEOUT)
         try:
             response = self.session.post(endpoint, json=payload, timeout=request_timeout)
             response.raise_for_status()

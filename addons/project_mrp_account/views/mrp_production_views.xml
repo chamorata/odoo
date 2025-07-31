@@ -7,10 +7,10 @@
         <field name="arch" type="xml">
             <xpath expr="//button[@name='action_view_stock_valuation_layers']" position="after">
                 <button class="oe_stat_button" type="object"
-                    name="action_view_analytic_accounts"
-                    icon="fa-bar-chart-o"
-                    invisible="not has_analytic_account or state in ['draft', 'cancel']"
-                    groups="analytic.group_analytic_accounting">
+                        name="action_view_analytic_accounts"
+                        icon="fa-bar-chart-o"
+                        invisible="not has_analytic_account or state in ['draft', 'cancel']"
+                        groups="analytic.group_analytic_accounting">
                     <div class="o_stat_info">
                         <span class="o_stat_text">Analytic Account</span>
                     </div>

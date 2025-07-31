@@ -32,12 +32,12 @@
         <field name="skill_type_id" ref="hr_skills.hr_skill_type_lang"/>
     </record>
 
-     <function model="hr.job" name="write">
-            <value model="hr.job" search="[
+    <function model="hr.job" name="write">
+        <value model="hr.job" search="[
                 ('name', '=', 'Chief Executive Officer'),
             ]
             "/>
-            <value eval="{
+        <value eval="{
                 'skill_ids': [
                     Command.set([
                         ref('hr_skills.hr_skill_french'),
@@ -46,5 +46,5 @@
                     ]),
                 ],
             }"/>
-        </function>
+    </function>
 </odoo>

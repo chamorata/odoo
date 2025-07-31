@@ -26,7 +26,7 @@ class AccountMoveLine(models.Model):
 
     @api.model
     def _get_extra_query_base_tax_line_mapping(self) -> SQL:
-        #TO OVERRIDE
+        # TO OVERRIDE
         return SQL()
 
     @api.model

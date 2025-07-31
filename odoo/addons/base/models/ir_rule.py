@@ -9,6 +9,8 @@ from odoo.tools import config, SQL
 from odoo.tools.safe_eval import safe_eval, time
 
 _logger = logging.getLogger(__name__)
+
+
 class IrRule(models.Model):
     _name = 'ir.rule'
     _description = 'Record Rule'
@@ -17,7 +19,8 @@ class IrRule(models.Model):
     _allow_sudo_commands = False
 
     name = fields.Char(index=True)
-    active = fields.Boolean(default=True, help="If you uncheck the active field, it will disable the record rule without deleting it (if you delete a native record rule, it may be re-created when you reload the module).")
+    active = fields.Boolean(default=True,
+                            help="If you uncheck the active field, it will disable the record rule without deleting it (if you delete a native record rule, it may be re-created when you reload the module).")
     model_id = fields.Many2one('ir.model', string='Model', index=True, required=True, ondelete="cascade")
     groups = fields.Many2many('res.groups', 'rule_group_rel', 'rule_group_id', 'group_id', ondelete='restrict')
     domain_force = fields.Text(string='Domain')
@@ -107,7 +110,8 @@ class IrRule(models.Model):
                 expression.normalize_domain(dom)
             ])) < len(ids)
 
-        return all_rules.filtered(lambda r: r in group_rules or (not r.groups and is_failing(r))).with_user(self.env.user)
+        return all_rules.filtered(lambda r: r in group_rules or (not r.groups and is_failing(r))).with_user(
+            self.env.user)
 
     def _get_rules(self, model_name, mode='read'):
         """ Returns all the rules matching the model for the mode for the
@@ -138,7 +142,7 @@ class IrRule(models.Model):
                        'tuple(self._compute_domain_context_values())'),
     )
     def _compute_domain(self, model_name, mode="read"):
-        global_domains = []                     # list of domains
+        global_domains = []  # list of domains
 
         # add rules for parent models
         for parent_model_name, parent_field_name in self.env[model_name]._inherits.items():
@@ -152,7 +156,7 @@ class IrRule(models.Model):
         # browse user and rules with sudo to avoid access errors!
         eval_context = self._eval_context()
         user_groups = self.env.user.groups_id
-        group_domains = []                      # list of domains
+        group_domains = []  # list of domains
         for rule in rules.sudo():
             # evaluate the domain for the current user
             dom = safe_eval(rule.domain_force, eval_context) if rule.domain_force else []
@@ -201,23 +205,26 @@ class IrRule(models.Model):
         return res
 
     def _make_access_error(self, operation, records):
-        _logger.info('Access Denied by record rules for operation: %s on record ids: %r, uid: %s, model: %s', operation, records.ids[:6], self._uid, records._name)
+        _logger.info('Access Denied by record rules for operation: %s on record ids: %r, uid: %s, model: %s', operation,
+                     records.ids[:6], self._uid, records._name)
         self = self.with_context(self.env.user.context_get())
 
         model = records._name
         description = self.env['ir.model']._get(model).name or model
         operations = {
-            'read':  _("read"),
+            'read': _("read"),
             'write': _("write"),
             'create': _("create"),
             'unlink': _("unlink"),
         }
         user_description = f"{self.env.user.name} (id={self.env.user.id})"
         operation_error = _("Uh-oh! Looks like you have stumbled upon some top-secret records.\n\n" \
-            "Sorry, %(user)s doesn't have '%(operation)s' access to:", user=user_description, operation=operations[operation])
+                            "Sorry, %(user)s doesn't have '%(operation)s' access to:", user=user_description,
+                            operation=operations[operation])
         failing_model = _("- %(description)s (%(model)s)", description=description, model=model)
 
-        resolution_info = _("If you really, really need access, perhaps you can win over your friendly administrator with a batch of freshly baked cookies.")
+        resolution_info = _(
+            "If you really, really need access, perhaps you can win over your friendly administrator with a batch of freshly baked cookies.")
 
         # Note that by default, public and portal users do not have
         # the group "base.group_no_one", even if debug mode is enabled,
@@ -238,12 +245,17 @@ class IrRule(models.Model):
         if company_related:
             suggested_companies = records_sudo._get_redirect_suggested_company()
             if suggested_companies and len(suggested_companies) != 1:
-                resolution_info += _('\n\nNote: this might be a multi-company issue. Switching company may help - in Odoo, not in real life!')
+                resolution_info += _(
+                    '\n\nNote: this might be a multi-company issue. Switching company may help - in Odoo, not in real life!')
             elif suggested_companies and suggested_companies in self.env.user.company_ids:
-                context = {'suggested_company': {'id': suggested_companies.id, 'display_name': suggested_companies.display_name}}
-                resolution_info += _('\n\nThis seems to be a multi-company issue, you might be able to access the record by switching to the company: %s.', suggested_companies.display_name)
+                context = {'suggested_company': {'id': suggested_companies.id,
+                                                 'display_name': suggested_companies.display_name}}
+                resolution_info += _(
+                    '\n\nThis seems to be a multi-company issue, you might be able to access the record by switching to the company: %s.',
+                    suggested_companies.display_name)
             elif suggested_companies:
-                resolution_info += _('\n\nThis seems to be a multi-company issue, but you do not have access to the proper company to access the record anyhow.')
+                resolution_info += _(
+                    '\n\nThis seems to be a multi-company issue, but you do not have access to the proper company to access the record anyhow.')
 
         if not self.env.user.has_group('base.group_no_one') or not self.env.user._is_internal():
             msg = f"{operation_error}\n{failing_model}\n\n{resolution_info}"

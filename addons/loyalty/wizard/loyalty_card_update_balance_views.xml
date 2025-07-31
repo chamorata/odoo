@@ -17,10 +17,10 @@
                 </sheet>
                 <footer>
                     <button
-                        name="action_update_card_point"
-                        type="object"
-                        class="btn-primary"
-                        data-hotkey="s"
+                            name="action_update_card_point"
+                            type="object"
+                            class="btn-primary"
+                            data-hotkey="s"
                     >
                         Confirm
                     </button>

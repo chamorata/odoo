@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
+from odoo.addons.mrp_subcontracting.tests.common import TestMrpSubcontractingCommon
 
 from odoo import Command
 from odoo.exceptions import AccessError, UserError
 from odoo.tests import Form
-from odoo.tests.common import TransactionCase
-from odoo.addons.mrp_subcontracting.tests.common import TestMrpSubcontractingCommon
-
 from odoo.tests import tagged
-from dateutil.relativedelta import relativedelta
+from odoo.tests.common import TransactionCase
 
 
 @tagged('post_install', '-at_install')
@@ -70,6 +69,7 @@ class TestSubcontractingBasic(TransactionCase):
         })
         self.assertEqual(warehouse.subcontracting_resupply_type_id.code, 'internal')
 
+
 @tagged('post_install', '-at_install')
 class TestSubcontractingFlows(TestMrpSubcontractingCommon):
     def test_flow_1(self):
@@ -79,7 +79,8 @@ class TestSubcontractingFlows(TestMrpSubcontractingCommon):
         resupplying actually works
         """
         # Check subcontracting picking Type
-        self.assertTrue(all(self.env['stock.warehouse'].search([]).with_context(active_test=False).mapped('subcontracting_type_id.use_create_components_lots')))
+        self.assertTrue(all(self.env['stock.warehouse'].search([]).with_context(active_test=False).mapped(
+            'subcontracting_type_id.use_create_components_lots')))
         # Create a receipt picking from the subcontractor
         picking_form = Form(self.env['stock.picking'])
         picking_form.picking_type_id = self.env.ref('stock.picking_type_in')
@@ -126,20 +127,26 @@ class TestSubcontractingFlows(TestMrpSubcontractingCommon):
         self.assertEqual(mo.origin, picking_receipt.name)
 
         # Available quantities should be negative at the subcontracting location for each components
-        avail_qty_comp1 = self.env['stock.quant']._get_available_quantity(self.comp1, self.subcontractor_partner1.property_stock_subcontractor, allow_negative=True)
-        avail_qty_comp2 = self.env['stock.quant']._get_available_quantity(self.comp2, self.subcontractor_partner1.property_stock_subcontractor, allow_negative=True)
+        avail_qty_comp1 = self.env['stock.quant']._get_available_quantity(self.comp1,
+                                                                          self.subcontractor_partner1.property_stock_subcontractor,
+                                                                          allow_negative=True)
+        avail_qty_comp2 = self.env['stock.quant']._get_available_quantity(self.comp2,
+                                                                          self.subcontractor_partner1.property_stock_subcontractor,
+                                                                          allow_negative=True)
         avail_qty_finished = self.env['stock.quant']._get_available_quantity(self.finished, wh.lot_stock_id)
         self.assertEqual(avail_qty_comp1, -1)
         self.assertEqual(avail_qty_comp2, -1)
         self.assertEqual(avail_qty_finished, 1)
 
         # Ensure returns to subcontractor location
-        return_form = Form(self.env['stock.return.picking'].with_context(active_id=picking_receipt.id, active_model='stock.picking'))
+        return_form = Form(
+            self.env['stock.return.picking'].with_context(active_id=picking_receipt.id, active_model='stock.picking'))
         return_wizard = return_form.save()
         return_wizard.product_return_moves.quantity = 1
         return_picking = return_wizard._create_return()
         self.assertEqual(len(return_picking), 1)
-        self.assertEqual(return_picking.move_ids.location_dest_id, self.subcontractor_partner1.property_stock_subcontractor)
+        self.assertEqual(return_picking.move_ids.location_dest_id,
+                         self.subcontractor_partner1.property_stock_subcontractor)
 
     def test_flow_2(self):
         """ Tick "Resupply Subcontractor on Order" on the components and trigger the creation of
@@ -150,7 +157,9 @@ class TestSubcontractingFlows(TestMrpSubcontractingCommon):
         resupply_sub_on_order_route = self.env['stock.route'].search([('name', '=', 'Resupply Subcontractor on Order')])
         (self.comp1 + self.comp2).write({'route_ids': [(4, resupply_sub_on_order_route.id, None)]})
         # Create a different subcontract location & check rules replication
-        reference_location_rules_count = self.env['stock.rule'].search_count(['|', ('location_src_id', '=', self.env.company.subcontracting_location_id.id), ('location_dest_id', '=', self.env.company.subcontracting_location_id.id)])
+        reference_location_rules_count = self.env['stock.rule'].search_count(
+            ['|', ('location_src_id', '=', self.env.company.subcontracting_location_id.id),
+             ('location_dest_id', '=', self.env.company.subcontracting_location_id.id)])
         partner_subcontract_location = self.env['stock.location'].create({
             'name': 'Specific partner location',
             'location_id': self.env.ref('stock.stock_location_locations_partner').id,
@@ -158,7 +167,9 @@ class TestSubcontractingFlows(TestMrpSubcontractingCommon):
             'company_id': self.env.company.id,
             'is_subcontracting_location': True,
         })
-        custom_location_rules_count = self.env['stock.rule'].search_count(['|', ('location_src_id', '=', partner_subcontract_location.id), ('location_dest_id', '=', partner_subcontract_location.id)])
+        custom_location_rules_count = self.env['stock.rule'].search_count(
+            ['|', ('location_src_id', '=', partner_subcontract_location.id),
+             ('location_dest_id', '=', partner_subcontract_location.id)])
         self.assertEqual(reference_location_rules_count, custom_location_rules_count)
         self.subcontractor_partner1.property_stock_subcontractor = partner_subcontract_location.id
         # Add a manufacturing lead time to check that the resupply delivery is correctly planned 2 days
@@ -191,7 +202,8 @@ class TestSubcontractingFlows(TestMrpSubcontractingCommon):
         # The picking should be a delivery order
         self.assertEqual(picking.picking_type_id, wh.subcontracting_resupply_type_id)
         # The date planned should be correct
-        self.assertEqual(picking_receipt.scheduled_date, picking.scheduled_date + relativedelta(days=mo.bom_id.produce_delay))
+        self.assertEqual(picking_receipt.scheduled_date,
+                         picking.scheduled_date + relativedelta(days=mo.bom_id.produce_delay))
 
         self.assertEqual(mo.picking_type_id, wh.subcontracting_type_id)
         self.assertFalse(mo.picking_type_id.active)
@@ -207,15 +219,23 @@ class TestSubcontractingFlows(TestMrpSubcontractingCommon):
         self.assertEqual(mo.origin, picking_receipt.name)
 
         # Available quantities should be negative at the subcontracting location for each components
-        avail_qty_comp1 = self.env['stock.quant']._get_available_quantity(self.comp1, self.subcontractor_partner1.property_stock_subcontractor, allow_negative=True)
-        avail_qty_comp2 = self.env['stock.quant']._get_available_quantity(self.comp2, self.subcontractor_partner1.property_stock_subcontractor, allow_negative=True)
+        avail_qty_comp1 = self.env['stock.quant']._get_available_quantity(self.comp1,
+                                                                          self.subcontractor_partner1.property_stock_subcontractor,
+                                                                          allow_negative=True)
+        avail_qty_comp2 = self.env['stock.quant']._get_available_quantity(self.comp2,
+                                                                          self.subcontractor_partner1.property_stock_subcontractor,
+                                                                          allow_negative=True)
         avail_qty_finished = self.env['stock.quant']._get_available_quantity(self.finished, wh.lot_stock_id)
         self.assertEqual(avail_qty_comp1, -1)
         self.assertEqual(avail_qty_comp2, -1)
         self.assertEqual(avail_qty_finished, 1)
 
-        avail_qty_comp1_in_global_location = self.env['stock.quant']._get_available_quantity(self.comp1, self.env.company.subcontracting_location_id, allow_negative=True)
-        avail_qty_comp2_in_global_location = self.env['stock.quant']._get_available_quantity(self.comp2, self.env.company.subcontracting_location_id, allow_negative=True)
+        avail_qty_comp1_in_global_location = self.env['stock.quant']._get_available_quantity(self.comp1,
+                                                                                             self.env.company.subcontracting_location_id,
+                                                                                             allow_negative=True)
+        avail_qty_comp2_in_global_location = self.env['stock.quant']._get_available_quantity(self.comp2,
+                                                                                             self.env.company.subcontracting_location_id,
+                                                                                             allow_negative=True)
         self.assertEqual(avail_qty_comp1_in_global_location, 0.0)
         self.assertEqual(avail_qty_comp2_in_global_location, 0.0)
 
@@ -278,8 +298,12 @@ class TestSubcontractingFlows(TestMrpSubcontractingCommon):
         self.assertEqual(mo.origin, picking_receipt.name)
 
         # Available quantities should be negative at the subcontracting location for each components
-        avail_qty_comp1 = self.env['stock.quant']._get_available_quantity(self.comp1, self.subcontractor_partner1.property_stock_subcontractor, allow_negative=True)
-        avail_qty_comp2 = self.env['stock.quant']._get_available_quantity(self.comp2, self.subcontractor_partner1.property_stock_subcontractor, allow_negative=True)
+        avail_qty_comp1 = self.env['stock.quant']._get_available_quantity(self.comp1,
+                                                                          self.subcontractor_partner1.property_stock_subcontractor,
+                                                                          allow_negative=True)
+        avail_qty_comp2 = self.env['stock.quant']._get_available_quantity(self.comp2,
+                                                                          self.subcontractor_partner1.property_stock_subcontractor,
+                                                                          allow_negative=True)
         avail_qty_finished = self.env['stock.quant']._get_available_quantity(self.finished, wh.lot_stock_id)
         self.assertEqual(avail_qty_comp1, -1)
         self.assertEqual(avail_qty_comp2, -1)
@@ -587,7 +611,9 @@ class TestSubcontractingFlows(TestMrpSubcontractingCommon):
 
         picking_receipt.button_validate()
         self.assertEqual(mo.state, 'done')
-        avail_qty_comp1 = self.env['stock.quant']._get_available_quantity(self.comp1, self.subcontractor_partner1.property_stock_subcontractor, allow_negative=True)
+        avail_qty_comp1 = self.env['stock.quant']._get_available_quantity(self.comp1,
+                                                                          self.subcontractor_partner1.property_stock_subcontractor,
+                                                                          allow_negative=True)
         self.assertEqual(avail_qty_comp1, -2)
 
     def test_flow_warning_bom_1(self):
@@ -648,7 +674,9 @@ class TestSubcontractingFlows(TestMrpSubcontractingCommon):
 
         picking_receipt.button_validate()
         self.assertEqual(mo.state, 'done')
-        avail_qty_comp1 = self.env['stock.quant']._get_available_quantity(self.comp1, self.subcontractor_partner1.property_stock_subcontractor, allow_negative=True)
+        avail_qty_comp1 = self.env['stock.quant']._get_available_quantity(self.comp1,
+                                                                          self.subcontractor_partner1.property_stock_subcontractor,
+                                                                          allow_negative=True)
         self.assertEqual(avail_qty_comp1, -5)
 
     def test_backorder_with_subcontracting(self):
@@ -731,7 +759,8 @@ class TestSubcontractingFlows(TestMrpSubcontractingCommon):
         self.assertEqual(sbc_mo.move_raw_ids[0].move_line_ids.quantity, 5)
 
     def test_mrp_report_bom_structure_subcontracting(self):
-        self.comp2_bom.write({'type': 'subcontract', 'subcontractor_ids': [Command.link(self.subcontractor_partner1.id)]})
+        self.comp2_bom.write(
+            {'type': 'subcontract', 'subcontractor_ids': [Command.link(self.subcontractor_partner1.id)]})
         self.env['product.supplierinfo'].create({
             'product_tmpl_id': self.finished.product_tmpl_id.id,
             'partner_id': self.subcontractor_partner1.id,
@@ -750,24 +779,30 @@ class TestSubcontractingFlows(TestMrpSubcontractingCommon):
         })
         self.assertTrue(supplier.is_subcontractor)
         self.comp1.standard_price = 5
-        report_values = self.env['report.mrp.report_bom_structure']._get_report_data(self.bom.id, searchQty=1, searchVariant=False)
+        report_values = self.env['report.mrp.report_bom_structure']._get_report_data(self.bom.id, searchQty=1,
+                                                                                     searchVariant=False)
         subcontracting_values = report_values['lines']['subcontracting']
         self.assertEqual(subcontracting_values['name'], self.subcontractor_partner1.display_name)
-        self.assertEqual(report_values['lines']['bom_cost'], 20)  # 10 For subcontracting + 5 for comp1 + 5 for subcontracting of comp2_bom
+        self.assertEqual(report_values['lines']['bom_cost'],
+                         20)  # 10 For subcontracting + 5 for comp1 + 5 for subcontracting of comp2_bom
         self.assertEqual(subcontracting_values['bom_cost'], 10)
         self.assertEqual(subcontracting_values['prod_cost'], 10)
         self.assertEqual(report_values['lines']['components'][0]['bom_cost'], 5)
         self.assertEqual(report_values['lines']['components'][1]['bom_cost'], 5)
-        report_values = self.env['report.mrp.report_bom_structure']._get_report_data(self.bom.id, searchQty=3, searchVariant=False)
+        report_values = self.env['report.mrp.report_bom_structure']._get_report_data(self.bom.id, searchQty=3,
+                                                                                     searchVariant=False)
         subcontracting_values = report_values['lines']['subcontracting']
-        self.assertEqual(report_values['lines']['bom_cost'], 60)  # 30 for subcontracting + 15 for comp1 + 15 for subcontracting of comp2_bom
+        self.assertEqual(report_values['lines']['bom_cost'],
+                         60)  # 30 for subcontracting + 15 for comp1 + 15 for subcontracting of comp2_bom
         self.assertEqual(subcontracting_values['bom_cost'], 30)
         self.assertEqual(subcontracting_values['prod_cost'], 30)
         self.assertEqual(report_values['lines']['components'][0]['bom_cost'], 15)
         self.assertEqual(report_values['lines']['components'][1]['bom_cost'], 15)
-        report_values = self.env['report.mrp.report_bom_structure']._get_report_data(self.bom.id, searchQty=5, searchVariant=False)
+        report_values = self.env['report.mrp.report_bom_structure']._get_report_data(self.bom.id, searchQty=5,
+                                                                                     searchVariant=False)
         subcontracting_values = report_values['lines']['subcontracting']
-        self.assertEqual(report_values['lines']['bom_cost'], 80)  # 50 for subcontracting + 25 for comp1 + 5 for subcontracting of comp2_bom
+        self.assertEqual(report_values['lines']['bom_cost'],
+                         80)  # 50 for subcontracting + 25 for comp1 + 5 for subcontracting of comp2_bom
         self.assertEqual(subcontracting_values['bom_cost'], 50)
         self.assertEqual(subcontracting_values['prod_cost'], 50)
         self.assertEqual(report_values['lines']['components'][0]['bom_cost'], 25)
@@ -884,7 +919,9 @@ class TestSubcontractingFlows(TestMrpSubcontractingCommon):
 
     def test_subcontracting_rules_replication(self):
         """ Test activate/archive subcontracting location rules."""
-        reference_location_rules = self.env['stock.rule'].search(['|', ('location_src_id', '=', self.env.company.subcontracting_location_id.id), ('location_dest_id', '=', self.env.company.subcontracting_location_id.id)])
+        reference_location_rules = self.env['stock.rule'].search(
+            ['|', ('location_src_id', '=', self.env.company.subcontracting_location_id.id),
+             ('location_dest_id', '=', self.env.company.subcontracting_location_id.id)])
         warehouse_related_rules = reference_location_rules.filtered(lambda r: r.warehouse_id)
         company_rules = reference_location_rules - warehouse_related_rules
         # Create a custom subcontracting location
@@ -895,18 +932,26 @@ class TestSubcontractingFlows(TestMrpSubcontractingCommon):
             'company_id': self.env.company.id,
             'is_subcontracting_location': True,
         })
-        custom_location_rules_count = self.env['stock.rule'].search_count(['|', ('location_src_id', '=', custom_subcontracting_location.id), ('location_dest_id', '=', custom_subcontracting_location.id)])
+        custom_location_rules_count = self.env['stock.rule'].search_count(
+            ['|', ('location_src_id', '=', custom_subcontracting_location.id),
+             ('location_dest_id', '=', custom_subcontracting_location.id)])
         self.assertEqual(len(reference_location_rules), custom_location_rules_count)
         # Add a new warehouse
         warehouse = self.env['stock.warehouse'].create({
             'name': 'Additional Warehouse',
             'code': 'ADD'
         })
-        company_subcontracting_locations_rules_count = self.env['stock.rule'].search_count(['&', ('company_id', '=', warehouse.company_id.id), '|', ('location_src_id.is_subcontracting_location', '=', True), ('location_dest_id.is_subcontracting_location', '=', True)])
-        self.assertEqual(len(warehouse_related_rules) * 4 + len(company_rules) * 2, company_subcontracting_locations_rules_count)
+        company_subcontracting_locations_rules_count = self.env['stock.rule'].search_count(
+            ['&', ('company_id', '=', warehouse.company_id.id), '|',
+             ('location_src_id.is_subcontracting_location', '=', True),
+             ('location_dest_id.is_subcontracting_location', '=', True)])
+        self.assertEqual(len(warehouse_related_rules) * 4 + len(company_rules) * 2,
+                         company_subcontracting_locations_rules_count)
         # Custom location no longer a subcontracting one
         custom_subcontracting_location.is_subcontracting_location = False
-        custom_location_rules_count = self.env['stock.rule'].search_count(['|', ('location_src_id', '=', custom_subcontracting_location.id), ('location_dest_id', '=', custom_subcontracting_location.id)])
+        custom_location_rules_count = self.env['stock.rule'].search_count(
+            ['|', ('location_src_id', '=', custom_subcontracting_location.id),
+             ('location_dest_id', '=', custom_subcontracting_location.id)])
         self.assertEqual(custom_location_rules_count, 0)
 
     def test_subcontracting_date_warning(self):
@@ -976,7 +1021,8 @@ class TestSubcontractingFlows(TestMrpSubcontractingCommon):
         # Register serial number for each finished product
         for lot in finished_lots:
             action = picking_receipt.move_ids.action_show_details()
-            self.assertEqual(action['name'], 'Subcontract', "It should open the subcontract record components wizard instead.")
+            self.assertEqual(action['name'], 'Subcontract',
+                             "It should open the subcontract record components wizard instead.")
             mo = self.env['mrp.production'].browse(action['res_id'])
             with Form(mo.with_context(action['context']), view=action['view_id']) as mo_form:
                 mo_form.qty_producing = 1
@@ -998,7 +1044,8 @@ class TestSubcontractingFlows(TestMrpSubcontractingCommon):
             'product_id': self.finished.id,
         })
         action = picking_receipt.move_ids.action_show_details()
-        self.assertEqual(action['name'], 'Detailed Operations', "The subcontract record components wizard shouldn't be available now.")
+        self.assertEqual(action['name'], 'Detailed Operations',
+                         "The subcontract record components wizard shouldn't be available now.")
         with Form(subcontract_move.with_context(action['context']), view=action['view_id']) as move_form:
             with move_form.move_line_ids.edit(2) as move_line:
                 move_line.lot_id = new_lot
@@ -1148,11 +1195,13 @@ class TestSubcontractingFlows(TestMrpSubcontractingCommon):
             return picking
 
         picking_with_default_location = create_picking(subcontractor)
-        self.assertEqual(picking_with_default_location.location_dest_id, self.warehouse.subcontracting_resupply_type_id.default_location_dest_id)
+        self.assertEqual(picking_with_default_location.location_dest_id,
+                         self.warehouse.subcontracting_resupply_type_id.default_location_dest_id)
 
         subcontractor.property_stock_subcontractor = custom_subcontract_location.id
         picking_with_custom_location = create_picking(subcontractor)
         self.assertEqual(picking_with_custom_location.location_dest_id, custom_subcontract_location)
+
 
 @tagged('post_install', '-at_install')
 class TestSubcontractingTracking(TransactionCase):
@@ -1273,8 +1322,12 @@ class TestSubcontractingTracking(TransactionCase):
         self.assertEqual(mo.state, 'done')
 
         # Available quantities should be negative at the subcontracting location for each components
-        avail_qty_comp1 = self.env['stock.quant']._get_available_quantity(self.comp1_sn, self.subcontractor_partner1.property_stock_subcontractor, allow_negative=True)
-        avail_qty_comp2 = self.env['stock.quant']._get_available_quantity(self.comp2, self.subcontractor_partner1.property_stock_subcontractor, allow_negative=True)
+        avail_qty_comp1 = self.env['stock.quant']._get_available_quantity(self.comp1_sn,
+                                                                          self.subcontractor_partner1.property_stock_subcontractor,
+                                                                          allow_negative=True)
+        avail_qty_comp2 = self.env['stock.quant']._get_available_quantity(self.comp2,
+                                                                          self.subcontractor_partner1.property_stock_subcontractor,
+                                                                          allow_negative=True)
         avail_qty_finished = self.env['stock.quant']._get_available_quantity(self.finished_product, wh.lot_stock_id)
         self.assertEqual(avail_qty_comp1, -1)
         self.assertEqual(avail_qty_comp2, -1)
@@ -1320,8 +1373,12 @@ class TestSubcontractingTracking(TransactionCase):
         self.assertEqual(set(mos.lot_producing_id.mapped("name")), set(lot_names_finished))
 
         # Available quantities should be negative at the subcontracting location for each components
-        avail_qty_comp1 = self.env['stock.quant']._get_available_quantity(self.comp1_sn, self.subcontractor_partner1.property_stock_subcontractor, allow_negative=True)
-        avail_qty_comp2 = self.env['stock.quant']._get_available_quantity(self.comp2, self.subcontractor_partner1.property_stock_subcontractor, allow_negative=True)
+        avail_qty_comp1 = self.env['stock.quant']._get_available_quantity(self.comp1_sn,
+                                                                          self.subcontractor_partner1.property_stock_subcontractor,
+                                                                          allow_negative=True)
+        avail_qty_comp2 = self.env['stock.quant']._get_available_quantity(self.comp2,
+                                                                          self.subcontractor_partner1.property_stock_subcontractor,
+                                                                          allow_negative=True)
         avail_qty_finished = self.env['stock.quant']._get_available_quantity(self.finished_product, wh.lot_stock_id)
         self.assertEqual(avail_qty_comp1, -nb_finished_product)
         self.assertEqual(avail_qty_comp2, -nb_finished_product)
@@ -1396,8 +1453,12 @@ class TestSubcontractingTracking(TransactionCase):
         self.assertEqual(mo.procurement_group_id.mrp_production_ids.mapped("qty_produced"), [1] * todo_nb)
 
         # Available quantities should be negative at the subcontracting location for each components
-        avail_qty_comp1 = self.env['stock.quant']._get_available_quantity(self.comp1_sn, self.subcontractor_partner1.property_stock_subcontractor, allow_negative=True)
-        avail_qty_comp2 = self.env['stock.quant']._get_available_quantity(self.comp2, self.subcontractor_partner1.property_stock_subcontractor, allow_negative=True)
+        avail_qty_comp1 = self.env['stock.quant']._get_available_quantity(self.comp1_sn,
+                                                                          self.subcontractor_partner1.property_stock_subcontractor,
+                                                                          allow_negative=True)
+        avail_qty_comp2 = self.env['stock.quant']._get_available_quantity(self.comp2,
+                                                                          self.subcontractor_partner1.property_stock_subcontractor,
+                                                                          allow_negative=True)
         avail_qty_finished = self.env['stock.quant']._get_available_quantity(self.finished_product, wh.lot_stock_id)
         self.assertEqual(avail_qty_comp1, -todo_nb)
         self.assertEqual(avail_qty_comp2, -todo_nb)
@@ -1432,7 +1493,8 @@ class TestSubcontractingTracking(TransactionCase):
             'product_id': product.id,
         } for product in [finished_product, component]])
 
-        self.env['stock.quant']._update_available_quantity(component, self.env.ref('stock.stock_location_stock'), todo_nb, lot_id=component_lot)
+        self.env['stock.quant']._update_available_quantity(component, self.env.ref('stock.stock_location_stock'),
+                                                           todo_nb, lot_id=component_lot)
 
         # Create a receipt picking from the subcontractor
         picking_form = Form(self.env['stock.picking'])
@@ -1453,7 +1515,8 @@ class TestSubcontractingTracking(TransactionCase):
 
         for qty in [3, 1]:
             # Record the receiption of <qty> finished products
-            picking_receipt = self.env['stock.picking'].search([('partner_id', '=', self.subcontractor_partner1.id), ('state', '!=', 'done')])
+            picking_receipt = self.env['stock.picking'].search(
+                [('partner_id', '=', self.subcontractor_partner1.id), ('state', '!=', 'done')])
             action = picking_receipt.action_record_components()
             mo = self.env['mrp.production'].browse(action['res_id'])
             mo_form = Form(mo.with_context(**action['context']), view=action['view_id'])
@@ -1502,7 +1565,8 @@ class TestSubcontractingTracking(TransactionCase):
             'product_id': finished_product.id,
         } for i in range(todo_nb)])
 
-        self.env['stock.quant']._update_available_quantity(component, self.env.ref('stock.stock_location_stock'), todo_nb)
+        self.env['stock.quant']._update_available_quantity(component, self.env.ref('stock.stock_location_stock'),
+                                                           todo_nb)
 
         # Create a receipt picking from the subcontractor
         picking_form = Form(self.env['stock.picking'])
@@ -1523,7 +1587,8 @@ class TestSubcontractingTracking(TransactionCase):
         compo_picking.action_assign()
         compo_picking.button_validate()
 
-        picking_receipt = self.env['stock.picking'].search([('partner_id', '=', self.subcontractor_partner1.id), ('state', '!=', 'done')])
+        picking_receipt = self.env['stock.picking'].search(
+            [('partner_id', '=', self.subcontractor_partner1.id), ('state', '!=', 'done')])
         for sn in finished_serials:
             # Record the production of each serial number separately
             action = picking_receipt.action_record_components()
@@ -1563,7 +1628,8 @@ class TestSubcontractingTracking(TransactionCase):
             bom_line.product_qty = 1
         bom = bom_form.save()
 
-        self.env['stock.quant']._update_available_quantity(component, self.env.ref('stock.stock_location_stock'), todo_nb)
+        self.env['stock.quant']._update_available_quantity(component, self.env.ref('stock.stock_location_stock'),
+                                                           todo_nb)
 
         # Create a receipt picking from the subcontractor
         picking_form = Form(self.env['stock.picking'])
@@ -1606,7 +1672,7 @@ class TestSubcontractingTracking(TransactionCase):
             {"quantity": 1.0, "state": "assigned"},
         ])
         mo.procurement_group_id.mrp_production_ids.button_mark_done()
-        self.assertEqual(mo.procurement_group_id.mrp_production_ids.mapped("state"), ['done', 'done' , 'done'])
+        self.assertEqual(mo.procurement_group_id.mrp_production_ids.mapped("state"), ['done', 'done', 'done'])
 
 
 @tagged('post_install', '-at_install')
@@ -1703,7 +1769,8 @@ class TestSubcontractingPortal(TransactionCase):
             'name': 'lot3',
             'product_id': self.comp1_sn.id,
         })
-        action = picking_receipt.with_user(self.portal_user).with_context({'is_subcontracting_portal': 1}).move_ids.action_show_details()
+        action = picking_receipt.with_user(self.portal_user).with_context(
+            {'is_subcontracting_portal': 1}).move_ids.action_show_details()
         mo = self.env['mrp.production'].with_user(self.portal_user).browse(action['res_id'])
         mo_form = Form(mo.with_context(action['context']), view=action['view_id'])
         # Registering components for the first manufactured product
@@ -1714,7 +1781,8 @@ class TestSubcontractingPortal(TransactionCase):
         mo = mo_form.save()
         mo.subcontracting_record_component()
         # Continue record of components with new MO (backorder was when recording first MO)
-        action = picking_receipt.with_user(self.portal_user).with_context({'is_subcontracting_portal': 1}).move_ids.action_show_details()
+        action = picking_receipt.with_user(self.portal_user).with_context(
+            {'is_subcontracting_portal': 1}).move_ids.action_show_details()
         mo = self.env['mrp.production'].with_user(self.portal_user).browse(action['res_id'])
         mo_form = Form(mo.with_context(action['context']), view=action['view_id'])
         # Registering components for the second manufactured product with over-consumption, which leads to a warning
@@ -1749,6 +1817,8 @@ class TestSubcontractingPortal(TransactionCase):
         self.assertEqual(mo.move_line_raw_ids[1].quantity, 1)
         self.assertEqual(mo.move_line_raw_ids[1].lot_id, serial3)
         self.assertEqual(mo.move_line_raw_ids[2].quantity, 2)
+
+
 class TestSubcontractingSerialMassReceipt(TransactionCase):
 
     def setUp(self):
@@ -1782,7 +1852,8 @@ class TestSubcontractingSerialMassReceipt(TransactionCase):
     def test_receive_after_resupply(self):
         quantities = [5, 4, 1]
         # Make needed component stock
-        self.env['stock.quant']._update_available_quantity(self.raw_material, self.env.ref('stock.stock_location_stock'), sum(quantities))
+        self.env['stock.quant']._update_available_quantity(self.raw_material,
+                                                           self.env.ref('stock.stock_location_stock'), sum(quantities))
         # Create a receipt picking from the subcontractor
         picking_form = Form(self.env['stock.picking'])
         picking_form.picking_type_id = self.env.ref('stock.picking_type_in')
@@ -1800,7 +1871,8 @@ class TestSubcontractingSerialMassReceipt(TransactionCase):
         for quantity in quantities:
             # Receive <quantity> finished products
             picking_receipt.do_unreserve()
-            lot_name = self.env['stock.lot']._get_next_serial(picking_receipt.company_id, picking_receipt.move_ids[0].product_id) or 'sn#1'
+            lot_name = self.env['stock.lot']._get_next_serial(picking_receipt.company_id,
+                                                              picking_receipt.move_ids[0].product_id) or 'sn#1'
             picking_receipt.move_ids[0]._generate_serial_numbers(lot_name, quantity)
             picking_receipt.move_ids.picked = True
             wizard_data = picking_receipt.button_validate()
@@ -1811,8 +1883,11 @@ class TestSubcontractingSerialMassReceipt(TransactionCase):
                 picking_receipt = picking_receipt.backorder_ids[-1]
                 self.assertEqual(picking_receipt.state, 'assigned')
         self.assertEqual(picking_receipt.state, 'done')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(self.raw_material, self.env.ref('stock.stock_location_stock')), 0)
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(self.raw_material, self.subcontractor.property_stock_subcontractor), 0)
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(self.raw_material,
+                                                                         self.env.ref('stock.stock_location_stock')), 0)
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(self.raw_material,
+                                                                         self.subcontractor.property_stock_subcontractor),
+                         0)
 
     def test_receive_no_resupply(self):
         quantity = 5
@@ -1827,13 +1902,17 @@ class TestSubcontractingSerialMassReceipt(TransactionCase):
         picking_receipt.action_confirm()
         picking_receipt.do_unreserve()
         # Receive finished products
-        lot_name = self.env['stock.lot']._get_next_serial(picking_receipt.company_id, picking_receipt.move_ids[0].product_id) or 'sn#1'
+        lot_name = self.env['stock.lot']._get_next_serial(picking_receipt.company_id,
+                                                          picking_receipt.move_ids[0].product_id) or 'sn#1'
         picking_receipt.move_ids[0]._generate_serial_numbers(lot_name, quantity)
         picking_receipt.move_ids.picked = True
         picking_receipt.button_validate()
         self.assertEqual(picking_receipt.state, 'done')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(self.raw_material, self.env.ref('stock.stock_location_stock')), 0)
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(self.raw_material, self.subcontractor.property_stock_subcontractor, allow_negative=True), -quantity)
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(self.raw_material,
+                                                                         self.env.ref('stock.stock_location_stock')), 0)
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(self.raw_material,
+                                                                         self.subcontractor.property_stock_subcontractor,
+                                                                         allow_negative=True), -quantity)
 
     def test_bom_subcontracting_product_dynamic_attribute(self):
         """

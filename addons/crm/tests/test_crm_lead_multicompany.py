@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.crm.tests.common import TestCrmCommon, INCOMING_EMAIL
+
 from odoo.exceptions import AccessError, UserError
 from odoo.tests import Form, tagged
 from odoo.tests.common import users
@@ -106,7 +107,8 @@ class TestCRMLeadMultiCompany(TestCrmCommon):
                          '[Auto/1] First available team in current company should have been assigned (fallback as user in no team in Main Company).')
         self.assertEqual(lead_1_auto.company_id, self.company_main,
                          '[Auto/1] Current company should be set on the lead as no company was assigned given by team and company is allowed for user.')
-        self.assertEqual(lead_1_auto.user_id, self.user_sales_manager_mc, '[Auto/1] Current user should have been assigned.')
+        self.assertEqual(lead_1_auto.user_id, self.user_sales_manager_mc,
+                         '[Auto/1] Current user should have been assigned.')
         # manual creation
         lead_1_manual = LeadUnsyncCids.create({
             'name': 'My Lead MC',
@@ -115,10 +117,12 @@ class TestCRMLeadMultiCompany(TestCrmCommon):
                          '[Auto/1] First available team in current company should have been assigned (fallback as user in no team in Main Company).')
         self.assertEqual(lead_1_manual.company_id, self.company_main,
                          '[Auto/1] Current company should be set on the lead as no company was given by team and company is allowed for user.')
-        self.assertEqual(lead_1_manual.user_id, self.user_sales_manager_mc, '[Manual/1] Current user should have been assigned.')
+        self.assertEqual(lead_1_manual.user_id, self.user_sales_manager_mc,
+                         '[Manual/1] Current user should have been assigned.')
 
         # Logged on other company will use that one for the lead company with sales_team_2 as is assigned to company_2
-        LeadUnsyncCids = self.env['crm.lead'].with_context(allowed_company_ids=[self.company_main.id, self.company_2.id])
+        LeadUnsyncCids = self.env['crm.lead'].with_context(
+            allowed_company_ids=[self.company_main.id, self.company_2.id])
         LeadUnsyncCids = LeadUnsyncCids.with_company(self.company_2)
         self.assertEqual(LeadUnsyncCids.env.company, self.company_2)
 
@@ -129,7 +133,8 @@ class TestCRMLeadMultiCompany(TestCrmCommon):
                          '[Auto/2] First available team user is a member of, in current company, should have been assigned.')
         self.assertEqual(lead_2_auto.company_id, self.company_2,
                          '[Auto/2] Current company should be set on the lead as company was assigned on team.')
-        self.assertEqual(lead_2_auto.user_id, self.user_sales_manager_mc, '[Auto/2] Current user should have been assigned.')
+        self.assertEqual(lead_2_auto.user_id, self.user_sales_manager_mc,
+                         '[Auto/2] Current user should have been assigned.')
         lead_2_manual = LeadUnsyncCids.create({
             'name': 'My Lead MC 2 Manual',
         })
@@ -137,7 +142,8 @@ class TestCRMLeadMultiCompany(TestCrmCommon):
                          '[Manual/2] First available team user is a member of, in current company, should have been assigned.')
         self.assertEqual(lead_2_manual.company_id, self.company_2,
                          '[Manual/2] Current company should be set on the lead as company was assigned on team.')
-        self.assertEqual(lead_2_manual.user_id, self.user_sales_manager_mc, '[Manual/2] Current user should have been assigned.')
+        self.assertEqual(lead_2_manual.user_id, self.user_sales_manager_mc,
+                         '[Manual/2] Current user should have been assigned.')
 
         # If assigned team has no company, use company
         self.team_company2.write({'company_id': False})
@@ -148,7 +154,8 @@ class TestCRMLeadMultiCompany(TestCrmCommon):
                          '[Auto/3] First available team user is a member of should have been assigned (fallback as no team with same company defined).')
         self.assertEqual(lead_3_auto.company_id, self.company_2,
                          '[Auto/3] Current company should be set on the lead as no company was given by team and company is allowed for user.')
-        self.assertEqual(lead_3_auto.user_id, self.user_sales_manager_mc, '[Auto/3] Current user should have been assigned.')
+        self.assertEqual(lead_3_auto.user_id, self.user_sales_manager_mc,
+                         '[Auto/3] Current user should have been assigned.')
         lead_3_manual = LeadUnsyncCids.create({
             'name': 'My Lead MC 3 Manual',
         })
@@ -156,7 +163,8 @@ class TestCRMLeadMultiCompany(TestCrmCommon):
                          '[Auto/3] First available team user is a member of should have been assigned (fallback as no team with same company defined).')
         self.assertEqual(lead_3_manual.team_id, self.team_company2,
                          '[Auto/3] Current company should be set on the lead as no company was given by team and company is allowed for user.')
-        self.assertEqual(lead_3_manual.user_id, self.user_sales_manager_mc, '[Manual/3] Current user should have been assigned.')
+        self.assertEqual(lead_3_manual.user_id, self.user_sales_manager_mc,
+                         '[Manual/3] Current user should have been assigned.')
 
         # If all teams have no company and don't have user as member, the first sales team is used.
         self.team_company2.write({'member_ids': [(3, self.user_sales_manager_mc.id)]})
@@ -168,7 +176,8 @@ class TestCRMLeadMultiCompany(TestCrmCommon):
                          '[Auto/4] As no team has current user as member nor current company as company_id, first available team should have been assigned.')
         self.assertEqual(lead_4_auto.company_id, self.company_2,
                          '[Auto/4] Current company should be set on the lead as no company was given by team and company is allowed for user.')
-        self.assertEqual(lead_4_auto.user_id, self.user_sales_manager_mc, '[Auto/4] Current user should have been assigned.')
+        self.assertEqual(lead_4_auto.user_id, self.user_sales_manager_mc,
+                         '[Auto/4] Current user should have been assigned.')
         lead_4_manual = LeadUnsyncCids.create({
             'name': 'My Lead MC 4 Manual',
         })

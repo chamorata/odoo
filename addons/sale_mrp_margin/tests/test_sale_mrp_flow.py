@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.sale_mrp.tests import test_sale_mrp_flow
+
 from odoo.tests import common, Form
 
 

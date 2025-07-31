@@ -6,11 +6,13 @@ from markupsafe import Markup
 from odoo import api, fields, models, _
 from odoo.osv import expression
 
+
 class ChannelUsersRelation(models.Model):
     _inherit = 'slide.channel.partner'
 
     nbr_certification = fields.Integer(related='channel_id.nbr_certification')
     survey_certification_success = fields.Boolean('Certified')
+
 
 class Channel(models.Model):
     _inherit = 'slide.channel'

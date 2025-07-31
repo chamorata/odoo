@@ -6,9 +6,10 @@ from contextlib import contextmanager
 from unittest.mock import patch
 
 from odoo.addons.mail.tests.common import mail_new_test_user
+
+from odoo import SUPERUSER_ID
 from odoo.http import request
 from odoo.tests.common import HttpCase
-from odoo import SUPERUSER_ID
 
 
 @contextmanager
@@ -19,8 +20,10 @@ def mock_auth_method_outlook(login):
 
     :param login: Login of the user used for the authentication
     """
+
     def patched_auth_method_outlook(*args, **kwargs):
-        request.update_env(user=request.env['res.users'].with_user(SUPERUSER_ID).search([('login', '=', login)], limit=1))
+        request.update_env(
+            user=request.env['res.users'].with_user(SUPERUSER_ID).search([('login', '=', login)], limit=1))
 
     with patch(
             'odoo.addons.mail_plugin.models.ir_http.IrHttp'
@@ -54,9 +57,9 @@ class TestMailPluginControllerCommon(HttpCase):
         }
 
         with patch(
-            "odoo.addons.mail_plugin.controllers.mail_plugin.MailPluginController"
-            "._iap_enrich",
-            new=patched_iap_enrich,
+                "odoo.addons.mail_plugin.controllers.mail_plugin.MailPluginController"
+                "._iap_enrich",
+                new=patched_iap_enrich,
         ):
             result = self.url_open(
                 "/mail_plugin/partner/get",
@@ -84,9 +87,9 @@ class TestMailPluginControllerCommon(HttpCase):
         }
 
         with patch(
-            "odoo.addons.mail_plugin.controllers.mail_plugin.MailPluginController"
-            "._iap_enrich",
-            new=patched_iap_enrich,
+                "odoo.addons.mail_plugin.controllers.mail_plugin.MailPluginController"
+                "._iap_enrich",
+                new=patched_iap_enrich,
         ):
             result = self.url_open(
                 "/mail_plugin/partner/enrich_and_create_company",

@@ -1,9 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import _, api, fields, models, modules, tools
-from odoo.exceptions import UserError, ValidationError
-
 from odoo.addons.account_peppol.tools.demo_utils import handle_demo
+
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError, ValidationError
 
 
 class ResConfigSettings(models.TransientModel):
@@ -22,7 +22,8 @@ class ResConfigSettings(models.TransientModel):
     account_peppol_migration_key = fields.Char(related='company_id.account_peppol_migration_key', readonly=False)
     account_peppol_phone_number = fields.Char(related='company_id.account_peppol_phone_number', readonly=False)
     account_peppol_proxy_state = fields.Selection(related='company_id.account_peppol_proxy_state', readonly=False)
-    account_peppol_purchase_journal_id = fields.Many2one(related='company_id.peppol_purchase_journal_id', readonly=False)
+    account_peppol_purchase_journal_id = fields.Many2one(related='company_id.peppol_purchase_journal_id',
+                                                         readonly=False)
 
     # -------------------------------------------------------------------------
     # COMPUTE METHODS
@@ -89,7 +90,8 @@ class ResConfigSettings(models.TransientModel):
                 'params': {
                     'title': _("Registered to receive documents via Peppol."),
                     'type': 'success',
-                    'message': _("Your registration on Peppol network should be activated within a day. The updated status will be visible in Settings."),
+                    'message': _(
+                        "Your registration on Peppol network should be activated within a day. The updated status will be visible in Settings."),
                     'next': {'type': 'ir.actions.act_window_close'},
                 }
             }

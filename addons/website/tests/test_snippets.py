@@ -2,12 +2,10 @@
 import logging
 
 from lxml import html
+from odoo.addons.website.tools import MockRequest, create_image_attachment
 from werkzeug.urls import url_encode
 
 from odoo.tests import HttpCase, tagged
-from odoo.addons.website.tools import MockRequest, create_image_attachment
-from odoo.tests.common import HOST
-from odoo.tools import config
 
 _logger = logging.getLogger(__name__)
 
@@ -22,7 +20,8 @@ class TestSnippets(HttpCase):
         return super().fetch_proxy(url)
 
     def test_01_empty_parents_autoremove(self):
-        self.start_tour(self.env['website'].get_client_action_url('/'), 'snippet_empty_parent_autoremove', login='admin')
+        self.start_tour(self.env['website'].get_client_action_url('/'), 'snippet_empty_parent_autoremove',
+                        login='admin')
 
     def test_02_default_shape_gets_palette_colors(self):
         self.start_tour('/@/', 'default_shape_gets_palette_colors', login='admin')
@@ -31,7 +30,8 @@ class TestSnippets(HttpCase):
         with MockRequest(self.env, website=self.env['website'].browse(1)):
             snippets_template = self.env['ir.ui.view'].render_public_asset('website.snippets')
         html_template = html.fromstring(snippets_template)
-        data_snippet_els = html_template.xpath("//*[snippets and not(contains(@class, 'd-none'))]//*[@data-oe-type='snippet']/*[@data-snippet]")
+        data_snippet_els = html_template.xpath(
+            "//*[snippets and not(contains(@class, 'd-none'))]//*[@data-oe-type='snippet']/*[@data-snippet]")
         blacklist = [
             's_facebook_page',  # avoid call to external services (facebook.com)
             's_map',  # avoid call to maps.google.com
@@ -53,7 +53,8 @@ class TestSnippets(HttpCase):
                 'name': 'My Mail Group',
                 'alias_name': 'my_mail_group',
             })
-        self.start_tour(f"/odoo/action-website.website_preview?{path}", "snippets_all_drag_and_drop", login='admin', timeout=600)
+        self.start_tour(f"/odoo/action-website.website_preview?{path}", "snippets_all_drag_and_drop", login='admin',
+                        timeout=600)
 
     def test_04_countdown_preview(self):
         self.start_tour(self.env['website'].get_client_action_url('/'), 'snippet_countdown', login='admin')
@@ -113,22 +114,26 @@ class TestSnippets(HttpCase):
         website = self.env.ref('website.default_website')
         website.cookies_bar = True
         self.start_tour(self.env['website'].get_client_action_url('/'), 'snippet_popup_and_scrollbar', login='admin')
-        self.start_tour(self.env['website'].get_client_action_url('/'), 'snippet_popup_and_animations', login='admin', timeout=90)
+        self.start_tour(self.env['website'].get_client_action_url('/'), 'snippet_popup_and_animations', login='admin',
+                        timeout=90)
 
     def test_drag_and_drop_on_non_editable(self):
-        self.start_tour(self.env['website'].get_client_action_url('/'), 'test_drag_and_drop_on_non_editable', login='admin')
+        self.start_tour(self.env['website'].get_client_action_url('/'), 'test_drag_and_drop_on_non_editable',
+                        login='admin')
 
     def test_snippet_image_gallery_reorder(self):
         self.start_tour(self.env['website'].get_client_action_url('/'), "snippet_image_gallery_reorder", login='admin')
 
     def test_snippet_image_gallery_thumbnail_update(self):
         create_image_attachment(self.env, '/web/image/website.s_banner_default_image', 's_default_image.jpg')
-        self.start_tour(self.env['website'].get_client_action_url('/'), 'snippet_image_gallery_thumbnail_update', login='admin')
+        self.start_tour(self.env['website'].get_client_action_url('/'), 'snippet_image_gallery_thumbnail_update',
+                        login='admin')
 
     def test_dropdowns_and_header_hide_on_scroll(self):
         admin_user = self.env['res.partner'].search([("email", "ilike", "admin")])
-        admin_user.name = "mitchell admin" # We need to force Admin user name for no-demo cases
-        self.start_tour(self.env['website'].get_client_action_url('/'), 'dropdowns_and_header_hide_on_scroll', login='admin')
+        admin_user.name = "mitchell admin"  # We need to force Admin user name for no-demo cases
+        self.start_tour(self.env['website'].get_client_action_url('/'), 'dropdowns_and_header_hide_on_scroll',
+                        login='admin')
 
     def test_snippet_image(self):
         create_image_attachment(self.env, '/web/image/website.s_banner_default_image', 's_default_image.jpg')

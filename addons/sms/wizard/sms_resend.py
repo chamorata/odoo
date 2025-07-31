@@ -35,7 +35,9 @@ class SMSResend(models.TransientModel):
                 'failure_type': notif.failure_type,
                 'partner_name': notif.res_partner_id.display_name or mail_message_id.record_name,
                 'sms_number': notif.sms_number,
-            }) for notif in mail_message_id.notification_ids if notif.notification_type == 'sms' and notif.notification_status in ('exception', 'bounce')]
+            }) for notif in mail_message_id.notification_ids if
+                                       notif.notification_type == 'sms' and notif.notification_status in ('exception',
+                                                                                                          'bounce')]
         return result
 
     mail_message_id = fields.Many2one('mail.message', 'Message', readonly=True, required=True)
@@ -85,12 +87,14 @@ class SMSResend(models.TransientModel):
         if to_resend_ids:
             record = self.env[self.mail_message_id.model].browse(self.mail_message_id.res_id)
 
-            sms_pid_to_number = dict((r.partner_id.id, r.sms_number) for  r in self.recipient_ids if r.resend and r.partner_id)
+            sms_pid_to_number = dict(
+                (r.partner_id.id, r.sms_number) for r in self.recipient_ids if r.resend and r.partner_id)
             pids = list(sms_pid_to_number.keys())
             numbers = [r.sms_number for r in self.recipient_ids if r.resend and not r.partner_id]
 
             recipients_data = []
-            all_recipients_data = self.env['mail.followers']._get_recipient_data(record, 'sms', False, pids=pids)[record.id]
+            all_recipients_data = self.env['mail.followers']._get_recipient_data(record, 'sms', False, pids=pids)[
+                record.id]
             for pid, pdata in all_recipients_data.items():
                 if pid and pdata['notif'] == 'sms':
                     recipients_data.append(pdata)

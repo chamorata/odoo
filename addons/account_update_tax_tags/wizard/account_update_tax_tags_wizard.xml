@@ -7,10 +7,14 @@
             <form>
                 <div class="alert alert-warning" role="alert">
                     Updating tax tags on existing Journal Entries is an <b>irreversible</b> action that will impact
-                    your reports.<br/>
-                    It is highly recommended to backup your database beforehand.<br/>
-                    The update will change tax tags on your accounting history, starting from and including selected date,
-                    so that it matches with the current configuration of your taxes.<br/>
+                    your reports.
+                    <br/>
+                    It is highly recommended to backup your database beforehand.
+                    <br/>
+                    The update will change tax tags on your accounting history, starting from and including selected
+                    date,
+                    so that it matches with the current configuration of your taxes.
+                    <br/>
                 </div>
                 <div class="alert alert-warning" role="alert" invisible="not display_lock_date_warning">
                     The date you chose is violating the tax lock date, do this at your own risk.
@@ -19,7 +23,8 @@
                     <field name="date_from"/>
                 </group>
                 <footer>
-                    <button string="Update" class="btn-primary" name="update_amls_tax_tags" type="object" data-hotkey="v"/>
+                    <button string="Update" class="btn-primary" name="update_amls_tax_tags" type="object"
+                            data-hotkey="v"/>
                     <button string="Discard" special="cancel" data-hotkey="z"/>
                 </footer>
             </form>

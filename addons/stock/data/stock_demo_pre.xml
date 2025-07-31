@@ -6,14 +6,14 @@
             <field name="posx">0</field>
             <field name="barcode">SHELF2</field>
             <field name="location_id" model="stock.location"
-                eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+                   eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
         </record>
         <record id="stock_location_components" model="stock.location">
             <field name="name">Shelf 1</field>
             <field name="posx">0</field>
             <field name="barcode">SHELF1</field>
             <field name="location_id" model="stock.location"
-                eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+                   eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
         </record>
         <record id="location_order" model="stock.location">
             <field name="name">Order Processing</field>

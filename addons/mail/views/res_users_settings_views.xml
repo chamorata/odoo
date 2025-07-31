@@ -21,7 +21,9 @@
             <form string="User Settings">
                 <sheet>
                     <div class="oe_title">
-                        <h1><field name="user_id" readonly="id != False"/></h1>
+                        <h1>
+                            <field name="user_id" readonly="id != False"/>
+                        </h1>
                     </div>
                     <group name="discuss_user_settings">
                         <group string="Discuss sidebar">
@@ -30,7 +32,8 @@
                         </group>
                         <group string="Voice">
                             <field name="use_push_to_talk"/>
-                            <field name="push_to_talk_key" placeholder="e.g. true.true..f" invisible="not use_push_to_talk"/>
+                            <field name="push_to_talk_key" placeholder="e.g. true.true..f"
+                                   invisible="not use_push_to_talk"/>
                             <field name="voice_active_duration" invisible="use_push_to_talk"/>
                         </group>
                     </group>

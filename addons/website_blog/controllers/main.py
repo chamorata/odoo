@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import werkzeug
-import itertools
-import pytz
-import babel.dates
 from collections import defaultdict
 
-from odoo import http, fields, tools, models
+import babel.dates
+import pytz
+import werkzeug
 from odoo.addons.website.controllers.main import QueryURL
+
+from odoo import http, fields, tools, models
 from odoo.http import request
 from odoo.tools import html2plaintext
-from odoo.tools.misc import get_lang
 from odoo.tools import sql
+from odoo.tools.misc import get_lang
 
 
 class WebsiteBlog(http.Controller):
@@ -50,7 +50,8 @@ class WebsiteBlog(http.Controller):
             })
         return res
 
-    def _get_blog_post_search_options(self, blog=None, active_tags=None, date_begin=None, date_end=None, state=None, **post):
+    def _get_blog_post_search_options(self, blog=None, active_tags=None, date_begin=None, date_end=None, state=None,
+                                      **post):
         return {
             'displayDescription': True,
             'displayDetail': False,
@@ -65,7 +66,8 @@ class WebsiteBlog(http.Controller):
             'state': state,
         }
 
-    def _prepare_blog_values(self, blogs, blog=False, date_begin=False, date_end=False, tags=False, state=False, page=False, search=None, **post):
+    def _prepare_blog_values(self, blogs, blog=False, date_begin=False, date_end=False, tags=False, state=False,
+                             page=False, search=None, **post):
         """ Prepare all values to display the blogs index page or one specific blog"""
         BlogPost = request.env['blog.post']
         BlogTag = request.env['blog.tag']
@@ -113,7 +115,9 @@ class WebsiteBlog(http.Controller):
             **post
         )
         total, details, fuzzy_search_term = request.website._search_with_fuzzy("blog_posts_only", search,
-            limit=page * self._blog_post_per_page, order="is_published desc, post_date desc, id asc", options=options)
+                                                                               limit=page * self._blog_post_per_page,
+                                                                               order="is_published desc, post_date desc, id asc",
+                                                                               options=options)
         posts = details[0].get('results', BlogPost)
         posts = posts[offset:offset + self._blog_post_per_page]
 
@@ -136,9 +140,13 @@ class WebsiteBlog(http.Controller):
         if not blogs:
             all_tags = request.env['blog.tag']
         else:
-            all_tags = tools.lazy(lambda: blogs.all_tags(join=True) if not blog else blogs.all_tags().get(blog.id, request.env['blog.tag']))
-        tag_category = tools.lazy(lambda: sorted(all_tags.mapped('category_id'), key=lambda category: category.name.upper()))
-        other_tags = tools.lazy(lambda: sorted(all_tags.filtered(lambda x: not x.category_id), key=lambda tag: tag.name.upper()))
+            all_tags = tools.lazy(lambda: blogs.all_tags(join=True) if not blog else blogs.all_tags().get(blog.id,
+                                                                                                          request.env[
+                                                                                                              'blog.tag']))
+        tag_category = tools.lazy(
+            lambda: sorted(all_tags.mapped('category_id'), key=lambda category: category.name.upper()))
+        other_tags = tools.lazy(
+            lambda: sorted(all_tags.filtered(lambda x: not x.category_id), key=lambda tag: tag.name.upper()))
         nav_list = tools.lazy(lambda: self.nav_list(blog))
         # and avoid accessing related blogs one by one
         posts.blog_id
@@ -187,7 +195,8 @@ class WebsiteBlog(http.Controller):
             # redirect get tag-1,tag-2 -> get tag-1
             tags = tag.split(',')
             if len(tags) > 1:
-                url = QueryURL('' if blog else '/blog', ['blog', 'tag'], blog=blog, tag=tags[0], date_begin=date_begin, date_end=date_end, search=search)()
+                url = QueryURL('' if blog else '/blog', ['blog', 'tag'], blog=blog, tag=tags[0], date_begin=date_begin,
+                               date_end=date_end, search=search)()
                 return request.redirect(url, code=302)
 
         values = self._prepare_blog_values(blogs=blogs, blog=blog, tags=tag, page=page, search=search, **opt)
@@ -198,7 +207,8 @@ class WebsiteBlog(http.Controller):
 
         if blog:
             values['main_object'] = blog
-        values['blog_url'] = QueryURL('/blog', ['blog', 'tag'], blog=blog, tag=tag, date_begin=date_begin, date_end=date_end, search=search)
+        values['blog_url'] = QueryURL('/blog', ['blog', 'tag'], blog=blog, tag=tag, date_begin=date_begin,
+                                      date_end=date_end, search=search)
 
         return request.render("website_blog.blog_post_short", values)
 
@@ -207,7 +217,8 @@ class WebsiteBlog(http.Controller):
         v = {}
         v['blog'] = blog
         v['base_url'] = blog.get_base_url()
-        v['posts'] = request.env['blog.post'].search([('blog_id', '=', blog.id)], limit=min(int(limit), 50), order="post_date DESC")
+        v['posts'] = request.env['blog.post'].search([('blog_id', '=', blog.id)], limit=min(int(limit), 50),
+                                                     order="post_date DESC")
         v['html2plaintext'] = html2plaintext
         r = request.render("website_blog.blog_feed", v, headers=[('Content-Type', 'application/atom+xml')])
         return r
@@ -217,7 +228,8 @@ class WebsiteBlog(http.Controller):
     ], type='http', auth="public", website=True, sitemap=False)
     def old_blog_post(self, blog, blog_post, **post):
         # Compatibility pre-v14
-        return request.redirect("/blog/%s/%s" % (request.env['ir.http']._slug(blog), request.env['ir.http']._slug(blog_post)), code=301)
+        return request.redirect(
+            "/blog/%s/%s" % (request.env['ir.http']._slug(blog), request.env['ir.http']._slug(blog_post)), code=301)
 
     @http.route([
         '''/blog/<model("blog.blog"):blog>/<model("blog.post", "[('blog_id','=',blog.id)]"):blog_post>''',
@@ -245,10 +257,12 @@ class WebsiteBlog(http.Controller):
         tag = None
         if tag_id:
             tag = request.env['blog.tag'].browse(int(tag_id))
-        blog_url = QueryURL('', ['blog', 'tag'], blog=blog_post.blog_id, tag=tag, date_begin=date_begin, date_end=date_end)
+        blog_url = QueryURL('', ['blog', 'tag'], blog=blog_post.blog_id, tag=tag, date_begin=date_begin,
+                            date_end=date_end)
 
         if not blog_post.blog_id.id == blog.id:
-            return request.redirect("/blog/%s/%s" % (request.env['ir.http']._slug(blog_post.blog_id), request.env['ir.http']._slug(blog_post)), code=301)
+            return request.redirect("/blog/%s/%s" % (request.env['ir.http']._slug(blog_post.blog_id),
+                                                     request.env['ir.http']._slug(blog_post)), code=301)
 
         tags = request.env['blog.tag'].search([])
 

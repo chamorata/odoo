@@ -1,8 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.osv.expression import OR
-
 from odoo.addons.payment.tests.common import PaymentCommon
+
+from odoo.osv.expression import OR
 
 
 class PaymentCustomCommon(PaymentCommon):

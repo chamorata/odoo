@@ -1,7 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import json
 from datetime import datetime, timedelta
+
 from freezegun import freeze_time
+
 try:
     import websocket as ws
 except ImportError:

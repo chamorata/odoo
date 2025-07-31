@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates id="template" xml:space="preserve">
 
-    <t t-name="pos_restaurant.PaymentScreenValidate" t-inherit="point_of_sale.PaymentScreenValidate" t-inherit-mode="extension">
+    <t t-name="pos_restaurant.PaymentScreenValidate" t-inherit="point_of_sale.PaymentScreenValidate"
+       t-inherit-mode="extension">
         <xpath expr="//button[hasclass('button') and hasclass('next')]" position="attributes">
             <attribute name="t-att-hidden">pos.config.set_tip_after_payment and !currentOrder.is_paid()</attribute>
         </xpath>
@@ -24,7 +25,8 @@
     <t t-name="pos_restaurant.PaymentScreenDue" t-inherit="point_of_sale.PaymentScreenDue" t-inherit-mode="extension">
         <xpath expr="//section[hasclass('paymentlines-container')]" position="inside">
             <div t-if="currentOrder.getCustomerCount() > 1" class="message text-center fs-4">
-                <t t-esc="this.env.utils.formatCurrency(currentOrder.amountPerGuest())" /> / Guest
+                <t t-esc="this.env.utils.formatCurrency(currentOrder.amountPerGuest())"/>
+                / Guest
             </div>
         </xpath>
     </t>

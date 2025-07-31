@@ -5,12 +5,14 @@ class TestDisplayNames(TransactionCase):
 
     def test_get_single_display_name(self):
         bob = self.env["res.partner"].create({"name": "Bob"})
-        display_name = self.env["spreadsheet.mixin"].get_display_names_for_spreadsheet([{"model": "res.partner", "id": bob.id}])
+        display_name = self.env["spreadsheet.mixin"].get_display_names_for_spreadsheet(
+            [{"model": "res.partner", "id": bob.id}])
         self.assertEqual(display_name, ["Bob"])
 
     def test_get_archived_record_display_name(self):
         bob = self.env["res.partner"].create({"name": "Bob", "active": False})
-        display_name = self.env["spreadsheet.mixin"].get_display_names_for_spreadsheet([{"model": "res.partner", "id": bob.id}])
+        display_name = self.env["spreadsheet.mixin"].get_display_names_for_spreadsheet(
+            [{"model": "res.partner", "id": bob.id}])
         self.assertEqual(display_name, ["Bob"])
 
     def test_two_single_display_name(self):

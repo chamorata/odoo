@@ -3,8 +3,9 @@
 
 from datetime import datetime
 
-from odoo.addons.mass_mailing_sms.tests.common import MassSMSCommon
 from odoo.addons.mass_mailing.tests.test_mailing_ab_testing import TestMailingABTestingCommon
+from odoo.addons.mass_mailing_sms.tests.common import MassSMSCommon
+
 from odoo.tests import tagged
 
 

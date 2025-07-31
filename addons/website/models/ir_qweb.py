@@ -1,18 +1,15 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-import re
 import logging
-
+import re
 from collections import OrderedDict
+
+from odoo.addons.website.models import ir_http
 from urllib3.util import parse_url
 
 from odoo import models
+from odoo.exceptions import AccessError
 from odoo.http import request
 from odoo.tools import lazy
-from odoo.addons.base.models.assetsbundle import AssetsBundle
-from odoo.osv import expression
-from odoo.addons.website.models import ir_http
-from odoo.exceptions import AccessError
-
 
 _logger = logging.getLogger(__name__)
 re_background_image = re.compile(r"(background-image\s*:\s*url\(\s*['\"]?\s*)([^)'\"]+)")
@@ -52,7 +49,8 @@ class IrQWeb(models.AbstractModel):
                 editable = True
             except AccessError:
                 pass
-        translatable = has_group_restricted_editor and irQweb.env.context.get('lang') != irQweb.env['ir.http']._get_default_lang().code
+        translatable = has_group_restricted_editor and irQweb.env.context.get('lang') != irQweb.env[
+            'ir.http']._get_default_lang().code
         editable = editable and not translatable
 
         if has_group_restricted_editor and irQweb.env.user.has_group('website.group_multi_website'):
@@ -63,7 +61,8 @@ class IrQWeb(models.AbstractModel):
             ])
 
             cur_company = irQweb.env.company
-            values['multi_website_companies_current'] = lazy(lambda: {'company_id': cur_company.id, 'name': cur_company.name})
+            values['multi_website_companies_current'] = lazy(
+                lambda: {'company_id': cur_company.id, 'name': cur_company.name})
             values['multi_website_companies'] = lazy(lambda: [
                 {'company_id': comp.id, 'name': comp.name}
                 for comp in irQweb.env.user.company_ids if comp != cur_company
@@ -83,7 +82,9 @@ class IrQWeb(models.AbstractModel):
             # form editable object, add the backend configuration link
             if 'main_object' in values and has_group_restricted_editor:
                 func = getattr(values['main_object'], 'get_backend_menu_id', False)
-                values['backend_menu_id'] = lazy(lambda: func and func() or irQweb.env['ir.model.data']._xmlid_to_res_id('website.menu_website_configuration'))
+                values['backend_menu_id'] = lazy(
+                    lambda: func and func() or irQweb.env['ir.model.data']._xmlid_to_res_id(
+                        'website.menu_website_configuration'))
 
         # update options
 
@@ -118,17 +119,18 @@ class IrQWeb(models.AbstractModel):
             atts['loading'] = 'lazy'  # default is auto
 
         if self.env.context.get('inherit_branding') or self.env.context.get('rendering_bundle') or \
-           self.env.context.get('edit_translations') or self.env.context.get('debug') or (request and request.session.debug):
+                self.env.context.get('edit_translations') or self.env.context.get('debug') or (
+                request and request.session.debug):
             return atts
 
         if not website:
             return atts
 
         if (
-            website.cookies_bar
-            and website.block_third_party_domains
-            and not self.env.context.get('cookies_allowed')
-            and not request.env.user.has_group('website.group_website_restricted_editor')
+                website.cookies_bar
+                and website.block_third_party_domains
+                and not self.env.context.get('cookies_allowed')
+                and not request.env.user.has_group('website.group_website_restricted_editor')
         ):
             # If the cookie banner is activated, 3rd-party embedded iframes and
             # scripts should be controlled. As such:
@@ -152,8 +154,8 @@ class IrQWeb(models.AbstractModel):
                         for domain in cookies_watchlist['domains']
                     )
             if (
-                remove_src
-                or cookies_watchlist['classes'].intersection((atts.get('class') or '').split(' '))
+                    remove_src
+                    or cookies_watchlist['classes'].intersection((atts.get('class') or '').split(' '))
             ):
                 atts['data-need-cookies-approval'] = 'true'
                 # Case class in watchlist: we stop here. The element could

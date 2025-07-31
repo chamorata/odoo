@@ -2,19 +2,19 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
-from freezegun import freeze_time
 from unittest.mock import patch
 
-from odoo.addons.google_calendar.utils.google_event import GoogleEvent
-from odoo.addons.google_calendar.utils.google_calendar import GoogleCalendarService
+from dateutil.relativedelta import relativedelta
+from freezegun import freeze_time
 from odoo.addons.google_calendar.models.res_users import User
 from odoo.addons.google_calendar.tests.test_sync_common import TestSyncGoogle, patch_api
+from odoo.addons.google_calendar.utils.google_calendar import GoogleCalendarService
+from odoo.addons.google_calendar.utils.google_event import GoogleEvent
 from odoo.addons.mail.tests.common import MailCommon
-from odoo.tests.common import users, warmup
-from odoo.tests import tagged
-from odoo import tools
 
+from odoo import tools
+from odoo.tests import tagged
+from odoo.tests.common import users, warmup
 from .test_token_access import TestTokenAccess
 
 
@@ -351,8 +351,10 @@ class TestSyncOdoo2Google(TestSyncGoogle):
     @patch_api
     def test_stop_synchronization(self):
         self.env.user.stop_google_synchronization()
-        self.assertTrue(self.env.user.google_synchronization_stopped, "The google synchronization flag should be switched on")
-        self.assertFalse(self.env.user._sync_google_calendar(self.google_service), "The google synchronization should be stopped")
+        self.assertTrue(self.env.user.google_synchronization_stopped,
+                        "The google synchronization flag should be switched on")
+        self.assertFalse(self.env.user._sync_google_calendar(self.google_service),
+                         "The google synchronization should be stopped")
 
         # If synchronization stopped, creating a new event should not call _google_insert.
         self.env['calendar.event'].create({
@@ -470,7 +472,6 @@ class TestSyncOdoo2Google(TestSyncGoogle):
         self.assertGoogleEventNotInserted()
         self.assertGoogleEventNotDeleted()
 
-
     @patch_api
     def test_event_until_utc(self):
         """ UNTIl rrule value must be in UTC: ending with a 'Z """
@@ -564,7 +565,6 @@ class TestSyncOdoo2Google(TestSyncGoogle):
             'reminders': {'overrides': [], 'useDefault': False},
             'transparency': 'opaque',
         })
-
 
     @patch_api
     def test_all_event_with_tz_updated(self):
@@ -738,7 +738,8 @@ class TestSyncOdoo2Google(TestSyncGoogle):
         self.assertFalse(self.env.user.google_synchronization_stopped)
         self.assertEqual(self.env.user._get_google_sync_status(), "sync_paused")
         self.assertFalse(record.active, "Event must be archived in Odoo after unlinking it")
-        self.assertTrue(record.need_sync, "Sync variable must be true for updating event in Google when sync re-activates")
+        self.assertTrue(record.need_sync,
+                        "Sync variable must be true for updating event in Google when sync re-activates")
         self.assertGoogleEventNotDeleted()
 
     @patch_api
@@ -750,7 +751,7 @@ class TestSyncOdoo2Google(TestSyncGoogle):
             'stop': datetime(2020, 1, 15, 18, 0),
             'partner_ids': [(4, partner.id)],
             'need_sync': False,
-            'location' : 'Event Location'
+            'location': 'Event Location'
         })
         event._sync_odoo2google(self.google_service)
         self.assertGoogleEventInserted({'conferenceData': False})
@@ -830,9 +831,12 @@ class TestSyncOdoo2Google(TestSyncGoogle):
 
         # With the synchronization paused, manually call the synchronization to simulate the page refresh.
         self.organizer_user.sudo()._sync_google_calendar(self.google_service)
-        self.assertFalse(self.organizer_user.google_synchronization_stopped, "Synchronization should not be stopped, only paused.")
-        self.assertEqual(self.organizer_user._get_google_sync_status(), "sync_paused", "Synchronization must be paused since it wasn't resumed yet.")
-        self.assertTrue(record.need_sync, "Record must have its 'need_sync' variable as true for it to be synchronized when the synchronization is resumed.")
+        self.assertFalse(self.organizer_user.google_synchronization_stopped,
+                         "Synchronization should not be stopped, only paused.")
+        self.assertEqual(self.organizer_user._get_google_sync_status(), "sync_paused",
+                         "Synchronization must be paused since it wasn't resumed yet.")
+        self.assertTrue(record.need_sync,
+                        "Record must have its 'need_sync' variable as true for it to be synchronized when the synchronization is resumed.")
         self.assertGoogleEventNotInserted()
 
         # Unpause the synchronization and call the calendar synchronization. Ensure the event was inserted in Google side.
@@ -850,9 +854,9 @@ class TestSyncOdoo2Google(TestSyncGoogle):
             'reminders': {'overrides': [], 'useDefault': False},
             'organizer': {'email': self.organizer_user.email, 'self': True},
             'attendees': [
-                            {'email': self.attendee_user.email, 'responseStatus': 'needsAction'},
-                            {'email': self.organizer_user.email, 'responseStatus': 'accepted'}
-                         ],
+                {'email': self.attendee_user.email, 'responseStatus': 'needsAction'},
+                {'email': self.organizer_user.email, 'responseStatus': 'accepted'}
+            ],
             'extendedProperties': {'shared': {'%s_odoo_id' % self.env.cr.dbname: record.id}},
         })
 
@@ -944,9 +948,9 @@ class TestSyncOdoo2Google(TestSyncGoogle):
                 'reminders': {'overrides': [], 'useDefault': False},
                 'organizer': {'email': self.organizer_user.email, 'self': True},
                 'attendees': [
-                                {'email': self.attendee_user.email, 'responseStatus': 'needsAction'},
-                                {'email': self.organizer_user.email, 'responseStatus': 'accepted'}
-                            ],
+                    {'email': self.attendee_user.email, 'responseStatus': 'needsAction'},
+                    {'email': self.organizer_user.email, 'responseStatus': 'accepted'}
+                ],
                 'extendedProperties': {'shared': {'%s_odoo_id' % self.env.cr.dbname: record.id}},
             })
 
@@ -971,9 +975,9 @@ class TestSyncOdoo2Google(TestSyncGoogle):
             'guestsCanModify': True,
             'organizer': {'email': self.organizer_user.email, 'self': True},
             'attendees': [
-                            {'email': self.attendee_user.email, 'responseStatus': 'needsAction'},
-                            {'email': self.organizer_user.email, 'responseStatus': 'accepted'}
-                         ],
+                {'email': self.attendee_user.email, 'responseStatus': 'needsAction'},
+                {'email': self.organizer_user.email, 'responseStatus': 'accepted'}
+            ],
             'reminders': {'overrides': [], 'useDefault': False},
             'transparency': 'opaque',
         }
@@ -1092,8 +1096,9 @@ class TestSyncOdoo2GoogleMail(TestTokenAccess, TestSyncGoogle, MailCommon):
         partner = self.env['res.partner'].create({'name': 'Jean-Luc', 'email': 'jean-luc@opoo.com'})
         for create_user, organizer, responsible, expect_mail, is_public in [
             (user_root, organizer1, organizer1, False, True), (user_root, None, user_root, True, True),
-                (organizer1, None, organizer1, False, False), (organizer1, organizer2, organizer1, False, True)]:
-            with self.subTest(create_uid=create_user.name if create_user else None, user_id=organizer.name if organizer else None):
+            (organizer1, None, organizer1, False, False), (organizer1, organizer2, organizer1, False, True)]:
+            with self.subTest(create_uid=create_user.name if create_user else None,
+                              user_id=organizer.name if organizer else None):
                 with self.mock_mail_gateway(), self.mock_google_sync(user_id=responsible):
                     self.env['calendar.event'].with_user(create_user).create({
                         **event_values,

@@ -1,10 +1,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.sale_gelato import utils
+
 from odoo import Command, _, api, fields, models
 from odoo.exceptions import UserError
 from odoo.osv import expression
-
-from odoo.addons.sale_gelato import utils
 
 
 class ProductTemplate(models.Model):

@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import Command
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
-from odoo.tests import common
 
+from odoo import Command
+from odoo.tests import common
 from odoo.tools import html2plaintext
 
 
@@ -68,7 +68,8 @@ class TestSaleMrpInvoices(AccountTestInvoicingCommon):
         html = self.env['ir.actions.report']._render_qweb_html(
             'account.report_invoice_with_payments', invoice.ids)[0]
         text = html2plaintext(html.decode())
-        self.assertRegex(text, r'Product By Lot\n1.00Units\nLOT0001', "There should be a line that specifies 1 x LOT0001")
+        self.assertRegex(text, r'Product By Lot\n1.00Units\nLOT0001',
+                         "There should be a line that specifies 1 x LOT0001")
 
     def test_report_forecast_for_mto_procure_method(self):
         """
@@ -119,7 +120,9 @@ class TestSaleMrpInvoices(AccountTestInvoicingCommon):
 
         ])
         (so_1 | so_2).action_confirm()
-        report_lines = self.env['stock.forecasted_product_product'].with_context(warehouse=warehouse.id).get_report_values(docids=product.ids)['docs']['lines']
+        report_lines = \
+        self.env['stock.forecasted_product_product'].with_context(warehouse=warehouse.id).get_report_values(
+            docids=product.ids)['docs']['lines']
         self.assertEqual(len(report_lines), 3)
         so_1_line = report_lines[0]
         self.assertEqual(
@@ -133,6 +136,7 @@ class TestSaleMrpInvoices(AccountTestInvoicingCommon):
         )
         replenisment_line = report_lines[2]
         self.assertEqual(
-            [replenisment_line['document_in'], replenisment_line['document_out'], replenisment_line['quantity'], replenisment_line['move_out'], replenisment_line['replenishment_filled']],
+            [replenisment_line['document_in'], replenisment_line['document_out'], replenisment_line['quantity'],
+             replenisment_line['move_out'], replenisment_line['replenishment_filled']],
             [False, False, 10.0, None, True]
         )

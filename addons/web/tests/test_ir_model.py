@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo.tests.common import TransactionCase
-
 from odoo.tests import tagged
+from odoo.tests.common import TransactionCase
 from odoo.tests.common import new_test_user
 
 
@@ -62,10 +61,12 @@ class IrModelAccessTest(TransactionCase):
         self.assertEqual(result, [{"display_name": "unexistent", "model": "unexistent"}])
         # non existent model comes after existent model
         result = self.env['ir.model'].display_name_for(["res.company", "unexistent"])
-        self.assertEqual(result, [{"display_name": "Companies", "model": "res.company"}, {"display_name": "unexistent", "model": "unexistent"}])
+        self.assertEqual(result, [{"display_name": "Companies", "model": "res.company"},
+                                  {"display_name": "unexistent", "model": "unexistent"}])
         # transient models
         result = self.env['ir.model'].display_name_for(["res.company", "base.language.export"])
-        self.assertEqual(result, [{"display_name": "Companies", "model": "res.company"}, {"display_name": "base.language.export", "model": "base.language.export"}])
+        self.assertEqual(result, [{"display_name": "Companies", "model": "res.company"},
+                                  {"display_name": "base.language.export", "model": "base.language.export"}])
 
         # do not return results for transient models
         result = self.env['ir.model'].get_available_models()

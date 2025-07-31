@@ -11,7 +11,8 @@
                 <filter string="Code" name="resource" context="{'group_by':'res_name'}"/>
             </xpath>
             <xpath expr="//filter[@name='resource']" position="after">
-                <filter string="Livechat Channel" name="groupby_livechat_channel" context="{'group_by': 'parent_res_name'}"/>
+                <filter string="Livechat Channel" name="groupby_livechat_channel"
+                        context="{'group_by': 'parent_res_name'}"/>
             </xpath>
             <xpath expr="/search" position="inside">
                 <filter string="This Week" name="creation_date_filter" domain="[

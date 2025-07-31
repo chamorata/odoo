@@ -2,7 +2,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import base64
 import mimetypes
-
 from urllib.parse import unquote, urlencode
 
 from odoo import http, modules
@@ -16,14 +15,15 @@ class WebManifest(http.Controller):
     def _get_shortcuts(self):
         module_names = ['mail', 'crm', 'project', 'project_todo']
         try:
-            module_ids = request.env['ir.module.module'].search([('state', '=', 'installed'), ('name', 'in', module_names)]) \
-                                                        .sorted(key=lambda r: module_names.index(r["name"]))
+            module_ids = request.env['ir.module.module'].search(
+                [('state', '=', 'installed'), ('name', 'in', module_names)]) \
+                .sorted(key=lambda r: module_names.index(r["name"]))
         except AccessError:
             return []
         menu_roots = request.env['ir.ui.menu'].get_user_roots()
         datas = request.env['ir.model.data'].sudo().search([('model', '=', 'ir.ui.menu'),
-                                                         ('res_id', 'in', menu_roots.ids),
-                                                         ('module', 'in', module_names)])
+                                                            ('res_id', 'in', menu_roots.ids),
+                                                            ('module', 'in', module_names)])
         shortcuts = []
         for module in module_ids:
             data = datas.filtered(lambda res: res.module == module.name)

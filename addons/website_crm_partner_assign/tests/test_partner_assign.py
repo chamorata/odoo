@@ -4,12 +4,6 @@
 from datetime import date, timedelta
 from unittest.mock import patch
 
-from odoo.exceptions import AccessError
-from odoo.fields import Command
-from odoo.tests.common import tagged, new_test_user, TransactionCase
-from odoo.tools import mute_logger
-
-from odoo.addons.base.tests.common import HttpCase
 from odoo.addons.crm.tests.common import TestCrmCommon
 from odoo.addons.mail.tests.common import mail_new_test_user
 from odoo.addons.website.tools import MockRequest
@@ -17,6 +11,12 @@ from odoo.addons.website_crm_partner_assign.controllers.main import (
     WebsiteAccount,
     WebsiteCrmPartnerAssign,
 )
+
+from odoo.addons.base.tests.common import HttpCase
+from odoo.exceptions import AccessError
+from odoo.fields import Command
+from odoo.tests.common import tagged, new_test_user, TransactionCase
+from odoo.tools import mute_logger
 
 
 class TestPartnerAssign(TransactionCase):
@@ -51,9 +51,9 @@ class TestPartnerAssign(TransactionCase):
             'is_company': True,
             'child_ids': [
                 (0, 0, {'name': 'Uk Children 1',
-                       }),
+                        }),
                 (0, 0, {'name': 'Uk Children 2',
-                       }),
+                        }),
             ],
         })
         lead_uk_assigned = self.env['crm.lead'].create({
@@ -134,8 +134,10 @@ class TestPartnerAssign(TransactionCase):
         partner_be.with_context(force_geo_localize=True).geo_localize()
 
         # I check Geo Latitude and Longitude of partner after set
-        self.assertTrue(50 < partner_be.partner_latitude < 51, "Latitude is wrong: 50 < %s < 51" % partner_be.partner_latitude)
-        self.assertTrue(3 < partner_be.partner_longitude < 5, "Longitude is wrong: 3 < %s < 5" % partner_be.partner_longitude)
+        self.assertTrue(50 < partner_be.partner_latitude < 51,
+                        "Latitude is wrong: 50 < %s < 51" % partner_be.partner_latitude)
+        self.assertTrue(3 < partner_be.partner_longitude < 5,
+                        "Longitude is wrong: 3 < %s < 5" % partner_be.partner_longitude)
 
         # I assign nearest partner to opportunity.
         lead.assign_partner()
@@ -193,20 +195,24 @@ class TestPartnerLeadPortal(TestCrmCommon):
 
     def test_partner_lead_decline(self):
         """ Test an integrating partner decline the lead """
-        self.lead_portal.with_user(self.user_portal).partner_desinterested(comment="No thanks, I have enough leads !", contacted=True, spam=False)
+        self.lead_portal.with_user(self.user_portal).partner_desinterested(comment="No thanks, I have enough leads !",
+                                                                           contacted=True, spam=False)
 
-        self.assertFalse(self.lead_portal.partner_assigned_id.id, 'The partner_assigned_id of the declined lead should be False.')
-        self.assertTrue(self.user_portal.partner_id in self.lead_portal.sudo().partner_declined_ids, 'Partner who has declined the lead should be in the declined_partner_ids.')
+        self.assertFalse(self.lead_portal.partner_assigned_id.id,
+                         'The partner_assigned_id of the declined lead should be False.')
+        self.assertTrue(self.user_portal.partner_id in self.lead_portal.sudo().partner_declined_ids,
+                        'Partner who has declined the lead should be in the declined_partner_ids.')
 
     def test_lead_access_right(self):
         """ Test another portal user can not write on every leads """
         # portal user having no right
-        poor_portal_user = self.env['res.users'].with_context({'no_reset_password': True, 'mail_notrack': True}).create({
-            'name': 'Poor Partner (not integrating one)',
-            'email': 'poor.partner@ododo.com',
-            'login': 'poorpartner',
-            'groups_id': [(6, 0, [self.env.ref('base.group_portal').id])],
-        })
+        poor_portal_user = self.env['res.users'].with_context({'no_reset_password': True, 'mail_notrack': True}).create(
+            {
+                'name': 'Poor Partner (not integrating one)',
+                'email': 'poor.partner@ododo.com',
+                'login': 'poorpartner',
+                'groups_id': [(6, 0, [self.env.ref('base.group_portal').id])],
+            })
         # try to accept a lead that is not mine
         with self.assertRaises(AccessError):
             self.lead_portal.with_user(poor_portal_user).partner_interested(comment="Oh yeah, I take that lead !")
@@ -221,8 +227,10 @@ class TestPartnerLeadPortal(TestCrmCommon):
         opportunity = self.env['crm.lead'].browse(data['id'])
         salesmanteam = self.env['crm.team']._get_default_team_id(user_id=self.user_portal.user_id.id)
 
-        self.assertEqual(opportunity.team_id, salesmanteam, 'The created opportunity should have the same team as the salesman default team of the opportunity creator.')
-        self.assertEqual(opportunity.partner_assigned_id, self.user_portal.partner_id, 'Assigned Partner of created opportunity is the (portal) creator.')
+        self.assertEqual(opportunity.team_id, salesmanteam,
+                         'The created opportunity should have the same team as the salesman default team of the opportunity creator.')
+        self.assertEqual(opportunity.partner_assigned_id, self.user_portal.partner_id,
+                         'Assigned Partner of created opportunity is the (portal) creator.')
 
     def test_portal_mixin_url(self):
         record_action = self.lead_portal._get_access_action(access_uid=self.user_portal.id)
@@ -257,7 +265,7 @@ class TestPartnerLeadPortal(TestCrmCommon):
             )
 
         with self.with_user(self.user_portal.login), MockRequest(
-            self.env, website=self.env["website"].browse(1)
+                self.env, website=self.env["website"].browse(1)
         ) as mock_request:
             mock_request.render = render_function
             WebsiteAccount().portal_my_opportunities(filterby="today")
@@ -287,8 +295,10 @@ class TestPartnerLeadPortal(TestCrmCommon):
 
         def render_function(_, values, *args, **kwargs):
             """ Tests values at the end of WebsiteCrmPartnerAssign.partners method."""
-            self.assertIn("partners", values, "Partner key is not present in the values, can't perform subsequent checks.")
-            self.assertIn(non_mexican_partner, values['partners'], "Non-Mexican Partner is not present when rendering partners from Mexico; fallback protection (protecting from no results) didn't work.")
+            self.assertIn("partners", values,
+                          "Partner key is not present in the values, can't perform subsequent checks.")
+            self.assertIn(non_mexican_partner, values['partners'],
+                          "Non-Mexican Partner is not present when rendering partners from Mexico; fallback protection (protecting from no results) didn't work.")
             return 'rendered'
 
         with MockRequest(self.env, website=self.env['website'].browse(1)) as mock_request:
@@ -329,7 +339,8 @@ class TestPublish(HttpCase):
 
     @mute_logger('odoo.addons.http_routing.models.ir_http', 'odoo.http')
     def test_01_admin(self):
-        self.start_tour(self.env['website'].get_client_action_url('/partners'), 'test_can_publish_partner', login="admin")
+        self.start_tour(self.env['website'].get_client_action_url('/partners'), 'test_can_publish_partner',
+                        login="admin")
         self.assertTrue(self.partner.website_published, "Partner should have been published")
 
     @mute_logger('odoo.addons.http_routing.models.ir_http', 'odoo.http')
@@ -338,7 +349,8 @@ class TestPublish(HttpCase):
             Command.link(self.group_restricted_editor.id),
             Command.link(self.group_sale_salesman.id),
         ]
-        self.start_tour(self.env['website'].get_client_action_url('/partners'), 'test_can_publish_partner', login="testtest")
+        self.start_tour(self.env['website'].get_client_action_url('/partners'), 'test_can_publish_partner',
+                        login="testtest")
         self.assertTrue(self.partner.website_published, "Partner should have been published")
 
     @mute_logger('odoo.addons.http_routing.models.ir_http', 'odoo.http')
@@ -348,9 +360,12 @@ class TestPublish(HttpCase):
             Command.unlink(self.group_sale_salesman.id),
             Command.unlink(self.group_partner_manager.id)
         ]
-        self.assertNotIn(self.group_sale_salesman.id, self.user_test.groups_id.ids, "User should not be a group_sale_salesman")
-        self.assertNotIn(self.group_partner_manager.id, self.user_test.groups_id.ids, "User should not be a group_partner_manager")
-        self.start_tour(self.env['website'].get_client_action_url('/partners'), 'test_cannot_publish_partner', login="testtest")
+        self.assertNotIn(self.group_sale_salesman.id, self.user_test.groups_id.ids,
+                         "User should not be a group_sale_salesman")
+        self.assertNotIn(self.group_partner_manager.id, self.user_test.groups_id.ids,
+                         "User should not be a group_partner_manager")
+        self.start_tour(self.env['website'].get_client_action_url('/partners'), 'test_cannot_publish_partner',
+                        login="testtest")
 
     @mute_logger('odoo.addons.http_routing.models.ir_http', 'odoo.http')
     def test_04_not_reditor_salesman(self):
@@ -358,8 +373,10 @@ class TestPublish(HttpCase):
             Command.unlink(self.group_restricted_editor.id),
             Command.link(self.group_sale_salesman.id),
         ]
-        self.assertNotIn(self.group_restricted_editor.id, self.user_test.groups_id.ids, "User should not be a group_restricted_editor")
-        self.start_tour(self.env['website'].get_client_action_url('/partners'), 'test_can_publish_partner', login="testtest")
+        self.assertNotIn(self.group_restricted_editor.id, self.user_test.groups_id.ids,
+                         "User should not be a group_restricted_editor")
+        self.start_tour(self.env['website'].get_client_action_url('/partners'), 'test_can_publish_partner',
+                        login="testtest")
         self.assertTrue(self.partner.website_published, "Partner should have been published")
 
     @mute_logger('odoo.addons.http_routing.models.ir_http', 'odoo.http')
@@ -369,7 +386,11 @@ class TestPublish(HttpCase):
             Command.unlink(self.group_sale_salesman.id),
             Command.unlink(self.group_partner_manager.id)
         ]
-        self.assertNotIn(self.group_sale_salesman.id, self.user_test.groups_id.ids, "User should not be a group_sale_salesman")
-        self.assertNotIn(self.group_partner_manager.id, self.user_test.groups_id.ids, "User should not be a group_partner_manager")
-        self.assertNotIn(self.group_restricted_editor.id, self.user_test.groups_id.ids, "User should not be a group_restricted_editor")
-        self.start_tour(self.env['website'].get_client_action_url('/partners'), 'test_cannot_publish_partner', login="testtest")
+        self.assertNotIn(self.group_sale_salesman.id, self.user_test.groups_id.ids,
+                         "User should not be a group_sale_salesman")
+        self.assertNotIn(self.group_partner_manager.id, self.user_test.groups_id.ids,
+                         "User should not be a group_partner_manager")
+        self.assertNotIn(self.group_restricted_editor.id, self.user_test.groups_id.ids,
+                         "User should not be a group_restricted_editor")
+        self.start_tour(self.env['website'].get_client_action_url('/partners'), 'test_cannot_publish_partner',
+                        login="testtest")

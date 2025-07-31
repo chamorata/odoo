@@ -27,7 +27,8 @@ class ResCompany(models.Model):
         purchase_journals = self.env['account.journal'].search([('type', '=', 'purchase')])
         for company in self:
             if not company.l10n_tr_nilvera_purchase_journal_id:
-                company.l10n_tr_nilvera_purchase_journal_id = purchase_journals.filtered_domain(self.env['account.journal']._check_company_domain(company))[:1]
+                company.l10n_tr_nilvera_purchase_journal_id = purchase_journals.filtered_domain(
+                    self.env['account.journal']._check_company_domain(company))[:1]
                 company.l10n_tr_nilvera_purchase_journal_id.is_nilvera_journal = True
 
     def _inverse_l10n_tr_nilvera_purchase_journal_id(self):

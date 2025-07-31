@@ -3,11 +3,10 @@
 from http import HTTPStatus
 
 import odoo
+from odoo.addons.test_http.utils import HtmlTokenizer
 from odoo.tests import tagged
 from odoo.tests.common import new_test_user, Like
 from odoo.tools import mute_logger
-from odoo.addons.test_http.utils import HtmlTokenizer
-
 from .test_common import TestHttpBase
 
 
@@ -38,7 +37,7 @@ class TestHttpModels(TestHttpBase):
                     <li><a href="/test_http/1/3">Dakara (P5C-113)</a></li>
                 </ul>
                 ''')
-            )
+        )
 
     @mute_logger('odoo.http')
     def test_models1_galaxy_ko(self):
@@ -74,7 +73,6 @@ class TestHttpModels(TestHttpBase):
     def test_models4_stargate_setname(self):
         milky_way = self.env.ref('test_http.milky_way')
 
-
         milky_way.invalidate_recordset()
         res = self.url_open(f'/test_http/{milky_way.id}/setname?readonly=0', {
             'name': "Wilky May",
@@ -90,8 +88,8 @@ class TestHttpModels(TestHttpBase):
 
         self.assertEqual(milky_way.name, "Milky Way")
 
-        with self.assertLogs('odoo.http', 'WARNING') as capture_http,\
-             self.assertLogs('odoo.sql_db', 'WARNING') as capture_sql_db:
+        with self.assertLogs('odoo.http', 'WARNING') as capture_http, \
+                self.assertLogs('odoo.sql_db', 'WARNING') as capture_sql_db:
             res = self.url_open(f'/test_http/{milky_way.id}/setname?readonly=1', {
                 'name': "Wilky May",
                 'csrf_token': odoo.http.Request.csrf_token(self),

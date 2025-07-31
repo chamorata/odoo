@@ -1,9 +1,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from freezegun import freeze_time
+from odoo.addons.account.tests.common import AccountTestInvoicingHttpCommon
+
 from odoo import Command
 from odoo.tests import tagged
-from odoo.addons.account.tests.common import AccountTestInvoicingHttpCommon
 from .test_l10n_id_efaktur import TestIndonesianEfaktur
 
 

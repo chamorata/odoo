@@ -1,6 +1,6 @@
+from OpenSSL.crypto import X509
 from cryptography.hazmat.backends import default_backend
 from cryptography.x509 import load_pem_x509_certificate
-from OpenSSL.crypto import X509
 
 
 def pem_cert_bytes_to_open_ssl_x509(cert: bytes) -> X509:

@@ -9,14 +9,15 @@ from odoo.exceptions import UserError
 class HrEmployee(models.Model):
     _inherit = 'hr.employee'
 
-    has_timesheet = fields.Boolean(compute='_compute_has_timesheet', groups="hr.group_hr_user,base.group_system", export_string_translation=False)
+    has_timesheet = fields.Boolean(compute='_compute_has_timesheet', groups="hr.group_hr_user,base.group_system",
+                                   export_string_translation=False)
 
     def _compute_has_timesheet(self):
         self.env.cr.execute("""
         SELECT id, EXISTS(SELECT 1 FROM account_analytic_line WHERE project_id IS NOT NULL AND employee_id = e.id limit 1)
           FROM hr_employee e
          WHERE id in %s
-        """, (tuple(self.ids), ))
+        """, (tuple(self.ids),))
 
         result = {eid[0]: eid[1] for eid in self.env.cr.fetchall()}
 
@@ -47,7 +48,8 @@ class HrEmployee(models.Model):
         wizard = self.env['hr.employee.delete.wizard'].create({
             'employee_ids': self.ids,
         })
-        if not self.env.user.has_group('hr_timesheet.group_hr_timesheet_approver') and wizard.has_timesheet and not wizard.has_active_employee:
+        if not self.env.user.has_group(
+                'hr_timesheet.group_hr_timesheet_approver') and wizard.has_timesheet and not wizard.has_active_employee:
             raise UserError(_('You cannot delete employees who have timesheets.'))
 
         return {

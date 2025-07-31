@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from odoo import api, models
 
+
 class SaleOrderLine(models.Model):
     _inherit = "sale.order.line"
 
@@ -12,7 +13,7 @@ class SaleOrderLine(models.Model):
         # for which the recomputation was triggered by a depency from another override of _compute_purchase_price
         service_non_timesheet_sols = self.filtered(
             lambda sol: not sol.is_expense and sol.is_service and
-            sol.product_id.service_policy == 'ordered_prepaid' and sol.state == 'sale'
+                        sol.product_id.service_policy == 'ordered_prepaid' and sol.state == 'sale'
         )
         timesheet_sols = self.filtered(
             lambda sol: sol.qty_delivered_method == 'timesheet' and not sol.product_id.standard_price
@@ -32,8 +33,8 @@ class SaleOrderLine(models.Model):
                 product_cost = mapped_sol_timesheet_amount.get(line.id, line.product_id.standard_price)
                 product_uom = line.product_uom or line.product_id.uom_id
                 if (
-                    product_uom != line.company_id.project_time_mode_id
-                    and product_uom.category_id.id == line.company_id.project_time_mode_id.category_id.id
+                        product_uom != line.company_id.project_time_mode_id
+                        and product_uom.category_id.id == line.company_id.project_time_mode_id.category_id.id
                 ):
                     product_cost = product_uom._compute_quantity(
                         product_cost,

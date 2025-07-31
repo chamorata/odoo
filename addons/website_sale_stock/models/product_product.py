@@ -8,7 +8,8 @@ from odoo.http import request
 class ProductProduct(models.Model):
     _inherit = 'product.product'
 
-    stock_notification_partner_ids = fields.Many2many('res.partner', relation='stock_notification_product_partner_rel', string='Back in stock Notifications')
+    stock_notification_partner_ids = fields.Many2many('res.partner', relation='stock_notification_product_partner_rel',
+                                                      string='Back in stock Notifications')
 
     def _has_stock_notification(self, partner):
         self.ensure_one()

@@ -59,7 +59,8 @@ class Survey(models.Model):
         'res.users', string='Responsible',
         domain=[('share', '=', False)], tracking=1,
         default=lambda self: self.env.user)
-    restrict_user_ids = fields.Many2many('res.users', string='Restricted to', domain=[('share', '=', False)], tracking=2)
+    restrict_user_ids = fields.Many2many('res.users', string='Restricted to', domain=[('share', '=', False)],
+                                         tracking=2)
     # questions
     question_and_page_ids = fields.One2many('survey.question', 'survey_id', string='Sections and Questions', copy=True)
     page_ids = fields.One2many('survey.question', string='Pages', compute="_compute_page_and_question_ids")
@@ -87,14 +88,16 @@ class Survey(models.Model):
         ('token', 'Invited people only')], string='Access Mode',
         default='public', required=True)
     access_token = fields.Char('Access Token', default=lambda self: self._get_default_access_token(), copy=False)
-    users_login_required = fields.Boolean('Require Login', help="If checked, users have to login before answering even with a valid token.")
+    users_login_required = fields.Boolean('Require Login',
+                                          help="If checked, users have to login before answering even with a valid token.")
     users_can_go_back = fields.Boolean('Users can go back', help="If checked, users can go back to previous pages.")
     users_can_signup = fields.Boolean('Users can signup', compute='_compute_users_can_signup')
     # statistics
     answer_count = fields.Integer("Registered", compute="_compute_survey_statistic")
     answer_done_count = fields.Integer("Attempts", compute="_compute_survey_statistic")
     answer_score_avg = fields.Float("Avg Score (%)", compute="_compute_survey_statistic")
-    answer_duration_avg = fields.Float("Average Duration", compute="_compute_answer_duration_avg", help="Average duration of the survey (in hours)")
+    answer_duration_avg = fields.Float("Average Duration", compute="_compute_answer_duration_avg",
+                                       help="Average duration of the survey (in hours)")
     success_count = fields.Integer("Success", compute="_compute_survey_statistic")
     success_ratio = fields.Integer("Success Ratio (%)", compute="_compute_survey_statistic")
     # scoring
@@ -107,7 +110,8 @@ class Survey(models.Model):
     scoring_success_min = fields.Float('Required Score (%)', default=80.0)
     scoring_max_obtainable = fields.Float('Maximum obtainable score', compute='_compute_scoring_max_obtainable')
     # attendees context: attempts and time limitation
-    is_attempts_limited = fields.Boolean('Limited number of attempts', help="Check this option if you want to limit the number of attempts per user",
+    is_attempts_limited = fields.Boolean('Limited number of attempts',
+                                         help="Check this option if you want to limit the number of attempts per user",
                                          compute="_compute_is_attempts_limited", store=True, readonly=False)
     attempts_limit = fields.Integer('Number of attempts', default=1)
     is_time_limited = fields.Boolean('The survey is limited in time')
@@ -141,39 +145,44 @@ class Survey(models.Model):
     session_state = fields.Selection([
         ('ready', 'Ready'),
         ('in_progress', 'In Progress'),
-        ], string="Session State", copy=False)
+    ], string="Session State", copy=False)
     session_code = fields.Char('Session Code', copy=False, compute="_compute_session_code",
                                precompute=True, store=True, readonly=False,
-        help="This code will be used by your attendees to reach your session. Feel free to customize it however you like!")
+                               help="This code will be used by your attendees to reach your session. Feel free to customize it however you like!")
     session_link = fields.Char('Session Link', compute='_compute_session_link')
     # live sessions - current question fields
     session_question_id = fields.Many2one('survey.question', string="Current Question", copy=False,
-        help="The current question of the survey session.")
+                                          help="The current question of the survey session.")
     session_start_time = fields.Datetime("Current Session Start Time", copy=False)
     session_question_start_time = fields.Datetime("Current Question Start Time", copy=False,
-        help="The time at which the current question has started, used to handle the timer for attendees.")
+                                                  help="The time at which the current question has started, used to handle the timer for attendees.")
     session_answer_count = fields.Integer("Answers Count", compute='_compute_session_answer_count')
-    session_question_answer_count = fields.Integer("Question Answers Count", compute='_compute_session_question_answer_count')
+    session_question_answer_count = fields.Integer("Question Answers Count",
+                                                   compute='_compute_session_question_answer_count')
     # live sessions - settings
     session_show_leaderboard = fields.Boolean("Show Session Leaderboard", compute='_compute_session_show_leaderboard',
-        help="Whether or not we want to show the attendees leaderboard for this survey.")
-    session_speed_rating = fields.Boolean("Reward quick answers", help="Attendees get more points if they answer quickly")
+                                              help="Whether or not we want to show the attendees leaderboard for this survey.")
+    session_speed_rating = fields.Boolean("Reward quick answers",
+                                          help="Attendees get more points if they answer quickly")
     session_speed_rating_time_limit = fields.Integer(
         "Time limit (seconds)", help="Default time given to receive additional points for right answers")
     # conditional questions management
-    has_conditional_questions = fields.Boolean("Contains conditional questions", compute="_compute_has_conditional_questions")
+    has_conditional_questions = fields.Boolean("Contains conditional questions",
+                                               compute="_compute_has_conditional_questions")
 
     _sql_constraints = [
         ('access_token_unique', 'unique(access_token)', 'Access token should be unique'),
         ('session_code_unique', 'unique(session_code)', 'Session code should be unique'),
         ('certification_check', "CHECK( scoring_type!='no_scoring' OR certification=False )",
-            'You can only create certifications for surveys that have a scoring mechanism.'),
-        ('scoring_success_min_check', "CHECK( scoring_success_min IS NULL OR (scoring_success_min>=0 AND scoring_success_min<=100) )",
-            'The percentage of success has to be defined between 0 and 100.'),
+         'You can only create certifications for surveys that have a scoring mechanism.'),
+        ('scoring_success_min_check',
+         "CHECK( scoring_success_min IS NULL OR (scoring_success_min>=0 AND scoring_success_min<=100) )",
+         'The percentage of success has to be defined between 0 and 100.'),
         ('time_limit_check', "CHECK( (is_time_limited=False) OR (time_limit is not null AND time_limit > 0) )",
-            'The time limit needs to be a positive number if the survey is time limited.'),
-        ('attempts_limit_check', "CHECK( (is_attempts_limited=False) OR (attempts_limit is not null AND attempts_limit > 0) )",
-            'The attempts limit needs to be a positive number if the survey has a limited number of attempts.'),
+         'The time limit needs to be a positive number if the survey is time limited.'),
+        ('attempts_limit_check',
+         "CHECK( (is_attempts_limited=False) OR (attempts_limit is not null AND attempts_limit > 0) )",
+         'The attempts limit needs to be a positive number if the survey has a limited number of attempts.'),
         ('badge_uniq', 'unique (certification_badge_id)', "The badge for each survey should be unique!"),
         ('session_speed_rating_has_time_limit',
          "CHECK (session_speed_rating != TRUE OR session_speed_rating_time_limit IS NOT NULL AND session_speed_rating_time_limit > 0)",
@@ -204,7 +213,8 @@ class Survey(models.Model):
         for survey in self:
             survey.users_can_signup = signup_allowed
 
-    @api.depends('user_input_ids.state', 'user_input_ids.test_entry', 'user_input_ids.scoring_percentage', 'user_input_ids.scoring_success')
+    @api.depends('user_input_ids.state', 'user_input_ids.test_entry', 'user_input_ids.scoring_percentage',
+                 'user_input_ids.scoring_success')
     def _compute_survey_statistic(self):
         default_vals = {
             'answer_count': 0, 'answer_done_count': 0, 'success_count': 0,
@@ -214,7 +224,9 @@ class Survey(models.Model):
         UserInput = self.env['survey.user_input']
         base_domain = [('survey_id', 'in', self.ids)]
 
-        read_group_res = UserInput._read_group(base_domain, ['survey_id', 'state', 'scoring_percentage', 'scoring_success'], ['__count'])
+        read_group_res = UserInput._read_group(base_domain,
+                                               ['survey_id', 'state', 'scoring_percentage', 'scoring_success'],
+                                               ['__count'])
         for survey, state, scoring_percentage, scoring_success, count in read_group_res:
             stat[survey.id]['answer_count'] += count
             stat[survey.id]['answer_score_avg_total'] += scoring_percentage
@@ -226,7 +238,8 @@ class Survey(models.Model):
         for survey_stats in stat.values():
             avg_total = survey_stats.pop('answer_score_avg_total')
             survey_stats['answer_score_avg'] = avg_total / (survey_stats['answer_count'] or 1)
-            survey_stats['success_ratio'] = (survey_stats['success_count'] / (survey_stats['answer_count'] or 1.0))*100
+            survey_stats['success_ratio'] = (survey_stats['success_count'] / (
+                        survey_stats['answer_count'] or 1.0)) * 100
 
         for survey in self:
             survey.update(stat.get(survey._origin.id, default_vals))
@@ -262,8 +275,8 @@ class Survey(models.Model):
     def _compute_is_attempts_limited(self):
         for survey in self:
             if not survey.is_attempts_limited or \
-               (survey.access_mode == 'public' and not survey.users_login_required) or \
-               any(question.triggering_answer_ids for question in survey.question_and_page_ids):
+                    (survey.access_mode == 'public' and not survey.users_login_required) or \
+                    any(question.triggering_answer_ids for question in survey.question_and_page_ids):
                 survey.is_attempts_limited = False
 
     @api.depends('session_start_time', 'user_input_ids')
@@ -323,12 +336,14 @@ class Survey(models.Model):
     def _compute_session_show_leaderboard(self):
         for survey in self:
             survey.session_show_leaderboard = survey.scoring_type != 'no_scoring' and \
-                any(question.save_as_nickname for question in survey.question_and_page_ids)
+                                              any(question.save_as_nickname for question in
+                                                  survey.question_and_page_ids)
 
     @api.depends('question_and_page_ids.triggering_answer_ids')
     def _compute_has_conditional_questions(self):
         for survey in self:
-            survey.has_conditional_questions = any(question.triggering_answer_ids for question in survey.question_and_page_ids)
+            survey.has_conditional_questions = any(
+                question.triggering_answer_ids for question in survey.question_and_page_ids)
 
     @api.depends('scoring_type')
     def _compute_certification(self):
@@ -340,8 +355,8 @@ class Survey(models.Model):
     def _compute_certification_give_badge(self):
         for survey in self:
             if not survey.certification_give_badge or \
-               not survey.users_login_required or \
-               not survey.certification:
+                    not survey.users_login_required or \
+                    not survey.certification:
                 survey.certification_give_badge = False
 
     @api.depends('certification')
@@ -407,13 +422,15 @@ class Survey(models.Model):
          - user_id is not a survey manager
         """
         surveys_to_check = self.filtered(lambda s: s.restrict_user_ids and bool(s.user_id - s.restrict_user_ids))
-        users_are_managers = surveys_to_check.user_id.filtered(lambda user: user.has_group('survey.group_survey_manager'))
+        users_are_managers = surveys_to_check.user_id.filtered(
+            lambda user: user.has_group('survey.group_survey_manager'))
         for survey in surveys_to_check.filtered(lambda s: s.user_id not in users_are_managers):
             survey.restrict_user_ids += survey.user_id
 
     @api.constrains('scoring_type', 'users_can_go_back')
     def _check_scoring_after_page_availability(self):
-        failing = self.filtered(lambda survey: survey.scoring_type == 'scoring_with_answers_after_page' and survey.users_can_go_back)
+        failing = self.filtered(
+            lambda survey: survey.scoring_type == 'scoring_with_answers_after_page' and survey.users_can_go_back)
         if failing:
             raise ValidationError(
                 _('Combining roaming and "Scoring with answers after each page" is not possible; please update the following surveys:\n- %(survey_names)s',
@@ -434,7 +451,8 @@ class Survey(models.Model):
             if failing_surveys_sudo:
                 raise ValidationError(
                     _('The access of the following surveys is restricted. Make sure their responsible still has access to it: \n%(survey_names)s\n',
-                        survey_names='\n'.join(f'- {survey.title}: {survey.user_id.name}' for survey in failing_surveys_sudo)))
+                      survey_names='\n'.join(
+                          f'- {survey.title}: {survey.user_id.name}' for survey in failing_surveys_sudo)))
 
     # ------------------------------------------------------------
     # CRUD
@@ -451,8 +469,8 @@ class Survey(models.Model):
         speed_rating, speed_limit = vals.get('session_speed_rating'), vals.get('session_speed_rating_time_limit')
 
         surveys_to_update = self.filtered(lambda s: (
-            speed_rating is not None and s.session_speed_rating != speed_rating
-            or speed_limit is not None and s.session_speed_rating_time_limit != speed_limit
+                speed_rating is not None and s.session_speed_rating != speed_rating
+                or speed_limit is not None and s.session_speed_rating_time_limit != speed_limit
         ))
 
         result = super(Survey, self).write(vals)
@@ -491,7 +509,8 @@ class Survey(models.Model):
             }
             for src, dst in zip(old_survey.question_ids, cloned_question_ids):
                 if src.triggering_answer_ids:
-                    dst.triggering_answer_ids = [answers_map[src_answer_id.id] for src_answer_id in src.triggering_answer_ids]
+                    dst.triggering_answer_ids = [answers_map[src_answer_id.id] for src_answer_id in
+                                                 src.triggering_answer_ids]
         return new_surveys
 
     def copy_data(self, default=None):
@@ -508,7 +527,8 @@ class Survey(models.Model):
     # ANSWER MANAGEMENT
     # ------------------------------------------------------------
 
-    def _create_answer(self, user=False, partner=False, email=False, test_entry=False, check_attempts=True, **additional_vals):
+    def _create_answer(self, user=False, partner=False, email=False, test_entry=False, check_attempts=True,
+                       **additional_vals):
         """ Main entry point to get a token back or create a new one. This method
         does check for current user access in order to explicitly validate security.
 
@@ -524,7 +544,8 @@ class Survey(models.Model):
                 user = partner.user_ids[0]
 
             invite_token = additional_vals.pop('invite_token', False)
-            survey._check_answer_creation(user, partner, email, test_entry=test_entry, check_attempts=check_attempts, invite_token=invite_token)
+            survey._check_answer_creation(user, partner, email, test_entry=test_entry, check_attempts=check_attempts,
+                                          invite_token=invite_token)
             answer_vals = {
                 'survey_id': survey.id,
                 'test_entry': test_entry,
@@ -584,13 +605,17 @@ class Survey(models.Model):
             if self.access_mode == 'authentication':
                 # signup possible -> should have at least a partner to create an account
                 if self.users_can_signup and not user and not partner:
-                    raise exceptions.UserError(_('Creating token for external people is not allowed for surveys requesting authentication.'))
+                    raise exceptions.UserError(
+                        _('Creating token for external people is not allowed for surveys requesting authentication.'))
                 # no signup possible -> should be a not public user (employee or portal users)
                 if not self.users_can_signup and (not user or user._is_public()):
-                    raise exceptions.UserError(_('Creating token for external people is not allowed for surveys requesting authentication.'))
+                    raise exceptions.UserError(
+                        _('Creating token for external people is not allowed for surveys requesting authentication.'))
             if self.access_mode == 'internal' and (not user or not user._is_internal()):
-                raise exceptions.UserError(_('Creating token for anybody else than employees is not allowed for internal surveys.'))
-            if check_attempts and not self._has_attempts_left(partner or (user and user.partner_id), email, invite_token):
+                raise exceptions.UserError(
+                    _('Creating token for anybody else than employees is not allowed for internal surveys.'))
+            if check_attempts and not self._has_attempts_left(partner or (user and user.partner_id), email,
+                                                              invite_token):
                 raise exceptions.UserError(_('No attempts left.'))
 
     def _prepare_user_input_predefined_questions(self):
@@ -765,7 +790,8 @@ class Survey(models.Model):
             for question in question_candidates.sorted(reverse=go_back):
                 # pages with description are potential questions to display (are part of question_candidates)
                 if question.is_page:
-                    contains_active_question = any(sub_question not in inactive_questions for sub_question in question.question_ids)
+                    contains_active_question = any(
+                        sub_question not in inactive_questions for sub_question in question.question_ids)
                     is_description_section = not question.question_ids and not is_html_empty(question.description)
                     if contains_active_question or is_description_section:
                         return question
@@ -792,7 +818,7 @@ class Survey(models.Model):
             first page or question."""
         first_section_has_description = self.page_ids and not is_html_empty(self.page_ids[0].description)
         is_first_page_or_question = (first_section_has_description and page_or_question == self.page_ids[0]) or \
-            (not first_section_has_description and page_or_question == self.question_ids[0])
+                                    (not first_section_has_description and page_or_question == self.question_ids[0])
         return is_first_page_or_question
 
     def _is_last_page_or_question(self, user_input, page_or_question):
@@ -815,8 +841,8 @@ class Survey(models.Model):
         __, triggered_questions_by_answer, __ = user_input._get_conditional_values()
         if self.questions_layout == 'page_per_question':
             return not (
-                any(next_question not in inactive_questions for next_question in next_page_or_question_candidates)
-                or any(answer in triggered_questions_by_answer for answer in page_or_question.suggested_answer_ids)
+                    any(next_question not in inactive_questions for next_question in next_page_or_question_candidates)
+                    or any(answer in triggered_questions_by_answer for answer in page_or_question.suggested_answer_ids)
             )
         elif self.questions_layout == 'page_per_section':
             for question in page_or_question.question_ids:
@@ -968,12 +994,12 @@ class Survey(models.Model):
         ], limit=15, order="scoring_total desc")
 
         if leaderboard and self.session_state == 'in_progress' and \
-           any(answer.answer_score for answer in self.session_question_id.suggested_answer_ids):
+                any(answer.answer_score for answer in self.session_question_id.suggested_answer_ids):
             question_scores = {}
             input_lines = self.env['survey.user_input.line'].search_read(
-                    [('user_input_id', 'in', [score['id'] for score in leaderboard]),
-                        ('question_id', '=', self.session_question_id.id)],
-                    ['user_input_id', 'answer_score'])
+                [('user_input_id', 'in', [score['id'] for score in leaderboard]),
+                 ('question_id', '=', self.session_question_id.id)],
+                ['user_input_id', 'answer_score'])
             for input_line in input_lines:
                 question_scores[input_line['user_input_id'][0]] = \
                     question_scores.get(input_line['user_input_id'][0], 0) + input_line['answer_score']
@@ -1016,9 +1042,11 @@ class Survey(models.Model):
         # Ensure that this survey has at least one section with question(s), if question layout is 'One page per section'.
         if self.questions_layout == 'page_per_section':
             if not self.page_ids:
-                raise UserError(_('You cannot send an invitation for a "One page per section" survey if the survey has no sections.'))
+                raise UserError(
+                    _('You cannot send an invitation for a "One page per section" survey if the survey has no sections.'))
             if not self.page_ids.mapped('question_ids'):
-                raise UserError(_('You cannot send an invitation for a "One page per section" survey if the survey only contains empty sections.'))
+                raise UserError(
+                    _('You cannot send an invitation for a "One page per section" survey if the survey only contains empty sections.'))
 
         if not self.active:
             raise exceptions.UserError(_("You cannot send invitations for closed surveys."))
@@ -1048,7 +1076,8 @@ class Survey(models.Model):
     def action_start_survey(self, answer=None):
         """ Open the website page with the survey form """
         self.ensure_one()
-        url = '%s?%s' % (self.get_start_url(), werkzeug.urls.url_encode({'answer_token': answer and answer.access_token or None}))
+        url = '%s?%s' % (self.get_start_url(),
+                         werkzeug.urls.url_encode({'answer_token': answer and answer.access_token or None}))
         return {
             'type': 'ir.actions.act_url',
             'name': "Start Survey",
@@ -1059,7 +1088,8 @@ class Survey(models.Model):
     def action_print_survey(self, answer=None):
         """ Open the website page with the survey printable view """
         self.ensure_one()
-        url = '%s?%s' % (self.get_print_url(), werkzeug.urls.url_encode({'answer_token': answer and answer.access_token or None}))
+        url = '%s?%s' % (self.get_print_url(),
+                         werkzeug.urls.url_encode({'answer_token': answer and answer.access_token or None}))
         return {
             'type': 'ir.actions.act_url',
             'name': "Print Survey",
@@ -1182,8 +1212,10 @@ class Survey(models.Model):
                 ('state', '=', 'done'),
                 ('test_entry', '=', False)
             ]
-        count_data_success = self.env['survey.user_input'].sudo()._read_group(user_input_domain, ['scoring_success'], ['__count'])
-        completed_count = self.env['survey.user_input'].sudo().search_count(user_input_domain + [('state', "=", "done")])
+        count_data_success = self.env['survey.user_input'].sudo()._read_group(user_input_domain, ['scoring_success'],
+                                                                              ['__count'])
+        completed_count = self.env['survey.user_input'].sudo().search_count(
+            user_input_domain + [('state', "=", "done")])
 
         scoring_success_count = 0
         scoring_failed_count = 0
@@ -1212,7 +1244,8 @@ class Survey(models.Model):
     def _create_certification_badge_trigger(self):
         self.ensure_one()
         if not self.certification_badge_id:
-            raise ValueError(_('Certification Badge is not configured for the survey %(survey_name)s', survey_name=self.title))
+            raise ValueError(
+                _('Certification Badge is not configured for the survey %(survey_name)s', survey_name=self.title))
 
         goal = self.env['gamification.goal.definition'].create({
             'name': self.title,
@@ -1282,7 +1315,8 @@ class Survey(models.Model):
         for digits_count in range(4, 10):
             range_lower_bound = 10 ** (digits_count - 1)
             range_upper_bound = (range_lower_bound * 10) - 1
-            code_candidates = {str(random.randint(range_lower_bound, range_upper_bound)) for _ in range(code_count + 20)}
+            code_candidates = {str(random.randint(range_lower_bound, range_upper_bound)) for _ in
+                               range(code_count + 20)}
             session_codes |= code_candidates - unavailable_codes
             if len(session_codes) >= code_count:
                 return list(session_codes)[:code_count]

@@ -118,7 +118,8 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_47" model="account.report.line">
-                                <field name="name">47 - Other exempted operations and operations carried out abroad</field>
+                                <field name="name">47 - Other exempted operations and operations carried out abroad
+                                </field>
                                 <field name="code">c47</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_line_47_tag" model="account.report.expression">
@@ -131,7 +132,8 @@
                             <record id="tax_report_title_operations_sortie_48" model="account.report.line">
                                 <field name="name">48 - Credit notes for operations in grids [44] and [46]</field>
                                 <field name="code">c48</field>
-                                <field name="aggregation_formula">c48s44.balance + c48s46L.balance + c48s46T.balance</field>
+                                <field name="aggregation_formula">c48s44.balance + c48s46L.balance + c48s46T.balance
+                                </field>
                                 <field name="foldable" eval="True"/>
                                 <field name="children_ids">
                                     <record id="tax_report_line_48s44" model="account.report.line">
@@ -297,7 +299,8 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_85" model="account.report.line">
-                                <field name="name">85 - Credit notes received relating to other operations in part III</field>
+                                <field name="name">85 - Credit notes received relating to other operations in part III
+                                </field>
                                 <field name="code">c85</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_line_85_tag" model="account.report.expression">
@@ -441,7 +444,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_56" model="account.report.line">
-                                <field name="name">56 - VAT on operations in grid [87], with the exception of imports with reverse charge</field>
+                                <field name="name">56 - VAT on operations in grid [87], with the exception of imports
+                                    with reverse charge
+                                </field>
                                 <field name="code">c56</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_line_56_tag" model="account.report.expression">
@@ -535,7 +540,9 @@
                                     <record id="tax_report_line_71_formula" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">(c54.balance + c55.balance + c56.balance + c57.balance + c61.balance + c63.balance) - (c59.balance + c62.balance + c64.balance)</field>
+                                        <field name="formula">(c54.balance + c55.balance + c56.balance + c57.balance +
+                                            c61.balance + c63.balance) - (c59.balance + c62.balance + c64.balance)
+                                        </field>
                                         <field name="subformula">if_above(EUR(0))</field>
                                     </record>
                                 </field>
@@ -546,7 +553,9 @@
                                     <record id="tax_report_line_72_formula" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">(c59.balance + c62.balance + c64.balance) - (c54.balance + c55.balance + c56.balance + c57.balance + c61.balance + c63.balance)</field>
+                                        <field name="formula">(c59.balance + c62.balance + c64.balance) - (c54.balance +
+                                            c55.balance + c56.balance + c57.balance + c61.balance + c63.balance)
+                                        </field>
                                         <field name="subformula">if_above(EUR(0))</field>
                                     </record>
                                 </field>

@@ -1,10 +1,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from datetime import timedelta, datetime
+
 from freezegun import freeze_time
 
-from . import common
 from odoo import Command
 from odoo.tests import Form, tagged
+from . import common
 
 
 @tagged('-at_install', 'post_install')
@@ -28,7 +29,7 @@ class TestWorkcenterOverview(common.TestMrpCommon):
         })
 
         lang = self.env['res.lang']._lang_get(self.env.user.lang)
-        lang.week_start = '3'   # Wednesday
+        lang.week_start = '3'  # Wednesday
         week_range, date_start, date_stop = self.workcenter_2._get_week_range_and_first_last_days()
         self.assertEqual(next(iter(week_range)), date_start)
         self.assertEqual(date_stop.strftime('%Y-%m-%d'), '2020-04-07')
@@ -49,8 +50,10 @@ class TestWorkcenterOverview(common.TestMrpCommon):
 
         wc_load_data = self.workcenter_2._get_workcenter_load_per_week(week_range, date_start, date_stop)
         self.assertListEqual(list(wc_load_data[self.workcenter_2].values()), [20.0, 60.0])
-        self.assertListEqual(list(wc_load_data[self.workcenter_2].keys()), [datetime(2020, 3, 11), datetime(2020, 3, 18)])
+        self.assertListEqual(list(wc_load_data[self.workcenter_2].keys()),
+                             [datetime(2020, 3, 11), datetime(2020, 3, 18)])
         load_graph_data = self.workcenter_2._prepare_graph_data(wc_load_data, week_range)
         self.assertEqual(load_graph_data[self.workcenter_2.id][0]['is_sample_data'], False)
         self.assertListEqual(load_graph_data[self.workcenter_2.id][0]['labels'], list(week_range.values()))
-        self.assertListEqual(load_graph_data[self.workcenter_2.id][0]['values'], [[0, 20.0, 40.0, 0, 0], 40.0, [0, 0, 20.0, 0, 0]])
+        self.assertListEqual(load_graph_data[self.workcenter_2.id][0]['values'],
+                             [[0, 20.0, 40.0, 0, 0], 40.0, [0, 0, 20.0, 0, 0]])

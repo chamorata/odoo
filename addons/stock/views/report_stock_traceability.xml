@@ -19,7 +19,8 @@
                 <h3>
                     Traceability Report
                     <span t-if="reference" style="margin-left:28%">
-                        Reference: <t t-esc="reference"/>
+                        Reference:
+                        <t t-esc="reference"/>
                     </span>
                 </h3>
             </span>
@@ -42,20 +43,24 @@
                         <t t-foreach="lines" t-as="a">
                             <t t-set="space_td" t-value="'margin-left: '+ str(a['level']) + 'px;'"/>
                             <t t-set="trclass" t-value="'o_stock_reports_default_style'"/>
-                            <t t-if="a.get('model') == 'stock.move.line'"><t t-set="trclass" t-value="'o_stock_reports_level0'"/></t>
-                            <t t-set="column" t-value="0" />
+                            <t t-if="a.get('model') == 'stock.move.line'">
+                                <t t-set="trclass" t-value="'o_stock_reports_level0'"/>
+                            </t>
+                            <t t-set="column" t-value="0"/>
                             <tr t-att-data-id="a['id']" t-att-data-model="a['model']" t-att-class="trclass">
-                                <t t-set="tdclass" t-value="''" />
-                                <t t-if="a.get('unfoldable')"><t t-set="tdclass" t-value="'o_stock_reports_unfoldable'" /></t>
-                                <t t-set="column" t-value="0" />
+                                <t t-set="tdclass" t-value="''"/>
+                                <t t-if="a.get('unfoldable')">
+                                    <t t-set="tdclass" t-value="'o_stock_reports_unfoldable'"/>
+                                </t>
+                                <t t-set="column" t-value="0"/>
                                 <t t-foreach="a['columns']" t-as="c">
-                                    <t t-set="column" t-value="column + 1" />
+                                    <t t-set="column" t-value="column + 1"/>
                                     <td>
                                         <t t-if="column == 1">
                                             <span t-att-style="space_td"></span>
                                         </t>
                                         <span>
-                                            <t t-esc="c" />
+                                            <t t-esc="c"/>
                                         </span>
                                     </td>
                                 </t>

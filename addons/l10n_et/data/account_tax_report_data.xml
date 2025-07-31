@@ -15,7 +15,10 @@
         <field name="line_ids">
             <record id="account_tax_report_purch_vt" model="account.report.line">
                 <field name="name">Taxable Purchases - VAT</field>
-                <field name="aggregation_formula">ET_TAXABLE_PURCHASE_VAT_OUT_OF_SCOPE.balance + ET_TAXABLE_PURCHASE_VAT_EXEMPT.balance + ET_TAXABLE_PURCHASE_VAT_RATED_0.balance + ET_TAXABLE_PURCHASE_VAT_RATED_15.balance</field>
+                <field name="aggregation_formula">ET_TAXABLE_PURCHASE_VAT_OUT_OF_SCOPE.balance +
+                    ET_TAXABLE_PURCHASE_VAT_EXEMPT.balance + ET_TAXABLE_PURCHASE_VAT_RATED_0.balance +
+                    ET_TAXABLE_PURCHASE_VAT_RATED_15.balance
+                </field>
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
                     <record id="account_tax_report_purch_vt_out_scope" model="account.report.line">
@@ -66,7 +69,9 @@
             </record>
             <record id="account_tax_report_purch_withholding" model="account.report.line">
                 <field name="name">Taxable Purchases - Witholding</field>
-                <field name="aggregation_formula">ET_TAXABLE_ET_2_WITHHOLDING_ON_PURCHASES.balance + ET_TAXABLE_ET_35_WITHHOLDING_ON_PURCHASES.balance</field>
+                <field name="aggregation_formula">ET_TAXABLE_ET_2_WITHHOLDING_ON_PURCHASES.balance +
+                    ET_TAXABLE_ET_35_WITHHOLDING_ON_PURCHASES.balance
+                </field>
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
                     <record id="account_tax_report_purch_withholding_2" model="account.report.line">
@@ -95,7 +100,10 @@
             </record>
             <record id="account_tax_report_sale_vat" model="account.report.line">
                 <field name="name">Taxable Sales - VAT</field>
-                <field name="aggregation_formula">ET_TAXABLE_SALES_VAT_OUT_OF_SCOPE_SALES.balance + ET_TAXABLE_SALES_VAT_EXEMPT.balance + ET_TAXABLE_SALES_VAT_RATED_0.balance + ET_TAXABLE_ET_SALES_VAT_RATED_15.balance</field>
+                <field name="aggregation_formula">ET_TAXABLE_SALES_VAT_OUT_OF_SCOPE_SALES.balance +
+                    ET_TAXABLE_SALES_VAT_EXEMPT.balance + ET_TAXABLE_SALES_VAT_RATED_0.balance +
+                    ET_TAXABLE_ET_SALES_VAT_RATED_15.balance
+                </field>
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
                     <record id="account_tax_report_sale_vat_out_scope" model="account.report.line">
@@ -146,7 +154,9 @@
             </record>
             <record id="account_tax_report_sale_withholding" model="account.report.line">
                 <field name="name">Taxable Sales - Withholding</field>
-                <field name="aggregation_formula">ET_TAXABLE_2_WITHHOLDING_ON_SALES.balance + ET_TAXABLE_35_WITHHOLDING_ON_SALES.balance + ET_TAXABLE_VAT_WITHHOLDING_ON_SALES.balance</field>
+                <field name="aggregation_formula">ET_TAXABLE_2_WITHHOLDING_ON_SALES.balance +
+                    ET_TAXABLE_35_WITHHOLDING_ON_SALES.balance + ET_TAXABLE_VAT_WITHHOLDING_ON_SALES.balance
+                </field>
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
                     <record id="account_tax_report_sale_withholding_2" model="account.report.line">
@@ -198,7 +208,8 @@
                                 <field name="name">Purchase VAT Rated 15%</field>
                                 <field name="code">ET_PURCHASE_VAT_RATED_15</field>
                                 <field name="expression_ids">
-                                    <record id="account_tax_report_purch_vat_rated_15_tag" model="account.report.expression">
+                                    <record id="account_tax_report_purch_vat_rated_15_tag"
+                                            model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">Purchase VAT Rated 15%</field>
@@ -216,7 +227,8 @@
                                 <field name="name">Sales VAT Rated 15%</field>
                                 <field name="code">ET_SALES_VAT_RATED_15</field>
                                 <field name="expression_ids">
-                                    <record id="account_tax_report_net_sale_vat_15_tag" model="account.report.expression">
+                                    <record id="account_tax_report_net_sale_vat_15_tag"
+                                            model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">Sales VAT Rated 15%</field>
@@ -229,14 +241,17 @@
             </record>
             <record id="account_tax_report_net_purch_witholding" model="account.report.line">
                 <field name="name">Withholding on Purchases</field>
-                <field name="aggregation_formula">ET_2_WITHHOLDING_ON_PURCHASES.balance + ET_35_WITHHOLDING_ON_PURCHASES.balance</field>
+                <field name="aggregation_formula">ET_2_WITHHOLDING_ON_PURCHASES.balance +
+                    ET_35_WITHHOLDING_ON_PURCHASES.balance
+                </field>
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
                     <record id="account_tax_report_net_purch_witholding_2" model="account.report.line">
                         <field name="name">2% Withholding on Purchases</field>
                         <field name="code">ET_2_WITHHOLDING_ON_PURCHASES</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_net_purch_witholding_2_tag" model="account.report.expression">
+                            <record id="account_tax_report_net_purch_witholding_2_tag"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">2% Withholding on Purchases</field>
@@ -247,7 +262,8 @@
                         <field name="name">35% Withholding on Purchases</field>
                         <field name="code">ET_35_WITHHOLDING_ON_PURCHASES</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_net_purch_witholding_35_tag" model="account.report.expression">
+                            <record id="account_tax_report_net_purch_witholding_35_tag"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">35% Withholding on Purchases</field>
@@ -258,7 +274,9 @@
             </record>
             <record id="account_tax_report_net_sale_witholding" model="account.report.line">
                 <field name="name">Withholding on Sales</field>
-                <field name="aggregation_formula">ET_2_WITHHELD_ON_SALES.balance + ET_35_WITHHELD_ON_SALES.balance + ET_VAT_WITHHELD_ON_SALES.balance</field>
+                <field name="aggregation_formula">ET_2_WITHHELD_ON_SALES.balance + ET_35_WITHHELD_ON_SALES.balance +
+                    ET_VAT_WITHHELD_ON_SALES.balance
+                </field>
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
                     <record id="account_tax_report_net_sale_witheld_2" model="account.report.line">

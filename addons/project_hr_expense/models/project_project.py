@@ -95,7 +95,8 @@ class Project(models.Model):
 
         section_id = 'expenses'
         expense_profitability_items = {
-            'costs': {'id': section_id, 'sequence': self._get_profitability_sequence_per_invoice_type()[section_id], 'billed': -amount_billed, 'to_bill': 0.0},
+            'costs': {'id': section_id, 'sequence': self._get_profitability_sequence_per_invoice_type()[section_id],
+                      'billed': -amount_billed, 'to_bill': 0.0},
         }
         if can_see_expense:
             args = [section_id, [('id', 'in', expense_ids)]]
@@ -118,7 +119,8 @@ class Project(models.Model):
             if 'revenues' in expenses_data:
                 revenues = profitability_data['revenues']
                 revenues['data'].append(expenses_data['revenues'])
-                revenues['total'] = {k: revenues['total'][k] + expenses_data['revenues'][k] for k in ['invoiced', 'to_invoice']}
+                revenues['total'] = {k: revenues['total'][k] + expenses_data['revenues'][k] for k in
+                                     ['invoiced', 'to_invoice']}
             costs = profitability_data['costs']
             costs['data'].append(expenses_data['costs'])
             costs['total'] = {k: costs['total'][k] + expenses_data['costs'][k] for k in ['billed', 'to_bill']}

@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.crm.tests.test_crm_lead_merge import TestLeadMergeCommon
+
 from odoo.tests.common import tagged, users
 
 
@@ -24,10 +25,10 @@ class TestLeadSaleMerge(TestLeadMergeCommon):
         orders = self.env['sale.order'].sudo().create([
             {'partner_id': self.contact_1.id,
              'opportunity_id': self.lead_w_partner_company.id,
-            },
+             },
             {'partner_id': self.contact_1.id,
              'opportunity_id': self.lead_w_partner.id,
-            }
+             }
         ])
         self.assertEqual(self.lead_w_partner_company.order_ids, orders[0])
         self.assertEqual(self.lead_w_partner.order_ids, orders[1])

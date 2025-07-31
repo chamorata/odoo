@@ -153,7 +153,9 @@
                                 </field>
                             </record>
                             <record id="account_tax_report_gstrpt_g15" model="account.report.line">
-                                <field name="name">G15: Estimated purchases for private use or not income tax deductible</field>
+                                <field name="name">G15: Estimated purchases for private use or not income tax
+                                    deductible
+                                </field>
                                 <field name="code">G15</field>
                                 <field name="expression_ids">
                                     <record id="account_tax_report_gstrpt_g15_tag" model="account.report.expression">
@@ -171,7 +173,7 @@
                         <field name="aggregation_formula">G13.balance+G14.balance+G15.balance</field>
                     </record>
                     <record id="account_tax_report_gstrpt_g17" model="account.report.line">
-                        <field name="name">G17: Total purchases subject to GST (G12 minus G16) </field>
+                        <field name="name">G17: Total purchases subject to GST (G12 minus G16)</field>
                         <field name="code">G17</field>
                         <field name="aggregation_formula">G12.balance-G16.balance</field>
                         <field name="children_ids">
@@ -189,7 +191,7 @@
                         </field>
                     </record>
                     <record id="account_tax_report_gstrpt_g19" model="account.report.line">
-                        <field name="name">G19: Total purchases subject to GST after adjustments (G17 + G18) </field>
+                        <field name="name">G19: Total purchases subject to GST after adjustments (G17 + G18)</field>
                         <field name="code">G19</field>
                         <field name="aggregation_formula">G17.balance+G18.balance</field>
                     </record>
@@ -232,7 +234,8 @@
                         </field>
                     </record>
                     <record id="account_tax_report_payg_w2" model="account.report.line">
-                        <field name="name">W2: Amounts withheld from salaries or wages and other payments shown at W1</field>
+                        <field name="name">W2: Amounts withheld from salaries or wages and other payments shown at W1
+                        </field>
                         <field name="code">W2</field>
                         <field name="expression_ids">
                             <record id="account_tax_report_payg_w2_tag" model="account.report.expression">
@@ -304,7 +307,8 @@
                                 <field name="name">7A: Deferred GST</field>
                                 <field name="code">7A</field>
                                 <field name="expression_ids">
-                                    <record id="account_tax_report_gstrpt_summary_tag" model="account.report.expression">
+                                    <record id="account_tax_report_gstrpt_summary_tag"
+                                            model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">7A</field>

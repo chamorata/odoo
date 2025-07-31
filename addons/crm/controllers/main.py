@@ -3,6 +3,7 @@
 import logging
 
 from odoo.addons.mail.controllers.mail import MailController
+
 from odoo import http
 
 _logger = logging.getLogger(__name__)
@@ -12,7 +13,8 @@ class CrmController(http.Controller):
 
     @http.route('/lead/case_mark_won', type='http', auth='user', methods=['GET'])
     def crm_lead_case_mark_won(self, res_id, token):
-        comparison, record, redirect = MailController._check_token_and_record_or_redirect('crm.lead', int(res_id), token)
+        comparison, record, redirect = MailController._check_token_and_record_or_redirect('crm.lead', int(res_id),
+                                                                                          token)
         if comparison and record:
             try:
                 record.action_set_won_rainbowman()
@@ -23,7 +25,8 @@ class CrmController(http.Controller):
 
     @http.route('/lead/case_mark_lost', type='http', auth='user', methods=['GET'])
     def crm_lead_case_mark_lost(self, res_id, token):
-        comparison, record, redirect = MailController._check_token_and_record_or_redirect('crm.lead', int(res_id), token)
+        comparison, record, redirect = MailController._check_token_and_record_or_redirect('crm.lead', int(res_id),
+                                                                                          token)
         if comparison and record:
             try:
                 record.action_set_lost()
@@ -34,7 +37,8 @@ class CrmController(http.Controller):
 
     @http.route('/lead/convert', type='http', auth='user', methods=['GET'])
     def crm_lead_convert(self, res_id, token):
-        comparison, record, redirect = MailController._check_token_and_record_or_redirect('crm.lead', int(res_id), token)
+        comparison, record, redirect = MailController._check_token_and_record_or_redirect('crm.lead', int(res_id),
+                                                                                          token)
         if comparison and record:
             try:
                 record.convert_opportunity(record.partner_id)

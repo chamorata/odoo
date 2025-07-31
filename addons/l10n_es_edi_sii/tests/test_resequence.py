@@ -4,7 +4,6 @@ from freezegun import freeze_time
 
 from odoo.exceptions import UserError
 from odoo.tests import Form, tagged
-
 from .common import TestEsEdiCommon, mocked_l10n_es_edi_call_web_service_sign
 
 
@@ -50,10 +49,10 @@ class TestResequenceSII(TestEsEdiCommon):
         super().setUp()
         # Send to SII
         all_invoices = (
-            self.customer_invoice_1
-            + self.customer_invoice_2
-            + self.vendor_invoice_1
-            + self.vendor_invoice_2
+                self.customer_invoice_1
+                + self.customer_invoice_2
+                + self.vendor_invoice_1
+                + self.vendor_invoice_2
         )
         self.generated_files = self._process_documents_web_services(
             all_invoices, {self.edi_format.code}
@@ -96,8 +95,8 @@ class TestResequenceSII(TestEsEdiCommon):
         wiz_f.ordering = "date"
         wiz = wiz_f.save()
         with self.assertRaises(
-            UserError,
-            msg="The following documents have already been sent and cannot be resequenced: INV/2019/00001, INV/2019/00002",
+                UserError,
+                msg="The following documents have already been sent and cannot be resequenced: INV/2019/00001, INV/2019/00002",
         ):
             wiz.resequence()
 

@@ -5,12 +5,12 @@ import datetime
 import itertools
 import logging
 import re
-from dateutil.relativedelta import relativedelta
 
-import odoo
-from odoo import api, fields, models, tools, _
-from odoo.addons.iap.tools import iap_tools
+from dateutil.relativedelta import relativedelta
 from odoo.addons.crm.models import crm_stage
+from odoo.addons.iap.tools import iap_tools
+
+from odoo import api, fields, models, tools, _
 from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -18,6 +18,7 @@ _logger = logging.getLogger(__name__)
 DEFAULT_ENDPOINT = 'https://iap-services.odoo.com'
 DEFAULT_REVEAL_BATCH_LIMIT = 25
 DEFAULT_REVEAL_MONTH_VALID = 6
+
 
 class CRMRevealRule(models.Model):
     _name = 'crm.reveal.rule'
@@ -28,30 +29,41 @@ class CRMRevealRule(models.Model):
     active = fields.Boolean(default=True)
 
     # Website Traffic Filter
-    country_ids = fields.Many2many('res.country', string='Countries', help='Only visitors of following countries will be converted into leads/opportunities (using GeoIP).')
+    country_ids = fields.Many2many('res.country', string='Countries',
+                                   help='Only visitors of following countries will be converted into leads/opportunities (using GeoIP).')
     website_id = fields.Many2one('website', help='Restrict Lead generation to this website.')
-    state_ids = fields.Many2many('res.country.state', string='States', help='Only visitors of following states will be converted into leads/opportunities.')
-    regex_url = fields.Char(string='URL Expression', help='Regex to track website pages. Leave empty to track the entire website, or / to target the homepage. Example: /page* to track all the pages which begin with /page')
+    state_ids = fields.Many2many('res.country.state', string='States',
+                                 help='Only visitors of following states will be converted into leads/opportunities.')
+    regex_url = fields.Char(string='URL Expression',
+                            help='Regex to track website pages. Leave empty to track the entire website, or / to target the homepage. Example: /page* to track all the pages which begin with /page')
     sequence = fields.Integer(help='Used to order the rules with same URL and countries. '
                                    'Rules with a lower sequence number will be processed first.')
 
     # Company Criteria Filter
-    industry_tag_ids = fields.Many2many('crm.iap.lead.industry', string='Industries', help='Leave empty to always match. Odoo will not create lead if no match')
+    industry_tag_ids = fields.Many2many('crm.iap.lead.industry', string='Industries',
+                                        help='Leave empty to always match. Odoo will not create lead if no match')
     filter_on_size = fields.Boolean(string="Filter on Size", default=True, help="Filter companies based on their size.")
     company_size_min = fields.Integer(string='Company Size', default=0)
     company_size_max = fields.Integer(default=1000)
 
     # Contact Generation Filter
-    contact_filter_type = fields.Selection([('role', 'Role'), ('seniority', 'Seniority')], string="Filter On", required=True, default='role')
+    contact_filter_type = fields.Selection([('role', 'Role'), ('seniority', 'Seniority')], string="Filter On",
+                                           required=True, default='role')
     preferred_role_id = fields.Many2one('crm.iap.lead.role', string='Preferred Role')
     other_role_ids = fields.Many2many('crm.iap.lead.role', string='Other Roles')
     seniority_id = fields.Many2one('crm.iap.lead.seniority', string='Seniority')
-    extra_contacts = fields.Integer(string='Number of Contacts', help='This is the number of contacts to track if their role/seniority match your criteria. Their details will show up in the history thread of generated leads/opportunities. One credit is consumed per tracked contact.', default=1)
+    extra_contacts = fields.Integer(string='Number of Contacts',
+                                    help='This is the number of contacts to track if their role/seniority match your criteria. Their details will show up in the history thread of generated leads/opportunities. One credit is consumed per tracked contact.',
+                                    default=1)
 
     # Lead / Opportunity Data
-    lead_for = fields.Selection([('companies', 'Companies'), ('people', 'Companies and their Contacts')], string='Data Tracking', required=True, default='companies', help='Choose whether to track companies only or companies and their contacts')
-    lead_type = fields.Selection([('lead', 'Lead'), ('opportunity', 'Opportunity')], string='Type', required=True, default='opportunity')
-    suffix = fields.Char(string='Suffix', help='This will be appended in name of generated lead so you can identify lead/opportunity is generated with this rule')
+    lead_for = fields.Selection([('companies', 'Companies'), ('people', 'Companies and their Contacts')],
+                                string='Data Tracking', required=True, default='companies',
+                                help='Choose whether to track companies only or companies and their contacts')
+    lead_type = fields.Selection([('lead', 'Lead'), ('opportunity', 'Opportunity')], string='Type', required=True,
+                                 default='opportunity')
+    suffix = fields.Char(string='Suffix',
+                         help='This will be appended in name of generated lead so you can identify lead/opportunity is generated with this rule')
     team_id = fields.Many2one('crm.team', string='Sales Team', ondelete="set null")
     tag_ids = fields.Many2many('crm.tag', string='Tags')
     user_id = fields.Many2one('res.users', string='Salesperson')
@@ -63,7 +75,8 @@ class CRMRevealRule(models.Model):
     # This limits the number of extra contact.
     # Even if more than 5 extra contacts provided service will return only 5 contacts (see service module for more)
     _sql_constraints = [
-        ('limit_extra_contacts', 'check(extra_contacts >= 1 and extra_contacts <= 5)', 'Maximum 5 contacts are allowed!'),
+        ('limit_extra_contacts', 'check(extra_contacts >= 1 and extra_contacts <= 5)',
+         'Maximum 5 contacts are allowed!'),
     ]
 
     def _compute_lead_count(self):
@@ -85,7 +98,7 @@ class CRMRevealRule(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        self.env.registry.clear_cache() # Clear the cache in order to recompute _get_active_rules
+        self.env.registry.clear_cache()  # Clear the cache in order to recompute _get_active_rules
         return super().create(vals_list)
 
     def write(self, vals):
@@ -93,11 +106,11 @@ class CRMRevealRule(models.Model):
             'country_ids', 'regex_url', 'active'
         }
         if set(vals.keys()) & fields_set:
-            self.env.registry.clear_cache() # Clear the cache in order to recompute _get_active_rules
+            self.env.registry.clear_cache()  # Clear the cache in order to recompute _get_active_rules
         return super(CRMRevealRule, self).write(vals)
 
     def unlink(self):
-        self.env.registry.clear_cache() # Clear the cache in order to recompute _get_active_rules
+        self.env.registry.clear_cache()  # Clear the cache in order to recompute _get_active_rules
         return super(CRMRevealRule, self).unlink()
 
     def action_get_lead_tree_view(self):
@@ -148,7 +161,7 @@ class CRMRevealRule(models.Model):
         for rule in rules_records:
             regex_url = rule['regex_url']
             if not regex_url:
-                regex_url = '.*'    # for all pages if url not given
+                regex_url = '.*'  # for all pages if url not given
             elif regex_url == '/':
                 regex_url = '.*/$'  # for home
             countries = rule.country_ids.mapped('code')
@@ -161,7 +174,7 @@ class CRMRevealRule(models.Model):
                         # Remove country because rule doesn't apply to any state
                         states.remove((state_id.country_id.code, False))
                     states += [(state_id.country_id.code, state_id.code)]
-                
+
             rules.append({
                 'id': rule.id,
                 'regex': regex_url,
@@ -195,10 +208,10 @@ class CRMRevealRule(models.Model):
         rules_matched = []
         for rule_index in rules_id:
             rule = all_rules['rules'][rule_index]
-            if ((country_code, state_code) in rule['state_codes'] or (country_code, False) in rule['state_codes'])\
-                and (not rule['website_id'] or rule['website_id'] == website_id)\
-                and str(rule['id']) not in rules_excluded\
-                and re.search(rule['regex'], url):
+            if ((country_code, state_code) in rule['state_codes'] or (country_code, False) in rule['state_codes']) \
+                    and (not rule['website_id'] or rule['website_id'] == website_id) \
+                    and str(rule['id']) not in rules_excluded \
+                    and re.search(rule['regex'], url):
                 rules_matched.append(rule)
         return rules_matched
 
@@ -230,14 +243,16 @@ class CRMRevealRule(models.Model):
         created lead with given IP. So, we unlink crm.reveal.view with same IP
         as a already created lead.
         """
-        months_valid = self.env['ir.config_parameter'].sudo().get_param('reveal.lead_month_valid', DEFAULT_REVEAL_MONTH_VALID)
+        months_valid = self.env['ir.config_parameter'].sudo().get_param('reveal.lead_month_valid',
+                                                                        DEFAULT_REVEAL_MONTH_VALID)
         try:
             months_valid = int(months_valid)
         except ValueError:
             months_valid = DEFAULT_REVEAL_MONTH_VALID
         domain = []
         domain.append(('reveal_ip', '!=', False))
-        domain.append(('create_date', '>', fields.Datetime.to_string(datetime.date.today() - relativedelta(months=months_valid))))
+        domain.append(
+            ('create_date', '>', fields.Datetime.to_string(datetime.date.today() - relativedelta(months=months_valid))))
         leads = self.env['crm.lead'].with_context(active_test=False).search(domain)
         self.env['crm.reveal.view'].search([('reveal_ip', 'in', [lead.reveal_ip for lead in leads])]).unlink()
 
@@ -348,7 +363,8 @@ class CRMRevealRule(models.Model):
         return True
 
     def _iap_contact_reveal(self, params, timeout=300):
-        endpoint = self.env['ir.config_parameter'].sudo().get_param('reveal.endpoint', DEFAULT_ENDPOINT) + '/iap/clearbit/1/reveal'
+        endpoint = self.env['ir.config_parameter'].sudo().get_param('reveal.endpoint',
+                                                                    DEFAULT_ENDPOINT) + '/iap/clearbit/1/reveal'
         return iap_tools.iap_jsonrpc(endpoint, params=params, timeout=timeout)
 
     def _create_lead_from_response(self, result):
@@ -389,7 +405,9 @@ class CRMRevealRule(models.Model):
         self.ensure_one()
         company_data = result['reveal_data']
         people_data = result.get('people_data')
-        lead_vals = self.env['crm.iap.lead.helpers'].lead_vals_from_response(self.lead_type, self.team_id.id, self.tag_ids.ids, self.user_id.id, company_data, people_data)
+        lead_vals = self.env['crm.iap.lead.helpers'].lead_vals_from_response(self.lead_type, self.team_id.id,
+                                                                             self.tag_ids.ids, self.user_id.id,
+                                                                             company_data, people_data)
 
         lead_vals.update({
             'priority': self.priority,

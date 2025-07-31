@@ -24,8 +24,10 @@ def _make_demo_tax(chart_template, chart_template_data):
     if not purchase_taxes:
         return
 
-    tax_repartition_lines = [line[2] for line in tax_data[purchase_taxes[0]]['repartition_line_ids'] if line[2]['repartition_type'] == 'tax']
-    if not tax_repartition_lines or 'account_id' not in tax_repartition_lines[0] or not tax_repartition_lines[0]['account_id']:
+    tax_repartition_lines = [line[2] for line in tax_data[purchase_taxes[0]]['repartition_line_ids'] if
+                             line[2]['repartition_type'] == 'tax']
+    if not tax_repartition_lines or 'account_id' not in tax_repartition_lines[0] or not tax_repartition_lines[0][
+        'account_id']:
         return
 
     account_id = tax_repartition_lines[0]['account_id']
@@ -67,4 +69,5 @@ def _make_demo_tax(chart_template, chart_template_data):
         }).id,
     })
     # Add the tax on both demo services
-    (chart_template.ref('product.product_product_1') | chart_template.ref('product.product_product_2')).supplier_taxes_id += wh_tax
+    (chart_template.ref('product.product_product_1') | chart_template.ref(
+        'product.product_product_2')).supplier_taxes_id += wh_tax

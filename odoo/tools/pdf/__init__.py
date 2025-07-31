@@ -2,13 +2,12 @@
 import importlib
 import io
 import re
-import unicodedata
-import sys
 from datetime import datetime
 from hashlib import md5
 from logging import getLogger
 from zlib import compress, decompress, decompressobj
 
+import unicodedata
 from PIL import Image, PdfImagePlugin
 from reportlab.lib import colors
 from reportlab.lib.units import cm
@@ -16,8 +15,8 @@ from reportlab.lib.utils import ImageReader
 from reportlab.pdfgen import canvas
 
 from odoo.tools.arabic_reshaper import reshape
-from odoo.tools.parse_version import parse_version
 from odoo.tools.misc import file_open
+from odoo.tools.parse_version import parse_version
 
 try:
     import fontTools
@@ -34,15 +33,17 @@ except ImportError:
 try:
     import zlib
 
+
     def _decompress(data):
         zobj = zlib.decompressobj()
         return zobj.decompress(data)
 
+
     import PyPDF2.filters  # needed after PyPDF2 2.0.0 and before 2.11.0
+
     PyPDF2.filters.decompress = _decompress
 except ImportError:
     pass  # no fix required
-
 
 # might be a good case for exception groups
 error = None
@@ -58,10 +59,10 @@ else:
     raise ImportError("pypdf implementation not found") from error
 del error
 
-PdfReaderBase, PdfWriter, filters, generic, errors, create_string_object =\
+PdfReaderBase, PdfWriter, filters, generic, errors, create_string_object = \
     pypdf.PdfReader, pypdf.PdfWriter, pypdf.filters, pypdf.generic, pypdf.errors, pypdf.create_string_object
 # because they got re-exported
-ArrayObject, BooleanObject, ByteStringObject, DecodedStreamObject, DictionaryObject, IndirectObject, NameObject, NumberObject =\
+ArrayObject, BooleanObject, ByteStringObject, DecodedStreamObject, DictionaryObject, IndirectObject, NameObject, NumberObject = \
     generic.ArrayObject, generic.BooleanObject, generic.ByteStringObject, generic.DecodedStreamObject, generic.DictionaryObject, generic.IndirectObject, generic.NameObject, generic.NumberObject
 
 # compatibility aliases
@@ -100,7 +101,6 @@ DEFAULT_PDF_DATETIME_FORMAT = "D:%Y%m%d%H%M%S+00'00'"
 REGEX_SUBTYPE_UNFORMATED = re.compile(r'^\w+/[\w-]+$')
 REGEX_SUBTYPE_FORMATED = re.compile(r'^/\w+#2F[\w-]+$')
 
-
 # Disable linter warning: this import is needed to make sure a PDF stream can be saved in Image.
 PdfImagePlugin.__name__
 
@@ -114,7 +114,6 @@ def _unwrapping_get(self, key, default=None):
 
 
 DictionaryObject.get = _unwrapping_get
-
 
 if hasattr(PdfWriter, 'write_stream'):
     # >= 2.x has a utility `write` which can open a path, so `write_stream` could be called directly
@@ -134,7 +133,6 @@ else:
                 '/Producer': "Odoo",
             })
             super().write(*args, **kwargs)
-
 
 PdfFileWriter = BrandedFileWriter
 
@@ -328,6 +326,7 @@ class OdooPdfFileReader(PdfFileReader):
     ''' Returns the files inside the PDF.
     :raises NotImplementedError: if document is encrypted and uses an unsupported encryption method.
     '''
+
     def getAttachments(self):
         if self.isEncrypted:
             # If the PDF is owner-encrypted, try to unwrap it by giving it an empty user password.
@@ -375,7 +374,8 @@ class OdooPdfFileWriter(PdfFileWriter):
 
         if not REGEX_SUBTYPE_FORMATED.match(adapted_subtype):
             # The subtype still does not match the correct format, so we will not add it to the document
-            _logger.warning("Attempt to add an attachment with the incorrect subtype '%s'. The subtype will be ignored.", subtype)
+            _logger.warning(
+                "Attempt to add an attachment with the incorrect subtype '%s'. The subtype will be ignored.", subtype)
             adapted_subtype = ''
         return adapted_subtype
 
@@ -422,6 +422,7 @@ class OdooPdfFileWriter(PdfFileWriter):
             self._root_object.update({
                 NameObject("/AF"): attachment_array
             })
+
     addAttachment = add_attachment
 
     def embed_odoo_attachment(self, attachment, subtype=None):

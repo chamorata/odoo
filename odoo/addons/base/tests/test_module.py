@@ -6,8 +6,8 @@ from os.path import join as opj
 from unittest.mock import patch
 
 import odoo.addons
-from odoo.modules.module import load_manifest
 from odoo.modules.module import get_manifest
+from odoo.modules.module import load_manifest
 from odoo.release import major_version
 from odoo.tests.common import BaseCase
 

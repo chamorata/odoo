@@ -1,7 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo.tests.common import tagged, HttpCase
 from unittest.mock import patch
+
 from odoo.http import Request
+from odoo.tests.common import tagged, HttpCase
 
 
 @tagged('post_install', '-at_install', 'hr_attendance_overtime')
@@ -18,8 +19,8 @@ class TestHrAttendanceKiosk(HttpCase):
 
         cls.employee_A = cls.env['hr.employee'].create({
             'name': 'employee_A',
-             'company_id': cls.company_B.id,
-             'department_id': cls.department_A.id,
+            'company_id': cls.company_B.id,
+            'department_id': cls.department_A.id,
         })
         cls.employee_B = cls.env['hr.employee'].create({
             'name': 'employee_B',

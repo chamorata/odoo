@@ -33,8 +33,10 @@ class CalendarEvent(models.Model):
         if 'applicant_id' not in defaults:
             res_model = defaults.get('res_model', False) or self_ctx.env.context.get('default_res_model')
             res_model_id = defaults.get('res_model_id', False) or self_ctx.env.context.get('default_res_model_id')
-            if (res_model and res_model == 'hr.applicant') or (res_model_id and self_ctx.env['ir.model'].sudo().browse(res_model_id).model == 'hr.applicant'):
-                defaults['applicant_id'] = defaults.get('res_id', False) or self_ctx.env.context.get('default_res_id', False)
+            if (res_model and res_model == 'hr.applicant') or (
+                    res_model_id and self_ctx.env['ir.model'].sudo().browse(res_model_id).model == 'hr.applicant'):
+                defaults['applicant_id'] = defaults.get('res_id', False) or self_ctx.env.context.get('default_res_id',
+                                                                                                     False)
 
         return defaults
 

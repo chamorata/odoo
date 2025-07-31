@@ -12,12 +12,14 @@
                     <div class="o_comparelist_products">
                         <div class="o_comparelist_limit_warning" style="display:none">
                             <div class="o_shortlog alert alert-warning" role="alert">
-                                <span><i class="fa fa-warning text-danger" role="img" aria-label="Warning" title="Warning"></i> You can compare max 4 products.</span>
+                                <span><i class="fa fa-warning text-danger" role="img" aria-label="Warning" title="Warning"></i>
+                                    You can compare max 4 products.</span>
                             </div>
                         </div>
                     </div>
                     <div class="o_comparelist_button" style='display:none'>
-                        <a role="button" class="btn btn-primary d-block" href="#"><i class="fa fa-exchange me-2"/>Compare</a>
+                        <a role="button" class="btn btn-primary d-block" href="#"><i class="fa fa-exchange me-2"/>
+                            Compare</a>
                     </div>
                 </span>
             </span>

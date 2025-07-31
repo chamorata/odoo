@@ -3,23 +3,27 @@
 
 from collections import OrderedDict
 from itertools import chain
-from lxml import etree
 
+from lxml import etree
 from odoo.addons.hr.tests.common import TestHrCommon
-from odoo.tests import new_test_user, tagged, Form
+
 from odoo.exceptions import AccessError
+from odoo.tests import new_test_user, tagged, Form
+
 
 @tagged('post_install', '-at_install')
 class TestSelfAccessProfile(TestHrCommon):
 
     def test_access_my_profile(self):
         """ A simple user should be able to read all fields in his profile """
-        james = new_test_user(self.env, login='hel', groups='base.group_user', name='Simple employee', email='ric@example.com')
+        james = new_test_user(self.env, login='hel', groups='base.group_user', name='Simple employee',
+                              email='ric@example.com')
         james = james.with_user(james)
         self.env['hr.employee'].create({
             'name': 'James',
             'user_id': james.id,
-            'bank_account_id': self.env['res.partner.bank'].create({'acc_number': 'BE1234567890', 'partner_id': james.partner_id.id}).id
+            'bank_account_id': self.env['res.partner.bank'].create(
+                {'acc_number': 'BE1234567890', 'partner_id': james.partner_id.id}).id
         })
         view = self.env.ref('hr.res_users_view_form_profile')
         view_infos = james.get_view(view.id)
@@ -29,7 +33,8 @@ class TestSelfAccessProfile(TestHrCommon):
     def test_readonly_fields(self):
         """ Employee related fields should be readonly if self editing is not allowed """
         self.env['ir.config_parameter'].sudo().set_param('hr.hr_employee_self_edit', False)
-        james = new_test_user(self.env, login='hel', groups='base.group_user', name='Simple employee', email='ric@example.com')
+        james = new_test_user(self.env, login='hel', groups='base.group_user', name='Simple employee',
+                              email='ric@example.com')
         james = james.with_user(james)
         self.env['hr.employee'].create({
             'name': 'James',
@@ -47,9 +52,9 @@ class TestSelfAccessProfile(TestHrCommon):
 
         form = Form(james, view=view)
         for field in employee_related_fields:
-            with self.assertRaises(AssertionError, msg="Field '%s' should be readonly in the employee profile when self editing is not allowed." % field):
+            with self.assertRaises(AssertionError,
+                                   msg="Field '%s' should be readonly in the employee profile when self editing is not allowed." % field):
                 form.__setattr__(field, 'some value')
-
 
     def test_profile_view_fields(self):
         """ A simple user should see all fields in profile view, even if they are protected by groups """
@@ -60,7 +65,7 @@ class TestSelfAccessProfile(TestHrCommon):
             field.groups.split(',')
             for field in self.env['res.users']._fields.values()
             if field.groups
-            if field.groups != '.' # "no-access" group on purpose
+            if field.groups != '.'  # "no-access" group on purpose
         ])
         all_groups = self.env['res.groups']
         for xml_id in all_groups_xml_ids:
@@ -68,7 +73,8 @@ class TestSelfAccessProfile(TestHrCommon):
         user_all_groups = new_test_user(self.env, groups='base.group_user', login='hel', name='God')
         user_all_groups.write({'groups_id': [(4, group.id, False) for group in all_groups]})
         view_infos = self.env['res.users'].with_user(user_all_groups).get_view(view.id)
-        full_fields = [el.get('name') for el in etree.fromstring(view_infos['arch']).xpath('//field[not(ancestor::field)]')]
+        full_fields = [el.get('name') for el in
+                       etree.fromstring(view_infos['arch']).xpath('//field[not(ancestor::field)]')]
 
         # Now check the view for a simple user
         user = new_test_user(self.env, login='gro', name='Grouillot')
@@ -80,20 +86,23 @@ class TestSelfAccessProfile(TestHrCommon):
 
     def test_access_my_profile_toolbar(self):
         """ A simple user shouldn't have the possibilities to see the 'Change Password' action"""
-        james = new_test_user(self.env, login='jam', groups='base.group_user', name='Simple employee', email='jam@example.com')
+        james = new_test_user(self.env, login='jam', groups='base.group_user', name='Simple employee',
+                              email='jam@example.com')
         james = james.with_user(james)
         self.env['hr.employee'].create({
             'name': 'James',
             'user_id': james.id,
         })
         view = self.env.ref('hr.res_users_view_form_profile')
-        available_actions = james.get_views([(view.id, 'form')], {'toolbar': True})['views']['form']['toolbar'].get('action', {})
+        available_actions = james.get_views([(view.id, 'form')], {'toolbar': True})['views']['form']['toolbar'].get(
+            'action', {})
         change_password_action = self.env.ref("base.change_password_wizard_action")
 
         self.assertFalse(any(x['id'] == change_password_action.id for x in available_actions))
 
         # An ERP manager should have the possibilities to see the 'Change Password'
-        john = new_test_user(self.env, login='joh', groups='base.group_erp_manager', name='ERP Manager', email='joh@example.com')
+        john = new_test_user(self.env, login='joh', groups='base.group_erp_manager', name='ERP Manager',
+                             email='joh@example.com')
         john = john.with_user(john)
         self.env['hr.employee'].create({
             'name': 'John',
@@ -107,29 +116,35 @@ class TestSelfAccessProfile(TestHrCommon):
         # Note: If this tests is crashing, this is probably because the linked field on the error
         # message is defined on hr.employee only (and not on hr.employee.public) and has no group
         # defined on it (at least hr.group_hr_user).
-        internal_user = new_test_user(self.env, login='mireille', groups='base.group_user', name='Mireille', email='mireille@example.com')
+        internal_user = new_test_user(self.env, login='mireille', groups='base.group_user', name='Mireille',
+                                      email='mireille@example.com')
         self.env['hr.employee'].with_user(internal_user).search([]).read([])
+
 
 class TestSelfAccessRights(TestHrCommon):
 
     @classmethod
     def setUpClass(cls):
         super(TestSelfAccessRights, cls).setUpClass()
-        cls.richard = new_test_user(cls.env, login='ric', groups='base.group_user', name='Simple employee', email='ric@example.com')
+        cls.richard = new_test_user(cls.env, login='ric', groups='base.group_user', name='Simple employee',
+                                    email='ric@example.com')
         cls.richard_emp = cls.env['hr.employee'].create({
             'name': 'Richard',
             'user_id': cls.richard.id,
             'private_phone': '21454',
         })
-        cls.hubert = new_test_user(cls.env, login='hub', groups='base.group_user', name='Simple employee', email='hub@example.com')
+        cls.hubert = new_test_user(cls.env, login='hub', groups='base.group_user', name='Simple employee',
+                                   email='hub@example.com')
         cls.hubert_emp = cls.env['hr.employee'].create({
             'name': 'Hubert',
             'user_id': cls.hubert.id,
         })
 
-        cls.protected_fields_emp = OrderedDict([(k, v) for k, v in cls.env['hr.employee']._fields.items() if v.groups == 'hr.group_hr_user'])
+        cls.protected_fields_emp = OrderedDict(
+            [(k, v) for k, v in cls.env['hr.employee']._fields.items() if v.groups == 'hr.group_hr_user'])
         # Compute fields and id field are always readable by everyone
-        cls.read_protected_fields_emp = OrderedDict([(k, v) for k, v in cls.env['hr.employee']._fields.items() if not v.compute and k != 'id'])
+        cls.read_protected_fields_emp = OrderedDict(
+            [(k, v) for k, v in cls.env['hr.employee']._fields.items() if not v.compute and k != 'id'])
         cls.self_protected_fields_user = OrderedDict([
             (k, v)
             for k, v in cls.env['res.users']._fields.items()
@@ -239,9 +254,11 @@ class TestSelfAccessRights(TestHrCommon):
             form.tz = "Europe/Brussels"
 
     def test_access_employee_account(self):
-        hubert = new_test_user(self.env, login='hubert', groups='base.group_user', name='Hubert Bonisseur de La Bath', email='hubert@oss.fr')
+        hubert = new_test_user(self.env, login='hubert', groups='base.group_user', name='Hubert Bonisseur de La Bath',
+                               email='hubert@oss.fr')
         hubert = hubert.with_user(hubert)
-        hubert_acc = self.env['res.partner.bank'].create({'acc_number': 'FR1234567890', 'partner_id': hubert.partner_id.id})
+        hubert_acc = self.env['res.partner.bank'].create(
+            {'acc_number': 'FR1234567890', 'partner_id': hubert.partner_id.id})
         hubert_emp = self.env['hr.employee'].create({
             'name': 'Hubert',
             'user_id': hubert.id,

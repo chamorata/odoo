@@ -23,11 +23,11 @@ class Job(models.Model):
         self.write({'survey_id': survey.id})
 
         action = {
-                'name': _('Survey'),
-                'view_mode': 'form,list',
-                'res_model': 'survey.survey',
-                'type': 'ir.actions.act_window',
-                'res_id': survey.id,
-            }
+            'name': _('Survey'),
+            'view_mode': 'form,list',
+            'res_model': 'survey.survey',
+            'type': 'ir.actions.act_window',
+            'res_id': survey.id,
+        }
 
         return action

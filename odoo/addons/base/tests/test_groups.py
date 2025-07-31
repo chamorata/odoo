@@ -11,23 +11,23 @@ class TestGroupsObject(common.BaseCase):
         super().setUpClass()
         cls.definitions = SetDefinitions({
             1: {'ref': 'A'},
-            2: {'ref': 'A1', 'supersets': [1]},         # A1 <= A
-            3: {'ref': 'A11', 'supersets': [2]},        # A11 <= A1
-            4: {'ref': 'A2', 'supersets': [1]},         # A2 <= A
-            5: {'ref': 'A21', 'supersets': [4]},        # A21 <= A2
-            6: {'ref': 'A22', 'supersets': [4]},        # A22 <= A2
+            2: {'ref': 'A1', 'supersets': [1]},  # A1 <= A
+            3: {'ref': 'A11', 'supersets': [2]},  # A11 <= A1
+            4: {'ref': 'A2', 'supersets': [1]},  # A2 <= A
+            5: {'ref': 'A21', 'supersets': [4]},  # A21 <= A2
+            6: {'ref': 'A22', 'supersets': [4]},  # A22 <= A2
             7: {'ref': 'B'},
-            8: {'ref': 'B1', 'supersets': [7]},         # B1 <= B
-            9: {'ref': 'B11', 'supersets': [8]},        # B11 <= B1
-            10: {'ref': 'B2', 'supersets': [7]},        # B2 <= B
+            8: {'ref': 'B1', 'supersets': [7]},  # B1 <= B
+            9: {'ref': 'B11', 'supersets': [8]},  # B11 <= B1
+            10: {'ref': 'B2', 'supersets': [7]},  # B2 <= B
             11: {'ref': 'BX',
-                 'supersets': [7],                      # BX <= B
-                 'disjoints': [8, 10]},                 # BX disjoint from B1, B2
-            12: {'ref': 'A1B1', 'supersets': [2, 8]},   # A1B1 <= A1, B1
+                 'supersets': [7],  # BX <= B
+                 'disjoints': [8, 10]},  # BX disjoint from B1, B2
+            12: {'ref': 'A1B1', 'supersets': [2, 8]},  # A1B1 <= A1, B1
             13: {'ref': 'C'},
-            14: {'ref': 'D', 'disjoints': [1, 7]},      # D disjoint from A, B
+            14: {'ref': 'D', 'disjoints': [1, 7]},  # D disjoint from A, B
             15: {'ref': 'E', 'disjoints': [1, 7, 14]},  # E disjoint from A, B, D
-            16: {'ref': 'E1', 'supersets': [15]},       # E1 <= E (and thus disjoint from A, B, D)
+            16: {'ref': 'E1', 'supersets': [15]},  # E1 <= E (and thus disjoint from A, B, D)
         })
 
     def test_groups_1_base(self):
@@ -204,7 +204,8 @@ class TestGroupsObject(common.BaseCase):
         self.assertEqual(str(~((A & B1) | B2)), "(~'A' & ~'B2') | (~'B1' & ~'B2')")
         self.assertEqual(str(~(A | (B1 & B2))), "(~'A' & ~'B1') | (~'A' & ~'B2')")
         self.assertEqual(str(~(A | (B2 & B1))), "(~'A' & ~'B1') | (~'A' & ~'B2')")
-        self.assertEqual(str(~((A1 & A2) | (B1 & B2))), "(~'A1' & ~'B1') | (~'A1' & ~'B2') | (~'A2' & ~'B1') | (~'A2' & ~'B2')")
+        self.assertEqual(str(~((A1 & A2) | (B1 & B2))),
+                         "(~'A1' & ~'B1') | (~'A1' & ~'B2') | (~'A2' & ~'B1') | (~'A2' & ~'B2')")
         self.assertEqual(str(~A & ~B2), "~'A' & ~'B2'")
         self.assertEqual(str(~(~B1 & ~B2)), "'B1' | 'B2'")
         self.assertEqual(str(~((A & B) | A1)), "~'A' | (~'A1' & ~'B')")
@@ -531,10 +532,12 @@ class TestGroupsOdoo(common.TransactionCase):
         self.assertEqual(str(parse('base.group_user') & parse('base.group_system')), "'base.group_system'")
         self.assertEqual(str(parse('base.group_system') & parse('base.group_user')), "'base.group_system'")
         self.assertEqual(str(parse('base.group_erp_manager') & parse('base.group_system')), "'base.group_system'")
-        self.assertEqual(str(parse('base.group_system') & parse('base.group_allow_export')), "'base.group_system' & 'base.group_allow_export'")
+        self.assertEqual(str(parse('base.group_system') & parse('base.group_allow_export')),
+                         "'base.group_system' & 'base.group_allow_export'")
         self.assertEqual(str(parse('base.group_user') | parse('base.group_user')), "'base.group_user'")
         self.assertEqual(str(parse('base.group_user') | parse('base.group_system')), "'base.group_user'")
-        self.assertEqual(str(parse('base.group_system') | parse('base.group_public')), "'base.group_system' | 'base.group_public'")
+        self.assertEqual(str(parse('base.group_system') | parse('base.group_public')),
+                         "'base.group_system' | 'base.group_public'")
         self.assertEqual(parse('base.group_system') < parse('base.group_erp_manager'), True)
         self.assertEqual(parse('base.group_system') < parse('base.group_sanitize_override'), True)
         self.assertEqual(parse('base.group_erp_manager') < parse('base.group_user'), True)
@@ -550,91 +553,157 @@ class TestGroupsOdoo(common.TransactionCase):
     def test_groups_2_from_commat_separator(self):
         parse = self.definitions.parse
 
-        self.assertEqual(str(parse('base.group_user,base.group_system') & parse('base.group_system')), "'base.group_system'")
-        self.assertEqual(str(parse('base.group_user,base.group_erp_manager') & parse('base.group_system')), "'base.group_system'")
-        self.assertEqual(str(parse('base.group_user,base.group_portal') & parse('base.group_portal')), "'base.group_portal'")
-        self.assertEqual(str(parse('base.group_user,base.group_portal,base.group_public,base.group_multi_company') & parse('base.group_portal,base.group_public')), "'base.group_portal' | 'base.group_public'")
-        self.assertEqual(str(parse('base.group_system,base.base_test_group') & parse('base.group_user')), "'base.group_system' | 'base.base_test_group'")
-        self.assertEqual(str(parse('base.group_system,base.group_portal') & parse('base.group_user')), "'base.group_system'")
-        self.assertEqual(str(parse('base.group_user') & parse('!base.group_portal,base.group_system')), "'base.group_system'")
-        self.assertEqual(str(parse('!base.group_portal') & parse('base.group_portal,base.group_system')), "'base.group_system'")
+        self.assertEqual(str(parse('base.group_user,base.group_system') & parse('base.group_system')),
+                         "'base.group_system'")
+        self.assertEqual(str(parse('base.group_user,base.group_erp_manager') & parse('base.group_system')),
+                         "'base.group_system'")
+        self.assertEqual(str(parse('base.group_user,base.group_portal') & parse('base.group_portal')),
+                         "'base.group_portal'")
+        self.assertEqual(
+            str(parse('base.group_user,base.group_portal,base.group_public,base.group_multi_company') & parse(
+                'base.group_portal,base.group_public')), "'base.group_portal' | 'base.group_public'")
+        self.assertEqual(str(parse('base.group_system,base.base_test_group') & parse('base.group_user')),
+                         "'base.group_system' | 'base.base_test_group'")
+        self.assertEqual(str(parse('base.group_system,base.group_portal') & parse('base.group_user')),
+                         "'base.group_system'")
+        self.assertEqual(str(parse('base.group_user') & parse('!base.group_portal,base.group_system')),
+                         "'base.group_system'")
+        self.assertEqual(str(parse('!base.group_portal') & parse('base.group_portal,base.group_system')),
+                         "'base.group_system'")
         self.assertEqual(str(parse('base.group_portal,!base.group_user') & parse('base.group_user')), "~*")
-        self.assertEqual(str(parse('!base.group_user') & parse('base.group_portal,base.group_user')), "'base.group_portal'")
+        self.assertEqual(str(parse('!base.group_user') & parse('base.group_portal,base.group_user')),
+                         "'base.group_portal'")
         self.assertEqual(str(parse('base.group_user') & parse('base.group_portal,!base.group_user')), "~*")
-        self.assertEqual(str(parse('!base.group_user') & parse('base.group_portal,!base.group_system')), "'base.group_portal'")
-        self.assertEqual(str(parse('!base.group_user,base.group_allow_export') & parse('base.group_allow_export,!base.group_system')), "~'base.group_user' & 'base.group_allow_export'")
-        self.assertEqual(str(parse('!base.group_user,base.group_portal') & parse('base.group_portal,!base.group_system')), "'base.group_portal'")
+        self.assertEqual(str(parse('!base.group_user') & parse('base.group_portal,!base.group_system')),
+                         "'base.group_portal'")
+        self.assertEqual(str(parse('!base.group_user,base.group_allow_export') & parse(
+            'base.group_allow_export,!base.group_system')), "~'base.group_user' & 'base.group_allow_export'")
+        self.assertEqual(
+            str(parse('!base.group_user,base.group_portal') & parse('base.group_portal,!base.group_system')),
+            "'base.group_portal'")
         self.assertEqual(str(parse('!*') & parse('base.group_portal')), "~*")
         self.assertEqual(str(parse('*') & parse('base.group_portal')), "'base.group_portal'")
-        self.assertEqual(str(parse('base.group_user,!base.group_system') & parse('base.group_erp_manager,base.group_portal')), "'base.group_erp_manager' & ~'base.group_system'")
-        self.assertEqual(str(parse('base.group_user,!base.group_system') & parse('base.group_portal,base.group_erp_manager')), "'base.group_erp_manager' & ~'base.group_system'")
-        self.assertEqual(str(parse('base.group_user') & parse('base.group_portal,base.group_erp_manager,!base.group_system')), "'base.group_erp_manager' & ~'base.group_system'")
-        self.assertEqual(str(parse('base.group_user') & parse('base.group_portal,base.group_system')), "'base.group_system'")
-        self.assertEqual(str(parse('base.group_user,base.group_system') & parse('base.group_portal,base.group_system')), "'base.group_system'")
-        self.assertEqual(str(parse('base.group_user') & parse('base.group_portal,base.group_erp_manager')), "'base.group_erp_manager'")
+        self.assertEqual(
+            str(parse('base.group_user,!base.group_system') & parse('base.group_erp_manager,base.group_portal')),
+            "'base.group_erp_manager' & ~'base.group_system'")
+        self.assertEqual(
+            str(parse('base.group_user,!base.group_system') & parse('base.group_portal,base.group_erp_manager')),
+            "'base.group_erp_manager' & ~'base.group_system'")
+        self.assertEqual(
+            str(parse('base.group_user') & parse('base.group_portal,base.group_erp_manager,!base.group_system')),
+            "'base.group_erp_manager' & ~'base.group_system'")
+        self.assertEqual(str(parse('base.group_user') & parse('base.group_portal,base.group_system')),
+                         "'base.group_system'")
+        self.assertEqual(str(parse('base.group_user,base.group_system') & parse('base.group_portal,base.group_system')),
+                         "'base.group_system'")
+        self.assertEqual(str(parse('base.group_user') & parse('base.group_portal,base.group_erp_manager')),
+                         "'base.group_erp_manager'")
         self.assertEqual(str(parse('base.group_user') & parse('base.group_portal,!base.group_system')), "~*")
-        self.assertEqual(str(parse('base.group_user,base.group_system') & parse('base.group_system,base.group_portal')), "'base.group_system'")
-        self.assertEqual(str(parse('base.group_user') & parse('base.group_system,base.group_portal')), "'base.group_system'")
-        self.assertEqual(str(parse('base.group_user,base.group_system') & parse('base.group_allow_export')), "'base.group_user' & 'base.group_allow_export'")
-        self.assertEqual(str(parse('base.group_user,base.group_erp_manager') | parse('base.group_system')), "'base.group_user'")
-        self.assertEqual(str(parse('base.group_user') | parse('base.group_portal,base.group_system')), "'base.group_user' | 'base.group_portal'")
+        self.assertEqual(str(parse('base.group_user,base.group_system') & parse('base.group_system,base.group_portal')),
+                         "'base.group_system'")
+        self.assertEqual(str(parse('base.group_user') & parse('base.group_system,base.group_portal')),
+                         "'base.group_system'")
+        self.assertEqual(str(parse('base.group_user,base.group_system') & parse('base.group_allow_export')),
+                         "'base.group_user' & 'base.group_allow_export'")
+        self.assertEqual(str(parse('base.group_user,base.group_erp_manager') | parse('base.group_system')),
+                         "'base.group_user'")
+        self.assertEqual(str(parse('base.group_user') | parse('base.group_portal,base.group_system')),
+                         "'base.group_user' | 'base.group_portal'")
         self.assertEqual(str(parse('!*') | parse('base.group_user')), "'base.group_user'")
         self.assertEqual(str(parse('base.group_user') | parse('!*')), "'base.group_user'")
-        self.assertEqual(str(parse('!*') | parse('base.group_user,base.group_portal')), "'base.group_user' | 'base.group_portal'")
+        self.assertEqual(str(parse('!*') | parse('base.group_user,base.group_portal')),
+                         "'base.group_user' | 'base.group_portal'")
         self.assertEqual(str(parse('*') | parse('base.group_user')), "*")
         self.assertEqual(str(parse('base.group_user') | parse('*')), "*")
-        self.assertEqual(str(parse('base.group_user,base.group_erp_manager') | parse('base.group_system,base.group_public')), "'base.group_user' | 'base.group_public'")
-        self.assertEqual(parse('base.group_system') < parse('base.group_erp_manager,base.group_sanitize_override'), True)
+        self.assertEqual(
+            str(parse('base.group_user,base.group_erp_manager') | parse('base.group_system,base.group_public')),
+            "'base.group_user' | 'base.group_public'")
+        self.assertEqual(parse('base.group_system') < parse('base.group_erp_manager,base.group_sanitize_override'),
+                         True)
         self.assertEqual(parse('!base.group_public,!base.group_portal') < parse('!base.group_public'), True)
-        self.assertEqual(parse('base.group_system,base.base_test_group') == parse('base.group_system,base.base_test_group'), True)
-        self.assertEqual(parse('base.group_system,base.base_test_group') == parse('base.base_test_group,base.group_system'), True)
-        self.assertEqual(parse('base.group_system,base.base_test_group') == parse('base.base_test_group,base.group_public'), False)
+        self.assertEqual(
+            parse('base.group_system,base.base_test_group') == parse('base.group_system,base.base_test_group'), True)
+        self.assertEqual(
+            parse('base.group_system,base.base_test_group') == parse('base.base_test_group,base.group_system'), True)
+        self.assertEqual(
+            parse('base.group_system,base.base_test_group') == parse('base.base_test_group,base.group_public'), False)
         self.assertEqual(parse('base.group_system,base.base_test_group') == parse('base.base_test_group'), False)
         self.assertEqual(parse('base.group_user') <= parse('base.group_system,base.group_public'), False)
         self.assertEqual(parse('base.group_system') <= parse('base.group_user,base.group_public'), True)
         self.assertEqual(parse('base.group_public') <= parse('base.group_system,base.group_public'), True)
-        self.assertEqual(parse('base.group_system,base.group_public') <= parse('base.group_system,base.group_public'), True)
-        self.assertEqual(parse('base.group_system,base.group_public') <= parse('base.group_user,base.group_public'), True)
+        self.assertEqual(parse('base.group_system,base.group_public') <= parse('base.group_system,base.group_public'),
+                         True)
+        self.assertEqual(parse('base.group_system,base.group_public') <= parse('base.group_user,base.group_public'),
+                         True)
         self.assertEqual(parse('base.group_system,!base.group_public') <= parse('base.group_system'), True)
         self.assertEqual(parse('base.group_system,!base.group_allow_export') <= parse('base.group_system'), True)
         self.assertEqual(parse('base.group_system') <= parse('base.group_system,!base.group_allow_export'), False)
         self.assertEqual(parse('base.group_system') <= parse('base.group_system,!base.group_public'), True)
         self.assertEqual(parse('base.group_system') == parse('base.group_system,!base.group_public'), True)
         self.assertEqual(parse('!base.group_public,!base.group_portal') <= parse('!base.group_public'), True)
-        self.assertEqual(parse('base.group_user,!base.group_allow_export') <= parse('base.group_user,!base.group_system,!base.group_allow_export'), False)
-        self.assertEqual(parse('base.group_system,!base.group_portal,!base.group_public') <= parse('base.group_system,!base.group_public'), True)
+        self.assertEqual(parse('base.group_user,!base.group_allow_export') <= parse(
+            'base.group_user,!base.group_system,!base.group_allow_export'), False)
+        self.assertEqual(parse('base.group_system,!base.group_portal,!base.group_public') <= parse(
+            'base.group_system,!base.group_public'), True)
 
     def test_groups_3_from_ref(self):
         parse = self.parse_repr
 
-        self.assertEqual(str(parse('base.group_user & base.group_portal | base.group_user & ~base.group_system') & parse('base.group_public')), "~*")
-        self.assertEqual(str(parse('base.group_user & base.group_portal | base.group_user & ~base.group_system') & parse('~base.group_user')), "~*")
-        self.assertEqual(str(parse('base.group_user & base.group_portal | base.group_user & ~base.group_system') & parse('~base.group_user & base.group_portal')), "~*")
-        self.assertEqual(str(parse('base.group_user & base.group_portal | base.group_user & base.group_system') & parse('base.group_user & ~base.group_portal')), "'base.group_system'")
-        self.assertEqual(str(parse('base.group_public & base.group_erp_manager | base.group_public & base.group_portal') & parse('*')), "~*")
-        self.assertEqual(str(parse('base.group_system & base.group_allow_export') & parse('base.group_portal | base.group_system')), "'base.group_system' & 'base.group_allow_export'")
-        self.assertEqual(str(parse('base.group_portal & base.group_erp_manager') | parse('base.group_erp_manager')), "'base.group_erp_manager'")
+        self.assertEqual(
+            str(parse('base.group_user & base.group_portal | base.group_user & ~base.group_system') & parse(
+                'base.group_public')), "~*")
+        self.assertEqual(
+            str(parse('base.group_user & base.group_portal | base.group_user & ~base.group_system') & parse(
+                '~base.group_user')), "~*")
+        self.assertEqual(
+            str(parse('base.group_user & base.group_portal | base.group_user & ~base.group_system') & parse(
+                '~base.group_user & base.group_portal')), "~*")
+        self.assertEqual(str(parse('base.group_user & base.group_portal | base.group_user & base.group_system') & parse(
+            'base.group_user & ~base.group_portal')), "'base.group_system'")
+        self.assertEqual(
+            str(parse('base.group_public & base.group_erp_manager | base.group_public & base.group_portal') & parse(
+                '*')), "~*")
+        self.assertEqual(
+            str(parse('base.group_system & base.group_allow_export') & parse('base.group_portal | base.group_system')),
+            "'base.group_system' & 'base.group_allow_export'")
+        self.assertEqual(str(parse('base.group_portal & base.group_erp_manager') | parse('base.group_erp_manager')),
+                         "'base.group_erp_manager'")
         self.assertEqual(parse('base.group_system & base.group_allow_export') < parse('base.group_system'), True)
         self.assertEqual(parse('base.base_test_group') == parse('base.base_test_group & base.group_user'), True)
-        self.assertEqual(parse('base.group_system | base.base_test_group') == parse('base.group_system & base.group_user | base.base_test_group & base.group_user'), True)
+        self.assertEqual(parse('base.group_system | base.base_test_group') == parse(
+            'base.group_system & base.group_user | base.base_test_group & base.group_user'), True)
         self.assertEqual(parse('base.group_public & base.group_allow_export') <= parse('base.group_public'), True)
         self.assertEqual(parse('base.group_public') <= parse('base.group_public & base.group_allow_export'), False)
         self.assertEqual(parse('base.group_public & base.group_user') <= parse('base.group_portal'), True)
-        self.assertEqual(parse('base.group_public & base.group_user') <= parse('base.group_public | base.group_user'), True)
+        self.assertEqual(parse('base.group_public & base.group_user') <= parse('base.group_public | base.group_user'),
+                         True)
         self.assertEqual(parse('base.group_public & base.group_system') <= parse('base.group_user'), True)
-        self.assertEqual(parse('base.group_public & base.group_system') <= parse('base.group_portal | base.group_user'), True)
+        self.assertEqual(parse('base.group_public & base.group_system') <= parse('base.group_portal | base.group_user'),
+                         True)
         self.assertEqual(parse('base.group_public & base.group_allow_export') <= parse('~base.group_public'), False)
-        self.assertEqual(parse('base.group_portal & base.group_public | base.group_system & base.group_public') <= parse('base.group_public'), True)
-        self.assertEqual(parse('base.group_portal & base.group_user | base.group_system & base.group_user') <= parse('base.group_user'), True)
-        self.assertEqual(parse('base.group_portal & base.group_system | base.group_user & base.group_system') <= parse('base.group_system'), True)
-        self.assertEqual(parse('base.group_portal & base.group_user | base.group_user & base.group_user') <= parse('base.group_user'), True)
-        self.assertEqual(parse('base.group_portal & base.group_user | base.group_user & base.group_user') <= parse('base.group_user'), True)
-        self.assertEqual(parse('base.group_public') <= parse('base.group_portal & base.group_public | base.group_system & base.group_public'), False)
-        self.assertEqual(parse('base.group_user & base.group_allow_export') <= parse('base.group_user & base.group_system & base.group_allow_export'), False)
-        self.assertEqual(parse('base.group_system & base.group_allow_export') <= parse('base.group_user & base.group_system & base.group_allow_export'), True)
+        self.assertEqual(
+            parse('base.group_portal & base.group_public | base.group_system & base.group_public') <= parse(
+                'base.group_public'), True)
+        self.assertEqual(parse('base.group_portal & base.group_user | base.group_system & base.group_user') <= parse(
+            'base.group_user'), True)
+        self.assertEqual(parse('base.group_portal & base.group_system | base.group_user & base.group_system') <= parse(
+            'base.group_system'), True)
+        self.assertEqual(parse('base.group_portal & base.group_user | base.group_user & base.group_user') <= parse(
+            'base.group_user'), True)
+        self.assertEqual(parse('base.group_portal & base.group_user | base.group_user & base.group_user') <= parse(
+            'base.group_user'), True)
+        self.assertEqual(parse('base.group_public') <= parse(
+            'base.group_portal & base.group_public | base.group_system & base.group_public'), False)
+        self.assertEqual(parse('base.group_user & base.group_allow_export') <= parse(
+            'base.group_user & base.group_system & base.group_allow_export'), False)
+        self.assertEqual(parse('base.group_system & base.group_allow_export') <= parse(
+            'base.group_user & base.group_system & base.group_allow_export'), True)
         self.assertEqual(parse('base.group_system & base.group_allow_export') <= parse('base.group_system'), True)
-        self.assertEqual(parse('base.group_public') >= parse('base.group_portal & base.group_public | base.group_system & base.group_public'), True)
-        self.assertEqual(parse('base.group_user & base.group_public') >= parse('base.group_user & base.group_portal & base.group_public | base.group_user & base.group_system & base.group_public'), True)
+        self.assertEqual(parse('base.group_public') >= parse(
+            'base.group_portal & base.group_public | base.group_system & base.group_public'), True)
+        self.assertEqual(parse('base.group_user & base.group_public') >= parse(
+            'base.group_user & base.group_portal & base.group_public | base.group_user & base.group_system & base.group_public'),
+                         True)
         self.assertEqual(parse('base.group_system & base.group_allow_export') >= parse('base.group_system'), False)
         self.assertEqual(parse('base.group_system & base.group_allow_export') > parse('base.group_system'), False)
 
@@ -676,14 +745,17 @@ class TestGroupsOdoo(common.TransactionCase):
             ('base.group_system', '~base.group_system & ~base.group_user', False),
             ('base.group_user', 'base.group_user & base.group_sanitize_override & base.group_allow_export', False),
             ('base.group_system', 'base.group_user & base.group_sanitize_override & base.group_allow_export', False),
-            ('base.group_system,base.group_allow_export', 'base.group_user & base.group_sanitize_override & base.group_allow_export', True),
-            ('base.group_user,base.group_sanitize_override,base.group_allow_export', 'base.group_user & base.group_sanitize_override & base.group_allow_export', True),
+            ('base.group_system,base.group_allow_export',
+             'base.group_user & base.group_sanitize_override & base.group_allow_export', True),
+            ('base.group_user,base.group_sanitize_override,base.group_allow_export',
+             'base.group_user & base.group_sanitize_override & base.group_allow_export', True),
             ('base.group_user', 'base.group_erp_manager | base.group_multi_company', False),
             ('base.group_user,base.group_erp_manager', 'base.group_erp_manager | base.group_multi_company', True),
         ]
         for user_groups, groups, result in tests:
             user.groups_id = [(6, 0, [self.env.ref(xmlid).id for xmlid in user_groups.split(',')])]
-            self.assertEqual(self.parse_repr(groups).matches(user._get_group_ids()), result, f'User ({user_groups!r}) should {"" if result else "not "}have access to groups: ({groups!r})')
+            self.assertEqual(self.parse_repr(groups).matches(user._get_group_ids()), result,
+                             f'User ({user_groups!r}) should {"" if result else "not "}have access to groups: ({groups!r})')
 
     def test_groups_6_distinct(self):
         user = self.env['res.users'].create({

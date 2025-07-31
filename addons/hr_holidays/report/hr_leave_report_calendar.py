@@ -29,7 +29,7 @@ class LeaveReportCalendar(models.Model):
     ], readonly=True)
     description = fields.Char("Description", readonly=True, groups='hr_holidays.group_hr_holidays_user')
     holiday_status_id = fields.Many2one('hr.leave.type', readonly=True, string="Time Off Type",
-        groups='hr_holidays.group_hr_holidays_user')
+                                        groups='hr_holidays.group_hr_holidays_user')
 
     is_hatched = fields.Boolean('Hatched', readonly=True)
     is_striked = fields.Boolean('Striked', readonly=True)
@@ -103,7 +103,8 @@ class LeaveReportCalendar(models.Model):
     @api.depends('leave_manager_id')
     def _compute_is_manager(self):
         for leave in self:
-            leave.is_manager = self.env.user.has_group('hr_holidays.group_hr_holidays_user') or leave.leave_manager_id == self.env.user
+            leave.is_manager = self.env.user.has_group(
+                'hr_holidays.group_hr_holidays_user') or leave.leave_manager_id == self.env.user
 
     def action_approve(self):
         self.leave_id.action_approve(check_state=False)

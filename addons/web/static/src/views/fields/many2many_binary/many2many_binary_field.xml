@@ -11,23 +11,25 @@
             <div t-if="!props.readonly &amp;&amp; (!props.numberOfFiles or files.length &lt; props.numberOfFiles)"
                  class="oe_add">
                 <FileInput
-                    acceptedFileExtensions="props.acceptedFileExtensions"
-                    multiUpload="true"
-                    onUpload.bind="onFileUploaded"
-                    resModel="props.record.resModel"
-                    resId="props.record.resId or 0"
+                        acceptedFileExtensions="props.acceptedFileExtensions"
+                        multiUpload="true"
+                        onUpload.bind="onFileUploaded"
+                        resModel="props.record.resModel"
+                        resId="props.record.resId or 0"
                 >
                     <button class="btn btn-secondary o_attach" data-tooltip="Attach">
-                        <span class="fa fa-paperclip" aria-label="Attach"/> <t t-esc="uploadText"/>
+                        <span class="fa fa-paperclip" aria-label="Attach"/>
+                        <t t-esc="uploadText"/>
                     </button>
                 </FileInput>
             </div>
         </div>
     </t>
 
-<t t-name="web.Many2ManyBinaryField.attachment_preview">
+    <t t-name="web.Many2ManyBinaryField.attachment_preview">
     <t t-set="editable" t-value="!props.readonly"/>
-    <div t-attf-class="o_attachment o_attachment_many2many #{ editable ? 'o_attachment_editable' : '' } #{upload ? 'o_attachment_uploading' : ''}" t-att-title="file.name">
+        <div t-attf-class="o_attachment o_attachment_many2many #{ editable ? 'o_attachment_editable' : '' } #{upload ? 'o_attachment_uploading' : ''}"
+             t-att-title="file.name">
         <div class="o_attachment_wrap">
             <t t-set="ext" t-value="getExtension(file)"/>
             <t t-set="url" t-value="getUrl(file.id)"/>

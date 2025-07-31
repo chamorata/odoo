@@ -7,10 +7,10 @@
         <field name="arch" type="xml">
             <button name="action_open_expense_view" position="after">
                 <button name="action_open_sale_orders"
-                    class="oe_stat_button"
-                    icon="fa-money"
-                    type="object"
-                    invisible="sale_order_count == 0">
+                        class="oe_stat_button"
+                        icon="fa-money"
+                        type="object"
+                        invisible="sale_order_count == 0">
                     <field name="sale_order_count" widget="statinfo" string="Sales Orders"/>
                 </button>
             </button>

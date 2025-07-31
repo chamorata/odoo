@@ -1,10 +1,12 @@
-from odoo import Command
-from odoo.addons.account.tests.common import TestAccountMergeCommon
-from odoo.tests import Form, tagged, new_test_user
-from odoo.exceptions import UserError, ValidationError
-from odoo.tools import mute_logger
 import psycopg2
 from freezegun import freeze_time
+from odoo.addons.account.tests.common import TestAccountMergeCommon
+
+from odoo import Command
+from odoo.exceptions import UserError, ValidationError
+from odoo.tests import Form, tagged, new_test_user
+from odoo.tools import mute_logger
+
 
 @tagged('post_install', '-at_install')
 class TestAccountAccount(TestAccountMergeCommon):
@@ -46,7 +48,8 @@ class TestAccountAccount(TestAccountMergeCommon):
         account.write({
             'code': '180011',
             'company_ids': [Command.link(company_1.id)],
-            'tax_ids': [Command.link(self.company_data['default_tax_sale'].id), Command.link(self.company_data_2['default_tax_sale'].id)],
+            'tax_ids': [Command.link(self.company_data['default_tax_sale'].id),
+                        Command.link(self.company_data_2['default_tax_sale'].id)],
         })
         self.assertRecordValues(account, [{'code': '180011', 'company_ids': [company_1.id, company_2.id]}])
 
@@ -61,12 +64,14 @@ class TestAccountAccount(TestAccountMergeCommon):
             'company_ids': [Command.set([company_1.id, company_2.id, company_3.id])],
             'tax_ids': [Command.set([self.company_data_2['default_tax_sale'].id])],
         })
-        self.assertRecordValues(account_2, [{'code': '180021', 'company_ids': [company_1.id, company_2.id, company_3.id]}])
+        self.assertRecordValues(account_2,
+                                [{'code': '180021', 'company_ids': [company_1.id, company_2.id, company_3.id]}])
         self.assertRecordValues(account_2.with_company(company_2), [{'code': '180022'}])
         self.assertRecordValues(account_2.with_company(company_3), [{'code': '180023'}])
 
         # Test copying an account belonging to multiple companies, specifying the company the new account should belong to.
-        account_copy_1 = account.copy({'company_ids': [Command.set(company_1.ids)], 'tax_ids': [Command.set(self.company_data['default_tax_sale'].ids)]})
+        account_copy_1 = account.copy({'company_ids': [Command.set(company_1.ids)],
+                                       'tax_ids': [Command.set(self.company_data['default_tax_sale'].ids)]})
         self.assertRecordValues(
             account_copy_1,
             [{'code': '180012', 'company_ids': company_1.ids, 'tax_ids': self.company_data['default_tax_sale'].ids}],
@@ -86,7 +91,8 @@ class TestAccountAccount(TestAccountMergeCommon):
 
         # Test copying an account belonging to 3 companies
         account_copy_3 = account_2.copy()
-        self.assertRecordValues(account_copy_3, [{'code': '180022', 'company_ids': [company_1.id, company_2.id, company_3.id]}])
+        self.assertRecordValues(account_copy_3,
+                                [{'code': '180022', 'company_ids': [company_1.id, company_2.id, company_3.id]}])
         self.assertRecordValues(account_copy_3.with_company(company_2), [{'code': '180023'}])
         self.assertRecordValues(account_copy_3.with_company(company_3), [{'code': '180024'}])
 
@@ -368,7 +374,8 @@ class TestAccountAccount(TestAccountMergeCommon):
         # account code is mandatory and providing a name without a code should raise an error
         with self.assertRaises(psycopg2.DatabaseError), mute_logger('odoo.sql_db'):
             self.env['account.account'].with_context(import_file=True).name_create('Existing Account')
-        account_id = self.env['account.account'].with_context(import_file=True).name_create('550003 Existing Account')[0]
+        account_id = self.env['account.account'].with_context(import_file=True).name_create('550003 Existing Account')[
+            0]
         account = self.env['account.account'].browse(account_id)
         self.assertEqual(account.code, "550003")
         self.assertEqual(account.name, "Existing Account")
@@ -414,13 +421,13 @@ class TestAccountAccount(TestAccountMergeCommon):
         # pylint: disable=bad-whitespace
         tests = [
             # start_code  Expected tested codes
-            ('102100',    ['102101', '102102', '102103', '102104']),
-            ('1598',      ['1599', '1600', '1601', '1602']),
-            ('10.01.08',  ['10.01.09', '10.01.10', '10.01.11', '10.01.12']),
-            ('10.01.97',  ['10.01.98', '10.01.99', '10.01.97.copy', '10.01.97.copy2']),
-            ('1021A',     ['1022A', '1023A', '1024A', '1025A']),
-            ('hello',     ['hello.copy', 'hello.copy2', 'hello.copy3', 'hello.copy4']),
-            ('9998',      ['9999', '9998.copy', '9998.copy2', '9998.copy3']),
+            ('102100', ['102101', '102102', '102103', '102104']),
+            ('1598', ['1599', '1600', '1601', '1602']),
+            ('10.01.08', ['10.01.09', '10.01.10', '10.01.11', '10.01.12']),
+            ('10.01.97', ['10.01.98', '10.01.99', '10.01.97.copy', '10.01.97.copy2']),
+            ('1021A', ['1022A', '1023A', '1024A', '1025A']),
+            ('hello', ['hello.copy', 'hello.copy2', 'hello.copy3', 'hello.copy4']),
+            ('9998', ['9999', '9998.copy', '9998.copy2', '9998.copy3']),
         ]
         for start_code, expected_tested_codes in tests:
             start_account = self.env['account.account'].create({
@@ -467,12 +474,14 @@ class TestAccountAccount(TestAccountMergeCommon):
 
         self.env['account.move'].create(payable_credit_move).button_cancel()
         account_payable._compute_current_balance()
-        self.assertEqual(account_payable.current_balance, -100, 'Canceled invoices/bills should not be used when computing the balance')
+        self.assertEqual(account_payable.current_balance, -100,
+                         'Canceled invoices/bills should not be used when computing the balance')
 
         # draft invoice
         self.env['account.move'].create(payable_credit_move)
         account_payable._compute_current_balance()
-        self.assertEqual(account_payable.current_balance, -100, 'Draft invoices/bills should not be used when computing the balance')
+        self.assertEqual(account_payable.current_balance, -100,
+                         'Draft invoices/bills should not be used when computing the balance')
 
     def test_name_create_account_code_only(self):
         """
@@ -497,7 +506,8 @@ class TestAccountAccount(TestAccountMergeCommon):
         self.assertEqual(account.code, "550005")
         self.assertEqual(account.name, "CO2")
 
-        account_id = self.env['account.account'].with_context(import_file=True, default_account_type='expense').name_create('CO2')[0]
+        account_id = \
+        self.env['account.account'].with_context(import_file=True, default_account_type='expense').name_create('CO2')[0]
         account = self.env['account.account'].browse(account_id)
         self.assertEqual(account.code, "CO2")
         self.assertEqual(account.name, "")
@@ -629,9 +639,11 @@ class TestAccountAccount(TestAccountMergeCommon):
 
             Check that `_field_to_sql` gives the same value.
         """
+
         def get_placeholder_code_via_sql(account):
             account_query = account._as_query()
-            placeholder_code_sql = account_query.select(account._field_to_sql('account_account', 'placeholder_code', account_query))
+            placeholder_code_sql = account_query.select(
+                account._field_to_sql('account_account', 'placeholder_code', account_query))
             placeholder_code = self.env.execute_query(placeholder_code_sql)[0][0]
             return placeholder_code
 
@@ -681,7 +693,8 @@ class TestAccountAccount(TestAccountMergeCommon):
             company_id=self.env.company.id,
         )
 
-        searched_account = self.env['account.account'].with_user(user_that_cannot_access_company_2).sudo().search([('id', '=', account.id)])
+        searched_account = self.env['account.account'].with_user(user_that_cannot_access_company_2).sudo().search(
+            [('id', '=', account.id)])
         self.assertEqual(searched_account, account)
 
     @freeze_time('2017-01-01')
@@ -696,17 +709,17 @@ class TestAccountAccount(TestAccountMergeCommon):
         self.cr.precommit.run()
         self.assertRecordValues(company.account_opening_move_id.line_ids.sorted(), [
             # pylint: disable=bad-whitespace
-            {'account_id': account.id,              'balance': 300.0},
-            {'account_id': balancing_account.id,    'balance': -300.0},
+            {'account_id': account.id, 'balance': 300.0},
+            {'account_id': balancing_account.id, 'balance': -300.0},
         ])
 
         account.opening_credit = 500
         self.cr.precommit.run()
         self.assertRecordValues(company.account_opening_move_id.line_ids.sorted(), [
             # pylint: disable=bad-whitespace
-            {'account_id': account.id,              'balance': 300.0},
-            {'account_id': account.id,              'balance': -500.0},
-            {'account_id': balancing_account.id,    'balance': 200.0},
+            {'account_id': account.id, 'balance': 300.0},
+            {'account_id': account.id, 'balance': -500.0},
+            {'account_id': balancing_account.id, 'balance': 200.0},
         ])
 
         account.opening_balance = 0
@@ -718,8 +731,8 @@ class TestAccountAccount(TestAccountMergeCommon):
         self.cr.precommit.run()
         self.assertRecordValues(company.account_opening_move_id.line_ids.sorted(), [
             # pylint: disable=bad-whitespace
-            {'account_id': account.id,              'balance': 100.0,   'amount_currency': 200.0},
-            {'account_id': balancing_account.id,    'balance': -100.0,  'amount_currency': -100.0},
+            {'account_id': account.id, 'balance': 100.0, 'amount_currency': 200.0},
+            {'account_id': balancing_account.id, 'balance': -100.0, 'amount_currency': -100.0},
         ])
 
         company.account_opening_move_id.write({'line_ids': [
@@ -736,28 +749,28 @@ class TestAccountAccount(TestAccountMergeCommon):
         ]})
         self.assertRecordValues(company.account_opening_move_id.line_ids.sorted(), [
             # pylint: disable=bad-whitespace
-            {'account_id': account.id,              'balance': 100.0,   'amount_currency': 200.0},
-            {'account_id': balancing_account.id,    'balance': -100.0,  'amount_currency': -100.0},
-            {'account_id': account.id,              'balance': 100.0,   'amount_currency': 200.0},
-            {'account_id': balancing_account.id,    'balance': -100.0,  'amount_currency': -100.0},
+            {'account_id': account.id, 'balance': 100.0, 'amount_currency': 200.0},
+            {'account_id': balancing_account.id, 'balance': -100.0, 'amount_currency': -100.0},
+            {'account_id': account.id, 'balance': 100.0, 'amount_currency': 200.0},
+            {'account_id': balancing_account.id, 'balance': -100.0, 'amount_currency': -100.0},
         ])
 
         account.opening_credit = 1000
         self.cr.precommit.run()
         self.assertRecordValues(company.account_opening_move_id.line_ids.sorted(), [
             # pylint: disable=bad-whitespace
-            {'account_id': account.id,              'balance': 100.0,   'amount_currency': 200.0},
-            {'account_id': account.id,              'balance': 100.0,   'amount_currency': 200.0},
-            {'account_id': account.id,              'balance': -1000.0, 'amount_currency': -2000.0},
-            {'account_id': balancing_account.id,    'balance': 800.0,   'amount_currency': 800.0},
+            {'account_id': account.id, 'balance': 100.0, 'amount_currency': 200.0},
+            {'account_id': account.id, 'balance': 100.0, 'amount_currency': 200.0},
+            {'account_id': account.id, 'balance': -1000.0, 'amount_currency': -2000.0},
+            {'account_id': balancing_account.id, 'balance': 800.0, 'amount_currency': 800.0},
         ])
 
         account.opening_debit = 1000
         self.cr.precommit.run()
         self.assertRecordValues(company.account_opening_move_id.line_ids.sorted(), [
             # pylint: disable=bad-whitespace
-            {'account_id': account.id,              'balance': 1000.0,  'amount_currency': 2000.0},
-            {'account_id': account.id,              'balance': -1000.0, 'amount_currency': -2000.0},
+            {'account_id': account.id, 'balance': 1000.0, 'amount_currency': 2000.0},
+            {'account_id': account.id, 'balance': -1000.0, 'amount_currency': -2000.0},
         ])
 
     def test_unmerge(self):
@@ -807,15 +820,18 @@ class TestAccountAccount(TestAccountMergeCommon):
             'name': 'My First Account',
             'code': '100234',
             'tax_ids': [self.company_data['default_tax_sale'].id, self.company_data_2['default_tax_sale'].id],
-            'tag_ids': [self.env.ref('account.account_tag_operating').id, self.env.ref('account.account_tag_investing').id],
+            'tag_ids': [self.env.ref('account.account_tag_operating').id,
+                        self.env.ref('account.account_tag_investing').id],
         }])
         self.assertRecordValues(account_to_unmerge.with_company(company_2), [{'code': '100235'}])
         self.assertEqual(self.env['account.chart.template'].ref('test_account_1'), account_to_unmerge)
-        self.assertEqual(self.env['account.chart.template'].with_company(company_2).ref('test_account_2'), account_to_unmerge)
+        self.assertEqual(self.env['account.chart.template'].with_company(company_2).ref('test_account_2'),
+                         account_to_unmerge)
 
         for referencing_records_for_account in referencing_records.values():
             for referencing_record, fname in referencing_records_for_account.items():
-                expected_field_value = account_to_unmerge.ids if referencing_record._fields[fname].type == 'many2many' else account_to_unmerge.id
+                expected_field_value = account_to_unmerge.ids if referencing_record._fields[
+                                                                     fname].type == 'many2many' else account_to_unmerge.id
                 self.assertRecordValues(referencing_record, [{fname: expected_field_value}])
 
         # Step 2: Unmerge the account
@@ -830,7 +846,8 @@ class TestAccountAccount(TestAccountMergeCommon):
             'name': 'My First Account',
             'code': '100234',
             'tax_ids': self.company_data['default_tax_sale'].ids,
-            'tag_ids': [self.env.ref('account.account_tag_operating').id, self.env.ref('account.account_tag_investing').id],
+            'tag_ids': [self.env.ref('account.account_tag_operating').id,
+                        self.env.ref('account.account_tag_investing').id],
         }])
         self.assertRecordValues(account_to_unmerge.with_company(company_2), [{'code': False}])
         self.assertRecordValues(new_account.with_company(company_2), [{
@@ -838,7 +855,8 @@ class TestAccountAccount(TestAccountMergeCommon):
             'name': 'My First Account',
             'code': '100235',
             'tax_ids': self.company_data_2['default_tax_sale'].ids,
-            'tag_ids': [self.env.ref('account.account_tag_operating').id, self.env.ref('account.account_tag_investing').id],
+            'tag_ids': [self.env.ref('account.account_tag_operating').id,
+                        self.env.ref('account.account_tag_investing').id],
         }])
         self.assertRecordValues(new_account, [{'code': False}])
 
@@ -850,7 +868,8 @@ class TestAccountAccount(TestAccountMergeCommon):
         for account, referencing_records_for_account in referencing_records.items():
             for referencing_record, fname in referencing_records_for_account.items():
                 expected_account = new_account_by_old_account[account]
-                expected_field_value = expected_account.ids if referencing_record._fields[fname].type == 'many2many' else expected_account.id
+                expected_field_value = expected_account.ids if referencing_record._fields[
+                                                                   fname].type == 'many2many' else expected_account.id
                 self.assertRecordValues(referencing_record, [{fname: expected_field_value}])
 
         # Check that the XMLids were correctly unmerged
@@ -868,7 +887,8 @@ class TestAccountAccount(TestAccountMergeCommon):
         # Write to DB so that the account gets an ID, and invalidate cache for code_mapping_ids so that they will be looked up
         account.invalidate_recordset(['code_mapping_ids'])
 
-        account = account.with_context({'allowed_company_ids': [self.company_data['company'].id, self.company_data_2['company'].id, company_3.id]})
+        account = account.with_context(
+            {'allowed_company_ids': [self.company_data['company'].id, self.company_data_2['company'].id, company_3.id]})
 
         with Form(account) as account_form:
             # Test that the code mapping gives correct values once the form has been opened (which should call search)
@@ -909,7 +929,8 @@ class TestAccountAccount(TestAccountMergeCommon):
             ]
             actual_code_mapping_vals_list = account_form.code_mapping_ids._records
 
-            for expected_code_mapping_vals, actual_code_mapping_vals in zip(expected_code_mapping_vals_list, actual_code_mapping_vals_list):
+            for expected_code_mapping_vals, actual_code_mapping_vals in zip(expected_code_mapping_vals_list,
+                                                                            actual_code_mapping_vals_list):
                 for key, expected_val in expected_code_mapping_vals.items():
                     self.assertEqual(actual_code_mapping_vals[key], expected_val)
 
@@ -937,6 +958,7 @@ class TestAccountAccount(TestAccountMergeCommon):
 
     def test_account_group_hierarchy_consistency(self):
         """ Test if the hierarchy of account groups is consistent when creating, deleting and recreating an account group """
+
         def create_account_group(name, code_prefix, company):
             return self.env['account.group'].create({
                 'name': name,

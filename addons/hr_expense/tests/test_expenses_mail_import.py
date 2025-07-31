@@ -1,7 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from odoo.addons.hr_expense.tests.common import TestExpenseCommon
-from odoo.tests import tagged
+
 from odoo.exceptions import UserError
+from odoo.tests import tagged
 
 
 @tagged('-at_install', 'post_install')
@@ -37,7 +38,7 @@ class TestExpensesMailImport(TestExpenseCommon):
 
         self.assertRecordValues(expenses, [
             {'product_id': self.product_a.id, 'total_amount_currency': 800.0, 'employee_id': self.expense_employee.id},
-            {'product_id': False,             'total_amount_currency': 800.0, 'employee_id': self.expense_employee.id},
+            {'product_id': False, 'total_amount_currency': 800.0, 'employee_id': self.expense_employee.id},
             {'product_id': self.product_c.id, 'total_amount_currency': 100.0, 'employee_id': self.expense_employee.id},
         ])
 
@@ -226,4 +227,5 @@ class TestExpensesMailImport(TestExpenseCommon):
         }
 
         expense = self.env['hr.expense'].message_new(message)
-        self.assertRaisesRegex(UserError, r"You can not create report without category\.", expense._get_default_expense_sheet_values)
+        self.assertRaisesRegex(UserError, r"You can not create report without category\.",
+                               expense._get_default_expense_sheet_values)

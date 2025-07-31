@@ -32,7 +32,8 @@ class SurveyInvite(models.TransientModel):
 
             if not self.applicant_id.response_ids.filtered(lambda res: res.survey_id.id == self.survey_id.id):
                 self.applicant_id.sudo().write({
-                    'response_ids': (self.applicant_id.response_ids | survey.sudo()._create_answer(partner=self.applicant_id.partner_id,
+                    'response_ids': (self.applicant_id.response_ids | survey.sudo()._create_answer(
+                        partner=self.applicant_id.partner_id,
                         **self._get_answers_values())).ids
                 })
 
@@ -40,9 +41,9 @@ class SurveyInvite(models.TransientModel):
             survey_link = survey._get_html_link(title=survey.title)
             partner_link = partner._get_html_link()
             content = _('The survey %(survey_link)s has been sent to %(partner_link)s',
-                survey_link=survey_link,
-                partner_link=partner_link,
-            )
+                        survey_link=survey_link,
+                        partner_link=partner_link,
+                        )
             body = Markup('<p>%s</p>') % content
             self.applicant_id.message_post(body=body)
         return super().action_invite()

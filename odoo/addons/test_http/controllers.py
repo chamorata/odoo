@@ -3,6 +3,7 @@ import json
 import logging
 
 import werkzeug
+from odoo.addons.web.controllers.utils import ensure_db
 from psycopg2.errorcodes import SERIALIZATION_FAILURE
 from psycopg2.errors import SerializationFailure
 
@@ -11,14 +12,10 @@ from odoo.exceptions import AccessError, UserError
 from odoo.http import request
 from odoo.tools import replace_exceptions, str2bool
 
-from odoo.addons.web.controllers.utils import ensure_db
-
 _logger = logging.getLogger(__name__)
-
 
 CT_JSON = {'Content-Type': 'application/json; charset=utf-8'}
 WSGI_SAFE_KEYS = {'PATH_INFO', 'QUERY_STRING', 'RAW_URI', 'SCRIPT_NAME', 'wsgi.url_scheme'}
-
 
 # Force serialization errors. Patched in some tests.
 should_fail = None
@@ -62,11 +59,11 @@ class TestHttp(http.Controller):
         environ = {
             key: val for key, val in request.httprequest.environ.items()
             if (key.startswith('HTTP_')  # headers
-             or key.startswith('REMOTE_')
-             or key.startswith('REQUEST_')
-             or key.startswith('SERVER_')
-             or key.startswith('werkzeug.proxy_fix.')
-             or key in WSGI_SAFE_KEYS)
+                or key.startswith('REMOTE_')
+                or key.startswith('REQUEST_')
+                or key.startswith('SERVER_')
+                or key.startswith('werkzeug.proxy_fix.')
+                or key in WSGI_SAFE_KEYS)
         }
 
         return request.make_response(
@@ -131,7 +128,8 @@ class TestHttp(http.Controller):
         galaxy.name = name
         return galaxy.name
 
-    @http.route('/test_http/<model("test_http.galaxy"):galaxy>/<model("test_http.stargate"):gate>', auth='user', readonly=True)
+    @http.route('/test_http/<model("test_http.galaxy"):galaxy>/<model("test_http.stargate"):gate>', auth='user',
+                readonly=True)
     def stargate(self, galaxy, gate):
         if not gate.exists():
             raise UserError("The goauld destroyed the gate")

@@ -6,7 +6,6 @@ from datetime import timedelta
 
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
-from odoo.tools import float_round
 
 
 class HRLeave(models.Model):
@@ -29,12 +28,13 @@ class HRLeave(models.Model):
 
     def write(self, vals):
         res = super().write(vals)
-        fields_to_check = {'number_of_days', 'request_date_from', 'request_date_to', 'state', 'employee_id', 'holiday_status_id'}
+        fields_to_check = {'number_of_days', 'request_date_from', 'request_date_to', 'state', 'employee_id',
+                           'holiday_status_id'}
         if not any(field for field in fields_to_check if field in vals):
             return res
         if vals.get('holiday_status_id'):
             self._check_overtime_deductible(self)
-        #User may not have access to overtime_id field
+        # User may not have access to overtime_id field
         for leave in self.sudo().filtered('overtime_id'):
             # It must always be possible to refuse leave based on overtime
             if vals.get('state') in ['refuse']:
@@ -73,7 +73,7 @@ class HRLeave(models.Model):
         res = super().action_reset_confirm()
         overtime_leaves.overtime_id.sudo().unlink()
         return res
-    
+
     def action_confirm(self):
         res = super().action_confirm()
         self._check_overtime_deductible(self)
@@ -98,7 +98,9 @@ class HRLeave(models.Model):
         for leave in self:
             if leave.employee_id:
                 for d in range((leave.date_to - leave.date_from).days + 1):
-                    employee_dates[leave.employee_id].add(self.env['hr.attendance']._get_day_start_and_day(leave.employee_id, leave.date_from + timedelta(days=d)))
+                    employee_dates[leave.employee_id].add(
+                        self.env['hr.attendance']._get_day_start_and_day(leave.employee_id,
+                                                                         leave.date_from + timedelta(days=d)))
         if employee_dates:
             self.env['hr.attendance'].sudo()._update_overtime(employee_dates)
 

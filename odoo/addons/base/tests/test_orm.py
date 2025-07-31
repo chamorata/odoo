@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo import Command
 from odoo.exceptions import AccessError
 from odoo.tests.common import TransactionCase, tagged
 from odoo.tools import mute_logger
-from odoo import Command
 
 
 class TestORM(TransactionCase):
@@ -41,13 +41,15 @@ class TestORM(TransactionCase):
         self.assertTrue(type(Model).display_name.automatic, "test assumption not satisfied")
 
         # access regular field when another record from the same prefetch set has been deleted
-        records = Model.create([{'name': name[0], 'code': name[1]} for name in (['Foo', 'ZV'], ['Bar', 'ZX'], ['Baz', 'ZY'])])
+        records = Model.create(
+            [{'name': name[0], 'code': name[1]} for name in (['Foo', 'ZV'], ['Bar', 'ZX'], ['Baz', 'ZY'])])
         for record in records:
             record.name
             record.unlink()
 
         # access computed field when another record from the same prefetch set has been deleted
-        records = Model.create([{'name': name[0], 'code': name[1]} for name in (['Foo', 'ZV'], ['Bar', 'ZX'], ['Baz', 'ZY'])])
+        records = Model.create(
+            [{'name': name[0], 'code': name[1]} for name in (['Foo', 'ZV'], ['Bar', 'ZX'], ['Baz', 'ZY'])])
         for record in records:
             record.display_name
             record.unlink()
@@ -63,7 +65,7 @@ class TestORM(TransactionCase):
             'groups_id': [Command.set([self.ref('base.group_user')])],
         })
 
-        partner_model = self.env['ir.model'].search([('model','=','res.partner')])
+        partner_model = self.env['ir.model'].search([('model', '=', 'res.partner')])
         self.env['ir.rule'].create({
             'name': 'Y is invisible',
             'domain_force': [('id', '!=', p1.id)],
@@ -343,9 +345,10 @@ class TestCompanyDependent(TransactionCase):
                     for comodel_field in self.env[field.comodel_name]._fields.values():
                         self.assertFalse(
                             comodel_field.type == 'many2one' and comodel_field.ondelete == 'cascade',
-                            (f'when a row for {comodel_field.comodel_name} is deleted, a row for {comodel_field.model_name} '
-                             f'may also be deleted for sake of on delete cascade field {comodel_field}, which will '
-                             f'bypass the ORM ondelete="restrict" check for a company dependent many2one field {field}. '
-                             f'Please override the unlink method of {comodel_field.comodel_name} and do the ORM on '
-                             f'delete cascade logic and remove/override the ondelete="cascade" of {comodel_field}')
+                            (
+                                f'when a row for {comodel_field.comodel_name} is deleted, a row for {comodel_field.model_name} '
+                                f'may also be deleted for sake of on delete cascade field {comodel_field}, which will '
+                                f'bypass the ORM ondelete="restrict" check for a company dependent many2one field {field}. '
+                                f'Please override the unlink method of {comodel_field.comodel_name} and do the ORM on '
+                                f'delete cascade logic and remove/override the ondelete="cascade" of {comodel_field}')
                         )

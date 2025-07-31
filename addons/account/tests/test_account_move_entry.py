@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
-from odoo.addons.account.tests.common import AccountTestInvoicingCommon
-from odoo.tests import Form, tagged, new_test_user
-from odoo import Command, fields
-from odoo.exceptions import UserError, RedirectWarning
+from collections import defaultdict
 
 from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
-from collections import defaultdict
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
+from odoo import Command, fields
+from odoo.exceptions import UserError, RedirectWarning
+from odoo.tests import Form, tagged, new_test_user
+
 
 @tagged('post_install', '-at_install')
 class TestAccountMove(AccountTestInvoicingCommon):
@@ -18,7 +20,7 @@ class TestAccountMove(AccountTestInvoicingCommon):
         cls.company_data_2 = cls.setup_other_company()
         cls.other_currency = cls.setup_other_currency('HRK')
 
-        tax_repartition_line = cls.company_data['default_tax_sale'].refund_repartition_line_ids\
+        tax_repartition_line = cls.company_data['default_tax_sale'].refund_repartition_line_ids \
             .filtered(lambda line: line.repartition_type == 'tax')
         cls.test_move = cls.env['account.move'].create({
             'move_type': 'entry',
@@ -109,7 +111,8 @@ class TestAccountMove(AccountTestInvoicingCommon):
         self.assertEqual(1, len(new_invoices_1))  # following entry is created
         self.assertEqual('monthly', new_invoices_1.auto_post)
         self.assertEqual(new_date_1, new_invoices_1.date)
-        self.assertEqual(new_date_1 + relativedelta(days=1), new_invoices_1.invoice_date_due)  # due date maintains delta with date
+        self.assertEqual(new_date_1 + relativedelta(days=1),
+                         new_invoices_1.invoice_date_due)  # due date maintains delta with date
 
         self.env.ref('account.ir_cron_auto_post_draft_entry').method_direct_trigger()  # second recurrence
         new_invoices_2 = self.env['account.move'].search(domain=[]) - prev_invoices - new_invoices_1
@@ -320,7 +323,7 @@ class TestAccountMove(AccountTestInvoicingCommon):
         existing_partners = self.env['res.partner'].create([{
             'name': 'Jean',
             'company_id': company.id,
-        },{
+        }, {
             'name': 'Paulus',
         }])
         self.test_move.message_subscribe(existing_partners.ids)
@@ -466,9 +469,11 @@ class TestAccountMove(AccountTestInvoicingCommon):
         move = move_form.save()
 
         self.assertRecordValues(move.line_ids.sorted(lambda x: -x.balance), [
-            {'name': 'debit_line_1',             'debit': 1000.0,    'credit': 0.0,      'tax_ids': [self.included_percent_tax.id],      'tax_line_id': False},
-            {'name': 'included_tax_line',        'debit': 200.0,     'credit': 0.0,      'tax_ids': [],                                  'tax_line_id': self.included_percent_tax.id},
-            {'name': 'credit_line_1',            'debit': 0.0,       'credit': 1200.0,   'tax_ids': [],                                  'tax_line_id': False},
+            {'name': 'debit_line_1', 'debit': 1000.0, 'credit': 0.0, 'tax_ids': [self.included_percent_tax.id],
+             'tax_line_id': False},
+            {'name': 'included_tax_line', 'debit': 200.0, 'credit': 0.0, 'tax_ids': [],
+             'tax_line_id': self.included_percent_tax.id},
+            {'name': 'credit_line_1', 'debit': 0.0, 'credit': 1200.0, 'tax_ids': [], 'tax_line_id': False},
         ])
 
     def test_misc_prevent_unlink_posted_items(self):
@@ -524,7 +529,8 @@ class TestAccountMove(AccountTestInvoicingCommon):
         })
         move.action_post()
 
-        move_reversal = self.env['account.move.reversal'].with_context(active_model="account.move", active_ids=move.ids).create({
+        move_reversal = self.env['account.move.reversal'].with_context(active_model="account.move",
+                                                                       active_ids=move.ids).create({
             'date': fields.Date.from_string('2021-02-01'),
             'journal_id': move.journal_id.id,
         })
@@ -629,7 +635,8 @@ class TestAccountMove(AccountTestInvoicingCommon):
                     'debit': 0.0,
                     'credit': 100.0,
                     'tax_tag_ids': [(6, 0, tax_tags['invoice']['tax'].ids)],
-                    'tax_repartition_line_id': tax.invoice_repartition_line_ids.filtered(lambda x: x.repartition_type == 'tax').id,
+                    'tax_repartition_line_id': tax.invoice_repartition_line_ids.filtered(
+                        lambda x: x.repartition_type == 'tax').id,
                 }),
                 (0, None, {
                     'name': 'counterpart line',
@@ -651,7 +658,8 @@ class TestAccountMove(AccountTestInvoicingCommon):
             'journal_id': self.company_data['default_journal_bank'].id,
         })
         payment.action_post()
-        (payment.move_id + move).line_ids.filtered(lambda x: x.account_id == self.company_data['default_account_receivable']).reconcile()
+        (payment.move_id + move).line_ids.filtered(
+            lambda x: x.account_id == self.company_data['default_account_receivable']).reconcile()
         # check caba move
         partial_rec = move.mapped('line_ids.matched_credit_ids')
         caba_move = self.env['account.move'].search([('tax_cash_basis_rec_id', '=', partial_rec.id)])
@@ -686,7 +694,8 @@ class TestAccountMove(AccountTestInvoicingCommon):
             },
             {
                 'tax_line_id': tax.id,
-                'tax_repartition_line_id': tax.invoice_repartition_line_ids.filtered(lambda x: x.repartition_type == 'tax').id,
+                'tax_repartition_line_id': tax.invoice_repartition_line_ids.filtered(
+                    lambda x: x.repartition_type == 'tax').id,
                 'tax_ids': [],
                 'tax_tag_ids': tax_tags['invoice']['tax'].ids,
                 'account_id': tax_final_account.id,
@@ -731,12 +740,12 @@ class TestAccountMove(AccountTestInvoicingCommon):
             })
 
         self.test_move.action_post()
-        with self.assertRaisesRegex(UserError, "You cannot modify the taxes related to a posted journal item"),\
-             self.cr.savepoint():
+        with self.assertRaisesRegex(UserError, "You cannot modify the taxes related to a posted journal item"), \
+                self.cr.savepoint():
             edit_tax_on_posted_moves()
 
-        with self.assertRaisesRegex(UserError, "You cannot modify the taxes related to a posted journal item"),\
-             self.cr.savepoint():
+        with self.assertRaisesRegex(UserError, "You cannot modify the taxes related to a posted journal item"), \
+                self.cr.savepoint():
             self.test_move.line_ids.filtered(lambda l: l.tax_line_id).tax_line_id = False
 
         # You can remove journal items if the related journal entry is draft.
@@ -814,8 +823,8 @@ class TestAccountMove(AccountTestInvoicingCommon):
         ])
         moves.action_post()
 
-        moves.line_ids\
-            .filtered(lambda x: x.account_id == self.company_data['default_account_receivable'])\
+        moves.line_ids \
+            .filtered(lambda x: x.account_id == self.company_data['default_account_receivable']) \
             .reconcile()
 
         exchange_diff = moves.line_ids.matched_debit_ids.exchange_move_id
@@ -877,9 +886,12 @@ class TestAccountMove(AccountTestInvoicingCommon):
 
         self.assertRecordValues(move.line_ids.sorted(lambda x: -x.balance), [
             # pylint: disable=C0326
-            {'name': 'debit',  'debit': 120.0, 'credit': 0.0,   'account_id': income_account.id, 'tax_ids': [],           'tax_line_id': False},
-            {'name': 'CABA',   'debit': 0.0,   'credit': 20.0,  'account_id': tax_account.id,    'tax_ids': [],           'tax_line_id': caba_tax.id},
-            {'name': 'credit', 'debit': 0.0,   'credit': 100.0, 'account_id': income_account.id, 'tax_ids': caba_tax.ids, 'tax_line_id': False},
+            {'name': 'debit', 'debit': 120.0, 'credit': 0.0, 'account_id': income_account.id, 'tax_ids': [],
+             'tax_line_id': False},
+            {'name': 'CABA', 'debit': 0.0, 'credit': 20.0, 'account_id': tax_account.id, 'tax_ids': [],
+             'tax_line_id': caba_tax.id},
+            {'name': 'credit', 'debit': 0.0, 'credit': 100.0, 'account_id': income_account.id, 'tax_ids': caba_tax.ids,
+             'tax_line_id': False},
         ])
 
     def test_misc_with_taxes_reverse(self):
@@ -908,9 +920,13 @@ class TestAccountMove(AccountTestInvoicingCommon):
 
         self.assertRecordValues(sale_move.line_ids.sorted(lambda x: -x.balance), [
             # pylint: disable=C0326
-            {'name': 'debit',  'debit': 115.0, 'credit':   0.0, 'account_id': test_account.id,                                  'tax_ids': [],           'tax_base_amount': 0,   'tax_tag_invert': False, 'tax_repartition_line_id': False},
-            {'name': '15%',    'debit':   0.0, 'credit':  15.0, 'account_id': self.company_data['default_account_tax_sale'].id, 'tax_ids': [],           'tax_base_amount': 100, 'tax_tag_invert': True,  'tax_repartition_line_id': sale_invoice_rep_line.id},
-            {'name': 'credit', 'debit':   0.0, 'credit': 100.0, 'account_id': test_account.id,                                  'tax_ids': sale_tax.ids, 'tax_base_amount': 0,   'tax_tag_invert': True,  'tax_repartition_line_id': False},
+            {'name': 'debit', 'debit': 115.0, 'credit': 0.0, 'account_id': test_account.id, 'tax_ids': [],
+             'tax_base_amount': 0, 'tax_tag_invert': False, 'tax_repartition_line_id': False},
+            {'name': '15%', 'debit': 0.0, 'credit': 15.0,
+             'account_id': self.company_data['default_account_tax_sale'].id, 'tax_ids': [], 'tax_base_amount': 100,
+             'tax_tag_invert': True, 'tax_repartition_line_id': sale_invoice_rep_line.id},
+            {'name': 'credit', 'debit': 0.0, 'credit': 100.0, 'account_id': test_account.id, 'tax_ids': sale_tax.ids,
+             'tax_base_amount': 0, 'tax_tag_invert': True, 'tax_repartition_line_id': False},
         ])
 
         # Same with a purchase tax
@@ -932,12 +948,17 @@ class TestAccountMove(AccountTestInvoicingCommon):
 
         purchase_move = move_form.save()
 
-        purchase_invoice_rep_line = purchase_tax.invoice_repartition_line_ids.filtered(lambda x: x.repartition_type == 'tax')
+        purchase_invoice_rep_line = purchase_tax.invoice_repartition_line_ids.filtered(
+            lambda x: x.repartition_type == 'tax')
         self.assertRecordValues(purchase_move.line_ids.sorted(lambda x: x.balance), [
             # pylint: disable=C0326
-            {'name': 'credit', 'credit': 115.0, 'debit':   0.0, 'account_id': test_account.id,                                      'tax_ids': [],               'tax_base_amount': 0,   'tax_tag_invert': False, 'tax_repartition_line_id': False},
-            {'name': '15%',    'credit':   0.0, 'debit':  15.0, 'account_id': self.company_data['default_account_tax_purchase'].id, 'tax_ids': [],               'tax_base_amount': 100, 'tax_tag_invert': False,  'tax_repartition_line_id': purchase_invoice_rep_line.id},
-            {'name': 'debit',  'credit':   0.0, 'debit': 100.0, 'account_id': test_account.id,                                      'tax_ids': purchase_tax.ids, 'tax_base_amount': 0,   'tax_tag_invert': False,  'tax_repartition_line_id': False},
+            {'name': 'credit', 'credit': 115.0, 'debit': 0.0, 'account_id': test_account.id, 'tax_ids': [],
+             'tax_base_amount': 0, 'tax_tag_invert': False, 'tax_repartition_line_id': False},
+            {'name': '15%', 'credit': 0.0, 'debit': 15.0,
+             'account_id': self.company_data['default_account_tax_purchase'].id, 'tax_ids': [], 'tax_base_amount': 100,
+             'tax_tag_invert': False, 'tax_repartition_line_id': purchase_invoice_rep_line.id},
+            {'name': 'debit', 'credit': 0.0, 'debit': 100.0, 'account_id': test_account.id, 'tax_ids': purchase_tax.ids,
+             'tax_base_amount': 0, 'tax_tag_invert': False, 'tax_repartition_line_id': False},
         ])
 
     @freeze_time('2021-10-01 00:00:00')
@@ -970,7 +991,8 @@ class TestAccountMove(AccountTestInvoicingCommon):
         self.test_move.button_draft()  # move has posted_before == True
         self.assertEqual(self.test_move.journal_id, self.company_data['default_journal_misc'])
         self.assertEqual(self.test_move.name, 'MISC/2016/01/0001')
-        with self.assertRaisesRegex(UserError, 'You cannot edit the journal of an account move if it has been posted once, unless the name is removed or set to "/". This might create a gap in the sequence.'):
+        with self.assertRaisesRegex(UserError,
+                                    'You cannot edit the journal of an account move if it has been posted once, unless the name is removed or set to "/". This might create a gap in the sequence.'):
             self.test_move.write({'journal_id': False})
         # Once move name in draft is changed to '/', changing the journal is allowed
         self.test_move.name = '/'
@@ -993,7 +1015,8 @@ class TestAccountMove(AccountTestInvoicingCommon):
         test_move_2 = self.test_move.copy({'name': 'TEST/2016/01/0002', 'date': '2016-01-01'})
         self.assertEqual(test_move_2.sequence_number, 2)
         self.assertEqual(test_move_2.journal_id, self.company_data['default_journal_misc'])
-        with self.assertRaisesRegex(UserError, 'You cannot edit the journal of an account move with a sequence number assigned, unless the name is removed or set to "/". This might create a gap in the sequence.'):
+        with self.assertRaisesRegex(UserError,
+                                    'You cannot edit the journal of an account move with a sequence number assigned, unless the name is removed or set to "/". This might create a gap in the sequence.'):
             test_move_2.write({'journal_id': False})
         # Once move name in draft is changed to '/', changing the journal is allowed
         test_move_2.write({'name': False, 'journal_id': journal.id})
@@ -1066,7 +1089,8 @@ class TestAccountMove(AccountTestInvoicingCommon):
         """ Test that the wizard to validate a move with auto_post is working fine. """
         self.test_move.date = fields.Date.today() + relativedelta(months=3)
         self.test_move.auto_post = 'at_date'
-        wizard = self.env['validate.account.move'].with_context(active_model='account.move', active_ids=self.test_move.ids).create({})
+        wizard = self.env['validate.account.move'].with_context(active_model='account.move',
+                                                                active_ids=self.test_move.ids).create({})
         wizard.force_post = True
         wizard.validate_move()
         self.assertTrue(self.test_move.state == 'posted')
@@ -1134,6 +1158,7 @@ class TestAccountMove(AccountTestInvoicingCommon):
         This test checks that tax tags on journal entries lines are updated according to the taxes on each line
         In other words, removing a tax from a line should remove its tags from that line
         """
+
         def _create_tax_tag(tag_name):
             return self.env['account.account.tag'].create({
                 'name': tag_name,

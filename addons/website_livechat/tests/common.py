@@ -45,9 +45,10 @@ class TestLivechatCommon(TransactionCaseWithUserDemo):
             'partner_id': self.partner_demo.id,
             'access_token': self.user_demo.partner_id.id,
         }] + [
-            dict(visitor_vals, access_token='%032x' % random.randrange(16**32))
-            for _ in range(self.max_sessions_per_operator)
-        ])
+                                                               dict(visitor_vals,
+                                                                    access_token='%032x' % random.randrange(16 ** 32))
+                                                               for _ in range(self.max_sessions_per_operator)
+                                                           ])
         self.visitor_demo, self.visitor = self.visitors[0], self.visitors[1]
 
         self.livechat_base_url = self.livechat_channel.get_base_url()
@@ -66,12 +67,15 @@ class TestLivechatCommon(TransactionCaseWithUserDemo):
             for record in channel_self:
                 record.available_operator_ids = self.operator
 
-        self.patch(type(self.env['im_livechat.channel']), '_compute_available_operator_ids', _compute_available_operator_ids)
+        self.patch(type(self.env['im_livechat.channel']), '_compute_available_operator_ids',
+                   _compute_available_operator_ids)
 
         # override the _get_visitor_from_request to return self.visitor
         self.target_visitor = self.visitor
+
         def get_visitor_from_request(self_mock, **kwargs):
             return self.target_visitor
+
         self.patch(type(self.env['website.visitor']), '_get_visitor_from_request', get_visitor_from_request)
 
     def _send_message(self, channel, email_from, body, author_id=False):

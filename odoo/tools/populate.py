@@ -33,19 +33,18 @@ Key Features:
    ensuring performance and flexibility in handling large datasets.
 """
 
+import logging
 from collections import defaultdict
 from contextlib import contextmanager
 from datetime import datetime
 
-from psycopg2.errors import InsufficientPrivilege
 from dateutil.relativedelta import relativedelta
-import logging
+from psycopg2.errors import InsufficientPrivilege
 
 from odoo.api import Environment
-from odoo.tools.sql import SQL
 from odoo.fields import Field, Many2one
 from odoo.models import Model
-
+from odoo.tools.sql import SQL
 
 _logger = logging.getLogger(__name__)
 
@@ -149,9 +148,10 @@ class PopulateContext:
                 yield
                 model.env.cr.execute('RESET session_replication_role')
             except InsufficientPrivilege:
-                _logger.warning("Cannot ignore Fkey constraints during insertion due to insufficient privileges for current pg_role. "
-                                "Resetting transaction and retrying to populate without dropping the check on Fkey constraints. "
-                                "The bulk insertion will be vastly slower than anticipated.")
+                _logger.warning(
+                    "Cannot ignore Fkey constraints during insertion due to insufficient privileges for current pg_role. "
+                    "Resetting transaction and retrying to populate without dropping the check on Fkey constraints. "
+                    "The bulk insertion will be vastly slower than anticipated.")
                 model.env.cr.rollback()
                 self.has_session_replication_role = False
                 yield
@@ -168,6 +168,7 @@ def field_needs_variation(model: Model, field: Field) -> bool:
     - field will be part of _rec_name_search, therefor variety is needed for effective searches
     - field has a trigram index on it
     """
+
     def is_unique(model_, field_):
         """
         An unique constraint is enforced by Postgres as an unique index,
@@ -232,6 +233,7 @@ def populate_field(model: Model, field: Field, populated: dict[Model, int], fact
     `table_alias` and `series_alias` are the identifiers used to reference
     the currently being populated table and it's series, respectively.
     """
+
     def copy_noop():
         return None
 
@@ -254,12 +256,13 @@ def populate_field(model: Model, field: Field, populated: dict[Model, int], fact
         if (comodel := model.env[field_.comodel_name]) in populated:
             comodel_max_id = populated[comodel]
             # we use MOD() instead of %, because % cannot be correctly escaped, it's a limitation of the SQL wrapper
-            return SQL("%(table_alias)s.%(field_name)s + %(comodel_max_id)s * (MOD(%(series_alias)s - 1, %(factor)s) + 1)",
-                        table_alias=SQL.identifier(table_alias),
-                        field_name=SQL.identifier(field_.name),
-                        comodel_max_id=comodel_max_id,
-                        series_alias=SQL.identifier(series_alias),
-                        factor=factors[comodel])
+            return SQL(
+                "%(table_alias)s.%(field_name)s + %(comodel_max_id)s * (MOD(%(series_alias)s - 1, %(factor)s) + 1)",
+                table_alias=SQL.identifier(table_alias),
+                field_name=SQL.identifier(field_.name),
+                comodel_max_id=comodel_max_id,
+                series_alias=SQL.identifier(series_alias),
+                factor=factors[comodel])
         return copy(field_)
 
     if field.name == 'id':
@@ -288,10 +291,9 @@ def populate_field(model: Model, field: Field, populated: dict[Model, int], fact
 
 
 def populate_model(model: Model, populated: dict[Model, int], factors: dict[Model, int], separator_code: str) -> None:
-
     def update_sequence(model_):
         model_.env.execute_query(SQL("SELECT SETVAL(%(sequence)s, %(last_id)s, TRUE)",
-                              sequence=f"{model_._table}_id_seq", last_id=fetch_last_id(model_)))
+                                     sequence=f"{model_._table}_id_seq", last_id=fetch_last_id(model_)))
 
     def has_column(field_):
         return field_.store and field_.column_type
@@ -325,8 +327,8 @@ def populate_model(model: Model, populated: dict[Model, int], factors: dict[Mode
         SELECT %(src_columns)s FROM %(table)s %(table_alias)s,
         GENERATE_SERIES(1, %(factor)s) %(series_alias)s
     """, table=SQL.identifier(model._table), factor=factors[model],
-         dest_columns=SQL(', ').join(dest_fields), src_columns=SQL(', ').join(src_fields),
-         table_alias=SQL.identifier(table_alias), series_alias=SQL.identifier(series_alias))
+                dest_columns=SQL(', ').join(dest_fields), src_columns=SQL(', ').join(src_fields),
+                table_alias=SQL.identifier(table_alias), series_alias=SQL.identifier(series_alias))
     model.env.cr.execute(query)
     # normally copying the 'id' will set the model entry in the populated dict,
     # but for the case of a table with no 'id' (ex: Many2many), we add manually,

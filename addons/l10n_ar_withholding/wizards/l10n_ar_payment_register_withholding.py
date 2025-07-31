@@ -1,9 +1,10 @@
 # pylint: disable=protected-access
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import logging
+from datetime import datetime
 
 from dateutil.relativedelta import relativedelta
-from datetime import datetime
+
 from odoo import models, fields, api
 
 _logger = logging.getLogger(__name__)
@@ -42,7 +43,8 @@ class l10nArPaymentRegisterWithholding(models.TransientModel):
                 ('tax_line_id.l10n_ar_tax_type', 'in', ['earnings', 'earnings_scale']),
                 ('partner_id', '=', self.payment_register_id.partner_id.commercial_partner_id.id),
                 ('date', '<=', to_date), ('date', '>=', from_date)]
-            if same_period_partner_withholdings := self.env['account.move.line'].sudo()._read_group(domain_same_period_withholdings, ['partner_id'], ['balance:sum']):
+            if same_period_partner_withholdings := self.env['account.move.line'].sudo()._read_group(
+                    domain_same_period_withholdings, ['partner_id'], ['balance:sum']):
                 same_period_withholdings = abs(same_period_partner_withholdings[0][1])
             else:
                 same_period_withholdings = 0.0
@@ -53,7 +55,9 @@ class l10nArPaymentRegisterWithholding(models.TransientModel):
                 ('tax_ids.l10n_ar_tax_type', 'in', ['earnings', 'earnings_scale']),
                 ('partner_id', '=', self.payment_register_id.partner_id.commercial_partner_id.id),
                 ('date', '<=', to_date), ('date', '>=', from_date)]
-            if same_period_partner_base := self.env['account.move.line'].sudo()._read_group(domain_same_period_base, ['partner_id'], ['balance:sum']):
+            if same_period_partner_base := self.env['account.move.line'].sudo()._read_group(domain_same_period_base,
+                                                                                            ['partner_id'],
+                                                                                            ['balance:sum']):
                 same_period_base = abs(same_period_partner_base[0][1])
             else:
                 same_period_base = 0.0
@@ -104,4 +108,6 @@ class l10nArPaymentRegisterWithholding(models.TransientModel):
             if wth.tax_id.l10n_ar_tax_type == 'iibb_total':
                 wth.base_amount = wth.payment_register_id.amount
             else:
-                wth.base_amount = wth.payment_register_id.amount * sum(wth.payment_register_id.line_ids.mapped('move_id.amount_untaxed')) / sum(wth.payment_register_id.line_ids.mapped("move_id.amount_total"))
+                wth.base_amount = wth.payment_register_id.amount * sum(
+                    wth.payment_register_id.line_ids.mapped('move_id.amount_untaxed')) / sum(
+                    wth.payment_register_id.line_ids.mapped("move_id.amount_total"))

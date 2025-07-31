@@ -8,18 +8,22 @@
                     <t t-if="!!props.additionalData.in_store_stock.show_quantity">
                         <span class="text-warning">
                             <i class="fa fa-circle"/>
-                            Only <t t-out="props.additionalData.in_store_stock.quantity"/> available
+                            Only
+                            <t t-out="props.additionalData.in_store_stock.quantity"/>
+                            available
                         </span>
                     </t>
                     <t t-else="">
                         <span class="text-success">
-                            <i class="fa fa-circle"/> Available
+                            <i class="fa fa-circle"/>
+                            Available
                         </span>
                     </t>
                 </t>
                 <t t-else="">
                     <span class="text-danger">
-                        <i class="fa fa-times"/> Out of stock
+                        <i class="fa fa-times"/>
+                        Out of stock
                     </span>
                 </t>
             </t>

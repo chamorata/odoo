@@ -10,7 +10,8 @@
             <xpath expr="//block[@id='website_settings']" position="inside">
                 <setting id="events_app_setting" groups="base.group_no_one">
                     <label for="events_app_name" string="Events PWA"/>
-                    <span class="fa fa-lg fa-globe" title="Values set here are website-specific." groups="website.group_multi_website"/>
+                    <span class="fa fa-lg fa-globe" title="Values set here are website-specific."
+                          groups="website.group_multi_website"/>
                     <div class="text-muted">
                         Name of your website's Events Progressive Web Application
                     </div>

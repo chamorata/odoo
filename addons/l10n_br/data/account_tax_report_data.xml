@@ -15,7 +15,9 @@
         <field name="line_ids">
             <record id="tax_report_icms" model="account.report.line">
                 <field name="name">ICMS</field>
-                <field name="aggregation_formula">TRIBUTADA_INTEGRALMENTE.balance + TRIBUTADA_E_COM_COBRANCA_DO_ICMS_POR_SUBSTITUICAO_TRIBUTARIA.balance</field>
+                <field name="aggregation_formula">TRIBUTADA_INTEGRALMENTE.balance +
+                    TRIBUTADA_E_COM_COBRANCA_DO_ICMS_POR_SUBSTITUICAO_TRIBUTARIA.balance
+                </field>
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
                     <record id="tax_report_icms_tributada" model="account.report.line">
@@ -276,7 +278,9 @@
             <record id="tax_report_ipi" model="account.report.line">
                 <field name="name">IPI</field>
                 <field name="code">BRTAX07</field>
-                <field name="aggregation_formula">ENTRADA_COM_RECUPERACAO_DE_CREDITO.balance + ENTRADA_TRIBUTADA_COM_ALIQUOTA_ZERO.balance</field>
+                <field name="aggregation_formula">ENTRADA_COM_RECUPERACAO_DE_CREDITO.balance +
+                    ENTRADA_TRIBUTADA_COM_ALIQUOTA_ZERO.balance
+                </field>
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
                     <record id="tax_report_ipi_extrada_com" model="account.report.line">

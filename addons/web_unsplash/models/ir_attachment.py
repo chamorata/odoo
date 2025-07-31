@@ -5,7 +5,6 @@ from odoo import models
 
 
 class Attachment(models.Model):
-
     _inherit = "ir.attachment"
 
     def _can_bypass_rights_on_media_dialog(self, **attachment_data):

@@ -46,7 +46,8 @@ class PhoneBlackList(models.Model):
         # Out of existing pb records, activate non-active, (unless requested to leave them alone with 'active' set to False)
         numbers_to_keep_inactive = {values['number'] for values in to_create if not values.get('active', True)}
         numbers_to_keep_inactive = numbers_to_keep_inactive & set(existing.mapped('number'))
-        existing.filtered(lambda pb: not pb.active and pb.number not in numbers_to_keep_inactive).write({'active': True})
+        existing.filtered(lambda pb: not pb.active and pb.number not in numbers_to_keep_inactive).write(
+            {'active': True})
 
         # Create new records, while skipping existing_numbers
         existing_numbers = set(existing.mapped('number'))

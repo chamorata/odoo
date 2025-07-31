@@ -20,6 +20,7 @@ seamless communication in Odoo Discuss without any constraints.
 
 You can check whether your voice transmission is activated at anytime by looking
 at the extension icon.
+
 - <img src="assets/icons/active_icon.png" alt="active_icon" width="24"/> Indicates the voice transmission is active.
 - <img src="assets/icons/inactive_icon.png" alt="inactive_icon" width="24"/>
   Indicates the voice transmission is inactive.

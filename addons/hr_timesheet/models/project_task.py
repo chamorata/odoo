@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import re
-
 from collections import defaultdict
+
+from odoo.addons.rating.models.rating_data import OPERATOR_MAPPING
 
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, RedirectWarning
 from odoo.tools import SQL
-from odoo.addons.rating.models.rating_data import OPERATOR_MAPPING
-
 
 PROJECT_TASK_READABLE_FIELDS = {
     'allow_timesheets',
@@ -25,32 +24,43 @@ PROJECT_TASK_READABLE_FIELDS = {
     'total_hours_spent',
 }
 
+
 class Task(models.Model):
     _name = "project.task"
     _inherit = "project.task"
 
-    project_id = fields.Many2one(domain="['|', ('company_id', '=', False), ('company_id', '=?',  company_id), ('is_internal_project', '=', False)]")
-    analytic_account_active = fields.Boolean("Active Analytic Account", related='project_id.analytic_account_active', export_string_translation=False)
+    project_id = fields.Many2one(
+        domain="['|', ('company_id', '=', False), ('company_id', '=?',  company_id), ('is_internal_project', '=', False)]")
+    analytic_account_active = fields.Boolean("Active Analytic Account", related='project_id.analytic_account_active',
+                                             export_string_translation=False)
     allow_timesheets = fields.Boolean(
         "Allow timesheets",
         compute='_compute_allow_timesheets', search='_search_allow_timesheets',
         compute_sudo=True, readonly=True, export_string_translation=False)
-    remaining_hours = fields.Float("Time Remaining", compute='_compute_remaining_hours', store=True, readonly=True, help="Number of allocated hours minus the number of hours spent.")
-    remaining_hours_percentage = fields.Float(compute='_compute_remaining_hours_percentage', search='_search_remaining_hours_percentage', export_string_translation=False)
+    remaining_hours = fields.Float("Time Remaining", compute='_compute_remaining_hours', store=True, readonly=True,
+                                   help="Number of allocated hours minus the number of hours spent.")
+    remaining_hours_percentage = fields.Float(compute='_compute_remaining_hours_percentage',
+                                              search='_search_remaining_hours_percentage',
+                                              export_string_translation=False)
     effective_hours = fields.Float("Time Spent", compute='_compute_effective_hours', compute_sudo=True, store=True)
-    total_hours_spent = fields.Float("Total Time Spent", compute='_compute_total_hours_spent', store=True, help="Time spent on this task and its sub-tasks (and their own sub-tasks).")
+    total_hours_spent = fields.Float("Total Time Spent", compute='_compute_total_hours_spent', store=True,
+                                     help="Time spent on this task and its sub-tasks (and their own sub-tasks).")
     progress = fields.Float("Progress", compute='_compute_progress_hours', store=True, aggregator="avg")
     overtime = fields.Float(compute='_compute_progress_hours', store=True)
-    subtask_effective_hours = fields.Float("Time Spent on Sub-tasks", compute='_compute_subtask_effective_hours', recursive=True, store=True, help="Time spent on the sub-tasks (and their own sub-tasks) of this task.")
+    subtask_effective_hours = fields.Float("Time Spent on Sub-tasks", compute='_compute_subtask_effective_hours',
+                                           recursive=True, store=True,
+                                           help="Time spent on the sub-tasks (and their own sub-tasks) of this task.")
     timesheet_ids = fields.One2many('account.analytic.line', 'task_id', 'Timesheets', export_string_translation=False)
-    encode_uom_in_days = fields.Boolean(compute='_compute_encode_uom_in_days', default=lambda self: self._uom_in_days(), export_string_translation=False)
+    encode_uom_in_days = fields.Boolean(compute='_compute_encode_uom_in_days', default=lambda self: self._uom_in_days(),
+                                        export_string_translation=False)
     display_name = fields.Char(help="""Use these keywords in the title to set new tasks:\n
         30h Allocate 30 hours to the task
         #tags Set tags on the task
         @user Assign the task to a user
         ! Set the task a high priority\n
         Make sure to use the right format and order e.g. Improve the configuration screen 5h #feature #v16 @Mitchell !""",
-    )
+                               )
+
     @property
     def SELF_READABLE_FIELDS(self):
         return super().SELF_READABLE_FIELDS | PROJECT_TASK_READABLE_FIELDS
@@ -58,7 +68,8 @@ class Task(models.Model):
     @api.constrains('project_id')
     def _check_project_root(self):
         private_tasks = self.filtered(lambda t: not t.project_id)
-        if private_tasks and self.env['account.analytic.line'].sudo().search_count([('task_id', 'in', private_tasks.ids)], limit=1):
+        if private_tasks and self.env['account.analytic.line'].sudo().search_count(
+                [('task_id', 'in', private_tasks.ids)], limit=1):
             raise UserError(_("This task cannot be private because there are some timesheets linked to it."))
 
     def _uom_in_days(self):
@@ -84,7 +95,8 @@ class Task(models.Model):
             for task in self:
                 task.effective_hours = sum(task.timesheet_ids.mapped('unit_amount'))
             return
-        timesheet_read_group = self.env['account.analytic.line']._read_group([('task_id', 'in', self.ids)], ['task_id'], ['unit_amount:sum'])
+        timesheet_read_group = self.env['account.analytic.line']._read_group([('task_id', 'in', self.ids)], ['task_id'],
+                                                                             ['unit_amount:sum'])
         timesheets_per_task = {task.id: amount for task, amount in timesheet_read_group}
         for task in self:
             task.effective_hours = timesheets_per_task.get(task.id, 0.0)
@@ -136,7 +148,8 @@ class Task(models.Model):
     @api.depends('child_ids.effective_hours', 'child_ids.subtask_effective_hours')
     def _compute_subtask_effective_hours(self):
         for task in self.with_context(active_test=False):
-            task.subtask_effective_hours = sum(child_task.effective_hours + child_task.subtask_effective_hours for child_task in task.child_ids)
+            task.subtask_effective_hours = sum(
+                child_task.effective_hours + child_task.subtask_effective_hours for child_task in task.child_ids)
 
     def _get_group_pattern(self):
         return {
@@ -167,21 +180,26 @@ class Task(models.Model):
         graph_view_id = self.env.ref("hr_timesheet.view_hr_timesheet_line_graph_by_employee").id
         new_views = []
         for view in action['views']:
-            if (not is_internal_user or self.env.context.get('is_project_sharing')) and view[1] not in ['tree', 'kanban', 'form']:
+            if (not is_internal_user or self.env.context.get('is_project_sharing')) and view[1] not in ['tree',
+                                                                                                        'kanban',
+                                                                                                        'form']:
                 continue
             if not is_internal_user:
                 if view[1] == 'list':
-                    tree_view_id = self.env['ir.model.data']._xmlid_to_res_id('hr_timesheet.hr_timesheet_line_portal_tree')
+                    tree_view_id = self.env['ir.model.data']._xmlid_to_res_id(
+                        'hr_timesheet.hr_timesheet_line_portal_tree')
                     if tree_view_id:
                         new_views.insert(0, (tree_view_id, 'list'))
                         continue
                 elif view[1] == 'form':
-                    form_view_id = self.env['ir.model.data']._xmlid_to_res_id('hr_timesheet.timesheet_view_form_portal_user')
+                    form_view_id = self.env['ir.model.data']._xmlid_to_res_id(
+                        'hr_timesheet.timesheet_view_form_portal_user')
                     if form_view_id:
                         new_views.append((form_view_id, 'form'))
                         continue
                 elif view[1] == 'kanban':
-                    kanban_view_id = self.env['ir.model.data']._xmlid_to_res_id('hr_timesheet.view_kanban_account_analytic_line_portal_user')
+                    kanban_view_id = self.env['ir.model.data']._xmlid_to_res_id(
+                        'hr_timesheet.view_kanban_account_analytic_line_portal_user')
                     if kanban_view_id:
                         new_views.append((kanban_view_id, 'kanban'))
                         continue
@@ -226,7 +244,8 @@ class Task(models.Model):
                     days_left = _("(%s days remaining)", task._convert_hours_to_days(task.remaining_hours))
                     task.display_name = task.display_name + "\u00A0" + days_left
                 elif task.allow_timesheets and task.allocated_hours > 0:
-                    hours, mins = (str(int(duration)).rjust(2, '0') for duration in divmod(abs(task.remaining_hours) * 60, 60))
+                    hours, mins = (str(int(duration)).rjust(2, '0') for duration in
+                                   divmod(abs(task.remaining_hours) * 60, 60))
                     hours_left = _(
                         "(%(sign)s%(hours)s:%(minutes)s remaining)",
                         sign='-' if task.remaining_hours < 0 else '',
@@ -250,9 +269,11 @@ class Task(models.Model):
         task_with_timesheets_ids = [task.id for task, in timesheet_data]
         if task_with_timesheets_ids:
             if len(task_with_timesheets_ids) > 1:
-                warning_msg = _("These tasks have some timesheet entries referencing them. Before removing these tasks, you have to remove these timesheet entries.")
+                warning_msg = _(
+                    "These tasks have some timesheet entries referencing them. Before removing these tasks, you have to remove these timesheet entries.")
             else:
-                warning_msg = _("This task has some timesheet entries referencing it. Before removing this task, you have to remove these timesheet entries.")
+                warning_msg = _(
+                    "This task has some timesheet entries referencing it. Before removing this task, you have to remove these timesheet entries.")
             raise RedirectWarning(
                 warning_msg, self.env.ref('hr_timesheet.timesheet_action_task').id,
                 _('See timesheet entries'), {'active_ids': task_with_timesheets_ids})

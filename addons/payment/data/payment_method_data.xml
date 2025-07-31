@@ -671,12 +671,12 @@
         <field name="support_express_checkout">False</field>
         <field name="support_refund">none</field>
         <field name="supported_country_ids"
-              eval="[Command.set([
+               eval="[Command.set([
                         ref('base.ph'),
                     ])]"
         />
         <field name="supported_currency_ids"
-              eval="[Command.set([
+               eval="[Command.set([
                         ref('base.PHP'),
                     ])]"
         />
@@ -810,24 +810,24 @@
     </record>
 
     <record id="payment_method_bpi" model="payment.method">
-       <field name="name">Bank of the Philippine Islands</field>
-       <field name="code">bpi</field>
-       <field name="sequence">1000</field>
-       <field name="active">False</field>
-       <field name="image" type="base64" file="payment/static/img/bank.png"/>
-       <field name="support_tokenization">False</field>
-       <field name="support_express_checkout">False</field>
-       <field name="support_refund">none</field>
-       <field name="supported_country_ids"
-              eval="[Command.set([
+        <field name="name">Bank of the Philippine Islands</field>
+        <field name="code">bpi</field>
+        <field name="sequence">1000</field>
+        <field name="active">False</field>
+        <field name="image" type="base64" file="payment/static/img/bank.png"/>
+        <field name="support_tokenization">False</field>
+        <field name="support_express_checkout">False</field>
+        <field name="support_refund">none</field>
+        <field name="supported_country_ids"
+               eval="[Command.set([
                         ref('base.ph'),
                     ])]"
-       />
-       <field name="supported_currency_ids"
-              eval="[Command.set([
+        />
+        <field name="supported_currency_ids"
+               eval="[Command.set([
                         ref('base.PHP'),
                     ])]"
-       />
+        />
     </record>
 
     <record id="payment_method_brankas" model="payment.method">
@@ -2949,7 +2949,7 @@
         />
     </record>
 
-     <record id="payment_method_rabbit_line_pay" model="payment.method">
+    <record id="payment_method_rabbit_line_pay" model="payment.method">
         <field name="name">Rabbit LINE Pay</field>
         <field name="code">rabbit_line_pay</field>
         <field name="sequence">1000</field>

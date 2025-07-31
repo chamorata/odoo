@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import json
+
 from odoo import fields, models, api, _
 from odoo.exceptions import UserError
 
@@ -43,8 +44,10 @@ class AccountMove(models.Model):
     # transporter id required when transportation done by other party.
     l10n_in_transporter_id = fields.Many2one("res.partner", "Transporter", copy=False, tracking=True)
     # show and hide fields base on this
-    l10n_in_edi_ewaybill_direct_api = fields.Boolean(string="E-waybill(IN) direct API", compute="_compute_l10n_in_edi_ewaybill_direct")
-    l10n_in_edi_ewaybill_show_send_button = fields.Boolean(string="Show Send E-waybill Button", compute="_compute_l10n_in_edi_ewaybill_show_send_button")
+    l10n_in_edi_ewaybill_direct_api = fields.Boolean(string="E-waybill(IN) direct API",
+                                                     compute="_compute_l10n_in_edi_ewaybill_direct")
+    l10n_in_edi_ewaybill_show_send_button = fields.Boolean(string="Show Send E-waybill Button",
+                                                           compute="_compute_l10n_in_edi_ewaybill_show_send_button")
 
     @api.depends('state', 'edi_document_ids', 'edi_document_ids.state')
     def _compute_l10n_in_edi_ewaybill_show_send_button(self):
@@ -52,9 +55,11 @@ class AccountMove(models.Model):
         if not edi_format:
             self.l10n_in_edi_ewaybill_show_send_button = False
             return
-        posted_moves = self.filtered(lambda x: x.move_type in ('out_invoice', 'in_invoice', 'in_refund') and x.state == 'posted' and x.country_code == "IN")
+        posted_moves = self.filtered(lambda x: x.move_type in ('out_invoice', 'in_invoice',
+                                                               'in_refund') and x.state == 'posted' and x.country_code == "IN")
         for move in posted_moves:
-            already_sent = move.edi_document_ids.filtered(lambda x: x.edi_format_id == edi_format and x.state in ('sent', 'to_cancel', 'to_send'))
+            already_sent = move.edi_document_ids.filtered(
+                lambda x: x.edi_format_id == edi_format and x.state in ('sent', 'to_cancel', 'to_send'))
             if already_sent:
                 move.l10n_in_edi_ewaybill_show_send_button = False
             else:
@@ -71,13 +76,15 @@ class AccountMove(models.Model):
     def _compute_l10n_in_edi_show_cancel(self):
         super()._compute_l10n_in_edi_show_cancel()
         for invoice in self:
-            if invoice.edi_document_ids.filtered(lambda i: i.edi_format_id.code == "in_ewaybill_1_03" and i.state in ("sent", "to_cancel", "cancelled")):
+            if invoice.edi_document_ids.filtered(
+                    lambda i: i.edi_format_id.code == "in_ewaybill_1_03" and i.state in ("sent", "to_cancel",
+                                                                                         "cancelled")):
                 invoice.l10n_in_edi_show_cancel = True
 
     def _get_l10n_in_edi_ewaybill_response_json(self):
         self.ensure_one()
         l10n_in_edi = self.edi_document_ids.filtered(lambda i: i.edi_format_id.code == "in_ewaybill_1_03"
-            and i.state in ("sent", "to_cancel"))
+                                                               and i.state in ("sent", "to_cancel"))
         if l10n_in_edi and l10n_in_edi.sudo().attachment_id:
             return json.loads(l10n_in_edi.sudo().attachment_id.raw.decode("utf-8"))
         else:
@@ -87,10 +94,12 @@ class AccountMove(models.Model):
         """Mark the edi.document related to this move to be canceled."""
         reason_and_remarks_not_set = self.env["account.move"]
         for move in self:
-            send_l10n_in_edi_ewaybill = move.edi_document_ids.filtered(lambda doc: doc.edi_format_id.code == "in_ewaybill_1_03")
+            send_l10n_in_edi_ewaybill = move.edi_document_ids.filtered(
+                lambda doc: doc.edi_format_id.code == "in_ewaybill_1_03")
             # check submitted E-waybill does not have reason and remarks
             # because it's needed to cancel E-waybill
-            if send_l10n_in_edi_ewaybill and (not move.l10n_in_edi_cancel_reason or not move.l10n_in_edi_cancel_remarks):
+            if send_l10n_in_edi_ewaybill and (
+                    not move.l10n_in_edi_cancel_reason or not move.l10n_in_edi_cancel_remarks):
                 reason_and_remarks_not_set += move
         if reason_and_remarks_not_set:
             raise UserError(_(
@@ -128,4 +137,5 @@ class AccountMove(models.Model):
     def _can_force_cancel(self):
         # OVERRIDE
         self.ensure_one()
-        return any(document.edi_format_id.code == 'in_ewaybill_1_03' and document.state == 'to_cancel' for document in self.edi_document_ids) or super()._can_force_cancel()
+        return any(document.edi_format_id.code == 'in_ewaybill_1_03' and document.state == 'to_cancel' for document in
+                   self.edi_document_ids) or super()._can_force_cancel()

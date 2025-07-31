@@ -22,7 +22,8 @@ class TestProjectPricingType(TestCommonSaleTimesheet):
         # 1) Take a project non billable and check if the pricing_type is equal to False
         project = self.project_non_billable
         self.assertFalse(project.allow_billable, 'The allow_billable should be false if the project is non billable.')
-        self.assertFalse(project.pricing_type, 'The pricing type of this project should be equal to False since it is non billable.')
+        self.assertFalse(project.pricing_type,
+                         'The pricing type of this project should be equal to False since it is non billable.')
         self.assertFalse(project.filtered_domain(project._search_pricing_type('=', 'task_rate')))
         self.assertFalse(project.filtered_domain(project._search_pricing_type('=', 'fixed_rate')))
         self.assertFalse(project.filtered_domain(project._search_pricing_type('=', 'employee_rate')))
@@ -57,9 +58,11 @@ class TestProjectPricingType(TestCommonSaleTimesheet):
             'sale_line_id': self.so.order_line[0].id,
         })
 
-        self.assertEqual(project.sale_order_id, self.so, 'The sales order should be equal to the one set in the project.')
+        self.assertEqual(project.sale_order_id, self.so,
+                         'The sales order should be equal to the one set in the project.')
         self.assertEqual(project.sale_line_id, self.so.order_line[0], 'The sales order item should be the one chosen.')
-        self.assertEqual(project.pricing_type, 'fixed_rate', 'The pricing type should be equal to fixed_rate since the project has a sales order item.')
+        self.assertEqual(project.pricing_type, 'fixed_rate',
+                         'The pricing type should be equal to fixed_rate since the project has a sales order item.')
         self.assertFalse(project.filtered_domain(project._search_pricing_type('=', 'task_rate')))
         self.assertTrue(project.filtered_domain(project._search_pricing_type('=', 'fixed_rate')))
         self.assertFalse(project.filtered_domain(project._search_pricing_type('=', 'employee_rate')))
@@ -78,7 +81,8 @@ class TestProjectPricingType(TestCommonSaleTimesheet):
         })
 
         self.assertEqual(len(project.sale_line_employee_ids), 1, 'The project should have an employee mapping.')
-        self.assertEqual(project.pricing_type, 'employee_rate', 'The pricing type should be equal to employee_rate since the project has an employee mapping.')
+        self.assertEqual(project.pricing_type, 'employee_rate',
+                         'The pricing type should be equal to employee_rate since the project has an employee mapping.')
         self.assertFalse(project.filtered_domain(project._search_pricing_type('=', 'task_rate')))
         self.assertFalse(project.filtered_domain(project._search_pricing_type('=', 'fixed_rate')))
         self.assertTrue(project.filtered_domain(project._search_pricing_type('=', 'employee_rate')))
@@ -94,7 +98,8 @@ class TestProjectPricingType(TestCommonSaleTimesheet):
         })
         self.assertFalse(project.sale_order_id, 'The sales order of the project should be empty.')
         self.assertFalse(project.sale_line_id, 'The sales order item of the project should be empty.')
-        self.assertEqual(project.pricing_type, 'employee_rate', 'The pricing type should always be equal to employee_rate.')
+        self.assertEqual(project.pricing_type, 'employee_rate',
+                         'The pricing type should always be equal to employee_rate.')
         self.assertFalse(project.filtered_domain(project._search_pricing_type('=', 'task_rate')))
         self.assertFalse(project.filtered_domain(project._search_pricing_type('=', 'fixed_rate')))
         self.assertTrue(project.filtered_domain(project._search_pricing_type('=', 'employee_rate')))

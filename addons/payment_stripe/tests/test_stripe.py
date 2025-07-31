@@ -3,15 +3,14 @@
 import unittest
 from unittest.mock import patch
 
-from werkzeug.urls import url_encode, url_join
-
-from odoo.tests import tagged
-from odoo.tools import mute_logger
-
 from odoo.addons.payment.tests.http_common import PaymentHttpCommon
 from odoo.addons.payment_stripe import const
 from odoo.addons.payment_stripe.controllers.main import StripeController
 from odoo.addons.payment_stripe.tests.common import StripeCommon
+from werkzeug.urls import url_encode, url_join
+
+from odoo.tests import tagged
+from odoo.tools import mute_logger
 
 
 @tagged('post_install', '-at_install')
@@ -26,8 +25,8 @@ class StripeTest(StripeCommon, PaymentHttpCommon):
             return {'client_secret': dummy_client_secret}
 
         with patch.object(
-            type(self.env['payment.transaction']), '_stripe_create_intent',
-            mock_stripe_stripe_create_intent,
+                type(self.env['payment.transaction']), '_stripe_create_intent',
+                mock_stripe_stripe_create_intent,
         ), mute_logger('odoo.addons.payment.models.payment_transaction'):
             processing_values = tx._get_processing_values()
 
@@ -45,9 +44,9 @@ class StripeTest(StripeCommon, PaymentHttpCommon):
         tx = self._create_transaction('direct', state='authorized')
 
         with patch(
-            'odoo.addons.payment_stripe.models.payment_provider.PaymentProvider'
-            '._stripe_make_request',
-            return_value={'id': 'pi_3KTk9zAlCFm536g81Wy7RCPH', 'status': 'succeeded'},
+                'odoo.addons.payment_stripe.models.payment_provider.PaymentProvider'
+                '._stripe_make_request',
+                return_value={'id': 'pi_3KTk9zAlCFm536g81Wy7RCPH', 'status': 'succeeded'},
         ):
             tx._send_capture_request()
         self.assertEqual(
@@ -60,9 +59,9 @@ class StripeTest(StripeCommon, PaymentHttpCommon):
         tx = self._create_transaction('redirect', state='authorized')
 
         with patch(
-            'odoo.addons.payment_stripe.models.payment_provider.PaymentProvider'
-            '._stripe_make_request',
-            return_value={'id': 'pi_3KTk9zAlCFm536g81Wy7RCPH', 'status': 'canceled'},
+                'odoo.addons.payment_stripe.models.payment_provider.PaymentProvider'
+                '._stripe_make_request',
+                return_value={'id': 'pi_3KTk9zAlCFm536g81Wy7RCPH', 'status': 'canceled'},
         ):
             tx._send_void_request()
         self.assertEqual(
@@ -75,8 +74,8 @@ class StripeTest(StripeCommon, PaymentHttpCommon):
         tx = self._create_transaction('redirect')
         url = self._build_url(StripeController._webhook_url)
         with patch(
-            'odoo.addons.payment_stripe.controllers.main.StripeController'
-            '._verify_notification_signature'
+                'odoo.addons.payment_stripe.controllers.main.StripeController'
+                '._verify_notification_signature'
         ):
             self._make_json_request(url, data=self.notification_data)
         self.assertEqual(tx.state, 'done')
@@ -92,8 +91,8 @@ class StripeTest(StripeCommon, PaymentHttpCommon):
             'type': 'card'
         }
         with patch(
-            'odoo.addons.payment_stripe.controllers.main.StripeController'
-            '._verify_notification_signature'
+                'odoo.addons.payment_stripe.controllers.main.StripeController'
+                '._verify_notification_signature'
         ), patch(
             'odoo.addons.payment_stripe.models.payment_provider.PaymentProvider'
             '._stripe_make_request',
@@ -113,8 +112,8 @@ class StripeTest(StripeCommon, PaymentHttpCommon):
         self._create_transaction('redirect')
         url = self._build_url(StripeController._webhook_url)
         with patch(
-            'odoo.addons.payment_stripe.controllers.main.StripeController'
-            '._verify_notification_signature'
+                'odoo.addons.payment_stripe.controllers.main.StripeController'
+                '._verify_notification_signature'
         ) as signature_check_mock, patch(
             'odoo.addons.payment.models.payment_transaction.PaymentTransaction'
             '._handle_notification_data'
@@ -130,8 +129,8 @@ class StripeTest(StripeCommon, PaymentHttpCommon):
             raise unittest.SkipTest("Unable to find a country supported by both odoo and stripe")
 
         with patch.object(
-            type(self.env['payment.provider']), '_stripe_fetch_or_create_connected_account',
-            return_value={'id': 'dummy'},
+                type(self.env['payment.provider']), '_stripe_fetch_or_create_connected_account',
+                return_value={'id': 'dummy'},
         ), patch.object(
             type(self.env['payment.provider']), '_stripe_create_account_link',
             return_value='https://dummy.url',
@@ -156,8 +155,8 @@ class StripeTest(StripeCommon, PaymentHttpCommon):
     def test_create_account_link_pass_required_parameters(self):
         """ Test that the generation of an account link includes all the required parameters. """
         with patch.object(
-            type(self.env['payment.provider']), '_stripe_make_proxy_request',
-            return_value={'url': 'https://dummy.url'},
+                type(self.env['payment.provider']), '_stripe_make_proxy_request',
+                return_value={'url': 'https://dummy.url'},
         ) as mock:
             self.stripe._stripe_create_account_link('dummy', 'dummy')
             mock.assert_called_once()

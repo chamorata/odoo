@@ -3,10 +3,11 @@
 from collections import defaultdict
 from datetime import timedelta
 
+from dateutil.relativedelta import relativedelta
+
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 from odoo.tools.float_utils import float_compare
-from dateutil.relativedelta import relativedelta
 
 
 class StockPicking(models.Model):
@@ -15,7 +16,7 @@ class StockPicking(models.Model):
 
     move_line_ids_without_package = fields.One2many(
         domain=['&', '|', ('location_dest_id.usage', '!=', 'production'), ('move_id.picking_code', '!=', 'outgoing'),
-                     '|', ('package_level_id', '=', False), ('picking_type_entire_packs', '=', False)])
+                '|', ('package_level_id', '=', False), ('picking_type_entire_packs', '=', False)])
     display_action_record_components = fields.Selection(
         [('hide', 'Hide'), ('facultative', 'Facultative'), ('mandatory', 'Mandatory')],
         compute='_compute_display_action_record_components')
@@ -42,10 +43,9 @@ class StockPicking(models.Model):
             # If this is a subcontractor resupply transfer, set the destination location
             # to the vendor subcontractor location
             subcontracting_resupply_type_id = picking.picking_type_id.warehouse_id.subcontracting_resupply_type_id
-            if picking.picking_type_id == subcontracting_resupply_type_id\
-                and picking.partner_id.property_stock_subcontractor:
+            if picking.picking_type_id == subcontracting_resupply_type_id \
+                    and picking.partner_id.property_stock_subcontractor:
                 picking.location_dest_id = picking.partner_id.property_stock_subcontractor
-
 
     # -------------------------------------------------------------------------
     # Action methods
@@ -62,7 +62,8 @@ class StockPicking(models.Model):
             recorded_qty = sum(recorded_productions.mapped('qty_producing'))
             sm_done_qty = sum(productions._get_subcontract_move().filtered(lambda m: m.picked).mapped('quantity'))
             rounding = self.env['decimal.precision'].precision_get('Product Unit of Measure')
-            if float_compare(move.product_uom_qty, move.quantity, precision_digits=rounding) > 0 and self._context.get('cancel_backorder'):
+            if float_compare(move.product_uom_qty, move.quantity, precision_digits=rounding) > 0 and self._context.get(
+                    'cancel_backorder'):
                 move._update_subcontract_order_qty(move.quantity)
             if float_compare(recorded_qty, sm_done_qty, precision_digits=rounding) >= 0:
                 continue
@@ -73,7 +74,8 @@ class StockPicking(models.Model):
                 raise UserError(_("There shouldn't be multiple productions to record for the same subcontracted move."))
             # Manage additional quantities
             quantity_done_move = move.product_uom._compute_quantity(move.quantity, production.product_uom_id)
-            if float_compare(production.product_qty, quantity_done_move, precision_rounding=production.product_uom_id.rounding) == -1:
+            if float_compare(production.product_qty, quantity_done_move,
+                             precision_rounding=production.product_uom_id.rounding) == -1:
                 change_qty = self.env['change.production.qty'].create({
                     'mo_id': production.id,
                     'product_qty': quantity_done_move
@@ -145,7 +147,8 @@ class StockPicking(models.Model):
         product = subcontract_move.product_id
         warehouse = self._get_warehouse(subcontract_move)
         subcontracting_location = \
-            subcontract_move.picking_id.partner_id.with_company(subcontract_move.company_id).property_stock_subcontractor \
+            subcontract_move.picking_id.partner_id.with_company(
+                subcontract_move.company_id).property_stock_subcontractor \
             or subcontract_move.company_id.subcontracting_location_id
         vals = {
             'company_id': subcontract_move.company_id.id,

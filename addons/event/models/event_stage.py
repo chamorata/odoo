@@ -20,7 +20,8 @@ class EventStage(models.Model):
         'Red Kanban Label', default=lambda s: s.env._('Blocked'), translate=True, prefetch='legend', required=True,
         help='Override the default value displayed for the blocked state for kanban selection.')
     legend_done = fields.Char(
-        'Green Kanban Label', default=lambda s: s.env._('Ready for Next Stage'), translate=True, prefetch='legend', required=True,
+        'Green Kanban Label', default=lambda s: s.env._('Ready for Next Stage'), translate=True, prefetch='legend',
+        required=True,
         help='Override the default value displayed for the done state for kanban selection.')
     legend_normal = fields.Char(
         'Grey Kanban Label', default=lambda s: s.env._('In Progress'), translate=True, prefetch='legend', required=True,

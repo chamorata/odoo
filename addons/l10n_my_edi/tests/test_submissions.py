@@ -1,16 +1,16 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import datetime
+from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
-
-from odoo import Command
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.addons.account.tests.test_account_move_send import TestAccountMoveSendCommon
+
+from odoo import Command
 from odoo.exceptions import UserError
 from odoo.tests import tagged
-from unittest.mock import patch
 
 CONTACT_PROXY_METHOD = 'odoo.addons.l10n_my_edi.models.account_edi_proxy_user.AccountEdiProxyClientUser._l10n_my_edi_contact_proxy'
 
@@ -27,7 +27,8 @@ class L10nMyEDITestSubmission(TestAccountMoveSendCommon):
         cls.company_data['company'].write({
             'vat': 'C2584563200',
             'l10n_my_edi_mode': 'test',
-            'l10n_my_edi_industrial_classification': cls.env['l10n_my_edi.industry_classification'].search([('code', '=', '01111')]).id,
+            'l10n_my_edi_industrial_classification': cls.env['l10n_my_edi.industry_classification'].search(
+                [('code', '=', '01111')]).id,
             'l10n_my_identification_type': 'BRN',
             'l10n_my_identification_number': '202001234567',
             'state_id': cls.env.ref('base.state_my_jhr').id,
@@ -55,7 +56,8 @@ class L10nMyEDITestSubmission(TestAccountMoveSendCommon):
         cls.basic_invoice.action_post()
 
         # For simplicity, we will test everything using a 'test' mode user, but we create it using demo to avoid triggering any api calls.
-        cls.proxy_user = cls.env['account_edi_proxy_client.user']._register_proxy_user(cls.company_data['company'], 'l10n_my_edi', 'demo')
+        cls.proxy_user = cls.env['account_edi_proxy_client.user']._register_proxy_user(cls.company_data['company'],
+                                                                                       'l10n_my_edi', 'demo')
         cls.proxy_user.edi_mode = 'test'
 
         # This will allow to still use the send and print flow when testing, even if the new module is installed.
@@ -99,7 +101,8 @@ class L10nMyEDITestSubmission(TestAccountMoveSendCommon):
         """
         send_and_print = self.create_send_and_print(self.basic_invoice)
         with patch(CONTACT_PROXY_METHOD, new=self._test_02_mock):
-            with self.assertRaises(UserError, msg='Server error; If the problem persists, please contact the Odoo support.'):
+            with self.assertRaises(UserError,
+                                   msg='Server error; If the problem persists, please contact the Odoo support.'):
                 send_and_print._generate_and_send_invoices(
                     self.basic_invoice,
                     invoice_edi_format='my_myinvois',
@@ -176,10 +179,12 @@ class L10nMyEDITestSubmission(TestAccountMoveSendCommon):
                 invoice_edi_format='my_myinvois',
             )
 
-            self.basic_invoice.l10n_my_edi_validation_time = datetime.strptime('2024-07-12 10:00:00', '%Y-%m-%d %H:%M:%S')
+            self.basic_invoice.l10n_my_edi_validation_time = datetime.strptime('2024-07-12 10:00:00',
+                                                                               '%Y-%m-%d %H:%M:%S')
 
             # More than 72h, it failed
-            with self.assertRaises(UserError, msg='It has been more than 72h since the invoice validation, you can no longer cancel it.\nInstead, you should issue a debit or credit note.'):
+            with self.assertRaises(UserError,
+                                   msg='It has been more than 72h since the invoice validation, you can no longer cancel it.\nInstead, you should issue a debit or credit note.'):
                 self.basic_invoice.button_request_cancel()
 
             self.basic_invoice.l10n_my_edi_validation_time = datetime.now()
@@ -189,7 +194,8 @@ class L10nMyEDITestSubmission(TestAccountMoveSendCommon):
             })
             # Cancel the invoice. It failed during cancellation and logged an error.
             wizard.button_request_update()
-            self.assertEqual(self.basic_invoice.message_ids[0].preview, 'You do not have the permission to update this invoice.')
+            self.assertEqual(self.basic_invoice.message_ids[0].preview,
+                             'You do not have the permission to update this invoice.')
 
     def test_06_invalid_reset(self):
         """
@@ -290,7 +296,7 @@ class L10nMyEDITestSubmission(TestAccountMoveSendCommon):
 
         send_and_print = self.create_send_and_print(self.submission_invoice)
         with patch(CONTACT_PROXY_METHOD, new=self._test_08_mock), \
-             patch('odoo.addons.l10n_my_edi.models.account_move.SUBMISSION_MAX_SIZE', 2):
+                patch('odoo.addons.l10n_my_edi.models.account_move.SUBMISSION_MAX_SIZE', 2):
             send_and_print._generate_and_send_invoices(
                 self.submission_invoice,
                 invoice_edi_format='my_myinvois',

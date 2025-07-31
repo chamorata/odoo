@@ -77,7 +77,6 @@ class MailTrackingDurationMixinCase(MailCommon):
         """
 
         with patch.object(self.env.cr, 'now', return_value=self.mock_start_time) as now:
-
             track_duration_tracking = defaultdict(lambda: 0)
             record = self.rec_1
 
@@ -128,7 +127,6 @@ class MailTrackingDurationMixinCase(MailCommon):
         """
 
         with patch.object(self.env.cr, 'now', return_value=self.mock_start_time) as now:
-
             track_duration_tracking1 = defaultdict(lambda: 0)
             track_duration_tracking2 = defaultdict(lambda: 0)
             track_duration_tracking3 = defaultdict(lambda: 0)

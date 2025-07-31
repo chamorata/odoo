@@ -27,8 +27,8 @@
                     <sheet>
                         <div class="oe_button_box" name="button_box">
                             <button name="action_open_document"
-                                type="object" class="oe_link" icon="fa-file-text-o"
-                                invisible="not model or res_id == 0">
+                                    type="object" class="oe_link" icon="fa-file-text-o"
+                                    invisible="not model or res_id == 0">
                                 <div class="o_field_widget o_stat_info">
                                     <span class="o_stat_text">Open Document</span>
                                 </div>
@@ -104,7 +104,8 @@
             <field name="priority">25</field>
             <field name="arch" type="xml">
                 <search string="Messages Search">
-                    <field name="body" string="Content" filter_domain="['|', ('subject', 'ilike', self), ('body', 'ilike', self)]" />
+                    <field name="body" string="Content"
+                           filter_domain="['|', ('subject', 'ilike', self), ('body', 'ilike', self)]"/>
                     <field name="subject"/>
                     <field name="message_type"/>
                     <field name="author_id"/>
@@ -141,16 +142,22 @@
                     <field name="type"/>
                     <templates>
                         <t t-name="menu">
-                            <a t-attf-href="/web/content/ir.attachment/#{record.id.raw_value}/datas?download=true" download="" class="dropdown-item">Download</a>
+                            <a t-attf-href="/web/content/ir.attachment/#{record.id.raw_value}/datas?download=true"
+                               download="" class="dropdown-item">Download
+                            </a>
                             <a t-if="widget.deletable" role="menuitem" type="delete" class="dropdown-item">Delete</a>
                         </t>
                         <t t-name="card" class="o_kanban_attachment flex-row">
                             <aside class="o_kanban_image m-1">
                                 <div class="o_kanban_image_wrapper d-flex align-items-center justify-content-center">
-                                    <t t-set="webimage" t-value="new RegExp('image.*(gif|jpeg|jpg|png|webp)').test(record.mimetype.value)"/>
-                                    <div t-if="record.type.raw_value == 'url'" class="fa fa-link fa-3x text-muted" aria-label="Image is a link"/>
-                                    <img t-elif="webimage" t-attf-src="/web/image/#{record.id.raw_value}" width="100" height="100" alt="Document" class="o_attachment_image"/>
-                                    <div t-else="!webimage" class="o_image o_image_thumbnail" t-att-data-mimetype="record.mimetype.value"/>
+                                    <t t-set="webimage"
+                                       t-value="new RegExp('image.*(gif|jpeg|jpg|png|webp)').test(record.mimetype.value)"/>
+                                    <div t-if="record.type.raw_value == 'url'" class="fa fa-link fa-3x text-muted"
+                                         aria-label="Image is a link"/>
+                                    <img t-elif="webimage" t-attf-src="/web/image/#{record.id.raw_value}" width="100"
+                                         height="100" alt="Document" class="o_attachment_image"/>
+                                    <div t-else="!webimage" class="o_image o_image_thumbnail"
+                                         t-att-data-mimetype="record.mimetype.value"/>
                                 </div>
                             </aside>
                             <main class="o_kanban_details ms-1">
@@ -158,7 +165,8 @@
                                     <field name="name" class="text-truncate fw-bold fs-5"/>
                                     <div class="d-flex flex-grow-1 align-items-center">
                                         <t t-if="record.type.raw_value == 'url'">
-                                            <i class="fa fa-globe" aria-label="Document url"/> <field name="url" widget="url"/>
+                                            <i class="fa fa-globe" aria-label="Document url"/>
+                                            <field name="url" widget="url"/>
                                         </t>
                                     </div>
                                     <div class="d-flex">
@@ -175,9 +183,9 @@
         <record id="base.action_attachment" model="ir.actions.act_window">
             <field name="view_mode">kanban,list,form</field>
             <field name="help" type="html">
-              <p class="o_view_nocontent_smiling_face">
-                Attach a new document
-              </p>
+                <p class="o_view_nocontent_smiling_face">
+                    Attach a new document
+                </p>
             </field>
         </record>
 

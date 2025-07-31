@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import Command
 from odoo.addons.stock.tests.common import TestStockCommon
-from odoo.tests import Form
+
+from odoo import Command
 from odoo.exceptions import ValidationError
+from odoo.tests import Form
 
 
 class TestLotSerial(TestStockCommon):
@@ -71,7 +72,8 @@ class TestLotSerial(TestStockCommon):
         self.assertEqual(self.lot_p_a.location_id.id, False)
 
         # testing having the lot back in a single location
-        self.lot_p_a.quant_ids.filtered(lambda q: q.location_id == self.locationA).move_quants(location_dest_id=self.locationC)
+        self.lot_p_a.quant_ids.filtered(lambda q: q.location_id == self.locationA).move_quants(
+            location_dest_id=self.locationC)
         self.StockQuantObj.invalidate_model()
         self.StockQuantObj._unlink_zero_quants()
         self.assertEqual(self.lot_p_a.location_id, self.locationC)
@@ -195,7 +197,8 @@ class TestLotSerial(TestStockCommon):
             'lot_id': lot.id,
             'quant_id': quant.id
         })
-        self.assertRecordValues(delivery_picking.move_ids, [{'state': 'done', 'quantity': 5.0, 'picked': True}, {'state': 'done', 'quantity': 3.0, 'picked': True}])
+        self.assertRecordValues(delivery_picking.move_ids, [{'state': 'done', 'quantity': 5.0, 'picked': True},
+                                                            {'state': 'done', 'quantity': 3.0, 'picked': True}])
         self.assertRecordValues(quant, [{'quantity': 7.0, 'reserved_quantity': 0.0}])
 
     def test_location_lot_id_update_quant_qty(self):
@@ -251,7 +254,8 @@ class TestLotSerial(TestStockCommon):
         self.assertEqual(self.productB.tracking, 'serial')
         self.productB.company_id = self.env.company
         branch_a_warehouse = self.env['stock.warehouse'].search([('company_id', '=', branch_a.id)])
-        branch_receipt_type = self.env['stock.picking.type'].search([('company_id', '=', branch_a.id), ('code', '=', 'incoming')], limit=1)
+        branch_receipt_type = self.env['stock.picking.type'].search(
+            [('company_id', '=', branch_a.id), ('code', '=', 'incoming')], limit=1)
         # create a receipt and confirm it
         picking1 = self.env['stock.picking'].create({
             'name': 'Picking 1',
@@ -268,7 +272,7 @@ class TestLotSerial(TestStockCommon):
             'picking_id': picking1.id,
         })
         picking1.with_company(branch_a).action_confirm()
-        move.move_line_ids.lot_name =  'sn_test'
+        move.move_line_ids.lot_name = 'sn_test'
         move.picked = True
         picking1.with_company(branch_a)._action_done()
         self.assertTrue(move.move_line_ids.lot_id)

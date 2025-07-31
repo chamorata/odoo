@@ -2,16 +2,15 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import werkzeug
-import werkzeug.utils
 import werkzeug.exceptions
+import werkzeug.utils
+from odoo.addons.website_slides.controllers.main import WebsiteSlides
 
 from odoo import _
 from odoo import http
 from odoo.exceptions import AccessError
 from odoo.http import request
 from odoo.osv import expression
-
-from odoo.addons.website_slides.controllers.main import WebsiteSlides
 
 
 class WebsiteSlidesSurvey(WebsiteSlides):
@@ -43,7 +42,8 @@ class WebsiteSlidesSurvey(WebsiteSlides):
 
     @http.route()
     def create_slide(self, *args, **post):
-        create_new_survey = post['slide_category'] == "certification" and post.get('survey') and not post['survey']['id']
+        create_new_survey = post['slide_category'] == "certification" and post.get('survey') and not post['survey'][
+            'id']
         linked_survey_id = int(post.get('survey', {}).get('id') or 0)
 
         if create_new_survey:
@@ -152,8 +152,10 @@ class WebsiteSlidesSurvey(WebsiteSlides):
         badges = values['badges'] - certification_badges
 
         # 4. Getting all course url for each badge
-        certification_slides = request.env['slide.slide'].sudo().search([('survey_id', 'in', certification_badges.mapped('survey_id').ids)])
-        certification_badge_urls = {slide.survey_id.certification_badge_id.id: slide.channel_id.website_url for slide in certification_slides}
+        certification_slides = request.env['slide.slide'].sudo().search(
+            [('survey_id', 'in', certification_badges.mapped('survey_id').ids)])
+        certification_badge_urls = {slide.survey_id.certification_badge_id.id: slide.channel_id.website_url for slide in
+                                    certification_slides}
 
         # 5. Applying changes
         values.update({

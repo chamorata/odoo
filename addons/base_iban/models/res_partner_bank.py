@@ -4,13 +4,14 @@ import re
 
 from odoo import api, models
 from odoo.exceptions import UserError, ValidationError
-from odoo. tools import LazyTranslate
+from odoo.tools import LazyTranslate
 
 _lt = LazyTranslate(__name__)  # TODO pass env to functions and remove _lt
 
 
 def normalize_iban(iban):
     return re.sub(r'[\W_]', '', iban or '')
+
 
 def pretty_iban(iban):
     """ return iban in groups of four characters separated by a single space """
@@ -21,12 +22,14 @@ def pretty_iban(iban):
         pass
     return iban
 
+
 def get_bban_from_iban(iban):
     """ Returns the basic bank account number corresponding to an IBAN.
         Note : the BBAN is not the same as the domestic bank account number !
         The relation between IBAN, BBAN and domestic can be found here : http://www.ecbs.org/iban.htm
     """
     return normalize_iban(iban)[4:]
+
 
 def validate_iban(iban):
     iban = normalize_iban(iban)
@@ -39,8 +42,9 @@ def validate_iban(iban):
 
     iban_template = _map_iban_template[country_code]
     if len(iban) != len(iban_template.replace(' ', '')) or not re.fullmatch("[a-zA-Z0-9]+", iban):
-        raise ValidationError(_lt("The IBAN does not seem to be correct. You should have entered something like this %s\n"
-            "Where B = National bank code, S = Branch code, C = Account No, k = Check digit", iban_template))
+        raise ValidationError(
+            _lt("The IBAN does not seem to be correct. You should have entered something like this %s\n"
+                "Where B = National bank code, S = Branch code, C = Account No, k = Check digit", iban_template))
 
     check_chars = iban[4:] + iban[:4]
     digits = int(''.join(str(int(char, 36)) for char in check_chars))  # BASE 36: 0..9,A..Z -> 0..35
@@ -103,6 +107,7 @@ class ResPartnerBank(models.Model):
         except ValidationError:
             return False
 
+
 # Map ISO 3166-1 -> IBAN template, as described here :
 # http://en.wikipedia.org/wiki/International_Bank_Account_Number#IBAN_formats_by_country
 _map_iban_template = {
@@ -158,7 +163,7 @@ _map_iban_template = {
     'mu': 'MUkk BBBB BBSS CCCC CCCC CCCC CCCC CC',  # Mauritius
     'nl': 'NLkk BBBB CCCC CCCC CC',  # Netherlands
     'no': 'NOkk BBBB CCCC CCK',  # Norway
-    'om': 'OMkk BBBC CCCC CCCC CCCC CCC', # Oman
+    'om': 'OMkk BBBC CCCC CCCC CCCC CCC',  # Oman
     'pk': 'PKkk BBBB CCCC CCCC CCCC CCCC',  # Pakistan
     'pl': 'PLkk BBBS SSSK CCCC CCCC CCCC CCCC',  # Poland
     'ps': 'PSkk BBBB XXXX XXXX XCCC CCCC CCCC C',  # Palestinian

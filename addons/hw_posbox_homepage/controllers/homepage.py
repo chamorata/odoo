@@ -1,6 +1,5 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import jinja2
 import json
 import logging
 import os
@@ -9,19 +8,21 @@ import subprocess
 import sys
 import threading
 import time
-
 from pathlib import Path
-from odoo import http
-from odoo.addons.hw_drivers.tools import helpers
-from odoo.addons.hw_drivers.main import iot_devices
-from odoo.addons.web.controllers.home import Home
+
+import jinja2
 from odoo.addons.hw_drivers.connection_manager import connection_manager
-from odoo.tools.misc import file_path
+from odoo.addons.hw_drivers.main import iot_devices
 from odoo.addons.hw_drivers.server_logger import (
     check_and_update_odoo_config_log_to_server_option,
     get_odoo_config_log_to_server_option,
     close_server_log_sender_handler,
 )
+from odoo.addons.hw_drivers.tools import helpers
+from odoo.addons.web.controllers.home import Home
+
+from odoo import http
+from odoo.tools.misc import file_path
 
 _logger = logging.getLogger(__name__)
 
@@ -300,7 +301,8 @@ class IotBoxOwlHomePage(Home):
     @http.route('/hw_posbox_homepage/enable_ngrok', auth="none", type="json", methods=['POST'], cors='*')
     def enable_remote_connection(self, auth_token):
         if subprocess.call(['pgrep', 'ngrok']) == 1:
-            subprocess.Popen(['sudo', 'systemd-run', 'ngrok', 'tcp', '--authtoken', auth_token, '--log', '/tmp/ngrok.log', '22'])
+            subprocess.Popen(
+                ['sudo', 'systemd-run', 'ngrok', 'tcp', '--authtoken', auth_token, '--log', '/tmp/ngrok.log', '22'])
 
         return {
             'status': 'success',
@@ -479,4 +481,4 @@ class IotBoxOwlHomePage(Home):
         """
         odoo_addon_handler_path = helpers.compute_iot_handlers_addon_name(handler_folder_name, handler_name)
         return odoo_addon_handler_path in logging.Logger.manager.loggerDict and \
-               logging.getLogger(odoo_addon_handler_path)
+            logging.getLogger(odoo_addon_handler_path)

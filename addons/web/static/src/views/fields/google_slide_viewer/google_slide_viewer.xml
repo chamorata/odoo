@@ -6,10 +6,10 @@
             <t t-if="url">
                 <div>
                     <iframe class="o_embed_iframe w-100"
-                        alt="Google Slide Viewer"
-                        t-att-src="url"
-                        t-att-name="props.name"
-                        t-on-error="onLoadFailed"
+                            alt="Google Slide Viewer"
+                            t-att-src="url"
+                            t-att-name="props.name"
+                            t-on-error="onLoadFailed"
                     />
                 </div>
             </t>

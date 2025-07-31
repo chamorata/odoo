@@ -5,10 +5,10 @@ import logging
 import threading
 from uuid import uuid4
 
+from odoo.addons.sms.tools.sms_api import SmsApi
 from werkzeug.urls import url_join
 
 from odoo import api, fields, models, tools, _
-from odoo.addons.sms.tools.sms_api import SmsApi
 
 _logger = logging.getLogger(__name__)
 
@@ -102,7 +102,8 @@ class SmsSms(models.Model):
         """
         self = self.filtered(lambda sms: sms.state == 'outgoing' and not sms.to_delete)
         for batch_ids in self._split_batch():
-            self.browse(batch_ids)._send(unlink_failed=unlink_failed, unlink_sent=unlink_sent, raise_exception=raise_exception)
+            self.browse(batch_ids)._send(unlink_failed=unlink_failed, unlink_sent=unlink_sent,
+                                         raise_exception=raise_exception)
             # auto-commit if asked except in testing mode
             if auto_commit is True and not getattr(threading.current_thread(), 'testing', False):
                 self._cr.commit()
@@ -119,7 +120,9 @@ class SmsSms(models.Model):
             if success_sms > 0:
                 notification_title = _('Success')
                 notification_type = 'success'
-                notification_message = _('%(count)s out of the %(total)s selected SMS Text Messages have successfully been resent.', count=success_sms, total=len(self))
+                notification_message = _(
+                    '%(count)s out of the %(total)s selected SMS Text Messages have successfully been resent.',
+                    count=success_sms, total=len(self))
             else:
                 notification_message = _('The SMS Text Messages could not be resent.')
         else:
@@ -155,7 +158,8 @@ class SmsSms(models.Model):
         try:
             # auto-commit except in testing mode
             auto_commit = not getattr(threading.current_thread(), 'testing', False)
-            res = self.browse(ids).send(unlink_failed=False, unlink_sent=True, auto_commit=auto_commit, raise_exception=False)
+            res = self.browse(ids).send(unlink_failed=False, unlink_sent=True, auto_commit=auto_commit,
+                                        raise_exception=False)
         except Exception:
             _logger.exception("Failed processing SMS queue")
         return res
@@ -184,7 +188,8 @@ class SmsSms(models.Model):
             _logger.info('Send batch %s SMS: %s: gave %s', len(self.ids), self.ids, results)
 
         results_uuids = [result['uuid'] for result in results]
-        all_sms_sudo = self.env['sms.sms'].sudo().search([('uuid', 'in', results_uuids)]).with_context(sms_skip_msg_notification=True)
+        all_sms_sudo = self.env['sms.sms'].sudo().search([('uuid', 'in', results_uuids)]).with_context(
+            sms_skip_msg_notification=True)
 
         for iap_state, results_group in tools.groupby(results, key=lambda result: result['state']):
             sms_sudo = all_sms_sudo.filtered(lambda s: s.uuid in {result['uuid'] for result in results_group})

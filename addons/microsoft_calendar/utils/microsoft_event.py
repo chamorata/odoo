@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import json
-
 from collections import abc
 from typing import Iterator, Mapping
 
@@ -161,7 +160,8 @@ class MicrosoftEvent(abc.Set):
         if not self.organizer:
             return False
 
-        organizer_email = self.organizer.get('emailAddress') and email_normalize(self.organizer.get('emailAddress').get('address'))
+        organizer_email = self.organizer.get('emailAddress') and email_normalize(
+            self.organizer.get('emailAddress').get('address'))
         if organizer_email:
             # Warning: In Microsoft: 1 email = 1 user; but in Odoo several users might have the same email
             user = env['res.users'].search([('email', '=', organizer_email)], limit=1)

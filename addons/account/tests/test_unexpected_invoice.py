@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from datetime import date, timedelta
-from odoo import Command
+
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
+from odoo import Command
 from odoo.tests import tagged
 
 
@@ -38,10 +40,14 @@ class TestUnexpectedAmount(AccountTestInvoicingCommon):
             self._invoice_vals(price_unit=50),
             self._invoice_vals(price_unit=10),
         ])
-        self.assertFalse(bills[0].abnormal_amount_warning, "The price of 100 is not deviant and thus shouldn't trigger a warning")
-        self.assertTrue(bills[1].abnormal_amount_warning, "The price of 200 is deviant and thus should trigger a warning")
-        self.assertTrue(bills[2].abnormal_amount_warning, "The price of 50 is deviant and thus should trigger a warning")
-        self.assertTrue(bills[3].abnormal_amount_warning, "The price of 10 is deviant and thus should trigger a warning")
+        self.assertFalse(bills[0].abnormal_amount_warning,
+                         "The price of 100 is not deviant and thus shouldn't trigger a warning")
+        self.assertTrue(bills[1].abnormal_amount_warning,
+                        "The price of 200 is deviant and thus should trigger a warning")
+        self.assertTrue(bills[2].abnormal_amount_warning,
+                        "The price of 50 is deviant and thus should trigger a warning")
+        self.assertTrue(bills[3].abnormal_amount_warning,
+                        "The price of 10 is deviant and thus should trigger a warning")
 
         # cleaning the bills context to have an unbiased env test for the wizard trigerring
         bills = bills.with_context({

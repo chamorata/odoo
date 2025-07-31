@@ -49,7 +49,8 @@ class TestImLivechatCommon(HttpCase):
             for record in channel_self:
                 record.available_operator_ids = record.user_ids
 
-        self.patch(type(self.env['im_livechat.channel']), '_compute_available_operator_ids', _compute_available_operator_ids)
+        self.patch(type(self.env['im_livechat.channel']), '_compute_available_operator_ids',
+                   _compute_available_operator_ids)
 
     def _create_operator(self, lang_code=None, country_code=None):
         self.env["res.lang"].with_context(active_test=False).search(

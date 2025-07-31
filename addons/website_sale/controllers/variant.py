@@ -9,8 +9,8 @@ class WebsiteSaleVariantController(Controller):
 
     @route('/website_sale/get_combination_info', type='json', auth='public', methods=['POST'], website=True)
     def get_combination_info_website(
-        self, product_template_id, product_id, combination, add_qty, parent_combination=None,
-        **kwargs
+            self, product_template_id, product_id, combination, add_qty, parent_combination=None,
+            **kwargs
     ):
         product_template = request.env['product.template'].browse(
             product_template_id and int(product_template_id))
@@ -26,7 +26,8 @@ class WebsiteSaleVariantController(Controller):
         for key in ('product_taxes', 'taxes', 'currency', 'date', 'combination'):
             combination_info.pop(key)
 
-        if request.website.product_page_image_width != 'none' and not request.env.context.get('website_sale_no_images', False):
+        if request.website.product_page_image_width != 'none' and not request.env.context.get('website_sale_no_images',
+                                                                                              False):
             combination_info['carousel'] = request.env['ir.ui.view']._render_template(
                 'website_sale.shop_product_images',
                 values={

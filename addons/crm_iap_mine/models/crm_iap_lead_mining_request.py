@@ -3,8 +3,9 @@
 
 import logging
 
-from odoo import api, fields, models, _
 from odoo.addons.iap.tools import iap_tools
+
+from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 from odoo.tools import is_html_empty
 
@@ -34,11 +35,13 @@ class CRMLeadMiningRequest(models.Model):
         return self.env.user.company_id.country_id
 
     name = fields.Char(string='Request Number', required=True, readonly=True, default=lambda self: _('New'), copy=False)
-    state = fields.Selection([('draft', 'Draft'), ('error', 'Error'), ('done', 'Done')], string='Status', required=True, default='draft')
+    state = fields.Selection([('draft', 'Draft'), ('error', 'Error'), ('done', 'Done')], string='Status', required=True,
+                             default='draft')
 
     # Request Data
     lead_number = fields.Integer(string='Number of Leads', required=True, default=3)
-    search_type = fields.Selection([('companies', 'Companies'), ('people', 'Companies and their Contacts')], string='Target', required=True, default='companies')
+    search_type = fields.Selection([('companies', 'Companies'), ('people', 'Companies and their Contacts')],
+                                   string='Target', required=True, default='companies')
     error_type = fields.Selection([
         ('credits', 'Insufficient Credits'),
         ('no_result', 'No Result'),
@@ -46,7 +49,8 @@ class CRMLeadMiningRequest(models.Model):
 
     # Lead / Opportunity Data
 
-    lead_type = fields.Selection([('lead', 'Leads'), ('opportunity', 'Opportunities')], string='Type', required=True, default=_default_lead_type)
+    lead_type = fields.Selection([('lead', 'Leads'), ('opportunity', 'Opportunities')], string='Type', required=True,
+                                 default=_default_lead_type)
     team_id = fields.Many2one(
         'crm.team', string='Sales Team', ondelete="set null",
         domain="[('use_opportunities', '=', True)]", readonly=False, compute='_compute_team_id', store=True)
@@ -66,7 +70,8 @@ class CRMLeadMiningRequest(models.Model):
 
     # Contact Generation Filter
     contact_number = fields.Integer(string='Number of Contacts', default=10)
-    contact_filter_type = fields.Selection([('role', 'Role'), ('seniority', 'Seniority')], string='Filter on', default='role')
+    contact_filter_type = fields.Selection([('role', 'Role'), ('seniority', 'Seniority')], string='Filter on',
+                                           default='role')
     preferred_role_id = fields.Many2one('crm.iap.lead.role', string='Preferred Role')
     role_ids = fields.Many2many('crm.iap.lead.role', string='Other Roles')
     seniority_id = fields.Many2one('crm.iap.lead.seniority', string='Seniority')
@@ -92,7 +97,8 @@ class CRMLeadMiningRequest(models.Model):
                 credit_count=company_credits,
                 company_count=record.lead_number,
             )
-            record.lead_total_credits = _("This makes a total of %d credits for this request.", total_contact_credits + company_credits)
+            record.lead_total_credits = _("This makes a total of %d credits for this request.",
+                                          total_contact_credits + company_credits)
 
     @api.depends('lead_ids.lead_mining_request_id')
     def _compute_lead_count(self):
@@ -116,7 +122,8 @@ class CRMLeadMiningRequest(models.Model):
             user = mining.user_id
             if mining.team_id and user in mining.team_id.member_ids | mining.team_id.user_id:
                 continue
-            team_domain = [('use_leads', '=', True)] if mining.lead_type == 'lead' else [('use_opportunities', '=', True)]
+            team_domain = [('use_leads', '=', True)] if mining.lead_type == 'lead' else [
+                ('use_opportunities', '=', True)]
             team = self.env['crm.team']._get_default_team_id(user_id=user.id, domain=team_domain)
             mining.team_id = team.id
 
@@ -139,7 +146,7 @@ class CRMLeadMiningRequest(models.Model):
 
         for lead_mining_request in self:
             countries = lead_mining_request.country_ids.filtered(lambda country:
-                country.code in iap_tools._STATES_FILTER_COUNTRIES_WHITELIST)
+                                                                 country.code in iap_tools._STATES_FILTER_COUNTRIES_WHITELIST)
             lead_mining_request.available_state_ids = self.env['res.country.state'].search([
                 ('country_id', 'in', countries.ids)
             ])
@@ -257,7 +264,8 @@ class CRMLeadMiningRequest(models.Model):
             raise UserError(_("Your request could not be executed: %s", e))
 
     def _iap_contact_mining(self, params, timeout=300):
-        endpoint = self.env['ir.config_parameter'].sudo().get_param('reveal.endpoint', DEFAULT_ENDPOINT) + '/iap/clearbit/2/lead_mining_request'
+        endpoint = self.env['ir.config_parameter'].sudo().get_param('reveal.endpoint',
+                                                                    DEFAULT_ENDPOINT) + '/iap/clearbit/2/lead_mining_request'
         return iap_tools.iap_jsonrpc(endpoint, params=params, timeout=timeout)
 
     def _create_leads_from_response(self, result):
@@ -289,7 +297,9 @@ class CRMLeadMiningRequest(models.Model):
         self.ensure_one()
         company_data = data.get('company_data')
         people_data = data.get('people_data')
-        lead_vals = self.env['crm.iap.lead.helpers'].lead_vals_from_response(self.lead_type, self.team_id.id, self.tag_ids.ids, self.user_id.id, company_data, people_data)
+        lead_vals = self.env['crm.iap.lead.helpers'].lead_vals_from_response(self.lead_type, self.team_id.id,
+                                                                             self.tag_ids.ids, self.user_id.id,
+                                                                             company_data, people_data)
         lead_vals['lead_mining_request_id'] = self.id
         return lead_vals
 

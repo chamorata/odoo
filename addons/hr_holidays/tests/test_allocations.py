@@ -1,11 +1,10 @@
 from datetime import date
 
 from freezegun import freeze_time
+from odoo.addons.hr_holidays.tests.common import TestHrHolidaysCommon
 
 from odoo.exceptions import ValidationError
 from odoo.tests import Form, tagged, users
-
-from odoo.addons.hr_holidays.tests.common import TestHrHolidaysCommon
 
 
 @tagged('allocation')
@@ -42,22 +41,37 @@ class TestAllocations(TestHrHolidaysCommon):
             'name': 'Calendar - 35H',
             'company_id': cls.company.id,
             'attendance_ids': [(5, 0, 0),
-                    (0, 0, {'name': 'Monday Morning', 'dayofweek': '0', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-                    (0, 0, {'name': 'Monday Lunch', 'dayofweek': '0', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
-                    (0, 0, {'name': 'Monday Afternoon', 'dayofweek': '0', 'hour_from': 13, 'hour_to': 16, 'day_period': 'afternoon'}),
-                    (0, 0, {'name': 'Tuesday Morning', 'dayofweek': '1', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-                    (0, 0, {'name': 'Tuesday Lunch', 'dayofweek': '1', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
-                    (0, 0, {'name': 'Tuesday Afternoon', 'dayofweek': '1', 'hour_from': 13, 'hour_to': 16, 'day_period': 'afternoon'}),
-                    (0, 0, {'name': 'Wednesday Morning', 'dayofweek': '2', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-                    (0, 0, {'name': 'Wednesday Lunch', 'dayofweek': '2', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
-                    (0, 0, {'name': 'Wednesday Afternoon', 'dayofweek': '2', 'hour_from': 13, 'hour_to': 16, 'day_period': 'afternoon'}),
-                    (0, 0, {'name': 'Thursday Morning', 'dayofweek': '3', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-                    (0, 0, {'name': 'Thursday Lunch', 'dayofweek': '3', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
-                    (0, 0, {'name': 'Thursday Afternoon', 'dayofweek': '3', 'hour_from': 13, 'hour_to': 16, 'day_period': 'afternoon'}),
-                    (0, 0, {'name': 'Friday Morning', 'dayofweek': '4', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
-                    (0, 0, {'name': 'Friday Lunch', 'dayofweek': '4', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
-                    (0, 0, {'name': 'Friday Afternoon', 'dayofweek': '4', 'hour_from': 13, 'hour_to': 16, 'day_period': 'afternoon'})
-                ]
+                               (0, 0, {'name': 'Monday Morning', 'dayofweek': '0', 'hour_from': 8, 'hour_to': 12,
+                                       'day_period': 'morning'}),
+                               (0, 0, {'name': 'Monday Lunch', 'dayofweek': '0', 'hour_from': 12, 'hour_to': 13,
+                                       'day_period': 'lunch'}),
+                               (0, 0, {'name': 'Monday Afternoon', 'dayofweek': '0', 'hour_from': 13, 'hour_to': 16,
+                                       'day_period': 'afternoon'}),
+                               (0, 0, {'name': 'Tuesday Morning', 'dayofweek': '1', 'hour_from': 8, 'hour_to': 12,
+                                       'day_period': 'morning'}),
+                               (0, 0, {'name': 'Tuesday Lunch', 'dayofweek': '1', 'hour_from': 12, 'hour_to': 13,
+                                       'day_period': 'lunch'}),
+                               (0, 0, {'name': 'Tuesday Afternoon', 'dayofweek': '1', 'hour_from': 13, 'hour_to': 16,
+                                       'day_period': 'afternoon'}),
+                               (0, 0, {'name': 'Wednesday Morning', 'dayofweek': '2', 'hour_from': 8, 'hour_to': 12,
+                                       'day_period': 'morning'}),
+                               (0, 0, {'name': 'Wednesday Lunch', 'dayofweek': '2', 'hour_from': 12, 'hour_to': 13,
+                                       'day_period': 'lunch'}),
+                               (0, 0, {'name': 'Wednesday Afternoon', 'dayofweek': '2', 'hour_from': 13, 'hour_to': 16,
+                                       'day_period': 'afternoon'}),
+                               (0, 0, {'name': 'Thursday Morning', 'dayofweek': '3', 'hour_from': 8, 'hour_to': 12,
+                                       'day_period': 'morning'}),
+                               (0, 0, {'name': 'Thursday Lunch', 'dayofweek': '3', 'hour_from': 12, 'hour_to': 13,
+                                       'day_period': 'lunch'}),
+                               (0, 0, {'name': 'Thursday Afternoon', 'dayofweek': '3', 'hour_from': 13, 'hour_to': 16,
+                                       'day_period': 'afternoon'}),
+                               (0, 0, {'name': 'Friday Morning', 'dayofweek': '4', 'hour_from': 8, 'hour_to': 12,
+                                       'day_period': 'morning'}),
+                               (0, 0, {'name': 'Friday Lunch', 'dayofweek': '4', 'hour_from': 12, 'hour_to': 13,
+                                       'day_period': 'lunch'}),
+                               (0, 0, {'name': 'Friday Afternoon', 'dayofweek': '4', 'hour_from': 13, 'hour_to': 16,
+                                       'day_period': 'afternoon'})
+                               ]
         })
 
     def test_allocation_whole_company(self):
@@ -132,7 +146,8 @@ class TestAllocations(TestHrHolidaysCommon):
             'allocation_type': 'regular',
         })
 
-        with Form(employee_allocation.with_context(is_employee_allocation=True), 'hr_holidays.hr_leave_allocation_view_form_dashboard') as allocation:
+        with Form(employee_allocation.with_context(is_employee_allocation=True),
+                  'hr_holidays.hr_leave_allocation_view_form_dashboard') as allocation:
             allocation.number_of_days_display = 10
             employee_allocation = allocation.save()
 
@@ -151,7 +166,8 @@ class TestAllocations(TestHrHolidaysCommon):
             'type_request_unit': 'half_day',
         })
 
-        with Form(employee_allocation.with_context(is_employee_allocation=True), 'hr_holidays.hr_leave_allocation_view_form_dashboard') as allocation:
+        with Form(employee_allocation.with_context(is_employee_allocation=True),
+                  'hr_holidays.hr_leave_allocation_view_form_dashboard') as allocation:
             allocation.number_of_days_display = 10
             employee_allocation = allocation.save()
 
@@ -170,7 +186,8 @@ class TestAllocations(TestHrHolidaysCommon):
             'allocation_type': 'regular',
         })
 
-        with Form(employee_allocation.with_context(is_employee_allocation=True), 'hr_holidays.hr_leave_allocation_view_form_dashboard') as allocation:
+        with Form(employee_allocation.with_context(is_employee_allocation=True),
+                  'hr_holidays.hr_leave_allocation_view_form_dashboard') as allocation:
             allocation.allocation_type = 'extra'
             allocation.allocation_type = 'regular'
             employee_allocation = allocation.save()
@@ -220,7 +237,8 @@ class TestAllocations(TestHrHolidaysCommon):
             'type_request_unit': 'hour',
         })
 
-        with Form(employee_allocation.with_context(is_employee_allocation=True), 'hr_holidays.hr_leave_allocation_view_form_dashboard') as allocation:
+        with Form(employee_allocation.with_context(is_employee_allocation=True),
+                  'hr_holidays.hr_leave_allocation_view_form_dashboard') as allocation:
             allocation.allocation_type = 'extra'
             allocation.allocation_type = 'regular'
             employee_allocation = allocation.save()

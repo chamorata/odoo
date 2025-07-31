@@ -2,7 +2,6 @@ from unittest.mock import patch
 
 from odoo.exceptions import UserError
 from odoo.tests import tagged
-
 from .common import TestEsEdiTbaiCommonBizkaia
 
 
@@ -17,8 +16,8 @@ class TestSendBillEdiBizkaia(TestEsEdiTbaiCommonBizkaia):
         self.assertFalse(bill.l10n_es_tbai_post_document_id.xml_attachment_id)
 
         with patch(
-            'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
-            return_value=self.mock_response_post_bill_success,
+                'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
+                return_value=self.mock_response_post_bill_success,
         ):
             bill.l10n_es_tbai_send_bill()
 
@@ -31,8 +30,8 @@ class TestSendBillEdiBizkaia(TestEsEdiTbaiCommonBizkaia):
         self.assertFalse(bill.l10n_es_tbai_cancel_document_id.xml_attachment_id)
 
         with patch(
-            'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
-            return_value=self.mock_response_cancel_bill_success,
+                'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
+                return_value=self.mock_response_cancel_bill_success,
         ):
             bill.l10n_es_tbai_cancel()
 
@@ -45,8 +44,8 @@ class TestSendBillEdiBizkaia(TestEsEdiTbaiCommonBizkaia):
 
         with self.assertRaises(UserError):
             with patch(
-                'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
-                return_value=self.mock_response_post_bill_failure,
+                    'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
+                    return_value=self.mock_response_post_bill_failure,
             ):
                 bill.l10n_es_tbai_send_bill()
 
@@ -54,15 +53,15 @@ class TestSendBillEdiBizkaia(TestEsEdiTbaiCommonBizkaia):
         bill = self._create_posted_bill()
 
         with patch(
-            'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
-            return_value=self.mock_response_post_bill_success,
+                'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
+                return_value=self.mock_response_post_bill_success,
         ):
             bill.l10n_es_tbai_send_bill()
 
         with self.assertRaises(UserError):
             with patch(
-                'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
-                return_value=self.mock_response_cancel_bill_failure,
+                    'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
+                    return_value=self.mock_response_cancel_bill_failure,
             ):
                 bill.l10n_es_tbai_cancel()
 
@@ -71,7 +70,7 @@ class TestSendBillEdiBizkaia(TestEsEdiTbaiCommonBizkaia):
 
         with self.assertRaises(UserError):
             with patch(
-                'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
-                side_effect=self.mock_request_error,
+                    'odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_document.requests.Session.request',
+                    side_effect=self.mock_request_error,
             ):
                 bill.l10n_es_tbai_send_bill()

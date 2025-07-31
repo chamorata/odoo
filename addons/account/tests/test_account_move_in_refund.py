@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 # pylint: disable=bad-whitespace
-from lxml import etree
-
-from odoo.addons.account.tests.common import AccountTestInvoicingCommon
-from odoo.tests import Form, tagged
-from odoo import fields, Command
-
 from collections import defaultdict
+
+from lxml import etree
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
+from odoo import fields, Command
+from odoo.tests import Form, tagged
 
 
 @tagged('post_install', '-at_install')
@@ -18,7 +18,7 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
 
         cls.other_currency = cls.setup_other_currency('EUR')
 
-        cls.invoice = cls.init_invoice('in_refund', products=cls.product_a+cls.product_b)
+        cls.invoice = cls.init_invoice('in_refund', products=cls.product_a + cls.product_b)
 
         cls.product_line_vals_1 = {
             'product_id': cls.product_a.id,
@@ -178,11 +178,11 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
                 'debit': 416.0,
             },
         ], {
-            **self.move_vals,
-            'amount_untaxed': 320.0,
-            'amount_tax': 96.0,
-            'amount_total': 416.0,
-        })
+                                     **self.move_vals,
+                                     'amount_untaxed': 320.0,
+                                     'amount_tax': 96.0,
+                                     'amount_total': 416.0,
+                                 })
 
     def test_in_refund_line_onchange_business_fields_1(self):
         move_form = Form(self.invoice)
@@ -238,11 +238,11 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
                 'debit': 208.0,
             },
         ], {
-            **self.move_vals,
-            'amount_untaxed': 160.0,
-            'amount_tax': 48.0,
-            'amount_total': 208.0,
-        })
+                                     **self.move_vals,
+                                     'amount_untaxed': 160.0,
+                                     'amount_tax': 48.0,
+                                     'amount_total': 208.0,
+                                 })
 
     def test_in_refund_line_onchange_partner_1(self):
         move_form = Form(self.invoice)
@@ -285,15 +285,15 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
                 'date_maturity': fields.Date.from_string('2019-02-28'),
             },
         ], {
-            **self.move_vals,
-            'partner_id': self.partner_b.id,
-            'payment_reference': 'turlututu',
-            'fiscal_position_id': self.fiscal_pos_a.id,
-            'invoice_payment_term_id': self.pay_terms_b.id,
-            'amount_untaxed': 960.0,
-            'amount_tax': 168.0,
-            'amount_total': 1128.0,
-        })
+                                     **self.move_vals,
+                                     'partner_id': self.partner_b.id,
+                                     'payment_reference': 'turlututu',
+                                     'fiscal_position_id': self.fiscal_pos_a.id,
+                                     'invoice_payment_term_id': self.pay_terms_b.id,
+                                     'amount_untaxed': 960.0,
+                                     'amount_tax': 168.0,
+                                     'amount_total': 1128.0,
+                                 })
 
         # Remove lines and recreate them to apply the fiscal position.
         move_form = Form(self.invoice)
@@ -342,15 +342,15 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
                 'date_maturity': fields.Date.from_string('2019-02-28'),
             },
         ], {
-            **self.move_vals,
-            'partner_id': self.partner_b.id,
-            'payment_reference': 'turlututu',
-            'fiscal_position_id': self.fiscal_pos_a.id,
-            'invoice_payment_term_id': self.pay_terms_b.id,
-            'amount_untaxed': 960.0,
-            'amount_tax': 144.0,
-            'amount_total': 1104.0,
-        })
+                                     **self.move_vals,
+                                     'partner_id': self.partner_b.id,
+                                     'payment_reference': 'turlututu',
+                                     'fiscal_position_id': self.fiscal_pos_a.id,
+                                     'invoice_payment_term_id': self.pay_terms_b.id,
+                                     'amount_untaxed': 960.0,
+                                     'amount_tax': 144.0,
+                                     'amount_total': 1104.0,
+                                 })
 
     def test_in_refund_line_onchange_taxes_1(self):
         move_form = Form(self.invoice)
@@ -439,11 +439,11 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
                 'debit': 1384.0,
             },
         ], {
-            **self.move_vals,
-            'amount_untaxed': 960.0,
-            'amount_tax': 424.0,
-            'amount_total': 1384.0,
-        })
+                                     **self.move_vals,
+                                     'amount_untaxed': 960.0,
+                                     'amount_tax': 424.0,
+                                     'amount_total': 1384.0,
+                                 })
 
     def test_in_refund_line_onchange_cash_rounding_1(self):
         # Required for `invoice_cash_rounding_id` to be visible in the view
@@ -513,7 +513,8 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
             'country_id': self.company_data['company'].country_id.id,
         })
 
-        repartition_line = self.tax_purchase_a.refund_repartition_line_ids.filtered(lambda x: x.repartition_type == 'tax')
+        repartition_line = self.tax_purchase_a.refund_repartition_line_ids.filtered(
+            lambda x: x.repartition_type == 'tax')
         repartition_line.write({'tag_ids': [(4, tax_line_tag.id, 0)]})
 
         # Create the invoice
@@ -528,14 +529,14 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
                     'product_id': self.product_a.id,
                     'price_unit': 799.99,
                     'tax_ids': [(6, 0, self.product_a.supplier_taxes_id.ids)],
-                    'product_uom_id':  self.product_a.uom_id.id,
+                    'product_uom_id': self.product_a.uom_id.id,
                 }),
 
                 (0, 0, {
                     'product_id': self.product_b.id,
                     'price_unit': self.product_b.standard_price,
                     'tax_ids': [(6, 0, self.product_b.supplier_taxes_id.ids)],
-                    'product_uom_id':  self.product_b.uom_id.id,
+                    'product_uom_id': self.product_b.uom_id.id,
                 }),
             ],
         })
@@ -563,7 +564,8 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
             },
             {
                 **self.tax_line_vals_2,
-                'tax_repartition_line_id': self.tax_purchase_b.refund_repartition_line_ids.filtered(lambda x: x.repartition_type == 'tax').id,
+                'tax_repartition_line_id': self.tax_purchase_b.refund_repartition_line_ids.filtered(
+                    lambda x: x.repartition_type == 'tax').id,
                 'tax_tag_ids': [],
             },
             {
@@ -598,11 +600,11 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
                 'tax_tag_ids': [],
             },
         ], {
-            **self.move_vals,
-            'amount_untaxed': 959.99,
-            'amount_tax': 167.96,
-            'amount_total': 1127.95,
-        })
+                                     **self.move_vals,
+                                     'amount_untaxed': 959.99,
+                                     'amount_tax': 167.96,
+                                     'amount_total': 1127.95,
+                                 })
 
     def test_in_refund_line_onchange_currency_1(self):
         move_form = Form(self.invoice)
@@ -641,9 +643,9 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
                 'debit': 564.0,
             },
         ], {
-            **self.move_vals,
-            'currency_id': self.other_currency.id,
-        })
+                                     **self.move_vals,
+                                     'currency_id': self.other_currency.id,
+                                 })
 
         # Change the date to get another rate: 1/3 instead of 1/2.
         with Form(self.invoice) as move_form:
@@ -683,11 +685,11 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
                 'date_maturity': fields.Date.from_string('2016-01-01'),
             },
         ], {
-            **self.move_vals,
-            'currency_id': self.other_currency.id,
-            'date': fields.Date.from_string('2016-01-01'),
-            'invoice_date': fields.Date.from_string('2016-01-01'),
-        })
+                                     **self.move_vals,
+                                     'currency_id': self.other_currency.id,
+                                     'date': fields.Date.from_string('2016-01-01'),
+                                     'invoice_date': fields.Date.from_string('2016-01-01'),
+                                 })
 
         move_form = Form(self.invoice)
         with move_form.invoice_line_ids.edit(0) as line_form:
@@ -734,14 +736,14 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
                 'date_maturity': fields.Date.from_string('2016-01-01'),
             },
         ], {
-            **self.move_vals,
-            'currency_id': self.other_currency.id,
-            'date': fields.Date.from_string('2016-01-01'),
-            'invoice_date': fields.Date.from_string('2016-01-01'),
-            'amount_untaxed': 160.005,
-            'amount_tax': 48.001,
-            'amount_total': 208.006,
-        })
+                                     **self.move_vals,
+                                     'currency_id': self.other_currency.id,
+                                     'date': fields.Date.from_string('2016-01-01'),
+                                     'invoice_date': fields.Date.from_string('2016-01-01'),
+                                     'amount_untaxed': 160.005,
+                                     'amount_tax': 48.001,
+                                     'amount_total': 208.006,
+                                 })
 
         # Exit the multi-currencies.
         move_form = Form(self.invoice)
@@ -772,14 +774,14 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
                 'date_maturity': fields.Date.from_string('2016-01-01'),
             },
         ], {
-            **self.move_vals,
-            'currency_id': self.company_data['currency'].id,
-            'date': fields.Date.from_string('2016-01-01'),
-            'invoice_date': fields.Date.from_string('2016-01-01'),
-            'amount_untaxed': 160.01,
-            'amount_tax': 48.0,
-            'amount_total': 208.01,
-        })
+                                     **self.move_vals,
+                                     'currency_id': self.company_data['currency'].id,
+                                     'date': fields.Date.from_string('2016-01-01'),
+                                     'invoice_date': fields.Date.from_string('2016-01-01'),
+                                     'amount_untaxed': 160.01,
+                                     'amount_tax': 48.0,
+                                     'amount_total': 208.01,
+                                 })
 
     def test_in_refund_onchange_past_invoice_1(self):
         copy_invoice = self.invoice.copy()
@@ -868,9 +870,9 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
                 'debit': 564.0,
             },
         ], {
-            **self.move_vals,
-            'currency_id': self.other_currency.id,
-        })
+                                     **self.move_vals,
+                                     'currency_id': self.other_currency.id,
+                                 })
 
     def test_in_refund_write_1(self):
         # Test creating an account_move with the least information.
@@ -932,9 +934,9 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
                 'debit': 564.0,
             },
         ], {
-            **self.move_vals,
-            'currency_id': self.other_currency.id,
-        })
+                                     **self.move_vals,
+                                     'currency_id': self.other_currency.id,
+                                 })
 
     def test_in_refund_create_storno(self):
         # Test creating an account_move refund (credit note)
@@ -1005,9 +1007,9 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
                 'credit': -564.0,
             },
         ], {
-             **self.move_vals,
-             'currency_id': self.other_currency.id,
-        })
+                                     **self.move_vals,
+                                     'currency_id': self.other_currency.id,
+                                 })
 
     def test_in_refund_reverse_caba(self):
         tax_waiting_account = self.env['account.account'].create({
@@ -1111,7 +1113,8 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
             },
             {
                 'tax_line_id': tax.id,
-                'tax_repartition_line_id': tax.refund_repartition_line_ids.filtered(lambda x: x.repartition_type == 'tax').id,
+                'tax_repartition_line_id': tax.refund_repartition_line_ids.filtered(
+                    lambda x: x.repartition_type == 'tax').id,
                 'tax_ids': [],
                 'tax_tag_ids': tax_tags['refund']['tax'].ids,
                 'account_id': tax_final_account.id,
@@ -1269,7 +1272,8 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
             },
             {
                 'tax_line_id': tax.id,
-                'tax_repartition_line_id': tax.refund_repartition_line_ids.filtered(lambda x: x.repartition_type == 'tax').id,
+                'tax_repartition_line_id': tax.refund_repartition_line_ids.filtered(
+                    lambda x: x.repartition_type == 'tax').id,
                 'tax_ids': [],
                 'tax_tag_ids': tax_tags['refund']['tax'].ids,
                 'account_id': tax_final_account.id,

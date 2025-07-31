@@ -37,10 +37,11 @@ from copy import deepcopy
 from datetime import datetime
 from functools import lru_cache, partial
 from itertools import zip_longest as izip_longest
-from passlib.context import CryptContext
 from typing import Optional, Iterable
 from unittest.mock import patch, _patch, Mock
 from xmlrpc import client as xmlrpclib
+
+from passlib.context import CryptContext
 
 try:
     from concurrent.futures import InvalidStateError
@@ -126,11 +127,12 @@ HOST = '127.0.0.1'
 # Useless constant, tests are aware of the content of demo data
 ADMIN_USER_ID = odoo.SUPERUSER_ID
 
-CHECK_BROWSER_SLEEP = 0.1 # seconds
+CHECK_BROWSER_SLEEP = 0.1  # seconds
 CHECK_BROWSER_ITERATIONS = 100
-BROWSER_WAIT = CHECK_BROWSER_SLEEP * CHECK_BROWSER_ITERATIONS # seconds
+BROWSER_WAIT = CHECK_BROWSER_SLEEP * CHECK_BROWSER_ITERATIONS  # seconds
 DEFAULT_SUCCESS_SIGNAL = 'test successful'
 TEST_CURSOR_COOKIE_NAME = 'test_request_key'
+
 
 def get_db_name():
     db = odoo.tools.config['db_name']
@@ -152,6 +154,7 @@ def standalone(*tags):
     forbidden in regular test cases.  The function is registered under the given
     ``tags`` and the corresponding Odoo module name.
     """
+
     def register(func):
         # register func by odoo module name
         if func.__module__.startswith('odoo.addons.'):
@@ -172,7 +175,9 @@ def test_xsd(url=None, path=None, skip=False):
             if not skip:
                 xmls = func(self, *args, **kwargs)
                 _validate_xml(self.env, url, path, xmls)
+
         return wrapped_f
+
     return decorator
 
 
@@ -226,8 +231,10 @@ def new_test_user(env, login='', groups='base.group_user', context=None, **kwarg
 
     return env['res.users'].with_context(**context).create(create_values)
 
+
 def loaded_demo_data(env):
     return bool(env.ref('base.user_demo', raise_if_not_found=False))
+
 
 class RecordCapturer:
     def __init__(self, model, domain):
@@ -254,6 +261,7 @@ class MetaCase(type):
     """ Metaclass of test case classes to assign default 'test_tags':
         'standard', 'at_install' and the name of the module.
     """
+
     def __init__(cls, name, bases, attrs):
         super(MetaCase, cls).__init__(name, bases, attrs)
         # assign default test tags
@@ -284,16 +292,21 @@ def _normalize_arch_for_assert(arch_string, parser_method="xml"):
     arch_string = etree.fromstring(arch_string, parser=parser)
     return etree.tostring(arch_string, pretty_print=True, encoding='unicode')
 
+
 class BlockedRequest(requests.exceptions.ConnectionError):
     pass
+
+
 _super_send = requests.Session.send
+
+
 class BaseCase(case.TestCase, metaclass=MetaCase):
     """ Subclass of TestCase for Odoo-specific code. This class is abstract and
     expects self.registry, self.cr and self.uid to be initialized by subclasses.
     """
 
-    longMessage = True      # more verbose error message by default: https://www.odoo.com/r/Vmh
-    warm = True             # False during warm-up phase (see :func:`warmup`)
+    longMessage = True  # more verbose error message by default: https://www.odoo.com/r/Vmh
+    warm = True  # False during warm-up phase (see :func:`warmup`)
     _python_version = sys.version_info
 
     _tests_run_count = int(os.environ.get('ODOO_TEST_FAILURE_RETRIES', 0)) + 1
@@ -304,7 +317,6 @@ class BaseCase(case.TestCase, metaclass=MetaCase):
         self.addTypeEqualityFunc(html.HtmlElement, self.assertTreesEqual)
         if methodName != 'runTest':
             self.test_tags = self.test_tags | set(self.get_method_additional_tags(getattr(self, methodName)))
-
 
     @classmethod
     def _request_handler(cls, s: Session, r: PreparedRequest, /, **kw):
@@ -338,7 +350,7 @@ class BaseCase(case.TestCase, metaclass=MetaCase):
             result.had_failure = False  # reset in case of retry without soft_fail
             if retry:
                 _logger.runbot(f'Retrying a failed test: {self}')
-            if retry < tests_run_count-1:
+            if retry < tests_run_count - 1:
                 with warnings.catch_warnings(), \
                         result.soft_fail(), \
                         lower_logging(25, logging.INFO) as quiet_log:
@@ -355,8 +367,10 @@ class BaseCase(case.TestCase, metaclass=MetaCase):
     def setUpClass(cls):
         def check_remaining_patchers():
             for patcher in _patch._active_patches:
-                _logger.warning("A patcher (targeting %s.%s) was remaining active at the end of %s, disabling it...", patcher.target, patcher.attribute, cls.__name__)
+                _logger.warning("A patcher (targeting %s.%s) was remaining active at the end of %s, disabling it...",
+                                patcher.target, patcher.attribute, cls.__name__)
                 patcher.stop()
+
         cls.addClassCleanup(check_remaining_patchers)
         super().setUpClass()
         if 'standard' in cls.test_tags:
@@ -409,14 +423,14 @@ class BaseCase(case.TestCase, metaclass=MetaCase):
 
     def patch(self, obj, key, val):
         """ Do the patch ``setattr(obj, key, val)``, and prepare cleanup. """
-        patcher = patch.object(obj, key, val)   # this is unittest.mock.patch
+        patcher = patch.object(obj, key, val)  # this is unittest.mock.patch
         patcher.start()
         self.addCleanup(patcher.stop)
 
     @classmethod
     def classPatch(cls, obj, key, val):
         """ Do the patch ``setattr(obj, key, val)``, and prepare cleanup. """
-        patcher = patch.object(obj, key, val)   # this is unittest.mock.patch
+        patcher = patch.object(obj, key, val)  # this is unittest.mock.patch
         patcher.start()
         cls.addClassCleanup(patcher.stop)
 
@@ -759,7 +773,8 @@ class BaseCase(case.TestCase, metaclass=MetaCase):
         if 'db' not in kwargs:
             kwargs['db'] = self.env.cr.dbname
         return profiler.Profiler(
-            description='%s uid:%s %s %s' % (test_method, self.env.user.id, 'warm' if self.warm else 'cold', description),
+            description='%s uid:%s %s %s' % (test_method, self.env.user.id, 'warm' if self.warm else 'cold',
+                                             description),
             profile_session=self.profile_session,
             **kwargs)
 
@@ -771,6 +786,7 @@ class BaseCase(case.TestCase, metaclass=MetaCase):
         def reset_http_key():
             self.http_request_key = None
             self.http_request_strict_check = True
+
         self.addCleanup(reset_http_key)  # this should avoid to have a request executing during teardown
 
     def mandatory_request_route(self, route):
@@ -823,6 +839,7 @@ class BaseCase(case.TestCase, metaclass=MetaCase):
             additional_tags.append('is_query_count')
         return additional_tags
 
+
 class Like:
     """
         A string-like object comparable to other strings but where the substring
@@ -855,6 +872,7 @@ class Like:
 
 
         """
+
     def __init__(self, pattern):
         self.pattern = pattern
         self.regex = '.*'.join([re.escape(part.strip()) for part in self.pattern.split('...')])
@@ -873,7 +891,9 @@ class Approx:  # noqa: PLW1641
     Most of the time, :meth:`TestCase.assertAlmostEqual` is more useful, but it
     doesn't work for all helpers.
     """
-    def __init__(self, value: float, rounding: int | float | odoo.addons.base.models.res_currency.Currency, /, decorate: bool) -> None:  # noqa: PYI041
+
+    def __init__(self, value: float, rounding: int | float | odoo.addons.base.models.res_currency.Currency, /,
+                 decorate: bool) -> None:  # noqa: PYI041
         self.value = value
         self.decorate = decorate
         if isinstance(rounding, int):
@@ -947,6 +967,7 @@ class TransactionCase(BaseCase):
                 cls.registry.clear_all_caches()
             cls.registry.cache_invalidated.clear()
             cls.registry.cache_sequences = cls.registry_cache_sequences
+
         cls.addClassCleanup(reset_changes)
 
         def signal_changes():
@@ -981,7 +1002,8 @@ class TransactionCase(BaseCase):
 
         def forbidden(*args, **kwars):
             traceback.print_stack()
-            raise AssertionError('Cannot commit or rollback a cursor from inside a test, this will lead to a broken cursor when trying to rollback the test. Please rollback to a specific savepoint instead or open another cursor if really necessary')
+            raise AssertionError(
+                'Cannot commit or rollback a cursor from inside a test, this will lead to a broken cursor when trying to rollback the test. Please rollback to a specific savepoint instead or open another cursor if really necessary')
 
         cls.commit_patcher = patch.object(cls.cr, 'commit', forbidden)
         cls.startClassPatcher(cls.commit_patcher)
@@ -989,7 +1011,6 @@ class TransactionCase(BaseCase):
         cls.startClassPatcher(cls.rollback_patcher)
         cls.close_patcher = patch.object(cls.cr, 'close', forbidden)
         cls.startClassPatcher(cls.close_patcher)
-
 
         cls.env = api.Environment(cls.cr, odoo.SUPERUSER_ID, {})
 
@@ -999,6 +1020,7 @@ class TransactionCase(BaseCase):
                 ['pbkdf2_sha512', 'plaintext'],
                 pbkdf2_sha512__rounds=1,
             )
+
         cls._crypt_context_patcher = patch('odoo.addons.base.models.res_users.Users._crypt_context', _crypt_context)
         cls.startClassPatcher(cls._crypt_context_patcher)
 
@@ -1023,6 +1045,7 @@ class TransactionCase(BaseCase):
         def _reset(cb, funcs, data):
             cb._funcs = funcs
             cb.data = data
+
         for callback in [cr.precommit, cr.postcommit, cr.prerollback, cr.postrollback]:
             self.addCleanup(_reset, callback, deque(callback._funcs), deepcopy(callback.data))
 
@@ -1039,6 +1062,7 @@ class SingleTransactionCase(BaseCase):
     the transaction is started with the first test method and rolled back at
     the end of the last.
     """
+
     @classmethod
     def __init_subclass__(cls):
         super().__init_subclass__()
@@ -1065,6 +1089,7 @@ class SingleTransactionCase(BaseCase):
 class ChromeBrowserException(Exception):
     pass
 
+
 def run(gen_func):
     def done(f):
         try:
@@ -1086,7 +1111,9 @@ def run(gen_func):
     except StopIteration:
         return
 
-def save_test_file(test_name, content, prefix, extension='png', logger=_logger, document_type='Screenshot', date_format="%Y%m%d_%H%M%S_%f"):
+
+def save_test_file(test_name, content, prefix, extension='png', logger=_logger, document_type='Screenshot',
+                   date_format="%Y%m%d_%H%M%S_%f"):
     assert re.fullmatch(r'\w*_', prefix)
     assert re.fullmatch(r'[a-z]+', extension)
     assert re.fullmatch(r'\w+', test_name)
@@ -1105,7 +1132,8 @@ class ChromeBrowser:
     """ Helper object to control a Chrome headless process. """
     remote_debugging_port = 0  # 9222, change it in a non-git-tracked file
 
-    def __init__(self, test_case: HttpCase, success_signal: str = DEFAULT_SUCCESS_SIGNAL, headless: bool = True, debug: bool = False):
+    def __init__(self, test_case: HttpCase, success_signal: str = DEFAULT_SUCCESS_SIGNAL, headless: bool = True,
+                 debug: bool = False):
         self._logger = test_case._logger
         self.test_case = test_case
         self.success_signal = success_signal
@@ -1263,10 +1291,10 @@ class ChromeBrowser:
         headless_switches = {
             '--headless': '',
             '--disable-extensions': '',
-            '--disable-background-networking' : '',
-            '--disable-background-timer-throttling' : '',
+            '--disable-background-networking': '',
+            '--disable-background-timer-throttling': '',
             '--disable-backgrounding-occluded-windows': '',
-            '--disable-renderer-backgrounding' : '',
+            '--disable-renderer-backgrounding': '',
             '--disable-breakpad': '',
             '--disable-client-side-phishing-detection': '',
             '--disable-crash-reporter': '',
@@ -1406,7 +1434,7 @@ class ChromeBrowser:
         # {id, method, params} and eventually a {id, result | error} should
         # arrive the other way, however for events it uses "notifications"
         # meaning request objects without an ``id``, but *coming from the server
-        while True: # or maybe until `self._result` is `done()`?
+        while True:  # or maybe until `self._result` is `done()`?
             try:
                 msg = self.ws.recv()
                 if not msg:
@@ -1446,7 +1474,7 @@ class ChromeBrowser:
                 _logger.exception("While processing message %s", msg)
 
     def _websocket_request(self, method, *, params=None, timeout=10.0):
-        assert threading.get_ident() != self._receiver.ident,\
+        assert threading.get_ident() != self._receiver.ident, \
             "_websocket_request must not be called from the consumer thread"
         if self.ws is None:
             return
@@ -1492,7 +1520,7 @@ class ChromeBrowser:
             # this can happen if the browser is closed. Just ignore it.
             _logger.info("Websocket error while handling request %s", params['request']['url'])
 
-    def _handle_console(self, type, args=None, stackTrace=None, **kw): # pylint: disable=redefined-builtin
+    def _handle_console(self, type, args=None, stackTrace=None, **kw):  # pylint: disable=redefined-builtin
         # console formatting differs somewhat from Python's, if args[0] has
         # format modifiers that many of args[1:] get formatted in, missing
         # args are replaced by empty strings and extra args are concatenated
@@ -1520,7 +1548,7 @@ class ChromeBrowser:
             self._TO_LEVEL.get(log_type, logging.INFO),
             "%s%s",
             "Error received after termination: " if self._result.done() else "",
-            message # might still have %<x> characters
+            message  # might still have %<x> characters
         )
 
         if log_type == 'error':
@@ -1581,7 +1609,6 @@ which leads to stray network requests and inconsistencies."""
                     # if the future was already failed, we're happy,
                     # otherwise swap for a new failed
                     _logger.error("Tried to make the tour successful twice.")
-
 
     def _handle_exception(self, exceptionDetails, timestamp):
         message = exceptionDetails['text']
@@ -1694,12 +1721,13 @@ which leads to stray network requests and inconsistencies."""
             with open(concat_script_path, 'w') as concat_file:
                 for i in range(nb_frames):
                     frame_file_path = os.path.join(self.screencasts_frames_dir, self.screencast_frames[i]['file_path'])
-                    end_time = time.time() if i == nb_frames - 1 else self.screencast_frames[i+1]['timestamp']
+                    end_time = time.time() if i == nb_frames - 1 else self.screencast_frames[i + 1]['timestamp']
                     duration = end_time - self.screencast_frames[i]['timestamp']
                     concat_file.write("file '%s'\nduration %s\n" % (frame_file_path, duration))
                 concat_file.write("file '%s'" % frame_file_path)  # needed by the concat plugin
             try:
-                subprocess.run([ffmpeg_path, '-f', 'concat', '-safe', '0', '-i', concat_script_path, '-vf', 'pad=ceil(iw/2)*2:ceil(ih/2)*2', '-pix_fmt', 'yuv420p', '-g', '0', outfile], check=True)
+                subprocess.run([ffmpeg_path, '-f', 'concat', '-safe', '0', '-i', concat_script_path, '-vf',
+                                'pad=ceil(iw/2)*2:ceil(ih/2)*2', '-pix_fmt', 'yuv420p', '-g', '0', outfile], check=True)
             except subprocess.CalledProcessError:
                 self._logger.error('Failed to encode screencast.')
                 return
@@ -1740,7 +1768,7 @@ which leads to stray network requests and inconsistencies."""
             result = self._websocket_request('Runtime.evaluate', params={
                 'expression': "try { %s } catch {}" % ready_code,
                 'awaitPromise': True,
-            }, timeout=timeout-taken)['result']
+            }, timeout=timeout - taken)['result']
 
             if result == {'type': 'boolean', 'value': True}:
                 time_to_ready = time.time() - start_time
@@ -1833,6 +1861,7 @@ which leads to stray network requests and inconsistencies."""
         )
 
     LINE_PATTERN = '\tat %(functionName)s (%(url)s:%(lineNumber)d:%(columnNumber)d)\n'
+
     def _format_stack(self, logrecord):
         if logrecord['type'] not in ['trace']:
             return
@@ -1868,7 +1897,9 @@ which leads to stray network requests and inconsistencies."""
                     return ''
                 return str(self._from_remoteobject(repl))
             return m[0]
+
         return replacer
+
 
 @lru_cache(1)
 def _find_executable():
@@ -1902,6 +1933,7 @@ def _find_executable():
 
     raise unittest.SkipTest("Chrome executable not found")
 
+
 class Opener(requests.Session):
     """
     Flushes and clears the current transaction when starting a request.
@@ -1910,6 +1942,7 @@ class Opener(requests.Session):
     request is made with a test cursor, which uses a different cache than this
     transaction.
     """
+
     def __init__(self, cr: BaseCursor):
         super().__init__()
         self.cr = cr
@@ -1922,6 +1955,7 @@ class Opener(requests.Session):
 
 class Transport(xmlrpclib.Transport):
     """ see :class:`Opener` """
+
     def __init__(self, cr: BaseCursor):
         self.cr = cr
         super().__init__()
@@ -1986,7 +2020,8 @@ class HttpCase(TransactionCase):
 
         self.xmlrpc_common = xmlrpclib.ServerProxy(self.xmlrpc_url + 'common', transport=Transport(self.cr))
         self.xmlrpc_db = xmlrpclib.ServerProxy(self.xmlrpc_url + 'db', transport=Transport(self.cr))
-        self.xmlrpc_object = xmlrpclib.ServerProxy(self.xmlrpc_url + 'object', transport=Transport(self.cr), use_datetime=True)
+        self.xmlrpc_object = xmlrpclib.ServerProxy(self.xmlrpc_url + 'object', transport=Transport(self.cr),
+                                                   use_datetime=True)
         # setup an url opener helper
         self.opener = Opener(self.cr)
         self.opener.cookies[TEST_CURSOR_COOKIE_NAME] = self.canonical_tag
@@ -2030,9 +2065,11 @@ class HttpCase(TransactionCase):
         if url.startswith('/'):
             url = self.base_url() + url
         if head:
-            return self.opener.head(url, data=data, files=files, timeout=timeout, headers=headers, allow_redirects=False)
+            return self.opener.head(url, data=data, files=files, timeout=timeout, headers=headers,
+                                    allow_redirects=False)
         if data or files:
-            return self.opener.post(url, data=data, files=files, timeout=timeout, headers=headers, allow_redirects=allow_redirects)
+            return self.opener.post(url, data=data, files=files, timeout=timeout, headers=headers,
+                                    allow_redirects=allow_redirects)
         return self.opener.get(url, timeout=timeout, headers=headers, allow_redirects=allow_redirects)
 
     def _wait_remaining_requests(self, timeout=10):
@@ -2050,7 +2087,7 @@ class HttpCase(TransactionCase):
         request_threads = get_http_request_threads()
         for thread in request_threads:
             self._logger.info("Stop waiting for thread %s handling request for url %s",
-                                    thread.name, getattr(thread, 'url', '<UNKNOWN>'))
+                              thread.name, getattr(thread, 'url', '<UNKNOWN>'))
 
         if request_threads:
             self._logger.info('remaining requests')
@@ -2068,7 +2105,7 @@ class HttpCase(TransactionCase):
         session.update(odoo.http.get_default_session(), db=get_db_name())
         session.context['lang'] = odoo.http.DEFAULT_LANG
 
-        if user: # if authenticated
+        if user:  # if authenticated
             # Flush and clear the current transaction.  This is useful, because
             # the call below opens a test cursor, which uses a different cache
             # than this transaction.
@@ -2125,24 +2162,25 @@ class HttpCase(TransactionCase):
 
         _logger.info('External chrome request during tests: returning 404 for %s', url)
         return {
-                'body': '',
-                'responseCode': 404,
-                'responseHeaders': [],
-            }
+            'body': '',
+            'responseCode': 404,
+            'responseHeaders': [],
+        }
 
     def make_fetch_proxy_response(self, content, code=200):
         if isinstance(content, str):
             content = content.encode()
         return {
-                'body': base64.b64encode(content).decode(),
-                'responseCode': code,
-                'responseHeaders': [
-                    {'name': 'access-control-allow-origin', 'value': '*'},
-                    {'name': 'cache-control', 'value': 'public, max-age=10000'},
-                ],
-            }
+            'body': base64.b64encode(content).decode(),
+            'responseCode': code,
+            'responseHeaders': [
+                {'name': 'access-control-allow-origin', 'value': '*'},
+                {'name': 'cache-control', 'value': 'public, max-age=10000'},
+            ],
+        }
 
-    def browser_js(self, url_path, code, ready='', login=None, timeout=60, cookies=None, error_checker=None, watch=False, success_signal=DEFAULT_SUCCESS_SIGNAL, debug=False, cpu_throttling=None, **kw):
+    def browser_js(self, url_path, code, ready='', login=None, timeout=60, cookies=None, error_checker=None,
+                   watch=False, success_signal=DEFAULT_SUCCESS_SIGNAL, debug=False, cpu_throttling=None, **kw):
         """ Test JavaScript code running in the browser.
 
         To signal success test do: `console.log()` with the expected `success_signal`. Default is "test successful"
@@ -2168,7 +2206,7 @@ class HttpCase(TransactionCase):
             self._logger.warning('HttpCase test should be in post_install only')
 
         # increase timeout if coverage is running
-        if any(f.filename.endswith('/coverage/execfile.py') for f in inspect.stack()  if f.filename):
+        if any(f.filename.endswith('/coverage/execfile.py') for f in inspect.stack() if f.filename):
             timeout = timeout * 1.5
 
         if debug is not False:
@@ -2204,7 +2242,7 @@ class HttpCase(TransactionCase):
                 for name, value in cookies.items():
                     browser.set_cookie(name, value, '/', HOST)
 
-            cpu_throttling_os = os.environ.get('ODOO_BROWSER_CPU_THROTTLING') # used by dedicated runbot builds
+            cpu_throttling_os = os.environ.get('ODOO_BROWSER_CPU_THROTTLING')  # used by dedicated runbot builds
             cpu_throttling = int(cpu_throttling_os) if cpu_throttling_os else cpu_throttling
 
             if cpu_throttling:
@@ -2252,7 +2290,9 @@ class HttpCase(TransactionCase):
             'keepWatchBrowser': kwargs.get('watch', False),
             'debug': kwargs.get('debug', False),
             'startUrl': url_path,
-            'delayToCheckUndeterminisms': kwargs.pop('delay_to_check_undeterminisms', int(os.getenv("ODOO_TOUR_DELAY_TO_CHECK_UNDETERMINISMS", "0")) or 0),
+            'delayToCheckUndeterminisms': kwargs.pop('delay_to_check_undeterminisms',
+                                                     int(os.getenv("ODOO_TOUR_DELAY_TO_CHECK_UNDETERMINISMS",
+                                                                   "0")) or 0),
         }
         code = kwargs.pop('code', f"odoo.startTour({tour_name!r}, {json.dumps(options)})")
         ready = kwargs.pop('ready', f"odoo.isTourReady({tour_name!r})")
@@ -2261,7 +2301,8 @@ class HttpCase(TransactionCase):
         if options["delayToCheckUndeterminisms"] > 0:
             timeout = timeout + 1000 * options["delayToCheckUndeterminisms"]
             _logger.runbot("Tour %s is launched with mode: check for undeterminisms.", tour_name)
-        return self.browser_js(url_path=url_path, code=code, ready=ready, timeout=timeout, success_signal="tour succeeded", **kwargs)
+        return self.browser_js(url_path=url_path, code=code, ready=ready, timeout=timeout,
+                               success_signal="tour succeeded", **kwargs)
 
     def profile(self, **kwargs):
         """
@@ -2269,10 +2310,12 @@ class HttpCase(TransactionCase):
         """
         sup = super()
         _profiler = sup.profile(**kwargs)
+
         def route_profiler(request):
             _route_profiler = sup.profile(description=request.httprequest.full_path, db=_profiler.db)
             _profiler.sub_profilers.append(_route_profiler)
             return _route_profiler
+
         return profiler.Nested(_profiler, patch('odoo.http.Request._get_profiler_context_manager', route_profiler))
 
     def get_method_additional_tags(self, test_method):
@@ -2322,6 +2365,7 @@ def no_retry(arg):
 
 def users(*logins):
     """ Decorate a method to execute it once for each given user. """
+
     @decorator
     def _users(func, *args, **kwargs):
         self = args[0]
@@ -2412,6 +2456,7 @@ def tagged(*tags):
         if not (at_install ^ post_install):
             _logger.warning('A tests should be either at_install or post_install, which is not the case of %r', obj)
         return obj
+
     return tags_decorator
 
 

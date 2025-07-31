@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import base64
 import re
-from pytz import timezone, UTC
 from datetime import datetime, time
 from random import choice
 from string import digits
+
 from dateutil.relativedelta import relativedelta
 from markupsafe import Markup
+from pytz import timezone, UTC
 
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError, AccessError
@@ -27,7 +27,8 @@ class HrEmployeePrivate(models.Model):
     _name = "hr.employee"
     _description = "Employee"
     _order = 'name'
-    _inherit = ['hr.employee.base', 'mail.thread.main.attachment', 'mail.activity.mixin', 'resource.mixin', 'avatar.mixin']
+    _inherit = ['hr.employee.base', 'mail.thread.main.attachment', 'mail.activity.mixin', 'resource.mixin',
+                'avatar.mixin']
     _mail_post_access = 'read'
 
     @api.model
@@ -50,8 +51,10 @@ class HrEmployeePrivate(models.Model):
     resource_calendar_id = fields.Many2one(tracking=True)
     department_id = fields.Many2one(tracking=True)
     company_id = fields.Many2one('res.company', required=True)
-    company_country_id = fields.Many2one('res.country', 'Company Country', related='company_id.country_id', readonly=True, groups="base.group_system,hr.group_hr_user")
-    company_country_code = fields.Char(related='company_country_id.code', depends=['company_country_id'], readonly=True, groups="base.group_system,hr.group_hr_user")
+    company_country_id = fields.Many2one('res.country', 'Company Country', related='company_id.country_id',
+                                         readonly=True, groups="base.group_system,hr.group_hr_user")
+    company_country_code = fields.Char(related='company_country_id.code', depends=['company_country_id'], readonly=True,
+                                       groups="base.group_system,hr.group_hr_user")
     # private info
     private_street = fields.Char(string="Private Street", groups="hr.group_hr_user")
     private_street2 = fields.Char(string="Private Street2", groups="hr.group_hr_user")
@@ -84,7 +87,8 @@ class HrEmployeePrivate(models.Model):
     spouse_birthdate = fields.Date(string="Spouse Birthdate", groups="hr.group_hr_user", tracking=True)
     children = fields.Integer(string='Number of Dependent Children', groups="hr.group_hr_user", tracking=True)
     place_of_birth = fields.Char('Place of Birth', groups="hr.group_hr_user", tracking=True)
-    country_of_birth = fields.Many2one('res.country', string="Country of Birth", groups="hr.group_hr_user", tracking=True)
+    country_of_birth = fields.Many2one('res.country', string="Country of Birth", groups="hr.group_hr_user",
+                                       tracking=True)
     birthday = fields.Date('Date of Birth', groups="hr.group_hr_user", tracking=True)
     ssnid = fields.Char('SSN No', help='Social Security Number', groups="hr.group_hr_user", tracking=True)
     sinid = fields.Char('SIN No', help='Social Insurance Number', groups="hr.group_hr_user", tracking=True)
@@ -116,19 +120,20 @@ class HrEmployeePrivate(models.Model):
     emergency_contact = fields.Char("Contact Name", groups="hr.group_hr_user", tracking=True)
     emergency_phone = fields.Char("Contact Phone", groups="hr.group_hr_user", tracking=True)
     distance_home_work = fields.Integer(string="Home-Work Distance", groups="hr.group_hr_user", tracking=True)
-    km_home_work = fields.Integer(string="Home-Work Distance in Km", groups="hr.group_hr_user", compute="_compute_km_home_work", inverse="_inverse_km_home_work", store=True)
+    km_home_work = fields.Integer(string="Home-Work Distance in Km", groups="hr.group_hr_user",
+                                  compute="_compute_km_home_work", inverse="_inverse_km_home_work", store=True)
     distance_home_work_unit = fields.Selection([
         ('kilometers', 'km'),
         ('miles', 'mi'),
     ], 'Home-Work Distance unit', tracking=True, groups="hr.group_hr_user", default='kilometers', required=True)
     employee_type = fields.Selection([
-            ('employee', 'Employee'),
-            ('worker', 'Worker'),
-            ('student', 'Student'),
-            ('trainee', 'Trainee'),
-            ('contractor', 'Contractor'),
-            ('freelance', 'Freelancer'),
-        ], string='Employee Type', default='employee', required=True, groups="hr.group_hr_user",
+        ('employee', 'Employee'),
+        ('worker', 'Worker'),
+        ('student', 'Student'),
+        ('trainee', 'Trainee'),
+        ('contractor', 'Contractor'),
+        ('freelance', 'Freelancer'),
+    ], string='Employee Type', default='employee', required=True, groups="hr.group_hr_user",
         help="Categorize your Employees by type. This field also has an impact on contracts. Only Employees, Students and Trainee will have contract history.")
 
     job_id = fields.Many2one(tracking=True)
@@ -141,9 +146,10 @@ class HrEmployeePrivate(models.Model):
     # misc
     notes = fields.Text('Notes', groups="hr.group_hr_user")
     color = fields.Integer('Color Index', default=0)
-    barcode = fields.Char(string="Badge ID", help="ID used for employee identification.", groups="hr.group_hr_user", copy=False)
+    barcode = fields.Char(string="Badge ID", help="ID used for employee identification.", groups="hr.group_hr_user",
+                          copy=False)
     pin = fields.Char(string="PIN", groups="hr.group_hr_user", copy=False,
-        help="PIN used to Check In/Out in the Kiosk Mode of the Attendance application (if enabled in Configuration) and to change the cashier in the Point of Sale application.")
+                      help="PIN used to Check In/Out in the Kiosk Mode of the Attendance application (if enabled in Configuration) and to change the cashier in the Point of Sale application.")
     departure_reason_id = fields.Many2one("hr.departure.reason", string="Departure Reason", groups="hr.group_hr_user",
                                           copy=False, tracking=True, ondelete='restrict')
     departure_description = fields.Html(string="Additional Information", groups="hr.group_hr_user", copy=False)
@@ -151,11 +157,14 @@ class HrEmployeePrivate(models.Model):
     message_main_attachment_id = fields.Many2one(groups="hr.group_hr_user")
     id_card = fields.Binary(string="ID Card Copy", groups="hr.group_hr_user")
     driving_license = fields.Binary(string="Driving License", groups="hr.group_hr_user")
-    private_car_plate = fields.Char(groups="hr.group_hr_user", help="If you have more than one car, just separate the plates by a space.")
-    currency_id = fields.Many2one('res.currency', related='company_id.currency_id', readonly=True, groups="hr.group_hr_user")
+    private_car_plate = fields.Char(groups="hr.group_hr_user",
+                                    help="If you have more than one car, just separate the plates by a space.")
+    currency_id = fields.Many2one('res.currency', related='company_id.currency_id', readonly=True,
+                                  groups="hr.group_hr_user")
     related_partners_count = fields.Integer(compute="_compute_related_partners_count", groups="hr.group_hr_user")
     # properties
-    employee_properties = fields.Properties('Properties', definition='company_id.employee_properties_definition', precompute=False, groups="hr.group_hr_user")
+    employee_properties = fields.Properties('Properties', definition='company_id.employee_properties_definition',
+                                            precompute=False, groups="hr.group_hr_user")
 
     # mail.activity.mixin
     activity_ids = fields.One2many(groups="hr.group_hr_user")
@@ -182,8 +191,10 @@ class HrEmployeePrivate(models.Model):
     message_attachment_count = fields.Integer(groups="hr.group_hr_user")
 
     _sql_constraints = [
-        ('barcode_uniq', 'unique (barcode)', "The Badge ID must be unique, this one is already assigned to another employee."),
-        ('user_uniq', 'unique (user_id, company_id)', "A user cannot be linked to multiple employees in the same company.")
+        ('barcode_uniq', 'unique (barcode)',
+         "The Badge ID must be unique, this one is already assigned to another employee."),
+        ('user_uniq', 'unique (user_id, company_id)',
+         "A user cannot be linked to multiple employees in the same company.")
     ]
 
     @api.model
@@ -194,7 +205,9 @@ class HrEmployeePrivate(models.Model):
         # list if you can specify the group on the field directly (as all the other fields).
         result = super().check_field_access_rights(operation, field_names)
         if not self.env.user.has_group("hr.group_hr_user"):
-            result = [field for field in result if field not in ['activity_calendar_event_id', 'rating_ids', 'website_message_ids', 'message_has_sms_error']]
+            result = [field for field in result if
+                      field not in ['activity_calendar_event_id', 'rating_ids', 'website_message_ids',
+                                    'message_has_sms_error']]
         return result
 
     @api.depends('name', 'user_id.avatar_1920', 'image_1920')
@@ -330,7 +343,9 @@ class HrEmployeePrivate(models.Model):
         public_fields = self.env['hr.employee.public']._fields
         private_fields = [fname for fname in field_names if fname not in public_fields]
         if private_fields:
-            raise AccessError(_('The fields “%s”, which you are trying to read, are not available for employee public profiles.', ','.join(private_fields)))
+            raise AccessError(
+                _('The fields “%s”, which you are trying to read, are not available for employee public profiles.',
+                  ','.join(private_fields)))
 
     def _copy_cache_from(self, public, field_names):
         # HACK: retrieve publicly available values from hr.employee.public and
@@ -347,19 +362,21 @@ class HrEmployeePrivate(models.Model):
         # Called by a cron
         # Schedule an activity 1 month before the work permit expires
         outdated_days = fields.Date.today() + relativedelta(months=+1)
-        nearly_expired_work_permits = self.search([('work_permit_scheduled_activity', '=', False), ('work_permit_expiration_date', '<', outdated_days)])
+        nearly_expired_work_permits = self.search(
+            [('work_permit_scheduled_activity', '=', False), ('work_permit_expiration_date', '<', outdated_days)])
         employees_scheduled = self.env['hr.employee']
         for employee in nearly_expired_work_permits.filtered(lambda employee: employee.parent_id):
             responsible_user_id = employee.parent_id.user_id.id
             if responsible_user_id:
                 employees_scheduled |= employee
                 lang = self.env['res.users'].browse(responsible_user_id).lang
-                formated_date = format_date(employee.env, employee.work_permit_expiration_date, date_format="dd MMMM y", lang_code=lang)
+                formated_date = format_date(employee.env, employee.work_permit_expiration_date, date_format="dd MMMM y",
+                                            lang_code=lang)
                 employee.activity_schedule(
                     'mail.mail_activity_data_todo',
                     note=_('The work permit of %(employee)s expires at %(date)s.',
-                        employee=employee.name,
-                        date=formated_date),
+                           employee=employee.name,
+                           date=formated_date),
                     user_id=responsible_user_id)
         employees_scheduled.write({'work_permit_scheduled_activity': True})
 
@@ -430,7 +447,8 @@ class HrEmployeePrivate(models.Model):
         for employee in self:
             if employee.barcode:
                 if not (re.match(r'^[A-Za-z0-9]+$', employee.barcode) and len(employee.barcode) <= 18):
-                    raise ValidationError(_("The Badge ID must be alphanumeric without any accents and no longer than 18 characters."))
+                    raise ValidationError(
+                        _("The Badge ID must be alphanumeric without any accents and no longer than 18 characters."))
 
     @api.constrains('ssnid')
     def _check_ssnid(self):
@@ -454,10 +472,10 @@ class HrEmployeePrivate(models.Model):
         employee_company = employee_company or self.company_id.id
         # For employees with a user_id, the constraint (user can't be linked to multiple employees) is triggered
         old_partner_employee_ids = user.partner_id.employee_ids.filtered(lambda e:
-            not e.user_id
-            and e.company_id.id == employee_company
-            and e != self
-        )
+                                                                         not e.user_id
+                                                                         and e.company_id.id == employee_company
+                                                                         and e != self
+                                                                         )
         old_partner_employee_ids.work_contact_id = None
 
     def _sync_user(self, user, employee_has_image=False):
@@ -511,7 +529,8 @@ class HrEmployeePrivate(models.Model):
         hr_root_menu = self.env.ref('hr.menu_hr_root')
         for employee in employees:
             # Launch onboarding plans
-            url = '/odoo/%s/action-hr.plan_wizard_action?active_model=hr.employee&menu_id=%s' % (employee.id, hr_root_menu.id)
+            url = '/odoo/%s/action-hr.plan_wizard_action?active_model=hr.employee&menu_id=%s' % (employee.id,
+                                                                                                 hr_root_menu.id)
             onboarding_notes_bodies[employee.id] = Markup(_(
                 '<b>Congratulations!</b> May I recommend you to setup an <a href="%s">onboarding plan?</a>',
             )) % url
@@ -606,21 +625,22 @@ class HrEmployeePrivate(models.Model):
         if self._origin:
             return {'warning': {
                 'title': _("Warning"),
-                'message': _("To avoid multi company issues (losing the access to your previous contracts, leaves, ...), you should create another employee in the new company instead.")
+                'message': _(
+                    "To avoid multi company issues (losing the access to your previous contracts, leaves, ...), you should create another employee in the new company instead.")
             }}
 
     def generate_random_barcode(self):
         for employee in self:
-            employee.barcode = '041'+"".join(choice(digits) for i in range(9))
+            employee.barcode = '041' + "".join(choice(digits) for i in range(9))
 
     def _get_tz(self):
         # Finds the first valid timezone in his tz, his work hours tz,
         #  the company calendar tz or UTC and returns it as a string
         self.ensure_one()
-        return self.tz or\
-               self.resource_calendar_id.tz or\
-               self.company_id.resource_calendar_id.tz or\
-               'UTC'
+        return self.tz or \
+            self.resource_calendar_id.tz or \
+            self.company_id.resource_calendar_id.tz or \
+            'UTC'
 
     def _get_tz_batch(self):
         # Finds the first valid timezone in his tz, his work hours tz,
@@ -641,24 +661,24 @@ class HrEmployeePrivate(models.Model):
         employee_timezone = timezone(self.tz) if self.tz else None
         calendar = self.resource_calendar_id or self.company_id.resource_calendar_id
         calendar_intervals = calendar._work_intervals_batch(
-                                date_from,
-                                date_to,
-                                tz=employee_timezone,
-                                resources=self.resource_id,
-                                compute_leaves=True,
-                                domain=[('company_id', 'in', [False, self.company_id.id])])[self.resource_id.id]
+            date_from,
+            date_to,
+            tz=employee_timezone,
+            resources=self.resource_id,
+            compute_leaves=True,
+            domain=[('company_id', 'in', [False, self.company_id.id])])[self.resource_id.id]
         return calendar_intervals
 
     def _get_calendar_attendances(self, date_from, date_to):
         self.ensure_one()
         employee_timezone = timezone(self.tz) if self.tz else None
         calendar = self.resource_calendar_id or self.company_id.resource_calendar_id
-        return calendar\
-            .with_context(employee_timezone=employee_timezone)\
+        return calendar \
+            .with_context(employee_timezone=employee_timezone) \
             .get_work_duration_data(
-                date_from,
-                date_to,
-                domain=[('company_id', 'in', [False, self.company_id.id])])
+            date_from,
+            date_to,
+            domain=[('company_id', 'in', [False, self.company_id.id])])
 
     def _get_marital_status_selection(self):
         return [

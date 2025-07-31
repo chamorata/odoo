@@ -61,8 +61,8 @@ class CrmTeamMember(models.Model):
         )
         for membership in self:
             potential = existing.filtered(lambda m: m.user_id == membership.user_id and \
-                m.crm_team_id == membership.crm_team_id and m.id != membership.id
-            )
+                                                    m.crm_team_id == membership.crm_team_id and m.id != membership.id
+                                          )
             if not potential or len(potential) > 1:
                 duplicates += potential
                 continue
@@ -75,7 +75,7 @@ class CrmTeamMember(models.Model):
             raise exceptions.ValidationError(
                 _("You are trying to create duplicate membership(s). We found that %(duplicates)s already exist(s).",
                   duplicates=", ".join("%s (%s)" % (m.user_id.name, m.crm_team_id.name) for m in duplicates)
-                 ))
+                  ))
 
     @api.depends('crm_team_id', 'is_membership_multi', 'user_id')
     @api.depends_context('default_crm_team_id')
@@ -94,7 +94,8 @@ class CrmTeamMember(models.Model):
             elif member.crm_team_id:
                 member.user_in_teams_ids = member.crm_team_id.member_ids
             elif self.env.context.get('default_crm_team_id'):
-                member.user_in_teams_ids = self.env['crm.team'].browse(self.env.context['default_crm_team_id']).member_ids
+                member.user_in_teams_ids = self.env['crm.team'].browse(
+                    self.env.context['default_crm_team_id']).member_ids
             else:
                 member.user_in_teams_ids = self.env['res.users']
 
@@ -135,7 +136,7 @@ class CrmTeamMember(models.Model):
                                               "Working in multiple teams? Activate the option under Configuration>Settings.",
                                               user_name=member.user_id.name,
                                               team_names=", ".join(remaining.mapped('name'))
-                                             )
+                                              )
                 else:
                     member.member_warning = False
 

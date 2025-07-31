@@ -13,8 +13,9 @@ class ResCurrency(models.Model):
     def _get_fiscal_country_codes(self):
         return ','.join(self.env.companies.mapped('account_fiscal_country_id.code'))
 
-    display_rounding_warning = fields.Boolean(string="Display Rounding Warning", compute='_compute_display_rounding_warning',
-        help="The warning informs a rounding factor change might be dangerous on res.currency's form view.")
+    display_rounding_warning = fields.Boolean(string="Display Rounding Warning",
+                                              compute='_compute_display_rounding_warning',
+                                              help="The warning informs a rounding factor change might be dangerous on res.currency's form view.")
     fiscal_country_codes = fields.Char(store=False, default=_get_fiscal_country_codes)
 
     @api.depends('rounding')
@@ -29,7 +30,8 @@ class ResCurrency(models.Model):
             rounding_val = vals['rounding']
             for record in self:
                 if (rounding_val > record.rounding or rounding_val == 0) and record._has_accounting_entries():
-                    raise UserError(_("You cannot reduce the number of decimal places of a currency which has already been used to make accounting entries."))
+                    raise UserError(
+                        _("You cannot reduce the number of decimal places of a currency which has already been used to make accounting entries."))
 
         return super(ResCurrency, self).write(vals)
 
@@ -38,7 +40,8 @@ class ResCurrency(models.Model):
         some move lines (either as their foreign currency, or as the main currency).
         """
         self.ensure_one()
-        return bool(self.env['account.move.line'].sudo().search_count(['|', ('currency_id', '=', self.id), ('company_currency_id', '=', self.id)]))
+        return bool(self.env['account.move.line'].sudo().search_count(
+            ['|', ('currency_id', '=', self.id), ('company_currency_id', '=', self.id)]))
 
     def _get_simple_currency_table(self, companies) -> SQL:
         """ Helper creating the currency table and returning its definition for basic cases of Odoo reports needing to convert amounts using only the
@@ -66,11 +69,14 @@ class ResCurrency(models.Model):
         be written exactly in the same way, joining the currency table returned by some function, for both mono and multi currency cases.
         """
         unit_rates = [
-            SQL("(%(company_id)s, CAST(NULL AS VARCHAR), CAST(NULL AS DATE), CAST(NULL AS DATE), %(rate_type)s, 1)", company_id=company.id, rate_type=rate_type)
+            SQL("(%(company_id)s, CAST(NULL AS VARCHAR), CAST(NULL AS DATE), CAST(NULL AS DATE), %(rate_type)s, 1)",
+                company_id=company.id, rate_type=rate_type)
             for company in companies
             for rate_type in (('historical', 'current', 'average') if use_cta_rates else ('current',))
         ]
-        return SQL('(VALUES %s) AS account_currency_table(company_id, period_key, date_from, date_next, rate_type, rate)', SQL(',').join(unit_rates))
+        return SQL(
+            '(VALUES %s) AS account_currency_table(company_id, period_key, date_from, date_next, rate_type, rate)',
+            SQL(',').join(unit_rates))
 
     def _create_currency_table(self, companies, date_periods, use_cta_rates=False):
         """ Creates a temporary table containing the currency rates to be used in order to aggregate amounts belonging to companies
@@ -109,16 +115,21 @@ class ResCurrency(models.Model):
 
         last_date_to = None
         for period_key, date_from, date_to in date_periods:
-            main_company_unit_factor = main_company.currency_id._get_rates(main_company, date_to)[main_company.currency_id.id]
+            main_company_unit_factor = main_company.currency_id._get_rates(main_company, date_to)[
+                main_company.currency_id.id]
 
             if use_cta_rates:
                 table_builders += [
-                    self._get_table_builder_closing(period_key, main_company, other_companies, date_to, main_company_unit_factor),
-                    self._get_table_builder_historical(main_company, other_companies, date_to, main_company_unit_factor, last_date_to),
-                    self._get_table_builder_average(period_key, main_company, other_companies, date_from, date_to, main_company_unit_factor),
+                    self._get_table_builder_closing(period_key, main_company, other_companies, date_to,
+                                                    main_company_unit_factor),
+                    self._get_table_builder_historical(main_company, other_companies, date_to, main_company_unit_factor,
+                                                       last_date_to),
+                    self._get_table_builder_average(period_key, main_company, other_companies, date_from, date_to,
+                                                    main_company_unit_factor),
                 ]
             else:
-                table_builders += [self._get_table_builder_current(period_key, main_company, other_companies, date_to, main_company_unit_factor)]
+                table_builders += [self._get_table_builder_current(period_key, main_company, other_companies, date_to,
+                                                                   main_company_unit_factor)]
 
             last_date_to = date_to
 
@@ -149,12 +160,17 @@ class ResCurrency(models.Model):
         for company in companies:
             if use_cta_rates:
                 rate_values += [
-                    SQL("(%s, CAST(NULL AS VARCHAR), CAST(NULL AS DATE), CAST(NULL AS DATE), 'average', 1)", company.id),
-                    SQL("(%s, CAST(NULL AS VARCHAR), CAST(NULL AS DATE), CAST(NULL AS DATE), 'historical', 1)", company.id),
-                    SQL("(%s, CAST(NULL AS VARCHAR), CAST(NULL AS DATE), CAST(NULL AS DATE), 'closing', 1)", company.id),
+                    SQL("(%s, CAST(NULL AS VARCHAR), CAST(NULL AS DATE), CAST(NULL AS DATE), 'average', 1)",
+                        company.id),
+                    SQL("(%s, CAST(NULL AS VARCHAR), CAST(NULL AS DATE), CAST(NULL AS DATE), 'historical', 1)",
+                        company.id),
+                    SQL("(%s, CAST(NULL AS VARCHAR), CAST(NULL AS DATE), CAST(NULL AS DATE), 'closing', 1)",
+                        company.id),
                 ]
             else:
-                rate_values.append(SQL("(%s, CAST(NULL AS VARCHAR), CAST(NULL AS DATE), CAST(NULL AS DATE), 'current', 1)", company.id))
+                rate_values.append(
+                    SQL("(%s, CAST(NULL AS VARCHAR), CAST(NULL AS DATE), CAST(NULL AS DATE), 'current', 1)",
+                        company.id))
 
         return SQL(
             """
@@ -166,7 +182,8 @@ class ResCurrency(models.Model):
             rate_values=SQL(", ").join(rate_values)
         )
 
-    def _get_table_builder_current(self, period_key, main_company, other_companies, date_to, main_company_unit_factor) -> SQL:
+    def _get_table_builder_current(self, period_key, main_company, other_companies, date_to,
+                                   main_company_unit_factor) -> SQL:
         return SQL(
             """
                 SELECT DISTINCT ON (other_company.id)
@@ -192,7 +209,8 @@ class ResCurrency(models.Model):
             main_company_unit_factor=main_company_unit_factor,
         )
 
-    def _get_table_builder_closing(self, period_key, main_company, other_companies, date_to, main_company_unit_factor) -> SQL:
+    def _get_table_builder_closing(self, period_key, main_company, other_companies, date_to,
+                                   main_company_unit_factor) -> SQL:
         fiscal_year_bounds = self._get_currency_table_fiscal_year_bounds(main_company)
 
         return SQL(
@@ -218,7 +236,9 @@ class ResCurrency(models.Model):
             """,
             period_key=period_key,
             main_company_id=main_company.root_id.id,
-            fiscal_year_bounds_values=SQL(",").join(SQL("(%(fy_from)s::date,%(fy_to)s::date)", fy_from=fy_from, fy_to=fy_to) for fy_from, fy_to in fiscal_year_bounds),
+            fiscal_year_bounds_values=SQL(",").join(
+                SQL("(%(fy_from)s::date,%(fy_to)s::date)", fy_from=fy_from, fy_to=fy_to) for fy_from, fy_to in
+                fiscal_year_bounds),
             other_company_ids=tuple(other_companies.ids),
             date_to=date_to,
             main_company_unit_factor=main_company_unit_factor,
@@ -226,21 +246,25 @@ class ResCurrency(models.Model):
 
     def _get_currency_table_fiscal_year_bounds(self, main_company):
         today_fiscal_year = main_company.compute_fiscalyear_dates(fields.Date.today())
-        first_rate = self.env['res.currency.rate'].search(self.env['res.currency.rate']._check_company_domain(main_company), order="name ASC", limit=1)
+        first_rate = self.env['res.currency.rate'].search(
+            self.env['res.currency.rate']._check_company_domain(main_company), order="name ASC", limit=1)
         fiscal_year_bounds = []
         if first_rate:
             first_rate_fiscal_year = main_company.compute_fiscalyear_dates(first_rate.name)
-            fiscal_year_bounds = [(None, first_rate_fiscal_year['date_from'] - relativedelta(days=1))]  # Initialized to have a value for everything before the first rate
+            fiscal_year_bounds = [(None, first_rate_fiscal_year['date_from'] - relativedelta(
+                days=1))]  # Initialized to have a value for everything before the first rate
             for civil_year in range(first_rate_fiscal_year['date_from'].year, today_fiscal_year['date_from'].year):
                 year_delta = relativedelta(years=civil_year - first_rate_fiscal_year['date_from'].year)
-                fiscal_year_bounds.append((first_rate_fiscal_year['date_from'] + year_delta, first_rate_fiscal_year['date_to'] + year_delta))
+                fiscal_year_bounds.append(
+                    (first_rate_fiscal_year['date_from'] + year_delta, first_rate_fiscal_year['date_to'] + year_delta))
 
         # The current fiscal year is not closed yet, so we need to use its rates for everything after it
         fiscal_year_bounds.append((today_fiscal_year['date_from'], None))
 
         return fiscal_year_bounds
 
-    def _get_table_builder_historical(self, main_company, other_companies, date_to, main_company_unit_factor, date_exclude) -> SQL:
+    def _get_table_builder_historical(self, main_company, other_companies, date_to, main_company_unit_factor,
+                                      date_exclude) -> SQL:
         return SQL(
             """
                 SELECT
@@ -263,10 +287,12 @@ class ResCurrency(models.Model):
             other_company_ids=tuple(other_companies.ids),
             main_company_unit_factor=main_company_unit_factor,
             date_to=date_to,
-            exclusion_condition=SQL("AND rate.name > %(date_exclude)s", date_exclude=date_exclude) if date_exclude else SQL(),
+            exclusion_condition=SQL("AND rate.name > %(date_exclude)s",
+                                    date_exclude=date_exclude) if date_exclude else SQL(),
         )
 
-    def _get_table_builder_average(self, period_key, main_company, other_companies, date_from, date_to, main_company_unit_factor) -> SQL:
+    def _get_table_builder_average(self, period_key, main_company, other_companies, date_from, date_to,
+                                   main_company_unit_factor) -> SQL:
         if not date_from:
             # When there is no start date, we want to compute the average rate on the current year only
             date_from = date_utils.start_of(fields.Date.from_string(date_to), 'year')

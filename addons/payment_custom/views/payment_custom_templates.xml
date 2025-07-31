@@ -51,9 +51,9 @@
 
         <xpath expr="//t[@t-set='o_payment_status_alert_class']" position="replace">
             <t t-if="tx.provider_id.sudo().code == 'custom'">
-               <t t-set="o_payment_status_alert_class"
-                  t-value="'d-flex flex-column flex-md-row align-items-stretch gap-2 gap-md-3 mb32'"
-               />
+                <t t-set="o_payment_status_alert_class"
+                   t-value="'d-flex flex-column flex-md-row align-items-stretch gap-2 gap-md-3 mb32'"
+                />
             </t>
             <t t-else="">$0</t>
         </xpath>
@@ -72,7 +72,7 @@
                         <t>$0</t>
                         <t t-if="tx._get_communication()">
                             <hr class="w-100"/>
-                            <strong class="mt-auto">Communication: </strong>
+                            <strong class="mt-auto">Communication:</strong>
                             <span t-out="tx._get_communication()"/>
                         </t>
                     </div>

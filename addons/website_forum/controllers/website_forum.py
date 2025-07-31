@@ -8,10 +8,10 @@ import requests
 import werkzeug.exceptions
 import werkzeug.urls
 import werkzeug.wrappers
-
-from odoo import _, http, tools
 from odoo.addons.website.models.ir_http import sitemap_qs2dom
 from odoo.addons.website_profile.controllers.main import WebsiteProfile
+
+from odoo import _, http, tools
 from odoo.exceptions import AccessError, UserError
 from odoo.http import request
 from odoo.osv import expression
@@ -47,6 +47,7 @@ class WebsiteForum(WebsiteProfile):
                     [('id', '!=', forum.id)],
                     [('post_ids', 'any', post_domain)]
                 ]))
+
             values['my_other_forums'] = tools.lazy(_get_my_other_forums)
         else:
             values['my_other_forums'] = request.env['forum.forum']
@@ -89,7 +90,8 @@ class WebsiteForum(WebsiteProfile):
             if not qs or qs.lower() in loc:
                 yield {'loc': loc}
 
-    def _get_forum_post_search_options(self, forum=None, tag=None, filters=None, my=None, create_uid=False, include_answers=False, **post):
+    def _get_forum_post_search_options(self, forum=None, tag=None, filters=None, my=None, create_uid=False,
+                                       include_answers=False, **post):
         return {
             'allowFuzzy': not post.get('noFuzzy'),
             'create_uid': create_uid,
@@ -112,7 +114,8 @@ class WebsiteForum(WebsiteProfile):
                  '''/forum/<model("forum.forum"):forum>/tag/<model("forum.tag"):tag>/questions''',
                  '''/forum/<model("forum.forum"):forum>/tag/<model("forum.tag"):tag>/questions/page/<int:page>''',
                  ], type='http', auth="public", website=True, sitemap=sitemap_forum, readonly=True)
-    def questions(self, forum=None, tag=None, page=1, filters='all', my=None, sorting=None, search='', create_uid=False, include_answers=False, **post):
+    def questions(self, forum=None, tag=None, page=1, filters='all', my=None, sorting=None, search='', create_uid=False,
+                  include_answers=False, **post):
         Post = request.env['forum.post']
 
         author = request.env['res.users'].browse(int(create_uid))
@@ -186,12 +189,14 @@ class WebsiteForum(WebsiteProfile):
 
         return request.render("website_forum.forum_index", values)
 
-    @http.route(['''/forum/<model("forum.forum"):forum>/faq'''], type='http', auth="public", website=True, sitemap=True, readonly=True)
+    @http.route(['''/forum/<model("forum.forum"):forum>/faq'''], type='http', auth="public", website=True, sitemap=True,
+                readonly=True)
     def forum_faq(self, forum, **post):
         values = self._prepare_user_values(forum=forum, searches=dict(), header={'is_guidelines': True}, **post)
         return request.render("website_forum.faq", values)
 
-    @http.route(['/forum/<model("forum.forum"):forum>/faq/karma'], type='http', auth="public", website=True, sitemap=False, readonly=True)
+    @http.route(['/forum/<model("forum.forum"):forum>/faq/karma'], type='http', auth="public", website=True,
+                sitemap=False, readonly=True)
     def forum_faq_karma(self, forum, **post):
         values = self._prepare_user_values(forum=forum, header={'is_guidelines': True, 'is_karma': True}, **post)
         return request.render("website_forum.faq_karma", values)
@@ -199,7 +204,8 @@ class WebsiteForum(WebsiteProfile):
     # Tags
     # --------------------------------------------------
 
-    @http.route('/forum/get_tags', type='http', auth="public", methods=['GET'], website=True, sitemap=False, readonly=True)
+    @http.route('/forum/get_tags', type='http', auth="public", methods=['GET'], website=True, sitemap=False,
+                readonly=True)
     def tag_read(self, forum_id, query='', limit=25, **post):
         data = request.env['forum.tag'].search_read(
             domain=[('forum_id', '=', int(forum_id)), ('name', '=ilike', (query or '') + "%")],
@@ -282,8 +288,9 @@ class WebsiteForum(WebsiteProfile):
         except IOError:
             return False
 
-    @http.route(['''/forum/<model("forum.forum"):forum>/question/<model("forum.post", "[('forum_id','=',forum.id),('parent_id','=',False),('can_view', '=', True)]"):question>'''],
-                type='http', auth="public", website=True, sitemap=False)
+    @http.route(
+        ['''/forum/<model("forum.forum"):forum>/question/<model("forum.post", "[('forum_id','=',forum.id),('parent_id','=',False),('can_view', '=', True)]"):question>'''],
+        type='http', auth="public", website=True, sitemap=False)
     def old_question(self, forum, question, **post):
         # Compatibility pre-v14
         slug = request.env['ir.http']._slug
@@ -340,7 +347,8 @@ class WebsiteForum(WebsiteProfile):
 
         return request.render("website_forum.post_description_full", values)
 
-    @http.route('/forum/<model("forum.forum"):forum>/question/<model("forum.post"):question>/toggle_favourite', type='json', auth="user", methods=['POST'], website=True)
+    @http.route('/forum/<model("forum.forum"):forum>/question/<model("forum.post"):question>/toggle_favourite',
+                type='json', auth="user", methods=['POST'], website=True)
     def question_toggle_favorite(self, forum, question, **post):
         favourite = not question.user_favourite
         question.sudo().favourite_ids = [(favourite and 4 or 3, request.uid)]
@@ -351,7 +359,8 @@ class WebsiteForum(WebsiteProfile):
             question.sudo().message_subscribe(request.env.user.partner_id.ids)
         return favourite
 
-    @http.route('/forum/<model("forum.forum"):forum>/question/<model("forum.post"):question>/ask_for_close', type='http', auth="user", methods=['POST'], website=True)
+    @http.route('/forum/<model("forum.forum"):forum>/question/<model("forum.post"):question>/ask_for_close',
+                type='http', auth="user", methods=['POST'], website=True)
     def question_ask_for_close(self, forum, question, **post):
         reasons = request.env['forum.post.reason'].search([('reason_type', '=', 'basic')])
 
@@ -363,7 +372,8 @@ class WebsiteForum(WebsiteProfile):
         })
         return request.render("website_forum.close_post", values)
 
-    @http.route('/forum/<model("forum.forum"):forum>/question/<model("forum.post"):question>/edit_answer', type='http', auth="user", website=True)
+    @http.route('/forum/<model("forum.forum"):forum>/question/<model("forum.post"):question>/edit_answer', type='http',
+                auth="user", website=True)
     def question_edit_answer(self, forum, question, **kwargs):
         for record in question.child_ids:
             if record.create_uid.id == request.uid:
@@ -374,25 +384,29 @@ class WebsiteForum(WebsiteProfile):
         slug = request.env['ir.http']._slug
         return request.redirect(f'/forum/{slug(forum)}/post/{slug(answer)}/edit')
 
-    @http.route('/forum/<model("forum.forum"):forum>/question/<model("forum.post"):question>/close', type='http', auth="user", methods=['POST'], website=True)
+    @http.route('/forum/<model("forum.forum"):forum>/question/<model("forum.post"):question>/close', type='http',
+                auth="user", methods=['POST'], website=True)
     def question_close(self, forum, question, **post):
         question.close(reason_id=int(post.get('reason_id', False)))
         slug = request.env['ir.http']._slug
         return request.redirect("/forum/%s/%s" % (slug(forum), slug(question)))
 
-    @http.route('/forum/<model("forum.forum"):forum>/question/<model("forum.post"):question>/reopen', type='http', auth="user", methods=['POST'], website=True)
+    @http.route('/forum/<model("forum.forum"):forum>/question/<model("forum.post"):question>/reopen', type='http',
+                auth="user", methods=['POST'], website=True)
     def question_reopen(self, forum, question, **kwarg):
         question.reopen()
         slug = request.env['ir.http']._slug
         return request.redirect("/forum/%s/%s" % (slug(forum), slug(question)))
 
-    @http.route('/forum/<model("forum.forum"):forum>/question/<model("forum.post"):question>/delete', type='http', auth="user", methods=['POST'], website=True)
+    @http.route('/forum/<model("forum.forum"):forum>/question/<model("forum.post"):question>/delete', type='http',
+                auth="user", methods=['POST'], website=True)
     def question_delete(self, forum, question, **kwarg):
         question.active = False
         slug = request.env['ir.http']._slug
         return request.redirect("/forum/%s" % slug(forum))
 
-    @http.route('/forum/<model("forum.forum"):forum>/question/<model("forum.post"):question>/undelete', type='http', auth="user", methods=['POST'], website=True)
+    @http.route('/forum/<model("forum.forum"):forum>/question/<model("forum.post"):question>/undelete', type='http',
+                auth="user", methods=['POST'], website=True)
     def question_undelete(self, forum, question, **kwarg):
         question.active = True
         slug = request.env['ir.http']._slug
@@ -436,7 +450,8 @@ class WebsiteForum(WebsiteProfile):
         slug = request.env['ir.http']._slug
         return request.redirect(f'/forum/{slug(forum)}/{slug(post_parent) if post_parent else new_question.id}')
 
-    @http.route('/forum/<model("forum.forum"):forum>/post/<model("forum.post"):post>/comment', type='http', auth="user", methods=['POST'], website=True)
+    @http.route('/forum/<model("forum.forum"):forum>/post/<model("forum.post"):post>/comment', type='http', auth="user",
+                methods=['POST'], website=True)
     def post_comment(self, forum, post, **kwargs):
         question = post.parent_id or post
         if kwargs.get('comment') and post.forum_id.id == forum.id:
@@ -450,7 +465,8 @@ class WebsiteForum(WebsiteProfile):
         slug = request.env['ir.http']._slug
         return request.redirect(f'/forum/{slug(forum)}/{slug(question)}')
 
-    @http.route('/forum/<model("forum.forum"):forum>/post/<model("forum.post"):post>/toggle_correct', type='json', auth="user", website=True)
+    @http.route('/forum/<model("forum.forum"):forum>/post/<model("forum.post"):post>/toggle_correct', type='json',
+                auth="user", website=True)
     def post_toggle_correct(self, forum, post, **kwargs):
         if post.parent_id is False:
             return request.redirect('/')
@@ -462,7 +478,8 @@ class WebsiteForum(WebsiteProfile):
         post.is_correct = not post.is_correct
         return post.is_correct
 
-    @http.route('/forum/<model("forum.forum"):forum>/post/<model("forum.post"):post>/delete', type='http', auth="user", methods=['POST'], website=True)
+    @http.route('/forum/<model("forum.forum"):forum>/post/<model("forum.post"):post>/delete', type='http', auth="user",
+                methods=['POST'], website=True)
     def post_delete(self, forum, post, **kwargs):
         question = post.parent_id
         post.unlink()
@@ -471,7 +488,8 @@ class WebsiteForum(WebsiteProfile):
             request.redirect("/forum/%s/%s" % (slug(forum), slug(question)))
         return request.redirect("/forum/%s" % slug(forum))
 
-    @http.route('/forum/<model("forum.forum"):forum>/post/<model("forum.post"):post>/edit', type='http', auth="user", website=True)
+    @http.route('/forum/<model("forum.forum"):forum>/post/<model("forum.post"):post>/edit', type='http', auth="user",
+                website=True)
     def post_edit(self, forum, post, **kwargs):
         tags = [dict(id=tag.id, name=tag.name) for tag in post.tag_ids]
         tags = json.dumps(tags)
@@ -486,7 +504,8 @@ class WebsiteForum(WebsiteProfile):
         })
         return request.render("website_forum.edit_post", values)
 
-    @http.route('/forum/<model("forum.forum"):forum>/post/<model("forum.post"):post>/save', type='http', auth="user", methods=['POST'], website=True)
+    @http.route('/forum/<model("forum.forum"):forum>/post/<model("forum.post"):post>/save', type='http', auth="user",
+                methods=['POST'], website=True)
     def post_save(self, forum, post, **kwargs):
         vals = {
             'content': kwargs.get('content'),
@@ -509,14 +528,16 @@ class WebsiteForum(WebsiteProfile):
     #  JSON utilities
     # --------------------------------------------------
 
-    @http.route('/forum/<model("forum.forum"):forum>/post/<model("forum.post"):post>/upvote', type='json', auth="user", website=True)
+    @http.route('/forum/<model("forum.forum"):forum>/post/<model("forum.post"):post>/upvote', type='json', auth="user",
+                website=True)
     def post_upvote(self, forum, post, **kwargs):
         if request.uid == post.create_uid.id:
             return {'error': 'own_post'}
         upvote = True if not post.user_vote > 0 else False
         return post.vote(upvote=upvote)
 
-    @http.route('/forum/<model("forum.forum"):forum>/post/<model("forum.post"):post>/downvote', type='json', auth="user", website=True)
+    @http.route('/forum/<model("forum.forum"):forum>/post/<model("forum.post"):post>/downvote', type='json',
+                auth="user", website=True)
     def post_downvote(self, forum, post, **kwargs):
         if request.uid == post.create_uid.id:
             return {'error': 'own_post'}
@@ -600,7 +621,8 @@ class WebsiteForum(WebsiteProfile):
 
         return request.render("website_forum.moderation_queue", values)
 
-    @http.route('/forum/<model("forum.forum"):forum>/post/<model("forum.post"):post>/validate', type='http', auth="user", website=True)
+    @http.route('/forum/<model("forum.forum"):forum>/post/<model("forum.post"):post>/validate', type='http',
+                auth="user", website=True)
     def post_accept(self, forum, post, **kwargs):
         slug = request.env['ir.http']._slug
         if post.state == 'flagged':
@@ -614,12 +636,14 @@ class WebsiteForum(WebsiteProfile):
         post.validate()
         return request.redirect(url)
 
-    @http.route('/forum/<model("forum.forum"):forum>/post/<model("forum.post"):post>/refuse', type='http', auth="user", website=True)
+    @http.route('/forum/<model("forum.forum"):forum>/post/<model("forum.post"):post>/refuse', type='http', auth="user",
+                website=True)
     def post_refuse(self, forum, post, **kwargs):
         post._refuse()
         return self.question_ask_for_close(forum, post)
 
-    @http.route('/forum/<model("forum.forum"):forum>/post/<model("forum.post"):post>/flag', type='json', auth="user", website=True)
+    @http.route('/forum/<model("forum.forum"):forum>/post/<model("forum.post"):post>/flag', type='json', auth="user",
+                website=True)
     def post_flag(self, forum, post, **kwargs):
         return post._flag()[0]
 
@@ -630,14 +654,16 @@ class WebsiteForum(WebsiteProfile):
         values = self._prepare_mark_as_offensive_values(post, **kwargs)
         return request.env['ir.ui.view']._render_template('website_forum.mark_as_offensive', values)
 
-    @http.route('/forum/<model("forum.forum"):forum>/post/<model("forum.post"):post>/ask_for_mark_as_offensive', type='http', auth="user", methods=['GET'], website=True)
+    @http.route('/forum/<model("forum.forum"):forum>/post/<model("forum.post"):post>/ask_for_mark_as_offensive',
+                type='http', auth="user", methods=['GET'], website=True)
     def post_http_ask_for_mark_as_offensive(self, forum, post, **kwargs):
         if not post.can_moderate:
             raise AccessError(_('%d karma required to mark a post as offensive.', forum.karma_moderate))
         values = self._prepare_mark_as_offensive_values(post, **kwargs)
         return request.render("website_forum.close_post", values)
 
-    @http.route('/forum/<model("forum.forum"):forum>/post/<model("forum.post"):post>/mark_as_offensive', type='http', auth="user", methods=["POST"], website=True)
+    @http.route('/forum/<model("forum.forum"):forum>/post/<model("forum.post"):post>/mark_as_offensive', type='http',
+                auth="user", methods=["POST"], website=True)
     def post_mark_as_offensive(self, forum, post, **kwargs):
         post._mark_as_offensive(reason_id=int(kwargs.get('reason_id', False)))
         slug = request.env['ir.http']._slug
@@ -649,7 +675,8 @@ class WebsiteForum(WebsiteProfile):
 
     # User
     # --------------------------------------------------
-    @http.route(['/forum/<model("forum.forum"):forum>/partner/<int:partner_id>'], type='http', auth="public", website=True)
+    @http.route(['/forum/<model("forum.forum"):forum>/partner/<int:partner_id>'], type='http', auth="public",
+                website=True)
     def open_partner(self, forum, partner_id=0, **post):
         slug = request.env['ir.http']._slug
         if partner_id:
@@ -778,7 +805,9 @@ class WebsiteForum(WebsiteProfile):
     # Messaging
     # --------------------------------------------------
 
-    @http.route('/forum/<model("forum.forum"):forum>/post/<model("forum.post"):post>/comment/<model("mail.message"):comment>/convert_to_answer', type='http', auth="user", methods=['POST'], website=True)
+    @http.route(
+        '/forum/<model("forum.forum"):forum>/post/<model("forum.post"):post>/comment/<model("mail.message"):comment>/convert_to_answer',
+        type='http', auth="user", methods=['POST'], website=True)
     def convert_comment_to_answer(self, forum, post, comment, **kwarg):
         post = request.env['forum.post'].convert_comment_to_answer(comment.id)
         slug = request.env['ir.http']._slug
@@ -787,7 +816,8 @@ class WebsiteForum(WebsiteProfile):
         question = post.parent_id if post.parent_id else post
         return request.redirect("/forum/%s/%s" % (slug(forum), request.env['ir.http']._slug(question)))
 
-    @http.route('/forum/<model("forum.forum"):forum>/post/<model("forum.post"):post>/convert_to_comment', type='http', auth="user", methods=['POST'], website=True)
+    @http.route('/forum/<model("forum.forum"):forum>/post/<model("forum.post"):post>/convert_to_comment', type='http',
+                auth="user", methods=['POST'], website=True)
     def convert_answer_to_comment(self, forum, post, **kwarg):
         question = post.parent_id
         new_msg = post.convert_answer_to_comment()
@@ -796,6 +826,8 @@ class WebsiteForum(WebsiteProfile):
             return request.redirect("/forum/%s" % slug(forum))
         return request.redirect("/forum/%s/%s" % (slug(forum), request.env['ir.http']._slug(question)))
 
-    @http.route('/forum/<model("forum.forum"):forum>/post/<model("forum.post"):post>/comment/<model("mail.message"):comment>/delete', type='json', auth="user", website=True)
+    @http.route(
+        '/forum/<model("forum.forum"):forum>/post/<model("forum.post"):post>/comment/<model("mail.message"):comment>/delete',
+        type='json', auth="user", website=True)
     def delete_comment(self, forum, post, comment, **kwarg):
         return post.unlink_comment(comment.id)[0]

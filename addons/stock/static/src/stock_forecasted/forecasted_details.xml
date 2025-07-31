@@ -23,22 +23,24 @@
                     <td/>
                     <td/>
                 </tr>
-                <tr t-foreach="props.docs.lines" t-as="line" t-key="line_index" t-attf-class="#{line.is_matched and 'o_grid_match table-info'}">
+                <tr t-foreach="props.docs.lines" t-as="line" t-key="line_index"
+                    t-attf-class="#{line.is_matched and 'o_grid_match table-info'}">
                     <td t-attf-class="#{line.is_late and 'o_grid_warning table-danger'}">
                         <a t-if="line.document_in"
-                            href="#"
-                            t-on-click.prevent="() => this.props.openView(line.document_in._name, 'form', line.document_in.id)"
-                            t-out="line.document_in.name"
-                            class="fw-bold"/>
+                           href="#"
+                           t-on-click.prevent="() => this.props.openView(line.document_in._name, 'form', line.document_in.id)"
+                           t-out="line.document_in.name"
+                           class="fw-bold"/>
 
                         <t t-elif="line.reservation">
                             <a t-out="line.reservation.name" href="#" class="fw-bold"
                                t-on-click.prevent="() => this.props.openView(line.reservation._name, 'form', line.reservation.id)"
-                                /> reserved
+                            />
+                            reserved
                             <button t-if="displayReserve(line)"
-                                class="btn btn-sm btn-primary o_report_replenish_unreserve"
-                                name="unreserve_link"
-                                t-on-click="() => this._unreserve(line.move_out.id)">
+                                    class="btn btn-sm btn-primary o_report_replenish_unreserve"
+                                    name="unreserve_link"
+                                    t-on-click="() => this._unreserve(line.move_out.id)">
                                 Unreserve
                             </button>
                         </t>
@@ -53,9 +55,9 @@
                         <t t-elif="line.replenishment_filled">
                             <t t-if="line.document_out">Inventory On Hand
                                 <button t-if="displayReserve(line)"
-                                    class="btn btn-sm btn-primary"
-                                    name="reserve_link"
-                                    t-on-click="() => this._reserve(line.move_out.id)">
+                                        class="btn btn-sm btn-primary"
+                                        name="reserve_link"
+                                        t-on-click="() => this._reserve(line.move_out.id)">
                                     Reserve
                                 </button>
                             </t>
@@ -66,17 +68,19 @@
                     <td t-out="line.receipt_date or ''"
                         t-attf-class="#{line.is_late and 'o_grid_warning table-danger'}"/>
                     <td t-if="props.docs.multiple_product" t-out="line.product.display_name"/>
-                    <td class="text-end"><t t-if="! line.replenishment_filled">- </t><t t-out="_formatFloat(line.quantity)"/></td>
-                    <td t-attf-class="#{! line.replenishment_filled and 'o_grid_warning table-danger'}" name="usedby_cell">
+                    <td class="text-end"><t t-if="! line.replenishment_filled">- </t>
+                        <t t-out="_formatFloat(line.quantity)"/></td>
+                    <td t-attf-class="#{! line.replenishment_filled and 'o_grid_warning table-danger'}"
+                        name="usedby_cell">
                         <button t-if="line.move_out and line.move_out.picking_id"
-                            t-attf-class="o_priority o_priority_star me-1 fa fa-star#{line.move_out.picking_id.priority=='1' ? '' : '-o'}"
-                            t-on-click="() => this._onClickChangePriority('stock.picking', line.move_out.picking_id)"
-                            name="change_priority_link"/>
+                                t-attf-class="o_priority o_priority_star me-1 fa fa-star#{line.move_out.picking_id.priority=='1' ? '' : '-o'}"
+                                t-on-click="() => this._onClickChangePriority('stock.picking', line.move_out.picking_id)"
+                                name="change_priority_link"/>
                         <a t-if="line.document_out"
-                            href="#"
-                            t-on-click.prevent="() => this.props.openView(line.document_out._name, 'form', line.document_out.id)"
-                            t-out="line.document_out.name"
-                            class="fw-bold"/>
+                           href="#"
+                           t-on-click.prevent="() => this.props.openView(line.document_out._name, 'form', line.document_out.id)"
+                           t-out="line.document_out.name"
+                           class="fw-bold"/>
                     </td>
                     <td t-out="line.delivery_date or ''"
                         t-attf-class="#{! line.replenishment_filled and 'o_grid_warning table-danger'}"/>

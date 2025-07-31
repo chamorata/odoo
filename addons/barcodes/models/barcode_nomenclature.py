@@ -3,7 +3,6 @@ import re
 from odoo import models, fields, api
 from odoo.tools.barcode import check_barcode_encoding, get_barcode_check_digit
 
-
 UPC_EAN_CONVERSIONS = [
     ('none', 'Never'),
     ('ean2upc', 'EAN-13 to UPC-A'),
@@ -16,8 +15,10 @@ class BarcodeNomenclature(models.Model):
     _name = 'barcode.nomenclature'
     _description = 'Barcode Nomenclature'
 
-    name = fields.Char(string='Barcode Nomenclature', required=True, help='An internal identification of the barcode nomenclature')
-    rule_ids = fields.One2many('barcode.rule', 'barcode_nomenclature_id', string='Rules', help='The list of barcode rules')
+    name = fields.Char(string='Barcode Nomenclature', required=True,
+                       help='An internal identification of the barcode nomenclature')
+    rule_ids = fields.One2many('barcode.rule', 'barcode_nomenclature_id', string='Rules',
+                               help='The list of barcode rules')
     upc_ean_conv = fields.Selection(
         UPC_EAN_CONVERSIONS, string='UPC/EAN Conversion', required=True, default='always',
         help="UPC Codes can be converted to EAN by prefixing them with a zero. This setting determines if a UPC/EAN barcode should be automatically converted in one way or another when trying to match a rule with the other encoding.")
@@ -66,18 +67,25 @@ class BarcodeNomenclature(models.Model):
             num_end = numerical_content.end()  # end index of numerical content
             value_string = barcode[num_start:num_end - 2]  # numerical content in barcode
 
-            whole_part_match = re.search("[{][N]*[D}]", numerical_content.group())  # looks for whole part of numerical content
+            whole_part_match = re.search("[{][N]*[D}]",
+                                         numerical_content.group())  # looks for whole part of numerical content
             decimal_part_match = re.search("[{N][D]*[}]", numerical_content.group())  # looks for decimal part
-            whole_part = value_string[:whole_part_match.end() - 2]  # retrieve whole part of numerical content in barcode
-            decimal_part = "0." + value_string[decimal_part_match.start():decimal_part_match.end() - 1]  # retrieve decimal part
+            whole_part = value_string[
+                         :whole_part_match.end() - 2]  # retrieve whole part of numerical content in barcode
+            decimal_part = "0." + value_string[
+                                  decimal_part_match.start():decimal_part_match.end() - 1]  # retrieve decimal part
             if whole_part == '':
                 whole_part = '0'
             if whole_part.isdigit():
                 match['value'] = int(whole_part) + float(decimal_part)
 
-                match['base_code'] = barcode[:num_start] + (num_end - num_start - 2) * "0" + barcode[num_end - 2:]  # replace numerical content by 0's in barcode
-                match['base_code'] = match['base_code'].replace("\\\\", "\\").replace("\\{", "{").replace("\\}", "}").replace("\\.", ".")
-                pattern = pattern[:num_start] + (num_end - num_start - 2) * "0" + pattern[num_end:]  # replace numerical content by 0's in pattern to match
+                match['base_code'] = barcode[:num_start] + (num_end - num_start - 2) * "0" + barcode[
+                                                                                             num_end - 2:]  # replace numerical content by 0's in barcode
+                match['base_code'] = match['base_code'].replace("\\\\", "\\").replace("\\{", "{").replace("\\}",
+                                                                                                          "}").replace(
+                    "\\.", ".")
+                pattern = pattern[:num_start] + (num_end - num_start - 2) * "0" + pattern[
+                                                                                  num_end:]  # replace numerical content by 0's in pattern to match
         match['match'] = re.match(pattern, match['base_code'][:len(pattern)])
 
         return match
@@ -110,9 +118,11 @@ class BarcodeNomenclature(models.Model):
 
         for rule in self.rule_ids:
             cur_barcode = barcode
-            if rule.encoding == 'ean13' and check_barcode_encoding(barcode, 'upca') and self.upc_ean_conv in ['upc2ean', 'always']:
+            if rule.encoding == 'ean13' and check_barcode_encoding(barcode, 'upca') and self.upc_ean_conv in ['upc2ean',
+                                                                                                              'always']:
                 cur_barcode = '0' + cur_barcode
-            elif rule.encoding == 'upca' and check_barcode_encoding(barcode, 'ean13') and barcode[0] == '0' and self.upc_ean_conv in ['ean2upc', 'always']:
+            elif rule.encoding == 'upca' and check_barcode_encoding(barcode, 'ean13') and barcode[
+                0] == '0' and self.upc_ean_conv in ['ean2upc', 'always']:
                 cur_barcode = cur_barcode[1:]
 
             if not check_barcode_encoding(barcode, rule.encoding):

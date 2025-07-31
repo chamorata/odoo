@@ -5,14 +5,15 @@
 # test cases for new-style fields
 #
 import base64
+import io
 import json
+import threading
 from collections import OrderedDict
 from datetime import date, datetime, time
-import io
-from PIL import Image
 from unittest.mock import patch
+
 import psycopg2
-import threading
+from PIL import Image
 
 from odoo import models, fields, Command
 from odoo.addons.base.tests.common import TransactionCaseWithUserDemo
@@ -75,7 +76,7 @@ class TestFields(TransactionCaseWithUserDemo, TransactionExpressionCase):
         # field assignment on multiple records should assign value to all records
         records = self.env['test_new_api.message'].search([])
         records.body = 'Updated'
-        self.assertTrue(all(map(lambda record:record.body=='Updated', records)))
+        self.assertTrue(all(map(lambda record: record.body == 'Updated', records)))
 
         # field assigmenent does not cache the wrong value when write overridden
         record.priority = 4
@@ -305,6 +306,7 @@ class TestFields(TransactionCaseWithUserDemo, TransactionExpressionCase):
 
     def test_11_stored(self):
         """ test stored fields """
+
         def check_stored(disc):
             """ Check the stored computed field on disc.messages """
             for msg in disc.messages:
@@ -1059,7 +1061,7 @@ class TestFields(TransactionCaseWithUserDemo, TransactionExpressionCase):
         })
         monetary_related = self.env['test_new_api.monetary_related'].create({
             'monetary_id': monetary_base.id,
-            'total': 1/3,
+            'total': 1 / 3,
         })
         self.env.cr.execute(
             "SELECT total FROM test_new_api_monetary_related WHERE id=%s",
@@ -1654,7 +1656,7 @@ class TestFields(TransactionCaseWithUserDemo, TransactionExpressionCase):
             self.assertEqual(record_company.truth, False)
             self.assertEqual(record_company.count, 0)
             self.assertEqual(record_company.phi, 0.0)
-    
+
     def test_27_company_dependent_missing_many2one(self):
         """ Test ORM can handle missing records for many2one company dependent fields """
         company0 = self.env.ref('base.main_company')
@@ -1737,7 +1739,8 @@ class TestFields(TransactionCaseWithUserDemo, TransactionExpressionCase):
                             Model.search([('id', 'in', records.ids)] + domain)  # warmup
                             if current_thread.query_count:
                                 # parent_of and child_of may need extra queries
-                                expected_contained_sqls = [''] * (current_thread.query_count - 1) + [f'"test_new_api_company"."{field_name}" IS NOT NULL']
+                                expected_contained_sqls = [''] * (current_thread.query_count - 1) + [
+                                    f'"test_new_api_company"."{field_name}" IS NOT NULL']
                                 with self.assertQueriesContain(expected_contained_sqls):
                                     Model.search([('id', 'in', records.ids)] + domain)
 
@@ -1890,13 +1893,16 @@ class TestFields(TransactionCaseWithUserDemo, TransactionExpressionCase):
             'html2': some_ugly_html_0,
         })
 
-        self.assertEqual(record.with_user(user0).html1, some_ugly_html_0, 'Error in HTML field: content was sanitized but field has sanitize=False')
+        self.assertEqual(record.with_user(user0).html1, some_ugly_html_0,
+                         'Error in HTML field: content was sanitized but field has sanitize=False')
         self.assertEqual(record.with_user(user1).html1, False)
         self.assertEqual(record.with_user(user2).html1, False)
 
         # sanitize should have closed tags left open in the original html for user0
-        self.assertIn('</table>', record.with_user(user0).html2, 'Error in HTML field: content does not seem to have been sanitized despise sanitize=True')
-        self.assertIn('</td>', record.with_user(user0).html2, 'Error in HTML field: content does not seem to have been sanitized despise sanitize=True')
+        self.assertIn('</table>', record.with_user(user0).html2,
+                      'Error in HTML field: content does not seem to have been sanitized despise sanitize=True')
+        self.assertIn('</td>', record.with_user(user0).html2,
+                      'Error in HTML field: content does not seem to have been sanitized despise sanitize=True')
         self.assertNotIn('<tr class="', record.with_user(user0).html2, 'Class attr should have been stripped')
         self.assertNotIn('<tr style="', record.with_user(user0).html2, 'Style attr should have been stripped')
 
@@ -1905,13 +1911,17 @@ class TestFields(TransactionCaseWithUserDemo, TransactionExpressionCase):
             'html2': some_ugly_html_1,
         })
 
-        self.assertEqual(record.with_user(user0).html1, some_ugly_html_0, 'Error in HTML field: content was sanitized but field has sanitize=False')
-        self.assertEqual(record.with_user(user1).html1, some_ugly_html_1, 'Error in HTML field: content was sanitized but field has sanitize=False')
+        self.assertEqual(record.with_user(user0).html1, some_ugly_html_0,
+                         'Error in HTML field: content was sanitized but field has sanitize=False')
+        self.assertEqual(record.with_user(user1).html1, some_ugly_html_1,
+                         'Error in HTML field: content was sanitized but field has sanitize=False')
         self.assertEqual(record.with_user(user2).html1, False)
 
         # sanitize should have closed tags left open in the original html for user1
-        self.assertIn('</table>', record.with_user(user1).html2, 'Error in HTML field: content does not seem to have been sanitized despise sanitize=True')
-        self.assertIn('</td>', record.with_user(user1).html2, 'Error in HTML field: content does not seem to have been sanitized despise sanitize=True')
+        self.assertIn('</table>', record.with_user(user1).html2,
+                      'Error in HTML field: content does not seem to have been sanitized despise sanitize=True')
+        self.assertIn('</td>', record.with_user(user1).html2,
+                      'Error in HTML field: content does not seem to have been sanitized despise sanitize=True')
         self.assertNotIn('<tr class="', record.with_user(user1).html2, 'Class attr should have been stripped')
         self.assertNotIn('<tr style="', record.with_user(user1).html2, 'Style attr should have been stripped')
 
@@ -2120,7 +2130,7 @@ class TestFields(TransactionCaseWithUserDemo, TransactionExpressionCase):
         self.assertFalse(msg0.discussion)
         self.assertFalse(msg1.discussion)
 
-        self.assertEqual(new_cat0.discussions, new_disc)    # add other discussions
+        self.assertEqual(new_cat0.discussions, new_disc)  # add other discussions
         self.assertEqual(new_cat1.discussions, new_disc)
         self.assertEqual(new_cat2.discussions, new_disc)
 
@@ -2909,7 +2919,8 @@ class TestFields(TransactionCaseWithUserDemo, TransactionExpressionCase):
         assertBinaryValue(record_bin_size, binary_size)
 
         # created and first read with bin_size=False
-        record_no_bin_size = self.env['test_new_api.model_binary'].with_context(bin_size=False).create({'binary': binary_value})
+        record_no_bin_size = self.env['test_new_api.model_binary'].with_context(bin_size=False).create(
+            {'binary': binary_value})
         record = self.env['test_new_api.model_binary'].browse(record.id)
         record_bin_size = record.with_context(bin_size=True)
 
@@ -2918,7 +2929,8 @@ class TestFields(TransactionCaseWithUserDemo, TransactionExpressionCase):
         assertBinaryValue(record_bin_size, binary_size)
 
         # created and first read with bin_size=True
-        record_bin_size = self.env['test_new_api.model_binary'].with_context(bin_size=True).create({'binary': binary_value})
+        record_bin_size = self.env['test_new_api.model_binary'].with_context(bin_size=True).create(
+            {'binary': binary_value})
         record = self.env['test_new_api.model_binary'].browse(record.id)
         record_no_bin_size = record.with_context(bin_size=False)
 
@@ -3726,13 +3738,16 @@ class TestHtmlField(TransactionCase):
             'comment4': some_ugly_html,
         })
 
-        self.assertEqual(record.comment1, some_ugly_html, 'Error in HTML field: content was sanitized but field has sanitize=False')
+        self.assertEqual(record.comment1, some_ugly_html,
+                         'Error in HTML field: content was sanitized but field has sanitize=False')
 
         self.assertIn('<tr class="', record.comment2)
 
         # sanitize should have closed tags left open in the original html
-        self.assertIn('</table>', record.comment3, 'Error in HTML field: content does not seem to have been sanitized despise sanitize=True')
-        self.assertIn('</td>', record.comment3, 'Error in HTML field: content does not seem to have been sanitized despise sanitize=True')
+        self.assertIn('</table>', record.comment3,
+                      'Error in HTML field: content does not seem to have been sanitized despise sanitize=True')
+        self.assertIn('</td>', record.comment3,
+                      'Error in HTML field: content does not seem to have been sanitized despise sanitize=True')
         self.assertIn('<tr style="', record.comment3, 'Style attr should not have been stripped')
         # sanitize does not keep classes if asked to
         self.assertNotIn('<tr class="', record.comment3)
@@ -4152,7 +4167,6 @@ class TestMany2oneReference(TransactionExpressionCase):
 
 @tagged('selection_abstract')
 class TestSelectionDeleteUpdate(TransactionCase):
-
     MODEL_ABSTRACT = 'test_new_api.state_mixin'
 
     def setUp(self):
@@ -4182,7 +4196,7 @@ class TestSelectionUpdates(TransactionCase):
         cls.env = cls.env(context={'lang': 'en_US'})
 
     def test_selection(self):
-        self.env[self.MODEL_BASE].create({})   # warming up
+        self.env[self.MODEL_BASE].create({})  # warming up
         with self.assertQueryCount(1):
             self.env[self.MODEL_BASE].create({})
         with self.assertQueryCount(1):
@@ -4207,7 +4221,6 @@ class TestSelectionUpdates(TransactionCase):
 
 @tagged('selection_ondelete_base')
 class TestSelectionOndelete(TransactionCase):
-
     MODEL_BASE = 'test_new_api.model_selection_base'
     MODEL_REQUIRED = 'test_new_api.model_selection_required'
     MODEL_NONSTORED = 'test_new_api.model_selection_non_stored'
@@ -4242,7 +4255,7 @@ class TestSelectionOndelete(TransactionCase):
         # verify that the ondelete policy has succesfully been applied
         self.assertEqual(rec1.my_selection, 'foo')
         self.assertEqual(rec2.my_selection, 'bar')
-        self.assertEqual(rec3.my_selection, 'foo')   # reset to default
+        self.assertEqual(rec3.my_selection, 'foo')  # reset to default
 
     def test_ondelete_base_null_explicit(self):
         rec1 = self.env[self.MODEL_BASE].create({'my_selection': 'foo'})
@@ -4363,7 +4376,6 @@ class TestSelectionOndelete(TransactionCase):
 
 @tagged('selection_ondelete_advanced')
 class TestSelectionOndeleteAdvanced(TransactionCase):
-
     MODEL_BASE = 'test_new_api.model_selection_base'
     MODEL_REQUIRED = 'test_new_api.model_selection_required'
 
@@ -4447,7 +4459,6 @@ class TestSelectionOndeleteAdvanced(TransactionCase):
 
 class TestFieldParametersValidation(TransactionCase):
     def test_invalid_parameter(self):
-
         class Foo(models.Model):
             _module = None
             _name = _description = 'test_new_api.field_parameter_validation'
@@ -4626,10 +4637,10 @@ class TestComputeQueries(TransactionCase):
 
         OrderLine = self.env.registry['test_new_api.order.line']
         with patch.object(
-            OrderLine,
-            '_compute_has_been_rewarded',
-            side_effect=OrderLine._compute_has_been_rewarded,
-            autospec=True,
+                OrderLine,
+                '_compute_has_been_rewarded',
+                side_effect=OrderLine._compute_has_been_rewarded,
+                autospec=True,
         ) as patch_compute:
             order.line_ids.mapped('has_been_rewarded')
             self.assertEqual(patch_compute.call_count, 1)
@@ -4726,6 +4737,7 @@ class TestWrongRelatedError(TransactionCase):
 
             foo_id = fields.Many2one('test_new_api.foo')
             foo_non_existing = fields.Char(related='foo_id.non_existing_field')
+
         Foo._build_model(self.registry, self.env.cr)
         self.addCleanup(self.registry.__delitem__, Foo._name)
 
@@ -4760,8 +4772,10 @@ class TestPrecomputeModel(TransactionCase):
 
         # see what happens if precompute depends on non-precompute
         self.addCleanup(self.registry.reset_changes)
+
         def reset():
             Model.lowup.precompute = True
+
         self.addCleanup(reset)
         self.patch(Model.lower, 'precompute', False)
         self.patch(Model.upper, 'precompute', False)
@@ -4769,7 +4783,6 @@ class TestPrecomputeModel(TransactionCase):
         with self.assertWarns(UserWarning):
             self.registry.setup_models(self.cr)
             self.registry.get_trigger_tree(Model._fields.values())
-
 
     def test_precompute_dependencies_many2one(self):
         Model = self.registry['test_new_api.precompute']
@@ -4799,7 +4812,6 @@ class TestPrecomputeModel(TransactionCase):
 class TestPrecompute(TransactionCase):
 
     def test_precompute(self):
-
         model = self.env['test_new_api.precompute']
         Model = self.registry['test_new_api.precompute']
         self.assertTrue(Model.lower.precompute)

@@ -1,4 +1,4 @@
-from odoo import api, fields, models,  _
+from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
 from .pine_labs_pos_request import call_pine_labs
@@ -7,10 +7,14 @@ from .pine_labs_pos_request import call_pine_labs
 class PosPaymentMethod(models.Model):
     _inherit = 'pos.payment.method'
 
-    pine_labs_merchant = fields.Char(string='Pine Labs Merchant ID', help='A merchant id issued directly to the merchant by Pine Labs.', copy=False)
-    pine_labs_store = fields.Char(string='Pine Labs Store ID', help='A store id issued directly to the merchant by Pine Labs.', copy=False)
-    pine_labs_client = fields.Char(string='Pine Labs Client ID', help='A client id issued directly to the merchant by Pine Labs.', copy=False)
-    pine_labs_security_token = fields.Char(string='Pine Labs Security Token', help='A security token issued directly to the merchant by Pine Labs.')
+    pine_labs_merchant = fields.Char(string='Pine Labs Merchant ID',
+                                     help='A merchant id issued directly to the merchant by Pine Labs.', copy=False)
+    pine_labs_store = fields.Char(string='Pine Labs Store ID',
+                                  help='A store id issued directly to the merchant by Pine Labs.', copy=False)
+    pine_labs_client = fields.Char(string='Pine Labs Client ID',
+                                   help='A client id issued directly to the merchant by Pine Labs.', copy=False)
+    pine_labs_security_token = fields.Char(string='Pine Labs Security Token',
+                                           help='A security token issued directly to the merchant by Pine Labs.')
     pine_labs_allowed_payment_mode = fields.Selection(
         selection=[('all', "All"), ('card', "Card"), ('upi', "Upi")],
         string='Pine Labs Allowed Payment Modes',
@@ -41,7 +45,8 @@ class PosPaymentMethod(models.Model):
                 'status': response['ResponseMessage'],
                 'plutusTransactionReferenceID': response['PlutusTransactionReferenceID'],
             }
-        default_error = _('The expected error code for the Pine Labs POS status request was not included in the response.')
+        default_error = _(
+            'The expected error code for the Pine Labs POS status request was not included in the response.')
         error = response.get('ResponseMessage') or response.get('errorMessage') or default_error
         return {"error": error}
 
@@ -54,17 +59,19 @@ class PosPaymentMethod(models.Model):
                 On failure, returns an error message.
         :rtype: dict
         """
-        body = { 'PlutusTransactionReferenceID': data['plutusTransactionReferenceID'] }
+        body = {'PlutusTransactionReferenceID': data['plutusTransactionReferenceID']}
         response = call_pine_labs(payment_method=self, endpoint='GetCloudBasedTxnStatus', payload=body)
         if response.get('ResponseCode') in [0, 1001]:
-            formatted_transaction_data = { d['Tag']: d['Value'] for d in response['TransactionData'] } if response.get('ResponseCode') == 0 else {}
+            formatted_transaction_data = {d['Tag']: d['Value'] for d in response['TransactionData']} if response.get(
+                'ResponseCode') == 0 else {}
             return {
                 'responseCode': response['ResponseCode'],
                 'status': response['ResponseMessage'],
                 'plutusTransactionReferenceID': response['PlutusTransactionReferenceID'],
                 'data': formatted_transaction_data,
             }
-        default_error = _('The expected error code for the Pine Labs POS status request was not included in the response.')
+        default_error = _(
+            'The expected error code for the Pine Labs POS status request was not included in the response.')
         error = response.get('ResponseMessage') or response.get('errorMessage') or default_error
         return {'error': error}
 
@@ -88,11 +95,13 @@ class PosPaymentMethod(models.Model):
                 'responseCode': response['ResponseCode'],
                 'notification': _('Pine Labs POS transaction cancelled. Retry again for collecting payment.')
             }
-        default_error = _('The expected error code for the Pine Labs POS status request was not included in the response.')
+        default_error = _(
+            'The expected error code for the Pine Labs POS status request was not included in the response.')
         error = response.get('ResponseMessage') or response.get('errorMessage') or default_error
-        return { 'error': error }
+        return {'error': error}
 
     @api.constrains('use_payment_terminal')
     def _check_pine_labs_terminal(self):
-        if any(record.use_payment_terminal == 'pine_labs' and record.company_id.currency_id.name != 'INR' for record in self):
+        if any(record.use_payment_terminal == 'pine_labs' and record.company_id.currency_id.name != 'INR' for record in
+               self):
             raise UserError(_('This Payment Terminal is only valid for INR Currency'))

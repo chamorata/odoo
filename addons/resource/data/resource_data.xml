@@ -12,8 +12,8 @@
         </record>
 
         <function
-            model="res.company"
-            name="_init_data_resource_calendar"
-            eval="[]"/>
+                model="res.company"
+                name="_init_data_resource_calendar"
+                eval="[]"/>
     </data>
 </odoo>

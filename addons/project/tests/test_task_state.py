@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.project.tests.test_project_base import TestProjectCommon
+
 from odoo.fields import Command
 from odoo.tests import tagged
-
-from odoo.addons.project.tests.test_project_base import TestProjectCommon
 
 
 @tagged('-at_install', 'post_install')
@@ -41,28 +41,31 @@ class TestTaskState(TestProjectCommon):
         self.task_1.write({
             'depend_on_ids': [Command.link(self.task_2.id)],
         })
-        self.assertEqual(self.task_1.state, '04_waiting_normal', "The task_1 should be in waiting_normal after depending on another open task")
-
+        self.assertEqual(self.task_1.state, '04_waiting_normal',
+                         "The task_1 should be in waiting_normal after depending on another open task")
 
         # 3) force task_1 state to done, the state of task_1 should become done
         self.task_1.write({
             'state': '1_done',
         })
-        self.assertEqual(self.task_1.state, '1_done', "The task_1 should be in done even if it has a depending task not closed")
+        self.assertEqual(self.task_1.state, '1_done',
+                         "The task_1 should be in done even if it has a depending task not closed")
 
         # 4) switch task_1 state back to in progress, its state should automatically switch back to waiting normal because of the task2 dependency
 
         self.task_1.write({
             'state': '01_in_progress',
         })
-        self.assertEqual(self.task_1.state, '04_waiting_normal', "task_1 state should automatically switch back to waiting_normal because of the task2 dependency")
+        self.assertEqual(self.task_1.state, '04_waiting_normal',
+                         "task_1 state should automatically switch back to waiting_normal because of the task2 dependency")
 
         # 5) change task_2 state to done, check that task_1 state has gone back to in_progress.
 
         self.task_2.write({
             'state': '1_canceled',
         })
-        self.assertEqual(self.task_1.state, '01_in_progress', "task_1 state should automatically switch back to in_progress when its dependency closes")
+        self.assertEqual(self.task_1.state, '01_in_progress',
+                         "task_1 state should automatically switch back to in_progress when its dependency closes")
 
     def test_change_stage_or_project(self):
         """
@@ -90,7 +93,8 @@ class TestTaskState(TestProjectCommon):
         (self.task_1 + self.task_2).write({
             'stage_id': stage_won.id,
         })
-        self.assertEqual(self.task_1.state, '01_in_progress', "task_1 state should automatically switch back to in_progress when its stage changes")
+        self.assertEqual(self.task_1.state, '01_in_progress',
+                         "task_1 state should automatically switch back to in_progress when its stage changes")
         self.assertEqual(self.task_2.state, '1_canceled', "task_2 state should stay in its closed state")
 
         # 3) change task_1 and task_2 project, they should both go back to in_progress
@@ -104,17 +108,21 @@ class TestTaskState(TestProjectCommon):
             'project_id': project_pigs.id
         })
         self.task_1._onchange_project_id()
-        self.assertEqual(self.task_1.state, '01_in_progress', "task_1 state should automatically switch back to in_progress when its project changes")
-        self.assertEqual(self.task_2.state, '01_in_progress', "task_2 state should automatically switch back to in_progress when its project changes")
+        self.assertEqual(self.task_1.state, '01_in_progress',
+                         "task_1 state should automatically switch back to in_progress when its project changes")
+        self.assertEqual(self.task_2.state, '01_in_progress',
+                         "task_2 state should automatically switch back to in_progress when its project changes")
 
     def test_duplicate_dependent_task(self):
         self.task_1.write({
             'depend_on_ids': [Command.link(self.task_2.id)],
         })
-        self.assertEqual(self.task_1.state, '04_waiting_normal', "The task_1 should be in waiting_normal after depending on another open task")
+        self.assertEqual(self.task_1.state, '04_waiting_normal',
+                         "The task_1 should be in waiting_normal after depending on another open task")
 
         self.task_1_copy = self.task_1.copy()
-        self.assertEqual(self.task_1.state, '04_waiting_normal', "The task_1_copy should keep his dependence and stay in waiting_normal")
+        self.assertEqual(self.task_1.state, '04_waiting_normal',
+                         "The task_1_copy should keep his dependence and stay in waiting_normal")
 
         self.task_2.write({
             'state': '03_approved',
@@ -125,15 +133,19 @@ class TestTaskState(TestProjectCommon):
         self.task_2.write({
             'state': '1_done',
         })
-        self.assertEqual(self.task_1.state, '04_waiting_normal', "The task_1 should have both tasks as dependencies and so should stay in waiting when one of the two is completed")
-        self.assertEqual(self.task_1_copy.state, '04_waiting_normal', "The task_1_copy should have both tasks as dependencies and so should stay in waiting when one of the two is completed")
+        self.assertEqual(self.task_1.state, '04_waiting_normal',
+                         "The task_1 should have both tasks as dependencies and so should stay in waiting when one of the two is completed")
+        self.assertEqual(self.task_1_copy.state, '04_waiting_normal',
+                         "The task_1_copy should have both tasks as dependencies and so should stay in waiting when one of the two is completed")
 
         self.task_2_copy.write({
             'state': '1_done',
         })
 
-        self.assertEqual(self.task_1.state, '01_in_progress', "The task_1 should have both tasks as dependencies and so should stay go to 'done' when both dependencies are completed")
-        self.assertEqual(self.task_1_copy.state, '01_in_progress', "The task_1_copy should have both tasks as dependencies and so should stay go to 'done' when both dependencies are completed")
+        self.assertEqual(self.task_1.state, '01_in_progress',
+                         "The task_1 should have both tasks as dependencies and so should stay go to 'done' when both dependencies are completed")
+        self.assertEqual(self.task_1_copy.state, '01_in_progress',
+                         "The task_1_copy should have both tasks as dependencies and so should stay go to 'done' when both dependencies are completed")
 
     def test_duplicate_task_state_retention_with_closed_dependencies(self):
         self.project_pigs.allow_task_dependencies = True

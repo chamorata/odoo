@@ -4,8 +4,9 @@ Running mode flags (gevent, prefork)
 This should be imported as early as possible.
 It will initialize the `odoo.evented` variable.
 """
-import odoo
 import sys
+
+import odoo
 
 odoo.evented = False
 
@@ -35,5 +36,6 @@ def patch_evented():
             else:
                 raise psycopg2.OperationalError(
                     "Bad result from poll: %r" % state)
+
     psycopg2.extensions.set_wait_callback(gevent_wait_callback)
     odoo.evented = True

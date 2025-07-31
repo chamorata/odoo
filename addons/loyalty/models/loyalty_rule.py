@@ -7,6 +7,7 @@ from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
 
+
 class LoyaltyRule(models.Model):
     _name = 'loyalty.rule'
     _description = 'Loyalty Rule'
@@ -18,9 +19,9 @@ class LoyaltyRule(models.Model):
         if 'program_type' in self.env.context:
             program_type = self.env.context['program_type']
             program_default_values = self.env['loyalty.program']._program_type_default_values()
-            if program_type in program_default_values and\
-                len(program_default_values[program_type]['rule_ids']) == 2 and\
-                isinstance(program_default_values[program_type]['rule_ids'][1][2], dict):
+            if program_type in program_default_values and \
+                    len(program_default_values[program_type]['rule_ids']) == 2 and \
+                    isinstance(program_default_values[program_type]['rule_ids'][1][2], dict):
                 result.update({
                     k: v for k, v in program_default_values[program_type]['rule_ids'][1][2].items() if k in fields_list
                 })
@@ -54,7 +55,7 @@ class LoyaltyRule(models.Model):
     reward_point_amount = fields.Float(default=1, string="Reward")
     # Only used for program_id.applies_on == 'future'
     reward_point_split = fields.Boolean(string='Split per unit', default=False,
-        help="Whether to separate reward coupons per matched unit, only applies to 'future' programs and trigger mode per money spent or unit paid..")
+                                        help="Whether to separate reward coupons per matched unit, only applies to 'future' programs and trigger mode per money spent or unit paid..")
     reward_point_name = fields.Char(related='program_id.portal_point_name', readonly=True)
     reward_point_mode = fields.Selection(selection=_get_reward_point_mode_selection, required=True, default='order')
 
@@ -76,23 +77,25 @@ class LoyaltyRule(models.Model):
     code = fields.Char(string='Discount code', compute='_compute_code', store=True, readonly=False)
 
     _sql_constraints = [
-        ('reward_point_amount_positive', 'CHECK (reward_point_amount > 0)', 'Rule points reward must be strictly positive.'),
+        ('reward_point_amount_positive', 'CHECK (reward_point_amount > 0)',
+         'Rule points reward must be strictly positive.'),
     ]
 
     @api.constrains('reward_point_split')
     def _constraint_trigger_multi(self):
         # Prevent setting trigger multi in case of nominative programs, it does not make sense to allow this
         for rule in self:
-            if rule.reward_point_split and (rule.program_id.applies_on == 'both' or rule.program_id.program_type == 'ewallet'):
+            if rule.reward_point_split and (
+                    rule.program_id.applies_on == 'both' or rule.program_id.program_type == 'ewallet'):
                 raise ValidationError(_('Split per unit is not allowed for Loyalty and eWallet programs.'))
 
     @api.constrains('code')
     def _constrains_code(self):
         mapped_codes = self.filtered('code').mapped('code')
         # Program code must be unique
-        if len(mapped_codes) != len(set(mapped_codes)) or\
-            self.env['loyalty.rule'].search_count(
-                [('mode', '=', 'with_code'), ('code', 'in', mapped_codes), ('id', 'not in', self.ids)]):
+        if len(mapped_codes) != len(set(mapped_codes)) or \
+                self.env['loyalty.rule'].search_count(
+                    [('mode', '=', 'with_code'), ('code', 'in', mapped_codes), ('id', 'not in', self.ids)]):
             raise ValidationError(_('The promo code must be unique.'))
         # Prevent coupons and programs from sharing a code
         if self.env['loyalty.card'].search_count([('code', 'in', mapped_codes)]):

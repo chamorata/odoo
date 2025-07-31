@@ -11,9 +11,9 @@ class Track(models.Model):
 
     youtube_video_url = fields.Char('YouTube Video Link')
     youtube_video_id = fields.Char('YouTube video ID', compute='_compute_youtube_video_id',
-        help="Extracted from the video URL and used to infer various links (embed/thumbnail/...)")
+                                   help="Extracted from the video URL and used to infer various links (embed/thumbnail/...)")
     is_youtube_replay = fields.Boolean('Is YouTube Replay',
-        help="Check this option if the video is already available on YouTube to avoid showing 'Direct' options (Chat, ...)")
+                                       help="Check this option if the video is already available on YouTube to avoid showing 'Direct' options (Chat, ...)")
     is_youtube_chat_available = fields.Boolean('Is Chat Available', compute='_compute_is_youtube_chat_available')
 
     @api.depends('youtube_video_url')
@@ -38,4 +38,5 @@ class Track(models.Model):
     @api.depends('youtube_video_url', 'is_youtube_replay', 'date', 'date_end', 'is_track_upcoming', 'is_track_live')
     def _compute_is_youtube_chat_available(self):
         for track in self:
-            track.is_youtube_chat_available = track.youtube_video_url and not track.is_youtube_replay and (track.is_track_soon or track.is_track_live)
+            track.is_youtube_chat_available = track.youtube_video_url and not track.is_youtube_replay and (
+                        track.is_track_soon or track.is_track_live)

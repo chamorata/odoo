@@ -1,18 +1,18 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+import hashlib
+import threading
 from datetime import datetime, timedelta
 
-import hashlib
 import pytz
-import threading
 
 from odoo import fields, models, api, _
 from odoo.addons.base.models.res_partner import _tz_get
 from odoo.exceptions import UserError
-from odoo.tools import split_every, SQL
-from odoo.tools.misc import _format_time_ago
 from odoo.http import request
 from odoo.osv import expression
+from odoo.tools import split_every, SQL
+from odoo.tools.misc import _format_time_ago
 
 
 class WebsiteTrack(models.Model):
@@ -52,30 +52,40 @@ class WebsiteVisitor(models.Model):
     name = fields.Char('Name', related='partner_id.name')
     access_token = fields.Char(required=True, default=_get_access_token, copy=False)
     website_id = fields.Many2one('website', "Website", readonly=True)
-    partner_id = fields.Many2one('res.partner', string="Contact", help="Partner of the last logged in user.", compute='_compute_partner_id', store=True, index='btree_not_null')
+    partner_id = fields.Many2one('res.partner', string="Contact", help="Partner of the last logged in user.",
+                                 compute='_compute_partner_id', store=True, index='btree_not_null')
     partner_image = fields.Binary(related='partner_id.image_1920')
 
     # localisation and info
     country_id = fields.Many2one('res.country', 'Country', readonly=True)
     country_flag = fields.Char(related="country_id.image_url", string="Country Flag")
-    lang_id = fields.Many2one('res.lang', string='Language', help="Language from the website when visitor has been created")
+    lang_id = fields.Many2one('res.lang', string='Language',
+                              help="Language from the website when visitor has been created")
     timezone = fields.Selection(_tz_get, string='Timezone')
     email = fields.Char(string='Email', compute='_compute_email_phone', compute_sudo=True)
     mobile = fields.Char(string='Mobile', compute='_compute_email_phone', compute_sudo=True)
 
     # Visit fields
-    visit_count = fields.Integer('# Visits', default=1, readonly=True, help="A new visit is considered if last connection was more than 8 hours ago.")
+    visit_count = fields.Integer('# Visits', default=1, readonly=True,
+                                 help="A new visit is considered if last connection was more than 8 hours ago.")
     website_track_ids = fields.One2many('website.track', 'visitor_id', string='Visited Pages History', readonly=True)
-    visitor_page_count = fields.Integer('Page Views', compute="_compute_page_statistics", help="Total number of visits on tracked pages")
-    page_ids = fields.Many2many('website.page', string="Visited Pages", compute="_compute_page_statistics", groups="website.group_website_designer", search="_search_page_ids")
-    page_count = fields.Integer('# Visited Pages', compute="_compute_page_statistics", help="Total number of tracked page visited")
-    last_visited_page_id = fields.Many2one('website.page', string="Last Visited Page", compute="_compute_last_visited_page_id")
+    visitor_page_count = fields.Integer('Page Views', compute="_compute_page_statistics",
+                                        help="Total number of visits on tracked pages")
+    page_ids = fields.Many2many('website.page', string="Visited Pages", compute="_compute_page_statistics",
+                                groups="website.group_website_designer", search="_search_page_ids")
+    page_count = fields.Integer('# Visited Pages', compute="_compute_page_statistics",
+                                help="Total number of tracked page visited")
+    last_visited_page_id = fields.Many2one('website.page', string="Last Visited Page",
+                                           compute="_compute_last_visited_page_id")
 
     # Time fields
     create_date = fields.Datetime('First Connection', readonly=True)
-    last_connection_datetime = fields.Datetime('Last Connection', default=fields.Datetime.now, help="Last page view date", readonly=True)
-    time_since_last_action = fields.Char('Last action', compute="_compute_time_statistics", help='Time since last page view. E.g.: 2 minutes ago')
-    is_connected = fields.Boolean('Is connected?', compute='_compute_time_statistics', help='A visitor is considered as connected if his last page view was within the last 5 minutes.')
+    last_connection_datetime = fields.Datetime('Last Connection', default=fields.Datetime.now,
+                                               help="Last page view date", readonly=True)
+    time_since_last_action = fields.Char('Last action', compute="_compute_time_statistics",
+                                         help='Time since last page view. E.g.: 2 minutes ago')
+    is_connected = fields.Boolean('Is connected?', compute='_compute_time_statistics',
+                                  help='A visitor is considered as connected if his last page view was within the last 5 minutes.')
 
     _sql_constraints = [
         ('access_token_unique', 'unique(access_token)', 'Access token should be unique.'),
@@ -152,7 +162,8 @@ class WebsiteVisitor(models.Model):
     @api.depends('last_connection_datetime')
     def _compute_time_statistics(self):
         for visitor in self:
-            visitor.time_since_last_action = _format_time_ago(self.env, (datetime.now() - visitor.last_connection_datetime))
+            visitor.time_since_last_action = _format_time_ago(self.env,
+                                                              (datetime.now() - visitor.last_connection_datetime))
             visitor.is_connected = (datetime.now() - visitor.last_connection_datetime) < timedelta(minutes=5)
 
     def _check_for_message_composer(self):
@@ -247,10 +258,10 @@ class WebsiteVisitor(models.Model):
                 )
                 SELECT id, upsert from visitor;
                 """,
-                query=query,
-                url=force_track_values['url'],
-                page_id=force_track_values.get('page_id'),
-            )
+                        query=query,
+                        url=force_track_values['url'],
+                        page_id=force_track_values.get('page_id'),
+                        )
 
         [result] = self.env.execute_query(query)
         return result
@@ -341,9 +352,9 @@ class WebsiteVisitor(models.Model):
         visitor_ids = visitor_model.sudo().search(self._inactive_visitors_domain(), limit=limit).ids
         visitor_done = 0
         for inactive_visitors_batch in split_every(
-            batch_size,
-            visitor_ids,
-            visitor_model.browse,
+                batch_size,
+                visitor_ids,
+                visitor_model.browse,
         ):
             inactive_visitors_batch.unlink()
             visitor_done += len(inactive_visitors_batch)

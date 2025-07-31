@@ -1,11 +1,11 @@
 import json
-
 from hashlib import sha256
-from lxml import html
 from unittest.mock import Mock, patch
+
+from lxml import html
+from odoo.addons.website.tools import MockRequest
 from werkzeug.urls import url_parse
 
-from odoo.addons.website.tools import MockRequest
 from odoo.tests import common
 
 
@@ -27,7 +27,8 @@ class TestMenu(common.TransactionCase):
             'parent_id': self.menu_root.id,
         })
 
-        self.assertEqual(total_menu_items + self.nb_website * 2, Menu.search_count([]), "Creating a menu without a website_id should create this menu for every website_id")
+        self.assertEqual(total_menu_items + self.nb_website * 2, Menu.search_count([]),
+                         "Creating a menu without a website_id should create this menu for every website_id")
 
     def test_02_menu_count(self):
         Menu = self.env['website.menu']
@@ -52,7 +53,8 @@ class TestMenu(common.TransactionCase):
         ]
         Menu.save(1, {'data': data, 'to_delete': []})
 
-        self.assertEqual(total_menu_items + 2, Menu.search_count([]), "Creating 2 new menus should create only 2 menus records")
+        self.assertEqual(total_menu_items + 2, Menu.search_count([]),
+                         "Creating 2 new menus should create only 2 menus records")
 
     def test_03_default_menu_for_new_website(self):
         Website = self.env['website']
@@ -65,12 +67,14 @@ class TestMenu(common.TransactionCase):
             'name': 'Sub Default Menu',
             'parent_id': default_menu.id,
         })
-        self.assertEqual(total_menu_items + 1 + self.nb_website, Menu.search_count([]), "Creating a default child menu should create it as such and copy it on every website")
+        self.assertEqual(total_menu_items + 1 + self.nb_website, Menu.search_count([]),
+                         "Creating a default child menu should create it as such and copy it on every website")
 
         # Ensure new website got a top menu
         total_menus = Menu.search_count([])
         Website.create({'name': 'new website'})
-        self.assertEqual(total_menus + 4, Menu.search_count([]), "New website's bootstraping should have duplicate default menu tree (Top/Home/Contactus/Sub Default Menu)")
+        self.assertEqual(total_menus + 4, Menu.search_count([]),
+                         "New website's bootstraping should have duplicate default menu tree (Top/Home/Contactus/Sub Default Menu)")
 
     def test_04_specific_menu_translation(self):
         IrModuleModule = self.env['ir.module.module']
@@ -122,7 +126,8 @@ class TestMenu(common.TransactionCase):
 
         default_menu = self.env.ref('website.main_menu')
         default_menu.child_id[0].unlink()
-        self.assertEqual(total_menu_items - 1 - self.nb_website, Menu.search_count([]), "Deleting a default menu item should delete its 'copies' (same URL) from website's menu trees. In this case, the default child menu and its copies on website 1 and website 2")
+        self.assertEqual(total_menu_items - 1 - self.nb_website, Menu.search_count([]),
+                         "Deleting a default menu item should delete its 'copies' (same URL) from website's menu trees. In this case, the default child menu and its copies on website 1 and website 2")
 
     def test_06_menu_active(self):
         Menu = self.env['website.menu']
@@ -163,14 +168,16 @@ class TestMenu(common.TransactionCase):
             url = a_menu.url
             self.request_url_mock = 'http://localhost:8069' + url
             with MockRequest(self.env, website=website_1), \
-                 patch('odoo.addons.website.models.website_menu.url_parse', new=url_parse_mock):
+                    patch('odoo.addons.website.models.website_menu.url_parse', new=url_parse_mock):
                 self.assertTrue(a_menu._is_active(), "Same path, no domain, no qs, should match")
                 a_menu.url = f'{url}#anchor'
-                self.assertTrue(a_menu._is_active(), "Same path, no domain, no qs, should match (anchor should be ignored)")
+                self.assertTrue(a_menu._is_active(),
+                                "Same path, no domain, no qs, should match (anchor should be ignored)")
                 a_menu.url = f'{url}?qs=1'
                 self.assertFalse(a_menu._is_active(), "Same path, no domain, qs mismatch, should not match")
                 self.request_url_mock = f'http://localhost:8069{url}?qs=2'
-                self.assertFalse(a_menu._is_active(), "Same path, no domain, qs mismatch (not the same val), should not match")
+                self.assertFalse(a_menu._is_active(),
+                                 "Same path, no domain, qs mismatch (not the same val), should not match")
                 self.request_url_mock = f'http://localhost:8069{url}?qs=1'
                 self.assertTrue(a_menu._is_active(), "Same path, no domain, qs match, should match")
                 self.request_url_mock = f'http://localhost:8069{url}?qs=1&qs_extra=1'
@@ -205,7 +212,7 @@ class TestMenu(common.TransactionCase):
         # Second, test a nested menu configuration (simple URL, no qs/anchor)
         self.request_url_mock = 'http://localhost:8069/'
         with MockRequest(self.env, website=website_1), \
-             patch('odoo.addons.website.models.website_menu.url_parse', new=url_parse_mock):
+                patch('odoo.addons.website.models.website_menu.url_parse', new=url_parse_mock):
             self.assertFalse(menu._is_active(), "Same path but it's a container menu, its URL shouldn't be considered")
             self.assertTrue(menu2._is_active(), "Same path and no child -> Should be active")
             self.assertFalse(menu3._is_active(), "Not same path + children")
@@ -306,7 +313,8 @@ class TestMenuHttp(common.HttpCase):
         }
         self.simulate_rpc_save_menu(data)
         self.assertFalse(self.menu.page_id, "M2o should have been unset as this is an anchor URL.")
-        self.assertEqual(self.menu.url, self.page_url + '#anchor', "Page URL should have been properly prefixed with the referer url")
+        self.assertEqual(self.menu.url, self.page_url + '#anchor',
+                         "Page URL should have been properly prefixed with the referer url")
         self.assertEqual(self.page.url, self.page_url, "Page URL should not have changed")
 
     def test_03_mega_menu_translate(self):

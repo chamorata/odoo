@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.mass_mailing.controllers import main
+
 from odoo import tools, _
 from odoo.http import route, request
-from odoo.addons.mass_mailing.controllers import main
 
 
 class MassMailController(main.MassMailController):

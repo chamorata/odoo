@@ -1,10 +1,11 @@
 import datetime
 import logging
-import pytz
 from unittest.mock import patch
 
-from odoo.tests.common import TransactionCase
+import pytz
+
 from odoo._monkeypatches.pytz import _tz_mapping
+from odoo.tests.common import TransactionCase
 
 _logger = logging.getLogger(__name__)
 
@@ -13,6 +14,7 @@ class TestTZ(TransactionCase):
 
     def test_tz_legacy(self):
         d = datetime.datetime(1969, 7, 16)
+
         # See https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
         def assertTZEqual(tz1, tz2):
             self.assertEqual(tz1.localize(d).strftime('%z'), tz2.localize(d).strftime('%z'))
@@ -44,9 +46,11 @@ class TestTZ(TransactionCase):
             'America/New_York': 'UTC',
         }):
             self.assertNotIn('DeprecatedUtc', pytz.all_timezones_set, 'DeprecatedUtc is not available')
-            self.assertEqual(pytz.timezone('DeprecatedUtc'), pytz.timezone('UTC'), 'DeprecatedUtc does not exist and should have been replaced with UTC')
+            self.assertEqual(pytz.timezone('DeprecatedUtc'), pytz.timezone('UTC'),
+                             'DeprecatedUtc does not exist and should have been replaced with UTC')
             self.assertIn('America/New_York', pytz.all_timezones_set, 'America/New_York is available')
-            self.assertNotEqual(pytz.timezone('America/New_York'), pytz.timezone('UTC'), 'America/New_York exists and should not have been replaced with UTC')
+            self.assertNotEqual(pytz.timezone('America/New_York'), pytz.timezone('UTC'),
+                                'America/New_York exists and should not have been replaced with UTC')
 
     def test_cannot_set_deprecated_timezone(self):
         # this should be ok
@@ -60,8 +64,10 @@ class TestTZ(TransactionCase):
         partner = self.env['res.partner'].create({'name': 'test', 'tz': 'UTC'})
         self.env.cr.execute("""UPDATE res_partner set tz='US/Eastern' WHERE id=%s""", (partner.id,))
         partner.invalidate_recordset()
-        self.assertEqual(partner.tz, 'US/Eastern')  # tz was update despite selection not existing, but data was not migrated
+        self.assertEqual(partner.tz,
+                         'US/Eastern')  # tz was update despite selection not existing, but data was not migrated
         # comparing with 'America/New_York' see tools/_monkeypatches_pytz.py for mapping
         expected_offset = datetime.datetime.now(pytz.timezone('America/New_York')).strftime('%z')
         # offest will be -0400 in summer, -0500 in winter
-        self.assertEqual(partner.tz_offset, expected_offset, "We don't expect pytz.timezone to fail if the timezone diseapeared when chaging os version")
+        self.assertEqual(partner.tz_offset, expected_offset,
+                         "We don't expect pytz.timezone to fail if the timezone diseapeared when chaging os version")

@@ -1,7 +1,8 @@
 from contextlib import contextmanager
 
-from odoo import Command
 from odoo.addons.account.tests.common import TestTaxCommon
+
+from odoo import Command
 from odoo.tests import tagged
 
 
@@ -2604,7 +2605,8 @@ class TestTaxesTaxTotalsSummary(TestTaxCommon):
         self.tax_groups[3].preceding_subtotal = "PRE GROUP 1"  # same as tax_groups[1], on purpose
         tax_10.tax_group_id = self.tax_groups[3]  # preceding_subtotal == "PRE GROUP 1"
         tax_42.tax_group_id = self.tax_groups[1]  # preceding_subtotal == "PRE GROUP 1"
-        tax_minus_25 = self.percent_tax(-25.0, tax_group_id=self.tax_groups[2].id)  # preceding_subtotal == "PRE GROUP 2"
+        tax_minus_25 = self.percent_tax(-25.0,
+                                        tax_group_id=self.tax_groups[2].id)  # preceding_subtotal == "PRE GROUP 2"
         tax_30 = self.percent_tax(30.0, tax_group_id=self.tax_groups[0].id)
 
         document = self.populate_document(self.init_document([

@@ -6,23 +6,24 @@
                 <t t-foreach="props.paymentLines" t-as="line" t-key="line.uuid">
                     <t t-if="line.isSelected()">
                         <div t-attf-class="paymentline selected d-flex align-items-center {{ this.ui.isSmall ? 'bg-100' : 'bg-200'}} border rounded-3"
-                            t-att-class="selectedLineClass(line)">
-                            <div class="payment-infos d-flex align-items-center justify-content-between flex-grow-1 px-3 py-3 text-truncate cursor-pointer fs-2" t-on-click="() => this.selectLine(line)">
+                             t-att-class="selectedLineClass(line)">
+                            <div class="payment-infos d-flex align-items-center justify-content-between flex-grow-1 px-3 py-3 text-truncate cursor-pointer fs-2"
+                                 t-on-click="() => this.selectLine(line)">
                                  <span class="payment-name"><t t-esc="line.payment_method_id.name"/></span>
-                                 <div class="payment-amount px-3">
-                                    <t t-esc="env.utils.formatCurrency(line.get_amount())" />
+                                <div class="payment-amount px-3">
+                                    <t t-esc="env.utils.formatCurrency(line.get_amount())"/>
                                 </div>
                             </div>
                             <t t-if="!line.payment_status or !['done', 'reversed', 'waitingCard', 'waitingCapture'].includes(line.payment_status)">
                                 <button class="delete-button btn btn-link mx-2 px-3"
-                                    t-on-click="() => this.props.deleteLine(line.uuid)"
-                                    aria-label="Delete" title="Delete">
-                                    <i class="oi oi-close text-danger" />
+                                        t-on-click="() => this.props.deleteLine(line.uuid)"
+                                        aria-label="Delete" title="Delete">
+                                    <i class="oi oi-close text-danger"/>
                                 </button>
                             </t>
-                           <t t-elif="line.payment_status and ['waitingCard', 'waitingCapture'].includes(line.payment_status)">
+                            <t t-elif="line.payment_status and ['waitingCard', 'waitingCapture'].includes(line.payment_status)">
                                 <div class="mx-2 px-3">
-                                    <i class="fa fa-circle-o-notch fa-spin" role="img" />
+                                    <i class="fa fa-circle-o-notch fa-spin" role="img"/>
                                 </div>
                             </t>
                         </div>
@@ -32,7 +33,9 @@
                                     <div class="electronic_status">
                                         Payment request pending
                                     </div>
-                                    <div class="button send_payment_request highlight text-bg-primary" title="Send Payment Request" t-on-click="() => this.props.sendPaymentRequest(line)">
+                                    <div class="button send_payment_request highlight text-bg-primary"
+                                         title="Send Payment Request"
+                                         t-on-click="() => this.props.sendPaymentRequest(line)">
                                         Send
                                     </div>
                                 </t>
@@ -40,7 +43,9 @@
                                     <div class="electronic_status">
                                         Transaction cancelled
                                     </div>
-                                    <div class="button send_payment_request highlight text-bg-primary" title="Send Payment Request" t-on-click="() => this.props.sendPaymentRequest(line)">
+                                    <div class="button send_payment_request highlight text-bg-primary"
+                                         title="Send Payment Request"
+                                         t-on-click="() => this.props.sendPaymentRequest(line)">
                                         Retry
                                     </div>
                                 </t>
@@ -48,7 +53,8 @@
                                     <div class="electronic_status">
                                         Connection error
                                     </div>
-                                    <div class="button send_force_done" title="Force Done" t-on-click="() => this.props.sendForceDone(line)">
+                                    <div class="button send_force_done" title="Force Done"
+                                         t-on-click="() => this.props.sendForceDone(line)">
                                         Force done
                                     </div>
                                 </t>
@@ -56,7 +62,8 @@
                                     <div class="electronic_status">
                                         Waiting for card
                                     </div>
-                                    <div class="button send_payment_cancel" title="Cancel Payment Request" t-on-click="() => this.props.sendPaymentCancel(line)">
+                                    <div class="button send_payment_cancel" title="Cancel Payment Request"
+                                         t-on-click="() => this.props.sendPaymentCancel(line)">
                                         Cancel
                                     </div>
                                 </t>
@@ -65,7 +72,7 @@
                                         Request sent
                                     </div>
                                     <div>
-                                        <i class="fa fa-circle-o-notch fa-spin" role="img" />
+                                        <i class="fa fa-circle-o-notch fa-spin" role="img"/>
                                     </div>
                                 </t>
                                 <t t-elif="line.payment_status == 'reversing'">
@@ -73,7 +80,7 @@
                                         Reversal request sent to terminal
                                     </div>
                                     <div>
-                                        <i class="fa fa-circle-o-notch fa-spin" role="img" />
+                                        <i class="fa fa-circle-o-notch fa-spin" role="img"/>
                                     </div>
                                 </t>
                                 <t t-elif="line.payment_status == 'done'">
@@ -81,7 +88,8 @@
                                         Payment Successful
                                     </div>
                                     <t t-if="line.can_be_reversed">
-                                        <div class="button send_payment_reversal" title="Reverse Payment" t-on-click="() => this.props.sendPaymentReverse(line)">
+                                        <div class="button send_payment_reversal" title="Reverse Payment"
+                                             t-on-click="() => this.props.sendPaymentReverse(line)">
                                             Reverse
                                         </div>
                                     </t>
@@ -100,18 +108,19 @@
                     </t>
                     <t t-else="">
                         <div class="paymentline d-flex align-items-center bg-view border rounded-3"
-                            t-att-class="unselectedLineClass(line)">
-                             <div class="payment-infos d-flex align-items-center justify-content-between flex-grow-1 px-3 py-3 text-truncate cursor-pointer fs-2" t-on-click="() => this.selectLine(line)">
-                                 <t t-esc="line.payment_method_id.name" />
+                             t-att-class="unselectedLineClass(line)">
+                             <div class="payment-infos d-flex align-items-center justify-content-between flex-grow-1 px-3 py-3 text-truncate cursor-pointer fs-2"
+                                  t-on-click="() => this.selectLine(line)">
+                                 <t t-esc="line.payment_method_id.name"/>
                                  <div class="payment-amount px-3">
-                                    <t t-esc="env.utils.formatCurrency(line.get_amount())" />
+                                    <t t-esc="env.utils.formatCurrency(line.get_amount())"/>
                                 </div>
                              </div>
                             <t t-if="!line.payment_status or !['done', 'reversed'].includes(line.payment_status)">
                                 <div class="delete-button delete-button btn btn-link mx-2 px-3"
-                                    t-on-click="() => this.props.deleteLine(line.uuid)"
-                                    aria-label="Delete" title="Delete">
-                                    <i class="oi oi-close text-danger" />
+                                     t-on-click="() => this.props.deleteLine(line.uuid)"
+                                     aria-label="Delete" title="Delete">
+                                    <i class="oi oi-close text-danger"/>
                                 </div>
                             </t>
                         </div>

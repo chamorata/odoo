@@ -5,7 +5,7 @@
             <attribute name="t-on-click.stop.prevent">onClickAvatar</attribute>
         </xpath>
     </t>
-    
+
     <t t-name="mail.KanbanMany2OneAvatarUserField" t-inherit="web.KanbanMany2OneAvatarField" t-inherit-mode="primary">
         <xpath expr="//span[hasclass('o_m2o_avatar')]" position="attributes">
             <attribute name="t-on-click.stop.prevent">onClickAvatar</attribute>

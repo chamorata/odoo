@@ -3,10 +3,12 @@
 
 from odoo import models, fields, api, _
 
+
 class AccountMove(models.Model):
     _inherit = "account.move"
 
-    debit_origin_id = fields.Many2one('account.move', 'Original Invoice Debited', readonly=True, copy=False, index='btree_not_null')
+    debit_origin_id = fields.Many2one('account.move', 'Original Invoice Debited', readonly=True, copy=False,
+                                      index='btree_not_null')
     debit_note_ids = fields.One2many('account.move', 'debit_origin_id', 'Debit Notes',
                                      help="The debit notes created for this invoice")
     debit_note_count = fields.Integer('Number of Debit Notes', compute='_compute_debit_count')
@@ -14,7 +16,7 @@ class AccountMove(models.Model):
     @api.depends('debit_note_ids')
     def _compute_debit_count(self):
         debit_data = self.env['account.move']._read_group([('debit_origin_id', 'in', self.ids)],
-                                                        ['debit_origin_id'], ['__count'])
+                                                          ['debit_origin_id'], ['__count'])
         data_map = {debit_origin.id: count for debit_origin, count in debit_data}
         for inv in self:
             inv.debit_note_count = data_map.get(inv.id, 0.0)
@@ -42,9 +44,9 @@ class AccountMove(models.Model):
     def _get_starting_sequence(self):
         starting_sequence = super()._get_starting_sequence()
         if (
-            self.journal_id.debit_sequence
-            and self.debit_origin_id
-            and self.move_type in ("in_invoice", "out_invoice")
+                self.journal_id.debit_sequence
+                and self.debit_origin_id
+                and self.move_type in ("in_invoice", "out_invoice")
         ):
             starting_sequence = "D" + starting_sequence
         return starting_sequence

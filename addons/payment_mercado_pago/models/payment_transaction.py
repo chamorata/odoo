@@ -4,15 +4,13 @@ import logging
 import pprint
 from urllib.parse import quote as url_quote
 
+from odoo.addons.payment_mercado_pago import const
+from odoo.addons.payment_mercado_pago.controllers.main import MercadoPagoController
 from werkzeug import urls
 
 from odoo import _, api, models
 from odoo.exceptions import ValidationError
 from odoo.tools import float_round
-
-from odoo.addons.payment_mercado_pago import const
-from odoo.addons.payment_mercado_pago.controllers.main import MercadoPagoController
-
 
 _logger = logging.getLogger(__name__)
 

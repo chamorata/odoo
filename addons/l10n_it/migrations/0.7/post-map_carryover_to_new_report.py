@@ -1,6 +1,7 @@
 from odoo import api, SUPERUSER_ID
 from odoo.tools import sql
 
+
 def migrate(cr, version):
     env = api.Environment(cr, SUPERUSER_ID, {})
     vat_report_id = env.ref('l10n_it.tax_report_vat').id

@@ -1,31 +1,27 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-import base64
 import functools
 import json
 import logging
-import os
 
 import werkzeug.urls
 import werkzeug.utils
+from odoo.addons.auth_signup.controllers.main import AuthSignupHome as Home
+from odoo.addons.web.controllers.utils import ensure_db, _get_login_redirect_url
 from werkzeug.exceptions import BadRequest
 
 from odoo import api, http, SUPERUSER_ID, _
+from odoo import registry as registry_get
 from odoo.exceptions import AccessDenied
 from odoo.http import request, Response
-from odoo import registry as registry_get
 from odoo.tools.misc import clean_context
-
-from odoo.addons.auth_signup.controllers.main import AuthSignupHome as Home
-from odoo.addons.web.controllers.utils import ensure_db, _get_login_redirect_url
-
 
 _logger = logging.getLogger(__name__)
 
 
-#----------------------------------------------------------
+# ----------------------------------------------------------
 # helpers
-#----------------------------------------------------------
+# ----------------------------------------------------------
 def fragment_to_query_string(func):
     @functools.wraps(func)
     def wrapper(self, *a, **kw):
@@ -45,12 +41,13 @@ def fragment_to_query_string(func):
                 window.location = r;
             </script></head><body></body></html>""")
         return func(self, *a, **kw)
+
     return wrapper
 
 
-#----------------------------------------------------------
+# ----------------------------------------------------------
 # Controller
-#----------------------------------------------------------
+# ----------------------------------------------------------
 class OAuthLogin(Home):
     def list_providers(self):
         try:
@@ -101,7 +98,8 @@ class OAuthLogin(Home):
             elif error == '2':
                 error = _("Access Denied")
             elif error == '3':
-                error = _("You do not have access to this database or your invitation has expired. Please ask for an invitation and be sure to follow the link in your invitation email.")
+                error = _(
+                    "You do not have access to this database or your invitation has expired. Please ask for an invitation and be sure to follow the link in your invitation email.")
             else:
                 error = None
 
@@ -165,7 +163,8 @@ class OAuthController(http.Controller):
             url = "/web/login?oauth_error=1"
         except AccessDenied:
             # oauth credentials not valid, user could be on a temporary session
-            _logger.info('OAuth2: access denied, redirect to main page in case a valid session exists, without setting cookies')
+            _logger.info(
+                'OAuth2: access denied, redirect to main page in case a valid session exists, without setting cookies')
             url = "/web/login?oauth_error=3"
         except Exception:
             # signup error

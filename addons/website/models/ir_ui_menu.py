@@ -16,9 +16,9 @@ class IrUiMenu(models.Model):
             for menu in root_menus['children']:
                 # Force the action.
                 if (
-                    not menu['action']
-                    and web_menus[menu['id']]['actionModel']
-                    and web_menus[menu['id']]['actionID']
+                        not menu['action']
+                        and web_menus[menu['id']]['actionModel']
+                        and web_menus[menu['id']]['actionID']
                 ):
                     menu['action'] = f"{web_menus[menu['id']]['actionModel']},{web_menus[menu['id']]['actionID']}"
 

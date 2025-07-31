@@ -102,8 +102,8 @@ class AccountEdiXmlUBL21(models.AbstractModel):
 
         # deferred_start_date & deferred_end_date are enterprise-only fields
         if (
-            vals['document_type'] in {'invoice', 'credit_note'}
-            and (base_line.get('deferred_start_date') or base_line.get('deferred_end_date'))
+                vals['document_type'] in {'invoice', 'credit_note'}
+                and (base_line.get('deferred_start_date') or base_line.get('deferred_end_date'))
         ):
             line_node['cac:InvoicePeriod'] = {
                 'cbc:StartDate': {'_text': base_line['deferred_start_date']},

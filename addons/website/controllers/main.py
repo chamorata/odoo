@@ -1,37 +1,36 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import base64
 import datetime
-import os
 import logging
+import os
 import re
+import zipfile
+from hashlib import md5
+from io import BytesIO
+from itertools import islice
+from textwrap import shorten
+from xml.etree import ElementTree as ET
+
 import requests
 import werkzeug.urls
 import werkzeug.utils
 import werkzeug.wrappers
-import zipfile
-
-from hashlib import md5
-from io import BytesIO
-from itertools import islice
 from lxml import etree, html
-from textwrap import shorten
-from werkzeug.exceptions import NotFound
-from xml.etree import ElementTree as ET
-
-import odoo
-
-from odoo import http, models, fields, _
-from odoo.exceptions import AccessError, UserError
-from odoo.http import request, SessionExpiredException
-from odoo.osv import expression
-from odoo.tools import OrderedSet, escape_psql, html_escape as escape, py_to_js_locale
-from odoo.addons.base.models.ir_http import EXTENSION_TO_WEB_MIMETYPES
-from odoo.addons.base.models.ir_qweb import QWebException
 from odoo.addons.portal.controllers.portal import pager as portal_pager
 from odoo.addons.portal.controllers.web import Home
 from odoo.addons.web.controllers.binary import Binary
 from odoo.addons.web.controllers.session import Session
 from odoo.addons.website.tools import get_base_domain
+from werkzeug.exceptions import NotFound
+
+import odoo
+from odoo import http, models, fields, _
+from odoo.addons.base.models.ir_http import EXTENSION_TO_WEB_MIMETYPES
+from odoo.addons.base.models.ir_qweb import QWebException
+from odoo.exceptions import AccessError, UserError
+from odoo.http import request, SessionExpiredException
+from odoo.osv import expression
+from odoo.tools import OrderedSet, escape_psql, html_escape as escape, py_to_js_locale
 from odoo.tools.json import scriptsafe as json
 
 logger = logging.getLogger(__name__)
@@ -129,14 +128,15 @@ class Website(Home):
 
         raise request.not_found()
 
-    @http.route('/website/force/<int:website_id>', type='http', auth="user", website=True, sitemap=False, multilang=False, readonly=True)
+    @http.route('/website/force/<int:website_id>', type='http', auth="user", website=True, sitemap=False,
+                multilang=False, readonly=True)
     def website_force(self, website_id, path='/', isredir=False, **kw):
         """ To switch from a website to another, we need to force the website in
         session, AFTER landing on that website domain (if set) as this will be a
         different session.
         """
         if not (request.env.user.has_group('website.group_multi_website')
-           and request.env.user.has_group('website.group_website_restricted_editor')):
+                and request.env.user.has_group('website.group_website_restricted_editor')):
             # The user might not be logged in on the forced website, so he won't
             # have rights. We just redirect to the path as the user is already
             # on the domain (basically a no-op as it won't change domain or
@@ -153,12 +153,14 @@ class Website(Home):
             domain_to = get_base_domain(website.domain)
             if domain_from != domain_to:
                 # redirect to correct domain for a correct routing map
-                url_to = werkzeug.urls.url_join(website.domain, '/website/force/%s?isredir=1&path=%s' % (website.id, path))
+                url_to = werkzeug.urls.url_join(website.domain,
+                                                '/website/force/%s?isredir=1&path=%s' % (website.id, path))
                 return request.redirect(url_to)
         website._force()
         return request.redirect(path)
 
-    @http.route(['/@/', '/@/<path:path>'], type='http', auth='public', website=True, sitemap=False, multilang=False, readonly=True)
+    @http.route(['/@/', '/@/<path:path>'], type='http', auth='public', website=True, sitemap=False, multilang=False,
+                readonly=True)
     def client_action_redirect(self, path='', **kw):
         """ Redirect internal users to the backend preview of the requested path
         URL (client action iframe).
@@ -218,10 +220,12 @@ class Website(Home):
         redirect.set_cookie('frontend_lang', lang_code)
         return redirect
 
-    @http.route(['/website/country_infos/<model("res.country"):country>'], type='json', auth="public", methods=['POST'], website=True, readonly=True)
+    @http.route(['/website/country_infos/<model("res.country"):country>'], type='json', auth="public", methods=['POST'],
+                website=True, readonly=True)
     def country_infos(self, country, **kw):
         fields = country.get_address_fields()
-        return dict(fields=fields, states=[(st.id, st.name, st.code) for st in country.state_ids], phone_code=country.phone_code)
+        return dict(fields=fields, states=[(st.id, st.name, st.code) for st in country.state_ids],
+                    phone_code=country.phone_code)
 
     @http.route(['/robots.txt'], type='http', auth="public", website=True, multilang=False, sitemap=False)
     def robots(self, **kwargs):
@@ -230,7 +234,7 @@ class Website(Home):
         # if it's not the case to prevent the crawler to continue.
         allowed_routes = self._get_allowed_robots_routes()
         content = request.env['ir.ui.view']._render_template('website.robots',
-            {'url_root': request.httprequest.url_root})
+                                                             {'url_root': request.httprequest.url_root})
 
         if allowed_routes:
             content += '\nUser-agent: *'
@@ -258,6 +262,7 @@ class Website(Home):
                 'name': url,
                 'url': url,
             })
+
         dom = [('url', '=', '%s.xml' % sitemap_base_url), ('type', '=', 'binary')]
         sitemap = Attachment.search(dom, limit=1)
         if sitemap:
@@ -299,7 +304,8 @@ class Website(Home):
                 })
             else:
                 # TODO: in master/saas-15, move current_website_id in template directly
-                pages_with_website = ["%d-%s-%d" % (current_website.id, hashed_url_root, p) for p in range(1, pages + 1)]
+                pages_with_website = ["%d-%s-%d" % (current_website.id, hashed_url_root, p) for p in
+                                      range(1, pages + 1)]
 
                 # Sitemaps must be split in several smaller files with a sitemap index
                 content = View._render_template('website.sitemap_index_xml', {
@@ -314,7 +320,8 @@ class Website(Home):
 
     # if not icon provided in DOM, browser tries to access /favicon.ico, eg when
     # opening an order pdf
-    @http.route(['/favicon.ico'], type='http', auth='public', website=True, multilang=False, sitemap=False, readonly=True)
+    @http.route(['/favicon.ico'], type='http', auth='public', website=True, multilang=False, sitemap=False,
+                readonly=True)
     def favicon(self, **kw):
         website = request.website
         response = request.redirect(website.image_url(website, 'favicon'), code=301)
@@ -324,8 +331,8 @@ class Website(Home):
     def sitemap_website_info(env, rule, qs):
         website = env['website'].get_current_website()
         if not (
-            website.viewref('website.website_info', False).active
-            and website.viewref('website.show_website_info', False).active
+                website.viewref('website.website_info', False).active
+                and website.viewref('website.show_website_info', False).active
         ):
             # avoid 404 or blank page in sitemap
             return False
@@ -345,7 +352,8 @@ class Website(Home):
         }
         return request.render('website.website_info', values)
 
-    @http.route(['/website/configurator', '/website/configurator/<int:step>'], type='http', auth="user", website=True, multilang=False)
+    @http.route(['/website/configurator', '/website/configurator/<int:step>'], type='http', auth="user", website=True,
+                multilang=False)
     def website_configurator(self, step=1, **kwargs):
         if not request.env.user.has_group('website.group_website_designer'):
             raise werkzeug.exceptions.NotFound()
@@ -411,11 +419,13 @@ class Website(Home):
         request.session[f'website_{view_id}_layout_mode'] = layout_mode
 
     @http.route('/website/snippet/filters', type='json', auth='public', website=True, readonly=True)
-    def get_dynamic_filter(self, filter_id, template_key, limit=None, search_domain=None, with_sample=False, **custom_template_data):
+    def get_dynamic_filter(self, filter_id, template_key, limit=None, search_domain=None, with_sample=False,
+                           **custom_template_data):
         dynamic_filter = request.env['website.snippet.filter'].sudo().search(
             [('id', '=', filter_id)] + request.website.website_domain()
         )
-        return dynamic_filter and dynamic_filter._render(template_key, limit, search_domain, with_sample, **custom_template_data) or []
+        return dynamic_filter and dynamic_filter._render(template_key, limit, search_domain, with_sample,
+                                                         **custom_template_data) or []
 
     @http.route('/website/snippet/options_filters', type='json', auth='user', website=True, readonly=True)
     def get_dynamic_snippet_filters(self, model_name=None, search_domain=None):
@@ -498,7 +508,8 @@ class Website(Home):
         """
         order = self._get_search_order(order)
         options = options or {}
-        results_count, search_results, fuzzy_term = request.website._search_with_fuzzy(search_type, term, limit, order, options)
+        results_count, search_results, fuzzy_term = request.website._search_with_fuzzy(search_type, term, limit, order,
+                                                                                       options)
         if not results_count:
             return {
                 'results': [],
@@ -568,7 +579,8 @@ class Website(Home):
             'allowFuzzy': not post.get('noFuzzy'),
         }
 
-    @http.route(['/pages', '/pages/page/<int:page>'], type='http', auth="public", website=True, sitemap=False, readonly=True)
+    @http.route(['/pages', '/pages/page/<int:page>'], type='http', auth="public", website=True, sitemap=False,
+                readonly=True)
     def pages_list(self, page=1, search='', **kw):
         options = self._get_page_search_options(**kw)
         step = 50
@@ -617,7 +629,8 @@ class Website(Home):
             return request.render("website.list_hybrid")
 
         options = self._get_hybrid_search_options(**kw)
-        data = self.autocomplete(search_type=search_type, term=search, order='name asc', limit=500, max_nb_chars=200, options=options)
+        data = self.autocomplete(search_type=search_type, term=search, order='name asc', limit=500, max_nb_chars=200,
+                                 options=options)
 
         results = data.get('results', [])
         search_count = len(results)
@@ -664,7 +677,8 @@ class Website(Home):
         if website_id:
             website = request.env['website'].browse(int(website_id))
             website._force()
-        page = request.env['website'].new_page(path, add_menu=add_menu, sections_arch=kwargs.get('sections_arch'), **template)
+        page = request.env['website'].new_page(path, add_menu=add_menu, sections_arch=kwargs.get('sections_arch'),
+                                               **template)
         url = page['url']
         # In case the page is created through the 404 "Create Page" button, the
         # URL may use special characters which are slugified on page creation.
@@ -837,7 +851,8 @@ class Website(Home):
         res['has_social_default_image'] = request.website.has_social_default_image
 
         if res_model not in ('website.page', 'ir.ui.view') and 'seo_name' in record:  # allow custom slugify
-            res['seo_name_default'] = request.env['ir.http']._slugify(record.display_name or '')  # default slug, if seo_name become empty
+            res['seo_name_default'] = request.env['ir.http']._slugify(
+                record.display_name or '')  # default slug, if seo_name become empty
             res['seo_name'] = record.seo_name and request.env['ir.http']._slugify(record.seo_name) or ''
 
         return res
@@ -858,7 +873,8 @@ class Website(Home):
                 continue
         raise first_error
 
-    @http.route(['/google<string(length=16):key>.html'], type='http', auth="public", website=True, sitemap=False, readonly=True)
+    @http.route(['/google<string(length=16):key>.html'], type='http', auth="public", website=True, sitemap=False,
+                readonly=True)
     def google_console_search(self, key, **kwargs):
         if not request.website.google_search_console:
             logger.warning('Google Search Console not enable')
@@ -950,7 +966,8 @@ class Website(Home):
         Reloads asset bundles and returns their unique URLs.
         """
         return {
-            'web.assets_frontend': request.env['ir.qweb']._get_asset_link_urls('web.assets_frontend', request.session.debug),
+            'web.assets_frontend': request.env['ir.qweb']._get_asset_link_urls('web.assets_frontend',
+                                                                               request.session.debug),
         }
 
     # ------------------------------------------------------
@@ -969,6 +986,7 @@ class Website(Home):
             - attachment id
             - attachment URL
         """
+
         def check_content(filename, data):
             """ Returns True only if data matches the font extension. """
             # Do not pollute general guess_mimetype with this.

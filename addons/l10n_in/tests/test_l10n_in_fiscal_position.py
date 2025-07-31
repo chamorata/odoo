@@ -1,7 +1,7 @@
+from odoo.addons.l10n_in.tests.common import L10nInTestInvoicingCommon
+
 from odoo import Command, fields
 from odoo.tests import tagged
-
-from odoo.addons.l10n_in.tests.common import L10nInTestInvoicingCommon
 
 
 @tagged('post_install', '-at_install', 'post_install_l10n')
@@ -227,7 +227,7 @@ class TestFiscal(L10nInTestInvoicingCommon):
                 })]
             })
             vendor_bill.action_post()
-    
+
             self.assertEqual(
                 vendor_bill.fiscal_position_id,
                 self.env['account.chart.template'].ref('fiscal_position_in_export_sez_in')

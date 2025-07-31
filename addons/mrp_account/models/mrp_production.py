@@ -29,7 +29,8 @@ class MrpProduction(models.Model):
 
     def action_view_stock_valuation_layers(self):
         self.ensure_one()
-        domain = [('id', 'in', (self.move_raw_ids + self.move_finished_ids + self.scrap_ids.move_ids).stock_valuation_layer_ids.ids)]
+        domain = [('id', 'in', (
+                    self.move_raw_ids + self.move_finished_ids + self.scrap_ids.move_ids).stock_valuation_layer_ids.ids)]
         action = self.env["ir.actions.actions"]._for_xml_id("stock_account.stock_valuation_layer_action")
         context = literal_eval(action['context'])
         context.update(self.env.context)
@@ -51,17 +52,21 @@ class MrpProduction(models.Model):
             quantity = finished_move.product_uom._compute_quantity(
                 finished_move.quantity, finished_move.product_id.uom_id)
             extra_cost = self.extra_cost * quantity
-            total_cost = - sum(consumed_moves.sudo().stock_valuation_layer_ids.mapped('value')) + work_center_cost + extra_cost
-            byproduct_moves = self.move_byproduct_ids.filtered(lambda m: m.state not in ('done', 'cancel') and m.quantity > 0)
+            total_cost = - sum(
+                consumed_moves.sudo().stock_valuation_layer_ids.mapped('value')) + work_center_cost + extra_cost
+            byproduct_moves = self.move_byproduct_ids.filtered(
+                lambda m: m.state not in ('done', 'cancel') and m.quantity > 0)
             byproduct_cost_share = 0
             for byproduct in byproduct_moves:
                 if byproduct.cost_share == 0:
                     continue
                 byproduct_cost_share += byproduct.cost_share
                 if byproduct.product_id.cost_method in ('fifo', 'average'):
-                    byproduct.price_unit = total_cost * byproduct.cost_share / 100 / byproduct.product_uom._compute_quantity(byproduct.quantity, byproduct.product_id.uom_id)
+                    byproduct.price_unit = total_cost * byproduct.cost_share / 100 / byproduct.product_uom._compute_quantity(
+                        byproduct.quantity, byproduct.product_id.uom_id)
             if finished_move.product_id.cost_method in ('fifo', 'average'):
-                finished_move.price_unit = total_cost * float_round(1 - byproduct_cost_share / 100, precision_rounding=0.0001) / quantity
+                finished_move.price_unit = total_cost * float_round(1 - byproduct_cost_share / 100,
+                                                                    precision_rounding=0.0001) / quantity
         return True
 
     def _get_backorder_mo_vals(self):

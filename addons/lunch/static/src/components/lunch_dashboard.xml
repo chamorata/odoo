@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates id="template" xml:space="preserve">
     <t t-name="lunch.LunchCurrency">
-        <div class="text-end d-flex" >
+        <div class="text-end d-flex">
             <span class="col-4" t-if="props.currency.position == 'before'" t-esc="props.currency.symbol"/>
             <span class="col-8" t-esc="amount"/>
             <span class="col-4" t-if="props.currency.position == 'after'" t-esc="props.currency.symbol"/>
@@ -12,36 +12,37 @@
         <tr>
             <td class="text-center">
                 <span
-                    t-if="canEdit"
-                    type="button"
-                    class="btn btn-sm btn-icon btn-link fa fa-minus-circle px-0"
-                    t-on-click="() => this.updateQuantity(-1)"/>
+                        t-if="canEdit"
+                        type="button"
+                        class="btn btn-sm btn-icon btn-link fa fa-minus-circle px-0"
+                        t-on-click="() => this.updateQuantity(-1)"/>
                 <span
-                    t-else=""
-                    type="button"
-                    class="btn btn-sm btn-icon btn-link disabled fa fa-minus-circle px-0"/>
+                        t-else=""
+                        type="button"
+                        class="btn btn-sm btn-icon btn-link disabled fa fa-minus-circle px-0"/>
             </td>
             <td t-esc="line.quantity" class="text-center"/>
             <td class="text-center">
                 <span
-                    t-if="canAdd"
-                    type="button"
-                    class="btn btn-sm btn-icon btn-link fa fa-plus-circle px-0"
-                    t-on-click="() => this.updateQuantity(1)"/>
+                        t-if="canAdd"
+                        type="button"
+                        class="btn btn-sm btn-icon btn-link fa fa-plus-circle px-0"
+                        t-on-click="() => this.updateQuantity(1)"/>
                 <span
-                    t-else=""
-                    type="button"
-                    class="btn btn-sm btn-icon btn-link disabled fa fa-plus-circle px-0"/>
+                        t-else=""
+                        type="button"
+                        class="btn btn-sm btn-icon btn-link disabled fa fa-plus-circle px-0"/>
             </td>
             <td
-                t-if="canEdit"
-                t-esc="line.product[1]"
-                t-on-click="() => props.openOrderLine(line.product[0], line.id)"
-                role="button"
-                title="Edit order"/>
+                    t-if="canEdit"
+                    t-esc="line.product[1]"
+                    t-on-click="() => props.openOrderLine(line.product[0], line.id)"
+                    role="button"
+                    title="Edit order"/>
             <td t-else="" t-esc="line.product[1]"/>
             <td>
-                <span t-esc="line.state" t-attf-class="badge rounded-pill text-bg-#{badgeClass} border-#{badgeClass}" style="vertical-align: bottom;"/>
+                <span t-esc="line.state" t-attf-class="badge rounded-pill text-bg-#{badgeClass} border-#{badgeClass}"
+                      style="vertical-align: bottom;"/>
             </td>
             <td t-esc="line.location"/>
             <td t-esc="line.date" class="mx-4"/>
@@ -49,7 +50,7 @@
                 <LunchCurrency currency="props.currency" amount="line.product[2]"/>
             </td>
             </tr>
-            <t t-if="hasToppings" t-foreach="line.toppings" t-as="topping" t-key="topping">
+        <t t-if="hasToppings" t-foreach="line.toppings" t-as="topping" t-key="topping">
                 <tr>
                     <td/>
                     <td/>
@@ -63,18 +64,18 @@
                     </td>
                 </tr>
             </t>
-            <tr t-if="line.note">
+        <tr t-if="line.note">
                 <td/>
-                <td/>
-                <td/>
-                <td t-esc="line.note" class="text-muted"/>
+            <td/>
+            <td/>
+            <td t-esc="line.note" class="text-muted"/>
             </tr>
     </t>
 
     <t t-name="lunch.LunchAlerts">
         <div class="alert alert-warning mb-0" t-if="props.alerts.length !== 0" role="alert">
             <t t-foreach="props.alerts" t-as="alert" t-key="alert.id">
-                <LunchAlert message="alert.message" />
+                <LunchAlert message="alert.message"/>
             </t>
         </div>
     </t>
@@ -83,13 +84,13 @@
         <div class="lunch_user pb-1">
             <span t-if="!props.isManager" t-esc="props.username"/>
             <Many2XAutocomplete
-                t-else=""
-                value="props.username"
-                resModel="'res.users'"
-                getDomain="getDomain"
-                fieldString="props.username"
-                activeActions="{}"
-                update.bind="props.onUpdateUser"
+                    t-else=""
+                    value="props.username"
+                    resModel="'res.users'"
+                    getDomain="getDomain"
+                    fieldString="props.username"
+                    activeActions="{}"
+                    update.bind="props.onUpdateUser"
             />
         </div>
     </t>
@@ -98,12 +99,12 @@
         <div class="lunch_location pb-1">
             <t t-if="props.location">
                 <Many2XAutocomplete
-                    value="props.location"
-                    resModel="'lunch.location'"
-                    fieldString="props.location"
-                    getDomain="getDomain"
-                    activeActions="{}"
-                    update.bind="props.onUpdateLunchLocation"
+                        value="props.location"
+                        resModel="'lunch.location'"
+                        fieldString="props.location"
+                        getDomain="getDomain"
+                        activeActions="{}"
+                        update.bind="props.onUpdateLunchLocation"
                 />
             </t>
             <t t-else="">
@@ -124,19 +125,19 @@
                         </div>
                         <div class="w-100">
                             <LunchUser
-                                isManager="state.infos.is_manager"
-                                username="state.infos.username"
-                                onUpdateUser.bind="onUpdateUser"/>
+                                    isManager="state.infos.is_manager"
+                                    username="state.infos.username"
+                                    onUpdateUser.bind="onUpdateUser"/>
 
                             <LunchLocation
-                                location="location"
-                                onUpdateLunchLocation.bind="onUpdateLunchLocation"/>
+                                    location="location"
+                                    onUpdateLunchLocation.bind="onUpdateLunchLocation"/>
 
                             <div id="lunch_order_date">
                                 <DateTimeInput
-                                    type="'date'"
-                                    placeholder.translate="Today"
-                                    onChange.bind="onUpdateLunchTime"/>
+                                        type="'date'"
+                                        placeholder.translate="Today"
+                                        onChange.bind="onUpdateLunchTime"/>
                             </div>
 
                             <div class="d-flex pb-1">
@@ -152,13 +153,14 @@
                     <h4 class="">
                         Your Order
                         <button
-                            t-if="(['new', 'ordered'].includes(state.infos.raw_state))"
-                            class="btn btn-sm btn-icon btn-link fa fa-trash"
-                            t-on-click.prevent="emptyCart"/>
+                                t-if="(['new', 'ordered'].includes(state.infos.raw_state))"
+                                class="btn btn-sm btn-icon btn-link fa fa-trash"
+                                t-on-click.prevent="emptyCart"/>
                     </h4>
                     <table class="o_lunch_widget_lines w-100">
                         <t t-foreach="state.infos.lines" t-as="line" t-key="line.id">
-                            <LunchOrderLine line="line" currency="currency" onUpdateQuantity.bind="onUpdateQuantity" openOrderLine.bind="props.openOrderLine" infos="state.infos"/>
+                            <LunchOrderLine line="line" currency="currency" onUpdateQuantity.bind="onUpdateQuantity"
+                                            openOrderLine.bind="props.openOrderLine" infos="state.infos"/>
                         </t>
                     </table>
                 </div>

@@ -1,11 +1,11 @@
 # -*- coding:utf-8 -*-
 
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from reportlab.graphics.barcode import createBarcodeDrawing
 
 from odoo import Command
-from odoo.tests import tagged
 from odoo.exceptions import UserError
-from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+from odoo.tests import tagged
 
 
 @tagged('post_install_l10n', 'post_install', '-at_install')
@@ -64,7 +64,8 @@ class TestSwissQRCode(AccountTestInvoicingCommon):
         self.env.flush_all()
 
         # First check with a regular IBAN
-        with self.assertRaises(UserError, msg="It shouldn't be possible to generate a Swiss QR-code for partners without a complete Swiss address."):
+        with self.assertRaises(UserError,
+                               msg="It shouldn't be possible to generate a Swiss QR-code for partners without a complete Swiss address."):
             self.ch_qr_invoice._generate_qr_code()
 
         # Setting the address should make it work
@@ -76,7 +77,8 @@ class TestSwissQRCode(AccountTestInvoicingCommon):
         # Now, check with a QR-IBAN as the payment account
         self.ch_qr_invoice.partner_bank_id = self.swiss_qr_iban
 
-        with self.assertRaises(UserError, msg="It shouldn't be possible to generate a Swiss QR-cde for a QR-IBAN without giving it a valid QR-reference as payment reference."):
+        with self.assertRaises(UserError,
+                               msg="It shouldn't be possible to generate a Swiss QR-cde for a QR-IBAN without giving it a valid QR-reference as payment reference."):
             self.ch_qr_invoice._generate_qr_code()
 
         # Assigning a QR reference should fix it
@@ -93,7 +95,8 @@ class TestSwissQRCode(AccountTestInvoicingCommon):
         self._assign_partner_address(self.ch_qr_invoice.company_id.partner_id)
         self._assign_partner_address(self.ch_qr_invoice.partner_id)
         self.ch_qr_invoice._generate_qr_code()
-        self.assertEqual(self.ch_qr_invoice.qr_code_method, 'ch_qr', "Swiss QR-code generator should have been chosen for this invoice.")
+        self.assertEqual(self.ch_qr_invoice.qr_code_method, 'ch_qr',
+                         "Swiss QR-code generator should have been chosen for this invoice.")
 
     def test_ch_qr_code_cross_mask(self):
         for width, height in ((64, 128), (128, 128), (256, 256), (512, 512)):

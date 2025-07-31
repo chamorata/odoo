@@ -35,7 +35,8 @@ class ProductCategory(models.Model):
                 category.complete_name = category.name
 
     def _compute_product_count(self):
-        read_group_res = self.env['product.template']._read_group([('categ_id', 'child_of', self.ids)], ['categ_id'], ['__count'])
+        read_group_res = self.env['product.template']._read_group([('categ_id', 'child_of', self.ids)], ['categ_id'],
+                                                                  ['__count'])
         group_data = {categ.id: count for categ, count in read_group_res}
         for categ in self:
             product_count = 0

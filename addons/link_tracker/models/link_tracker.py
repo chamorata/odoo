@@ -4,14 +4,13 @@ import logging
 import random
 import string
 
+from odoo.addons.mail.tools import link_preview
 from werkzeug import urls
 
-from odoo import _, api, fields, models, tools
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 from odoo.osv import expression
 from odoo.tools.mail import validate_url
-
-from odoo.addons.mail.tools import link_preview
 
 LINK_TRACKER_UNIQUE_FIELDS = ('url', 'campaign_id', 'medium_id', 'source_id', 'label')
 
@@ -132,6 +131,7 @@ class LinkTracker(models.Model):
     @api.constrains(*LINK_TRACKER_UNIQUE_FIELDS)
     def _check_unicity(self):
         """Check that the link trackers are unique."""
+
         def _format_value(tracker, field_name):
             if field_name == 'label' and not tracker[field_name]:
                 return False
@@ -159,7 +159,8 @@ class LinkTracker(models.Model):
                 duplicates += tracker
         if duplicates:
             error_lines = '\n- '.join(
-                str((tracker.url, tracker.campaign_id.name, tracker.medium_id.name, tracker.source_id.name, tracker.label or '""'))
+                str((tracker.url, tracker.campaign_id.name, tracker.medium_id.name, tracker.source_id.name,
+                     tracker.label or '""'))
                 for tracker in duplicates
             )
             raise UserError(
@@ -202,7 +203,8 @@ class LinkTracker(models.Model):
     def search_or_create(self, vals_list):
         """Get existing or newly created records matching vals_list items in preserved order supporting duplicates."""
         if not isinstance(vals_list, list):
-            _logger.warning("Deprecated usage of LinkTracker.search_or_create which now expects a list of dictionaries as input.")
+            _logger.warning(
+                "Deprecated usage of LinkTracker.search_or_create which now expects a list of dictionaries as input.")
             vals_list = [vals_list]
 
         def _format_key(obj):
@@ -335,7 +337,8 @@ class LinkTrackerClick(models.Model):
     def _prepare_click_values_from_route(self, **route_values):
         click_values = dict((fname, route_values[fname]) for fname in self._fields if fname in route_values)
         if not click_values.get('country_id') and route_values.get('country_code'):
-            click_values['country_id'] = self.env['res.country'].search([('code', '=', route_values['country_code'])], limit=1).id
+            click_values['country_id'] = self.env['res.country'].search([('code', '=', route_values['country_code'])],
+                                                                        limit=1).id
         return click_values
 
     @api.model

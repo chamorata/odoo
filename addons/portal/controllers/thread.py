@@ -1,8 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.http import request
 from odoo.addons.mail.controllers import thread
 from odoo.addons.portal.utils import get_portal_partner
+
+from odoo.http import request
 
 
 class ThreadController(thread.ThreadController):
@@ -11,7 +12,7 @@ class ThreadController(thread.ThreadController):
         post_data = super()._prepare_post_data(post_data, thread, **kwargs)
         if request.env.user._is_public():
             if partner := get_portal_partner(
-                thread, kwargs.get("hash"), kwargs.get("pid"), kwargs.get("token")
+                    thread, kwargs.get("hash"), kwargs.get("pid"), kwargs.get("token")
             ):
                 post_data["author_id"] = partner.id
         return post_data

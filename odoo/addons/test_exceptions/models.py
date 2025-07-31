@@ -2,8 +2,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import odoo.exceptions
-from odoo import models, api
+from odoo import models
 from odoo.tools.safe_eval import safe_eval
+
 
 class m(models.Model):
     """ This model exposes a few methods that will raise the different
@@ -63,5 +64,5 @@ class m(models.Model):
         self.generate_safe_eval(self.generate_validation_error)
 
     def generate_safe_eval(self, f):
-        globals_dict = { 'generate': f }
+        globals_dict = {'generate': f}
         safe_eval("generate()", mode='exec', globals_dict=globals_dict)

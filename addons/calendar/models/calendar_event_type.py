@@ -7,7 +7,6 @@ from odoo import fields, models
 
 
 class MeetingType(models.Model):
-
     _name = 'calendar.event.type'
     _description = 'Event Meeting Type'
 

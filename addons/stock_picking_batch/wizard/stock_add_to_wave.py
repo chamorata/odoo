@@ -27,12 +27,13 @@ class StockPickingToWave(models.TransientModel):
             raise UserError(_("The selected transfers should belong to the same operation type"))
         return res
 
-    wave_id = fields.Many2one('stock.picking.batch', string='Wave Transfer', domain="[('is_wave', '=', True), ('state', 'in', ('draft', 'in_progress'))]")
+    wave_id = fields.Many2one('stock.picking.batch', string='Wave Transfer',
+                              domain="[('is_wave', '=', True), ('state', 'in', ('draft', 'in_progress'))]")
     picking_ids = fields.Many2many('stock.picking')
     line_ids = fields.Many2many('stock.move.line')
-    mode = fields.Selection([('existing', 'an existing wave transfer'), ('new', 'a new wave transfer')], default='existing')
+    mode = fields.Selection([('existing', 'an existing wave transfer'), ('new', 'a new wave transfer')],
+                            default='existing')
     user_id = fields.Many2one('res.users', string='Responsible')
-
 
     def attach_pickings(self):
         self.ensure_one()

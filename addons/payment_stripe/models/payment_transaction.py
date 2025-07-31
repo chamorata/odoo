@@ -3,16 +3,14 @@
 import logging
 import pprint
 
-from werkzeug.urls import url_encode, url_join
-
-from odoo import _, fields, models
-from odoo.exceptions import UserError, ValidationError
-
 from odoo.addons.payment import utils as payment_utils
 from odoo.addons.payment_stripe import const
 from odoo.addons.payment_stripe import utils as stripe_utils
 from odoo.addons.payment_stripe.controllers.main import StripeController
+from werkzeug.urls import url_encode, url_join
 
+from odoo import _, fields, models
+from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
 

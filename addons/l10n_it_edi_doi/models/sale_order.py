@@ -48,7 +48,7 @@ class SaleOrder(models.Model):
     def _compute_l10n_it_edi_doi_use(self):
         for order in self:
             order.l10n_it_edi_doi_use = order.l10n_it_edi_doi_id \
-                or order.country_code == "IT"
+                                        or order.country_code == "IT"
 
     @api.depends('company_id', 'partner_id.commercial_partner_id', 'l10n_it_edi_doi_date', 'currency_id')
     def _compute_l10n_it_edi_doi_id(self):
@@ -66,8 +66,9 @@ class SaleOrder(models.Model):
             if order.l10n_it_edi_doi_id and not validity_warnings:
                 continue
 
-            declaration = self.env['l10n_it_edi_doi.declaration_of_intent']\
-                ._fetch_valid_declaration_of_intent(order.company_id, partner, order.currency_id, order.l10n_it_edi_doi_date)
+            declaration = self.env['l10n_it_edi_doi.declaration_of_intent'] \
+                ._fetch_valid_declaration_of_intent(order.company_id, partner, order.currency_id,
+                                                    order.l10n_it_edi_doi_date)
             order.l10n_it_edi_doi_id = declaration
 
     @api.depends('l10n_it_edi_doi_id', 'tax_totals', 'order_line', 'order_line.qty_invoiced_posted')
@@ -106,7 +107,8 @@ class SaleOrder(models.Model):
                 sales_order=True
             )
 
-            threshold_warning = declaration._build_threshold_warning_message(declaration.invoiced, declaration_not_yet_invoiced)
+            threshold_warning = declaration._build_threshold_warning_message(declaration.invoiced,
+                                                                             declaration_not_yet_invoiced)
 
             order.l10n_it_edi_doi_warning = '{}\n\n{}'.format('\n'.join(validity_warnings), threshold_warning).strip()
 
@@ -140,7 +142,8 @@ class SaleOrder(models.Model):
         for order, data in zip(self, data_list):
             partner = order.partner_id.commercial_partner_id
             date = fields.Date.context_today(self)
-            if order.l10n_it_edi_doi_id._get_validity_warnings(order.company_id, partner, order.currency_id, date, sales_order=True):
+            if order.l10n_it_edi_doi_id._get_validity_warnings(order.company_id, partner, order.currency_id, date,
+                                                               sales_order=True):
                 del data['l10n_it_edi_doi_id']
                 del data['fiscal_position_id']
         return data_list
@@ -154,7 +157,8 @@ class SaleOrder(models.Model):
             declaration = order.l10n_it_edi_doi_id
             if declaration:
                 validity_warnings = declaration._get_validity_warnings(
-                    order.company_id, order.partner_id.commercial_partner_id, order.currency_id, order.l10n_it_edi_doi_date,
+                    order.company_id, order.partner_id.commercial_partner_id, order.currency_id,
+                    order.l10n_it_edi_doi_date,
                     only_blocking=True, sales_order=True,
                 )
                 errors.extend(validity_warnings)
@@ -194,7 +198,8 @@ class SaleOrder(models.Model):
                 return
             partner = order.partner_id.commercial_partner_id
             errors = declaration._get_validity_warnings(
-                order.company_id, partner, order.currency_id, order.l10n_it_edi_doi_date, only_blocking=True, sales_order=True
+                order.company_id, partner, order.currency_id, order.l10n_it_edi_doi_date, only_blocking=True,
+                sales_order=True
             )
             if errors:
                 raise ValidationError('\n'.join(errors))

@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from ast import literal_eval
-from collections import defaultdict
-from datetime import timedelta
-from pytz import timezone, utc
-from werkzeug.exceptions import Forbidden, NotFound
-
-import babel
-import babel.dates
 import base64
 import json
 import operator
-import pytz
+from ast import literal_eval
+from collections import defaultdict
+from datetime import timedelta
 
-from odoo import exceptions, http, fields, tools, _
+import babel
+import babel.dates
+import pytz
+from pytz import timezone, utc
+from werkzeug.exceptions import Forbidden, NotFound
+
+from odoo import http, fields, tools, _
 from odoo.http import request
 from odoo.osv import expression
 from odoo.tools import is_html_empty, plaintext2html
@@ -70,7 +70,8 @@ class EventTrackController(http.Controller):
           * 'tags': list of tag IDs for filtering;
         """
 
-        if searches.get('tags', '[]').count(',') > 0 and request.httprequest.method == 'GET' and not searches.get('prevent_redirect'):
+        if searches.get('tags', '[]').count(',') > 0 and request.httprequest.method == 'GET' and not searches.get(
+                'prevent_redirect'):
             # Previously, the tags were searched using GET, which caused issues with crawlers (too many hits)
             # We replaced those with POST to avoid that, but it's not sufficient as bots "remember" crawled pages for a while
             # This permanent redirect is placed to instruct the bots that this page is no longer valid
@@ -122,7 +123,8 @@ class EventTrackController(http.Controller):
             ])
 
         # fetch data to display with TZ set for both event and tracks
-        now_tz = utc.localize(fields.Datetime.now().replace(microsecond=0), is_dst=False).astimezone(timezone(event.date_tz))
+        now_tz = utc.localize(fields.Datetime.now().replace(microsecond=0), is_dst=False).astimezone(
+            timezone(event.date_tz))
         today_tz = now_tz.date()
         event = event.with_context(tz=event.date_tz or 'UTC')
         tracks_sudo = event.env['event.track'].sudo().search(search_domain, order='is_published desc, date asc')
@@ -144,7 +146,8 @@ class EventTrackController(http.Controller):
         tracks_sudo_soon = tracks_wdate.filtered(lambda track: not track.is_track_live and track.is_track_soon)
         tracks_by_day = []
         for display_date in date_begin_tz_all:
-            matching_tracks = tracks_wdate.filtered(lambda track: self._get_dt_in_event_tz([track.date], event)[0].date() == display_date)
+            matching_tracks = tracks_wdate.filtered(
+                lambda track: self._get_dt_in_event_tz([track.date], event)[0].date() == display_date)
             tracks_by_day.append({'date': display_date, 'name': display_date, 'tracks': matching_tracks})
         if tracks_announced:
             tracks_announced = tracks_announced.sorted('wishlisted_by_default', reverse=True)
@@ -185,7 +188,8 @@ class EventTrackController(http.Controller):
     # AGENDA VIEW
     # ------------------------------------------------------------
 
-    @http.route(['''/event/<model("event.event"):event>/agenda'''], type='http', auth="public", website=True, sitemap=False)
+    @http.route(['''/event/<model("event.event"):event>/agenda'''], type='http', auth="public", website=True,
+                sitemap=False)
     def event_agenda(self, event, tag=None, **post):
         event = event.with_context(tz=event.date_tz or 'UTC')
         vals = {
@@ -223,7 +227,8 @@ class EventTrackController(http.Controller):
         time_slots_by_tracks = {track: self._split_track_by_days(track, local_tz) for track in tracks_sudo}
 
         # extract all the tracks time slots
-        track_time_slots = set().union(*(time_slot.keys() for time_slot in [time_slots for time_slots in time_slots_by_tracks.values()]))
+        track_time_slots = set().union(
+            *(time_slot.keys() for time_slot in [time_slots for time_slots in time_slots_by_tracks.values()]))
 
         # extract unique days
         days = list(set(time_slot.date() for time_slot in track_time_slots))
@@ -232,7 +237,8 @@ class EventTrackController(http.Controller):
         # Create the dict that contains the tracks at the correct time_slots / locations coordinates
         tracks_by_days = dict.fromkeys(days, 0)
         time_slots_by_day = dict((day, dict(start=set(), end=set())) for day in days)
-        tracks_by_rounded_times = dict((time_slot, dict((location, {}) for location in locations)) for time_slot in track_time_slots)
+        tracks_by_rounded_times = dict(
+            (time_slot, dict((location, {}) for location in locations)) for time_slot in track_time_slots)
         for track, time_slots in time_slots_by_tracks.items():
             start_date = fields.Datetime.from_string(track.date).replace(tzinfo=pytz.utc).astimezone(local_tz)
             end_date = start_date + timedelta(hours=(track.duration or 0.25))
@@ -248,7 +254,7 @@ class EventTrackController(http.Controller):
                 # get all the time slots by day to determine the max duration of a day.
                 day = time_slot.date()
                 time_slots_by_day[day]['start'].add(time_slot)
-                time_slots_by_day[day]['end'].add(time_slot+timedelta(minutes=15*duration))
+                time_slots_by_day[day]['end'].add(time_slot + timedelta(minutes=15 * duration))
                 tracks_by_days[day] += 1
 
         # split days into 15 minutes time slots
@@ -261,7 +267,8 @@ class EventTrackController(http.Controller):
             current_time_slot = start_time_slot
             for i in range(0, time_slots_count + 1):
                 global_time_slots_by_day[day][current_time_slot] = tracks_by_rounded_times.get(current_time_slot, {})
-                global_time_slots_by_day[day][current_time_slot]['formatted_time'] = self._get_locale_time(current_time_slot, lang_code)
+                global_time_slots_by_day[day][current_time_slot]['formatted_time'] = self._get_locale_time(
+                    current_time_slot, lang_code)
                 current_time_slot = current_time_slot + timedelta(minutes=15)
 
         # count the number of tracks by days
@@ -322,7 +329,7 @@ class EventTrackController(http.Controller):
         for i in range(0, time_slots_count):
             # If the new time slot is still on the current day
             next_day = (start_datetime + timedelta(days=1)).date()
-            if (start_datetime + timedelta(minutes=15*i)).date() <= next_day:
+            if (start_datetime + timedelta(minutes=15 * i)).date() <= next_day:
                 time_slots_by_day_start_time[start_datetime] += 1
             else:
                 start_datetime = next_day.datetime()
@@ -341,7 +348,7 @@ class EventTrackController(http.Controller):
         start_date = fields.Datetime.from_string(track.date).replace(tzinfo=pytz.utc).astimezone(local_tz)
         start_date = self.time_slot_rounder(start_date, 15)
         for i in range(0, rowspan):
-            time_slot = start_date + timedelta(minutes=15*i)
+            time_slot = start_date + timedelta(minutes=15 * i)
             if track.location_id:
                 occupied_cells.append((time_slot, track.location_id))
             # when no location, reserve all locations
@@ -354,8 +361,9 @@ class EventTrackController(http.Controller):
     # TRACK PAGE VIEW
     # ------------------------------------------------------------
 
-    @http.route('''/event/<model("event.event", "[('website_track', '=', True)]"):event>/track/<model("event.track", "[('event_id', '=', event.id)]"):track>''',
-                type='http', auth="public", website=True, sitemap=True, readonly=True)
+    @http.route(
+        '''/event/<model("event.event", "[('website_track', '=', True)]"):event>/track/<model("event.track", "[('event_id', '=', event.id)]"):track>''',
+        type='http', auth="public", website=True, sitemap=True, readonly=True)
     def event_track_page(self, event, track, **options):
         track = self._fetch_track(track.id, allow_sudo=False)
 
@@ -424,11 +432,13 @@ class EventTrackController(http.Controller):
     # TRACK PROPOSAL
     # ------------------------------------------------------------
 
-    @http.route(['''/event/<model("event.event"):event>/track_proposal'''], type='http', auth="public", website=True, sitemap=False)
+    @http.route(['''/event/<model("event.event"):event>/track_proposal'''], type='http', auth="public", website=True,
+                sitemap=False)
     def event_track_proposal(self, event, **post):
         return request.render("website_event_track.event_track_proposal", {'event': event, 'main_object': event})
 
-    @http.route(['''/event/<model("event.event"):event>/track_proposal/post'''], type='http', auth="public", methods=['POST'], website=True)
+    @http.route(['''/event/<model("event.event"):event>/track_proposal/post'''], type='http', auth="public",
+                methods=['POST'], website=True)
     def event_track_proposal_post(self, event, **post):
         if not event.can_access_from_current_website():
             return json.dumps({'error': 'forbidden'})

@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, Command
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
-from odoo.tests import tagged
+
+from odoo import Command
 from odoo.exceptions import UserError
+from odoo.tests import tagged
 
 
 @tagged('post_install', '-at_install')
@@ -16,7 +17,7 @@ class TestAccruedPurchaseOrders(AccountTestInvoicingCommon):
         # set 'type' to 'service' to allow manualy set 'qty_delivered' even with purchase_stock installed
         cls.product_a.update({'type': 'service', 'purchase_method': 'receive'})
         cls.product_b.update({'type': 'service', 'purchase_method': 'receive'})
-        #analytic distribution
+        # analytic distribution
         cls.default_plan = cls.env['account.analytic.plan'].create({'name': 'Default'})
         cls.analytic_account_a = cls.env['account.analytic.account'].create({
             'name': 'analytic_account_a',
@@ -40,8 +41,8 @@ class TestAccruedPurchaseOrders(AccountTestInvoicingCommon):
                     'price_unit': cls.product_a.list_price,
                     'taxes_id': False,
                     'analytic_distribution': {
-                        cls.analytic_account_a.id : 80.0,
-                        cls.analytic_account_b.id : 20.0,
+                        cls.analytic_account_a.id: 80.0,
+                        cls.analytic_account_b.id: 20.0,
                     },
                 }),
                 Command.create({
@@ -52,7 +53,7 @@ class TestAccruedPurchaseOrders(AccountTestInvoicingCommon):
                     'price_unit': cls.product_b.list_price,
                     'taxes_id': False,
                     'analytic_distribution': {
-                        cls.analytic_account_b.id : 100.0,
+                        cls.analytic_account_b.id: 100.0,
                     },
                 }),
             ],
@@ -117,13 +118,19 @@ class TestAccruedPurchaseOrders(AccountTestInvoicingCommon):
 
         self.assertRecordValues(self.env['account.move'].search(self.wizard.create_entries()['domain']).line_ids, [
             # reverse move lines
-            {'account_id': self.account_expense.id, 'debit': 0.0, 'credit': 10000.0, 'analytic_distribution': {str(self.analytic_account_a.id): 80.0, str(self.analytic_account_b.id): 20.0}},
-            {'account_id': self.alt_exp_account.id, 'debit': 0.0, 'credit': 2000.0, 'analytic_distribution': {str(self.analytic_account_b.id): 100.0}},
-            {'account_id': self.account_revenue.id, 'debit': 12000.0, 'credit': 0.0, 'analytic_distribution': {str(self.analytic_account_a.id): 66.67, str(self.analytic_account_b.id): 33.33}},
+            {'account_id': self.account_expense.id, 'debit': 0.0, 'credit': 10000.0,
+             'analytic_distribution': {str(self.analytic_account_a.id): 80.0, str(self.analytic_account_b.id): 20.0}},
+            {'account_id': self.alt_exp_account.id, 'debit': 0.0, 'credit': 2000.0,
+             'analytic_distribution': {str(self.analytic_account_b.id): 100.0}},
+            {'account_id': self.account_revenue.id, 'debit': 12000.0, 'credit': 0.0,
+             'analytic_distribution': {str(self.analytic_account_a.id): 66.67, str(self.analytic_account_b.id): 33.33}},
             # move lines
-            {'account_id': self.account_expense.id, 'debit': 10000.0, 'credit': 0.0, 'analytic_distribution': {str(self.analytic_account_a.id): 80.0, str(self.analytic_account_b.id): 20.0}},
-            {'account_id': self.alt_exp_account.id, 'debit': 2000.0, 'credit': 0.0, 'analytic_distribution': {str(self.analytic_account_b.id): 100.0}},
-            {'account_id': self.account_revenue.id, 'debit': 0.0, 'credit': 12000.0, 'analytic_distribution': {str(self.analytic_account_a.id): 66.67, str(self.analytic_account_b.id): 33.33}},
+            {'account_id': self.account_expense.id, 'debit': 10000.0, 'credit': 0.0,
+             'analytic_distribution': {str(self.analytic_account_a.id): 80.0, str(self.analytic_account_b.id): 20.0}},
+            {'account_id': self.alt_exp_account.id, 'debit': 2000.0, 'credit': 0.0,
+             'analytic_distribution': {str(self.analytic_account_b.id): 100.0}},
+            {'account_id': self.account_revenue.id, 'debit': 0.0, 'credit': 12000.0,
+             'analytic_distribution': {str(self.analytic_account_a.id): 66.67, str(self.analytic_account_b.id): 33.33}},
         ])
 
     def test_accrued_order_with_tax_included(self):
@@ -181,7 +188,7 @@ class TestAccruedPurchaseOrders(AccountTestInvoicingCommon):
             {'account_id': self.alt_exp_account.id, 'debit': 0.0, 'credit': 1000.0},
             {'account_id': self.account_revenue.id, 'debit': 6000.0, 'credit': 0.0},
         ])
-    
+
     def test_error_when_different_currencies_accrued(self):
         """
         Tests that if two Purchase Orders with different currencies are selected for Accrued Expense Entry, 
@@ -191,7 +198,7 @@ class TestAccruedPurchaseOrders(AccountTestInvoicingCommon):
             {
                 'partner_id': self.partner_a.id,
                 'currency_id': self.company_data['currency'].id,
-            }, 
+            },
             {
                 'partner_id': self.partner_a.id,
                 'currency_id': self.other_currency.id,
@@ -202,5 +209,6 @@ class TestAccruedPurchaseOrders(AccountTestInvoicingCommon):
             active_model='purchase.order',
             active_ids=purchase_orders.ids,
         ).new()
-        with self.assertRaises(UserError, msg="An error should be raised if two different currencies are used for Accrued Expense Entry."):
+        with self.assertRaises(UserError,
+                               msg="An error should be raised if two different currencies are used for Accrued Expense Entry."):
             accrued_wizard._compute_move_vals()

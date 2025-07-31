@@ -3,11 +3,13 @@
 
 """ Implementation of "INVENTORY VALUATION TESTS (With valuation layers)" spreadsheet. """
 
+import time
+
+from freezegun import freeze_time
+from odoo.addons.stock_landed_costs.tests.common import TestStockLandedCostsCommon
+
 from odoo import fields
 from odoo.tests import Form, tagged
-from odoo.addons.stock_landed_costs.tests.common import TestStockLandedCostsCommon
-from freezegun import freeze_time
-import time
 
 
 class TestStockValuationLCCommon(TestStockLandedCostsCommon):
@@ -229,7 +231,8 @@ class TestStockValuationLCFIFO(TestStockValuationLCCommon):
 
         self.assertEqual(move2.stock_valuation_layer_ids.value, -32.67)
         self.assertEqual(move3.stock_valuation_layer_ids.value, -32.67)
-        self.assertAlmostEqual(move4.stock_valuation_layer_ids.value, -32.66, delta=0.01)  # self.env.company.currency_id.round(-32.66) -> -32.660000000000004
+        self.assertAlmostEqual(move4.stock_valuation_layer_ids.value, -32.66,
+                               delta=0.01)  # self.env.company.currency_id.round(-32.66) -> -32.660000000000004
         self.assertEqual(self.product1.value_svl, 0)
         self.assertEqual(self.product1.quantity_svl, 0)
 
@@ -359,6 +362,7 @@ class TestStockValuationLCAVCO(TestStockValuationLCCommon):
         self.assertEqual(product.quantity_svl, 1)
         self.assertEqual(product.standard_price, 15)
 
+
 @tagged('-at_install', 'post_install')
 class TestStockValuationLCFIFOVB(TestStockValuationLCCommon):
     @classmethod
@@ -452,7 +456,8 @@ class TestStockValuationLCFIFOVB(TestStockValuationLCCommon):
         self.assertEqual(valuation_aml.credit, 0)
 
         # Check reconciliation of input aml of lc
-        lc_input_aml = lc.account_move_id.line_ids.filtered(lambda aml: aml.account_id == self.company_data['default_account_stock_in'])
+        lc_input_aml = lc.account_move_id.line_ids.filtered(
+            lambda aml: aml.account_id == self.company_data['default_account_stock_in'])
         self.assertTrue(len(lc_input_aml.full_reconcile_id), 1)
 
         self.assertEqual(self.product1.quantity_svl, 10)
@@ -507,7 +512,8 @@ class TestStockValuationLCFIFOVB(TestStockValuationLCCommon):
         lc.button_validate()
 
         # Check reconciliation of input aml of lc
-        lc_input_aml = lc.account_move_id.line_ids.filtered(lambda aml: aml.account_id == self.company_data['default_account_stock_in'])
+        lc_input_aml = lc.account_move_id.line_ids.filtered(
+            lambda aml: aml.account_id == self.company_data['default_account_stock_in'])
         self.assertTrue(len(lc_input_aml.full_reconcile_id), 1)
 
     def test_vendor_bill_flow_continental_1(self):
@@ -695,7 +701,8 @@ class TestAccountInvoicingWithCOA(TestStockValuationLCCommon):
         return bill
 
     def _return(self, picking, qty):
-        wizard_form = Form(self.env['stock.return.picking'].with_context(active_ids=picking.ids, active_id=picking.id, active_model='stock.picking'))
+        wizard_form = Form(self.env['stock.return.picking'].with_context(active_ids=picking.ids, active_id=picking.id,
+                                                                         active_model='stock.picking'))
         wizard = wizard_form.save()
         wizard.product_return_moves.quantity = qty
         return_picking = wizard._create_return()

@@ -4,6 +4,7 @@
 from datetime import datetime, timedelta
 
 from odoo.addons.event_crm.tests.common import TestEventCrmCommon
+
 from odoo.tests.common import RecordCapturer, tagged, users
 
 
@@ -17,8 +18,8 @@ class EventRegistrationCase(TestEventCrmCommon):
         cls.event_0.write({
             "question_ids": [
                 (0, 0, {
-                'title': 'Text Input Question',
-                'question_type': 'text_box',
+                    'title': 'Text Input Question',
+                    'question_type': 'text_box',
                 }),
             ],
         })
@@ -108,7 +109,8 @@ class EventRegistrationCase(TestEventCrmCommon):
         group when no SO is linked is problematic as it merges unrelated data. """
         now = datetime(2024, 10, 1, 13, 30, 0)
         with RecordCapturer(self.env['crm.lead'], []) as capture:
-            Attendee = self.env['event.registration'].with_context(event_lead_rule_skip=True).with_user(self.user_eventmanager)
+            Attendee = self.env['event.registration'].with_context(event_lead_rule_skip=True).with_user(
+                self.user_eventmanager)
             with self.mock_datetime_and_now(now):
                 attendees_1 = Attendee.create([
                     {

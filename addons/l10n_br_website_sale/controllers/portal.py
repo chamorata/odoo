@@ -1,6 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from odoo.addons.account.controllers.portal import CustomerPortal
+
 from odoo.http import request
+
 
 class CustomerPortalBr(CustomerPortal):
 
@@ -35,5 +37,6 @@ class CustomerPortalBr(CustomerPortal):
         portal_layout_values = super()._prepare_portal_layout_values()
         website = request.env['website'].get_current_website()
         if website.company_id.country_code == 'BR':
-            portal_layout_values['identification_types'] = request.env['l10n_latam.identification.type'].search(['|', ('country_id', '=', False), ('country_id.code', '=', 'BR')])
+            portal_layout_values['identification_types'] = request.env['l10n_latam.identification.type'].search(
+                ['|', ('country_id', '=', False), ('country_id.code', '=', 'BR')])
         return portal_layout_values

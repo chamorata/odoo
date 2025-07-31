@@ -61,7 +61,8 @@ class BaseModuleUpgrade(models.TransientModel):
             self._cr.execute(query, (mods.ids, 'uninstalled'))
             unmet_packages = [row[0] for row in self._cr.fetchall()]
             if unmet_packages:
-                raise UserError(_('The following modules are not installed or unknown: %s', '\n\n' + '\n'.join(unmet_packages)))
+                raise UserError(
+                    _('The following modules are not installed or unknown: %s', '\n\n' + '\n'.join(unmet_packages)))
 
         # terminate transaction before re-creating cursor below
         self._cr.commit()

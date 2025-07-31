@@ -2,8 +2,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import models, api, tools
-from odoo.tools.misc import str2bool
 from odoo.exceptions import UserError
+from odoo.tools.misc import str2bool
 
 
 class ResUsers(models.Model):
@@ -31,7 +31,8 @@ class ResUsers(models.Model):
             name, email_normalized = tools.mail.parse_contact_from_email(email)
             if email_normalized in done:
                 continue
-            default_values = {'login': email_normalized, 'name': name or email_normalized, 'email': email_normalized, 'active': True}
+            default_values = {'login': email_normalized, 'name': name or email_normalized, 'email': email_normalized,
+                              'active': True}
             user = self.with_context(signup_valid=True).create(default_values)
 
         return True
@@ -41,7 +42,8 @@ class ResUsers(models.Model):
 
         If base_setup.default_user_rights is set, only the "Employee" group is used
         """
-        if not str2bool(self.env['ir.config_parameter'].sudo().get_param("base_setup.default_user_rights"), default=False):
+        if not str2bool(self.env['ir.config_parameter'].sudo().get_param("base_setup.default_user_rights"),
+                        default=False):
             employee_group = self.env.ref("base.group_user")
             # force the trans_implied_ids during default for consistency in the interface
             return employee_group | employee_group.trans_implied_ids
@@ -51,6 +53,7 @@ class ResUsers(models.Model):
         """
         If base_setup.default_user_rights is set, do not apply any new groups to existing employees
         """
-        if not str2bool(self.env['ir.config_parameter'].sudo().get_param("base_setup.default_user_rights"), default=False):
+        if not str2bool(self.env['ir.config_parameter'].sudo().get_param("base_setup.default_user_rights"),
+                        default=False):
             return False
         return super()._apply_groups_to_existing_employees()

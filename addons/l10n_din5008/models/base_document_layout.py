@@ -1,6 +1,7 @@
-from markupsafe import Markup
 import re
+
 from dateutil.relativedelta import relativedelta
+from markupsafe import Markup
 
 from odoo import api, models, fields
 
@@ -14,7 +15,8 @@ class BaseDocumentLayout(models.TransientModel):
         if self.env.company.external_report_layout_id == self.env.ref('l10n_din5008.external_layout_din5008'):
             company = self.env.company
             # Company VAT should not be present in this footer, as it is displayed elsewhere in the DIN5008 layout
-            footer_fields = [field for field in [company.phone, company.email, company.website] if isinstance(field, str) and len(field) > 0]
+            footer_fields = [field for field in [company.phone, company.email, company.website] if
+                             isinstance(field, str) and len(field) > 0]
             return Markup('<br>').join(footer_fields)
         return super()._default_report_footer()
 

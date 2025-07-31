@@ -1,18 +1,20 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.stock_account.tests.test_stockvaluation import _create_accounting_data
+from odoo.addons.stock_account.tests.test_stockvaluationlayer import TestStockValuationCommon
+
 from odoo import Command
 from odoo.exceptions import UserError
 from odoo.tests import Form
-from odoo.addons.stock_account.tests.test_stockvaluation import _create_accounting_data
-from odoo.addons.stock_account.tests.test_stockvaluationlayer import TestStockValuationCommon
 
 
 class TestStockValuationLayerRevaluation(TestStockValuationCommon):
     @classmethod
     def setUpClass(cls):
         super(TestStockValuationLayerRevaluation, cls).setUpClass()
-        cls.stock_input_account, cls.stock_output_account, cls.stock_valuation_account, cls.expense_account, cls.stock_journal = _create_accounting_data(cls.env)
+        cls.stock_input_account, cls.stock_output_account, cls.stock_valuation_account, cls.expense_account, cls.stock_journal = _create_accounting_data(
+            cls.env)
         cls.product1.write({
             'property_account_expense_id': cls.expense_account.id,
         })
@@ -43,7 +45,8 @@ class TestStockValuationLayerRevaluation(TestStockValuationCommon):
         self.assertEqual(self.product1.standard_price, 3)
         self.assertEqual(self.product1.quantity_svl, 20)
 
-        old_layers = self.env['stock.valuation.layer'].search([('product_id', '=', self.product1.id)], order="create_date desc, id desc")
+        old_layers = self.env['stock.valuation.layer'].search([('product_id', '=', self.product1.id)],
+                                                              order="create_date desc, id desc")
 
         self.assertEqual(len(old_layers), 2)
         self.assertEqual(old_layers[0].remaining_value, 40)
@@ -58,7 +61,8 @@ class TestStockValuationLayerRevaluation(TestStockValuationCommon):
         self.assertEqual(self.product1.quantity_svl, 20)
 
         # Check the creation of stock.valuation.layer
-        new_layer = self.env['stock.valuation.layer'].search([('product_id', '=', self.product1.id)], order="create_date desc, id desc", limit=1)
+        new_layer = self.env['stock.valuation.layer'].search([('product_id', '=', self.product1.id)],
+                                                             order="create_date desc, id desc", limit=1)
         self.assertEqual(new_layer.value, 20)
 
         # Check the remaing value of current layers
@@ -94,7 +98,8 @@ class TestStockValuationLayerRevaluation(TestStockValuationCommon):
         self.assertEqual(self.product1.standard_price, 1)
         self.assertEqual(self.product1.quantity_svl, 3)
 
-        old_layers = self.env['stock.valuation.layer'].search([('product_id', '=', self.product1.id)], order="create_date desc, id desc")
+        old_layers = self.env['stock.valuation.layer'].search([('product_id', '=', self.product1.id)],
+                                                              order="create_date desc, id desc")
 
         self.assertEqual(len(old_layers), 3)
         self.assertEqual(old_layers[0].remaining_value, 1)
@@ -109,7 +114,8 @@ class TestStockValuationLayerRevaluation(TestStockValuationCommon):
         self.assertEqual(self.product1.quantity_svl, 3)
 
         # Check the creation of stock.valuation.layer
-        new_layer = self.env['stock.valuation.layer'].search([('product_id', '=', self.product1.id)], order="create_date desc, id desc", limit=1)
+        new_layer = self.env['stock.valuation.layer'].search([('product_id', '=', self.product1.id)],
+                                                             order="create_date desc, id desc", limit=1)
         self.assertEqual(new_layer.value, 1)
 
         # Check the remaing value of current layers
@@ -209,7 +215,8 @@ class TestStockValuationLayerRevaluation(TestStockValuationCommon):
         self.assertEqual(self.product1.standard_price, 3)
         self.assertEqual(self.product1.quantity_svl, 20)
 
-        old_layers = self.env['stock.valuation.layer'].search([('product_id', '=', self.product1.id)], order="create_date desc, id desc")
+        old_layers = self.env['stock.valuation.layer'].search([('product_id', '=', self.product1.id)],
+                                                              order="create_date desc, id desc")
 
         self.assertEqual(len(old_layers), 2)
         self.assertEqual(old_layers[0].remaining_value, 40)
@@ -222,7 +229,8 @@ class TestStockValuationLayerRevaluation(TestStockValuationCommon):
         self.assertEqual(self.product1.standard_price, 4)
 
         # Check the creation of stock.valuation.layer
-        new_layer = self.env['stock.valuation.layer'].search([('product_id', '=', self.product1.id)], order="create_date desc, id desc", limit=1)
+        new_layer = self.env['stock.valuation.layer'].search([('product_id', '=', self.product1.id)],
+                                                             order="create_date desc, id desc", limit=1)
         self.assertEqual(new_layer.value, 20)
 
         # Check the remaing value of current layers
@@ -257,7 +265,8 @@ class TestStockValuationLayerRevaluation(TestStockValuationCommon):
         self.assertEqual(self.product1.standard_price, 5)
         self.assertEqual(self.product1.quantity_svl, 20)
 
-        old_layers = self.env['stock.valuation.layer'].search([('product_id', '=', self.product1.id)], order="create_date desc, id desc")
+        old_layers = self.env['stock.valuation.layer'].search([('product_id', '=', self.product1.id)],
+                                                              order="create_date desc, id desc")
 
         self.assertEqual(len(old_layers), 3)
         self.assertEqual(old_layers.mapped("remaining_value"), [40, 40, 20])
@@ -282,7 +291,8 @@ class TestStockValuationLayerRevaluation(TestStockValuationCommon):
         self.assertEqual(self.product1.quantity_svl, 20)
 
         # Check the creation of stock.valuation.layer
-        new_layer = self.env['stock.valuation.layer'].search([('product_id', '=', self.product1.id)], order="create_date desc, id desc", limit=1)
+        new_layer = self.env['stock.valuation.layer'].search([('product_id', '=', self.product1.id)],
+                                                             order="create_date desc, id desc", limit=1)
         self.assertEqual(new_layer.value, 30)
 
         # Check the remaing value of current layers: only the adjusted layers should have changed

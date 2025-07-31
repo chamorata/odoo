@@ -158,13 +158,14 @@ class TestMultiCompany(TransactionCase):
                 'location_id': self.stock_location_a.id,
                 'product_id': product.id,
                 'inventory_quantity': 10
-        })
+            })
 
     def test_picking_1(self):
         """As a user of Company A, create a picking and use a picking type of Company B, check the
         create picking belongs to Company B.
         """
-        picking_type_company_b = self.env['stock.picking.type'].search([('company_id', '=', self.company_b.id)], limit=1)
+        picking_type_company_b = self.env['stock.picking.type'].search([('company_id', '=', self.company_b.id)],
+                                                                       limit=1)
         picking_form = Form(self.env['stock.picking'].with_user(self.user_a))
         picking_form.picking_type_id = picking_type_company_b
         picking = picking_form.save()
@@ -521,9 +522,9 @@ class TestMultiCompany(TransactionCase):
         self.assertEqual(move_push.state, "assigned")
         self.assertTrue(move_push.move_line_ids, "No move line created for the move")
         self.assertTrue(move_push in move_to_transit.move_dest_ids,
-                         "Moves are not chained")
+                        "Moves are not chained")
         self.assertEqual(move_push.move_line_ids.lot_id, move_line_2.lot_id,
-                            "Should be reserved from transit location")
+                         "Should be reserved from transit location")
         picking_receipt = move_push.picking_id
         move_line_3 = move_push.move_line_ids[0]
         picking_receipt.move_ids.picked = True
@@ -603,7 +604,7 @@ class TestMultiCompany(TransactionCase):
         self.assertTrue(move_wha_to_cus in move_transit_to_wha.move_dest_ids,
                         "Moves are not chained")
         self.assertTrue(move_transit_to_wha in move_whb_to_transit.move_dest_ids,
-                         "Moves are not chained")
+                        "Moves are not chained")
         self.assertEqual(move_wha_to_cus.state, "waiting")
         self.assertEqual(move_transit_to_wha.state, "waiting")
         self.assertEqual(move_whb_to_transit.state, "assigned")
@@ -613,7 +614,8 @@ class TestMultiCompany(TransactionCase):
         self.assertEqual(move_transit_to_wha.state, "waiting")
         self.assertEqual(move_whb_to_transit.state, "assigned")
         move_whb_to_transit.picking_id.button_validate()
-        intercom_quant = self.env['stock.quant'].search([('lot_id', '=', lot_a.id), ('product_id', '=', product_lot.id), ('location_id', '=', intercom_location.id)])
+        intercom_quant = self.env['stock.quant'].search([('lot_id', '=', lot_a.id), ('product_id', '=', product_lot.id),
+                                                         ('location_id', '=', intercom_location.id)])
         self.assertRecordValues(intercom_quant, [{'quantity': 1, 'reserved_quantity': 1}])
 
         move_line_2 = move_transit_to_wha.move_line_ids[0]

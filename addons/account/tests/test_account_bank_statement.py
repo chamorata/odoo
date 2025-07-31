@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
-from odoo.addons.account.tests.common import AccountTestInvoicingCommon
-from odoo.tests import tagged
-from odoo.exceptions import ValidationError, UserError
-from odoo import fields, Command
-
 import base64
+
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
+from odoo import fields, Command
+from odoo.exceptions import ValidationError, UserError
+from odoo.tests import tagged
+
 
 @tagged('post_install', '-at_install')
 class TestAccountBankStatementLine(AccountTestInvoicingCommon):
@@ -243,46 +245,46 @@ class TestAccountBankStatementLine(AccountTestInvoicingCommon):
     def test_edition_journal_curr_2_statement_curr_3(self):
         self._test_edition_customer_and_supplier_flows(
             # pylint: disable=bad-whitespace
-            80.0,               120.0,
-            self.currency_2,    self.currency_3,
-            {'debit': 40.0,     'credit': 0.0,      'amount_currency': 80.0,        'currency_id': self.currency_2.id},
-            {'debit': 0.0,      'credit': 40.0,     'amount_currency': -120.0,      'currency_id': self.currency_3.id},
+            80.0, 120.0,
+            self.currency_2, self.currency_3,
+            {'debit': 40.0, 'credit': 0.0, 'amount_currency': 80.0, 'currency_id': self.currency_2.id},
+            {'debit': 0.0, 'credit': 40.0, 'amount_currency': -120.0, 'currency_id': self.currency_3.id},
         )
 
     def test_edition_journal_curr_2_statement_curr_1(self):
         self._test_edition_customer_and_supplier_flows(
             # pylint: disable=bad-whitespace
-            120.0,              80.0,
-            self.currency_2,    self.currency_1,
-            {'debit': 80.0,     'credit': 0.0,      'amount_currency': 120.0,       'currency_id': self.currency_2.id},
-            {'debit': 0.0,      'credit': 80.0,     'amount_currency': -80.0,       'currency_id': self.currency_1.id},
+            120.0, 80.0,
+            self.currency_2, self.currency_1,
+            {'debit': 80.0, 'credit': 0.0, 'amount_currency': 120.0, 'currency_id': self.currency_2.id},
+            {'debit': 0.0, 'credit': 80.0, 'amount_currency': -80.0, 'currency_id': self.currency_1.id},
         )
 
     def test_edition_journal_curr_1_statement_curr_2(self):
         self._test_edition_customer_and_supplier_flows(
             # pylint: disable=bad-whitespace
-            80.0,               120.0,
-            self.currency_1,    self.currency_2,
-            {'debit': 80.0,     'credit': 0.0,      'amount_currency': 80.0,        'currency_id': self.currency_1.id},
-            {'debit': 0.0,      'credit': 80.0,     'amount_currency': -120.0,      'currency_id': self.currency_2.id},
+            80.0, 120.0,
+            self.currency_1, self.currency_2,
+            {'debit': 80.0, 'credit': 0.0, 'amount_currency': 80.0, 'currency_id': self.currency_1.id},
+            {'debit': 0.0, 'credit': 80.0, 'amount_currency': -120.0, 'currency_id': self.currency_2.id},
         )
 
     def test_edition_journal_curr_2_statement_false(self):
         self._test_edition_customer_and_supplier_flows(
             # pylint: disable=bad-whitespace
-            80.0,               0.0,
-            self.currency_2,    False,
-            {'debit': 40.0,     'credit': 0.0,      'amount_currency': 80.0,        'currency_id': self.currency_2.id},
-            {'debit': 0.0,      'credit': 40.0,     'amount_currency': -80.0,       'currency_id': self.currency_2.id},
+            80.0, 0.0,
+            self.currency_2, False,
+            {'debit': 40.0, 'credit': 0.0, 'amount_currency': 80.0, 'currency_id': self.currency_2.id},
+            {'debit': 0.0, 'credit': 40.0, 'amount_currency': -80.0, 'currency_id': self.currency_2.id},
         )
 
     def test_edition_journal_curr_1_statement_false(self):
         self._test_edition_customer_and_supplier_flows(
             # pylint: disable=bad-whitespace
-            80.0,               0.0,
-            self.currency_1,    False,
-            {'debit': 80.0,     'credit': 0.0,      'amount_currency': 80.0,        'currency_id': self.currency_1.id},
-            {'debit': 0.0,      'credit': 80.0,     'amount_currency': -80.0,       'currency_id': self.currency_1.id},
+            80.0, 0.0,
+            self.currency_1, False,
+            {'debit': 80.0, 'credit': 0.0, 'amount_currency': 80.0, 'currency_id': self.currency_1.id},
+            {'debit': 0.0, 'credit': 80.0, 'amount_currency': -80.0, 'currency_id': self.currency_1.id},
         )
 
     def test_zero_amount_journal_curr_1_statement_curr_2(self):
@@ -300,8 +302,8 @@ class TestAccountBankStatementLine(AccountTestInvoicingCommon):
 
         self.assertRecordValues(statement_line.move_id.line_ids, [
             # pylint: disable=bad-whitespace
-            {'debit': 0.0,      'credit': 0.0,      'amount_currency': 0.0,         'currency_id': self.currency_1.id},
-            {'debit': 0.0,      'credit': 0.0,      'amount_currency': -10.0,       'currency_id': self.currency_2.id},
+            {'debit': 0.0, 'credit': 0.0, 'amount_currency': 0.0, 'currency_id': self.currency_1.id},
+            {'debit': 0.0, 'credit': 0.0, 'amount_currency': -10.0, 'currency_id': self.currency_2.id},
         ])
 
     def test_zero_amount_journal_curr_2_statement_curr_1(self):
@@ -319,8 +321,8 @@ class TestAccountBankStatementLine(AccountTestInvoicingCommon):
 
         self.assertRecordValues(statement_line.move_id.line_ids, [
             # pylint: disable=bad-whitespace
-            {'debit': 10.0,     'credit': 0.0,      'amount_currency': 0.0,         'currency_id': self.currency_2.id},
-            {'debit': 0.0,      'credit': 10.0,     'amount_currency': -10.0,       'currency_id': self.currency_1.id},
+            {'debit': 10.0, 'credit': 0.0, 'amount_currency': 0.0, 'currency_id': self.currency_2.id},
+            {'debit': 0.0, 'credit': 10.0, 'amount_currency': -10.0, 'currency_id': self.currency_1.id},
         ])
 
     def test_zero_amount_journal_curr_2_statement_curr_3(self):
@@ -338,8 +340,8 @@ class TestAccountBankStatementLine(AccountTestInvoicingCommon):
 
         self.assertRecordValues(statement_line.move_id.line_ids, [
             # pylint: disable=bad-whitespace
-            {'debit': 0.0,      'credit': 0.0,      'amount_currency': 0.0,         'currency_id': self.currency_2.id},
-            {'debit': 0.0,      'credit': 0.0,      'amount_currency': -10.0,       'currency_id': self.currency_3.id},
+            {'debit': 0.0, 'credit': 0.0, 'amount_currency': 0.0, 'currency_id': self.currency_2.id},
+            {'debit': 0.0, 'credit': 0.0, 'amount_currency': -10.0, 'currency_id': self.currency_3.id},
         ])
 
     def test_constraints(self):
@@ -420,21 +422,21 @@ class TestAccountBankStatementLine(AccountTestInvoicingCommon):
             'amount_currency': -4000.0,
             'foreign_currency_id': self.currency_3.id,
         }, [
-            {
-                **self.expected_bank_line,
-                'debit': 0.0,
-                'credit': 2000.0,
-                'amount_currency': -2000.0,
-                'currency_id': self.currency_1.id,
-            },
-            {
-                **self.expected_counterpart_line,
-                'debit': 2000.0,
-                'credit': 0.0,
-                'amount_currency': 4000.0,
-                'currency_id': self.currency_3.id,
-            },
-        ])
+                                         {
+                                             **self.expected_bank_line,
+                                             'debit': 0.0,
+                                             'credit': 2000.0,
+                                             'amount_currency': -2000.0,
+                                             'currency_id': self.currency_1.id,
+                                         },
+                                         {
+                                             **self.expected_counterpart_line,
+                                             'debit': 2000.0,
+                                             'credit': 0.0,
+                                             'amount_currency': 4000.0,
+                                             'currency_id': self.currency_3.id,
+                                         },
+                                     ])
 
         # Check changing the label and the partner.
         self.statement_line.write({
@@ -450,32 +452,32 @@ class TestAccountBankStatementLine(AccountTestInvoicingCommon):
             'amount_currency': -4000.0,
             'foreign_currency_id': self.currency_3.id,
         }, [
-            {
-                **self.expected_bank_line,
-                'name': self.statement_line.payment_ref,
-                'partner_id': self.statement_line.partner_id.id,
-                'debit': 0.0,
-                'credit': 2000.0,
-                'amount_currency': -2000.0,
-                'currency_id': self.currency_1.id,
-            },
-            {
-                **self.expected_counterpart_line,
-                'name': self.statement_line.payment_ref,
-                'partner_id': self.statement_line.partner_id.id,
-                'debit': 2000.0,
-                'credit': 0.0,
-                'amount_currency': 4000.0,
-                'currency_id': self.currency_3.id,
-            },
-        ])
+                                         {
+                                             **self.expected_bank_line,
+                                             'name': self.statement_line.payment_ref,
+                                             'partner_id': self.statement_line.partner_id.id,
+                                             'debit': 0.0,
+                                             'credit': 2000.0,
+                                             'amount_currency': -2000.0,
+                                             'currency_id': self.currency_1.id,
+                                         },
+                                         {
+                                             **self.expected_counterpart_line,
+                                             'name': self.statement_line.payment_ref,
+                                             'partner_id': self.statement_line.partner_id.id,
+                                             'debit': 2000.0,
+                                             'credit': 0.0,
+                                             'amount_currency': 4000.0,
+                                             'currency_id': self.currency_3.id,
+                                         },
+                                     ])
 
     def test_prepare_counterpart_amounts_using_st_line_rate(self):
 
         def assertAppliedRate(
-            journal_currency, foreign_currency, aml_currency,
-            amount, amount_currency, aml_amount_currency, aml_balance,
-            expected_amount_currency, expected_balance,
+                journal_currency, foreign_currency, aml_currency,
+                amount, amount_currency, aml_amount_currency, aml_balance,
+                expected_amount_currency, expected_balance,
         ):
             journal = self.bank_journal_1.copy()
             journal.currency_id = journal_currency
@@ -495,20 +497,20 @@ class TestAccountBankStatementLine(AccountTestInvoicingCommon):
             self.assertAlmostEqual(res['balance'], expected_balance)
 
         for params in (
-            (self.currency_2, self.currency_3, self.currency_3, 80.0, 120.0, 120.0, 20.0, -120.0, -40.0),
-            (self.currency_2, self.currency_1, self.currency_2, 120.0, 80.0, 120.0, 40.0, -80.0, -80.0),
-            (self.currency_2, self.currency_3, self.currency_2, 80.0, 120.0, 80.0, 26.67, -120.0, -40.0),
-            (self.currency_2, self.currency_3, self.currency_4, 80.0, 120.0, 480.0, 40.0, -120.0, -40.0),
-            (self.currency_1, self.currency_2, self.currency_2, 80.0, 120.0, 120.0, 40.0, -120.0, -80.0),
-            (self.currency_1, self.currency_2, self.currency_3, 80.0, 120.0, 480.0, 80.0, -120.0, -80.0),
-            (self.currency_2, self.currency_2, self.currency_2, 80.0, 80.0, 80.0, 26.67, -80.0, -40.0),
-            (self.currency_2, self.currency_2, self.currency_3, 80.0, 80.0, 240.0, 40.0, -80.0, -40.0),
-            (self.currency_1, self.currency_1, self.currency_3, 80.0, 80.0, 480.0, 80.0, -80.0, -80.0),
-            (self.currency_2, self.currency_1, self.currency_1, 120.0, 80.0, 80.0, 80.0, -80.0, -80.0),
-            (self.currency_2, self.currency_3, self.currency_1, 80.0, 120.0, 40.0, 40.0, -120.0, -40.0),
-            (self.currency_1, self.currency_2, self.currency_1, 80.0, 120.0, 80.0, 80.0, -120.0, -80.0),
-            (self.currency_2, self.currency_2, self.currency_1, 80.0, 80.0, 40.0, 40.0, -80.0, -40.0),
-            (self.currency_1, self.currency_1, self.currency_1, 80.0, 80.0, 80.0, 80.0, -80.0, -80.0),
+                (self.currency_2, self.currency_3, self.currency_3, 80.0, 120.0, 120.0, 20.0, -120.0, -40.0),
+                (self.currency_2, self.currency_1, self.currency_2, 120.0, 80.0, 120.0, 40.0, -80.0, -80.0),
+                (self.currency_2, self.currency_3, self.currency_2, 80.0, 120.0, 80.0, 26.67, -120.0, -40.0),
+                (self.currency_2, self.currency_3, self.currency_4, 80.0, 120.0, 480.0, 40.0, -120.0, -40.0),
+                (self.currency_1, self.currency_2, self.currency_2, 80.0, 120.0, 120.0, 40.0, -120.0, -80.0),
+                (self.currency_1, self.currency_2, self.currency_3, 80.0, 120.0, 480.0, 80.0, -120.0, -80.0),
+                (self.currency_2, self.currency_2, self.currency_2, 80.0, 80.0, 80.0, 26.67, -80.0, -40.0),
+                (self.currency_2, self.currency_2, self.currency_3, 80.0, 80.0, 240.0, 40.0, -80.0, -40.0),
+                (self.currency_1, self.currency_1, self.currency_3, 80.0, 80.0, 480.0, 80.0, -80.0, -80.0),
+                (self.currency_2, self.currency_1, self.currency_1, 120.0, 80.0, 80.0, 80.0, -80.0, -80.0),
+                (self.currency_2, self.currency_3, self.currency_1, 80.0, 120.0, 40.0, 40.0, -120.0, -40.0),
+                (self.currency_1, self.currency_2, self.currency_1, 80.0, 120.0, 80.0, 80.0, -120.0, -80.0),
+                (self.currency_2, self.currency_2, self.currency_1, 80.0, 80.0, 40.0, 40.0, -80.0, -40.0),
+                (self.currency_1, self.currency_1, self.currency_1, 80.0, 80.0, 80.0, 80.0, -80.0, -80.0),
         ):
             with self.subTest(params=params):
                 assertAppliedRate(*params)
@@ -552,7 +554,8 @@ class TestAccountBankStatementLine(AccountTestInvoicingCommon):
         # create a valid and complete statement as the first lines (no statement before)
         line1 = self.create_bank_transaction(1, '2020-01-10')
         line2 = self.create_bank_transaction(2, '2020-01-11')
-        statement1 = self.env['account.bank.statement'].with_context(st_line_id=line1.id, active_ids=[line1.id, line2.id]).create({})
+        statement1 = self.env['account.bank.statement'].with_context(st_line_id=line1.id,
+                                                                     active_ids=[line1.id, line2.id]).create({})
         self.assertRecordValues(statement1, [{
             'is_complete': True,
             'is_valid': True,
@@ -762,7 +765,7 @@ class TestAccountBankStatementLine(AccountTestInvoicingCommon):
         statement1.balance_start = 26
         self.assertRecordValues(statement1, [{
             'is_complete': True,
-            'balance_end_real': 35, # autocorrect
+            'balance_end_real': 35,  # autocorrect
         }])
 
         # line3, line4 and line5 have the same date. Move line5 at the first place using the sequence.
@@ -930,7 +933,7 @@ class TestAccountBankStatementLine(AccountTestInvoicingCommon):
                 {'amount': 5, 'running_balance': 26, 'statement_id': False},
                 {'amount': 6, 'running_balance': 21, 'statement_id': statement2.id},
                 {'amount': 7, 'running_balance': 15, 'statement_id': statement1.id},
-                {'amount': 8, 'running_balance': 8,  'statement_id': statement1.id},
+                {'amount': 8, 'running_balance': 8, 'statement_id': statement1.id},
             ],
         )
 
@@ -955,7 +958,7 @@ class TestAccountBankStatementLine(AccountTestInvoicingCommon):
                 {'amount': 5, 'running_balance': 26, 'statement_id': statement3.id},
                 {'amount': 6, 'running_balance': 21, 'statement_id': statement2.id},
                 {'amount': 7, 'running_balance': 15, 'statement_id': False},
-                {'amount': 8, 'running_balance': 8,  'statement_id': False},
+                {'amount': 8, 'running_balance': 8, 'statement_id': False},
             ],
         )
         # Split on a line with a single line statement
@@ -987,7 +990,7 @@ class TestAccountBankStatementLine(AccountTestInvoicingCommon):
                 {'amount': 5, 'running_balance': 26, 'statement_id': statement3.id},
                 {'amount': 6, 'running_balance': 21, 'statement_id': statement4.id},
                 {'amount': 7, 'running_balance': 15, 'statement_id': statement4.id},
-                {'amount': 8, 'running_balance': 8,  'statement_id': statement4.id},
+                {'amount': 8, 'running_balance': 8, 'statement_id': statement4.id},
             ],
         )
         # check double split on a single line
@@ -1010,10 +1013,11 @@ class TestAccountBankStatementLine(AccountTestInvoicingCommon):
                 {'amount': 5, 'running_balance': 26, 'statement_id': statement3.id},
                 {'amount': 6, 'running_balance': 21, 'statement_id': statement4.id},
                 {'amount': 7, 'running_balance': 15, 'statement_id': statement4.id},
-                {'amount': 8, 'running_balance': 8,  'statement_id': statement4.id},
+                {'amount': 8, 'running_balance': 8, 'statement_id': statement4.id},
             ],
         )
-        statement6 = self.env['account.bank.statement'].with_context({'split_line_id': line2.id}).create({'reference': '6'})
+        statement6 = self.env['account.bank.statement'].with_context({'split_line_id': line2.id}).create(
+            {'reference': '6'})
         self.assertRecordValues(statement6, [{
             'balance_start': 33.0,
             'balance_end': 35.0,
@@ -1032,7 +1036,7 @@ class TestAccountBankStatementLine(AccountTestInvoicingCommon):
                 {'amount': 5, 'running_balance': 26, 'statement_id': statement3.id},
                 {'amount': 6, 'running_balance': 21, 'statement_id': statement4.id},
                 {'amount': 7, 'running_balance': 15, 'statement_id': statement4.id},
-                {'amount': 8, 'running_balance': 8,  'statement_id': statement4.id},
+                {'amount': 8, 'running_balance': 8, 'statement_id': statement4.id},
             ],
         )
 
@@ -1076,7 +1080,7 @@ class TestAccountBankStatementLine(AccountTestInvoicingCommon):
                 {'amount': 5, 'running_balance': 26, 'statement_id': statement7.id},
                 {'amount': 6, 'running_balance': 21, 'statement_id': statement4.id},
                 {'amount': 7, 'running_balance': 15, 'statement_id': statement4.id},
-                {'amount': 8, 'running_balance': 8,  'statement_id': statement4.id},
+                {'amount': 8, 'running_balance': 8, 'statement_id': statement4.id},
             ],
         )
 
@@ -1133,7 +1137,7 @@ class TestAccountBankStatementLine(AccountTestInvoicingCommon):
         ])
 
         # Fix statement8
-        statement8._compute_balance_start() # TODO: add_to_compute not working, why?
+        statement8._compute_balance_start()  # TODO: add_to_compute not working, why?
         self.assertRecordValues(statement8, [{
             'balance_end_real': 21.0,
             'balance_end': 21.0,
@@ -1257,9 +1261,9 @@ class TestAccountBankStatementLine(AccountTestInvoicingCommon):
             'balance_start': 0,
             'balance_end': 0,
         }, {
-            'is_complete': False, # no posted transactions
+            'is_complete': False,  # no posted transactions
             'balance_start': 1,  # from statement2's balance_end_real
-            'balance_end': 1, # no posted transactions
+            'balance_end': 1,  # no posted transactions
         }])
 
     def test_create_statement_line_with_inconsistent_currencies(self):
@@ -1382,7 +1386,8 @@ class TestAccountBankStatementLine(AccountTestInvoicingCommon):
             self.env['account.bank.statement'].with_context(context).create({})
 
         # create the second statement using split button
-        st2 = self.env['account.bank.statement'].with_context({'split_line_id': lines[-1].id}).create({'name': 'Statement 2'})
+        st2 = self.env['account.bank.statement'].with_context({'split_line_id': lines[-1].id}).create(
+            {'name': 'Statement 2'})
         self.assertRecordValues(st2, [{
             'balance_start': 10.0,
             'balance_end_real': 165.0,
@@ -1442,7 +1447,8 @@ class TestAccountBankStatementLine(AccountTestInvoicingCommon):
         })
         move = statement_line.move_id
 
-        move_reversal = self.env['account.move.reversal'].with_context(active_model="account.move", active_ids=move.ids).create({
+        move_reversal = self.env['account.move.reversal'].with_context(active_model="account.move",
+                                                                       active_ids=move.ids).create({
             'date': fields.Date.from_string('2021-02-01'),
             'journal_id': self.bank_journal_1.id,
         })
@@ -1452,7 +1458,8 @@ class TestAccountBankStatementLine(AccountTestInvoicingCommon):
         self.assertEqual(reversed_move.partner_id, partner)
 
     def test_bank_transaction_creation_with_default_journal_entry_date(self):
-        invoice_date_field = self.env['ir.model.fields'].search([('model', '=', 'account.move'), ('name', '=', 'invoice_date')], limit=1)
+        invoice_date_field = self.env['ir.model.fields'].search(
+            [('model', '=', 'account.move'), ('name', '=', 'invoice_date')], limit=1)
         self.env['ir.default'].create({
             'field_id': invoice_date_field.id,
             'json_value': '"2023-10-16"',

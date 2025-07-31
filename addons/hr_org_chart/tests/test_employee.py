@@ -1,16 +1,18 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.hr.tests.common import TestHrCommon
+
 from odoo.tests import tagged
 
-from odoo.addons.hr.tests.common import TestHrCommon
 
 @tagged('-at_install', 'post_install')
 class TestEmployee(TestHrCommon):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.employee_georges, cls.employee_paul, cls.employee_pierre = cls.env['hr.employee'].with_user(cls.res_users_hr_officer).create([
+        cls.employee_georges, cls.employee_paul, cls.employee_pierre = cls.env['hr.employee'].with_user(
+            cls.res_users_hr_officer).create([
             {'name': 'Georges'},
             {'name': 'Paul'},
             {'name': 'Pierre'},
@@ -76,7 +78,8 @@ class TestEmployee(TestHrCommon):
         self.assertEqual(len(result), 1 + employee_count)
         for employee_dict in result:
             self.assertFalse(employee_dict['parent_id'], "Each employee in the result should not have any parent set.")
-        self.assertIn({'id': self.employee_paul.id, 'parent_id': False, '__child_ids__': [self.employee_georges.id, self.employee_pierre.id]}, result)
+        self.assertIn({'id': self.employee_paul.id, 'parent_id': False,
+                       '__child_ids__': [self.employee_georges.id, self.employee_pierre.id]}, result)
 
         result = HrEmployee.hierarchy_read([('id', '=', self.employee_paul.id)], ['id'], 'parent_id')
         self.assertEqual(len(result), 3)

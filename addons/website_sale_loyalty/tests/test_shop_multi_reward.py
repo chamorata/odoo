@@ -1,11 +1,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details
 
-from odoo import Command, http
-from odoo.tests import tagged
-
-from odoo.addons.base.tests.common import TransactionCaseWithUserPortal
 from odoo.addons.website.tools import MockRequest
 from odoo.addons.website_sale_loyalty.controllers.main import WebsiteSale
+
+from odoo import Command, http
+from odoo.addons.base.tests.common import TransactionCaseWithUserPortal
+from odoo.tests import tagged
 
 
 @tagged('post_install', '-at_install')
@@ -25,16 +25,16 @@ class TestClaimReward(TransactionCaseWithUserPortal):
         })
         cls.product1, cls.product2 = cls.env['product.product'].create([
             {
-            'name': 'Test Product',
-            'list_price': 10.0,
-            'taxes_id': False,
-            'product_tag_ids': tag,
-        }, {
-            'name': 'Test Product 2',
-            'list_price': 20.0,
-            'taxes_id': False,
-            'product_tag_ids': tag,
-        }])
+                'name': 'Test Product',
+                'list_price': 10.0,
+                'taxes_id': False,
+                'product_tag_ids': tag,
+            }, {
+                'name': 'Test Product 2',
+                'list_price': 20.0,
+                'taxes_id': False,
+                'product_tag_ids': tag,
+            }])
 
         cls.promo_program, cls.coupon_program = cls.env['loyalty.program'].create([{
             'name': 'Free Products',
@@ -103,7 +103,8 @@ class TestClaimReward(TransactionCaseWithUserPortal):
             )
 
             self.assertEqual(len(order.order_line), 2, 'reward line should be added to order')
-            self.assertEqual(order.order_line[1].product_id, product2, 'added reward line should should contain product 2')
+            self.assertEqual(order.order_line[1].product_id, product2,
+                             'added reward line should should contain product 2')
 
     def test_apply_coupon_with_multiple_rewards(self):
         discount_reward = self.coupon_program.reward_ids.filtered('discount')

@@ -8,29 +8,32 @@ from odoo.tools.misc import mod10r
 
 L10N_CH_QRR_NUMBER_LENGTH = 27
 
+
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
-    l10n_ch_is_qr_valid = fields.Boolean(compute='_compute_l10n_ch_qr_is_valid', help="Determines whether an invoice can be printed as a QR or not")
+    l10n_ch_is_qr_valid = fields.Boolean(compute='_compute_l10n_ch_qr_is_valid',
+                                         help="Determines whether an invoice can be printed as a QR or not")
 
     @api.depends('partner_id', 'currency_id')
     def _compute_l10n_ch_qr_is_valid(self):
         for move in self:
             error_messages = move.partner_bank_id._get_error_messages_for_qr('ch_qr', move.partner_id, move.currency_id)
             move.l10n_ch_is_qr_valid = (
-                move.move_type == 'out_invoice' and
-                not error_messages and
-                (
-                    # QR codes must be printed on all Swiss transactions
-                    move.company_id.account_fiscal_country_id.code == 'CH' or
+                    move.move_type == 'out_invoice' and
+                    not error_messages and
                     (
-                        # QR code is also printed if the fiscal country is not Switzerland but the receivale account is eligible
-                        move.partner_bank_id.acc_type == 'iban' and
-                        (iban := (move.partner_bank_id.acc_number or '').replace(' ', '')).startswith('CH') and
-                        iban[4:9].isdigit() and
-                        30000 <= int(iban[4:9]) <= 31999
+                        # QR codes must be printed on all Swiss transactions
+                            move.company_id.account_fiscal_country_id.code == 'CH' or
+                            (
+                                # QR code is also printed if the fiscal country is not Switzerland but the receivale account is eligible
+                                    move.partner_bank_id.acc_type == 'iban' and
+                                    (iban := (move.partner_bank_id.acc_number or '').replace(' ', '')).startswith(
+                                        'CH') and
+                                    iban[4:9].isdigit() and
+                                    30000 <= int(iban[4:9]) <= 31999
+                            )
                     )
-                )
             )
 
     def get_l10n_ch_qrr_number(self):
@@ -78,9 +81,9 @@ class AccountMove(models.Model):
         by blocks of 5 from right to left.
         """
         spaced_qrr_ref = ''
-        i = len(qrr_ref) # i is the index after the last index to consider in substrings
+        i = len(qrr_ref)  # i is the index after the last index to consider in substrings
         while i > 0:
-            spaced_qrr_ref = qrr_ref[max(i-5, 0) : i] + ' ' + spaced_qrr_ref
+            spaced_qrr_ref = qrr_ref[max(i - 5, 0): i] + ' ' + spaced_qrr_ref
             i -= 5
         return spaced_qrr_ref
 

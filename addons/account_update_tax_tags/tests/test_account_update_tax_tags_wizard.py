@@ -1,9 +1,10 @@
 import time
 
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
 from odoo import Command
 from odoo.exceptions import UserError
 from odoo.tests import tagged, freeze_time
-from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 
 
 @freeze_time('2023-12-31')
@@ -31,7 +32,8 @@ class TestAccountUpdateTaxTagsWizard(AccountTestInvoicingCommon):
         cls.tax_1 = cls._create_tax('update_test_tax', 15, tag_names=cls.tag_names)
         cls.wizard = cls.env['account.update.tax.tags.wizard'].create({'date_from': '2023-02-01'})
 
-    def _create_invoice(self, move_type='out_invoice', invoice_amount=50, currency_id=None, partner_id=None, date_invoice=None, payment_term_id=False, auto_validate=False, taxes=None, state=None):
+    def _create_invoice(self, move_type='out_invoice', invoice_amount=50, currency_id=None, partner_id=None,
+                        date_invoice=None, payment_term_id=False, auto_validate=False, taxes=None, state=None):
         if move_type == 'entry':
             raise AssertionError("Unexpected move_type : 'entry'.")
 
@@ -68,7 +70,8 @@ class TestAccountUpdateTaxTagsWizard(AccountTestInvoicingCommon):
         return invoice
 
     def create_invoice(self, move_type='out_invoice', invoice_amount=50, currency_id=None):
-        return self._create_invoice(move_type=move_type, invoice_amount=invoice_amount, currency_id=currency_id, auto_validate=True)
+        return self._create_invoice(move_type=move_type, invoice_amount=invoice_amount, currency_id=currency_id,
+                                    auto_validate=True)
 
     @classmethod
     def _create_or_get_tax_tag(cls, name, country_id=None):
@@ -87,7 +90,8 @@ class TestAccountUpdateTaxTagsWizard(AccountTestInvoicingCommon):
         })
 
     @classmethod
-    def _create_tax(cls, name, amount, amount_type='percent', type_tax_use='sale', tag_names=None, children_taxes=None, tax_exigibility='on_invoice', **kwargs):
+    def _create_tax(cls, name, amount, amount_type='percent', type_tax_use='sale', tag_names=None, children_taxes=None,
+                    tax_exigibility='on_invoice', **kwargs):
         if not tag_names:
             tag_names = {}
         tag_commands = {
@@ -132,7 +136,8 @@ class TestAccountUpdateTaxTagsWizard(AccountTestInvoicingCommon):
     @classmethod
     def _change_tax_tag(cls, tax, new_tag, invoice=True, base=True):
         rep_lines = tax.invoice_repartition_line_ids if invoice else tax.refund_repartition_line_ids
-        filtered_rep_lines = rep_lines.filtered(lambda rep_line: rep_line.repartition_type == ('base' if base else 'tax'))
+        filtered_rep_lines = rep_lines.filtered(
+            lambda rep_line: rep_line.repartition_type == ('base' if base else 'tax'))
         filtered_rep_lines.write({'tag_ids': [Command.set(cls._create_or_get_tax_tag(new_tag).ids)]})
 
     def _get_amls_by_type(self, moves):
@@ -162,9 +167,11 @@ class TestAccountUpdateTaxTagsWizard(AccountTestInvoicingCommon):
         self.wizard.update_amls_tax_tags()
 
         tax_line_included = move_included.line_ids.filtered(lambda aml: aml.tax_line_id)
-        self.assertEqual(tax_line_included.tax_tag_ids.name, 'invoice_tax_tag_changed', 'Move within the date constraint should be updated.')
+        self.assertEqual(tax_line_included.tax_tag_ids.name, 'invoice_tax_tag_changed',
+                         'Move within the date constraint should be updated.')
         tax_line_not_included = move_not_included.line_ids.filtered(lambda aml: aml.tax_line_id)
-        self.assertEqual(tax_line_not_included.tax_tag_ids.name, 'invoice_tax_tag', 'Move outside the date constraint should not be updated.')
+        self.assertEqual(tax_line_not_included.tax_tag_ids.name, 'invoice_tax_tag',
+                         'Move outside the date constraint should not be updated.')
 
     def test_update_multiple_taxes(self):
         """ Test in case there are multiple taxes set on the invoice line. """
@@ -231,28 +238,36 @@ class TestAccountUpdateTaxTagsWizard(AccountTestInvoicingCommon):
             for line_type in ['base', 'tax']:
                 with self.subTest(f'Update tax tag on {move_type}-{line_type}'):
                     type_tax_use = 'sale' if move_type.startswith('out_') else 'purchase'
-                    tax_2 = self._create_tax(f'update_test_tax_2_{move_type}_{line_type}', 15, type_tax_use=type_tax_use, tag_names={
-                        'invoice_base': 'test_tag_invoice_base',
-                        'invoice_tax': 'test_tag_invoice_tax',
-                        'refund_base': 'test_tag_refund_base',
-                        'refund_tax': 'test_tag_refund_tax',
-                    })
+                    tax_2 = self._create_tax(f'update_test_tax_2_{move_type}_{line_type}', 15,
+                                             type_tax_use=type_tax_use, tag_names={
+                            'invoice_base': 'test_tag_invoice_base',
+                            'invoice_tax': 'test_tag_invoice_tax',
+                            'refund_base': 'test_tag_refund_base',
+                            'refund_tax': 'test_tag_refund_tax',
+                        })
                     move = self._create_invoice(move_type=move_type, taxes=tax_2)
                     super_type = move_type.split('_')[1]
                     if super_type == 'receipt':
                         super_type = 'invoice'  # receipt type acts just like invoice one
-                    self._change_tax_tag(tax_2, f'{move_type}_{line_type}_tag_changed', invoice=super_type == 'invoice', base=line_type == 'base')
+                    self._change_tax_tag(tax_2, f'{move_type}_{line_type}_tag_changed', invoice=super_type == 'invoice',
+                                         base=line_type == 'base')
                     self.wizard.update_amls_tax_tags()
 
                     invoice_line, tax_line, counterpart_line = self._get_amls_by_type(move)
                     if line_type == 'base':
-                        self.assertEqual(invoice_line.tax_tag_ids.name, f'{move_type}_{line_type}_tag_changed', 'Base lines tags should have changed.')
-                        self.assertEqual(tax_line.tax_tag_ids.name, f'test_tag_{super_type}_tax', 'Tax lines tags should not have changed.')
-                        self.assertFalse(counterpart_line.tax_tag_ids, 'Counterpart lines tags should not have changed.')
+                        self.assertEqual(invoice_line.tax_tag_ids.name, f'{move_type}_{line_type}_tag_changed',
+                                         'Base lines tags should have changed.')
+                        self.assertEqual(tax_line.tax_tag_ids.name, f'test_tag_{super_type}_tax',
+                                         'Tax lines tags should not have changed.')
+                        self.assertFalse(counterpart_line.tax_tag_ids,
+                                         'Counterpart lines tags should not have changed.')
                     else:
-                        self.assertEqual(invoice_line.tax_tag_ids.name, f'test_tag_{super_type}_base', 'Base lines tags should not have changed.')
-                        self.assertEqual(tax_line.tax_tag_ids.name, f'{move_type}_{line_type}_tag_changed', 'Tax lines tags should have changed.')
-                        self.assertFalse(counterpart_line.tax_tag_ids, 'Counterpart lines tags should not have changed.')
+                        self.assertEqual(invoice_line.tax_tag_ids.name, f'test_tag_{super_type}_base',
+                                         'Base lines tags should not have changed.')
+                        self.assertEqual(tax_line.tax_tag_ids.name, f'{move_type}_{line_type}_tag_changed',
+                                         'Tax lines tags should have changed.')
+                        self.assertFalse(counterpart_line.tax_tag_ids,
+                                         'Counterpart lines tags should not have changed.')
 
     def test_update_move_type_entry(self):
         """ Test that move of type 'entry' are correctly updated.
@@ -293,15 +308,18 @@ class TestAccountUpdateTaxTagsWizard(AccountTestInvoicingCommon):
     def test_update_amls_all_states(self):
         """ Tests that moves are correctly updated, regardless of their state. """
         move_states = ('posted', 'cancel', 'draft')
-        moves = [self._create_invoice(partner_id=self.partner_a.id, taxes=self.tax_1, state=state) for state in move_states]
+        moves = [self._create_invoice(partner_id=self.partner_a.id, taxes=self.tax_1, state=state) for state in
+                 move_states]
         self._change_tax_tag(self.tax_1, 'invoice_base_tag_changed', invoice=True, base=True)
         self._change_tax_tag(self.tax_1, 'invoice_tax_tag_changed', invoice=True, base=False)
         self.wizard.update_amls_tax_tags()
         for move in moves:
             with self.subTest(f'Update tax tag on move with state: {move.state}'):
                 invoice_line, tax_line, counterpart_line = self._get_amls_by_type(move)
-                self.assertEqual(invoice_line.tax_tag_ids.name, 'invoice_base_tag_changed', 'Base lines tags should have changed.')
-                self.assertEqual(tax_line.tax_tag_ids.name, 'invoice_tax_tag_changed', 'Tax lines tags should have changed.')
+                self.assertEqual(invoice_line.tax_tag_ids.name, 'invoice_base_tag_changed',
+                                 'Base lines tags should have changed.')
+                self.assertEqual(tax_line.tax_tag_ids.name, 'invoice_tax_tag_changed',
+                                 'Tax lines tags should have changed.')
                 self.assertFalse(counterpart_line.tax_tag_ids, 'Counterpart lines tags should not have changed.')
 
     def test_update_no_tag_before(self):
@@ -315,7 +333,8 @@ class TestAccountUpdateTaxTagsWizard(AccountTestInvoicingCommon):
 
     def test_update_no_tag_after(self):
         move = self._create_invoice(taxes=self.tax_1)
-        self.tax_1.invoice_repartition_line_ids.write({'tag_ids': [Command.clear()]})  # Command.CLEAR both base and tax lines
+        self.tax_1.invoice_repartition_line_ids.write(
+            {'tag_ids': [Command.clear()]})  # Command.CLEAR both base and tax lines
         self.wizard.update_amls_tax_tags()
 
         invoice_line, tax_line, counterpart_line = self._get_amls_by_type(move)
@@ -337,13 +356,16 @@ class TestAccountUpdateTaxTagsWizard(AccountTestInvoicingCommon):
             'refund_base': 'refund_base_tag_child_2',
             'refund_tax': 'refund_tax_tag_child_2',
         })
-        tax_parent = self._create_tax('tax_parent', 15, amount_type='group', type_tax_use='purchase', children_taxes=(tax_child_1 + tax_child_2))
+        tax_parent = self._create_tax('tax_parent', 15, amount_type='group', type_tax_use='purchase',
+                                      children_taxes=(tax_child_1 + tax_child_2))
         move = self._create_invoice(taxes=tax_parent)
 
         # Check that lines are set as expected before update.
         invoice_line, tax_lines, counterpart_line = self._get_amls_by_type(move)
-        self.assertEqual(invoice_line.tax_tag_ids.sorted('name').mapped('name'), ['invoice_base_tag_child_1', 'invoice_base_tag_child_2'])
-        self.assertEqual(tax_lines.tax_tag_ids.sorted('name').mapped('name'), ['invoice_tax_tag_child_1', 'invoice_tax_tag_child_2'])
+        self.assertEqual(invoice_line.tax_tag_ids.sorted('name').mapped('name'),
+                         ['invoice_base_tag_child_1', 'invoice_base_tag_child_2'])
+        self.assertEqual(tax_lines.tax_tag_ids.sorted('name').mapped('name'),
+                         ['invoice_tax_tag_child_1', 'invoice_tax_tag_child_2'])
         self.assertFalse(counterpart_line.tax_tag_ids)
 
         self._change_tax_tag(tax_child_1, 'invoice_base_tag_1_changed', invoice=True, base=True)
@@ -353,8 +375,10 @@ class TestAccountUpdateTaxTagsWizard(AccountTestInvoicingCommon):
         self.wizard.update_amls_tax_tags()
 
         invoice_line, tax_lines, counterpart_line = self._get_amls_by_type(move)
-        self.assertEqual(invoice_line.tax_tag_ids.sorted('name').mapped('name'), ['invoice_base_tag_1_changed', 'invoice_base_tag_2_changed'])
-        self.assertEqual(tax_lines.tax_tag_ids.sorted('name').mapped('name'), ['invoice_tax_tag_1_changed', 'invoice_tax_tag_2_changed'])
+        self.assertEqual(invoice_line.tax_tag_ids.sorted('name').mapped('name'),
+                         ['invoice_base_tag_1_changed', 'invoice_base_tag_2_changed'])
+        self.assertEqual(tax_lines.tax_tag_ids.sorted('name').mapped('name'),
+                         ['invoice_tax_tag_1_changed', 'invoice_tax_tag_2_changed'])
         self.assertFalse(counterpart_line.tax_tag_ids)
 
     def test_update_with_caba_taxes(self):
@@ -374,15 +398,18 @@ class TestAccountUpdateTaxTagsWizard(AccountTestInvoicingCommon):
         self.wizard.update_amls_tax_tags()
 
         invoice_lines, tax_lines, counterpart_lines = self._get_amls_by_type(invoice)
-        self.assertEqual(invoice_lines.tax_tag_ids.name, 'invoice_base_tag_changed', 'Base lines tags should have changed.')
+        self.assertEqual(invoice_lines.tax_tag_ids.name, 'invoice_base_tag_changed',
+                         'Base lines tags should have changed.')
         self.assertEqual(tax_lines.tax_tag_ids.name, 'invoice_tax_tag_changed', 'Tax lines tags should have changed.')
         self.assertFalse(counterpart_lines.tax_tag_ids, 'Counterpart lines should not have changed.')
 
         caba_base_line = caba_move.line_ids.filtered('tax_ids')
         caba_tax_line = caba_move.line_ids.filtered('tax_line_id')
         caba_counterpart_lines = caba_move.line_ids - caba_base_line - caba_tax_line
-        self.assertEqual(caba_base_line.tax_tag_ids.name, 'invoice_base_tag_changed', 'CABA base lines tags should have changed.')
-        self.assertEqual(caba_tax_line.tax_tag_ids.name, 'invoice_tax_tag_changed', 'CABA tax lines tags should have changed.')
+        self.assertEqual(caba_base_line.tax_tag_ids.name, 'invoice_base_tag_changed',
+                         'CABA base lines tags should have changed.')
+        self.assertEqual(caba_tax_line.tax_tag_ids.name, 'invoice_tax_tag_changed',
+                         'CABA tax lines tags should have changed.')
         self.assertFalse(caba_counterpart_lines.tax_tag_ids, 'CABA counterpart lines should not have changed.')
 
     def test_update_caba_taxes_with_negative_line(self):
@@ -400,7 +427,8 @@ class TestAccountUpdateTaxTagsWizard(AccountTestInvoicingCommon):
         self.wizard.update_amls_tax_tags()
 
         invoice_lines, tax_lines, counterpart_lines = self._get_amls_by_type(invoice)
-        self.assertEqual(invoice_lines.tax_tag_ids.name, 'invoice_base_tag_changed', 'Base lines tags should have changed.')
+        self.assertEqual(invoice_lines.tax_tag_ids.name, 'invoice_base_tag_changed',
+                         'Base lines tags should have changed.')
         self.assertEqual(tax_lines.tax_tag_ids.name, 'invoice_tax_tag_changed', 'Tax lines tags should have changed.')
         self.assertFalse(counterpart_lines.tax_tag_ids, 'Counterpart lines should not have changed.')
 
@@ -408,8 +436,10 @@ class TestAccountUpdateTaxTagsWizard(AccountTestInvoicingCommon):
         caba_base_line = caba_move.line_ids.filtered('tax_ids')
         caba_tax_line = caba_move.line_ids.filtered('tax_line_id')
         caba_counterpart_lines = caba_move.line_ids - caba_base_line - caba_tax_line
-        self.assertEqual(caba_base_line.tax_tag_ids.name, 'invoice_base_tag_changed', 'CABA base lines tags should have changed.')
-        self.assertEqual(caba_tax_line.tax_tag_ids.name, 'invoice_tax_tag_changed', 'CABA tax lines tags should have changed.')
+        self.assertEqual(caba_base_line.tax_tag_ids.name, 'invoice_base_tag_changed',
+                         'CABA base lines tags should have changed.')
+        self.assertEqual(caba_tax_line.tax_tag_ids.name, 'invoice_tax_tag_changed',
+                         'CABA tax lines tags should have changed.')
         self.assertFalse(caba_counterpart_lines.tax_tag_ids, 'CABA counterpart lines should not have changed.')
 
     def test_child_tax_multiple_parent_raises(self):
@@ -417,5 +447,6 @@ class TestAccountUpdateTaxTagsWizard(AccountTestInvoicingCommon):
         tax_parent_1 = self._create_tax('tax_parent', 15, amount_type='group', children_taxes=tax_child)
         self._create_tax('tax_parent_2', 15, amount_type='group', children_taxes=tax_child)
         self._create_invoice(taxes=tax_parent_1)
-        with self.assertRaisesRegex(UserError, 'Update with children taxes that are child of multiple parents is not supported.'):
+        with self.assertRaisesRegex(UserError,
+                                    'Update with children taxes that are child of multiple parents is not supported.'):
             self.wizard.update_amls_tax_tags()

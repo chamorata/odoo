@@ -7,7 +7,6 @@ from odoo import api, models, fields, _, SUPERUSER_ID
 from odoo.exceptions import AccessError
 from odoo.tools.misc import clean_context
 
-
 HR_READABLE_FIELDS = [
     'active',
     'child_ids',
@@ -86,13 +85,14 @@ class User(models.Model):
     # note: a user can only be linked to one employee per company (see sql constraint in ´hr.employee´)
     employee_ids = fields.One2many('hr.employee', 'user_id', string='Related employee', domain=_employee_ids_domain)
     employee_id = fields.Many2one('hr.employee', string="Company employee",
-        compute='_compute_company_employee', search='_search_company_employee', store=False)
+                                  compute='_compute_company_employee', search='_search_company_employee', store=False)
 
     job_title = fields.Char(related='employee_id.job_title', readonly=False, related_sudo=False)
     work_phone = fields.Char(related='employee_id.work_phone', readonly=False, related_sudo=False)
     mobile_phone = fields.Char(related='employee_id.mobile_phone', readonly=False, related_sudo=False)
     work_email = fields.Char(related='employee_id.work_email', readonly=False, related_sudo=False)
-    category_ids = fields.Many2many(related='employee_id.category_ids', string="Employee Tags", readonly=False, related_sudo=False)
+    category_ids = fields.Many2many(related='employee_id.category_ids', string="Employee Tags", readonly=False,
+                                    related_sudo=False)
     department_id = fields.Many2one(related='employee_id.department_id', readonly=False, related_sudo=False)
     address_id = fields.Many2one(related='employee_id.address_id', readonly=False, related_sudo=False)
     work_contact_id = fields.Many2one(related='employee_id.work_contact_id', readonly=False, related_sudo=False)
@@ -101,23 +101,32 @@ class User(models.Model):
     work_location_type = fields.Selection(related="employee_id.work_location_type")
     employee_parent_id = fields.Many2one(related='employee_id.parent_id', readonly=False, related_sudo=False)
     coach_id = fields.Many2one(related='employee_id.coach_id', readonly=False, related_sudo=False)
-    private_street = fields.Char(related='employee_id.private_street', string="Private Street", readonly=False, related_sudo=False)
-    private_street2 = fields.Char(related='employee_id.private_street2', string="Private Street2", readonly=False, related_sudo=False)
-    private_city = fields.Char(related='employee_id.private_city', string="Private City", readonly=False, related_sudo=False)
+    private_street = fields.Char(related='employee_id.private_street', string="Private Street", readonly=False,
+                                 related_sudo=False)
+    private_street2 = fields.Char(related='employee_id.private_street2', string="Private Street2", readonly=False,
+                                  related_sudo=False)
+    private_city = fields.Char(related='employee_id.private_city', string="Private City", readonly=False,
+                               related_sudo=False)
     private_state_id = fields.Many2one(
         related='employee_id.private_state_id', string="Private State", readonly=False, related_sudo=False,
         domain="[('country_id', '=?', private_country_id)]")
-    private_zip = fields.Char(related='employee_id.private_zip', readonly=False, string="Private Zip", related_sudo=False)
-    private_country_id = fields.Many2one(related='employee_id.private_country_id', string="Private Country", readonly=False, related_sudo=False)
+    private_zip = fields.Char(related='employee_id.private_zip', readonly=False, string="Private Zip",
+                              related_sudo=False)
+    private_country_id = fields.Many2one(related='employee_id.private_country_id', string="Private Country",
+                                         readonly=False, related_sudo=False)
     private_phone = fields.Char(related='employee_id.private_phone', readonly=False, related_sudo=False)
     private_email = fields.Char(related='employee_id.private_email', string="Private Email", readonly=False)
     private_lang = fields.Selection(related='employee_id.lang', string="Employee Lang", readonly=False)
     km_home_work = fields.Integer(related='employee_id.km_home_work', readonly=False, related_sudo=False)
     distance_home_work = fields.Integer(related='employee_id.distance_home_work', readonly=False, related_sudo=False)
-    distance_home_work_unit = fields.Selection(related='employee_id.distance_home_work_unit', readonly=False, related_sudo=False)
+    distance_home_work_unit = fields.Selection(related='employee_id.distance_home_work_unit', readonly=False,
+                                               related_sudo=False)
     # res.users already have a field bank_account_id and country_id from the res.partner inheritance: don't redefine them
-    employee_bank_account_id = fields.Many2one(related='employee_id.bank_account_id', string="Employee's Bank Account Number", related_sudo=False, readonly=False)
-    employee_country_id = fields.Many2one(related='employee_id.country_id', string="Employee's Country", readonly=False, related_sudo=False)
+    employee_bank_account_id = fields.Many2one(related='employee_id.bank_account_id',
+                                               string="Employee's Bank Account Number", related_sudo=False,
+                                               readonly=False)
+    employee_country_id = fields.Many2one(related='employee_id.country_id', string="Employee's Country", readonly=False,
+                                          related_sudo=False)
     identification_id = fields.Char(related='employee_id.identification_id', readonly=False, related_sudo=False)
     ssnid = fields.Char(related='employee_id.ssnid', readonly=False, related_sudo=False)
     passport_id = fields.Char(related='employee_id.passport_id', readonly=False, related_sudo=False)
@@ -145,10 +154,13 @@ class User(models.Model):
     last_activity = fields.Date(related='employee_id.last_activity')
     last_activity_time = fields.Char(related='employee_id.last_activity_time')
     employee_type = fields.Selection(related='employee_id.employee_type', readonly=False, related_sudo=False)
-    employee_resource_calendar_id = fields.Many2one(related='employee_id.resource_calendar_id', string="Employee's Working Hours", readonly=True)
+    employee_resource_calendar_id = fields.Many2one(related='employee_id.resource_calendar_id',
+                                                    string="Employee's Working Hours", readonly=True)
 
-    create_employee = fields.Boolean(store=False, default=False, copy=False, string="Technical field, whether to create an employee")
-    create_employee_id = fields.Many2one('hr.employee', store=False, copy=False, string="Technical field, bind user to this employee on create")
+    create_employee = fields.Boolean(store=False, default=False, copy=False,
+                                     string="Technical field, whether to create an employee")
+    create_employee_id = fields.Many2one('hr.employee', store=False, copy=False,
+                                         string="Technical field, bind user to this employee on create")
 
     can_edit = fields.Boolean(compute='_compute_can_edit')
     is_system = fields.Boolean(compute="_compute_is_system")
@@ -158,7 +170,8 @@ class User(models.Model):
         self.is_system = self.env.user._is_system()
 
     def _compute_can_edit(self):
-        can_edit = self.env['ir.config_parameter'].sudo().get_param('hr.hr_employee_self_edit') or self.env.user.has_group('hr.group_hr_user')
+        can_edit = self.env['ir.config_parameter'].sudo().get_param(
+            'hr.hr_employee_self_edit') or self.env.user.has_group('hr.group_hr_user')
         for user in self:
             user.can_edit = can_edit
 
@@ -244,10 +257,12 @@ class User(models.Model):
             for field_name, field in self._fields.items()
             if field.related_field and field.related_field.model_name == 'hr.employee' and field_name in vals
         }
-        can_edit_self = self.env['ir.config_parameter'].sudo().get_param('hr.hr_employee_self_edit') or self.env.user.has_group('hr.group_hr_user')
+        can_edit_self = self.env['ir.config_parameter'].sudo().get_param(
+            'hr.hr_employee_self_edit') or self.env.user.has_group('hr.group_hr_user')
         if hr_fields and not can_edit_self:
             # Raise meaningful error message
-            raise AccessError(_("You are only allowed to update your preferences. Please contact a HR officer to update other information."))
+            raise AccessError(
+                _("You are only allowed to update your preferences. Please contact a HR officer to update other information."))
 
         employee_domain = [
             *self.env['hr.employee']._check_company_domain(self.env.company),
@@ -257,7 +272,7 @@ class User(models.Model):
             employees = self.env['hr.employee'].sudo().search(employee_domain)
             get_field = self.env['ir.model.fields']._get
             field_names = Markup().join([
-                 Markup("<li>%s</li>") % get_field("res.users", fname).field_description for fname in hr_fields
+                Markup("<li>%s</li>") % get_field("res.users", fname).field_description for fname in hr_fields
             ])
             for employee in employees:
                 reason_message, partner_ids = self._get_personal_info_partner_ids_to_notify(employee)
@@ -304,7 +319,8 @@ class User(models.Model):
     def _compute_company_employee(self):
         employee_per_user = {
             employee.user_id: employee
-            for employee in self.env['hr.employee'].search([('user_id', 'in', self.ids), ('company_id', '=', self.env.company.id)])
+            for employee in
+            self.env['hr.employee'].search([('user_id', 'in', self.ids), ('company_id', '=', self.env.company.id)])
         }
         for user in self:
             user.employee_id = employee_per_user.get(user)
@@ -315,7 +331,9 @@ class User(models.Model):
     def action_create_employee(self):
         self.ensure_one()
         if self.env.company not in self.company_ids:
-            raise AccessError(_("You are not allowed to create an employee because the user does not have access rights for %s", self.env.company.name))
+            raise AccessError(
+                _("You are not allowed to create an employee because the user does not have access rights for %s",
+                  self.env.company.name))
         self.env['hr.employee'].create(dict(
             name=self.name,
             company_id=self.env.company.id,

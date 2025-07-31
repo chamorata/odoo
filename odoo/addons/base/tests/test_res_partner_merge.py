@@ -16,7 +16,8 @@ class TestMergePartner(TransactionCase):
         # Create bank accounts
         self.bank1 = self.Bank.create({'acc_number': '12345', 'partner_id': self.partner1.id})
         self.bank2 = self.Bank.create({'acc_number': '54321', 'partner_id': self.partner2.id})
-        self.bank3 = self.Bank.create({'acc_number': '12345', 'partner_id': self.partner3.id})  # Duplicate account number
+        self.bank3 = self.Bank.create(
+            {'acc_number': '12345', 'partner_id': self.partner3.id})  # Duplicate account number
 
         # Create references
         self.attachment1 = self.env['ir.attachment'].create({
@@ -62,7 +63,8 @@ class TestMergePartner(TransactionCase):
         self.assertFalse(self.partner2.exists(), "Source partner should be deleted after merge")
         self.assertTrue(self.partner1.exists(), "Destination partner should exist after merge")
         self.assertEqual(self.bank1.partner_id, self.partner1, "Bank account should belong to destination partner")
-        self.assertEqual(self.bank2.partner_id, self.partner1, "Bank account should be reassigned to destination partner")
+        self.assertEqual(self.bank2.partner_id, self.partner1,
+                         "Bank account should be reassigned to destination partner")
 
     def test_merge_partners_with_duplicate_bank_accounts(self):
         """ Test merging partners with duplicate bank accounts among themselves """
@@ -76,8 +78,10 @@ class TestMergePartner(TransactionCase):
             {'acc_number': '12345'},
             {'acc_number': '54321'},
         ])
-        self.assertEqual(self.attachment_bank1.res_id, self.bank1.id, "Bank attachment should remain linked to the correct bank account")
-        self.assertEqual(self.attachment_bank3.res_id, self.bank1.id, "Bank attachment should be reassigned to the correct bank account")
+        self.assertEqual(self.attachment_bank1.res_id, self.bank1.id,
+                         "Bank attachment should remain linked to the correct bank account")
+        self.assertEqual(self.attachment_bank3.res_id, self.bank1.id,
+                         "Bank attachment should be reassigned to the correct bank account")
 
     def test_merge_partners_with_duplicate_bank_accounts_with_destination(self):
         """ Test merging partners with duplicate bank accounts with the destination partner """
@@ -87,7 +91,8 @@ class TestMergePartner(TransactionCase):
         self.assertFalse(self.partner3.exists(), "Source partner should be deleted after merge")
         self.assertTrue(self.partner1.exists(), "Destination partner should exist after merge")
         self.assertEqual(len(self.partner1.bank_ids), 1, "There should be a single bank account after merge")
-        self.assertIn(self.bank1, self.partner1.bank_ids, "The original bank account of the destination partner should remain")
+        self.assertIn(self.bank1, self.partner1.bank_ids,
+                      "The original bank account of the destination partner should remain")
         self.assertFalse(self.bank3.exists(), "The duplicate bank account should have been deleted.")
 
     def test_merge_partners_with_references(self):
@@ -97,5 +102,7 @@ class TestMergePartner(TransactionCase):
 
         self.assertFalse(self.partner2.exists(), "Source partner should be deleted after merge")
         self.assertTrue(self.partner1.exists(), "Destination partner should exist after merge")
-        self.assertEqual(self.attachment1.res_id, self.partner1.id, "Attachment should be linked to the destination partner")
-        self.assertEqual(self.attachment2.res_id, self.partner1.id, "Attachment should be reassigned to the destination partner")
+        self.assertEqual(self.attachment1.res_id, self.partner1.id,
+                         "Attachment should be linked to the destination partner")
+        self.assertEqual(self.attachment2.res_id, self.partner1.id,
+                         "Attachment should be reassigned to the destination partner")

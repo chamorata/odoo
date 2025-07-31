@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, models, fields
+from odoo import models, fields
 from odoo.tools.translate import html_translate
 
 
 class ImLivechatChannel(models.Model):
-
     _name = 'im_livechat.channel'
     _inherit = ['im_livechat.channel', 'website.published.mixin']
 

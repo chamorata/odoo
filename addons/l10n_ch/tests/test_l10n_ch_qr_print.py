@@ -3,10 +3,12 @@
 import logging
 
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
 from odoo.exceptions import UserError
 from odoo.tests import tagged
 
 _logger = logging.getLogger(__name__)
+
 
 @tagged('post_install_l10n', 'post_install', '-at_install')
 class QRPrintTest(AccountTestInvoicingCommon):
@@ -64,14 +66,14 @@ class QRPrintTest(AccountTestInvoicingCommon):
         self.correct_invoice_chf.action_post()
         self.assertTrue(self.print_qr_bill(self.correct_invoice_chf))
 
-        #The QR can also be printed if the currency is EUR
+        # The QR can also be printed if the currency is EUR
         self.env.ref('base.EUR').active = True
         self.correct_invoice_eur.action_post()
         self.assertTrue(self.print_qr_bill(self.correct_invoice_eur))
 
-        #A normal invoice will be printed if the partner is not from Switzerland
+        # A normal invoice will be printed if the partner is not from Switzerland
         self.wrong_partner_invoice.action_post()
         self.assertTrue(self.print_qr_bill(self.wrong_partner_invoice))
 
-        #However, a qr bill can't be printed with those infos
+        # However, a qr bill can't be printed with those infos
         self.assertFalse(self.wrong_partner_invoice.l10n_ch_is_qr_valid)

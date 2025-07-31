@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import Command
-from odoo.tests import Form
 from odoo.addons.mrp.tests.common import TestMrpCommon
+
+from odoo import Command
 from odoo.exceptions import UserError
+from odoo.tests import Form
 
 
 class TestUnbuild(TestMrpCommon):
@@ -36,9 +37,12 @@ class TestUnbuild(TestMrpCommon):
         self.assertEqual(mo.state, 'done', "Production order should be in done state.")
 
         # Check quantity in stock before unbuild.
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p_final, self.stock_location), 5, 'You should have the 5 final product in stock')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p1, self.stock_location), 80, 'You should have 80 products in stock')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location), 0, 'You should have consumed all the 5 product in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p_final, self.stock_location), 5,
+                         'You should have the 5 final product in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p1, self.stock_location), 80,
+                         'You should have 80 products in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location), 0,
+                         'You should have consumed all the 5 product in stock')
 
         # ---------------------------------------------------
         #       unbuild
@@ -50,10 +54,12 @@ class TestUnbuild(TestMrpCommon):
         x.product_qty = 3
         x.save().action_unbuild()
 
-
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p_final, self.stock_location), 2, 'You should have consumed 3 final product in stock')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p1, self.stock_location), 92, 'You should have 80 products in stock')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location), 3, 'You should have consumed all the 5 product in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p_final, self.stock_location), 2,
+                         'You should have consumed 3 final product in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p1, self.stock_location), 92,
+                         'You should have 80 products in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location), 3,
+                         'You should have consumed all the 5 product in stock')
 
         x = Form(self.env['mrp.unbuild'])
         x.product_id = p_final
@@ -61,9 +67,12 @@ class TestUnbuild(TestMrpCommon):
         x.product_qty = 2
         x.save().action_unbuild()
 
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p_final, self.stock_location), 0, 'You should have 0 finalproduct in stock')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p1, self.stock_location), 100, 'You should have 80 products in stock')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location), 5, 'You should have consumed all the 5 product in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p_final, self.stock_location), 0,
+                         'You should have 0 finalproduct in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p1, self.stock_location), 100,
+                         'You should have 80 products in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location), 5,
+                         'You should have consumed all the 5 product in stock')
 
         x = Form(self.env['mrp.unbuild'])
         x.product_id = p_final
@@ -72,9 +81,13 @@ class TestUnbuild(TestMrpCommon):
         x.save().action_unbuild()
 
         # Check quantity in stock after last unbuild.
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p_final, self.stock_location, allow_negative=True), -5, 'You should have negative quantity for final product in stock')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p1, self.stock_location), 120, 'You should have 80 products in stock')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location), 10, 'You should have consumed all the 5 product in stock')
+        self.assertEqual(
+            self.env['stock.quant']._get_available_quantity(p_final, self.stock_location, allow_negative=True), -5,
+            'You should have negative quantity for final product in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p1, self.stock_location), 120,
+                         'You should have 80 products in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location), 10,
+                         'You should have consumed all the 5 product in stock')
 
     def test_unbuild_with_final_lot(self):
         """ This test creates a MO and then creates 3 unbuild
@@ -103,9 +116,12 @@ class TestUnbuild(TestMrpCommon):
         self.assertEqual(mo.state, 'done', "Production order should be in done state.")
 
         # Check quantity in stock before unbuild.
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p_final, self.stock_location, lot_id=lot), 5, 'You should have the 5 final product in stock')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p1, self.stock_location), 80, 'You should have 80 products in stock')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location), 0, 'You should have consumed all the 5 product in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p_final, self.stock_location, lot_id=lot), 5,
+                         'You should have the 5 final product in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p1, self.stock_location), 80,
+                         'You should have 80 products in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location), 0,
+                         'You should have consumed all the 5 product in stock')
 
         # ---------------------------------------------------
         #       unbuild
@@ -126,9 +142,12 @@ class TestUnbuild(TestMrpCommon):
         x.lot_id = lot
         x.save().action_unbuild()
 
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p_final, self.stock_location, lot_id=lot), 2, 'You should have consumed 3 final product in stock')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p1, self.stock_location), 92, 'You should have 80 products in stock')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location), 3, 'You should have consumed all the 5 product in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p_final, self.stock_location, lot_id=lot), 2,
+                         'You should have consumed 3 final product in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p1, self.stock_location), 92,
+                         'You should have 80 products in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location), 3,
+                         'You should have consumed all the 5 product in stock')
 
         x = Form(self.env['mrp.unbuild'])
         x.product_id = p_final
@@ -137,9 +156,12 @@ class TestUnbuild(TestMrpCommon):
         x.lot_id = lot
         x.save().action_unbuild()
 
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p_final, self.stock_location, lot_id=lot), 0, 'You should have 0 finalproduct in stock')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p1, self.stock_location), 100, 'You should have 80 products in stock')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location), 5, 'You should have consumed all the 5 product in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p_final, self.stock_location, lot_id=lot), 0,
+                         'You should have 0 finalproduct in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p1, self.stock_location), 100,
+                         'You should have 80 products in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location), 5,
+                         'You should have consumed all the 5 product in stock')
 
         x = Form(self.env['mrp.unbuild'])
         x.product_id = p_final
@@ -148,9 +170,13 @@ class TestUnbuild(TestMrpCommon):
         x.lot_id = lot
         x.save().action_unbuild()
 
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p_final, self.stock_location, lot_id=lot, allow_negative=True), -5, 'You should have negative quantity for final product in stock')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p1, self.stock_location), 120, 'You should have 80 products in stock')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location), 10, 'You should have consumed all the 5 product in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p_final, self.stock_location, lot_id=lot,
+                                                                         allow_negative=True), -5,
+                         'You should have negative quantity for final product in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p1, self.stock_location), 120,
+                         'You should have 80 products in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location), 10,
+                         'You should have consumed all the 5 product in stock')
 
     def test_unbuild_with_consumed_lot(self):
         """ This test creates a MO and then creates 3 unbuild
@@ -187,9 +213,12 @@ class TestUnbuild(TestMrpCommon):
         mo.button_mark_done()
         self.assertEqual(mo.state, 'done', "Production order should be in done state.")
         # Check quantity in stock before unbuild.
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p_final, self.stock_location), 5, 'You should have the 5 final product in stock')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p1, self.stock_location, lot_id=lot), 80, 'You should have 80 products in stock')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location), 0, 'You should have consumed all the 5 product in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p_final, self.stock_location), 5,
+                         'You should have the 5 final product in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p1, self.stock_location, lot_id=lot), 80,
+                         'You should have 80 products in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location), 0,
+                         'You should have consumed all the 5 product in stock')
 
         # ---------------------------------------------------
         #       unbuild
@@ -204,15 +233,19 @@ class TestUnbuild(TestMrpCommon):
         with self.assertRaises(UserError):
             unbuild_order.action_unbuild()
 
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p_final, self.stock_location), 5, 'You should have consumed 3 final product in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p_final, self.stock_location), 5,
+                         'You should have consumed 3 final product in stock')
 
         unbuild_order.mo_id = mo.id
         unbuild_order.product_qty = 3
         unbuild_order.action_unbuild()
 
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p_final, self.stock_location), 2, 'You should have consumed 3 final product in stock')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p1, self.stock_location, lot_id=lot), 92, 'You should have 92 products in stock')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location), 3, 'You should have consumed all the 5 product in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p_final, self.stock_location), 2,
+                         'You should have consumed 3 final product in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p1, self.stock_location, lot_id=lot), 92,
+                         'You should have 92 products in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location), 3,
+                         'You should have consumed all the 5 product in stock')
 
         x = Form(self.env['mrp.unbuild'])
         x.product_id = p_final
@@ -221,9 +254,12 @@ class TestUnbuild(TestMrpCommon):
         x.product_qty = 2
         x.save().action_unbuild()
 
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p_final, self.stock_location), 0, 'You should have 0 finalproduct in stock')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p1, self.stock_location, lot_id=lot), 100, 'You should have 80 products in stock')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location), 5, 'You should have consumed all the 5 product in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p_final, self.stock_location), 0,
+                         'You should have 0 finalproduct in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p1, self.stock_location, lot_id=lot), 100,
+                         'You should have 80 products in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location), 5,
+                         'You should have consumed all the 5 product in stock')
 
         x = Form(self.env['mrp.unbuild'])
         x.product_id = p_final
@@ -232,9 +268,13 @@ class TestUnbuild(TestMrpCommon):
         x.product_qty = 5
         x.save().action_unbuild()
 
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p_final, self.stock_location, allow_negative=True), -5, 'You should have negative quantity for final product in stock')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p1, self.stock_location, lot_id=lot), 120, 'You should have 80 products in stock')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location), 10, 'You should have consumed all the 5 product in stock')
+        self.assertEqual(
+            self.env['stock.quant']._get_available_quantity(p_final, self.stock_location, allow_negative=True), -5,
+            'You should have negative quantity for final product in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p1, self.stock_location, lot_id=lot), 120,
+                         'You should have 80 products in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location), 10,
+                         'You should have consumed all the 5 product in stock')
 
     def test_unbuild_with_everything_tracked(self):
         """ This test creates a MO and then creates 3 unbuild
@@ -280,9 +320,13 @@ class TestUnbuild(TestMrpCommon):
         mo.button_mark_done()
         self.assertEqual(mo.state, 'done', "Production order should be in done state.")
         # Check quantity in stock before unbuild.
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p_final, self.stock_location, lot_id=lot_final), 5, 'You should have the 5 final product in stock')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p1, self.stock_location, lot_id=lot_1), 80, 'You should have 80 products in stock')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location, lot_id=lot_2), 0, 'You should have consumed all the 5 product in stock')
+        self.assertEqual(
+            self.env['stock.quant']._get_available_quantity(p_final, self.stock_location, lot_id=lot_final), 5,
+            'You should have the 5 final product in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p1, self.stock_location, lot_id=lot_1), 80,
+                         'You should have 80 products in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location, lot_id=lot_2), 0,
+                         'You should have consumed all the 5 product in stock')
 
         # ---------------------------------------------------
         #       unbuild
@@ -301,9 +345,13 @@ class TestUnbuild(TestMrpCommon):
             x.product_qty = 3
             x.save()
 
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p_final, self.stock_location, lot_id=lot_final), 5, 'You should have consumed 3 final product in stock')
+        self.assertEqual(
+            self.env['stock.quant']._get_available_quantity(p_final, self.stock_location, lot_id=lot_final), 5,
+            'You should have consumed 3 final product in stock')
 
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p_final, self.stock_location, lot_id=lot_final), 5, 'You should have consumed 3 final product in stock')
+        self.assertEqual(
+            self.env['stock.quant']._get_available_quantity(p_final, self.stock_location, lot_id=lot_final), 5,
+            'You should have consumed 3 final product in stock')
 
         x = Form(self.env['mrp.unbuild'])
         x.product_id = p_final
@@ -312,9 +360,13 @@ class TestUnbuild(TestMrpCommon):
         x.product_qty = 3
         x.save().action_unbuild()
 
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p_final, self.stock_location, lot_id=lot_final), 2, 'You should have consumed 3 final product in stock')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p1, self.stock_location, lot_id=lot_1), 92, 'You should have 92 products in stock')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location, lot_id=lot_2), 3, 'You should have consumed all the 5 product in stock')
+        self.assertEqual(
+            self.env['stock.quant']._get_available_quantity(p_final, self.stock_location, lot_id=lot_final), 2,
+            'You should have consumed 3 final product in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p1, self.stock_location, lot_id=lot_1), 92,
+                         'You should have 92 products in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location, lot_id=lot_2), 3,
+                         'You should have consumed all the 5 product in stock')
 
         x = Form(self.env['mrp.unbuild'])
         x.product_id = p_final
@@ -323,9 +375,13 @@ class TestUnbuild(TestMrpCommon):
         x.product_qty = 2
         x.save().action_unbuild()
 
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p_final, self.stock_location, lot_id=lot_final), 0, 'You should have 0 finalproduct in stock')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p1, self.stock_location, lot_id=lot_1), 100, 'You should have 80 products in stock')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location, lot_id=lot_2), 5, 'You should have consumed all the 5 product in stock')
+        self.assertEqual(
+            self.env['stock.quant']._get_available_quantity(p_final, self.stock_location, lot_id=lot_final), 0,
+            'You should have 0 finalproduct in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p1, self.stock_location, lot_id=lot_1), 100,
+                         'You should have 80 products in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location, lot_id=lot_2), 5,
+                         'You should have consumed all the 5 product in stock')
 
         x = Form(self.env['mrp.unbuild'])
         x.product_id = p_final
@@ -334,15 +390,20 @@ class TestUnbuild(TestMrpCommon):
         x.product_qty = 5
         x.save().action_unbuild()
 
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p_final, self.stock_location, lot_id=lot_final, allow_negative=True), -5, 'You should have negative quantity for final product in stock')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p1, self.stock_location, lot_id=lot_1), 120, 'You should have 80 products in stock')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location, lot_id=lot_2), 10, 'You should have consumed all the 5 product in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p_final, self.stock_location, lot_id=lot_final,
+                                                                         allow_negative=True), -5,
+                         'You should have negative quantity for final product in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p1, self.stock_location, lot_id=lot_1), 120,
+                         'You should have 80 products in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location, lot_id=lot_2), 10,
+                         'You should have consumed all the 5 product in stock')
 
     def test_unbuild_with_duplicate_move(self):
         """ This test creates a MO from 3 different lot on a consumed product (p2).
         The unbuild order should revert the correct quantity for each specific lot.
         """
-        mo, bom, p_final, p1, p2 = self.generate_mo(tracking_final='none', tracking_base_2='lot', tracking_base_1='none')
+        mo, bom, p_final, p1, p2 = self.generate_mo(tracking_final='none', tracking_base_2='lot',
+                                                    tracking_base_1='none')
         self.assertEqual(len(mo), 1, 'MO should have been created')
 
         lot_1 = self.env['stock.lot'].create({
@@ -371,11 +432,16 @@ class TestUnbuild(TestMrpCommon):
         mo.button_mark_done()
         self.assertEqual(mo.state, 'done', "Production order should be in done state.")
         # Check quantity in stock before unbuild.
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p_final, self.stock_location), 5, 'You should have the 5 final product in stock')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p1, self.stock_location), 80, 'You should have 80 products in stock')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location, lot_id=lot_1), 0, 'You should have consumed all the 1 product for lot 1 in stock')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location, lot_id=lot_2), 0, 'You should have consumed all the 3 product for lot 2 in stock')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location, lot_id=lot_3), 1, 'You should have consumed only 1 product for lot3 in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p_final, self.stock_location), 5,
+                         'You should have the 5 final product in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p1, self.stock_location), 80,
+                         'You should have 80 products in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location, lot_id=lot_1), 0,
+                         'You should have consumed all the 1 product for lot 1 in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location, lot_id=lot_2), 0,
+                         'You should have consumed all the 3 product for lot 2 in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location, lot_id=lot_3), 1,
+                         'You should have consumed only 1 product for lot3 in stock')
 
         x = Form(self.env['mrp.unbuild'])
         x.product_id = p_final
@@ -384,11 +450,16 @@ class TestUnbuild(TestMrpCommon):
         x.product_qty = 5
         x.save().action_unbuild()
 
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p_final, self.stock_location), 0, 'You should have no more final product in stock after unbuild')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p1, self.stock_location), 100, 'You should have 80 products in stock')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location, lot_id=lot_1), 1, 'You should have get your product with lot 1 in stock')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location, lot_id=lot_2), 3, 'You should have the 3 basic product for lot 2 in stock')
-        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location, lot_id=lot_3), 2, 'You should have get one product back for lot 3')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p_final, self.stock_location), 0,
+                         'You should have no more final product in stock after unbuild')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p1, self.stock_location), 100,
+                         'You should have 80 products in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location, lot_id=lot_1), 1,
+                         'You should have get your product with lot 1 in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location, lot_id=lot_2), 3,
+                         'You should have the 3 basic product for lot 2 in stock')
+        self.assertEqual(self.env['stock.quant']._get_available_quantity(p2, self.stock_location, lot_id=lot_3), 2,
+                         'You should have get one product back for lot 3')
 
     def test_production_links_with_non_tracked_lots(self):
         """ This test produces an MO in two times and checks that the move lines are linked in a correct way
@@ -449,9 +520,11 @@ class TestUnbuild(TestMrpCommon):
         action = mo.button_mark_done()
 
         mo1 = mo.procurement_group_id.mrp_production_ids[0]
-        ml = mo1.finished_move_line_ids[0].consume_line_ids.filtered(lambda m: m.product_id == p1 and lot_finished_1 in m.produce_line_ids.lot_id)
+        ml = mo1.finished_move_line_ids[0].consume_line_ids.filtered(
+            lambda m: m.product_id == p1 and lot_finished_1 in m.produce_line_ids.lot_id)
         self.assertEqual(sum(ml.mapped('quantity')), 12.0, 'Should have consumed 12 for the first lot')
-        ml = mo.finished_move_line_ids[0].consume_line_ids.filtered(lambda m: m.product_id == p1 and lot_finished_2 in m.produce_line_ids.lot_id)
+        ml = mo.finished_move_line_ids[0].consume_line_ids.filtered(
+            lambda m: m.product_id == p1 and lot_finished_2 in m.produce_line_ids.lot_id)
         self.assertEqual(sum(ml.mapped('quantity')), 8.0, 'Should have consumed 8 for the second lot')
 
     def test_unbuild_with_routes(self):
@@ -534,9 +607,12 @@ class TestUnbuild(TestMrpCommon):
         self.assertEqual(mo.state, 'done', "Production order should be in done state.")
 
         # Check quantity in stock before unbuild
-        self.assertEqual(StockQuant._get_available_quantity(finshed_product, self.stock_location), 1, 'Table should be available in stock')
-        self.assertEqual(StockQuant._get_available_quantity(component1, self.stock_location), 0, 'Table head should not be available in stock')
-        self.assertEqual(StockQuant._get_available_quantity(component2, self.stock_location), 0, 'Table stand should not be available in stock')
+        self.assertEqual(StockQuant._get_available_quantity(finshed_product, self.stock_location), 1,
+                         'Table should be available in stock')
+        self.assertEqual(StockQuant._get_available_quantity(component1, self.stock_location), 0,
+                         'Table head should not be available in stock')
+        self.assertEqual(StockQuant._get_available_quantity(component2, self.stock_location), 0,
+                         'Table stand should not be available in stock')
 
         # ---------------------------------------------------
         #       Unbuild
@@ -553,9 +629,12 @@ class TestUnbuild(TestMrpCommon):
         x.save().action_unbuild()
 
         # Check the available quantity of components and final product in stock
-        self.assertEqual(StockQuant._get_available_quantity(finshed_product, self.stock_location), 0, 'Table should not be available in stock as it is unbuild')
-        self.assertEqual(StockQuant._get_available_quantity(component1, self.stock_location), 0, 'Table head should not be available in stock as it is in QC/Unbuild location')
-        self.assertEqual(StockQuant._get_available_quantity(component2, self.stock_location), 0, 'Table stand should not be available in stock as it is in QC/Unbuild location')
+        self.assertEqual(StockQuant._get_available_quantity(finshed_product, self.stock_location), 0,
+                         'Table should not be available in stock as it is unbuild')
+        self.assertEqual(StockQuant._get_available_quantity(component1, self.stock_location), 0,
+                         'Table head should not be available in stock as it is in QC/Unbuild location')
+        self.assertEqual(StockQuant._get_available_quantity(component2, self.stock_location), 0,
+                         'Table stand should not be available in stock as it is in QC/Unbuild location')
 
         # Find new generated picking
         picking = self.env['stock.picking'].search([('product_id', 'in', [component1.id, component2.id])])
@@ -568,9 +647,12 @@ class TestUnbuild(TestMrpCommon):
         picking._action_done()
 
         # Check the available quantity of components and final product in stock
-        self.assertEqual(StockQuant._get_available_quantity(finshed_product, self.stock_location), 0, 'Table should not be available in stock')
-        self.assertEqual(StockQuant._get_available_quantity(component1, self.stock_location), 1, 'Table head should be available in stock as the picking is transferred')
-        self.assertEqual(StockQuant._get_available_quantity(component2, self.stock_location), 1, 'Table stand should be available in stock as the picking is transferred')
+        self.assertEqual(StockQuant._get_available_quantity(finshed_product, self.stock_location), 0,
+                         'Table should not be available in stock')
+        self.assertEqual(StockQuant._get_available_quantity(component1, self.stock_location), 1,
+                         'Table head should be available in stock as the picking is transferred')
+        self.assertEqual(StockQuant._get_available_quantity(component2, self.stock_location), 1,
+                         'Table stand should be available in stock as the picking is transferred')
 
     def test_unbuild_decimal_qty(self):
         """
@@ -670,7 +752,8 @@ class TestUnbuild(TestMrpCommon):
         grp_multi_loc = self.env.ref('stock.group_stock_multi_locations')
         self.env.user.write({'groups_id': [(4, grp_multi_loc.id, 0)]})
         warehouse = self.env['stock.warehouse'].search([('company_id', '=', self.env.user.id)], limit=1)
-        prod_location = self.env['stock.location'].search([('usage', '=', 'production'), ('company_id', '=', self.env.user.id)])
+        prod_location = self.env['stock.location'].search(
+            [('usage', '=', 'production'), ('company_id', '=', self.env.user.id)])
         subloc01, subloc02, = self.stock_location.child_ids[:2]
 
         mo, _, p_final, p1, p2 = self.generate_mo(qty_final=1, qty_base_1=1, qty_base_2=1)
@@ -705,9 +788,9 @@ class TestUnbuild(TestMrpCommon):
 
         self.assertRecordValues(unbuild_order.produce_line_ids, [
             # pylint: disable=bad-whitespace
-            {'product_id': p_final.id,  'location_id': subloc01.id,         'location_dest_id': prod_location.id},
-            {'product_id': p2.id,       'location_id': prod_location.id,    'location_dest_id': subloc02.id},
-            {'product_id': p1.id,       'location_id': prod_location.id,    'location_dest_id': subloc02.id},
+            {'product_id': p_final.id, 'location_id': subloc01.id, 'location_dest_id': prod_location.id},
+            {'product_id': p2.id, 'location_id': prod_location.id, 'location_dest_id': subloc02.id},
+            {'product_id': p1.id, 'location_id': prod_location.id, 'location_dest_id': subloc02.id},
         ])
 
     def test_compute_product_uom_id(self):
@@ -781,12 +864,12 @@ class TestUnbuild(TestMrpCommon):
         mo.button_mark_done()
         self.assertEqual(mo.state, 'done', "Production order should be in done state.")
 
-        #unbuild order
+        # unbuild order
         unbuild_form = Form(self.env['mrp.unbuild'])
         unbuild_form.mo_id = mo
         unbuild_form.save().action_unbuild()
 
-        #mo2
+        # mo2
         mo_form = Form(self.env['mrp.production'])
         mo_form.product_id = product_2
         mo2 = mo_form.save()
@@ -857,7 +940,7 @@ class TestUnbuild(TestMrpCommon):
             'product_id': component.id,
         })
         self.env['stock.quant']._update_available_quantity(component, self.stock_location, 1, lot_id=component_sn)
-        #mo2 with tracked component
+        # mo2 with tracked component
         mo_form = Form(self.env['mrp.production'])
         mo_form.product_id = finished_product
         mo_form.bom_id = bom_1
@@ -908,7 +991,7 @@ class TestUnbuild(TestMrpCommon):
         with Form(mo) as mo_form:
             mo_form.qty_producing = 10
         self.assertEqual(mo.qty_producing, 10)
-        #unbuild order
+        # unbuild order
         unbuild_form = Form(self.env['mrp.unbuild'])
         unbuild_form.mo_id = mo
         # check that the quantity to unbuild is the qty produced in the MO
@@ -952,7 +1035,8 @@ class TestUnbuild(TestMrpCommon):
         mo.button_mark_done()
 
         Form.from_action(self.env, mo.button_unbuild()).save().action_validate()
-        self.assertEqual(mo.unbuild_ids.produce_line_ids.filtered(lambda m: m.product_id == self.product_3).product_uom_qty, 15)
+        self.assertEqual(
+            mo.unbuild_ids.produce_line_ids.filtered(lambda m: m.product_id == self.product_3).product_uom_qty, 15)
 
     def test_unbuild_mo_different_qty(self):
         # Test the unbuild of a MO with qty_produced > product_qty
@@ -1016,5 +1100,6 @@ class TestUnbuild(TestMrpCommon):
         unbuild_order = Form.from_action(self.env, unbuild_action).save()
         unbuild_order.action_unbuild()
 
-        component_move_unbuild = unbuild_order.produce_line_ids.filtered(lambda m: m.product_id == self.bom_4.bom_line_ids.product_id)
+        component_move_unbuild = unbuild_order.produce_line_ids.filtered(
+            lambda m: m.product_id == self.bom_4.bom_line_ids.product_id)
         self.assertEqual(component_move_unbuild.move_line_ids.location_dest_id, putaway_strategy.location_out_id)

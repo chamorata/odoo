@@ -68,13 +68,14 @@
         ]"/>
         <field name="view_mode">kanban,list,activity,form</field>
         <field name="context">{
-                'default_survey_type': 'recruitment',
+            'default_survey_type': 'recruitment',
             }
         </field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Add a new survey
-            </p><p>
+            </p>
+            <p>
                 You can create surveys used for recruitments. Design easily your interview,
                 send invitations and analyze answers.
             </p>
@@ -82,10 +83,10 @@
     </record>
 
     <menuitem
-        id="menu_hr_recruitment_config_surveys"
-        name="Interviews"
-        action="survey_survey_action_recruitment"
-        parent="hr_recruitment.menu_hr_recruitment_configuration"
-        sequence="50"
-        groups="hr_recruitment.group_hr_recruitment_manager"/>
+            id="menu_hr_recruitment_config_surveys"
+            name="Interviews"
+            action="survey_survey_action_recruitment"
+            parent="hr_recruitment.menu_hr_recruitment_configuration"
+            sequence="50"
+            groups="hr_recruitment.group_hr_recruitment_manager"/>
 </odoo>

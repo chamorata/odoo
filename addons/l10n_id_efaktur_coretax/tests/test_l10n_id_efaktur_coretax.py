@@ -1,11 +1,12 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from lxml import etree
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 
-from odoo import Command, tools
+from odoo import tools
 from odoo.exceptions import ValidationError
 from odoo.tests import tagged
-from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
 
 @tagged('post_install', '-at_install', 'post_install_l10n')
 class TestEfakturCoretax(AccountTestInvoicingCommon):
@@ -23,9 +24,11 @@ class TestEfakturCoretax(AccountTestInvoicingCommon):
         cls.company_data['company'].phone = "12345"
         cls.company_data['company'].vat = "1234567890123456"
 
-        cls.partner_a.write({"l10n_id_pkp": True, "l10n_id_kode_transaksi": "04", "vat": "1234567890123457", "country_id": cls.env.ref('base.id').id})
+        cls.partner_a.write({"l10n_id_pkp": True, "l10n_id_kode_transaksi": "04", "vat": "1234567890123457",
+                             "country_id": cls.env.ref('base.id').id})
         cls.tax_sale_a.amount = 11.0
-        cls.tax_incl = cls.env['account.tax'].create({"name": "tax include 11", "type_tax_use": "sale", "amount": 11.0, "price_include_override": "tax_included"})
+        cls.tax_incl = cls.env['account.tax'].create({"name": "tax include 11", "type_tax_use": "sale", "amount": 11.0,
+                                                      "price_include_override": "tax_included"})
 
         path = "l10n_id_efaktur_coretax/tests/results/sample.xml"
         with tools.file_open(path, mode='rb') as test_file:
@@ -39,10 +42,12 @@ class TestEfakturCoretax(AccountTestInvoicingCommon):
             "name": "test product",
             "type": "consu"
         })
-        self.assertEqual(product.l10n_id_product_code, self.env.ref('l10n_id_efaktur_coretax.product_code_000000_goods'))
+        self.assertEqual(product.l10n_id_product_code,
+                         self.env.ref('l10n_id_efaktur_coretax.product_code_000000_goods'))
 
         product.type = "service"
-        self.assertEqual(product.l10n_id_product_code, self.env.ref('l10n_id_efaktur_coretax.product_code_000000_service'))
+        self.assertEqual(product.l10n_id_product_code,
+                         self.env.ref('l10n_id_efaktur_coretax.product_code_000000_service'))
 
     def test_efaktur_change_facility_add_info(self):
         """ Test that changing FacilityInfo would trigger change in AddInfo and vice versa
@@ -82,7 +87,8 @@ class TestEfakturCoretax(AccountTestInvoicingCommon):
         exist in the error message
         """
         exception_msg = str(ex.exception)
-        actual_count = len(exception_msg.split('\n')) - 1  # -1 because the first line of error message ("Unable to Download ...") is always there
+        actual_count = len(exception_msg.split(
+            '\n')) - 1  # -1 because the first line of error message ("Unable to Download ...") is always there
 
         self.assertEqual(actual_count, err_count)
         self.assertTrue(all(msg in exception_msg for msg in messages))
@@ -512,7 +518,8 @@ class TestEfakturCoretax(AccountTestInvoicingCommon):
             'invoice_date': '2019-05-01',
             'date': '2019-05-01',
             'invoice_line_ids': [
-                (0, 0, {'product_id': self.product_a.id, 'name': 'line1', 'price_unit': 100000, 'quantity': 1, 'tax_ids': [luxury_tax.id, self.tax_sale_a.id]}),
+                (0, 0, {'product_id': self.product_a.id, 'name': 'line1', 'price_unit': 100000, 'quantity': 1,
+                        'tax_ids': [luxury_tax.id, self.tax_sale_a.id]}),
             ],
             'l10n_id_kode_transaksi': '01',
         })
@@ -546,7 +553,7 @@ class TestEfakturCoretax(AccountTestInvoicingCommon):
         """ Test to ensure that we are always using the address of the
         customer(partner_id) on the invoice while some legal fields
         (Is PKP, VAT, Document type, document number, ..) should use from main contact """
-        
+
         partner_a_invoice = self.env['res.partner'].create({
             "name": "partner_a invoice",
             "type": "invoice",
@@ -581,10 +588,10 @@ class TestEfakturCoretax(AccountTestInvoicingCommon):
         )
 
         self.assertXmlTreeEqual(result_tree, expected_tree)
-    
+
     def test_efaktur_tax_include(self):
         """ Test when tax configuration is tax included in price should affect price calculation """
-        
+
         # create invoice containing this
         move = self.env["account.move"].create({
             'move_type': 'out_invoice',
@@ -592,7 +599,8 @@ class TestEfakturCoretax(AccountTestInvoicingCommon):
             'invoice_date': '2019-05-01',
             'date': '2019-05-01',
             'invoice_line_ids': [
-                (0, 0, {'product_id': self.product_a.id, 'name': 'line1', 'price_unit': 111000, 'quantity': 1, 'tax_ids': [self.tax_incl.id]}),
+                (0, 0, {'product_id': self.product_a.id, 'name': 'line1', 'price_unit': 111000, 'quantity': 1,
+                        'tax_ids': [self.tax_incl.id]}),
             ],
             'l10n_id_kode_transaksi': '04',
         })
@@ -621,7 +629,8 @@ class TestEfakturCoretax(AccountTestInvoicingCommon):
             'invoice_date': '2019-05-01',
             'date': '2019-05-01',
             'invoice_line_ids': [
-                (0, 0, {'product_id': self.product_a.id, 'name': 'line1', 'price_unit': 111000, 'quantity': 1, 'tax_ids': [self.tax_incl.id], 'discount': 10}),
+                (0, 0, {'product_id': self.product_a.id, 'name': 'line1', 'price_unit': 111000, 'quantity': 1,
+                        'tax_ids': [self.tax_incl.id], 'discount': 10}),
             ],
             'l10n_id_kode_transaksi': '04',
         })

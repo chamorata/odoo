@@ -7,7 +7,6 @@ from cryptography.hazmat.primitives.serialization import Encoding
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
-
 STR_TO_HASH = {
     'sha1': hashes.SHA1(),
     'sha256': hashes.SHA256(),
@@ -107,7 +106,8 @@ class Key(models.Model):
                 if not pkey:
                     key.pem_key = None
                     key.public = None
-                    key.loading_error = _("This key could not be loaded. Either its content or its password is erroneous.")
+                    key.loading_error = _(
+                        "This key could not be loaded. Either its content or its password is erroneous.")
                     continue
 
                 if key.public:
@@ -192,7 +192,8 @@ class Key(models.Model):
         if self.public:
             public_key = serialization.load_pem_public_key(base64.b64decode(self.with_context(bin_size=False).pem_key))
         else:
-            public_key = serialization.load_pem_private_key(base64.b64decode(self.with_context(bin_size=False).pem_key), None).public_key()
+            public_key = serialization.load_pem_private_key(base64.b64decode(self.with_context(bin_size=False).pem_key),
+                                                            None).public_key()
 
         encoding = serialization.Encoding.DER if encoding == 'der' else serialization.Encoding.PEM
         return _get_formatted_value(
@@ -219,11 +220,14 @@ class Key(models.Model):
         if self.public:
             raise UserError(_("A private key is required to decrypt data."))
         if hashing_algorithm not in STR_TO_HASH:
-            raise UserError(f"Unsupported hashing algorithm '{hashing_algorithm}'. Currently supported: sha1 and sha256.")
+            raise UserError(
+                f"Unsupported hashing algorithm '{hashing_algorithm}'. Currently supported: sha1 and sha256.")
 
         private_key = serialization.load_pem_private_key(base64.b64decode(self.pem_key), None)
         if not isinstance(private_key, rsa.RSAPrivateKey):
-            raise UserError(_("Unsupported asymmetric cryptography algorithm '%s'. Currently supported for decryption: RSA.", type(private_key)))
+            raise UserError(
+                _("Unsupported asymmetric cryptography algorithm '%s'. Currently supported for decryption: RSA.",
+                  type(private_key)))
 
         return private_key.decrypt(
             message,
@@ -258,7 +262,8 @@ class Key(models.Model):
             pwd = pwd.encode('utf-8')
 
         if hashing_algorithm not in STR_TO_HASH:
-            raise UserError(f"Unsupported hashing algorithm '{hashing_algorithm}'. Currently supported: sha1 and sha256.")
+            raise UserError(
+                f"Unsupported hashing algorithm '{hashing_algorithm}'. Currently supported: sha1 and sha256.")
 
         try:
             private_key = serialization.load_pem_private_key(base64.b64decode(pem_key), pwd)
@@ -277,7 +282,9 @@ class Key(models.Model):
                 STR_TO_HASH[hashing_algorithm]
             )
         else:
-            raise UserError(_("Unsupported asymmetric cryptography algorithm '%s'. Currently supported for signature: EC and RSA.", type(private_key)))
+            raise UserError(
+                _("Unsupported asymmetric cryptography algorithm '%s'. Currently supported for signature: EC and RSA.",
+                  type(private_key)))
 
         return _get_formatted_value(signature, formatting=formatting)
 
@@ -308,7 +315,8 @@ class Key(models.Model):
             e = public_key.public_numbers().e
             n = public_key.public_numbers().n
         else:
-            raise UserError(_("Unsupported asymmetric cryptography algorithm '%s'. Currently supported: EC, RSA.", type(public_key)))
+            raise UserError(_("Unsupported asymmetric cryptography algorithm '%s'. Currently supported: EC, RSA.",
+                              type(public_key)))
 
         return (
             _get_formatted_value(_int_to_bytes(e), formatting=formatting),

@@ -3,13 +3,13 @@
 import json
 import logging
 import re
+
 import requests
+from odoo.addons.payment import utils as payment_utils
+from odoo.addons.payment_adyen import const
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
-
-from odoo.addons.payment import utils as payment_utils
-from odoo.addons.payment_adyen import const
 
 _logger = logging.getLogger(__name__)
 
@@ -38,7 +38,7 @@ class PaymentProvider(models.Model):
         required_if_provider='adyen',
     )
 
-    #=== CRUD METHODS ===#
+    # === CRUD METHODS ===#
 
     @api.model_create_multi
     def create(self, values_list):
@@ -62,7 +62,7 @@ class PaymentProvider(models.Model):
                 r'(?:https://)?(\w+-\w+).*', r'\1', values['adyen_api_url_prefix']
             )
 
-    #=== COMPUTE METHODS ===#
+    # === COMPUTE METHODS ===#
 
     def _compute_feature_support_fields(self):
         """ Override of `payment` to enable additional features. """
@@ -73,7 +73,7 @@ class PaymentProvider(models.Model):
             'support_tokenization': True,
         })
 
-    #=== BUSINESS METHODS - PAYMENT FLOW ===#
+    # === BUSINESS METHODS - PAYMENT FLOW ===#
 
     def _adyen_make_request(self, endpoint, endpoint_param=None, payload=None, method='POST', idempotency_key=None):
         """ Make a request to Adyen API at the specified endpoint.
@@ -146,7 +146,7 @@ class PaymentProvider(models.Model):
         """
         return f'ODOO_PARTNER_{partner_id}'
 
-    #=== BUSINESS METHODS - GETTERS ===#
+    # === BUSINESS METHODS - GETTERS ===#
 
     def _adyen_get_inline_form_values(self, pm_code, amount=None, currency=None):
         """ Return a serialized JSON of the required values to render the inline form.

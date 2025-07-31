@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import datetime
+
 from odoo import api, fields, models, SUPERUSER_ID, _
 
 
@@ -13,12 +14,13 @@ class StockLot(models.Model):
         string='Expiration Date', compute='_compute_expiration_date', store=True, readonly=False,
         help='This is the date on which the goods with this Serial Number may become dangerous and must not be consumed.')
     use_date = fields.Datetime(string='Best before Date', compute='_compute_dates', store=True, readonly=False,
-        help='This is the date on which the goods with this Serial Number start deteriorating, without being dangerous yet.')
+                               help='This is the date on which the goods with this Serial Number start deteriorating, without being dangerous yet.')
     removal_date = fields.Datetime(string='Removal Date', compute='_compute_dates', store=True, readonly=False,
-        help='This is the date on which the goods with this Serial Number should be removed from the stock. This date will be used in FEFO removal strategy.')
+                                   help='This is the date on which the goods with this Serial Number should be removed from the stock. This date will be used in FEFO removal strategy.')
     alert_date = fields.Datetime(string='Alert Date', compute='_compute_dates', store=True, readonly=False,
-        help='Date to determine the expired lots and serial numbers using the filter "Expiration Alerts".')
-    product_expiry_alert = fields.Boolean(compute='_compute_product_expiry_alert', help="The Expiration Date has been reached.")
+                                 help='Date to determine the expired lots and serial numbers using the filter "Expiration Alerts".')
+    product_expiry_alert = fields.Boolean(compute='_compute_product_expiry_alert',
+                                          help="The Expiration Date has been reached.")
     product_expiry_reminded = fields.Boolean(string="Expiry has been reminded")
 
     @api.depends('expiration_date')
@@ -48,8 +50,8 @@ class StockLot(models.Model):
             elif lot.expiration_date:
                 # when create
                 if lot.product_id != lot._origin.product_id or \
-                   (not lot.use_date and not lot.removal_date and not lot.alert_date) or \
-                   (lot.expiration_date and not lot._origin.expiration_date):
+                        (not lot.use_date and not lot.removal_date and not lot.alert_date) or \
+                        (lot.expiration_date and not lot._origin.expiration_date):
                     product_tmpl = lot.product_id.product_tmpl_id
                     lot.use_date = lot.expiration_date - datetime.timedelta(days=product_tmpl.use_time)
                     lot.removal_date = lot.expiration_date - datetime.timedelta(days=product_tmpl.removal_time)
@@ -109,7 +111,8 @@ class ProcurementGroup(models.Model):
             task_done = self._get_scheduler_tasks_to_do()
 
         if use_new_cursor:
-            self.env['ir.cron']._notify_progress(done=task_done, remaining=self._get_scheduler_tasks_to_do() - task_done)
+            self.env['ir.cron']._notify_progress(done=task_done,
+                                                 remaining=self._get_scheduler_tasks_to_do() - task_done)
             self.env.cr.commit()
 
     @api.model

@@ -33,9 +33,9 @@ class TestSeller(TransactionCase):
         default_code = self.product_service.code
         self.assertEqual("DEFCODE", default_code, "Default code not used in product name")
 
-        context_code = self.product_service\
-                           .with_context(partner_id=self.camptocamp.id)\
-                           .code
+        context_code = self.product_service \
+            .with_context(partner_id=self.camptocamp.id) \
+            .code
         self.assertEqual('C2CCODE', context_code, "Partner's code not used in product name with context set")
 
     def test_20_sellers_company(self):
@@ -160,7 +160,7 @@ class TestSeller(TransactionCase):
             'product_id': self.product_consu.id,
         }])
         self.assertEqual(vendors, self.product_consu.seller_ids,
-            "Sellers of a product should be listed in the product's seller_ids")
+                         "Sellers of a product should be listed in the product's seller_ids")
         vendors.write({'product_id': False})
         self.assertEqual(vendors, self.product_consu.seller_ids,
-            "Setting the product_id to False shouldn't affect seller_ids.")
+                         "Setting the product_id to False shouldn't affect seller_ids.")

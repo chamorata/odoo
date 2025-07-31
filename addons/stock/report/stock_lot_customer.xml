@@ -44,8 +44,10 @@
                 <group expand="0" string="Group By">
                     <filter name="group_by_product" string="Product" domain="[]" context="{'group_by': 'product_id'}"/>
                     <filter name="group_by_partner" string="Address" domain="[]" context="{'group_by': 'address'}"/>
-                    <filter name="group_by_lot" string="Lot / Serial Number" domain="[]" context="{'group_by': 'lot_id'}"/>
-                    <filter name="group_by_delivery_date" string="Delivery date" domain="[]" context="{'group_by': 'delivery_date'}"/>
+                    <filter name="group_by_lot" string="Lot / Serial Number" domain="[]"
+                            context="{'group_by': 'lot_id'}"/>
+                    <filter name="group_by_delivery_date" string="Delivery date" domain="[]"
+                            context="{'group_by': 'delivery_date'}"/>
                 </group>
             </search>
         </field>

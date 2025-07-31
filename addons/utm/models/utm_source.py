@@ -62,8 +62,8 @@ class UtmSourceMixin(models.AbstractModel):
         utm_sources = self.env['utm.source'].create([
             {
                 'name': values.get('name')
-                or self.env.context.get('default_name')
-                or self.env['utm.source']._generate_name(self, values.get(self._rec_name)),
+                        or self.env.context.get('default_name')
+                        or self.env['utm.source']._generate_name(self, values.get(self._rec_name)),
             }
             for values in vals_list
             if not values.get('source_id')

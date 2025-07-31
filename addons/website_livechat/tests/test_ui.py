@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import tests, _
-from odoo.addons.base.tests.common import HttpCaseWithUserDemo
 from odoo.addons.website_livechat.tests.common import TestLivechatCommon
+
+from odoo import tests
+from odoo.addons.base.tests.common import HttpCaseWithUserDemo
 
 
 @tests.tagged('post_install', '-at_install')
@@ -47,40 +48,47 @@ class TestLivechatUI(HttpCaseWithUserDemo, TestLivechatCommon):
     def test_empty_chat_request_flow_no_rating_no_close_ui(self):
         # Open an empty chat request
         self.visitor_tour.with_user(self.operator).sudo().action_send_chat_request()
-        chat_request = self.env['discuss.channel'].search([('livechat_visitor_id', '=', self.visitor_tour.id), ('livechat_active', '=', True)])
+        chat_request = self.env['discuss.channel'].search(
+            [('livechat_visitor_id', '=', self.visitor_tour.id), ('livechat_active', '=', True)])
 
         # Visitor ask a new livechat session before the operator start to send message in chat request session
         self.start_tour("/", 'website_livechat_no_rating_no_close_tour')
 
         # Visitor's session must be active (gets the priority)
-        channel = self.env['discuss.channel'].search([('livechat_visitor_id', '=', self.visitor_tour.id), ('livechat_active', '=', True)])
+        channel = self.env['discuss.channel'].search(
+            [('livechat_visitor_id', '=', self.visitor_tour.id), ('livechat_active', '=', True)])
         self.assertEqual(len(channel), 1, "There can only be one channel created for 'Visitor Tour'.")
         self.assertEqual(channel.livechat_active, True, 'Livechat must be active while the chat window is not closed.')
 
         # Check that the chat request has been canceled.
         chat_request.invalidate_recordset()
-        self.assertEqual(chat_request.livechat_active, False, "The livechat request must be inactive as the visitor started himself a livechat session.")
+        self.assertEqual(chat_request.livechat_active, False,
+                         "The livechat request must be inactive as the visitor started himself a livechat session.")
 
     def test_chat_request_flow_with_rating_ui(self):
         # Open a chat request
         self.visitor_tour.with_user(self.operator).sudo().action_send_chat_request()
-        chat_request = self.env['discuss.channel'].search([('livechat_visitor_id', '=', self.visitor_tour.id), ('livechat_active', '=', True)])
+        chat_request = self.env['discuss.channel'].search(
+            [('livechat_visitor_id', '=', self.visitor_tour.id), ('livechat_active', '=', True)])
 
         # Operator send a message to the visitor
-        self._send_message(chat_request, self.operator.email, "Hello my friend !", author_id=self.operator.partner_id.id)
+        self._send_message(chat_request, self.operator.email, "Hello my friend !",
+                           author_id=self.operator.partner_id.id)
         self.assertEqual(len(chat_request.message_ids), 1, "Number of messages incorrect.")
 
         # Visitor comes to the website and receives the chat request
         self.start_tour("/", 'website_livechat_chat_request_part_1_no_close_tour')
 
         # Check that the current session is the chat request
-        channel = self.env['discuss.channel'].search([('livechat_visitor_id', '=', self.visitor_tour.id), ('livechat_active', '=', True)])
+        channel = self.env['discuss.channel'].search(
+            [('livechat_visitor_id', '=', self.visitor_tour.id), ('livechat_active', '=', True)])
         self.assertEqual(len(channel), 1, "There can only be one channel created for 'Visitor Tour'.")
         self.assertEqual(channel, chat_request, "The active livechat session must be the chat request one.")
 
         # Visitor reload the page and continues the chat with the operator normally
         guest = channel.channel_member_ids.filtered(lambda m: m.guest_id).guest_id
-        self.start_tour("/", 'website_livechat_chat_request_part_2_end_session_tour', cookies={guest._cookie_name: guest._format_auth_cookie()})
+        self.start_tour("/", 'website_livechat_chat_request_part_2_end_session_tour',
+                        cookies={guest._cookie_name: guest._format_auth_cookie()})
         self._check_end_of_rating_tours()
 
     def _check_end_of_rating_tours(self):

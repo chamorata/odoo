@@ -69,7 +69,8 @@
                         </field>
                     </record>
                     <record id="l10n_ng_tr_b_30" model="account.report.line">
-                        <field name="name">30. Less: Value of Zero Rated Goods &amp; Services Included in line 20</field>
+                        <field name="name">30. Less: Value of Zero Rated Goods &amp; Services Included in line 20
+                        </field>
                         <field name="code">L10N_NG_B30</field>
                         <field name="expression_ids">
                             <record id="l10n_ng_tr_b_30_tag" model="account.report.expression">
@@ -91,10 +92,12 @@
                         </field>
                     </record>
                     <record id="l10n_ng_tr_b_40" model="account.report.line">
-                        <field name="name">40. Income Received from Sales Subject to VAT </field>
+                        <field name="name">40. Income Received from Sales Subject to VAT</field>
                         <field name="code">L10N_NG_B40</field>
                         <field name="hierarchy_level">1</field>
-                        <field name="aggregation_formula">L10N_NG_B20.balance - L10N_NG_B25.balance - L10N_NG_B30.balance + L10N_NG_B35.balance</field>
+                        <field name="aggregation_formula">L10N_NG_B20.balance - L10N_NG_B25.balance -
+                            L10N_NG_B30.balance + L10N_NG_B35.balance
+                        </field>
                     </record>
                     <record id="l10n_ng_tr_b_45" model="account.report.line">
                         <field name="name">45. TOTAL Output Tax Collected @ 7.5%</field>
@@ -121,7 +124,9 @@
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
                     <record id="l10n_ng_tr_c_50" model="account.report.line">
-                        <field name="name">50. Payments for Domestic Purchases other than zero rated and exempted goods and services For the Month</field>
+                        <field name="name">50. Payments for Domestic Purchases other than zero rated and exempted goods
+                            and services For the Month
+                        </field>
                         <field name="code">L10N_NG_C50</field>
                         <field name="expression_ids">
                             <record id="l10n_ng_tr_b_50_tag" model="account.report.expression">
@@ -184,7 +189,8 @@
                         <field name="aggregation_formula">L10N_NG_B45.balance - L10N_NG_C75.balance</field>
                     </record>
                     <record id="l10n_ng_tr_c_85" model="account.report.line">
-                        <field name="name">85. Less VAT deducted at source (by MDAs &amp; Oil and Gas) Current Month</field>
+                        <field name="name">85. Less VAT deducted at source (by MDAs &amp; Oil and Gas) Current Month
+                        </field>
                         <field name="code">L10N_NG_C85</field>
                         <field name="expression_ids">
                             <record id="l10n_ng_tr_b_85_tag" model="account.report.expression">
@@ -209,7 +215,9 @@
                         <field name="name">95. Net VAT Payable/(Refundable) Current Month</field>
                         <field name="code">L10N_NG_C95</field>
                         <field name="hierarchy_level">1</field>
-                        <field name="aggregation_formula">L10N_NG_C80.balance - L10N_NG_C85.balance - L10N_NG_C90.balance</field>
+                        <field name="aggregation_formula">L10N_NG_C80.balance - L10N_NG_C85.balance -
+                            L10N_NG_C90.balance
+                        </field>
                     </record>
                     <!-- the value should be either negative or equal to 0 -->
                     <record id="l10n_ng_tr_c_100" model="account.report.line">

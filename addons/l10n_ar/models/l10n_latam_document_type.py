@@ -1,22 +1,21 @@
-from odoo import models, api, fields, _
+from odoo import models, fields, _
 from odoo.exceptions import UserError
 
 
 class L10nLatamDocumentType(models.Model):
-
     _inherit = 'l10n_latam.document.type'
 
     l10n_ar_letter = fields.Selection(
         selection='_get_l10n_ar_letters',
         string='Letters',
         help='Letters defined by the AFIP that can be used to identify the'
-        ' documents presented to the government and that depends on the'
-        ' operation type, the responsibility of both the issuer and the'
-        ' receptor of the document')
+             ' documents presented to the government and that depends on the'
+             ' operation type, the responsibility of both the issuer and the'
+             ' receptor of the document')
     purchase_aliquots = fields.Selection(
         [('not_zero', 'Not Zero'), ('zero', 'Zero')], help='Raise an error if a vendor bill is miss encoded. "Not Zero"'
-        ' means the VAT taxes are required for the invoices related to this document type, and those with "Zero" means'
-        ' that only "VAT Not Applicable" tax is allowed.')
+                                                           ' means the VAT taxes are required for the invoices related to this document type, and those with "Zero" means'
+                                                           ' that only "VAT Not Applicable" tax is allowed.')
 
     def _get_l10n_ar_letters(self):
         """ Return the list of values of the selection field. """

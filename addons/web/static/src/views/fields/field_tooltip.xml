@@ -21,7 +21,7 @@
                 <t t-esc="resModel"/>
             </li>
             <t t-if="field">
-                <li t-if="field.type" data-item="type" >
+                <li t-if="field.type" data-item="type">
                     <span class="o-tooltip--technical--title">Type:</span>
                     <t t-esc="field.type"/>
                 </li>

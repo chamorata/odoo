@@ -1,9 +1,8 @@
 """ Test read_group grouping with many2many fields """
 
-
+from odoo.addons.base.tests.common import TransactionCaseWithUserDemo
 from odoo.fields import Command
 from odoo.tests import common
-from odoo.addons.base.tests.common import TransactionCaseWithUserDemo
 
 
 @common.tagged('test_m2m_read_group')
@@ -17,19 +16,19 @@ class TestM2MGrouping(TransactionCaseWithUserDemo):
             {'name': 'Luigi'},
         ])
         cls.tasks = cls.env['test_read_group.task'].create([
-            {   # both users
+            {  # both users
                 'name': "Super Mario Bros.",
                 'user_ids': [Command.set(cls.users.ids)],
             },
-            {   # mario only
+            {  # mario only
                 'name': "Paper Mario",
                 'user_ids': [Command.set(cls.users[0].ids)],
             },
-            {   # luigi only
+            {  # luigi only
                 'name': "Luigi's Mansion",
                 'user_ids': [Command.set(cls.users[1].ids)],
             },
-            {   # no user
+            {  # no user
                 'name': 'Donkey Kong',
                 'user_ids': [Command.set([])],
             },
@@ -43,19 +42,19 @@ class TestM2MGrouping(TransactionCaseWithUserDemo):
             groupby=['task_ids'],
         )
         self.assertEqual(user_by_tasks, [
-            {   # first task: both users
+            {  # first task: both users
                 'task_ids': (self.tasks[0].id, "Super Mario Bros."),
                 'task_ids_count': 2,
                 'name': ['Mario', 'Luigi'],
                 '__domain': [('task_ids', '=', self.tasks[0].id)],
             },
-            {   # second task: Mario only
+            {  # second task: Mario only
                 'task_ids': (self.tasks[1].id, "Paper Mario"),
                 'task_ids_count': 1,
                 'name': ['Mario'],
                 '__domain': [('task_ids', '=', self.tasks[1].id)],
             },
-            {   # third task: Luigi only
+            {  # third task: Luigi only
                 'task_ids': (self.tasks[2].id, "Luigi's Mansion"),
                 'task_ids_count': 1,
                 'name': ['Luigi'],
@@ -71,13 +70,13 @@ class TestM2MGrouping(TransactionCaseWithUserDemo):
             groupby=['user_ids'],
         )
         self.assertEqual(task_by_users, [
-            {   # task of Mario
+            {  # task of Mario
                 'user_ids': (self.users[0].id, "Mario"),
                 'user_ids_count': 1,
                 'name': ["Super Mario Bros."],
                 '__domain': ['&', ('id', '=', self.tasks[0].id), ('user_ids', '=', self.users[0].id)],
             },
-            {   # task of Luigi
+            {  # task of Luigi
                 'user_ids': (self.users[1].id, "Luigi"),
                 'user_ids_count': 1,
                 'name': ["Super Mario Bros."],
@@ -92,19 +91,19 @@ class TestM2MGrouping(TransactionCaseWithUserDemo):
             groupby=['user_ids'],
         )
         self.assertEqual(task_by_users, [
-            {   # tasks of Mario
+            {  # tasks of Mario
                 'user_ids': (self.users[0].id, "Mario"),
                 'user_ids_count': 2,
                 'name': unordered(["Super Mario Bros.", "Paper Mario"]),
                 '__domain': [('user_ids', '=', self.users[0].id)],
             },
-            {   # tasks of Luigi
+            {  # tasks of Luigi
                 'user_ids': (self.users[1].id, "Luigi"),
                 'user_ids_count': 2,
                 'name': unordered(["Super Mario Bros.", "Luigi's Mansion"]),
                 '__domain': [('user_ids', '=', self.users[1].id)],
             },
-            {   # tasks of nobody
+            {  # tasks of nobody
                 'user_ids': False,
                 'user_ids_count': 1,
                 'name': unordered(["Donkey Kong"]),
@@ -156,19 +155,19 @@ class TestM2MGrouping(TransactionCaseWithUserDemo):
                 groupby=['user_ids'],
             )
         self.assertEqual(as_admin, [
-            {   # tasks of Mario
+            {  # tasks of Mario
                 'user_ids': (self.users[0].id, "Mario"),
                 'user_ids_count': 2,
                 'name': unordered(["Super Mario Bros.", "Paper Mario"]),
                 '__domain': [('user_ids', '=', self.users[0].id)],
             },
-            {   # tasks of Luigi
+            {  # tasks of Luigi
                 'user_ids': (self.users[1].id, "Luigi"),
                 'user_ids_count': 2,
                 'name': unordered(["Super Mario Bros.", "Luigi's Mansion"]),
                 '__domain': [('user_ids', '=', self.users[1].id)],
             },
-            {   # tasks of nobody
+            {  # tasks of nobody
                 'user_ids': False,
                 'user_ids_count': 1,
                 'name': unordered(["Donkey Kong"]),
@@ -207,13 +206,13 @@ class TestM2MGrouping(TransactionCaseWithUserDemo):
                 groupby=['user_ids'],
             )
         self.assertEqual(as_demo, [
-            {   # tasks of Mario
+            {  # tasks of Mario
                 'user_ids': (self.users[0].id, "Mario"),
                 'user_ids_count': 2,
                 'name': unordered(['Super Mario Bros.', 'Paper Mario']),
                 '__domain': [('user_ids', '=', self.users[0].id)],
             },
-            {   # tasks of Luigi and no user
+            {  # tasks of Luigi and no user
                 'user_ids': False,
                 'user_ids_count': 2,
                 'name': unordered(["Luigi's Mansion", 'Donkey Kong']),
@@ -246,22 +245,23 @@ class TestM2MGrouping(TransactionCaseWithUserDemo):
         )
 
         self.assertEqual(tasks_by_users, [
-            {   # tasks of no one
+            {  # tasks of no one
                 'user_ids': False,
                 'user_ids_count': 1,
                 '__domain': [('user_ids', 'not any', [(1, '=', 1)])],
             },
-            {   # tasks of Luigi
+            {  # tasks of Luigi
                 'user_ids': (self.users[1].id, 'Luigi'),
                 'user_ids_count': 2,
                 '__domain': [('user_ids', '=', self.users[1].id)],
             },
-            {   # tasks of Mario
+            {  # tasks of Mario
                 'user_ids': (self.users[0].id, 'Mario'),
                 'user_ids_count': 2,
                 '__domain': [('user_ids', '=', self.users[0].id)],
             },
         ])
+
 
 class unordered(list):
     """ A list where equality is interpreted without ordering. """

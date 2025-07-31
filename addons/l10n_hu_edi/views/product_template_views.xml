@@ -11,7 +11,7 @@
                     <label for="l10n_hu_product_code_type" string="Product Code"/>
                     <div class="d-flex">
                         <field name="l10n_hu_product_code_type"/>
-                        <span class="oe_inline o_form_label mx-3"> : </span>
+                        <span class="oe_inline o_form_label mx-3">:</span>
                         <field name="l10n_hu_product_code" required="l10n_hu_product_code_type"/>
                     </div>
                 </group>

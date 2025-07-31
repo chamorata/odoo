@@ -3,17 +3,15 @@
 import json
 import logging
 import pprint
-import requests
-
 from datetime import timedelta
+
+import requests
+from odoo.addons.payment_paypal import const
+from odoo.addons.payment_paypal.controllers.main import PaypalController
 from werkzeug import urls
 
 from odoo import _, fields, models
 from odoo.exceptions import UserError, ValidationError
-
-from odoo.addons.payment_paypal import const
-from odoo.addons.payment_paypal.controllers.main import PaypalController
-
 
 _logger = logging.getLogger(__name__)
 
@@ -67,11 +65,11 @@ class PaymentProvider(models.Model):
         webhook_data = self._paypal_make_request('/v1/notifications/webhooks', json_payload=data)
         self.paypal_webhook_id = webhook_data.get('id')
 
-    #=== BUSINESS METHODS ===#
+    # === BUSINESS METHODS ===#
 
     def _paypal_make_request(
-        self, endpoint, data=None, json_payload=None, auth=None, is_refresh_token_request=False,
-        idempotency_key=None,
+            self, endpoint, data=None, json_payload=None, auth=None, is_refresh_token_request=False,
+            idempotency_key=None,
     ):
         """ Make a request to Paypal API at the specified endpoint.
 

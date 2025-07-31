@@ -12,8 +12,8 @@
     </record>
 
     <menuitem id="menu_link_tracker"
-        name="Link Tracker"
-        sequence="25"
-        parent="website.menu_current_page"
-        action="website.website_preview"/>
+              name="Link Tracker"
+              sequence="25"
+              parent="website.menu_current_page"
+              action="website.website_preview"/>
 </odoo>

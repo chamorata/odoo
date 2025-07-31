@@ -11,7 +11,8 @@ class TestProjectMilestone(TestProjectCommon):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.milestone_pigs, cls.milestone_goats = cls.env['project.milestone'].with_context({'mail_create_nolog': True}).create([{
+        cls.milestone_pigs, cls.milestone_goats = cls.env['project.milestone'].with_context(
+            {'mail_create_nolog': True}).create([{
             'name': 'Test Milestone',
             'project_id': cls.project_pigs.id,
         }, {
@@ -24,15 +25,20 @@ class TestProjectMilestone(TestProjectCommon):
         self.env['res.config.settings'] \
             .create({'group_project_milestone': False}) \
             .execute()
-        self.assertFalse(self.env.user.has_group('project.group_project_milestone'), 'The "Milestones" feature should not be globally enabled by default.')
-        self.assertFalse(self.project_pigs.allow_milestones, 'The "Milestones" feature should not be enabled by default.')
+        self.assertFalse(self.env.user.has_group('project.group_project_milestone'),
+                         'The "Milestones" feature should not be globally enabled by default.')
+        self.assertFalse(self.project_pigs.allow_milestones,
+                         'The "Milestones" feature should not be enabled by default.')
         self.env['res.config.settings'] \
             .create({'group_project_milestone': True}) \
             .execute()
-        self.assertTrue(self.env.user.has_group('project.group_project_milestone'), 'The "Milestones" feature should globally be enabled.')
-        self.assertTrue(self.project_pigs.allow_milestones, 'The "Milestones" feature should be enabled by default on the project when the feature is enabled.')
+        self.assertTrue(self.env.user.has_group('project.group_project_milestone'),
+                        'The "Milestones" feature should globally be enabled.')
+        self.assertTrue(self.project_pigs.allow_milestones,
+                        'The "Milestones" feature should be enabled by default on the project when the feature is enabled.')
         project = self.env['project.project'].create({'name': 'Test allow_milestones on New Project'})
-        self.assertTrue(project.allow_milestones, 'The "Milestones" feature should be enabled by default when the feature is enabled globally.')
+        self.assertTrue(project.allow_milestones,
+                        'The "Milestones" feature should be enabled by default when the feature is enabled globally.')
 
         with Form(self.env['project.project']) as project_form:
             project_form.name = 'My Mouses Project'
@@ -52,9 +58,9 @@ class TestProjectMilestone(TestProjectCommon):
         self.task_1.milestone_id = self.milestone_pigs
         self.assertEqual(self.task_1.milestone_id, self.milestone_pigs)
 
-
         self.task_1.project_id = self.project_goats
-        self.assertFalse(self.task_1.milestone_id, 'No milestone should be linked to the task since its project has changed')
+        self.assertFalse(self.task_1.milestone_id,
+                         'No milestone should be linked to the task since its project has changed')
 
         # B. Parent task with no milestone set
         task_2 = self.env['project.task'].with_context({'mail_create_nolog': True}).create({
@@ -67,7 +73,8 @@ class TestProjectMilestone(TestProjectCommon):
         self.assertEqual(task_2.milestone_id, self.milestone_pigs)
 
         task_2.project_id = self.project_goats
-        self.assertFalse(task_2.milestone_id, 'No milestone should be linked to the task since its project has changed and its parent task has no milestone')
+        self.assertFalse(task_2.milestone_id,
+                         'No milestone should be linked to the task since its project has changed and its parent task has no milestone')
 
         # C. Parent task with a milestone set but on a different project
         self.task_1.project_id = self.project_pigs
@@ -77,7 +84,8 @@ class TestProjectMilestone(TestProjectCommon):
         self.assertEqual(task_2.milestone_id, self.milestone_pigs)
 
         task_2.project_id = self.project_goats
-        self.assertFalse(task_2.milestone_id, 'No milestone should be linked to the task since its project has changed and its parent task belongs to another project')
+        self.assertFalse(task_2.milestone_id,
+                         'No milestone should be linked to the task since its project has changed and its parent task belongs to another project')
 
         # D. Parent task with a milestone set on the same project
         self.task_1.project_id = self.project_goats
@@ -155,11 +163,11 @@ class TestProjectMilestone(TestProjectCommon):
         self.task_2.milestone_id = extra_milestone_pigs
         self.project_pigs.allow_milestones = False
         project_copied = self.project_pigs.copy()
-        self.assertFalse(project_copied.allow_milestones, "The project copied should have the milestone feature disabled")
+        self.assertFalse(project_copied.allow_milestones,
+                         "The project copied should have the milestone feature disabled")
         self.assertFalse(project_copied.milestone_ids, "The project copied should not have any milestone.")
         for task in project_copied.task_ids:
             self.assertFalse(task.milestone_id, "None of the project's task should have a milestone.")
-
 
     def test_basic_milestone_write(self):
         """ Testing basic milestone/project write operation on task, i.e:
@@ -205,7 +213,6 @@ class TestProjectMilestone(TestProjectCommon):
         self.assertFalse(self.task_1.milestone_id,
                          "Setting the milestone of a task to an invalid value should reset the value of milestone_id.")
 
-
     def test_set_milestone_parent_task(self):
         """ When a milestone is set on a parent task, it is set as well on its child tasks if they have no milestone set yet and
             if they belong to the same project (or they have no project set).
@@ -245,7 +252,8 @@ class TestProjectMilestone(TestProjectCommon):
         self.assertEqual(task_2.milestone_id, extra_milestone_pigs)
 
         self.task_1.milestone_id = self.milestone_pigs
-        self.assertEqual(task_2.milestone_id, extra_milestone_pigs, "The milestone of the child task should not be modified has it has already one set.")
+        self.assertEqual(task_2.milestone_id, extra_milestone_pigs,
+                         "The milestone of the child task should not be modified has it has already one set.")
 
         # C. Child task with no milestone set but belonging to another project
         task_2.display_in_project = True
@@ -255,7 +263,8 @@ class TestProjectMilestone(TestProjectCommon):
         self.assertFalse(task_2.milestone_id)
 
         self.task_1.milestone_id = self.milestone_goats
-        self.assertFalse(task_2.milestone_id, "The milestone of the parent task should not be set to its child task has they belong to different projects.")
+        self.assertFalse(task_2.milestone_id,
+                         "The milestone of the parent task should not be set to its child task has they belong to different projects.")
 
         # D. Recursion test (grand-parent task's milestone set to grand-child task)
         task_3.parent_id = task_2
@@ -265,7 +274,8 @@ class TestProjectMilestone(TestProjectCommon):
         self.assertFalse(task_3.milestone_id)
 
         self.task_1.milestone_id = self.milestone_pigs
-        self.assertEqual(task_3.milestone_id, self.milestone_pigs, "The milestone of the parent task should be set to its (grand)child tasks recursively.")
+        self.assertEqual(task_3.milestone_id, self.milestone_pigs,
+                         "The milestone of the parent task should be set to its (grand)child tasks recursively.")
 
         # E. Recursion test 2 (grand-child task has no milestone but first level child does)
         self.task_1.milestone_id = False

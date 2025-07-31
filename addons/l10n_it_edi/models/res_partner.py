@@ -24,12 +24,12 @@ class ResPartner(models.Model):
 
     _sql_constraints = [
         ('l10n_it_codice_fiscale',
-            "CHECK(l10n_it_codice_fiscale IS NULL OR l10n_it_codice_fiscale = '' OR LENGTH(l10n_it_codice_fiscale) >= 11)",
-            "Codice fiscale must have between 11 and 16 characters."),
+         "CHECK(l10n_it_codice_fiscale IS NULL OR l10n_it_codice_fiscale = '' OR LENGTH(l10n_it_codice_fiscale) >= 11)",
+         "Codice fiscale must have between 11 and 16 characters."),
 
         ('l10n_it_pa_index',
-            "CHECK(l10n_it_pa_index IS NULL OR l10n_it_pa_index = '' OR LENGTH(l10n_it_pa_index) >= 6)",
-            "Destination Code must have between 6 and 7 characters."),
+         "CHECK(l10n_it_pa_index IS NULL OR l10n_it_pa_index = '' OR LENGTH(l10n_it_pa_index) >= 6)",
+         "Destination Code must have between 6 and 7 characters."),
     ]
 
     def _l10n_it_edi_is_public_administration(self):
@@ -144,9 +144,9 @@ class ResPartner(models.Model):
     @api.onchange('vat', 'country_id')
     def _l10n_it_onchange_vat(self):
         if self.vat and (
-            self.country_code == "IT"
-            if self.country_code
-            else self.vat.startswith("IT")
+                self.country_code == "IT"
+                if self.country_code
+                else self.vat.startswith("IT")
         ):
             self.l10n_it_codice_fiscale = self._l10n_it_edi_normalized_codice_fiscale(self.vat)
         else:
@@ -155,8 +155,12 @@ class ResPartner(models.Model):
     @api.constrains('l10n_it_codice_fiscale')
     def validate_codice_fiscale(self):
         for record in self:
-            if record.l10n_it_codice_fiscale and (not codicefiscale.is_valid(record.l10n_it_codice_fiscale) and not iva.is_valid(record.l10n_it_codice_fiscale)):
-                raise UserError(_("Invalid Codice Fiscale '%s': should be like 'MRTMTT91D08F205J' for physical person and '12345670546' for businesses.", record.l10n_it_codice_fiscale))
+            if record.l10n_it_codice_fiscale and (
+                    not codicefiscale.is_valid(record.l10n_it_codice_fiscale) and not iva.is_valid(
+                    record.l10n_it_codice_fiscale)):
+                raise UserError(
+                    _("Invalid Codice Fiscale '%s': should be like 'MRTMTT91D08F205J' for physical person and '12345670546' for businesses.",
+                      record.l10n_it_codice_fiscale))
 
     def _l10n_it_edi_export_check(self, checks=None):
         checks = checks or ['partner_vat_codice_fiscale_missing', 'partner_address_missing']
@@ -175,7 +179,8 @@ class ResPartner(models.Model):
             },
             'partner_address_missing': {
                 'fields': [('street', 'street2'), ('zip',), ('city',), ('country_id',)],
-                'message': _("Partner(s) should have a complete address, verify their Street, City, Zipcode and Country."),
+                'message': _(
+                    "Partner(s) should have a complete address, verify their Street, City, Zipcode and Country."),
             },
         }
         selected_checks = {k: v for k, v in fields_to_check.items() if k in checks}

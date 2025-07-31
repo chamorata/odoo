@@ -6,18 +6,18 @@
 import re
 
 component_re = re.compile(r'(\d+ | [a-z]+ | \.| -)', re.VERBOSE)
-replace = {'pre':'c', 'preview':'c','-':'final-','_':'final-','rc':'c','dev':'@','saas':'','~':''}.get
+replace = {'pre': 'c', 'preview': 'c', '-': 'final-', '_': 'final-', 'rc': 'c', 'dev': '@', 'saas': '', '~': ''}.get
 
 
 def _parse_version_parts(s):
     for part in component_re.split(s):
-        part = replace(part,part)
-        if not part or part=='.':
+        part = replace(part, part)
+        if not part or part == '.':
             continue
         if part[:1] in '0123456789':
-            yield part.zfill(8)    # pad for numeric comparison
+            yield part.zfill(8)  # pad for numeric comparison
         else:
-            yield '*'+part
+            yield '*' + part
 
     yield '*final'  # ensure that alpha/beta/candidate are before final
 
@@ -55,26 +55,27 @@ def parse_version(s: str) -> tuple[str, ...]:
     parts: list[str] = []
     for part in _parse_version_parts((s or '0.1').lower()):
         if part.startswith('*'):
-            if part<'*final':   # remove '-' before a prerelease tag
-                while parts and parts[-1]=='*final-': parts.pop()
+            if part < '*final':  # remove '-' before a prerelease tag
+                while parts and parts[-1] == '*final-': parts.pop()
             # remove trailing zeros from each series of numeric parts
-            while parts and parts[-1]=='00000000':
+            while parts and parts[-1] == '00000000':
                 parts.pop()
         parts.append(part)
     return tuple(parts)
 
-if __name__ == '__main__':
-        def chk(lst, verbose=False):
-            pvs = []
-            for v in lst:
-                pv = parse_version(v)
-                pvs.append(pv)
-                if verbose:
-                    print(v, pv)
 
-            for a, b in zip(pvs, pvs[1:]):
-                assert a < b, '%s < %s == %s' % (a, b, a < b)
-        
-        chk(('0', '4.2', '4.2.3.4', '5.0.0-alpha', '5.0.0-rc1', '5.0.0-rc1.1', '5.0.0_rc2', '5.0.0_rc3', '5.0.0'), False)
-        chk(('5.0.0-0_rc3', '5.0.0-1dev', '5.0.0-1'), False) 
-        
+if __name__ == '__main__':
+    def chk(lst, verbose=False):
+        pvs = []
+        for v in lst:
+            pv = parse_version(v)
+            pvs.append(pv)
+            if verbose:
+                print(v, pv)
+
+        for a, b in zip(pvs, pvs[1:]):
+            assert a < b, '%s < %s == %s' % (a, b, a < b)
+
+
+    chk(('0', '4.2', '4.2.3.4', '5.0.0-alpha', '5.0.0-rc1', '5.0.0-rc1.1', '5.0.0_rc2', '5.0.0_rc3', '5.0.0'), False)
+    chk(('5.0.0-0_rc3', '5.0.0-1dev', '5.0.0-1'), False)

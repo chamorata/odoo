@@ -12,9 +12,12 @@ class StockLot(models.Model):
 
     value_svl = fields.Float(compute='_compute_value_svl', compute_sudo=True)
     quantity_svl = fields.Float(compute='_compute_value_svl', compute_sudo=True)
-    avg_cost = fields.Monetary(string="Average Cost", compute='_compute_value_svl', compute_sudo=True, currency_field='company_currency_id')
-    total_value = fields.Monetary(string="Total Value", compute='_compute_value_svl', compute_sudo=True, currency_field='company_currency_id')
-    company_currency_id = fields.Many2one('res.currency', 'Valuation Currency', compute='_compute_value_svl', compute_sudo=True)
+    avg_cost = fields.Monetary(string="Average Cost", compute='_compute_value_svl', compute_sudo=True,
+                               currency_field='company_currency_id')
+    total_value = fields.Monetary(string="Total Value", compute='_compute_value_svl', compute_sudo=True,
+                                  currency_field='company_currency_id')
+    company_currency_id = fields.Many2one('res.currency', 'Valuation Currency', compute='_compute_value_svl',
+                                          compute_sudo=True)
     stock_valuation_layer_ids = fields.One2many('stock.valuation.layer', 'lot_id')
     standard_price = fields.Float(
         "Cost", company_dependent=True,
@@ -82,8 +85,10 @@ class StockLot(models.Model):
 
         :param new_price: new standard price
         """
-        if self.product_id.filtered(lambda p: p.valuation == 'real_time') and not self.env['stock.valuation.layer'].check_access_rights('read', raise_exception=False):
-            raise UserError(_("You cannot update the cost of a product in automated valuation as it leads to the creation of a journal entry, for which you don't have the access rights."))
+        if self.product_id.filtered(lambda p: p.valuation == 'real_time') and not self.env[
+            'stock.valuation.layer'].check_access_rights('read', raise_exception=False):
+            raise UserError(
+                _("You cannot update the cost of a product in automated valuation as it leads to the creation of a journal entry, for which you don't have the access rights."))
 
         svl_vals_list = []
         company_id = self.env.company
@@ -103,7 +108,8 @@ class StockLot(models.Model):
             svl_vals = {
                 'company_id': company_id.id,
                 'product_id': lot.product_id.id,
-                'description': _('Lot value manually modified (from %(old)s to %(new)s)', old=lot.standard_price, new=rounded_new_price),
+                'description': _('Lot value manually modified (from %(old)s to %(new)s)', old=lot.standard_price,
+                                 new=rounded_new_price),
                 'value': value,
                 'quantity': 0,
                 'lot_id': lot.id,
@@ -124,7 +130,8 @@ class StockLot(models.Model):
         # Cannot hide the button in list view for non required field in groupby
         if not self:
             raise UserError(_("Select an existing lot/serial number to be reevaluated"))
-        elif all(float_is_zero(layer.remaining_qty, precision_rounding=self.product_id.uom_id.rounding) for layer in self.stock_valuation_layer_ids):
+        elif all(float_is_zero(layer.remaining_qty, precision_rounding=self.product_id.uom_id.rounding) for layer in
+                 self.stock_valuation_layer_ids):
             raise UserError(_("You cannot adjust the valuation of a layer with zero quantity"))
         self.ensure_one()
         ctx = dict(self._context, default_lot_id=self.id, default_company_id=self.env.company.id)

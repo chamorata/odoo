@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.resource.models.utils import filter_domain_leaf
+
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 from odoo.tools import SQL
-from odoo.addons.resource.models.utils import filter_domain_leaf
 
 
 class ReportProjectTaskBurndownChart(models.AbstractModel):
@@ -26,7 +27,8 @@ class ReportProjectTaskBurndownChart(models.AbstractModel):
         ('1_canceled', 'Cancelled'),
         ('02_changes_requested', 'Changes Requested'),
     ], string='State', readonly=True)
-    is_closed = fields.Selection([('closed', 'Closed tasks'), ('open', 'Open tasks')], string="Closing Stage", readonly=True)
+    is_closed = fields.Selection([('closed', 'Closed tasks'), ('open', 'Open tasks')], string="Closing Stage",
+                                 readonly=True)
     milestone_id = fields.Many2one('project.milestone', readonly=True)
     partner_id = fields.Many2one('res.partner', string='Customer', readonly=True)
     project_id = fields.Many2one('project.project', readonly=True)
@@ -190,12 +192,12 @@ class ReportProjectTaskBurndownChart(models.AbstractModel):
                             AS date ON TRUE
             )
             """,
-            task_query_subselect=project_task_query.subselect(),
-            date_begin=SQL(simple_date_groupby_sql.replace('"date"', '"date_begin"')),
-            date_end=SQL(simple_date_groupby_sql.replace('"date"', '"date_end"')),
-            interval=SQL(sql_interval),
-            field_id=field_id,
-        )
+                                 task_query_subselect=project_task_query.subselect(),
+                                 date_begin=SQL(simple_date_groupby_sql.replace('"date"', '"date_begin"')),
+                                 date_end=SQL(simple_date_groupby_sql.replace('"date"', '"date_end"')),
+                                 interval=SQL(sql_interval),
+                                 field_id=field_id,
+                                 )
 
         # hardcode 'project_task_burndown_chart_report' as the query above
         # (with its own parameters)
@@ -219,7 +221,8 @@ class ReportProjectTaskBurndownChart(models.AbstractModel):
                 is_closed_or_stage_in_groupby = True
 
         if not date_in_groupby or not is_closed_or_stage_in_groupby:
-            raise UserError(_('The view must be grouped by date and by Stage - Burndown chart or Is Closed - Burnup chart'))
+            raise UserError(
+                _('The view must be grouped by date and by Stage - Burndown chart or Is Closed - Burnup chart'))
 
     @api.model
     def _determine_domains(self, domain):

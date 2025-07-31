@@ -3,6 +3,7 @@
 
 from odoo.addons.crm.tests.common import TestCrmCommon
 from odoo.addons.iap.tools import iap_tools
+
 from odoo.tests.common import tagged, users
 
 
@@ -209,7 +210,7 @@ class TestCRMLead(TestCrmCommon):
                     'email_from': test_email,
                     'name': test_email,
                 })
-                self.assertEqual(lead.email_domain_criterion, f'@{provider}',)
+                self.assertEqual(lead.email_domain_criterion, f'@{provider}', )
 
     @users('user_sales_leads')
     def test_iap_tools(self):

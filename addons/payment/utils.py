@@ -2,12 +2,12 @@
 
 from hashlib import sha1
 
+from odoo.addons.payment.const import CURRENCY_MINOR_UNITS
+
 from odoo import fields
 from odoo.http import request
-from odoo.tools import consteq, float_round, ustr
+from odoo.tools import consteq, float_round
 from odoo.tools.misc import hmac as hmac_tool
-
-from odoo.addons.payment.const import CURRENCY_MINOR_UNITS
 
 
 # Access token management
@@ -117,7 +117,7 @@ def singularize_reference_prefix(prefix='tx', separator='-', max_length=None):
     if max_length:
         DATETIME_LENGTH = 14
         assert max_length >= 1 + len(separator) + DATETIME_LENGTH  # 1 char + separator + datetime
-        prefix = prefix[:max_length-len(separator)-DATETIME_LENGTH]
+        prefix = prefix[:max_length - len(separator) - DATETIME_LENGTH]
     return f'{prefix}{separator}{fields.Datetime.now().strftime("%Y%m%d%H%M%S")}'
 
 
@@ -140,7 +140,7 @@ def to_major_currency_units(minor_amount, currency, arbitrary_decimal_number=Non
         decimal_number = CURRENCY_MINOR_UNITS.get(currency.name, currency.decimal_places)
     else:
         decimal_number = arbitrary_decimal_number
-    return float_round(minor_amount, precision_digits=0) / (10**decimal_number)
+    return float_round(minor_amount, precision_digits=0) / (10 ** decimal_number)
 
 
 def to_minor_currency_units(major_amount, currency, arbitrary_decimal_number=None):
@@ -165,7 +165,7 @@ def to_minor_currency_units(major_amount, currency, arbitrary_decimal_number=Non
     else:
         decimal_number = arbitrary_decimal_number
     return int(
-        float_round(major_amount * (10**decimal_number), precision_digits=0, rounding_method='DOWN')
+        float_round(major_amount * (10 ** decimal_number), precision_digits=0, rounding_method='DOWN')
     )
 
 

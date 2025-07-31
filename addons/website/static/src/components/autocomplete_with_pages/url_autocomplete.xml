@@ -2,12 +2,12 @@
 <templates xml:space="preserve">
     <t t-name="website.UrlAutoComplete">
         <AutoCompleteWithPages
-            onInput.bind="onInput"
-            onSelect.bind="onSelect"
-            dropdownClass="dropdownClass"
-            dropdownOptions="dropdownOptions"
-            sources="sources"
-            targetDropdown="props.targetDropdown"/>
+                onInput.bind="onInput"
+                onSelect.bind="onSelect"
+                dropdownClass="dropdownClass"
+                dropdownOptions="dropdownOptions"
+                sources="sources"
+                targetDropdown="props.targetDropdown"/>
     </t>
 
     <t t-name="website.AutoCompleteWithPagesItem">

@@ -5,7 +5,7 @@
         <field name="model">mrp.production</field>
         <field name="mode">primary</field>
         <field name="priority">1000</field>
-        <field name="inherit_id" ref="mrp.mrp_production_form_view" />
+        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
         <field name="arch" type="xml">
             <xpath expr="//header" position="replace">
                 <field name="state" invisible="1"/>
@@ -43,14 +43,17 @@
             <xpath expr="//field[@name='move_raw_ids']" position="replace">
                 <field name="bom_product_ids" invisible="1"/>
                 <field name="move_line_raw_ids" force_save="1"
-                    context="{'list_view_ref': 'mrp_subcontracting.mrp_subcontracting_stock_move_line_tree_view', 'default_company_id': company_id, 'default_location_id': location_src_id, 'default_location_dest_id': production_location_id, 'bom_product_ids': bom_product_ids}"
-                    />
+                       context="{'list_view_ref': 'mrp_subcontracting.mrp_subcontracting_stock_move_line_tree_view', 'default_company_id': company_id, 'default_location_id': location_src_id, 'default_location_dest_id': production_location_id, 'bom_product_ids': bom_product_ids}"
+                />
             </xpath>
             <xpath expr="//sheet" position="inside">
                 <footer>
-                    <button name="subcontracting_record_component" invisible="state == 'to_close' or qty_producing &lt; 0.001" string="Continue" type="object" class="oe_highlight" data-hotkey="q"/>
-                    <button name="subcontracting_record_component" invisible="state != 'to_close'" string="Record Production" type="object" class="oe_highlight" data-hotkey="q"/>
-                    <button string="Discard" special="cancel" data-hotkey="x" />
+                    <button name="subcontracting_record_component"
+                            invisible="state == 'to_close' or qty_producing &lt; 0.001" string="Continue" type="object"
+                            class="oe_highlight" data-hotkey="q"/>
+                    <button name="subcontracting_record_component" invisible="state != 'to_close'"
+                            string="Record Production" type="object" class="oe_highlight" data-hotkey="q"/>
+                    <button string="Discard" special="cancel" data-hotkey="x"/>
                 </footer>
             </xpath>
             <xpath expr="//chatter" position="replace"/>
@@ -62,7 +65,7 @@
         <field name="model">mrp.production</field>
         <field name="mode">primary</field>
         <field name="priority">1000</field>
-        <field name="inherit_id" ref="mrp_production_subcontracting_form_view" />
+        <field name="inherit_id" ref="mrp_production_subcontracting_form_view"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='product_id']" position="attributes">
                 <attribute name="options">{'no_create_edit': True, 'no_open': True}</attribute>
@@ -76,7 +79,11 @@
                 <attribute name="options">{'no_create_edit': True, 'no_open': True}</attribute>
             </xpath>
             <xpath expr="//field[@name='move_line_raw_ids']" position="attributes">
-                <attribute name="context">{'list_view_ref': 'mrp_subcontracting.mrp_subcontracting_portal_stock_move_line_tree_view', 'default_company_id': company_id, 'default_location_id': location_src_id, 'default_location_dest_id': production_location_id, 'bom_product_ids': bom_product_ids}</attribute>
+                <attribute name="context">{'list_view_ref':
+                    'mrp_subcontracting.mrp_subcontracting_portal_stock_move_line_tree_view', 'default_company_id':
+                    company_id, 'default_location_id': location_src_id, 'default_location_dest_id':
+                    production_location_id, 'bom_product_ids': bom_product_ids}
+                </attribute>
             </xpath>
             <xpath expr="//field[@name='forecasted_issue']" position="replace"/>
             <xpath expr="//button[@name='%(mrp.action_change_production_qty)d']" position="replace"/>
@@ -90,7 +97,7 @@
         <field name="model">mrp.production</field>
         <field name="mode">primary</field>
         <field name="priority">1000</field>
-        <field name="inherit_id" ref="mrp.mrp_production_tree_view" />
+        <field name="inherit_id" ref="mrp.mrp_production_tree_view"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='name']" position="after">
                 <field name="incoming_picking"/>
@@ -103,10 +110,11 @@
         <field name="model">mrp.production</field>
         <field name="mode">primary</field>
         <field name="priority">1000</field>
-        <field name="inherit_id" ref="mrp.view_mrp_production_filter" />
+        <field name="inherit_id" ref="mrp.view_mrp_production_filter"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='name']" position="after">
-                <field name="name" string="Incoming transfer" filter_domain="[('incoming_picking.name', 'ilike', self)]"/>
+                <field name="name" string="Incoming transfer"
+                       filter_domain="[('incoming_picking.name', 'ilike', self)]"/>
             </xpath>
         </field>
     </record>

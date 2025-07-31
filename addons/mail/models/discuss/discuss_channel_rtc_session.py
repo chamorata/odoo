@@ -1,14 +1,14 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import logging
-import requests
-
 from collections import defaultdict
-from dateutil.relativedelta import relativedelta
 
-from odoo import api, fields, models
+import requests
+from dateutil.relativedelta import relativedelta
 from odoo.addons.mail.tools import discuss, jwt
 from odoo.addons.mail.tools.discuss import Store
+
+from odoo import api, fields, models
 
 _logger = logging.getLogger(__name__)
 
@@ -109,7 +109,8 @@ class MailRtcSession(models.Model):
                     try:
                         requests_session.post(
                             url + '/v1/disconnect',
-                            data=jwt.sign({'sessionIdsByChannel': session_ids_by_channel}, key=key, ttl=20, algorithm=jwt.Algorithm.HS256),
+                            data=jwt.sign({'sessionIdsByChannel': session_ids_by_channel}, key=key, ttl=20,
+                                          algorithm=jwt.Algorithm.HS256),
                             timeout=3
                         ).raise_for_status()
                     except requests.exceptions.RequestException as error:

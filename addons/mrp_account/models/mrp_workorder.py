@@ -7,8 +7,10 @@ from odoo import fields, models, _
 class MrpWorkorder(models.Model):
     _inherit = 'mrp.workorder'
 
-    mo_analytic_account_line_ids = fields.Many2many('account.analytic.line', 'mrp_workorder_mo_analytic_rel', copy=False)
-    wc_analytic_account_line_ids = fields.Many2many('account.analytic.line', 'mrp_workorder_wc_analytic_rel', copy=False)
+    mo_analytic_account_line_ids = fields.Many2many('account.analytic.line', 'mrp_workorder_mo_analytic_rel',
+                                                    copy=False)
+    wc_analytic_account_line_ids = fields.Many2many('account.analytic.line', 'mrp_workorder_wc_analytic_rel',
+                                                    copy=False)
 
     def _compute_duration(self):
         res = super()._compute_duration()
@@ -49,9 +51,11 @@ class MrpWorkorder(models.Model):
     def _create_or_update_analytic_entry_for_record(self, value, hours):
         self.ensure_one()
         if self.workcenter_id.analytic_distribution or self.wc_analytic_account_line_ids or self.mo_analytic_account_line_ids:
-            wc_analytic_line_vals = self.env['account.analytic.account']._perform_analytic_distribution(self.workcenter_id.analytic_distribution, value, hours, self.wc_analytic_account_line_ids, self)
+            wc_analytic_line_vals = self.env['account.analytic.account']._perform_analytic_distribution(
+                self.workcenter_id.analytic_distribution, value, hours, self.wc_analytic_account_line_ids, self)
             if wc_analytic_line_vals:
-                self.wc_analytic_account_line_ids += self.env['account.analytic.line'].sudo().create(wc_analytic_line_vals)
+                self.wc_analytic_account_line_ids += self.env['account.analytic.line'].sudo().create(
+                    wc_analytic_line_vals)
 
     def unlink(self):
         (self.mo_analytic_account_line_ids | self.wc_analytic_account_line_ids).unlink()

@@ -3,10 +3,11 @@
 
 from datetime import timedelta
 
-from odoo import tools
 from odoo.addons.mail.tests.common import mail_new_test_user
+
+from odoo import tools
 from odoo.fields import Date
-from odoo.tests import Form, tagged, users, loaded_demo_data
+from odoo.tests import Form, tagged, users
 from odoo.tests.common import TransactionCase
 
 
@@ -37,7 +38,8 @@ class TestCRMPLS(TransactionCase):
         cls.env['crm.lead.scoring.frequency'].search([]).unlink()
         cls.cr.flush()
 
-    def _get_lead_values(self, team_id, name_suffix, country_id, state_id, email_state, phone_state, source_id, stage_id):
+    def _get_lead_values(self, team_id, name_suffix, country_id, state_id, email_state, phone_state, source_id,
+                         stage_id):
         return {
             'name': 'lead_' + name_suffix,
             'type': 'opportunity',
@@ -101,10 +103,12 @@ class TestCRMPLS(TransactionCase):
         # Check that wizard to update lead probabilities has correct value set by default
         pls_update_wizard = Form(self.env['crm.lead.pls.update'])
         with pls_update_wizard:
-            self.assertEqual(Date.to_string(pls_update_wizard.pls_start_date), pls_start_date_str, 'Correct date is taken from config')
-            self.assertEqual(','.join([f.field_id.name for f in pls_update_wizard.pls_fields]), pls_fields_str, 'Correct fields are taken from config')
+            self.assertEqual(Date.to_string(pls_update_wizard.pls_start_date), pls_start_date_str,
+                             'Correct date is taken from config')
+            self.assertEqual(','.join([f.field_id.name for f in pls_update_wizard.pls_fields]), pls_fields_str,
+                             'Correct fields are taken from config')
             # Update the wizard values and check that config values and probabilities are updated accordingly
-            pls_update_wizard.pls_start_date =  date_to_update
+            pls_update_wizard.pls_start_date = date_to_update
             for field in fields_to_remove:
                 pls_update_wizard.pls_fields.remove(field.id)
 
@@ -112,8 +116,10 @@ class TestCRMPLS(TransactionCase):
         pls_update_wizard0.action_update_crm_lead_probabilities()
 
         # Config params should have been updated
-        self.assertEqual(IrConfigSudo.get_param("crm.pls_start_date"), date_to_update, 'Correct date is updated in config')
-        self.assertEqual(IrConfigSudo.get_param("crm.pls_fields"), fields_after_updation_str, 'Correct fields are updated in config')
+        self.assertEqual(IrConfigSudo.get_param("crm.pls_start_date"), date_to_update,
+                         'Correct date is updated in config')
+        self.assertEqual(IrConfigSudo.get_param("crm.pls_fields"), fields_after_updation_str,
+                         'Correct fields are updated in config')
 
     def test_predictive_lead_scoring(self):
         """ We test here computation of lead probability based on PLS Bayes.
@@ -135,38 +141,51 @@ class TestCRMPLS(TransactionCase):
         country_ids = self.env['res.country'].search([], limit=3).ids
         stage_ids = self.env['crm.stage'].search([], limit=3).ids
         won_stage_id = self.env['crm.stage'].search([('is_won', '=', True)], limit=1).id
-        team_ids = self.env['crm.team'].create([{'name': 'Team Test 1'}, {'name': 'Team Test 2'}, {'name': 'Team Test 3'}]).ids
+        team_ids = self.env['crm.team'].create(
+            [{'name': 'Team Test 1'}, {'name': 'Team Test 2'}, {'name': 'Team Test 3'}]).ids
         # create bunch of lost and won crm_lead
         leads_to_create = []
         #   for team 1
         for i in range(3):
             leads_to_create.append(
-                self._get_lead_values(team_ids[0], 'team_1_%s' % str(i), country_ids[i], state_ids[i], state_values[i], state_values[i], source_ids[i], stage_ids[i]))
+                self._get_lead_values(team_ids[0], 'team_1_%s' % str(i), country_ids[i], state_ids[i], state_values[i],
+                                      state_values[i], source_ids[i], stage_ids[i]))
         leads_to_create.append(
-            self._get_lead_values(team_ids[0], 'team_1_%s' % str(3), country_ids[0], state_ids[1], state_values[2], state_values[0], source_ids[2], stage_ids[1]))
+            self._get_lead_values(team_ids[0], 'team_1_%s' % str(3), country_ids[0], state_ids[1], state_values[2],
+                                  state_values[0], source_ids[2], stage_ids[1]))
         leads_to_create.append(
-            self._get_lead_values(team_ids[0], 'team_1_%s' % str(4), country_ids[1], state_ids[1], state_values[1], state_values[0], source_ids[1], stage_ids[0]))
+            self._get_lead_values(team_ids[0], 'team_1_%s' % str(4), country_ids[1], state_ids[1], state_values[1],
+                                  state_values[0], source_ids[1], stage_ids[0]))
         #   for team 2
         leads_to_create.append(
-            self._get_lead_values(team_ids[1], 'team_2_%s' % str(5), country_ids[0], state_ids[1], state_values[2], state_values[0], source_ids[1], stage_ids[2]))
+            self._get_lead_values(team_ids[1], 'team_2_%s' % str(5), country_ids[0], state_ids[1], state_values[2],
+                                  state_values[0], source_ids[1], stage_ids[2]))
         leads_to_create.append(
-            self._get_lead_values(team_ids[1], 'team_2_%s' % str(6), country_ids[0], state_ids[1], state_values[0], state_values[1], source_ids[2], stage_ids[1]))
+            self._get_lead_values(team_ids[1], 'team_2_%s' % str(6), country_ids[0], state_ids[1], state_values[0],
+                                  state_values[1], source_ids[2], stage_ids[1]))
         leads_to_create.append(
-            self._get_lead_values(team_ids[1], 'team_2_%s' % str(7), country_ids[0], state_ids[2], state_values[0], state_values[1], source_ids[2], stage_ids[0]))
+            self._get_lead_values(team_ids[1], 'team_2_%s' % str(7), country_ids[0], state_ids[2], state_values[0],
+                                  state_values[1], source_ids[2], stage_ids[0]))
         leads_to_create.append(
-            self._get_lead_values(team_ids[1], 'team_2_%s' % str(8), country_ids[0], state_ids[1], state_values[2], state_values[0], source_ids[2], stage_ids[1]))
+            self._get_lead_values(team_ids[1], 'team_2_%s' % str(8), country_ids[0], state_ids[1], state_values[2],
+                                  state_values[0], source_ids[2], stage_ids[1]))
         leads_to_create.append(
-            self._get_lead_values(team_ids[1], 'team_2_%s' % str(9), country_ids[1], state_ids[0], state_values[1], state_values[0], source_ids[1], stage_ids[1]))
+            self._get_lead_values(team_ids[1], 'team_2_%s' % str(9), country_ids[1], state_ids[0], state_values[1],
+                                  state_values[0], source_ids[1], stage_ids[1]))
 
         #   for leads with no team
         leads_to_create.append(
-            self._get_lead_values(False, 'no_team_%s' % str(10), country_ids[1], state_ids[1], state_values[2], state_values[0], source_ids[1], stage_ids[2]))
+            self._get_lead_values(False, 'no_team_%s' % str(10), country_ids[1], state_ids[1], state_values[2],
+                                  state_values[0], source_ids[1], stage_ids[2]))
         leads_to_create.append(
-            self._get_lead_values(False, 'no_team_%s' % str(11), country_ids[0], state_ids[1], state_values[1], state_values[1], source_ids[0], stage_ids[0]))
+            self._get_lead_values(False, 'no_team_%s' % str(11), country_ids[0], state_ids[1], state_values[1],
+                                  state_values[1], source_ids[0], stage_ids[0]))
         leads_to_create.append(
-            self._get_lead_values(False, 'no_team_%s' % str(12), country_ids[1], state_ids[2], state_values[0], state_values[1], source_ids[2], stage_ids[0]))
+            self._get_lead_values(False, 'no_team_%s' % str(12), country_ids[1], state_ids[2], state_values[0],
+                                  state_values[1], source_ids[2], stage_ids[0]))
         leads_to_create.append(
-            self._get_lead_values(False, 'no_team_%s' % str(13), country_ids[0], state_ids[1], state_values[2], state_values[0], source_ids[2], stage_ids[1]))
+            self._get_lead_values(False, 'no_team_%s' % str(13), country_ids[0], state_ids[1], state_values[2],
+                                  state_values[0], source_ids[2], stage_ids[1]))
 
         leads = Lead.create(leads_to_create)
 
@@ -181,7 +200,8 @@ class TestCRMPLS(TransactionCase):
 
         # Set the PLS config
         self.env['ir.config_parameter'].sudo().set_param("crm.pls_start_date", "2000-01-01")
-        self.env['ir.config_parameter'].sudo().set_param("crm.pls_fields", "country_id,state_id,email_state,phone_state,source_id,tag_ids")
+        self.env['ir.config_parameter'].sudo().set_param("crm.pls_fields",
+                                                         "country_id,state_id,email_state,phone_state,source_id,tag_ids")
 
         # set leads as won and lost
         # for Team 1
@@ -217,19 +237,32 @@ class TestCRMPLS(TransactionCase):
 
         Lead._cron_update_automated_probabilities()
         lead_13_no_team_proba = leads[13].automated_probability
-        self.assertTrue(lead_13_team_3_proba != leads[13].automated_probability, "Probability for leads with no team should be different than if they where in their own team.")
+        self.assertTrue(lead_13_team_3_proba != leads[13].automated_probability,
+                        "Probability for leads with no team should be different than if they where in their own team.")
         self.assertAlmostEqual(lead_13_no_team_proba, 35.19, places=2)
 
         # Test frequencies
-        lead_4_stage_0_freq = LeadScoringFrequency.search([('team_id', '=', leads[4].team_id.id), ('variable', '=', 'stage_id'), ('value', '=', stage_ids[0])])
-        lead_4_stage_won_freq = LeadScoringFrequency.search([('team_id', '=', leads[4].team_id.id), ('variable', '=', 'stage_id'), ('value', '=', won_stage_id)])
-        lead_4_country_freq = LeadScoringFrequency.search([('team_id', '=', leads[4].team_id.id), ('variable', '=', 'country_id'), ('value', '=', leads[4].country_id.id)])
-        lead_4_email_state_freq = LeadScoringFrequency.search([('team_id', '=', leads[4].team_id.id), ('variable', '=', 'email_state'), ('value', '=', str(leads[4].email_state))])
+        lead_4_stage_0_freq = LeadScoringFrequency.search(
+            [('team_id', '=', leads[4].team_id.id), ('variable', '=', 'stage_id'), ('value', '=', stage_ids[0])])
+        lead_4_stage_won_freq = LeadScoringFrequency.search(
+            [('team_id', '=', leads[4].team_id.id), ('variable', '=', 'stage_id'), ('value', '=', won_stage_id)])
+        lead_4_country_freq = LeadScoringFrequency.search(
+            [('team_id', '=', leads[4].team_id.id), ('variable', '=', 'country_id'),
+             ('value', '=', leads[4].country_id.id)])
+        lead_4_email_state_freq = LeadScoringFrequency.search(
+            [('team_id', '=', leads[4].team_id.id), ('variable', '=', 'email_state'),
+             ('value', '=', str(leads[4].email_state))])
 
-        lead_9_stage_0_freq = LeadScoringFrequency.search([('team_id', '=', leads[9].team_id.id), ('variable', '=', 'stage_id'), ('value', '=', stage_ids[0])])
-        lead_9_stage_won_freq = LeadScoringFrequency.search([('team_id', '=', leads[9].team_id.id), ('variable', '=', 'stage_id'), ('value', '=', won_stage_id)])
-        lead_9_country_freq = LeadScoringFrequency.search([('team_id', '=', leads[9].team_id.id), ('variable', '=', 'country_id'), ('value', '=', leads[9].country_id.id)])
-        lead_9_email_state_freq = LeadScoringFrequency.search([('team_id', '=', leads[9].team_id.id), ('variable', '=', 'email_state'), ('value', '=', str(leads[9].email_state))])
+        lead_9_stage_0_freq = LeadScoringFrequency.search(
+            [('team_id', '=', leads[9].team_id.id), ('variable', '=', 'stage_id'), ('value', '=', stage_ids[0])])
+        lead_9_stage_won_freq = LeadScoringFrequency.search(
+            [('team_id', '=', leads[9].team_id.id), ('variable', '=', 'stage_id'), ('value', '=', won_stage_id)])
+        lead_9_country_freq = LeadScoringFrequency.search(
+            [('team_id', '=', leads[9].team_id.id), ('variable', '=', 'country_id'),
+             ('value', '=', leads[9].country_id.id)])
+        lead_9_email_state_freq = LeadScoringFrequency.search(
+            [('team_id', '=', leads[9].team_id.id), ('variable', '=', 'email_state'),
+             ('value', '=', str(leads[9].email_state))])
 
         self.assertEqual(lead_4_stage_0_freq.won_count, 1.1)
         self.assertEqual(lead_4_stage_won_freq.won_count, 1.1)
@@ -254,7 +287,9 @@ class TestCRMPLS(TransactionCase):
         leads[9].action_set_won()
 
         # re-get frequencies that did not exists before
-        lead_9_country_freq = LeadScoringFrequency.search([('team_id', '=', leads[9].team_id.id), ('variable', '=', 'country_id'), ('value', '=', leads[9].country_id.id)])
+        lead_9_country_freq = LeadScoringFrequency.search(
+            [('team_id', '=', leads[9].team_id.id), ('variable', '=', 'country_id'),
+             ('value', '=', leads[9].country_id.id)])
 
         # B.1. Test frequencies - team 1 should not impact team 2
         self.assertEqual(lead_4_stage_0_freq.won_count, 1.1)  # unchanged
@@ -262,7 +297,8 @@ class TestCRMPLS(TransactionCase):
         self.assertEqual(lead_4_country_freq.won_count, 0.1)  # unchanged
         self.assertEqual(lead_4_email_state_freq.won_count, 1.1)  # unchanged
         self.assertEqual(lead_4_stage_0_freq.lost_count, 3.1)  # + 1
-        self.assertEqual(lead_4_stage_won_freq.lost_count, 0.1)  # unchanged - consider stages with <= sequence when lost
+        self.assertEqual(lead_4_stage_won_freq.lost_count,
+                         0.1)  # unchanged - consider stages with <= sequence when lost
         self.assertEqual(lead_4_country_freq.lost_count, 2.1)  # + 1
         self.assertEqual(lead_4_email_state_freq.lost_count, 3.1)  # + 1
 
@@ -289,7 +325,8 @@ class TestCRMPLS(TransactionCase):
         self.assertEqual(lead_4_country_freq.won_count, 0.1)  # unchanged
         self.assertEqual(lead_4_email_state_freq.won_count, 1.1)  # unchanged
         self.assertEqual(lead_4_stage_0_freq.lost_count, 2.1)  # - 1
-        self.assertEqual(lead_4_stage_won_freq.lost_count, 0.1)  # unchanged - consider stages with <= sequence when lost
+        self.assertEqual(lead_4_stage_won_freq.lost_count,
+                         0.1)  # unchanged - consider stages with <= sequence when lost
         self.assertEqual(lead_4_country_freq.lost_count, 1.1)  # - 1
         self.assertEqual(lead_4_email_state_freq.lost_count, 2.1)  # - 1
 
@@ -320,7 +357,8 @@ class TestCRMPLS(TransactionCase):
         self.assertEqual(lead_4_country_freq.won_count, 0.1)  # - 1
         self.assertEqual(lead_4_email_state_freq.won_count, 1.1)  # - 1
         self.assertEqual(lead_4_stage_0_freq.lost_count, 3.1)  # + 1
-        self.assertEqual(lead_4_stage_won_freq.lost_count, 1.1)  # consider stages with <= sequence when lostand as stage is won.. even won_stage lost_count is increased by 1
+        self.assertEqual(lead_4_stage_won_freq.lost_count,
+                         1.1)  # consider stages with <= sequence when lostand as stage is won.. even won_stage lost_count is increased by 1
         self.assertEqual(lead_4_country_freq.lost_count, 2.1)  # + 1
         self.assertEqual(lead_4_email_state_freq.lost_count, 3.1)  # + 1
 
@@ -342,12 +380,14 @@ class TestCRMPLS(TransactionCase):
         self.assertEqual(lead_4_country_freq.won_count, 0.1)  # unchanged
         self.assertEqual(lead_4_email_state_freq.won_count, 1.1)  # unchanged
         self.assertEqual(lead_4_stage_0_freq.lost_count, 2.1)  # - 1
-        self.assertEqual(lead_4_stage_won_freq.lost_count, 1.1)  # unchanged - consider stages with <= sequence when lost
+        self.assertEqual(lead_4_stage_won_freq.lost_count,
+                         1.1)  # unchanged - consider stages with <= sequence when lost
         self.assertEqual(lead_4_country_freq.lost_count, 1.1)  # - 1
         self.assertEqual(lead_4_email_state_freq.lost_count, 2.1)  # - 1
 
         # Probabilities should only be recomputed after modifying the lead itself.
-        leads[3].stage_id = stage_ids[0]  # probability should only change a bit as frequencies are almost the same (except 0.0 -> 0.1)
+        leads[3].stage_id = stage_ids[
+            0]  # probability should only change a bit as frequencies are almost the same (except 0.0 -> 0.1)
         leads[8].stage_id = stage_ids[0]  # probability should change quite a lot
 
         # Test frequencies (should not have changed)
@@ -401,11 +441,11 @@ class TestCRMPLS(TransactionCase):
         leads_with_tags = self.generate_leads_with_tags(tag_ids)
 
         leads_with_tags[:30].action_set_lost()  # 60% lost on tag 1
-        leads_with_tags[31:50].action_set_won()   # 40% won on tag 1
+        leads_with_tags[31:50].action_set_won()  # 40% won on tag 1
         leads_with_tags[50:90].action_set_lost()  # 80% lost on tag 2
-        leads_with_tags[91:100].action_set_won()   # 20% won on tag 2
+        leads_with_tags[91:100].action_set_won()  # 20% won on tag 2
         leads_with_tags[100:135].action_set_lost()  # 70% lost on tag 1 and 2
-        leads_with_tags[136:150].action_set_won()   # 30% won on tag 1 and 2
+        leads_with_tags[136:150].action_set_won()  # 30% won on tag 1 and 2
         # tag 1 : won = 19+14  /  lost = 30+35
         # tag 2 : won = 9+14  /  lost = 40+35
 
@@ -470,7 +510,8 @@ class TestCRMPLS(TransactionCase):
         self.assertEqual(tools.float_compare(leads[8].automated_probability, 50.0, 2), 0)
 
         # check if the probabilities are the same with the old param
-        self.env['ir.config_parameter'].sudo().set_param("crm.pls_fields", "country_id,state_id,email_state,phone_state,source_id")
+        self.env['ir.config_parameter'].sudo().set_param("crm.pls_fields",
+                                                         "country_id,state_id,email_state,phone_state,source_id")
         Lead._cron_update_automated_probabilities()
         self.env.invalidate_all()
 
@@ -549,17 +590,20 @@ class TestCRMPLS(TransactionCase):
         set_param("crm.pls_start_date", "2021-10-10")
         res_config_new = resConfig.new()
         self.assertEqual(Date.to_string(res_config_new.predictive_lead_scoring_start_date),
-            "2021-10-10", "If config param is a valid date, date in settings should match with config param")
+                         "2021-10-10",
+                         "If config param is a valid date, date in settings should match with config param")
 
         set_param("crm.pls_start_date", "")
         res_config_new = resConfig.new()
         self.assertEqual(Date.to_string(res_config_new.predictive_lead_scoring_start_date),
-            str_date_8_days_ago, "If config param is empty, date in settings should be set to 8 days before today")
+                         str_date_8_days_ago,
+                         "If config param is empty, date in settings should be set to 8 days before today")
 
         set_param("crm.pls_start_date", "One does not simply walk into system parameters to corrupt them")
         res_config_new = resConfig.new()
         self.assertEqual(Date.to_string(res_config_new.predictive_lead_scoring_start_date),
-            str_date_8_days_ago, "If config param is not a valid date, date in settings should be set to 8 days before today")
+                         str_date_8_days_ago,
+                         "If config param is not a valid date, date in settings should be set to 8 days before today")
 
     def test_pls_no_share_stage(self):
         """ We test here the situation where all stages are team specific, as there is
@@ -594,7 +638,7 @@ class TestCRMPLS(TransactionCase):
             {'variable': variable, 'value': value,
              'won_count': won_count, 'lost_count': lost_count,
              'team_id': False,
-            } for variable, value, won_count, lost_count in no_team
+             } for variable, value, won_count, lost_count in no_team
         ])
 
         # add some frequencies to team to unlink
@@ -608,7 +652,7 @@ class TestCRMPLS(TransactionCase):
             {'variable': variable, 'value': value,
              'won_count': won_count, 'lost_count': lost_count,
              'team_id': pls_team.id,
-            } for variable, value, won_count, lost_count in team
+             } for variable, value, won_count, lost_count in team
         ])
 
         pls_team.unlink()

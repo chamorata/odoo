@@ -220,21 +220,24 @@ class TestAutoWaving(TransactionCase):
         all_batches = self.env['stock.picking.batch'].search([('picking_ids.partner_id', 'in', self.demo_partners.ids)])
         waves = all_batches.filtered(lambda b: b.is_wave)
 
-        wave_1 = waves.filtered(lambda w: w.description == f'{self.us_client.name}, {self.child_location_2.complete_name}')
+        wave_1 = waves.filtered(
+            lambda w: w.description == f'{self.us_client.name}, {self.child_location_2.complete_name}')
         self.assertEqual(len(wave_1), 1)
         self.assertEqual(len(wave_1.picking_ids), 2)
         self.assertEqual(len(wave_1.move_line_ids), 2)
         self.assertEqual(wave_1.picking_ids.partner_id, self.us_client)
         self.assertEqual(wave_1.move_line_ids.location_id, self.child_location_2)
 
-        wave_2 = waves.filtered(lambda w: w.description == f'{self.be_client.name}, {self.child_location_2.complete_name}')
+        wave_2 = waves.filtered(
+            lambda w: w.description == f'{self.be_client.name}, {self.child_location_2.complete_name}')
         self.assertEqual(len(wave_2), 1)
         self.assertEqual(len(wave_2.picking_ids), 1)
         self.assertEqual(len(wave_2.move_line_ids), 1)
         self.assertEqual(wave_2.picking_ids.partner_id, self.be_client)
         self.assertEqual(wave_2.move_line_ids.location_id, self.child_location_2)
 
-        wave_3 = waves.filtered(lambda w: w.description == f'{self.fr_client.name}, {self.child_location_2.complete_name}')
+        wave_3 = waves.filtered(
+            lambda w: w.description == f'{self.fr_client.name}, {self.child_location_2.complete_name}')
         self.assertEqual(len(wave_3), 1)
         self.assertEqual(len(wave_3.picking_ids), 1)
         self.assertEqual(len(wave_3.move_line_ids), 1)

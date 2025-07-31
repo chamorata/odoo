@@ -4,15 +4,14 @@ from datetime import timedelta
 from unittest.mock import patch
 
 from freezegun import freeze_time
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+from odoo.addons.mail.tests.common import MailCommon
+from odoo.addons.sale.tests.common import SaleCommon
 
 from odoo import fields
 from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.fields import Command
 from odoo.tests import Form, HttpCase, tagged
-
-from odoo.addons.account.tests.common import AccountTestInvoicingCommon
-from odoo.addons.mail.tests.common import MailCommon
-from odoo.addons.sale.tests.common import SaleCommon
 
 
 @tagged('post_install', '-at_install')
@@ -113,7 +112,8 @@ class TestSaleOrder(SaleCommon):
         # We need to prevent auto mail deletion, and so we copy the template and send the mail with
         # added configuration in copied template. It will allow us to check whether mail is being
         # sent to to author or not (in case author is present in 'Recipients' of composer).
-        mail_template = self.env['mail.template'].browse(email_ctx.get('default_template_id')).copy({'auto_delete': False})
+        mail_template = self.env['mail.template'].browse(email_ctx.get('default_template_id')).copy(
+            {'auto_delete': False})
         # send the mail with same user as customer
         sale_order.with_context(**email_ctx).with_user(self.sale_user).message_post_with_source(
             mail_template,
@@ -122,8 +122,10 @@ class TestSaleOrder(SaleCommon):
         self.assertTrue(sale_order.state == 'sent', 'Sale : state should be changed to sent')
         mail_message = sale_order.message_ids[0]
         self.assertEqual(mail_message.author_id, sale_order.partner_id, 'Sale: author should be same as customer')
-        self.assertEqual(mail_message.author_id, mail_message.partner_ids, 'Sale: author should be in composer recipients thanks to "partner_to" field set on template')
-        self.assertEqual(mail_message.partner_ids, mail_message.sudo().mail_ids.recipient_ids, 'Sale: author should receive mail due to presence in composer recipients')
+        self.assertEqual(mail_message.author_id, mail_message.partner_ids,
+                         'Sale: author should be in composer recipients thanks to "partner_to" field set on template')
+        self.assertEqual(mail_message.partner_ids, mail_message.sudo().mail_ids.recipient_ids,
+                         'Sale: author should receive mail due to presence in composer recipients')
 
     def test_sale_sequence(self):
         self.env['ir.sequence'].search([
@@ -568,8 +570,8 @@ class TestSaleOrder(SaleCommon):
     def test_so_discount_is_not_reset(self):
         """ Discounts should not be recomputed on order confirmation """
         with patch(
-            'odoo.addons.sale.models.sale_order_line.SaleOrderLine'
-            '._compute_discount'
+                'odoo.addons.sale.models.sale_order_line.SaleOrderLine'
+                '._compute_discount'
         ) as patched:
             self.sale_order.action_confirm()
             self.sale_order.order_line.flush_recordset(['discount'])
@@ -814,7 +816,8 @@ class TestSaleOrderInvoicing(AccountTestInvoicingCommon, SaleCommon):
         })
         sale_order.action_confirm()
         sale_order._create_invoices(final=True)
-        self.assertTrue(sale_order.invoice_status == 'invoiced', 'Sale: The invoicing status of the SO should be "invoiced"')
+        self.assertTrue(sale_order.invoice_status == 'invoiced',
+                        'Sale: The invoicing status of the SO should be "invoiced"')
 
 
 @tagged('post_install', '-at_install')
@@ -874,8 +877,10 @@ class TestSalesTeam(SaleCommon):
         self.env.user.groups_id += self.env.ref('analytic.group_analytic_accounting')
 
         analytic_plan = self.env['account.analytic.plan'].create({'name': 'Plan Test'})
-        analytic_account_super = self.env['account.analytic.account'].create({'name': 'Super Account', 'plan_id': analytic_plan.id})
-        analytic_account_great = self.env['account.analytic.account'].create({'name': 'Great Account', 'plan_id': analytic_plan.id})
+        analytic_account_super = self.env['account.analytic.account'].create(
+            {'name': 'Super Account', 'plan_id': analytic_plan.id})
+        analytic_account_great = self.env['account.analytic.account'].create(
+            {'name': 'Great Account', 'plan_id': analytic_plan.id})
         super_product = self.env['product.product'].create({'name': 'Super Product'})
         great_product = self.env['product.product'].create({'name': 'Great Product'})
         product_no_account = self.env['product.product'].create({'name': 'Product No Account'})
@@ -899,9 +904,11 @@ class TestSalesTeam(SaleCommon):
             'order_id': sale_order.id,
         })
 
-        self.assertEqual(sol.analytic_distribution, {str(analytic_account_super.id): 100}, "The analytic distribution should be set to Super Account")
+        self.assertEqual(sol.analytic_distribution, {str(analytic_account_super.id): 100},
+                         "The analytic distribution should be set to Super Account")
         sol.write({'product_id': great_product.id})
-        self.assertEqual(sol.analytic_distribution, {str(analytic_account_great.id): 100}, "The analytic distribution should be set to Great Account")
+        self.assertEqual(sol.analytic_distribution, {str(analytic_account_great.id): 100},
+                         "The analytic distribution should be set to Great Account")
 
         so_no_analytic_account = self.env['sale.order'].create({
             'partner_id': partner.id,
@@ -913,7 +920,8 @@ class TestSalesTeam(SaleCommon):
             'analytic_distribution': False,
         })
         so_no_analytic_account.action_confirm()
-        self.assertFalse(sol_no_analytic_account.analytic_distribution, "The compute should not overwrite what the user has set.")
+        self.assertFalse(sol_no_analytic_account.analytic_distribution,
+                         "The compute should not overwrite what the user has set.")
 
         sale_order.action_confirm()
         sol_on_confirmed_order = self.env['sale.order.line'].create({
@@ -927,7 +935,6 @@ class TestSalesTeam(SaleCommon):
             {str(analytic_account_super.id): 100},
             "The analytic distribution should be set to Super Account, even for confirmed orders"
         )
-
 
     def test_cannot_assign_tax_of_mismatch_company(self):
         """ Test that sol cannot have assigned tax belonging to a different company from that of the sale order. """
@@ -1000,7 +1007,8 @@ class TestSalesTeam(SaleCommon):
             'country_id': country.id,
         })
 
-        sale_order = self.env['sale.order'].create({'partner_id': self.partner.id, 'company_id': root_company.child_ids[0].id})
+        sale_order = self.env['sale.order'].create(
+            {'partner_id': self.partner.id, 'company_id': root_company.child_ids[0].id})
         product = self.env['product.product'].create({'name': 'Product'})
 
         # In sudo to simulate an user that have access to both companies.
@@ -1036,7 +1044,9 @@ class TestSalesTeam(SaleCommon):
                     'product_id': self.product.id,
                 })],
         })
-        self.assertEqual(self.env['sale.order.line'].search(['&', ('order_id', '=', sale_order.id), ('qty_delivered', '=', 0.0)]), sale_order.order_line)
+        self.assertEqual(
+            self.env['sale.order.line'].search(['&', ('order_id', '=', sale_order.id), ('qty_delivered', '=', 0.0)]),
+            sale_order.order_line)
 
     def test_action_recompute_taxes(self):
         '''
@@ -1112,6 +1122,7 @@ class TestSalesTeam(SaleCommon):
         order.action_update_taxes()
         self.assertEqual(order.amount_total, 252)
         self.assertEqual(order.amount_tax, 52)
+
 
 @tagged('post_install', '-at_install')
 class TestSaleMailComposerUI(MailCommon, HttpCase):

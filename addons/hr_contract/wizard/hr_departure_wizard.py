@@ -12,13 +12,15 @@ class HrDepartureWizard(models.TransientModel):
         employee = self.env['hr.employee'].browse(self.env.context['active_id'])
         if employee.contract_id.state == "open":
             return False
-        expired_contract = self.env['hr.contract'].search([('employee_id', '=', employee.id), ('state', '=', 'close')], limit=1, order='date_end desc')
+        expired_contract = self.env['hr.contract'].search([('employee_id', '=', employee.id), ('state', '=', 'close')],
+                                                          limit=1, order='date_end desc')
         if expired_contract:
             return expired_contract.date_end
         return super()._get_employee_departure_date()
 
-    set_date_end = fields.Boolean(string="Set Contract End Date", default=lambda self: self.env.user.has_group('hr_contract.group_hr_contract_manager'),
-        help="Set the end date on the current contract.")
+    set_date_end = fields.Boolean(string="Set Contract End Date",
+                                  default=lambda self: self.env.user.has_group('hr_contract.group_hr_contract_manager'),
+                                  help="Set the end date on the current contract.")
 
     def action_register_departure(self):
         """If set_date_end is checked, set the departure date as the end date to current running contract,

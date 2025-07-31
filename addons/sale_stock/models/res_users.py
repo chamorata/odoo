@@ -7,7 +7,8 @@ from odoo import models, fields
 class Users(models.Model):
     _inherit = ['res.users']
 
-    property_warehouse_id = fields.Many2one('stock.warehouse', string='Default Warehouse', company_dependent=True, check_company=True)
+    property_warehouse_id = fields.Many2one('stock.warehouse', string='Default Warehouse', company_dependent=True,
+                                            check_company=True)
 
     def _get_default_warehouse_id(self):
         if self.property_warehouse_id:

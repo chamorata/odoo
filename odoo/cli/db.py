@@ -1,8 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import argparse
 import io
-import urllib.parse
 import sys
+import urllib.parse
 import zipfile
 from functools import partial
 from pathlib import Path
@@ -15,6 +15,7 @@ from ..service.db import dump_db, exp_drop, exp_db_exist, exp_duplicate_database
 from ..tools import config
 
 eprint = partial(print, file=sys.stderr, flush=True)
+
 
 class Db(Command):
     """ Create, drop, dump, load databases """
@@ -45,8 +46,8 @@ class Db(Command):
         load = subs.add_parser(
             "load", help="Load a dump file.",
             description="Loads a dump file into odoo, dump file can be a URL. "
-                 "If `database` is provided, uses that as the database name. "
-                 "Otherwise uses the dump file name without extension.")
+                        "If `database` is provided, uses that as the database name. "
+                        "Otherwise uses the dump file name without extension.")
         load.set_defaults(func=self.load)
         load.add_argument(
             '-f', '--force', action='store_const', default=False, const=True,
@@ -87,7 +88,8 @@ class Db(Command):
             help="neutralize the target database after duplicate"
         )
         duplicate.add_argument("source")
-        duplicate.add_argument("target", help="database to copy `source` to, must not exist unless `-f` is specified in which case it will be dropped first")
+        duplicate.add_argument("target",
+                               help="database to copy `source` to, must not exist unless `-f` is specified in which case it will be dropped first")
 
         rename = subs.add_parser("rename", help="Rename a database including filestore.")
         rename.set_defaults(func=self.rename)
@@ -96,7 +98,8 @@ class Db(Command):
             help="delete `target` database before renaming if it exists"
         )
         rename.add_argument('source')
-        rename.add_argument("target", help="database to rename `source` to, must not exist unless `-f` is specified, in which case it will be dropped first")
+        rename.add_argument("target",
+                            help="database to rename `source` to, must not exist unless `-f` is specified, in which case it will be dropped first")
 
         drop = subs.add_parser("drop", help="Delete a database including filestore")
         drop.set_defaults(func=self.drop)
@@ -110,8 +113,8 @@ class Db(Command):
             if v is not None
             if k in ['config', 'data_dir', 'addons_path'] or k.startswith(('db_', 'pg_'))
             for val in [
-                '--data-dir' if k == 'data_dir'\
-                    else '--addons-path' if k == 'addons_path'\
+                '--data-dir' if k == 'data_dir' \
+                    else '--addons-path' if k == 'addons_path' \
                     else f'--{k}',
                 v,
             ]

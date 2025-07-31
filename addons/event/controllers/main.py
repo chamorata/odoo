@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import json
+
 from werkzeug.exceptions import NotFound
 
 from odoo import http, _

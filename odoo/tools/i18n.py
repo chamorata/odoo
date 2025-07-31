@@ -22,10 +22,11 @@ XPG_LOCALE_RE = re.compile(
 
 
 def format_list(
-    env: odoo.api.Environment,
-    lst: Sequence[str],
-    style: Literal["standard", "standard-short", "or", "or-short", "unit", "unit-short", "unit-narrow"] = "standard",
-    lang_code: Optional[str] = None,
+        env: odoo.api.Environment,
+        lst: Sequence[str],
+        style: Literal[
+            "standard", "standard-short", "or", "or-short", "unit", "unit-short", "unit-narrow"] = "standard",
+        lang_code: Optional[str] = None,
 ) -> str:
     """
     Format the items in `lst` as a list in a locale-dependent manner with the chosen style.

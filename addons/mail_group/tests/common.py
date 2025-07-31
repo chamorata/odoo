@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import Command, tools
-from odoo.addons.mail.tests.common import mail_new_test_user
 from odoo.addons.mail.tests.common import MailCommon
+from odoo.addons.mail.tests.common import mail_new_test_user
+
+from odoo import Command, tools
 
 
 class TestMailListCommon(MailCommon):

@@ -4,10 +4,10 @@
 import datetime
 
 from freezegun import freeze_time
-
-from odoo import _, Command, fields
 from odoo.addons.mail.tests.common import MailCase
 from odoo.addons.survey.tests import common
+
+from odoo import _, Command, fields
 from odoo.tests.common import users
 
 
@@ -38,7 +38,8 @@ class TestSurveyInternals(common.TestSurveyCommon, MailCase):
 
         with self.subTest('Editing existing questions'):
             # Only previous questions from the same survey
-            self.assertFalse(bool(survey_1_q_2.allowed_triggering_question_ids & survey_2_q_2.allowed_triggering_question_ids))
+            self.assertFalse(
+                bool(survey_1_q_2.allowed_triggering_question_ids & survey_2_q_2.allowed_triggering_question_ids))
             self.assertEqual(survey_1_q_2.allowed_triggering_question_ids, survey_1_q_1)
             self.assertEqual(survey_2_q_2.allowed_triggering_question_ids, survey_2_q_1)
 
@@ -48,7 +49,8 @@ class TestSurveyInternals(common.TestSurveyCommon, MailCase):
         with self.subTest('New questions'):
             # New questions should be allowed to use any question with choices from the same survey
             self.assertFalse(
-                bool(survey_1_new_question.allowed_triggering_question_ids & survey_2_new_question.allowed_triggering_question_ids)
+                bool(
+                    survey_1_new_question.allowed_triggering_question_ids & survey_2_new_question.allowed_triggering_question_ids)
             )
             self.assertEqual(survey_1_new_question.allowed_triggering_question_ids.ids, survey_1.question_ids.ids)
             self.assertEqual(survey_2_new_question.allowed_triggering_question_ids.ids, survey_2.question_ids.ids)
@@ -121,10 +123,12 @@ class TestSurveyInternals(common.TestSurveyCommon, MailCase):
                 self.assertEqual(question_answer_2.display_name, 'MChoice1')
             elif question.question_type == 'matrix':
                 question_answer_1 = self._add_answer_line(question, user_input,
-                    question.suggested_answer_ids[0].id, **{'answer_value_row': question.matrix_row_ids[0].id})
+                                                          question.suggested_answer_ids[0].id,
+                                                          **{'answer_value_row': question.matrix_row_ids[0].id})
                 self.assertEqual(question_answer_1.display_name, 'Column0: Row0')
                 question_answer_2 = self._add_answer_line(question, user_input,
-                    question.suggested_answer_ids[0].id, **{'answer_value_row': question.matrix_row_ids[1].id})
+                                                          question.suggested_answer_ids[0].id,
+                                                          **{'answer_value_row': question.matrix_row_ids[1].id})
                 self.assertEqual(question_answer_2.display_name, 'Column0: Row1')
             elif question.question_type == 'scale':
                 question_answer = self._add_answer_line(question, user_input, '3')
@@ -365,6 +369,7 @@ class TestSurveyInternals(common.TestSurveyCommon, MailCase):
         layout as the original survey.
         The test also check that the cloned survey doesn't reference the original survey.
         """
+
         def get_question_by_title(survey, title):
             return survey.question_ids.filtered(lambda q: q.title == title)[0]
 
@@ -401,7 +406,8 @@ class TestSurveyInternals(common.TestSurveyCommon, MailCase):
         self.assertTrue(bool(q_food_vegetarian_cloned))
         # Correct conditional layout
         self.assertEqual(q_food_vegetarian_cloned.triggering_answer_ids.ids,
-                         [q_is_vegetarian_cloned.suggested_answer_ids[0].id, q_is_vegetarian_cloned.suggested_answer_ids[2].id])
+                         [q_is_vegetarian_cloned.suggested_answer_ids[0].id,
+                          q_is_vegetarian_cloned.suggested_answer_ids[2].id])
         # Doesn't reference the original survey
         self.assertNotEqual(q_food_vegetarian_cloned.triggering_answer_ids.ids,
                             [q_is_vegetarian.suggested_answer_ids[0].id, q_is_vegetarian.suggested_answer_ids[2].id])
@@ -449,7 +455,8 @@ class TestSurveyInternals(common.TestSurveyCommon, MailCase):
 
         # Check that the conditional question is correctly copied to the right question
         self.assertEqual(
-            get_question_by_title(cloned_survey, 'Q1').triggering_answer_ids[0].value, q_1.triggering_answer_ids[0].value
+            get_question_by_title(cloned_survey, 'Q1').triggering_answer_ids[0].value,
+            q_1.triggering_answer_ids[0].value
         )
         self.assertFalse(bool(get_question_by_title(cloned_survey, 'Q2').triggering_answer_ids))
 
@@ -598,7 +605,8 @@ class TestSurveyInternals(common.TestSurveyCommon, MailCase):
             qtype_mapping['simple_choice'].id:
                 qtype_mapping['simple_choice'].suggested_answer_ids.filtered_domain([('value', '=', 'SChoice0')]).ids,
             qtype_mapping['multiple_choice'].id:
-                qtype_mapping['multiple_choice'].suggested_answer_ids.filtered_domain([('value', 'in', ['MChoice0', 'MChoice1'])]).ids,
+                qtype_mapping['multiple_choice'].suggested_answer_ids.filtered_domain(
+                    [('value', 'in', ['MChoice0', 'MChoice1'])]).ids,
         }
         self.assertEqual(questions._get_correct_answers(), expected_correct_answer)
 
@@ -734,9 +742,11 @@ class TestSurveyInternals(common.TestSurveyCommon, MailCase):
         survey_participation_subtype = self.env.ref('survey.mt_survey_survey_user_input_completed')
         user_input_participation_subtype = self.env.ref('survey.mt_survey_user_input_completed')
         # Make survey_user (group_survey_user) follow participation to survey (they follow), not survey 2 (no followers)
-        self.survey.message_subscribe(partner_ids=self.survey_user.partner_id.ids, subtype_ids=survey_participation_subtype.ids)
+        self.survey.message_subscribe(partner_ids=self.survey_user.partner_id.ids,
+                                      subtype_ids=survey_participation_subtype.ids)
         # Complete a participation for both surveys, only one should trigger a notification for followers
-        user_inputs = self.env['survey.user_input'].create([{'survey_id': survey.id} for survey in (self.survey, survey_2)])
+        user_inputs = self.env['survey.user_input'].create(
+            [{'survey_id': survey.id} for survey in (self.survey, survey_2)])
         with self.mock_mail_app():
             user_inputs._mark_done()
         self.assertEqual(len(self._new_msgs), 1)
@@ -881,14 +891,14 @@ class TestSurveyInternals(common.TestSurveyCommon, MailCase):
         answer_correct, answer_incorrect = q_01.suggested_answer_ids
         user_input = self.env['survey.user_input'].create({'survey_id': test_survey.id, 'is_session_answer': True})
         for (seconds_since_start, answer), expected_score in zip(
-            [
-                (61, answer_correct),  # time limit elapsed
-                (61, answer_incorrect),
-                (31, answer_correct),  # half of time limit elapsed
-                (31, answer_incorrect),
-                (2, answer_correct),  # end of max_score_delay
-                (2, answer_incorrect),
-            ], [2.5, 0.0, 3.75, 0.0, 5.0, 0.0],  # 2.5 if succeeded + up to 2.5 depending on time to answer
+                [
+                    (61, answer_correct),  # time limit elapsed
+                    (61, answer_incorrect),
+                    (31, answer_correct),  # half of time limit elapsed
+                    (31, answer_incorrect),
+                    (2, answer_correct),  # end of max_score_delay
+                    (2, answer_incorrect),
+                ], [2.5, 0.0, 3.75, 0.0, 5.0, 0.0],  # 2.5 if succeeded + up to 2.5 depending on time to answer
         ):
             with (self.subTest(elapsed=seconds_since_start, is_correct=answer.is_correct),
                   freeze_time(start_time + datetime.timedelta(seconds=seconds_since_start))):

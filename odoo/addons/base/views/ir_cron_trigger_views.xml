@@ -44,8 +44,8 @@
     </record>
 
     <menuitem id="ir_cron_trigger_menu"
-        action="ir_cron_trigger_action"
-        parent="base.menu_automation"
-        sequence="3"/>
+              action="ir_cron_trigger_action"
+              parent="base.menu_automation"
+              sequence="3"/>
 
 </odoo>

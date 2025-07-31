@@ -1,8 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.tests import tagged
-
 from odoo.addons.payment_mercado_pago.tests.common import MercadoPagoCommon
+
+from odoo.tests import tagged
 
 
 @tagged('post_install', '-at_install')

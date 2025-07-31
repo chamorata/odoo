@@ -1,24 +1,24 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+import base64
+import contextlib
+import json
+import logging
+import re
+from collections import defaultdict
+from functools import partial, reduce
+from operator import getitem
+
+import requests
+from pytz import timezone
+
 import odoo
 from odoo import api, fields, models, tools, _, Command
 from odoo.exceptions import MissingError, ValidationError, AccessError, UserError
 from odoo.tools import frozendict
-from odoo.tools.safe_eval import safe_eval, test_python_expr
 from odoo.tools.float_utils import float_compare
-from odoo.http import request
-import base64
-from collections import defaultdict
-from functools import partial, reduce
-import logging
-from operator import getitem
-import requests
-import json
-import re
-import contextlib
-
-from pytz import timezone
+from odoo.tools.safe_eval import safe_eval, test_python_expr
 
 _logger = logging.getLogger(__name__)
 _server_action_logger = _logger.getChild("server_action_safe_eval")
@@ -28,6 +28,7 @@ class LoggerProxy:
     """ Proxy of the `_logger` element in order to be used in server actions.
     We purposefully restrict its method as it will be executed in `safe_eval`.
     """
+
     @staticmethod
     def log(level, message, *args, stack_info=False, exc_info=False):
         _server_action_logger.log(level, message, *args, stack_info=stack_info, exc_info=exc_info)
@@ -56,7 +57,8 @@ class IrActions(models.Model):
     _order = 'name'
     _allow_sudo_commands = False
 
-    _sql_constraints = [('path_unique', 'unique(path)', "Path to show in the URL must be unique! Please choose another one.")]
+    _sql_constraints = [
+        ('path_unique', 'unique(path)', "Path to show in the URL must be unique! Please choose another one.")]
 
     name = fields.Char(string='Action Name', required=True, translate=True)
     type = fields.Char(string='Action Type', required=True)
@@ -77,7 +79,8 @@ class IrActions(models.Model):
         for action in self:
             if action.path:
                 if not re.fullmatch(r'[a-z][a-z0-9_-]*', action.path):
-                    raise ValidationError(_('The path should contain only lowercase alphanumeric characters, underscore, and dash, and it should start with a letter.'))
+                    raise ValidationError(
+                        _('The path should contain only lowercase alphanumeric characters, underscore, and dash, and it should start with a letter.'))
                 if action.path.startswith("m-"):
                     raise ValidationError(_("'m-' is a reserved prefix."))
                 if action.path.startswith("action-"):
@@ -128,7 +131,8 @@ class IrActions(models.Model):
 
     @api.ondelete(at_uninstall=True)
     def _unlink_check_home_action(self):
-        self.env['res.users'].with_context(active_test=False).search([('action_id', 'in', self.ids)]).sudo().write({'action_id': None})
+        self.env['res.users'].with_context(active_test=False).search([('action_id', 'in', self.ids)]).sudo().write(
+            {'action_id': None})
 
     @api.model
     def _get_eval_context(self, action=None):
@@ -165,9 +169,9 @@ class IrActions(models.Model):
                     continue
                 res_model = action.pop('res_model', None)
                 if res_model and not self.env['ir.model.access'].check(
-                    res_model,
-                    mode='read',
-                    raise_exception=False
+                        res_model,
+                        mode='read',
+                        raise_exception=False
                 ):
                     # the user won't be able to read records
                     continue
@@ -305,13 +309,17 @@ class IrActionsActWindow(models.Model):
                          help="Optional domain filtering of the destination data, as a Python expression")
     context = fields.Char(string='Context Value', default={}, required=True,
                           help="Context dictionary as Python expression, empty by default (Default: {})")
-    res_id = fields.Integer(string='Record ID', help="Database ID of record to open in form view, when ``view_mode`` is set to 'form' only")
+    res_id = fields.Integer(string='Record ID',
+                            help="Database ID of record to open in form view, when ``view_mode`` is set to 'form' only")
     res_model = fields.Char(string='Destination Model', required=True,
                             help="Model name of the object to open in the view window")
-    target = fields.Selection([('current', 'Current Window'), ('new', 'New Window'), ('inline', 'Inline Edit'), ('fullscreen', 'Full Screen'), ('main', 'Main action of Current Window')], default="current", string='Target Window')
+    target = fields.Selection(
+        [('current', 'Current Window'), ('new', 'New Window'), ('inline', 'Inline Edit'), ('fullscreen', 'Full Screen'),
+         ('main', 'Main action of Current Window')], default="current", string='Target Window')
     view_mode = fields.Char(required=True, default='list,form',
                             help="Comma-separated list of allowed view modes, such as 'form', 'list', 'calendar', etc. (Default: list,form)")
-    mobile_view_mode = fields.Char(default="kanban", help="First view mode in mobile and small screen environments (default='kanban'). If it can't be found among available view modes, the same mode as for wider screens is used)")
+    mobile_view_mode = fields.Char(default="kanban",
+                                   help="First view mode in mobile and small screen environments (default='kanban'). If it can't be found among available view modes, the same mode as for wider screens is used)")
     usage = fields.Char(string='Action Usage',
                         help="Used to filter menu and home actions from the user form.")
     view_ids = fields.One2many('ir.actions.act_window.view', 'act_window_id', string='No of Views')
@@ -327,7 +335,8 @@ class IrActionsActWindow(models.Model):
     filter = fields.Boolean()
 
     def _compute_embedded_actions(self):
-        embedded_actions = self.env["ir.embedded.actions"].search([('parent_action_id', 'in', self.ids)]).filtered(lambda x: x.is_visible)
+        embedded_actions = self.env["ir.embedded.actions"].search([('parent_action_id', 'in', self.ids)]).filtered(
+            lambda x: x.is_visible)
         for action in self:
             action.embedded_action_ids = embedded_actions.filtered(lambda rec: rec.parent_action_id == action)
 
@@ -369,7 +378,6 @@ class IrActionsActWindow(models.Model):
     def _existing(self):
         self._cr.execute("SELECT id FROM %s" % self._table)
         return set(row[0] for row in self._cr.fetchall())
-
 
     def _get_readable_fields(self):
         return super()._get_readable_fields() | {
@@ -417,7 +425,8 @@ class IrActionsActWindowView(models.Model):
     view_id = fields.Many2one('ir.ui.view', string='View')
     view_mode = fields.Selection(VIEW_TYPES, string='View Type', required=True)
     act_window_id = fields.Many2one('ir.actions.act_window', string='Action', ondelete='cascade')
-    multi = fields.Boolean(string='On Multiple Doc.', help="If set to true, the action will not be displayed on the right toolbar of a form view.")
+    multi = fields.Boolean(string='On Multiple Doc.',
+                           help="If set to true, the action will not be displayed on the right toolbar of a form view.")
 
     def _auto_init(self):
         res = super(IrActionsActWindowView, self)._auto_init()
@@ -460,6 +469,7 @@ class IrActionsActUrl(models.Model):
         return super()._get_readable_fields() | {
             "target", "url", "close",
         }
+
 
 WEBHOOK_SAMPLE_VALUES = {
     "integer": 42,
@@ -562,7 +572,8 @@ class IrActionsServer(models.Model):
                                    "based on the sequence. Low number means high priority.")
     model_id = fields.Many2one('ir.model', string='Model', required=True, ondelete='cascade', index=True,
                                help="Model on which the server action runs.")
-    available_model_ids = fields.Many2many('ir.model', string='Available Models', compute='_compute_available_model_ids', store=False)
+    available_model_ids = fields.Many2many('ir.model', string='Available Models',
+                                           compute='_compute_available_model_ids', store=False)
     model_name = fields.Char(related='model_id.model', string='Model Name', readonly=True, store=True)
     # Python code
     code = fields.Text(string='Python Code', groups='base.group_system',
@@ -571,7 +582,8 @@ class IrActionsServer(models.Model):
                             "available for use; help about python expression is given in the help tab.")
     # Multi
     child_ids = fields.Many2many('ir.actions.server', 'rel_server_actions', 'server_id', 'action_id',
-                                 string='Child Actions', help='Child server actions that will be executed. Note that the last return returned action value will be used as global return value.')
+                                 string='Child Actions',
+                                 help='Child server actions that will be executed. Note that the last return returned action value will be used as global return value.')
     # Create
     crud_model_id = fields.Many2one(
         'ir.model', string='Record to Create',
@@ -583,10 +595,13 @@ class IrActionsServer(models.Model):
         compute='_compute_link_field_id', readonly=False, store=True,
         help="Specify a field used to link the newly created record on the record used by the server action.")
     groups_id = fields.Many2many('res.groups', 'ir_act_server_group_rel',
-                                 'act_id', 'gid', string='Allowed Groups', help='Groups that can execute the server action. Leave empty to allow everybody.')
+                                 'act_id', 'gid', string='Allowed Groups',
+                                 help='Groups that can execute the server action. Leave empty to allow everybody.')
 
-    update_field_id = fields.Many2one('ir.model.fields', string='Field to Update', ondelete='cascade', compute='_compute_crud_relations', store=True, readonly=False)
-    update_path = fields.Char(string='Field to Update Path', help="Path to the field to update, e.g. 'partner_id.name'", default=_default_update_path)
+    update_field_id = fields.Many2one('ir.model.fields', string='Field to Update', ondelete='cascade',
+                                      compute='_compute_crud_relations', store=True, readonly=False)
+    update_path = fields.Char(string='Field to Update Path', help="Path to the field to update, e.g. 'partner_id.name'",
+                              default=_default_update_path)
     update_related_model_id = fields.Many2one('ir.model', compute='_compute_crud_relations', readonly=False, store=True)
     update_field_type = fields.Selection(related='update_field_id.ttype', readonly=True)
     update_m2m_operation = fields.Selection([
@@ -595,7 +610,8 @@ class IrActionsServer(models.Model):
         ('set', 'Setting it to'),
         ('clear', 'Clearing it')
     ], string='Many2many Operations', default='add')
-    update_boolean_value = fields.Selection([('true', 'Yes (True)'), ('false', "No (False)")], string='Boolean Value', default='true')
+    update_boolean_value = fields.Selection([('true', 'Yes (True)'), ('false', "No (False)")], string='Boolean Value',
+                                            default='true')
 
     value = fields.Text(help="For Python expressions, this field may hold a Python expression "
                              "that can use the same values as for the code field on the server action,"
@@ -640,7 +656,8 @@ class IrActionsServer(models.Model):
                 if field.groups:
                     restricted_fields.setdefault(action.name, []).append(model_field.field_description)
         if restricted_fields:
-            restricted_field_per_action = "\n".join([f"{action}: {', '.join(f for f in fields)}" for action, fields in restricted_fields.items()])
+            restricted_field_per_action = "\n".join(
+                [f"{action}: {', '.join(f for f in fields)}" for action, fields in restricted_fields.items()])
             raise ValidationError(_("Group-restricted fields cannot be included in "
                                     "webhook payloads, as it could allow any user to "
                                     "accidentally leak sensitive information. You will "
@@ -679,7 +696,8 @@ class IrActionsServer(models.Model):
                         action.crud_model_id = model
                         action.update_field_id = field
                         need_update_model = action.evaluation_type == 'value' and action.update_field_id and action.update_field_id.relation
-                        action.update_related_model_id = action.env["ir.model"]._get_id(field.relation) if need_update_model else False
+                        action.update_related_model_id = action.env["ir.model"]._get_id(
+                            field.relation) if need_update_model else False
                     else:
                         action.crud_model_id = action.model_id
                         action.update_field_id = False
@@ -702,7 +720,8 @@ class IrActionsServer(models.Model):
         Model = self.env[self.model_id.model]
         # sanity check: we're starting from a record that belongs to the model
         if record and record._name != Model._name:
-            raise ValidationError(_("I have no idea how you *did that*, but you're trying to use a gibberish configuration: the model of the record on which the action is triggered is not the same as the model of the action."))
+            raise ValidationError(
+                _("I have no idea how you *did that*, but you're trying to use a gibberish configuration: the model of the record on which the action is triggered is not the same as the model of the action."))
         for field_name in path:
             is_last_field = field_name == path[-1]
             field = Model._fields[field_name]
@@ -711,9 +730,12 @@ class IrActionsServer(models.Model):
             elif not field.relational:
                 # sanity check: this should be the last field in the path
                 if not is_last_field:
-                    raise ValidationError(_("The path to the field to update contains a non-relational field (%s) that is not the last field in the path. You can't traverse non-relational fields (even in the quantum realm). Make sure only the last field in the path is non-relational.", field_name))
+                    raise ValidationError(
+                        _("The path to the field to update contains a non-relational field (%s) that is not the last field in the path. You can't traverse non-relational fields (even in the quantum realm). Make sure only the last field in the path is non-relational.",
+                          field_name))
                 if isinstance(field, fields.Json):
-                    raise ValidationError(_("I'm sorry to say that JSON fields (such as %s) are currently not supported.", field_name))
+                    raise ValidationError(
+                        _("I'm sorry to say that JSON fields (such as %s) are currently not supported.", field_name))
         target_records = None
         if record is not None:
             target_records = reduce(getitem, path[:-1], record)
@@ -760,7 +782,8 @@ class IrActionsServer(models.Model):
                         payload['_id'] = sample_record.id
                         payload.update(sample_record.read(self.webhook_field_ids.mapped('name'), load=None)[0])
                     else:
-                        payload[field.name] = WEBHOOK_SAMPLE_VALUES[field.ttype] if field.ttype in WEBHOOK_SAMPLE_VALUES else WEBHOOK_SAMPLE_VALUES[None]
+                        payload[field.name] = WEBHOOK_SAMPLE_VALUES[
+                            field.ttype] if field.ttype in WEBHOOK_SAMPLE_VALUES else WEBHOOK_SAMPLE_VALUES[None]
             action.webhook_sample_payload = json.dumps(payload, indent=4, sort_keys=True, default=str)
 
     @api.depends('model_id')
@@ -789,12 +812,12 @@ class IrActionsServer(models.Model):
     def _get_runner(self):
         multi = True
         t = self.env.registry[self._name]
-        fn = getattr(t, f'_run_action_{self.state}_multi', None)\
-          or getattr(t, f'run_action_{self.state}_multi', None)
+        fn = getattr(t, f'_run_action_{self.state}_multi', None) \
+             or getattr(t, f'run_action_{self.state}_multi', None)
         if not fn:
             multi = False
-            fn = getattr(t, f'_run_action_{self.state}', None)\
-              or getattr(t, f'run_action_{self.state}', None)
+            fn = getattr(t, f'_run_action_{self.state}', None) \
+                 or getattr(t, f'run_action_{self.state}', None)
         if fn and fn.__name__.startswith('run_action_'):
             fn = partial(fn, self)
         return fn, multi
@@ -824,7 +847,8 @@ class IrActionsServer(models.Model):
         return True
 
     def _run_action_code_multi(self, eval_context):
-        safe_eval(self.code.strip(), eval_context, mode="exec", nocopy=True, filename=str(self))  # nocopy allows to return 'action'
+        safe_eval(self.code.strip(), eval_context, mode="exec", nocopy=True,
+                  filename=str(self))  # nocopy allows to return 'action'
         return eval_context.get('action')
 
     def _run_action_multi(self, eval_context=None):
@@ -854,7 +878,8 @@ class IrActionsServer(models.Model):
         if not record:
             return
         if not url:
-            raise UserError(_("I'll be happy to send a webhook for you, but you really need to give me a URL to reach out to..."))
+            raise UserError(
+                _("I'll be happy to send a webhook for you, but you really need to give me a URL to reach out to..."))
         vals = {
             '_model': self.model_id.model,
             '_id': record.id,
@@ -904,12 +929,14 @@ class IrActionsServer(models.Model):
         :param action: the current server action
         :type action: browse record
         :returns: dict -- evaluation context given to (safe_)safe_eval """
+
         def log(message, level="info"):
             with self.pool.cursor() as cr:
                 cr.execute("""
                     INSERT INTO ir_logging(create_date, create_uid, type, dbname, name, level, message, path, line, func)
                     VALUES (NOW() at time zone 'UTC', %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                """, (self.env.uid, 'server', self._cr.dbname, __name__, level, message, "action", action.id, action.name))
+                """, (self.env.uid, 'server', self._cr.dbname, __name__, level, message, "action", action.id,
+                      action.name))
 
         eval_context = super(IrActionsServer, self)._get_eval_context(action=action)
         model_name = action.model_id.sudo().model
@@ -970,8 +997,8 @@ class IrActionsServer(models.Model):
                     self.env[model_name].check_access("write")
                 except AccessError:
                     _logger.warning("Forbidden server action %r executed while the user %s does not have access to %s.",
-                        action.name, self.env.user.login, model_name,
-                    )
+                                    action.name, self.env.user.login, model_name,
+                                    )
                     raise
 
             eval_context = self._get_eval_context(action)
@@ -984,8 +1011,8 @@ class IrActionsServer(models.Model):
                     records.check_access('write')
                 except AccessError:
                     _logger.warning("Forbidden server action %r executed while the user %s does not have access to %s.",
-                        action.name, self.env.user.login, records,
-                    )
+                                    action.name, self.env.user.login, records,
+                                    )
                     raise
 
             runner, multi = action._get_runner()
@@ -1016,7 +1043,8 @@ class IrActionsServer(models.Model):
         return res or False
 
     @api.depends('evaluation_type', 'update_field_id')
-    def _compute_value_field_to_show(self):  # check if value_field_to_show can be removed and use ttype in xml view instead
+    def _compute_value_field_to_show(
+            self):  # check if value_field_to_show can be removed and use ttype in xml view instead
         for action in self:
             if action.update_field_id.ttype in ('one2many', 'many2one', 'many2many'):
                 action.value_field_to_show = 'resource_ref'
@@ -1085,6 +1113,7 @@ class IrActionsServer(models.Model):
             for vals in vals_list:
                 vals['name'] = _('%s (copy)', vals.get('name', ''))
         return vals_list
+
 
 class IrActionsTodo(models.Model):
     """
@@ -1179,9 +1208,11 @@ class IrActionsActClient(models.Model):
                       help="An arbitrary string, interpreted by the client"
                            " according to its own needs and wishes. There "
                            "is no central tag repository across clients.")
-    target = fields.Selection([('current', 'Current Window'), ('new', 'New Window'), ('fullscreen', 'Full Screen'), ('main', 'Main action of Current Window')], default="current", string='Target Window')
+    target = fields.Selection([('current', 'Current Window'), ('new', 'New Window'), ('fullscreen', 'Full Screen'),
+                               ('main', 'Main action of Current Window')], default="current", string='Target Window')
     res_model = fields.Char(string='Destination Model', help="Optional model, mostly used for needactions.")
-    context = fields.Char(string='Context Value', default="{}", required=True, help="Context dictionary as Python expression, empty by default (Default: {})")
+    context = fields.Char(string='Context Value', default="{}", required=True,
+                          help="Context dictionary as Python expression, empty by default (Default: {})")
     params = fields.Binary(compute='_compute_params', inverse='_inverse_params', string='Supplementary arguments',
                            help="Arguments sent to the client along with "
                                 "the view tag")
@@ -1205,7 +1236,6 @@ class IrActionsActClient(models.Model):
         params_store = doc.find(".//field[@name='params_store']")
         params_store.getparent().remove(params_store)
         return doc
-
 
     def _get_readable_fields(self):
         return super()._get_readable_fields() | {

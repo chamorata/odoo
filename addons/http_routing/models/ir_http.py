@@ -4,10 +4,11 @@ import logging
 import re
 import traceback
 import typing
+import urllib.parse
+
 import werkzeug.exceptions
 import werkzeug.routing
 import werkzeug.urls
-import urllib.parse
 from werkzeug.exceptions import HTTPException, NotFound
 
 import odoo
@@ -102,10 +103,10 @@ class IrHttp(models.AbstractModel):
 
     @classmethod
     def _url_localized(cls,
-            url: str | None = None,
-            lang_code: str | None = None,
-            canonical_domain: str | tuple[str, str, str, str, str] | None = None,
-            prefetch_langs: bool = False, force_default_lang: bool = False) -> str:
+                       url: str | None = None,
+                       lang_code: str | None = None,
+                       canonical_domain: str | tuple[str, str, str, str, str] | None = None,
+                       prefetch_langs: bool = False, force_default_lang: bool = False) -> str:
         """ Returns the given URL adapted for the given lang, meaning that:
         1. It will have the lang suffixed to it
         2. The model converter parts will be translated
@@ -247,8 +248,8 @@ class IrHttp(models.AbstractModel):
 
             # /page/xxx has no endpoint/func but is multilang
             return (not func or (
-                func.routing.get('website', False)
-                and func.routing.get('multilang', func.routing['type'] == 'http')
+                    func.routing.get('website', False)
+                    and func.routing.get('multilang', func.routing['type'] == 'http')
             ))
         except Exception as exception:  # noqa: BLE001
             _logger.warning(exception)
@@ -391,8 +392,8 @@ class IrHttp(models.AbstractModel):
             path_no_lang = path
 
         allow_redirect = (
-            request.httprequest.method != 'POST'
-            and getattr(request, 'is_frontend_multilang', True)
+                request.httprequest.method != 'POST'
+                and getattr(request, 'is_frontend_multilang', True)
         )
 
         # Some URLs in website are concatenated, first url ends with /,
@@ -408,12 +409,13 @@ class IrHttp(models.AbstractModel):
         real_env = request.env
         try:
             request.registry['ir.http']._auth_method_public()  # it calls update_env
-            nearest_url_lang = request.env['ir.http'].get_nearest_lang(request.env['res.lang']._get_data(url_code=url_lang_str).code or url_lang_str)
+            nearest_url_lang = request.env['ir.http'].get_nearest_lang(
+                request.env['res.lang']._get_data(url_code=url_lang_str).code or url_lang_str)
             cookie_lang = request.env['ir.http'].get_nearest_lang(request.cookies.get('frontend_lang'))
             context_lang = request.env['ir.http'].get_nearest_lang(real_env.context.get('lang'))
             default_lang = cls._get_default_lang()
             request.lang = request.env['res.lang']._get_data(code=(
-                nearest_url_lang or cookie_lang or context_lang or default_lang.code
+                    nearest_url_lang or cookie_lang or context_lang or default_lang.code
             ))
             request_url_code = request.lang.url_code
         finally:
@@ -433,7 +435,8 @@ class IrHttp(models.AbstractModel):
 
         # See /4, no lang in url and should not redirect (e.g. POST), continue
         elif not url_lang_str and not allow_redirect:
-            _logger.debug("%r (lang: %r) no lang in url and should not redirect (e.g. POST), continue", path, request_url_code)
+            _logger.debug("%r (lang: %r) no lang in url and should not redirect (e.g. POST), continue", path,
+                          request_url_code)
 
         # See /5, missing lang in url, /home -> /fr/home
         elif not url_lang_str:
@@ -471,7 +474,8 @@ class IrHttp(models.AbstractModel):
             path = path_no_lang
 
         else:
-            _logger.warning("%r (lang: %r) couldn't not correctly route this frontend request, url used as-is.", path, request_url_code)
+            _logger.warning("%r (lang: %r) couldn't not correctly route this frontend request, url used as-is.", path,
+                            request_url_code)
 
         # Re-match using rewritten route and really raise for 404 errors
         try:
@@ -602,7 +606,7 @@ class IrHttp(models.AbstractModel):
                     return response
             except werkzeug.exceptions.Forbidden:
                 # Rendering does raise a Forbidden if target is not visible.
-                pass # Use default error page handling.
+                pass  # Use default error page handling.
         elif code == 500:
             values = cls._get_values_500_error(request.env, values, exception)
         try:

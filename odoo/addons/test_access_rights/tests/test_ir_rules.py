@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo import Command
 from odoo.exceptions import AccessError, ValidationError
 from odoo.tests.common import TransactionCase
 from odoo.tools import mute_logger
-from odoo import Command
 
 
 class TestRules(TransactionCase):

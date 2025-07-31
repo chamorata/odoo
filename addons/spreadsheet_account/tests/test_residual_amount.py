@@ -1,6 +1,7 @@
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
 from odoo import Command
 from odoo.tests import tagged
-from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 
 
 @tagged('post_install', '-at_install')
@@ -79,11 +80,11 @@ class SpreadsheetAccountingFunctionsTest(AccountTestInvoicingCommon):
         # Post the move and payment and reconcile them
         (cls.move_22 + cls.move_23).action_post()
         (cls.payment_move_22 + cls.payment_move_23).action_post()
-        (cls.move_22 + cls.payment_move_22.move_id).line_ids\
-            .filtered(lambda line: line.account_type == 'asset_receivable')\
+        (cls.move_22 + cls.payment_move_22.move_id).line_ids \
+            .filtered(lambda line: line.account_type == 'asset_receivable') \
             .reconcile()
-        (cls.move_23 + cls.payment_move_23.move_id).line_ids\
-            .filtered(lambda line: line.account_type == 'asset_receivable')\
+        (cls.move_23 + cls.payment_move_23.move_id).line_ids \
+            .filtered(lambda line: line.account_type == 'asset_receivable') \
             .reconcile()
 
     def test_residual_empty_params(self):

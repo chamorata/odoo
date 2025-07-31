@@ -3,11 +3,9 @@
 import json
 import logging
 import pprint
-
 from uuid import uuid4
 
 import requests
-
 from odoo.addons.payment import utils as payment_utils
 
 _logger = logging.getLogger(__name__)
@@ -158,7 +156,7 @@ class AuthorizeAPI:
         response = self._make_request("deleteCustomerProfileRequest", {'customerProfileId': profile_id})
         return self._format_response(response, 'deleteCustomerProfile')
 
-    #=== Transaction management ===#
+    # === Transaction management ===#
     def _prepare_authorization_transaction_request(self, transaction_type, tx_data, tx):
         # The billTo parameter is required for new ACH transactions (transactions without a payment.token),
         # but is not allowed for transactions with a payment.token.
@@ -248,7 +246,8 @@ class AuthorizeAPI:
         :param token: The token of the payment method to charge, as a `payment.token` record
         :param dict opaque_data: The payment details obfuscated by Authorize.Net
         """
-        assert (token or opaque_data) and not (token and opaque_data), "Exactly one of token or opaque_data must be specified"
+        assert (token or opaque_data) and not (
+                    token and opaque_data), "Exactly one of token or opaque_data must be specified"
         if token:
             token.ensure_one()
             return {

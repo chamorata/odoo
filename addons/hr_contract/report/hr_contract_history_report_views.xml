@@ -13,15 +13,19 @@
                 <field name="state"/>
                 <field name="is_under_contract"/>
                 <filter string="Running Contracts" name="open_contracts" domain="[('state', '=', 'open')]"/>
-                <filter string="Contracts to Review" name="contract_to_review" domain="['|', ('state', 'in', ['draft', 'close', 'cancel']), ('is_under_contract', '!=', True)]"/>
+                <filter string="Contracts to Review" name="contract_to_review"
+                        domain="['|', ('state', 'in', ['draft', 'close', 'cancel']), ('is_under_contract', '!=', True)]"/>
                 <filter string="No Contracts" name="no_contracts" domain="[('contract_id', '=', False)]"/>
-                <filter string="Currently Under Contract" name="currently_under_contract" domain="[('is_under_contract', '=', True)]"/>
+                <filter string="Currently Under Contract" name="currently_under_contract"
+                        domain="[('is_under_contract', '=', True)]"/>
                 <filter string="Active Employees" name="active_employees" domain="[('active_employee', '=', True)]"/>
                 <group expand="0" string="Group By">
                     <filter string="Job Position" name="job" domain="[]" context="{'group_by': 'job_id'}"/>
                     <filter string="Status" name='group_by_state' domain="[]" context="{'group_by': 'state'}"/>
-                    <filter string="Reference Working Time" name="group_by_resource_calendar_id" domain="[]" context="{'group_by': 'resource_calendar_id'}"/>
-                    <filter string="Salary Structure Type" name="group_by_structure_type_id" domain="[]" context="{'group_by': 'structure_type_id'}"/>
+                    <filter string="Reference Working Time" name="group_by_resource_calendar_id" domain="[]"
+                            context="{'group_by': 'resource_calendar_id'}"/>
+                    <filter string="Salary Structure Type" name="group_by_structure_type_id" domain="[]"
+                            context="{'group_by': 'structure_type_id'}"/>
                 </group>
             </search>
         </field>
@@ -43,7 +47,8 @@
                   duplicate="false"
                   import="false">
                 <header>
-                    <button name="hr_contract_view_form_new_action" string="Create" type="object" groups="hr_contract.group_hr_contract_manager" class="btn-primary"/>
+                    <button name="hr_contract_view_form_new_action" string="Create" type="object"
+                            groups="hr_contract.group_hr_contract_manager" class="btn-primary"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box"/>
@@ -82,11 +87,12 @@
                                       decoration-primary="state == 'open'"
                                       decoration-muted="state == 'close'"
                                       decoration-bf="id == parent.contract_id"
-                                      default_order = "date_start desc, state desc"
+                                      default_order="date_start desc, state desc"
                                       editable="bottom"
                                       no_open="1"
                                       create="0" delete="0">
-                                    <button name="action_open_contract_form" type="object" icon="fa-external-link" title="Open Contract"/>
+                                    <button name="action_open_contract_form" type="object" icon="fa-external-link"
+                                            title="Open Contract"/>
                                     <field name="id" column_invisible="True"/>
                                     <field name="name" string="Contract Name"/>
                                     <field name="date_start"/>
@@ -94,7 +100,8 @@
                                     <field name="resource_calendar_id"/>
                                     <field name="currency_id" column_invisible="True"/>
                                     <field name="wage" string="Monthly Wage"/>
-                                    <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'close'" decoration-success="state == 'open'"/>
+                                    <field name="state" widget="badge" decoration-info="state == 'draft'"
+                                           decoration-warning="state == 'close'" decoration-success="state == 'open'"/>
                                 </list>
                             </field>
                         </page>
@@ -117,8 +124,8 @@
         <field name="search_view_id" ref="hr_contract_history_view_search"/>
         <field name="context">
             {
-                'search_default_active_employees': 1,
-                'search_default_group_by_state': 1
+            'search_default_active_employees': 1,
+            'search_default_group_by_state': 1
             }
         </field>
         <field name="help" type="html">
@@ -134,8 +141,8 @@
         <field name="search_view_id" ref="hr_contract_history_view_search"/>
         <field name="context">
             {
-                'search_default_to_review': 1,
-                'search_default_active_employees': 1
+            'search_default_to_review': 1,
+            'search_default_active_employees': 1
             }
         </field>
     </record>
@@ -144,7 +151,7 @@
         <field name="model">hr.contract.history</field>
         <field name="arch" type="xml">
             <list string="Contracts"
-                  default_order = 'is_under_contract, date_start desc'
+                  default_order='is_under_contract, date_start desc'
                   edit="false"
                   delete="false"
                   duplicate="false"
@@ -157,7 +164,7 @@
                 <field name="date_start"/>
                 <field string="Reference Working Time" name="resource_calendar_id" optional="hide"/>
                 <field name="under_contract_state" widget="state_selection" optional="hide"
-                    options="{'hide_label': False}"/>
+                       options="{'hide_label': False}"/>
                 <field name="structure_type_id" optional="hide"/>
                 <field name="currency_id" column_invisible="True"/>
                 <field name="wage" optional="hide"/>
@@ -175,7 +182,8 @@
         <field name="model">hr.contract.history</field>
         <field name="arch" type="xml">
             <kanban default_order="date_end" sample="1" create="0">
-                <progressbar field="activity_state" colors='{"planned": "success", "today": "warning", "overdue": "danger"}'/>
+                <progressbar field="activity_state"
+                             colors='{"planned": "success", "today": "warning", "overdue": "danger"}'/>
                 <templates>
                     <t t-name="card">
                         <field class="fw-bold fs-5" name="display_name"/>

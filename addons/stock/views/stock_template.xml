@@ -20,20 +20,27 @@
             <t t-if="move.state != 'done'">
                 <t t-if="'product_uom_qty' in vals">
                     <li>
-                        Quantity: <t t-esc="move.product_uom_qty"/> -&gt; <t t-esc="float(vals.get('product_uom_qty'))"/>
+                        Quantity:
+                        <t t-esc="move.product_uom_qty"/>
+                        -&gt;
+                        <t t-esc="float(vals.get('product_uom_qty'))"/>
                     </li>
                 </t>
             </t>
             <t t-if="'quantity' in vals">
                 <li>
-                    Quantity: <t t-esc="move.quantity"/> -&gt; <t t-esc="float(vals.get('quantity'))"/>
+                    Quantity:
+                    <t t-esc="move.quantity"/>
+                    -&gt;
+                    <t t-esc="float(vals.get('quantity'))"/>
                 </li>
             </t>
             <t t-if="'location_id' in vals">
                 <li>
                     Source Location:
                     <t t-if="move.location_id">
-                        <t t-esc="move.location_id.name"/> -&gt;
+                        <t t-esc="move.location_id.name"/>
+                        -&gt;
                     </t>
                     <t t-esc="vals['location_name']"/>
                 </li>
@@ -42,7 +49,8 @@
                 <li>
                     Destination Location:
                     <t t-if="move.location_dest_id">
-                        <t t-esc="move.location_dest_id.name"/> -&gt;
+                        <t t-esc="move.location_dest_id.name"/>
+                        -&gt;
                     </t>
                     <t t-esc="vals['location_dest_name']"/>
                 </li>
@@ -51,7 +59,8 @@
                 <li>
                     Lot/Serial:
                     <t t-if="move.lot_id">
-                        <t t-esc="move.lot_id.name"/> -&gt;
+                        <t t-esc="move.lot_id.name"/>
+                        -&gt;
                     </t>
                     <t t-esc="vals['lot_name']"/>
                 </li>
@@ -60,7 +69,8 @@
                 <li>
                     Source Package:
                     <t t-if="move.package_id">
-                        <t t-esc="move.package_id.name"/> -&gt;
+                        <t t-esc="move.package_id.name"/>
+                        -&gt;
                     </t>
                     <t t-esc="vals['package_name']"/>
                 </li>
@@ -69,7 +79,8 @@
                 <li>
                     Destination Package:
                     <t t-if="move.result_package_id">
-                        <t t-esc="move.result_package_id.name"/> -&gt;
+                        <t t-esc="move.result_package_id.name"/>
+                        -&gt;
                     </t>
                     <t t-esc="vals['result_package_name']"/>
                 </li>
@@ -78,7 +89,8 @@
                 <li>
                     Owner:
                     <t t-if="move.owner_id">
-                        <t t-esc="move.owner_id.name"/> -&gt;
+                        <t t-esc="move.owner_id.name"/>
+                        -&gt;
                     </t>
                     <t t-esc="vals['owner_name']"/>
                 </li>

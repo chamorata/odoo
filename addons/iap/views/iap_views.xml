@@ -10,11 +10,12 @@
                 <sheet>
                     <group name="account" string="Account Information">
                         <group>
-                            <field name="name" />
-                            <field name="service_id" readonly="service_locked" options="{'no_open': True, 'no_create': True}"/>
-                            <field name="description" />
+                            <field name="name"/>
+                            <field name="service_id" readonly="service_locked"
+                                   options="{'no_open': True, 'no_create': True}"/>
+                            <field name="description"/>
                             <field name="company_ids" widget="many2many_tags"
-                                domain="[('id', 'in', allowed_company_ids)]" />
+                                   domain="[('id', 'in', allowed_company_ids)]"/>
                             <field name="account_token" groups="base.group_no_one"/>
                         </group>
                         <group name="external">
@@ -22,7 +23,7 @@
                             <div>
                                 <field name="balance" class="oe_inline"/>
                                 <button type="object"
-                                    name="action_buy_credits" class="btn-link py-0">
+                                        name="action_buy_credits" class="btn-link py-0">
                                     <i class="oi oi-arrow-right"/>
                                     Buy Credit
                                 </button>
@@ -31,7 +32,7 @@
                             <field name="warning_user_ids"
                                    invisible="warning_threshold == 0"
                                    required="warning_threshold > 0"
-                                   widget="many2many_tags" />
+                                   widget="many2many_tags"/>
                         </group>
                     </group>
                 </sheet>
@@ -43,13 +44,13 @@
         <field name="model">iap.account</field>
         <field name="arch" type="xml">
             <list string="IAP Accounts">
-                <field name="name" />
-                <field name="service_id" />
-                <field name="company_ids" widget="many2many_tags" />
+                <field name="name"/>
+                <field name="service_id"/>
+                <field name="company_ids" widget="many2many_tags"/>
                 <field name="account_token" groups="base.group_no_one"/>
-                <field name="balance" />
-                <field name="warning_threshold" optional="hidden" />
-                <field name="description" optional="hidden" />
+                <field name="balance"/>
+                <field name="warning_threshold" optional="hidden"/>
+                <field name="description" optional="hidden"/>
             </list>
         </field>
     </record>
@@ -63,16 +64,16 @@
 
     <!-- Menus -->
     <menuitem
-        id="iap_root_menu"
-        name="IAP"
-        parent="base.menu_custom"
-        sequence="5"/>
+            id="iap_root_menu"
+            name="IAP"
+            parent="base.menu_custom"
+            sequence="5"/>
 
     <menuitem
-        id="iap_account_menu"
-        name="IAP Accounts"
-        parent="iap_root_menu"
-        action="iap_account_action"
-        sequence="10"/>
+            id="iap_account_menu"
+            name="IAP Accounts"
+            parent="iap_root_menu"
+            action="iap_account_action"
+            sequence="10"/>
 
 </odoo>

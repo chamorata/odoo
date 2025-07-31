@@ -1,11 +1,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.addons.account.tests.common import AccountTestInvoicingHttpCommon
-from odoo.tests.common import tagged
-
 import json
 
+from odoo.addons.account.tests.common import AccountTestInvoicingHttpCommon
+
 from odoo import http
+from odoo.tests.common import tagged
 from odoo.tools import file_open, mute_logger
 
 
@@ -188,7 +188,8 @@ class TestPortalAttachment(AccountTestInvoicingHttpCommon):
             },
         )
         self.assertEqual(res.status_code, 200)
-        self.assertIn("The attachment %s does not exist or you do not have the rights to access it." % attachment.id, res.text)
+        self.assertIn("The attachment %s does not exist or you do not have the rights to access it." % attachment.id,
+                      res.text)
 
         # Test attachment can't be associated if no main document token
         res = self.opener.post(

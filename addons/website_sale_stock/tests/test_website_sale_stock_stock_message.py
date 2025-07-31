@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.tests import tagged
 from odoo.addons.sale.tests.product_configurator_common import TestProductConfiguratorCommon
+
 from odoo.addons.base.tests.common import HttpCaseWithUserPortal
+from odoo.tests import tagged
+
 
 @tagged('post_install', '-at_install')
 class TestWebsiteSaleStockProductConfigurator(TestProductConfiguratorCommon, HttpCaseWithUserPortal):
@@ -26,7 +28,8 @@ class TestWebsiteSaleStockProductConfigurator(TestProductConfiguratorCommon, Htt
             'location_id': self.env.ref('stock.stock_location_stock').id,
             'quantity': 30.0,
         })
-        self.start_tour("/", 'website_sale_stock_message_after_close_onfigurator_modal_with_optional_products', login="admin")
+        self.start_tour("/", 'website_sale_stock_message_after_close_onfigurator_modal_with_optional_products',
+                        login="admin")
 
     def test_02_stock_message_update_after_close_without_optional_products(self):
         product_product_without_options = self.env['product.product'].create({
@@ -44,4 +47,5 @@ class TestWebsiteSaleStockProductConfigurator(TestProductConfiguratorCommon, Htt
             'location_id': self.env.ref('stock.stock_location_stock').id,
             'quantity': 30.0,
         })
-        self.start_tour("/", 'website_sale_stock_message_after_close_onfigurator_modal_without_optional_products', login="admin")
+        self.start_tour("/", 'website_sale_stock_message_after_close_onfigurator_modal_without_optional_products',
+                        login="admin")

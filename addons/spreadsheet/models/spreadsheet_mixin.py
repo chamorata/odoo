@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-import io
-import zipfile
 import base64
+import io
 import json
 import re
-
+import zipfile
 from collections import defaultdict
+
+from odoo.addons.spreadsheet.utils.validate_data import fields_in_spreadsheet, menus_xml_ids_in_spreadsheet
 
 from odoo import api, fields, models, _, tools
 from odoo.exceptions import ValidationError, MissingError
 
-from odoo.addons.spreadsheet.utils.validate_data import fields_in_spreadsheet, menus_xml_ids_in_spreadsheet
 
 class SpreadsheetMixin(models.AbstractModel):
     _name = "spreadsheet.mixin"
@@ -48,7 +48,8 @@ class SpreadsheetMixin(models.AbstractModel):
                     field_model = model
                     for fname in field_chain.split("."):  # field chain 'product_id.channel_ids'
                         if fname not in self.env[field_model]._fields:
-                            errors.append(f"- field '{fname}' used in spreadsheet '{display_name}' does not exist on model '{field_model}'")
+                            errors.append(
+                                f"- field '{fname}' used in spreadsheet '{display_name}' does not exist on model '{field_model}'")
                             continue
                         field = self.env[field_model]._fields[fname]
                         if field.relational:
@@ -61,7 +62,8 @@ class SpreadsheetMixin(models.AbstractModel):
                     continue
                 # check that the menu has an action. Root menus always have an action.
                 if not record.action and record.parent_id.id:
-                    errors.append(f"- menu with xml id '{xml_id}' used in spreadsheet '{display_name}' does not have an action")
+                    errors.append(
+                        f"- menu with xml id '{xml_id}' used in spreadsheet '{display_name}' does not have an action")
 
             if errors:
                 raise ValidationError(

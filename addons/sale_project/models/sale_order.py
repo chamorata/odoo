@@ -3,29 +3,41 @@
 import ast
 from collections import defaultdict
 
+from odoo.addons.project.models.project_task import CLOSED_STATES
+
 from odoo import api, fields, models, _, Command
 from odoo.exceptions import UserError
 from odoo.osv.expression import AND, NEGATIVE_TERM_OPERATORS, TERM_OPERATORS_NEGATION
-from odoo.addons.project.models.project_task import CLOSED_STATES
 
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
-    tasks_ids = fields.Many2many('project.task', compute='_compute_tasks_ids', search='_search_tasks_ids', string='Tasks associated with this sale', export_string_translation=False)
-    tasks_count = fields.Integer(string='Tasks', compute='_compute_tasks_ids', groups="project.group_project_user", export_string_translation=False)
+    tasks_ids = fields.Many2many('project.task', compute='_compute_tasks_ids', search='_search_tasks_ids',
+                                 string='Tasks associated with this sale', export_string_translation=False)
+    tasks_count = fields.Integer(string='Tasks', compute='_compute_tasks_ids', groups="project.group_project_user",
+                                 export_string_translation=False)
 
-    visible_project = fields.Boolean('Display project', compute='_compute_visible_project', readonly=True, export_string_translation=False)
-    project_ids = fields.Many2many('project.project', compute="_compute_project_ids", string='Projects', copy=False, groups="project.group_project_user,project.group_project_milestone", export_string_translation=False)
-    project_count = fields.Integer(string='Number of Projects', compute='_compute_project_ids', groups='project.group_project_user', export_string_translation=False)
+    visible_project = fields.Boolean('Display project', compute='_compute_visible_project', readonly=True,
+                                     export_string_translation=False)
+    project_ids = fields.Many2many('project.project', compute="_compute_project_ids", string='Projects', copy=False,
+                                   groups="project.group_project_user,project.group_project_milestone",
+                                   export_string_translation=False)
+    project_count = fields.Integer(string='Number of Projects', compute='_compute_project_ids',
+                                   groups='project.group_project_user', export_string_translation=False)
     milestone_count = fields.Integer(compute='_compute_milestone_count', export_string_translation=False)
     is_product_milestone = fields.Boolean(compute='_compute_is_product_milestone', export_string_translation=False)
-    show_create_project_button = fields.Boolean(compute='_compute_show_project_and_task_button', groups='project.group_project_user', export_string_translation=False)
-    show_project_button = fields.Boolean(compute='_compute_show_project_and_task_button', groups='project.group_project_user', export_string_translation=False)
-    show_task_button = fields.Boolean(compute='_compute_show_project_and_task_button', groups='project.group_project_user', export_string_translation=False)
+    show_create_project_button = fields.Boolean(compute='_compute_show_project_and_task_button',
+                                                groups='project.group_project_user', export_string_translation=False)
+    show_project_button = fields.Boolean(compute='_compute_show_project_and_task_button',
+                                         groups='project.group_project_user', export_string_translation=False)
+    show_task_button = fields.Boolean(compute='_compute_show_project_and_task_button',
+                                      groups='project.group_project_user', export_string_translation=False)
     closed_task_count = fields.Integer(compute='_compute_tasks_ids', export_string_translation=False)
-    completed_task_percentage = fields.Float(compute="_compute_completed_task_percentage", export_string_translation=False)
-    project_id = fields.Many2one('project.project', domain=[('allow_billable', '=', True)], copy=False, help="A task will be created for the project upon sales order confirmation. The analytic distribution of this project will also serve as a reference for newly created sales order items.")
+    completed_task_percentage = fields.Float(compute="_compute_completed_task_percentage",
+                                             export_string_translation=False)
+    project_id = fields.Many2one('project.project', domain=[('allow_billable', '=', True)], copy=False,
+                                 help="A task will be created for the project upon sales order confirmation. The analytic distribution of this project will also serve as a reference for newly created sales order items.")
     project_account_id = fields.Many2one('account.analytic.account', related='project_id.account_id')
 
     def _compute_milestone_count(self):
@@ -40,7 +52,8 @@ class SaleOrder(models.Model):
 
     def _compute_is_product_milestone(self):
         for order in self:
-            order.is_product_milestone = order.order_line.product_id.filtered(lambda p: p.service_policy == 'delivered_milestones')
+            order.is_product_milestone = order.order_line.product_id.filtered(
+                lambda p: p.service_policy == 'delivered_milestones')
 
     def _compute_show_project_and_task_button(self):
         is_project_manager = self.env.user.has_group('project.group_project_manager')
@@ -53,9 +66,9 @@ class SaleOrder(models.Model):
             order.show_project_button = order.id in show_button_ids and order.project_count
             order.show_task_button = order.show_project_button or order.tasks_count
             order.show_create_project_button = (
-                is_project_manager
-                and order.id in show_button_ids
-                and not order.project_count
+                    is_project_manager
+                    and order.id in show_button_ids
+                    and not order.project_count
             )
 
     @api.model
@@ -64,7 +77,8 @@ class SaleOrder(models.Model):
             positive_operator = TERM_OPERATORS_NEGATION[operator]
         else:
             positive_operator = operator
-        task_domain = [('display_name' if isinstance(value, str) else 'id', positive_operator, value), ('sale_order_id', '!=', False)]
+        task_domain = [('display_name' if isinstance(value, str) else 'id', positive_operator, value),
+                       ('sale_order_id', '!=', False)]
         query = self.env['project.task']._search(task_domain)
         return [('id', 'in' if positive_operator == operator else 'not in', query.subselect('sale_order_id'))]
 
@@ -102,7 +116,8 @@ class SaleOrder(models.Model):
         configured as 'task_in_project' """
         for order in self:
             order.visible_project = any(
-                service_tracking == 'task_in_project' for service_tracking in order.order_line.mapped('product_id.service_tracking')
+                service_tracking == 'task_in_project' for service_tracking in
+                order.order_line.mapped('product_id.service_tracking')
             )
 
     @api.depends('order_line.product_id', 'order_line.project_id')
@@ -148,7 +163,8 @@ class SaleOrder(models.Model):
             action['context'] = {}
         else:
             # Load top bar if all the tasks linked to the SO belong to the same project
-            action = self.env['ir.actions.actions'].with_context({'active_id': project_ids.id})._for_xml_id('project.act_project_project_2_project_task_all')
+            action = self.env['ir.actions.actions'].with_context({'active_id': project_ids.id})._for_xml_id(
+                'project.act_project_project_2_project_task_all')
             action['context'] = {
                 'active_id': project_ids.id,
                 'search_default_sale_order_id': self.id,
@@ -166,7 +182,8 @@ class SaleOrder(models.Model):
             action['views'] = [(form_view_id, 'form')]
             action['res_id'] = self.tasks_ids.id
         # set default project
-        default_line = next((sol for sol in self.order_line if sol.product_id.type == 'service'), self.env['sale.order.line'])
+        default_line = next((sol for sol in self.order_line if sol.product_id.type == 'service'),
+                            self.env['sale.order.line'])
         default_project_id = default_line.project_id.id or self.project_ids[:1].id or self.tasks_ids.project_id[:1].id
 
         action['context'].update({
@@ -179,7 +196,8 @@ class SaleOrder(models.Model):
         return action
 
     def _tasks_ids_domain(self):
-        return ['&', ('project_id', '!=', False), '|', ('sale_line_id', 'in', self.order_line.ids), ('sale_order_id', 'in', self.ids)]
+        return ['&', ('project_id', '!=', False), '|', ('sale_line_id', 'in', self.order_line.ids),
+                ('sale_order_id', 'in', self.ids)]
 
     def action_create_project(self):
         self.ensure_one()
@@ -189,7 +207,8 @@ class SaleOrder(models.Model):
                 'tag': 'display_notification',
                 'params': {
                     'type': 'danger',
-                    'message': _("The project couldn't be created as the Sales Order must be confirmed, is already linked to a project, or doesn't involve any services."),
+                    'message': _(
+                        "The project couldn't be created as the Sales Order must be confirmed, is already linked to a project, or doesn't involve any services."),
                 }
             }
 
@@ -224,7 +243,9 @@ class SaleOrder(models.Model):
         action = {
             'type': 'ir.actions.act_window',
             'name': _('Projects'),
-            'domain': ['|', ('sale_order_id', '=', self.id), ('id', 'in', self.with_context(active_test=False).project_ids.ids), ('active', 'in', [True, False])],
+            'domain': ['|', ('sale_order_id', '=', self.id),
+                       ('id', 'in', self.with_context(active_test=False).project_ids.ids),
+                       ('active', 'in', [True, False])],
             'res_model': 'project.project',
             'views': [(False, 'kanban'), (False, 'list'), (False, 'form')],
             'view_mode': 'kanban,list,form',
@@ -245,7 +266,7 @@ class SaleOrder(models.Model):
         sorted_line = self.order_line.sorted('sequence')
         default_sale_line = next((
             sol for sol in sorted_line
-                if sol.is_service and sol.product_id.service_policy == 'delivered_milestones'
+            if sol.is_service and sol.product_id.service_policy == 'delivered_milestones'
         ), self.env['sale.order.line'])
         return {
             'type': 'ir.actions.act_window',

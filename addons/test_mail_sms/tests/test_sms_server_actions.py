@@ -3,6 +3,7 @@
 
 from odoo.addons.sms.tests.common import SMSCommon
 from odoo.addons.test_mail_sms.tests.common import TestSMSRecipients
+
 from odoo.tests import tagged
 from odoo.tools import mute_logger
 
@@ -42,8 +43,10 @@ class TestServerAction(SMSCommon, TestSMSRecipients):
         with self.with_user('employee'), self.mockSMSGateway():
             self.action.with_user(self.env.user).with_context(**context).run()
 
-        self.assertSMSOutgoing(self.test_record.customer_id, None, content='Dear %s this is an SMS.' % self.test_record.display_name)
-        self.assertSMSOutgoing(self.env['res.partner'], self.test_numbers_san[0], content='Dear %s this is an SMS.' % self.test_record_2.display_name)
+        self.assertSMSOutgoing(self.test_record.customer_id, None,
+                               content='Dear %s this is an SMS.' % self.test_record.display_name)
+        self.assertSMSOutgoing(self.env['res.partner'], self.test_numbers_san[0],
+                               content='Dear %s this is an SMS.' % self.test_record_2.display_name)
 
     def test_action_sms_single(self):
         context = {
@@ -53,7 +56,8 @@ class TestServerAction(SMSCommon, TestSMSRecipients):
 
         with self.with_user('employee'), self.mockSMSGateway():
             self.action.with_user(self.env.user).with_context(**context).run()
-        self.assertSMSOutgoing(self.test_record.customer_id, None, content='Dear %s this is an SMS.' % self.test_record.display_name)
+        self.assertSMSOutgoing(self.test_record.customer_id, None,
+                               content='Dear %s this is an SMS.' % self.test_record.display_name)
 
     def test_action_sms_w_log(self):
         self.action.sms_method = 'note'
@@ -65,10 +69,12 @@ class TestServerAction(SMSCommon, TestSMSRecipients):
         with self.with_user('employee'), self.mockSMSGateway():
             self.action.with_user(self.env.user).with_context(**context).run()
 
-        self.assertSMSOutgoing(self.test_record.customer_id, None, content='Dear %s this is an SMS.' % self.test_record.display_name)
+        self.assertSMSOutgoing(self.test_record.customer_id, None,
+                               content='Dear %s this is an SMS.' % self.test_record.display_name)
         self.assertSMSLogged(self.test_record, 'Dear %s this is an SMS.' % self.test_record.display_name)
 
-        self.assertSMSOutgoing(self.env['res.partner'], self.test_numbers_san[0], content='Dear %s this is an SMS.' % self.test_record_2.display_name)
+        self.assertSMSOutgoing(self.env['res.partner'], self.test_numbers_san[0],
+                               content='Dear %s this is an SMS.' % self.test_record_2.display_name)
         self.assertSMSLogged(self.test_record_2, 'Dear %s this is an SMS.' % self.test_record_2.display_name)
 
     @mute_logger('odoo.addons.sms.models.sms_sms')

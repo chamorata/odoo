@@ -11,13 +11,15 @@
             <path fill="url(#c)" d="M82 0H0v60h82V0Z"/>
         </mask>
         <g mask="url(#d)">
-            <path fill="url(#e)" d="M68.5 82C83.135 82 95 73.046 95 62S83.135 42 68.5 42C53.864 42 42 50.954 42 62s11.864 20 26.5 20Z"/>
+            <path fill="url(#e)"
+                  d="M68.5 82C83.135 82 95 73.046 95 62S83.135 42 68.5 42C53.864 42 42 50.954 42 62s11.864 20 26.5 20Z"/>
         </g>
         <mask id="g" width="82" height="60" x="0" y="0" maskUnits="userSpaceOnUse" style="mask-type:luminance">
             <path fill="url(#f)" d="M82 0H0v60h82V0Z"/>
         </mask>
         <g mask="url(#g)">
-            <path fill="url(#h)" d="M18 99c28.166 0 51-14.327 51-32 0-17.673-22.834-32-51-32s-51 14.327-51 32c0 17.673 22.834 32 51 32Z"/>
+            <path fill="url(#h)"
+                  d="M18 99c28.166 0 51-14.327 51-32 0-17.673-22.834-32-51-32s-51 14.327-51 32c0 17.673 22.834 32 51 32Z"/>
         </g>
     </g>
     <defs>

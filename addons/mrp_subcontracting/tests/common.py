@@ -3,6 +3,7 @@
 
 from odoo.tests import Form, TransactionCase
 
+
 class TestMrpSubcontractingCommon(TransactionCase):
 
     @classmethod

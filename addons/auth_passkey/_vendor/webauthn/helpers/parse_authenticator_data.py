@@ -1,10 +1,8 @@
-from typing import Union
-
 from .byteslike_to_bytes import byteslike_to_bytes
-from .exceptions import InvalidAuthenticatorDataStructure
-from .structs import AttestedCredentialData, AuthenticatorData, AuthenticatorDataFlags
-from .parse_cbor import parse_cbor
 from .encode_cbor import encode_cbor
+from .exceptions import InvalidAuthenticatorDataStructure
+from .parse_cbor import parse_cbor
+from .structs import AttestedCredentialData, AuthenticatorData, AuthenticatorDataFlags
 
 
 def parse_authenticator_data(val: bytes) -> AuthenticatorData:
@@ -28,10 +26,10 @@ def parse_authenticator_data(val: bytes) -> AuthenticatorData:
     pointer += 32
 
     # Cast byte to ordinal so we can use bitwise operators on it
-    flags_bytes = ord(val[pointer : pointer + 1])
+    flags_bytes = ord(val[pointer: pointer + 1])
     pointer += 1
 
-    sign_count = val[pointer : pointer + 4]
+    sign_count = val[pointer: pointer + 4]
     pointer += 4
 
     # Parse flags
@@ -53,13 +51,13 @@ def parse_authenticator_data(val: bytes) -> AuthenticatorData:
 
     # Parse AttestedCredentialData if present
     if flags.at is True:
-        aaguid = val[pointer : pointer + 16]
+        aaguid = val[pointer: pointer + 16]
         pointer += 16
 
-        credential_id_len = int.from_bytes(val[pointer : pointer + 2], "big")
+        credential_id_len = int.from_bytes(val[pointer: pointer + 2], "big")
         pointer += 2
 
-        credential_id = val[pointer : pointer + credential_id_len]
+        credential_id = val[pointer: pointer + credential_id_len]
         pointer += credential_id_len
 
         """
@@ -71,7 +69,7 @@ def parse_authenticator_data(val: bytes) -> AuthenticatorData:
         # Decodes to `{1: "OKP", 3: -8, -1: "Ed25519"}` (it's missing key -2 a.k.a. COSEKey.X)
         bad_eddsa_cbor = bytearray.fromhex("a301634f4b500327206745643235353139")
         # If we find the bytes here then let's fix the bad data
-        if val[pointer : pointer + len(bad_eddsa_cbor)] == bad_eddsa_cbor:
+        if val[pointer: pointer + len(bad_eddsa_cbor)] == bad_eddsa_cbor:
             # Make a mutable copy of the bytes...
             _val = bytearray(val)
             # ...Fix the bad byte...

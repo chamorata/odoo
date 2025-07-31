@@ -104,14 +104,17 @@ class AccountEdiXmlUBLPINTANZ(models.AbstractModel):
         for tax_total_val in vals['vals']['tax_total_vals']:
             for tax_subtotal_val in tax_total_val.get('tax_subtotal_vals', ()):
                 if tax_subtotal_val['tax_category_vals']['tax_category_code'] not in ANZ_TAX_CATEGORIES:
-                    constraints['sg_vat_category_required'] = _("You must set a tax category on each taxes of the invoice.\nValid categories are: S, E, Z, G, O")
+                    constraints['sg_vat_category_required'] = _(
+                        "You must set a tax category on each taxes of the invoice.\nValid categories are: S, E, Z, G, O")
 
         # ALIGNED-IBR-001-AUNZ and ALIGNED-IBR-002-AUNZ
         for partner_type in ('supplier', 'customer'):
             partner = vals[partner_type]
             if partner.country_code == 'AU' and partner.peppol_eas != '0151':
-                constraints[f'au_{partner_type}_eas_0151'] = _("The Peppol EAS must be set to ABN (0151) if the partner country is Australia.")
+                constraints[f'au_{partner_type}_eas_0151'] = _(
+                    "The Peppol EAS must be set to ABN (0151) if the partner country is Australia.")
             elif partner.country_code == 'NZ' and partner.peppol_eas != '0088':
-                constraints[f'nz_{partner_type}_eas_0088'] = _("The Peppol EAS must be set to EAN (0088) if the partner country is New Zealand.")
+                constraints[f'nz_{partner_type}_eas_0088'] = _(
+                    "The Peppol EAS must be set to EAN (0088) if the partner country is New Zealand.")
 
         return constraints

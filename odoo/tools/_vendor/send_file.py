@@ -15,11 +15,11 @@ import logging
 import mimetypes
 import os
 import typing as t
-import unicodedata
 from datetime import datetime
 from time import time
 from zlib import adler32
 
+import unicodedata
 from werkzeug.datastructures import Headers
 from werkzeug.exceptions import RequestedRangeNotSatisfiable
 from werkzeug.urls import url_quote
@@ -30,20 +30,20 @@ _logger = logging.getLogger(__name__)
 
 
 def send_file(
-    path_or_file: t.Union[os.PathLike, str, t.IO[bytes]],
-    environ: "WSGIEnvironment",
-    mimetype: t.Optional[str] = None,
-    as_attachment: bool = False,
-    download_name: t.Optional[str] = None,
-    conditional: bool = True,
-    etag: t.Union[bool, str] = True,
-    last_modified: t.Optional[t.Union[datetime, int, float]] = None,
-    max_age: t.Optional[
-        t.Union[int, t.Callable[[t.Optional[str]], t.Optional[int]]]
-    ] = None,
-    use_x_sendfile: bool = False,
-    response_class: t.Optional[t.Type["Response"]] = None,
-    _root_path: t.Optional[t.Union[os.PathLike, str]] = None,
+        path_or_file: t.Union[os.PathLike, str, t.IO[bytes]],
+        environ: "WSGIEnvironment",
+        mimetype: t.Optional[str] = None,
+        as_attachment: bool = False,
+        download_name: t.Optional[str] = None,
+        conditional: bool = True,
+        etag: t.Union[bool, str] = True,
+        last_modified: t.Optional[t.Union[datetime, int, float]] = None,
+        max_age: t.Optional[
+            t.Union[int, t.Callable[[t.Optional[str]], t.Optional[int]]]
+        ] = None,
+        use_x_sendfile: bool = False,
+        response_class: t.Optional[t.Type["Response"]] = None,
+        _root_path: t.Optional[t.Union[os.PathLike, str]] = None,
 ) -> "Response":
     """Send the contents of a file to the client.
 
@@ -102,7 +102,7 @@ def send_file(
     headers = Headers()
 
     if isinstance(path_or_file, (os.PathLike, str)) or hasattr(
-        path_or_file, "__fspath__"
+            path_or_file, "__fspath__"
     ):
 
         # Flask will pass app.root_path, allowing its send_file wrapper

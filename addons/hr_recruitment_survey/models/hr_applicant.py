@@ -1,6 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import timedelta
+
 from odoo import fields, models, _
 from odoo.exceptions import UserError
 
@@ -14,8 +15,8 @@ class Applicant(models.Model):
     def action_print_survey(self):
         """ If response is available then print this response otherwise print survey form (print template of the survey) """
         self.ensure_one()
-        sorted_interviews = self.response_ids\
-            .filtered(lambda i: i.survey_id == self.survey_id)\
+        sorted_interviews = self.response_ids \
+            .filtered(lambda i: i.survey_id == self.survey_id) \
             .sorted(lambda i: i.create_date, reverse=True)
         if not sorted_interviews:
             action = self.survey_id.action_print_survey()
@@ -47,7 +48,8 @@ class Applicant(models.Model):
             })
 
         self.survey_id.check_validity()
-        template = self.env.ref('hr_recruitment_survey.mail_template_applicant_interview_invite', raise_if_not_found=False)
+        template = self.env.ref('hr_recruitment_survey.mail_template_applicant_interview_invite',
+                                raise_if_not_found=False)
         local_context = dict(
             default_applicant_id=self.id,
             default_partner_ids=self.partner_id.ids,

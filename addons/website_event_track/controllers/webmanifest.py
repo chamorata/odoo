@@ -11,7 +11,8 @@ from odoo.tools.translate import _
 
 class TrackManifest(http.Controller):
 
-    @http.route('/event/manifest.webmanifest', type='http', auth='public', methods=['GET'], website=True, sitemap=False, readonly=True)
+    @http.route('/event/manifest.webmanifest', type='http', auth='public', methods=['GET'], website=True, sitemap=False,
+                readonly=True)
     def webmanifest(self):
         """ Returns a WebManifest describing the metadata associated with a web application.
         Using this metadata, user agents can provide developers with means to create user 
@@ -40,7 +41,8 @@ class TrackManifest(http.Controller):
         ])
         return response
 
-    @http.route('/event/service-worker.js', type='http', auth='public', methods=['GET'], website=True, sitemap=False, readonly=True)
+    @http.route('/event/service-worker.js', type='http', auth='public', methods=['GET'], website=True, sitemap=False,
+                readonly=True)
     def service_worker(self):
         """ Returns a ServiceWorker javascript file scoped for website_event
         """
@@ -48,7 +50,7 @@ class TrackManifest(http.Controller):
             body = fp.read()
         js_cdn_url = 'undefined'
         if request.website.cdn_activated:
-            cdn_url = request.website.cdn_url.replace('"','%22').replace('\x5c','%5C')
+            cdn_url = request.website.cdn_url.replace('"', '%22').replace('\x5c', '%5C')
             js_cdn_url = '"%s"' % cdn_url
         body = body.replace('__ODOO_CDN_URL__', js_cdn_url)
         response = request.make_response(body, [
@@ -57,7 +59,8 @@ class TrackManifest(http.Controller):
         ])
         return response
 
-    @http.route('/event/offline', type='http', auth='public', methods=['GET'], website=True, sitemap=False, readonly=True)
+    @http.route('/event/offline', type='http', auth='public', methods=['GET'], website=True, sitemap=False,
+                readonly=True)
     def offline(self):
         """ Returns the offline page used by the 'website_event' PWA
         """

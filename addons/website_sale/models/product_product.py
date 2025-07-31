@@ -37,7 +37,7 @@ class Product(models.Model):
     )
     base_unit_name = fields.Char(
         help="Displays the custom unit for the products if defined or the selected unit of measure"
-            " otherwise.",
+             " otherwise.",
         compute='_compute_base_unit_name',
     )
 
@@ -47,7 +47,7 @@ class Product(models.Model):
         compute='_compute_product_website_url',
     )
 
-    #=== COMPUTE METHODS ===#
+    # === COMPUTE METHODS ===#
 
     def _get_base_unit_price(self, price):
         self.ensure_one()
@@ -76,7 +76,7 @@ class Product(models.Model):
                 url = f'{url}#attribute_values={",".join(pav_ids)}'
             product.website_url = url
 
-    #=== CONSTRAINT METHODS ===#
+    # === CONSTRAINT METHODS ===#
 
     @api.constrains('base_unit_count')
     def _check_base_unit_count(self):
@@ -86,7 +86,7 @@ class Product(models.Model):
                 " Use 0 to hide the price per unit on this product."
             ))
 
-    #=== BUSINESS METHODS ===#
+    # === BUSINESS METHODS ===#
 
     def _prepare_variant_values(self, combination):
         variant_dict = super()._prepare_variant_values(combination)
@@ -139,7 +139,7 @@ class Product(models.Model):
         is_product_salable = self.active and self.sale_ok and self.website_published
         website = self.env['website'].get_current_website()
         return (is_product_salable and website.has_ecommerce_access()) \
-               or self.env.user.has_group('base.group_system')
+            or self.env.user.has_group('base.group_system')
 
     @api.onchange('public_categ_ids')
     def _onchange_public_categ_ids(self):

@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import time
-
+from odoo import Command
 from odoo.tests import Form, TransactionCase
 from odoo.tools import mute_logger
-from odoo import Command
 
 
 class TestSaleMrpProcurement(TransactionCase):
@@ -172,7 +170,8 @@ class TestSaleMrpProcurement(TransactionCase):
         sale_order_so0.action_confirm()
 
         # Verify buttons are working as expected
-        self.assertEqual(sale_order_so0.mrp_production_count, 3, "2 Mos for the 2 sale order line + 1 child Mo for the complex product")
+        self.assertEqual(sale_order_so0.mrp_production_count, 3,
+                         "2 Mos for the 2 sale order line + 1 child Mo for the complex product")
 
         pickings = sale_order_so0.picking_ids
 

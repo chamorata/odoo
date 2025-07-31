@@ -73,7 +73,7 @@ class test_integer_field(CreatorCase):
         self.assertEqual(self.export(-32), [[-32]])
 
     def test_huge(self):
-        self.assertEqual(self.export(2**31 - 1), [[2147483647]])
+        self.assertEqual(self.export(2 ** 31 - 1), [[2147483647]])
 
 
 class test_float_field(CreatorCase):
@@ -125,7 +125,9 @@ class test_string_field(CreatorCase):
         self.assertEqual(self.export("foobar"), [["foobar"]])
 
     def test_out_of_bounds(self):
-        self.assertEqual(self.export("C for Sinking, Java for Drinking, Smalltalk for Thinking. ...and Power to the Penguin!"), [["C for Sinking, J"]])
+        self.assertEqual(
+            self.export("C for Sinking, Java for Drinking, Smalltalk for Thinking. ...and Power to the Penguin!"),
+            [["C for Sinking, J"]])
 
 
 class test_unbound_string_field(CreatorCase):
@@ -167,7 +169,8 @@ class test_text(CreatorCase):
 
     def test_big(self):
         self.assertEqual(
-            self.export("So, `bind' is `let' and monadic programming is equivalent to programming in the A-normal form. That is indeed all there is to monads"),
+            self.export(
+                "So, `bind' is `let' and monadic programming is equivalent to programming in the A-normal form. That is indeed all there is to monads"),
             [["So, `bind' is `let' and monadic programming is equivalent to programming in the A-normal form. That is indeed all there is to monads"]],
         )
 
@@ -201,7 +204,8 @@ class test_datetime(CreatorCase):
 
         .. note:: on the other hand, export uses user lang for display_name
         """
-        self.assertEqual(self.export('2011-11-07 21:05:48', context={'tz': 'Pacific/Norfolk'}), [[fields.Datetime.from_string('2011-11-08 08:35:48')]])
+        self.assertEqual(self.export('2011-11-07 21:05:48', context={'tz': 'Pacific/Norfolk'}),
+                         [[fields.Datetime.from_string('2011-11-08 08:35:48')]])
 
 
 class test_selection(CreatorCase):
@@ -262,7 +266,8 @@ class test_m2o(CreatorCase):
         record = self.env['export.integer'].create({'value': 42})
         # Expecting the m2o target model name in the external id,
         # not this model's name
-        self.assertRegex(self.export(record.id, fields=['value/id'])[0][0], '__export__.export_integer_%d_[0-9a-f]{8}' % record.id)
+        self.assertRegex(self.export(record.id, fields=['value/id'])[0][0],
+                         '__export__.export_integer_%d_[0-9a-f]{8}' % record.id)
 
     def test_identical(self):
         m2o = self.env['export.integer'].create({'value': 42}).id
@@ -290,7 +295,8 @@ class test_reference(CreatorCase):
         self.assertEqual(self.export(self.ref_value), [[self.ref_value]])
 
     def test_false_import_compat(self):
-        self.assertEqual(self.export(self.ref_value, context={'import_compat': False}), [[self.ref_record.display_name]])
+        self.assertEqual(self.export(self.ref_value, context={'import_compat': False}),
+                         [[self.ref_record.display_name]])
 
 
 class test_o2m(CreatorCase):
@@ -315,7 +321,8 @@ class test_o2m(CreatorCase):
         )
 
     def test_single_subfield(self):
-        self.assertEqual(self.export([Command.create({'value': 42})], fields=['value', 'value/value']), [['export.one2many.child:42', 42]])
+        self.assertEqual(self.export([Command.create({'value': 42})], fields=['value', 'value/value']),
+                         [['export.one2many.child:42', 42]])
 
     def test_integrate_one_in_parent(self):
         self.assertEqual(self.export([Command.create({'value': 42})], fields=['const', 'value/value']), [[4, 42]])
@@ -423,27 +430,36 @@ class test_o2m_multiple(CreatorCase):
         self.assertEqual(self.export(child1=False, child2=False), [['', '']])
 
     def test_single_per_side(self):
-        self.assertEqual(self.export(child1=False, child2=[Command.create({'value': 42})]), [['', 'export.one2many.child.2:42']])
+        self.assertEqual(self.export(child1=False, child2=[Command.create({'value': 42})]),
+                         [['', 'export.one2many.child.2:42']])
 
-        self.assertEqual(self.export(child1=[Command.create({'value': 43})], child2=False), [['export.one2many.child.1:43', '']])
+        self.assertEqual(self.export(child1=[Command.create({'value': 43})], child2=False),
+                         [['export.one2many.child.1:43', '']])
 
-        self.assertEqual(self.export(child1=[Command.create({'value': 43})], child2=[Command.create({'value': 42})]), [['export.one2many.child.1:43', 'export.one2many.child.2:42']])
+        self.assertEqual(self.export(child1=[Command.create({'value': 43})], child2=[Command.create({'value': 42})]),
+                         [['export.one2many.child.1:43', 'export.one2many.child.2:42']])
 
     def test_single_integrate_subfield(self):
         fields = ['const', 'child1/value', 'child2/value']
-        self.assertEqual(self.export(child1=False, child2=[Command.create({'value': 42})], fields=fields), [[36, '', 42]])
+        self.assertEqual(self.export(child1=False, child2=[Command.create({'value': 42})], fields=fields),
+                         [[36, '', 42]])
 
-        self.assertEqual(self.export(child1=[Command.create({'value': 43})], child2=False, fields=fields), [[36, 43, '']])
+        self.assertEqual(self.export(child1=[Command.create({'value': 43})], child2=False, fields=fields),
+                         [[36, 43, '']])
 
-        self.assertEqual(self.export(child1=[Command.create({'value': 43})], child2=[Command.create({'value': 42})], fields=fields), [[36, 43, 42]])
+        self.assertEqual(
+            self.export(child1=[Command.create({'value': 43})], child2=[Command.create({'value': 42})], fields=fields),
+            [[36, 43, 42]])
 
     def test_multiple(self):
         """With two "concurrent" o2ms, exports the first line combined, then
         exports the rows for the first o2m, then the rows for the second o2m.
         """
         fields = ['const', 'child1/value', 'child2/value']
-        child1 = [Command.create({'value': v, 'str': 'record%.02d' % index}) for index, v in zip(itertools.count(), [4, 42, 36, 4, 13])]
-        child2 = [Command.create({'value': v, 'str': 'record%.02d' % index}) for index, v in zip(itertools.count(10), [8, 12, 8, 55, 33, 13])]
+        child1 = [Command.create({'value': v, 'str': 'record%.02d' % index}) for index, v in
+                  zip(itertools.count(), [4, 42, 36, 4, 13])]
+        child2 = [Command.create({'value': v, 'str': 'record%.02d' % index}) for index, v in
+                  zip(itertools.count(10), [8, 12, 8, 55, 33, 13])]
 
         self.assertEqual(
             self.export(child1=child1, child2=False, fields=fields),
@@ -505,10 +521,12 @@ class test_m2m(CreatorCase):
         )
 
     def test_single_subfield(self):
-        self.assertEqual(self.export([Command.create({'value': 42})], fields=['value', 'value/value'], context={'import_compat': False}), [['export.many2many.other:42', 42]])
+        self.assertEqual(self.export([Command.create({'value': 42})], fields=['value', 'value/value'],
+                                     context={'import_compat': False}), [['export.many2many.other:42', 42]])
 
     def test_integrate_one_in_parent(self):
-        self.assertEqual(self.export([Command.create({'value': 42})], fields=['const', 'value/value'], context={'import_compat': False}), [[4, 42]])
+        self.assertEqual(self.export([Command.create({'value': 42})], fields=['const', 'value/value'],
+                                     context={'import_compat': False}), [[4, 42]])
 
     def test_multiple_records(self):
         self.assertEqual(
@@ -526,7 +544,8 @@ class test_m2m(CreatorCase):
         self.assertEqual(
             self.export(self.commands, fields=['const', 'value']),
             [
-                [4, 'export.many2many.other:4,export.many2many.other:42,export.many2many.other:36,export.many2many.other:4,export.many2many.other:13'],
+                [4,
+                 'export.many2many.other:4,export.many2many.other:42,export.many2many.other:36,export.many2many.other:4,export.many2many.other:13'],
             ],
         )
 
@@ -570,17 +589,22 @@ class test_m2m(CreatorCase):
         ]
         self.env.invalidate_all()
 
-        self.assertEqual(r._export_rows([['value', 'id']]), [['__t__.record000,__t__.record001,__t__.record010,__t__.record011,__t__.record100']])
-        self.assertEqual(r.with_context(import_compat=True)._export_rows([['value', 'id']]), [['__t__.record000,__t__.record001,__t__.record010,__t__.record011,__t__.record100']])
-        self.assertEqual(r.with_context(import_compat=True)._export_rows([['value'], ['value', 'id']]), [['', '__t__.record000,__t__.record001,__t__.record010,__t__.record011,__t__.record100']])
+        self.assertEqual(r._export_rows([['value', 'id']]),
+                         [['__t__.record000,__t__.record001,__t__.record010,__t__.record011,__t__.record100']])
+        self.assertEqual(r.with_context(import_compat=True)._export_rows([['value', 'id']]),
+                         [['__t__.record000,__t__.record001,__t__.record010,__t__.record011,__t__.record100']])
+        self.assertEqual(r.with_context(import_compat=True)._export_rows([['value'], ['value', 'id']]),
+                         [['', '__t__.record000,__t__.record001,__t__.record010,__t__.record011,__t__.record100']])
 
         self.assertEqual(
             r.with_context(import_compat=False)._export_rows([['id'], ['value', 'id'], ['value', 'value']]),
-            [[xid, '__t__.record000', 4], ['', '__t__.record001', 42], ['', '__t__.record010', 36], ['', '__t__.record011', 4], ['', '__t__.record100', 13]],
+            [[xid, '__t__.record000', 4], ['', '__t__.record001', 42], ['', '__t__.record010', 36],
+             ['', '__t__.record011', 4], ['', '__t__.record100', 13]],
         )
         self.assertEqual(
             r.with_context(import_compat=False)._export_rows([['id'], ['value', 'value'], ['value', 'id']]),
-            [[xid, 4, '__t__.record000'], ['', 42, '__t__.record001'], ['', 36, '__t__.record010'], ['', 4, '__t__.record011'], ['', 13, '__t__.record100']],
+            [[xid, 4, '__t__.record000'], ['', 42, '__t__.record001'], ['', 36, '__t__.record010'],
+             ['', 4, '__t__.record011'], ['', 13, '__t__.record100']],
         )
 
 

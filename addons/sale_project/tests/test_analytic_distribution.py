@@ -1,9 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from .common import TestSaleProjectCommon
 from odoo import Command
 from odoo.tests import HttpCase
 from odoo.tests.common import tagged
+from .common import TestSaleProjectCommon
 
 
 @tagged('post_install', '-at_install')

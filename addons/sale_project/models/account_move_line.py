@@ -22,7 +22,8 @@ class AccountMoveLine(models.Model):
         return OR([
             OR([
                 AND([
-                    [(self.env['account.analytic.account'].browse(int(account_id)).root_plan_id._column_name(), "=", int(account_id))]
+                    [(self.env['account.analytic.account'].browse(int(account_id)).root_plan_id._column_name(), "=",
+                      int(account_id))]
                     for account_id in key.split(",")
                 ])
                 for key in line.analytic_distribution or []

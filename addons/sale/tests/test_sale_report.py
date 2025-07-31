@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.sale.tests.common import SaleCommon
+
 from odoo import fields
 from odoo.fields import Command
 from odoo.tests import tagged
 from odoo.tools.float_utils import float_compare
-
-from odoo.addons.sale.tests.common import SaleCommon
 
 
 @tagged('-at_install', 'post_install')
@@ -116,7 +116,7 @@ class TestSaleReportCurrencyRate(SaleCommon):
                     so_company_rate = currency_rates[company.currency_id.id]
                     conversion_rate = (current_company_rate / so_company_rate)
                     expected_reported_amount += (
-                        order.amount_total / order.currency_rate * conversion_rate
+                            order.amount_total / order.currency_rate * conversion_rate
                     )
 
         # The report should show the amount in the current (in this case usd) company currency.
@@ -151,5 +151,8 @@ class TestSaleReportCurrencyRate(SaleCommon):
             []
         )[0]
 
-        self.assertEqual(float_compare(amount_line['untaxed_amount_invoiced'], 200, precision_rounding=order.currency_id.rounding), 0)
-        self.assertEqual(float_compare(amount_line['untaxed_amount_to_invoice'], self.product.lst_price - 200, precision_rounding=order.currency_id.rounding), 0)
+        self.assertEqual(
+            float_compare(amount_line['untaxed_amount_invoiced'], 200, precision_rounding=order.currency_id.rounding),
+            0)
+        self.assertEqual(float_compare(amount_line['untaxed_amount_to_invoice'], self.product.lst_price - 200,
+                                       precision_rounding=order.currency_id.rounding), 0)

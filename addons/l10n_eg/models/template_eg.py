@@ -1,6 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo import models
 from odoo.addons.account.models.chart_template import template
+
+from odoo import models
 
 
 class AccountChartTemplate(models.AbstractModel):
@@ -14,7 +15,7 @@ class AccountChartTemplate(models.AbstractModel):
             'property_account_payable_id': 'egy_account_201002',
             'property_account_expense_categ_id': 'egy_account_400028',
             'property_account_income_categ_id': 'egy_account_500001',
-            }
+        }
 
     @template('eg', 'res.company')
     def _get_eg_res_company(self):

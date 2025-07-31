@@ -9,7 +9,7 @@
                             class="btn btn-primary me-1"
                             t-on-click="createReceiver"
                             t-if="proxyState === 'sender' and (smpRegistration or this.state.isSettingsView)">
-                            Allow reception
+                        Allow reception
                     </button>
                 </div>
                 <div class="mt-3">
@@ -17,7 +17,7 @@
                             class="btn btn-secondary me-1"
                             t-on-click="updateDetails"
                             t-if="['sender', 'smp_registration', 'receiver'].includes(proxyState) and this.state.isSettingsView">
-                            Update
+                        Update
                     </button>
                 </div>
                 <div class="mt-3">
@@ -25,7 +25,7 @@
                             class="btn btn-primary me-1"
                             t-on-click="checkCode"
                             t-if="['not_registered', 'in_verification'].includes(proxyState)">
-                            <t t-out="createButtonLabel"/>
+                        <t t-out="createButtonLabel"/>
                     </button>
                 </div>
                 <div class="mt-3">
@@ -35,7 +35,7 @@
                             t-on-click="sendCode"
                             t-att-disabled="this.state.isSmsButtonDisabled"
                             t-if="proxyState === 'in_verification'">
-                            Send again
+                        Send again
                     </button>
                 </div>
                 <div class="mt-3">
@@ -51,7 +51,7 @@
                             class="btn btn-secondary me-1"
                             t-on-click="deregister"
                             t-if="migrationPrepared === false or ediMode == 'demo'">
-                            <t t-out="deregisterUserButtonLabel"/>
+                        <t t-out="deregisterUserButtonLabel"/>
                     </button>
                 </div>
             </div>

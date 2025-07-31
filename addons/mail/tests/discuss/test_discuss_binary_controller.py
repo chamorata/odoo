@@ -1,7 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import odoo
 from odoo.addons.mail.tests.test_binary_controller import TestBinaryControllerCommon
+
+import odoo
 
 
 @odoo.tests.tagged("-at_install", "post_install")
@@ -16,7 +17,7 @@ class TestDiscussBinaryControllerCommon(TestBinaryControllerCommon):
             name="Public Channel", group_id=None
         )
         cls.partner_ids = (
-            cls.user_public + cls.user_portal + cls.user_employee + cls.user_demo + cls.user_admin
+                cls.user_public + cls.user_portal + cls.user_employee + cls.user_demo + cls.user_admin
         ).partner_id.ids
 
 

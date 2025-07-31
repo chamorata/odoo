@@ -1,6 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.website_sale.controllers.main import WebsiteSale
+
 from odoo.http import request
 
 
@@ -24,8 +25,8 @@ class L10nECWebsiteSale(WebsiteSale):
             **kwargs,
         )
         if (
-            (address_type == 'billing' or use_delivery_as_billing)
-            and request.website.sudo().company_id.country_id.code == 'EC'
+                (address_type == 'billing' or use_delivery_as_billing)
+                and request.website.sudo().company_id.country_id.code == 'EC'
         ):
             can_edit_vat = rendering_values['can_edit_vat']
             LatamIdentificationType = request.env['l10n_latam.identification.type'].sudo()
@@ -51,6 +52,7 @@ class L10nECWebsiteSale(WebsiteSale):
         # Do not show payment methods without l10n_ec_sri_payment_id.
         # Payment methods without this fields could cause issues since we require a l10n_ec_sri_payment_id to post a move.
         if company.account_fiscal_country_id.code == 'EC':
-            payment_methods = payment_values['payment_methods_sudo'].filtered(lambda pm: bool(pm.l10n_ec_sri_payment_id))
+            payment_methods = payment_values['payment_methods_sudo'].filtered(
+                lambda pm: bool(pm.l10n_ec_sri_payment_id))
             payment_values['payment_methods_sudo'] = payment_methods
         return payment_values

@@ -22,17 +22,18 @@ from .modules import module
 
 _logger = logging.getLogger(__name__)
 
+
 def log(logger, level, prefix, msg, depth=None):
     warnings.warn(
         "odoo.netsvc.log is deprecated starting Odoo 18, use normal logging APIs",
         category=DeprecationWarning,
         stacklevel=2,
     )
-    indent=''
-    indent_after=' '*len(prefix)
+    indent = ''
+    indent_after = ' ' * len(prefix)
     for line in (prefix + pprint.pformat(msg, depth=depth)).split('\n'):
-        logger.log(level, indent+line)
-        indent=indent_after
+        logger.log(level, indent + line)
+        indent = indent_after
 
 
 class WatchedFileHandler(logging.handlers.WatchedFileHandler):
@@ -45,6 +46,7 @@ class WatchedFileHandler(logging.handlers.WatchedFileHandler):
     def _open(self):
         return open(self.baseFilename, self.mode, encoding=self.encoding, errors=self.errors)
 
+
 class PostgreSQLHandler(logging.Handler):
     """ PostgreSQL Logging Handler will store logs in the database, by default
     the current database, can be set using --log-db=DBNAME
@@ -54,8 +56,10 @@ class PostgreSQLHandler(logging.Handler):
         super().__init__()
         self._support_metadata = False
         if tools.config['log_db'] != '%d':
-            with contextlib.suppress(Exception), tools.mute_logger('odoo.sql_db'), sql_db.db_connect(tools.config['log_db'], allow_uri=True).cursor() as cr:
-                cr.execute("""SELECT 1 FROM information_schema.columns WHERE table_name='ir_logging' and column_name='metadata'""")
+            with contextlib.suppress(Exception), tools.mute_logger('odoo.sql_db'), sql_db.db_connect(
+                    tools.config['log_db'], allow_uri=True).cursor() as cr:
+                cr.execute(
+                    """SELECT 1 FROM information_schema.columns WHERE table_name='ir_logging' and column_name='metadata'""")
                 self._support_metadata = bool(cr.fetchone())
 
     def emit(self, record):
@@ -64,7 +68,8 @@ class PostgreSQLHandler(logging.Handler):
         dbname = tools.config['log_db'] if tools.config['log_db'] and tools.config['log_db'] != '%d' else ct_db
         if not dbname:
             return
-        with contextlib.suppress(Exception), tools.mute_logger('odoo.sql_db'), sql_db.db_connect(dbname, allow_uri=True).cursor() as cr:
+        with contextlib.suppress(Exception), tools.mute_logger('odoo.sql_db'), sql_db.db_connect(dbname,
+                                                                                                 allow_uri=True).cursor() as cr:
             # preclude risks of deadlocks
             cr.execute("SET LOCAL statement_timeout = 1000")
             msg = str(record.msg)
@@ -99,9 +104,10 @@ class PostgreSQLHandler(logging.Handler):
                 VALUES (NOW() at time zone 'UTC', %s, %s, %s, %s, %s, %s, %s, %s)
             """, val)
 
+
 BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE, _NOTHING, DEFAULT = range(10)
-#The background is set with 40 plus the number of the color, and the foreground with 30
-#These are the sequences needed to get colored output
+# The background is set with 40 plus the number of the color, and the foreground with 30
+# These are the sequences needed to get colored output
 RESET_SEQ = "\033[0m"
 COLOR_SEQ = "\033[1;%dm"
 BOLD_SEQ = "\033[1m"
@@ -113,6 +119,7 @@ LEVEL_COLOR_MAPPING = {
     logging.ERROR: (RED, DEFAULT),
     logging.CRITICAL: (WHITE, RED),
 }
+
 
 class PerfFilter(logging.Filter):
 
@@ -139,6 +146,7 @@ class PerfFilter(logging.Filter):
             record.perf_info = "- - -"
         return True
 
+
 class ColoredPerfFilter(PerfFilter):
     def format_perf(self, query_count, query_time, remaining_time):
         def colorize_time(time, format, low=1, high=5):
@@ -147,11 +155,12 @@ class ColoredPerfFilter(PerfFilter):
             if time > low:
                 return COLOR_PATTERN % (30 + YELLOW, 40 + DEFAULT, format % time)
             return format % time
+
         return (
             colorize_time(query_count, "%d", 100, 1000),
             colorize_time(query_time, "%.3f", 0.1, 3),
             colorize_time(remaining_time, "%.3f", 1, 5),
-            )
+        )
 
     def format_cursor_mode(self, cursor_mode):
         cursor_mode = super().format_cursor_mode(cursor_mode)
@@ -162,11 +171,13 @@ class ColoredPerfFilter(PerfFilter):
         )
         return COLOR_PATTERN % (30 + cursor_mode_color, 40 + DEFAULT, cursor_mode)
 
+
 class DBFormatter(logging.Formatter):
     def format(self, record):
         record.pid = os.getpid()
         record.dbname = getattr(threading.current_thread(), 'dbname', '?')
         return logging.Formatter.format(self, record)
+
 
 class ColoredFormatter(DBFormatter):
     def format(self, record):
@@ -182,6 +193,8 @@ class LogRecord(logging.LogRecord):
 
 
 showwarning = None
+
+
 def init_logger():
     global showwarning  # noqa: PLW0603
     if logging.getLogRecordFactory() is LogRecord:
@@ -198,7 +211,8 @@ def init_logger():
     # enable deprecation warnings (disabled by default)
     warnings.simplefilter('default', category=DeprecationWarning)
     # https://github.com/urllib3/urllib3/issues/2680
-    warnings.filterwarnings('ignore', r'^\'urllib3.contrib.pyopenssl\' module is deprecated.+', category=DeprecationWarning)
+    warnings.filterwarnings('ignore', r'^\'urllib3.contrib.pyopenssl\' module is deprecated.+',
+                            category=DeprecationWarning)
     # ofxparse use an html parser to parse ofx xml files and triggers a warning since bs4 4.11.0
     # https://github.com/jseutter/ofxparse/issues/170
     with contextlib.suppress(ImportError):
@@ -206,33 +220,38 @@ def init_logger():
         warnings.filterwarnings('ignore', category=XMLParsedAsHTMLWarning)
     # ignore a bunch of warnings we can't really fix ourselves
     for module in [
-        'babel.util', # deprecated parser module, no release yet
-        'zeep.loader',# zeep using defusedxml.lxml
-        'reportlab.lib.rl_safe_eval',# reportlab importing ABC from collections
-        'ofxparse',# ofxparse importing ABC from collections
+        'babel.util',  # deprecated parser module, no release yet
+        'zeep.loader',  # zeep using defusedxml.lxml
+        'reportlab.lib.rl_safe_eval',  # reportlab importing ABC from collections
+        'ofxparse',  # ofxparse importing ABC from collections
         'astroid',  # deprecated imp module (fixed in 2.5.1)
-        'requests_toolbelt', # importing ABC from collections (fixed in 0.9)
+        'requests_toolbelt',  # importing ABC from collections (fixed in 0.9)
     ]:
         warnings.filterwarnings('ignore', category=DeprecationWarning, module=module)
 
     # rsjmin triggers this with Python 3.10+ (that warning comes from the C code and has no `module`)
-    warnings.filterwarnings('ignore', r'^PyUnicode_FromUnicode\(NULL, size\) is deprecated', category=DeprecationWarning)
+    warnings.filterwarnings('ignore', r'^PyUnicode_FromUnicode\(NULL, size\) is deprecated',
+                            category=DeprecationWarning)
     # reportlab<4.0.6 triggers this in Py3.10/3.11
-    warnings.filterwarnings('ignore', r'the load_module\(\) method is deprecated', category=DeprecationWarning, module='importlib._bootstrap')
+    warnings.filterwarnings('ignore', r'the load_module\(\) method is deprecated', category=DeprecationWarning,
+                            module='importlib._bootstrap')
     # the SVG guesser thing always compares str and bytes, ignore it
     warnings.filterwarnings('ignore', category=BytesWarning, module='odoo.tools.image')
     # reportlab does a bunch of bytes/str mixing in a hashmap
     warnings.filterwarnings('ignore', category=BytesWarning, module='reportlab.platypus.paraparser')
 
     # need to be adapted later but too muchwork for this pr.
-    warnings.filterwarnings('ignore', r'^datetime.datetime.utcnow\(\) is deprecated and scheduled for removal in a future version.*', category=DeprecationWarning)
+    warnings.filterwarnings('ignore',
+                            r'^datetime.datetime.utcnow\(\) is deprecated and scheduled for removal in a future version.*',
+                            category=DeprecationWarning)
 
     # pkg_ressouce is used in google-auth < 1.23.0 (removed in https://github.com/googleapis/google-auth-library-python/pull/596)
     # unfortunately, in ubuntu jammy and noble, the google-auth version is 1.5.1
     # starting from noble, the default pkg_ressource version emits a warning on import, triggered when importing
     # google-auth
     warnings.filterwarnings('ignore', r'pkg_resources is deprecated as an API.+', category=DeprecationWarning)
-    warnings.filterwarnings('ignore', r'Deprecated call to \`pkg_resources.declare_namespace.+', category=DeprecationWarning)
+    warnings.filterwarnings('ignore', r'Deprecated call to \`pkg_resources.declare_namespace.+',
+                            category=DeprecationWarning)
 
     # This warning is triggered library only during the python precompilation which does not occur on readonly filesystem
     warnings.filterwarnings("ignore", r'invalid escape sequence', category=DeprecationWarning, module=".*vobject")
@@ -254,7 +273,7 @@ def init_logger():
         else:
             handler = logging.handlers.SysLogHandler('/dev/log')
         format = '%s %s' % (release.description, release.version) \
-                + ':%(dbname)s:%(levelname)s:%(name)s:%(message)s'
+                 + ':%(dbname)s:%(levelname)s:%(name)s:%(message)s'
 
     elif tools.config['logfile']:
         # LogFile Handler
@@ -278,7 +297,8 @@ def init_logger():
     def is_a_tty(stream):
         return hasattr(stream, 'fileno') and os.isatty(stream.fileno())
 
-    if os.name == 'posix' and isinstance(handler, logging.StreamHandler) and (is_a_tty(handler.stream) or os.environ.get("ODOO_PY_COLORS")):
+    if os.name == 'posix' and isinstance(handler, logging.StreamHandler) and (
+            is_a_tty(handler.stream) or os.environ.get("ODOO_PY_COLORS")):
         formatter = ColoredFormatter(format)
         perf_filter = ColoredPerfFilter()
     else:
@@ -335,10 +355,12 @@ PSEUDOCONFIG_MAPPER = {
 }
 
 logging.RUNBOT = 25
-logging.addLevelName(logging.RUNBOT, "INFO") # displayed as info in log
+logging.addLevelName(logging.RUNBOT, "INFO")  # displayed as info in log
 IGNORE = {
-    'Comparison between bytes and int', # a.foo != False or some shit, we don't care
+    'Comparison between bytes and int',  # a.foo != False or some shit, we don't care
 }
+
+
 def showwarning_with_traceback(message, category, filename, lineno, file=None, line=None):
     if category is BytesWarning and message.args[0] in IGNORE:
         return
@@ -356,6 +378,9 @@ def showwarning_with_traceback(message, category, filename, lineno, file=None, l
         line=''.join(traceback.format_list(filtered))
     )
 
+
 def runbot(self, message, *args, **kws):
     self.log(logging.RUNBOT, message, *args, **kws)
+
+
 logging.Logger.runbot = runbot

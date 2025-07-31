@@ -28,7 +28,8 @@ class ProductProduct(models.Model):
         try:
             rewards = config_id._get_program_ids().reward_ids
             reward_products = rewards.discount_line_product_id | rewards.reward_product_ids | rewards.reward_product_id
-            trigger_products = config_id._get_program_ids().filtered(lambda p: p.program_type in ['ewallet', 'gift_card']).trigger_product_ids
+            trigger_products = config_id._get_program_ids().filtered(
+                lambda p: p.program_type in ['ewallet', 'gift_card']).trigger_product_ids
 
             loyalty_product_ids = set(reward_products.ids + trigger_products.ids)
             classic_product_ids = {product['id'] for product in res['data']}
@@ -36,7 +37,9 @@ class ProductProduct(models.Model):
             products = products.read(fields=res['fields'], load=False)
             self._process_pos_ui_product_product(products, config_id)
 
-            data['pos.session']['data'][0]['_pos_special_products_ids'] += [product.id for product in reward_products if product.id not in [p["id"] for p in res['data']]]
+            data['pos.session']['data'][0]['_pos_special_products_ids'] += [product.id for product in reward_products if
+                                                                            product.id not in [p["id"] for p in
+                                                                                               res['data']]]
             res['data'].extend(products)
         except AccessError as e:
             _logger.warning('Cannot load loyalty products into the PoS \n%s', e)

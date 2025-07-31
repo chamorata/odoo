@@ -1,10 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.portal.controllers.mail import PortalChatter
 from werkzeug.exceptions import Forbidden
 
 from odoo.http import request
-
-from odoo.addons.portal.controllers.mail import PortalChatter
 from .portal import ProjectCustomerPortal
 
 
@@ -21,10 +20,12 @@ class ProjectSharingChatter(PortalChatter):
             If it is the case, then we give the access token of the task.
         """
         project_sudo = ProjectCustomerPortal._document_check_access(self, 'project.project', project_id, token)
-        can_access = project_sudo and res_model == 'project.task' and project_sudo.with_user(request.env.user)._check_project_sharing_access()
+        can_access = project_sudo and res_model == 'project.task' and project_sudo.with_user(
+            request.env.user)._check_project_sharing_access()
         task = None
         if can_access:
-            task = request.env['project.task'].sudo().with_context(active_test=False).search([('id', '=', res_id), ('project_id', '=', project_sudo.id)])
+            task = request.env['project.task'].sudo().with_context(active_test=False).search(
+                [('id', '=', res_id), ('project_id', '=', project_sudo.id)])
         if not can_access or not task:
             raise Forbidden()
         return task[task._mail_post_token_field]

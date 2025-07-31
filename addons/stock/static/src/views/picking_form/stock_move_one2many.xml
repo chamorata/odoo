@@ -5,7 +5,8 @@
             <t t-if="column.type === 'opendetailsop'">
                 <td class="o_data_cell cursor-pointer o_list_button">
                     <t t-if="record.resModel === 'stock.move' &amp;&amp; record.data?.show_details_visible">
-                        <button name="Open Move" class="btn btn-link fa fa-list" t-on-click="() => props.openRecord(record)"/>
+                        <button name="Open Move" class="btn btn-link fa fa-list"
+                                t-on-click="() => props.openRecord(record)"/>
                     </t>
                 </td>
             </t>

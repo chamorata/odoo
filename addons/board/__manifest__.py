@@ -17,7 +17,7 @@ Allows users to create custom dashboard.
     'data': [
         'security/ir.model.access.csv',
         'views/board_views.xml',
-        ],
+    ],
     'assets': {
         'web.assets_backend': [
             'board/static/src/**/*.scss',

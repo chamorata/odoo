@@ -118,7 +118,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_A5" model="account.report.line">
-                                <field name="name">A5 - Removal from suspensive tax regime (other than petroleum products)</field>
+                                <field name="name">A5 - Removal from suspensive tax regime (other than petroleum
+                                    products)
+                                </field>
                                 <field name="code">box_A5</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_A5_tag" model="account.report.expression">
@@ -187,7 +189,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_B3" model="account.report.line">
-                                <field name="name">B3 - Taxable supplies of electricity, natural gas, heat or cooling in France</field>
+                                <field name="name">B3 - Taxable supplies of electricity, natural gas, heat or cooling in
+                                    France
+                                </field>
                                 <field name="code">box_B3</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_B3_tag" model="account.report.expression">
@@ -210,7 +214,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_B4" model="account.report.line">
-                                <field name="name">B4 - Purchases of goods or services from a taxable person not established in France</field>
+                                <field name="name">B4 - Purchases of goods or services from a taxable person not
+                                    established in France
+                                </field>
                                 <field name="code">box_B4</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_B4_tag" model="account.report.expression">
@@ -307,7 +313,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_E3" model="account.report.line">
-                                <field name="name">E3 - Distance selling taxable in another Member State to non-taxable persons</field>
+                                <field name="name">E3 - Distance selling taxable in another Member State to non-taxable
+                                    persons
+                                </field>
                                 <field name="code">box_E3</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_E3_tag" model="account.report.expression">
@@ -353,7 +361,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_E5" model="account.report.line">
-                                <field name="name">E5 - Removal from suspensive tax regime (other than petroleum products)</field>
+                                <field name="name">E5 - Removal from suspensive tax regime (other than petroleum
+                                    products)
+                                </field>
                                 <field name="code">box_E5</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_E5_tag" model="account.report.expression">
@@ -376,7 +386,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_E6" model="account.report.line">
-                                <field name="name">E6 - Imports under suspensive tax arrangements (other than petroleum products)</field>
+                                <field name="name">E6 - Imports under suspensive tax arrangements (other than petroleum
+                                    products)
+                                </field>
                                 <field name="code">box_E6</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_E6_tag" model="account.report.expression">
@@ -445,7 +457,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_F3" model="account.report.line">
-                                <field name="name">F3 - Non-taxable supplies of electricity, natural gas, heat or cooling in France</field>
+                                <field name="name">F3 - Non-taxable supplies of electricity, natural gas, heat or
+                                    cooling in France
+                                </field>
                                 <field name="code">box_F3</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_F3_tag" model="account.report.expression">
@@ -491,7 +505,8 @@
                                 </field>
                             </record>
                             <record id="tax_report_F5" model="account.report.line">
-                                <field name="name">F5 - Imports of petroleum products under a suspensive tax regime</field>
+                                <field name="name">F5 - Imports of petroleum products under a suspensive tax regime
+                                </field>
                                 <field name="code">box_F5</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_F5_tag" model="account.report.expression">
@@ -537,7 +552,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_F7" model="account.report.line">
-                                <field name="name">F7 - Sales of goods or services by a taxable person not established in France</field>
+                                <field name="name">F7 - Sales of goods or services by a taxable person not established
+                                    in France
+                                </field>
                                 <field name="code">box_F7</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_F7_tag" model="account.report.expression">
@@ -583,7 +600,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_F9" model="account.report.line">
-                                <field name="name">F9 - Internal transactions between members of a single taxable person</field>
+                                <field name="name">F9 - Internal transactions between members of a single taxable
+                                    person
+                                </field>
                                 <field name="code">box_F9</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_F9_tag" model="account.report.expression">
@@ -626,7 +645,8 @@
                                     <record id="tax_report_08_base_tag" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">box_08_base.balance_from_tags + box_08_base.adjustment</field>
+                                        <field name="formula">box_08_base.balance_from_tags + box_08_base.adjustment
+                                        </field>
                                         <field name="subformula">round(0)</field>
                                     </record>
                                     <record id="tax_report_08_base_balance_from_tags" model="account.report.expression">
@@ -666,7 +686,8 @@
                                     <record id="tax_report_09_base_tag" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">box_09_base.balance_from_tags + box_09_base.adjustment</field>
+                                        <field name="formula">box_09_base.balance_from_tags + box_09_base.adjustment
+                                        </field>
                                         <field name="subformula">round(0)</field>
                                     </record>
                                     <record id="tax_report_09_base_balance_from_tags" model="account.report.expression">
@@ -706,7 +727,8 @@
                                     <record id="tax_report_9B_base_tag" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">box_9B_base.balance_from_tags + box_9B_base.adjustment</field>
+                                        <field name="formula">box_9B_base.balance_from_tags + box_9B_base.adjustment
+                                        </field>
                                         <field name="subformula">round(0)</field>
                                     </record>
                                     <record id="tax_report_9B_base_balance_from_tags" model="account.report.expression">
@@ -751,7 +773,8 @@
                                     <record id="tax_report_10_base_tag" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">box_10_base.balance_from_tags + box_10_base.adjustment</field>
+                                        <field name="formula">box_10_base.balance_from_tags + box_10_base.adjustment
+                                        </field>
                                         <field name="subformula">round(0)</field>
                                     </record>
                                     <record id="tax_report_10_base_balance_from_tags" model="account.report.expression">
@@ -791,7 +814,8 @@
                                     <record id="tax_report_11_base_tag" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">box_11_base.balance_from_tags + box_11_base.adjustment</field>
+                                        <field name="formula">box_11_base.balance_from_tags + box_11_base.adjustment
+                                        </field>
                                         <field name="subformula">round(0)</field>
                                     </record>
                                     <record id="tax_report_11_base_balance_from_tags" model="account.report.expression">
@@ -830,13 +854,16 @@
                         <field name="name">Transactions taxable at another rate (metropolitan France or DOM)</field>
                         <field name="children_ids">
                             <record id="tax_report_T1_base" model="account.report.line">
-                                <field name="name">T1 - Transactions carried out in the French overseas departments and taxable at 1.75% (base)</field>
+                                <field name="name">T1 - Transactions carried out in the French overseas departments and
+                                    taxable at 1.75% (base)
+                                </field>
                                 <field name="code">box_T1_base</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_T1_base_tag" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">box_T1_base.balance_from_tags + box_T1_base.adjustment</field>
+                                        <field name="formula">box_T1_base.balance_from_tags + box_T1_base.adjustment
+                                        </field>
                                         <field name="subformula">round(0)</field>
                                     </record>
                                     <record id="tax_report_T1_base_balance_from_tags" model="account.report.expression">
@@ -853,7 +880,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_T1_taxe" model="account.report.line">
-                                <field name="name">T1 - Transactions carried out in the French overseas departments and taxable at 1.75% (tax)</field>
+                                <field name="name">T1 - Transactions carried out in the French overseas departments and
+                                    taxable at 1.75% (tax)
+                                </field>
                                 <field name="code">box_T1_taxe</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_T1_taxe_tag" model="account.report.expression">
@@ -870,13 +899,16 @@
                                 </field>
                             </record>
                             <record id="tax_report_T2_base" model="account.report.line">
-                                <field name="name">T2 - Transactions carried out in the French overseas departments and taxable at 1.05% (base)</field>
+                                <field name="name">T2 - Transactions carried out in the French overseas departments and
+                                    taxable at 1.05% (base)
+                                </field>
                                 <field name="code">box_T2_base</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_T2_base_tag" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">box_T2_base.balance_from_tags + box_T2_base.adjustment</field>
+                                        <field name="formula">box_T2_base.balance_from_tags + box_T2_base.adjustment
+                                        </field>
                                         <field name="subformula">round(0)</field>
                                     </record>
                                     <record id="tax_report_T2_base_balance_from_tags" model="account.report.expression">
@@ -893,7 +925,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_T2_taxe" model="account.report.line">
-                                <field name="name">T2 - Transactions carried out in the French overseas departments and taxable at 1,05% (tax)</field>
+                                <field name="name">T2 - Transactions carried out in the French overseas departments and
+                                    taxable at 1,05% (tax)
+                                </field>
                                 <field name="code">box_T2_taxe</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_T2_taxe_tag" model="account.report.expression">
@@ -910,13 +944,16 @@
                                 </field>
                             </record>
                             <record id="tax_report_T3_base" model="account.report.line">
-                                <field name="name">T3 - Transactions carried out in Corsica and taxable at the rate of 10% (base)</field>
+                                <field name="name">T3 - Transactions carried out in Corsica and taxable at the rate of
+                                    10% (base)
+                                </field>
                                 <field name="code">box_T3_base</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_T3_base_tag" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">box_T3_base.balance_from_tags + box_T3_base.adjustment</field>
+                                        <field name="formula">box_T3_base.balance_from_tags + box_T3_base.adjustment
+                                        </field>
                                         <field name="subformula">round(0)</field>
                                     </record>
                                     <record id="tax_report_T3_base_balance_from_tags" model="account.report.expression">
@@ -933,7 +970,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_T3_taxe" model="account.report.line">
-                                <field name="name">T3 - Transactions carried out in Corsica and taxable at the rate of 10% (tax)</field>
+                                <field name="name">T3 - Transactions carried out in Corsica and taxable at the rate of
+                                    10% (tax)
+                                </field>
                                 <field name="code">box_T3_taxe</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_T3_taxe_tag" model="account.report.expression">
@@ -950,13 +989,16 @@
                                 </field>
                             </record>
                             <record id="tax_report_T4_base" model="account.report.line">
-                                <field name="name">T4 - Transactions carried out in Corsica and taxable at the rate of 2,1% (base)</field>
+                                <field name="name">T4 - Transactions carried out in Corsica and taxable at the rate of
+                                    2,1% (base)
+                                </field>
                                 <field name="code">box_T4_base</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_T4_base_tag" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">box_T4_base.balance_from_tags + box_T4_base.adjustment</field>
+                                        <field name="formula">box_T4_base.balance_from_tags + box_T4_base.adjustment
+                                        </field>
                                         <field name="subformula">round(0)</field>
                                     </record>
                                     <record id="tax_report_T4_base_balance_from_tags" model="account.report.expression">
@@ -973,7 +1015,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_T4_taxe" model="account.report.line">
-                                <field name="name">T4 - Transactions carried out in Corsica and taxable at the rate of 2,1% (tax)</field>
+                                <field name="name">T4 - Transactions carried out in Corsica and taxable at the rate of
+                                    2,1% (tax)
+                                </field>
                                 <field name="code">box_T4_taxe</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_T4_taxe_tag" model="account.report.expression">
@@ -990,13 +1034,16 @@
                                 </field>
                             </record>
                             <record id="tax_report_T5_base" model="account.report.line">
-                                <field name="name">T5 - Transactions carried out in Corsica and taxable at the rate of 0,9% (base)</field>
+                                <field name="name">T5 - Transactions carried out in Corsica and taxable at the rate of
+                                    0,9% (base)
+                                </field>
                                 <field name="code">box_T5_base</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_T5_base_tag" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">box_T5_base.balance_from_tags + box_T5_base.adjustment</field>
+                                        <field name="formula">box_T5_base.balance_from_tags + box_T5_base.adjustment
+                                        </field>
                                         <field name="subformula">round(0)</field>
                                     </record>
                                     <record id="tax_report_T5_base_balance_from_tags" model="account.report.expression">
@@ -1013,7 +1060,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_T5_taxe" model="account.report.line">
-                                <field name="name">T5 - Transactions carried out in Corsica and taxable at the rate of 0,9% (tax)</field>
+                                <field name="name">T5 - Transactions carried out in Corsica and taxable at the rate of
+                                    0,9% (tax)
+                                </field>
                                 <field name="code">box_T5_taxe</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_T5_taxe_tag" model="account.report.expression">
@@ -1030,13 +1079,16 @@
                                 </field>
                             </record>
                             <record id="tax_report_T6_base" model="account.report.line">
-                                <field name="name">T6 - Transactions carried out in mainland France at the rate of 2,1% (base)</field>
+                                <field name="name">T6 - Transactions carried out in mainland France at the rate of 2,1%
+                                    (base)
+                                </field>
                                 <field name="code">box_T6_base</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_T6_base_tag" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">box_T6_base.balance_from_tags + box_T6_base.adjustment</field>
+                                        <field name="formula">box_T6_base.balance_from_tags + box_T6_base.adjustment
+                                        </field>
                                         <field name="subformula">round(0)</field>
                                     </record>
                                     <record id="tax_report_T6_base_balance_from_tags" model="account.report.expression">
@@ -1053,7 +1105,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_T6_taxe" model="account.report.line">
-                                <field name="name">T6 - Transactions carried out in mainland France at the rate of 2,1% (tax)</field>
+                                <field name="name">T6 - Transactions carried out in mainland France at the rate of 2,1%
+                                    (tax)
+                                </field>
                                 <field name="code">box_T6_taxe</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_T6_taxe_tag" model="account.report.expression">
@@ -1076,7 +1130,8 @@
                                     <record id="tax_report_T7_base_tag" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">box_T7_base.balance_from_tags + box_T7_base.adjustment</field>
+                                        <field name="formula">box_T7_base.balance_from_tags + box_T7_base.adjustment
+                                        </field>
                                         <field name="subformula">round(0)</field>
                                     </record>
                                     <record id="tax_report_T7_base_balance_from_tags" model="account.report.expression">
@@ -1110,7 +1165,8 @@
                                     <record id="tax_report_13_base_tag" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">box_13_base.balance_from_tags + box_13_base.adjustment</field>
+                                        <field name="formula">box_13_base.balance_from_tags + box_13_base.adjustment
+                                        </field>
                                         <field name="subformula">round(0)</field>
                                     </record>
                                     <record id="tax_report_13_base_balance_from_tags" model="account.report.expression">
@@ -1144,7 +1200,8 @@
                                     <record id="tax_report_14_base_tag" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">box_14_base.balance_from_tags + box_14_base.adjustment</field>
+                                        <field name="formula">box_14_base.balance_from_tags + box_14_base.adjustment
+                                        </field>
                                         <field name="subformula">round(0)</field>
                                     </record>
                                     <record id="tax_report_14_base_balance_from_tags" model="account.report.expression">
@@ -1183,7 +1240,8 @@
                                     <record id="tax_report_P1_base_tag" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">box_P1_base.balance_from_tags + box_P1_base.adjustment</field>
+                                        <field name="formula">box_P1_base.balance_from_tags + box_P1_base.adjustment
+                                        </field>
                                         <field name="subformula">round(0)</field>
                                     </record>
                                     <record id="tax_report_P1_base_balance_from_tags" model="account.report.expression">
@@ -1223,7 +1281,8 @@
                                     <record id="tax_report_P2_base_tag" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">box_P2_base.balance_from_tags + box_P2_base.adjustment</field>
+                                        <field name="formula">box_P2_base.balance_from_tags + box_P2_base.adjustment
+                                        </field>
                                         <field name="subformula">round(0)</field>
                                     </record>
                                     <record id="tax_report_P2_base_balance_from_tags" model="account.report.expression">
@@ -1268,7 +1327,8 @@
                                     <record id="tax_report_I1_base_tag" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">box_I1_base.balance_from_tags + box_I1_base.adjustment</field>
+                                        <field name="formula">box_I1_base.balance_from_tags + box_I1_base.adjustment
+                                        </field>
                                         <field name="subformula">round(0)</field>
                                     </record>
                                     <record id="tax_report_I1_base_balance_from_tags" model="account.report.expression">
@@ -1308,7 +1368,8 @@
                                     <record id="tax_report_I2_base_tag" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">box_I2_base.balance_from_tags + box_I2_base.adjustment</field>
+                                        <field name="formula">box_I2_base.balance_from_tags + box_I2_base.adjustment
+                                        </field>
                                         <field name="subformula">round(0)</field>
                                     </record>
                                     <record id="tax_report_I2_base_balance_from_tags" model="account.report.expression">
@@ -1348,7 +1409,8 @@
                                     <record id="tax_report_I3_base_tag" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">box_I3_base.balance_from_tags + box_I3_base.adjustment</field>
+                                        <field name="formula">box_I3_base.balance_from_tags + box_I3_base.adjustment
+                                        </field>
                                         <field name="subformula">round(0)</field>
                                     </record>
                                     <record id="tax_report_I3_base_balance_from_tags" model="account.report.expression">
@@ -1388,7 +1450,8 @@
                                     <record id="tax_report_I4_base_tag" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">box_I4_base.balance_from_tags + box_I4_base.adjustment</field>
+                                        <field name="formula">box_I4_base.balance_from_tags + box_I4_base.adjustment
+                                        </field>
                                         <field name="subformula">round(0)</field>
                                     </record>
                                     <record id="tax_report_I4_base_balance_from_tags" model="account.report.expression">
@@ -1428,7 +1491,8 @@
                                     <record id="tax_report_I5_base_tag" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">box_I5_base.balance_from_tags + box_I5_base.adjustment</field>
+                                        <field name="formula">box_I5_base.balance_from_tags + box_I5_base.adjustment
+                                        </field>
                                         <field name="subformula">round(0)</field>
                                     </record>
                                     <record id="tax_report_I5_base_balance_from_tags" model="account.report.expression">
@@ -1468,7 +1532,8 @@
                                     <record id="tax_report_I6_base_tag" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">box_I6_base.balance_from_tags + box_I6_base.adjustment</field>
+                                        <field name="formula">box_I6_base.balance_from_tags + box_I6_base.adjustment
+                                        </field>
                                         <field name="subformula">round(0)</field>
                                     </record>
                                     <record id="tax_report_I6_base_balance_from_tags" model="account.report.expression">
@@ -1524,7 +1589,9 @@
                                         </field>
                                     </record>
                                     <record id="tax_report_15_2" model="account.report.line">
-                                        <field name="name">of which VAT on imported products excluding petroleum products</field>
+                                        <field name="name">of which VAT on imported products excluding petroleum
+                                            products
+                                        </field>
                                         <field name="code">box_15_2</field>
                                         <field name="expression_ids">
                                             <record id="tax_report_15_2_tag" model="account.report.expression">
@@ -1555,7 +1622,15 @@
                                     <record id="tax_report_16_formula" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">box_08_taxe.balance + box_09_taxe.balance + box_9B_taxe.balance + box_10_taxe.balance + box_11_taxe.balance + box_13_taxe.balance + box_14_taxe.balance + box_T1_taxe.balance + box_T2_taxe.balance + box_T3_taxe.balance + box_T4_taxe.balance + box_T5_taxe.balance + box_T6_taxe.balance + box_T7_taxe.balance + box_P1_taxe.balance + box_P2_taxe.balance + box_I1_taxe.balance + box_I2_taxe.balance + box_I3_taxe.balance + box_I4_taxe.balance + box_I5_taxe.balance + box_I6_taxe.balance + box_15.balance + box_5B.balance</field>
+                                        <field name="formula">box_08_taxe.balance + box_09_taxe.balance +
+                                            box_9B_taxe.balance + box_10_taxe.balance + box_11_taxe.balance +
+                                            box_13_taxe.balance + box_14_taxe.balance + box_T1_taxe.balance +
+                                            box_T2_taxe.balance + box_T3_taxe.balance + box_T4_taxe.balance +
+                                            box_T5_taxe.balance + box_T6_taxe.balance + box_T7_taxe.balance +
+                                            box_P1_taxe.balance + box_P2_taxe.balance + box_I1_taxe.balance +
+                                            box_I2_taxe.balance + box_I3_taxe.balance + box_I4_taxe.balance +
+                                            box_I5_taxe.balance + box_I6_taxe.balance + box_15.balance + box_5B.balance
+                                        </field>
                                         <field name="subformula">round(0)</field>
                                     </record>
                                 </field>
@@ -1655,7 +1730,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_22A" model="account.report.line">
-                                <field name="name">22A - Enter the single tax rate applicable for the period if different from 100%</field>
+                                <field name="name">22A - Enter the single tax rate applicable for the period if
+                                    different from 100%
+                                </field>
                                 <field name="code">box_22A</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_22A_tag" model="account.report.expression">
@@ -1673,7 +1750,9 @@
                                     <record id="tax_report_23_formula" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">box_19.balance + box_20.balance + box_21.balance + box_22.balance + box_2C.balance</field>
+                                        <field name="formula">box_19.balance + box_20.balance + box_21.balance +
+                                            box_22.balance + box_2C.balance
+                                        </field>
                                         <field name="subformula">round(0)</field>
                                     </record>
                                 </field>
@@ -1782,7 +1861,8 @@
                                     <record id="tax_report_TIC_total_formula" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">box_TICFE.balance + box_TICGN.balance + box_TICC.balance</field>
+                                        <field name="formula">box_TICFE.balance + box_TICGN.balance + box_TICC.balance
+                                        </field>
                                         <field name="subformula">round(0)</field>
                                     </record>
                                 </field>
@@ -1885,7 +1965,8 @@
                             <record id="tax_report_Y4" model="account.report.line">
                                 <field name="name">Y4</field>
                                 <field name="code">box_Y4</field>
-                                <field name="aggregation_formula">box_Y1.balance + box_Y2.balance + box_Y3.balance</field>
+                                <field name="aggregation_formula">box_Y1.balance + box_Y2.balance + box_Y3.balance
+                                </field>
                             </record>
                         </field>
                     </record>
@@ -1958,7 +2039,9 @@
                         </field>
                     </record>
                     <record id="tax_report_AA" model="account.report.line">
-                        <field name="name">AA - VAT credit transferred to the head company on the recapitulative return 3310-CA3G</field>
+                        <field name="name">AA - VAT credit transferred to the head company on the recapitulative return
+                            3310-CA3G
+                        </field>
                         <field name="code">box_AA</field>
                         <field name="expression_ids">
                             <record id="tax_report_AA_tag" model="account.report.expression">
@@ -2000,7 +2083,9 @@
                         <field name="aggregation_formula">box_Y4.balance</field>
                     </record>
                     <record id="tax_report_Y6" model="account.report.line">
-                        <field name="name">Y6 - TIC credit transferred to the head company on the 3310-CA3G recapitulative return (carried forward from line Y4)</field>
+                        <field name="name">Y6 - TIC credit transferred to the head company on the 3310-CA3G
+                            recapitulative return (carried forward from line Y4)
+                        </field>
                         <field name="code">box_Y6</field>
                     </record>
                     <record id="tax_report_X5" model="account.report.line">
@@ -2032,12 +2117,15 @@
                         </field>
                     </record>
                     <record id="tax_report_Z5" model="account.report.line">
-                        <field name="name">Z5 - Total domestic consumption tax due (carried forward from line Z4)</field>
+                        <field name="name">Z5 - Total domestic consumption tax due (carried forward from line Z4)
+                        </field>
                         <field name="code">box_Z5</field>
                         <field name="aggregation_formula">box_Z4.balance</field>
                     </record>
                     <record id="tax_report_AB" model="account.report.line">
-                        <field name="name">AB - Total to be paid by the head company on the recapitulative declaration 3310-CA3G</field>
+                        <field name="name">AB - Total to be paid by the head company on the recapitulative declaration
+                            3310-CA3G
+                        </field>
                         <field name="code">box_AB</field>
                     </record>
                     <record id="tax_report_32" model="account.report.line">

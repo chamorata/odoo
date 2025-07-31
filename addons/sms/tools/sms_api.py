@@ -1,24 +1,28 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import exceptions
 from odoo.addons.iap.tools import iap_tools
+
+from odoo import exceptions
 from odoo.tools.translate import _, LazyTranslate
 
 _lt = LazyTranslate(__name__)
 
 ERROR_MESSAGES = {
     # Errors that could occur while updating sender name
-    'format_error': _lt("Your sender name must be between 3 and 11 characters long and only contain alphanumeric characters."),
+    'format_error': _lt(
+        "Your sender name must be between 3 and 11 characters long and only contain alphanumeric characters."),
     'unregistered_account': _lt("Your sms account has not been activated yet."),
     'existing_sender': _lt("This account already has an existing sender name and it cannot be changed."),
 
     # Errors that could occur while sending the verification code
-    'invalid_phone_number': _lt("Invalid phone number. Please make sure to follow the international format, i.e. a plus sign (+), then country code, city code, and local phone number. For example: +1 555-555-555"),
+    'invalid_phone_number': _lt(
+        "Invalid phone number. Please make sure to follow the international format, i.e. a plus sign (+), then country code, city code, and local phone number. For example: +1 555-555-555"),
     'verification_sms_delivery': _lt(
         "We were not able to reach you via your phone number. "
         "If you have requested multiple codes recently, please retry later."
     ),
-    'closed_feature': _lt("The SMS Service is currently unavailable for new users and new accounts registrations are suspended."),
+    'closed_feature': _lt(
+        "The SMS Service is currently unavailable for new users and new accounts registrations are suspended."),
     'banned_account': _lt("This phone number/account has been banned from our service."),
 
     # Errors that could occur while verifying the code

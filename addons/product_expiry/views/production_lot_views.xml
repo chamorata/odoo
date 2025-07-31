@@ -3,27 +3,27 @@
     <record id="view_move_form_expiry" model="ir.ui.view">
         <field name="name">stock.production.lot.inherit.form</field>
         <field name="model">stock.lot</field>
-        <field name="inherit_id" ref="stock.view_production_lot_form" />
+        <field name="inherit_id" ref="stock.view_production_lot_form"/>
         <field name="arch" type="xml">
-        <xpath expr="//page[@name='description']" position="before">
-            <page string="Dates" name="expiration_dates" invisible="not use_expiration_date">
-                <field name="use_expiration_date" invisible="1"/>
-                <group>
+            <xpath expr="//page[@name='description']" position="before">
+                <page string="Dates" name="expiration_dates" invisible="not use_expiration_date">
+                    <field name="use_expiration_date" invisible="1"/>
                     <group>
-                        <field name="expiration_date" />
-                        <field name="removal_date" />
+                        <group>
+                            <field name="expiration_date"/>
+                            <field name="removal_date"/>
+                        </group>
+                        <group>
+                            <field name="use_date"/>
+                            <field name="alert_date"/>
+                        </group>
                     </group>
-                    <group>
-                        <field name="use_date" />
-                        <field name="alert_date" />
-                    </group>
-                </group>
-            </page>
-        </xpath>
-        <xpath expr="//div[hasclass('oe_title')]" position="inside">
-            <field name="product_expiry_alert" invisible="1"/>
-            <span class="badge text-bg-danger" invisible="not product_expiry_alert">Expiration Alert</span>
-        </xpath>
+                </page>
+            </xpath>
+            <xpath expr="//div[hasclass('oe_title')]" position="inside">
+                <field name="product_expiry_alert" invisible="1"/>
+                <span class="badge text-bg-danger" invisible="not product_expiry_alert">Expiration Alert</span>
+            </xpath>
         </field>
     </record>
 
@@ -33,10 +33,11 @@
         <field name="inherit_id" ref="stock.search_product_lot_filter"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='product_id']" position="after">
-                <filter string="Expiration Alerts" name="expiration_alerts" domain="[('alert_date', '&lt;=', time.strftime('%Y-%m-%d %H:%M:%S'))]"/>
+                <filter string="Expiration Alerts" name="expiration_alerts"
+                        domain="[('alert_date', '&lt;=', time.strftime('%Y-%m-%d %H:%M:%S'))]"/>
             </xpath>
         </field>
-     </record>
+    </record>
 
     <record id="view_production_lot_view_tree" model="ir.ui.view">
         <field name="name">stock.production.lot.list.inherit.product.expiry</field>
@@ -72,11 +73,11 @@
             <xpath expr="//field[@name='product_id']" position="after">
                 <div invisible="not expiration_date">
                     <div>
-                        <label for="expiration_date">Expiration: </label>
+                        <label for="expiration_date">Expiration:</label>
                         <field class="ms-2" name="expiration_date"/>
                     </div>
                     <div>
-                        <label for="removal_date">Removal: </label>
+                        <label for="removal_date">Removal:</label>
                         <field class="ms-2" name="removal_date"/>
                     </div>
                 </div>

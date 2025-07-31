@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.exceptions import UserError
 from odoo.addons.project.tests.test_project_base import TestProjectCommon
+
+from odoo.exceptions import UserError
 
 
 class TestProjectTaskType(TestProjectCommon):
@@ -21,18 +22,18 @@ class TestProjectTaskType(TestProjectCommon):
         Verify that 'user_id' is removed when a stage is created with `project_ids` set or set by default to the curent user if not
         '''
         self.assertFalse(self.env['project.task.type'].create({
-                'name': 'New Stage',
-                'user_id': self.uid,
-                'project_ids': [self.project_goats.id],
-            }).user_id,
-            "user_id should be reset if a project is set on the current stage",
-        )
+            'name': 'New Stage',
+            'user_id': self.uid,
+            'project_ids': [self.project_goats.id],
+        }).user_id,
+                         "user_id should be reset if a project is set on the current stage",
+                         )
         self.assertEqual(self.env['project.task.type'].create({
-                'name': 'Other new Stage',
-            }).user_id.id,
-            self.env.uid,
-            "user_id should be set to the current user if no project is set at stage creation",
-        )
+            'name': 'Other new Stage',
+        }).user_id.id,
+                         self.env.uid,
+                         "user_id should be set to the current user if no project is set at stage creation",
+                         )
 
     def test_modify_existing_stage(self):
         '''

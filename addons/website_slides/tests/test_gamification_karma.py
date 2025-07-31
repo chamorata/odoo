@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.website_slides.tests import common
+
 from odoo.tests import tagged
 from odoo.tests.common import users
 from odoo.tools import mute_logger
@@ -30,13 +31,13 @@ class TestKarmaGain(common.SlidesCase):
              'slide_category': 'document',
              'is_published': True,
              'completion_time': 2.0,
-            },
+             },
             {'name': 'How to duplicate yourself',
              'channel_id': self.channel_2.id,
              'slide_category': 'document',
              'is_published': True,
              'completion_time': 2.0,
-            }
+             }
         ])
 
     @mute_logger('odoo.models')
@@ -115,7 +116,8 @@ class TestKarmaGain(common.SlidesCase):
         (self.channel | self.channel_2)._action_add_members(user.partner_id)
 
         computed_karma += self.channel.karma_gen_channel_finish + self.channel_2.karma_gen_channel_finish
-        (self.slide | self.slide_2 | self.slide_3 | self.slide_2_0 | self.slide_2_1).with_user(user)._action_mark_completed()
+        (self.slide | self.slide_2 | self.slide_3 | self.slide_2_0 | self.slide_2_1).with_user(
+            user)._action_mark_completed()
         self.assertEqual(user.karma, computed_karma)
 
     @mute_logger('odoo.models')

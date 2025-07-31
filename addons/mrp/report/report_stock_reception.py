@@ -10,7 +10,8 @@ class ReceptionReport(models.AbstractModel):
 
     def _get_docs(self, docids):
         if self.env.context.get('default_production_ids'):
-            return self.env['mrp.production'].search([('id', 'in', self.env.context.get('default_production_ids')), ('state', '!=', 'cancel')])
+            return self.env['mrp.production'].search(
+                [('id', 'in', self.env.context.get('default_production_ids')), ('state', '!=', 'cancel')])
         return super()._get_docs(docids)
 
     def _get_doc_model(self):

@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+import logging
 from collections import defaultdict
 from unittest.mock import patch
-import logging
 
+from odoo import Command
 from odoo.addons.base.tests.common import SavepointCaseWithUserDemo
 from odoo.tests.common import TransactionCase, users, warmup, tagged
 from odoo.tools import mute_logger, sql
-from odoo import Command
 
 _logger = logging.getLogger(__name__)
 
@@ -668,7 +668,8 @@ class TestPerformance(SavepointCaseWithUserDemo):
 
         old_compute_display_name = self.registry['res.partner']._compute_display_name
 
-        with patch.object(self.registry['res.partner'], '_compute_display_name', side_effect=old_compute_display_name, autospec=True) as compute_display_name_spy:
+        with patch.object(self.registry['res.partner'], '_compute_display_name', side_effect=old_compute_display_name,
+                          autospec=True) as compute_display_name_spy:
             model.read_group([], ['__count'], ['partner_id', 'value'], lazy=False)
             compute_display_name_spy.assert_called_once()
             self.assertEqual(compute_display_name_spy.call_args.args[0].id, all_records[0].partner_id.id)
@@ -770,6 +771,7 @@ class TestIncrementFieldsSkipLock(TransactionCase):
     tests as we make sure to check the integrity of the results whether
     any record was updated or not.
     """
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -801,12 +803,15 @@ class TestIncrementFieldsSkipLock(TransactionCase):
 
         with self.assertQueryCount(1):  # Read
             if did_update:
-                self.assertEqual(self.record.value, 2, "according to increment_fields_skiplock's output, this number should have been incremented.")
+                self.assertEqual(self.record.value, 2,
+                                 "according to increment_fields_skiplock's output, this number should have been incremented.")
             else:
                 # Making sure the test random locks do not break the test; but updated and the values must be consistent
-                self.assertEqual(self.record.value, 1, "according to increment_fields_skiplock output's, this number should NOT have been incremented.")
+                self.assertEqual(self.record.value, 1,
+                                 "according to increment_fields_skiplock output's, this number should NOT have been incremented.")
 
-            self.assertEqual(self.record.value_plus_one, 2, "This value should not have been incremented, irrespective of the presence of a lock or not.")
+            self.assertEqual(self.record.value_plus_one, 2,
+                             "This value should not have been incremented, irrespective of the presence of a lock or not.")
 
         self.assertEqual(self.other_record.value, 10, "other_record should not have been updated.")
         self.assertEqual(self.other_record.value_plus_one, 11, "other_record should not have been updated.")
@@ -823,11 +828,15 @@ class TestIncrementFieldsSkipLock(TransactionCase):
 
         with self.assertQueryCount(1):  # Read
             if did_update:
-                self.assertEqual(self.record.value, 2, "according to increment_fields_skiplock's output, this number should have been incremented.")
-                self.assertEqual(self.record.value_plus_one, 3, "according to increment_fields_skiplock's output, this number should have been incremented.")
+                self.assertEqual(self.record.value, 2,
+                                 "according to increment_fields_skiplock's output, this number should have been incremented.")
+                self.assertEqual(self.record.value_plus_one, 3,
+                                 "according to increment_fields_skiplock's output, this number should have been incremented.")
             else:  # Making sure the test random locks do not break the test; but updated and the values must be consistent
-                self.assertEqual(self.record.value, 1, "according to increment_fields_skiplock output's, this number should NOT have been incremented.")
-                self.assertEqual(self.record.value_plus_one, 2, "according to increment_fields_skiplock's output, this number should NOT have been incremented.")
+                self.assertEqual(self.record.value, 1,
+                                 "according to increment_fields_skiplock output's, this number should NOT have been incremented.")
+                self.assertEqual(self.record.value_plus_one, 2,
+                                 "according to increment_fields_skiplock's output, this number should NOT have been incremented.")
 
         self.assertEqual(self.other_record.value, 10, "other_record should not have been updated.")
         self.assertEqual(self.other_record.value_plus_one, 11, "other_record should not have been updated.")
@@ -837,7 +846,8 @@ class TestIncrementFieldsSkipLock(TransactionCase):
         When an integer is NULL in database, the ORM automatically converts it to 0.
         However, increment_fields_skiplock is a special tool using raw sql and by-passing the ORM"""
         # First, ensure our value is NULL in database
-        self.env.cr.execute("SELECT value_null_by_default FROM test_performance_mozzarella WHERE id = %s", (self.record.id,))
+        self.env.cr.execute("SELECT value_null_by_default FROM test_performance_mozzarella WHERE id = %s",
+                            (self.record.id,))
         [value] = self.env.cr.fetchone()
         self.assertIsNone(value)
         self.assertEqual(self.record.value_null_by_default, 0)

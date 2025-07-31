@@ -8,13 +8,11 @@ import pprint
 from wsgiref.handlers import format_date_time
 
 import requests
+from odoo.addons.payment_worldline import const
 
 from odoo import _, fields, models
 from odoo.exceptions import ValidationError
 from odoo.fields import Datetime
-
-from odoo.addons.payment_worldline import const
-
 
 _logger = logging.getLogger(__name__)
 
@@ -112,7 +110,7 @@ class PaymentProvider(models.Model):
             return 'https://payment.preprod.direct.worldline-solutions.com'
 
     def _worldline_calculate_signature(
-        self, method, endpoint, content_type, dt_rfc, idempotency_key=None
+            self, method, endpoint, content_type, dt_rfc, idempotency_key=None
     ):
         """ Compute the signature for the provided data.
 

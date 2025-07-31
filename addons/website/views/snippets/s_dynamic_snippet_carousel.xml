@@ -10,8 +10,9 @@
             <t t-set="snippet_name" t-value="snippet_name"/>
             <t t-set="snippet_selector" t-value="snippet_selector"/>
             <we-input string="Slider Speed"
-                  data-select-data-attribute="1s" data-name="speed_opt" data-attribute-name="carouselInterval" data-no-preview="true"
-                  data-unit="s" data-save-unit="ms" data-step="0.1"/>
+                      data-select-data-attribute="1s" data-name="speed_opt" data-attribute-name="carouselInterval"
+                      data-no-preview="true"
+                      data-unit="s" data-save-unit="ms" data-step="0.1"/>
             <t t-out="0"/>
         </t>
     </template>
@@ -24,22 +25,22 @@
         </xpath>
     </template>
 
-<record id="website.s_dynamic_snippet_carousel_000_scss" model="ir.asset">
-    <field name="name">Dynamic snippet carousel 000 SCSS</field>
-    <field name="bundle">web.assets_frontend</field>
-    <field name="path">website/static/src/snippets/s_dynamic_snippet_carousel/000.scss</field>
-</record>
+    <record id="website.s_dynamic_snippet_carousel_000_scss" model="ir.asset">
+        <field name="name">Dynamic snippet carousel 000 SCSS</field>
+        <field name="bundle">web.assets_frontend</field>
+        <field name="path">website/static/src/snippets/s_dynamic_snippet_carousel/000.scss</field>
+    </record>
 
-<record id="website.s_dynamic_snippet_carousel_000_js" model="ir.asset">
-    <field name="name">Dynamic snippet carousel 000 JS</field>
-    <field name="bundle">web.assets_frontend</field>
-    <field name="path">website/static/src/snippets/s_dynamic_snippet_carousel/000.js</field>
-</record>
+    <record id="website.s_dynamic_snippet_carousel_000_js" model="ir.asset">
+        <field name="name">Dynamic snippet carousel 000 JS</field>
+        <field name="bundle">web.assets_frontend</field>
+        <field name="path">website/static/src/snippets/s_dynamic_snippet_carousel/000.js</field>
+    </record>
 
-<record id="website.s_dynamic_snippet_carousel_000_xml" model="ir.asset">
-    <field name="name">Dynamic snippet carousel 000 XML</field>
-    <field name="bundle">web.assets_frontend</field>
-    <field name="path">website/static/src/snippets/s_dynamic_snippet_carousel/000.xml</field>
-</record>
+    <record id="website.s_dynamic_snippet_carousel_000_xml" model="ir.asset">
+        <field name="name">Dynamic snippet carousel 000 XML</field>
+        <field name="bundle">web.assets_frontend</field>
+        <field name="path">website/static/src/snippets/s_dynamic_snippet_carousel/000.xml</field>
+    </record>
 
 </odoo>

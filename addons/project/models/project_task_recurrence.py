@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from dateutil.relativedelta import relativedelta
+
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
-from dateutil.relativedelta import relativedelta
 
 class ProjectTaskRecurrence(models.Model):
     _name = 'project.task.recurrence'
@@ -67,8 +68,9 @@ class ProjectTaskRecurrence(models.Model):
         self.ensure_one()
         # Prevent double mail_followers creation
         if (
-            self.repeat_type != 'until' or not occurrence_from.date_deadline or
-            self.repeat_until and (occurrence_from.date_deadline + self._get_recurrence_delta()).date() <= self.repeat_until
+                self.repeat_type != 'until' or not occurrence_from.date_deadline or
+                self.repeat_until and (
+                occurrence_from.date_deadline + self._get_recurrence_delta()).date() <= self.repeat_until
         ):
             occurrence_from.with_context(copy_project=True).sudo().copy(
                 self._create_next_occurrence_values(occurrence_from)
@@ -90,8 +92,10 @@ class ProjectTaskRecurrence(models.Model):
         })
 
         create_values['priority'] = '0'
-        create_values['stage_id'] = occurrence_from.project_id.type_ids[0].id if occurrence_from.project_id.type_ids else occurrence_from.stage_id.id
+        create_values['stage_id'] = occurrence_from.project_id.type_ids[
+            0].id if occurrence_from.project_id.type_ids else occurrence_from.stage_id.id
         create_values['child_ids'] = [
-            child.with_context(copy_project=True).sudo().copy(self._create_next_occurrence_values(child)).id for child in occurrence_from.with_context(active_test=False).child_ids
+            child.with_context(copy_project=True).sudo().copy(self._create_next_occurrence_values(child)).id for child
+            in occurrence_from.with_context(active_test=False).child_ids
         ]
         return create_values

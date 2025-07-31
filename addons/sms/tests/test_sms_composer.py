@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 from odoo.addons.sms.models.mail_thread import MailThread
 from odoo.addons.sms.tests.common import SMSCommon, SMSCase
+
 from odoo.tests import tagged
 
 
@@ -26,9 +27,10 @@ class TestSMSComposerComment(SMSCommon, SMSCase):
                 '<p>Hello there, check this awesome &lt;b&gt;app&lt;/b&gt; I found:&lt;br/&gt;<a href="https://odoo.com" target="_blank" rel="noreferrer noopener">https://odoo.com</a></p>',
                 'Hello there, check this awesome <b>app</b> I found:<br/>https://odoo.com'
             ), (
-                'Hello there, check this awesome <b>app</b> I found:<br/><a href="https://odoo.com">Here</a>',   # a link
+                'Hello there, check this awesome <b>app</b> I found:<br/><a href="https://odoo.com">Here</a>',  # a link
                 '<p>Hello there, check this awesome &lt;b&gt;app&lt;/b&gt; I found:&lt;br/&gt;&lt;a href="<a href="https://odoo.com" target="_blank" rel="noreferrer noopener">https://odoo.com</a>"&gt;Here&lt;/a&gt;</p>',
-                'Hello there, check this awesome <b>app</b> I found:<br/><a href="https://odoo.com">Here</a>'  # keep all information
+                'Hello there, check this awesome <b>app</b> I found:<br/><a href="https://odoo.com">Here</a>'
+            # keep all information
             )
         ]
 

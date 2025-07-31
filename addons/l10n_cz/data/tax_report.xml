@@ -49,18 +49,22 @@
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
                     <record id="l10n_cz_vat_declaration_line_2" model="account.report.line">
-                        <field name="name">Supply of goods or services with a place of performance in the domestic territory</field>
+                        <field name="name">Supply of goods or services with a place of performance in the domestic
+                            territory
+                        </field>
                         <field name="children_ids">
                             <record id="l10n_cz_vat_declaration_line_3" model="account.report.line">
                                 <field name="name">Basic - line 1</field>
                                 <field name="code">R1</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_cz_vat_declaration_line_3_tax_base" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_3_tax_base"
+                                            model="account.report.expression">
                                         <field name="label">tax_base</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">VAT 1 Base</field>
                                     </record>
-                                    <record id="l10n_cz_vat_declaration_line_3_output_tax" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_3_output_tax"
+                                            model="account.report.expression">
                                         <field name="label">output_tax</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">VAT 1 Tax</field>
@@ -71,12 +75,14 @@
                                 <field name="name">Reduced - line 2</field>
                                 <field name="code">R2</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_cz_vat_declaration_line_4_tax_base" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_4_tax_base"
+                                            model="account.report.expression">
                                         <field name="label">tax_base</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">VAT 2 Base</field>
                                     </record>
-                                    <record id="l10n_cz_vat_declaration_line_4_output_tax" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_4_output_tax"
+                                            model="account.report.expression">
                                         <field name="label">output_tax</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">VAT 2 Tax</field>
@@ -86,18 +92,21 @@
                         </field>
                     </record>
                     <record id="l10n_cz_vat_declaration_line_5" model="account.report.line">
-                        <field name="name">Acquisition of goods from another Member State (16;17(6)(e);19(3)/19(6))</field>
+                        <field name="name">Acquisition of goods from another Member State (16;17(6)(e);19(3)/19(6))
+                        </field>
                         <field name="children_ids">
                             <record id="l10n_cz_vat_declaration_line_6" model="account.report.line">
                                 <field name="name">Basic - line 3</field>
                                 <field name="code">R3</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_cz_vat_declaration_line_6_tax_base" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_6_tax_base"
+                                            model="account.report.expression">
                                         <field name="label">tax_base</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">VAT 3 Base</field>
                                     </record>
-                                    <record id="l10n_cz_vat_declaration_line_6_output_tax" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_6_output_tax"
+                                            model="account.report.expression">
                                         <field name="label">output_tax</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">VAT 3 Tax</field>
@@ -108,12 +117,14 @@
                                 <field name="name">Reduced - line 4</field>
                                 <field name="code">R4</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_cz_vat_declaration_line_7_tax_base" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_7_tax_base"
+                                            model="account.report.expression">
                                         <field name="label">tax_base</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">VAT 4 Base</field>
                                     </record>
-                                    <record id="l10n_cz_vat_declaration_line_7_output_tax" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_7_output_tax"
+                                            model="account.report.expression">
                                         <field name="label">output_tax</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">VAT 4 Tax</field>
@@ -123,18 +134,22 @@
                         </field>
                     </record>
                     <record id="l10n_cz_vat_declaration_line_8" model="account.report.line">
-                        <field name="name">Receipt of services with a place of supply referred to in Article 9(1) from a person registered for tax in another Member State</field>
+                        <field name="name">Receipt of services with a place of supply referred to in Article 9(1) from a
+                            person registered for tax in another Member State
+                        </field>
                         <field name="children_ids">
                             <record id="l10n_cz_vat_declaration_line_9" model="account.report.line">
                                 <field name="name">Basic - line 5</field>
                                 <field name="code">R5</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_cz_vat_declaration_line_9_tax_base" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_9_tax_base"
+                                            model="account.report.expression">
                                         <field name="label">tax_base</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">VAT 5 Base</field>
                                     </record>
-                                    <record id="l10n_cz_vat_declaration_line_9_output_tax" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_9_output_tax"
+                                            model="account.report.expression">
                                         <field name="label">output_tax</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">VAT 5 Tax</field>
@@ -145,12 +160,14 @@
                                 <field name="name">Reduced - line 6</field>
                                 <field name="code">R6</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_cz_vat_declaration_line_10_tax_base" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_10_tax_base"
+                                            model="account.report.expression">
                                         <field name="label">tax_base</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">VAT 6 Base</field>
                                     </record>
-                                    <record id="l10n_cz_vat_declaration_line_10_output_tax" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_10_output_tax"
+                                            model="account.report.expression">
                                         <field name="label">output_tax</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">VAT 6 Tax</field>
@@ -166,12 +183,14 @@
                                 <field name="name">Basic - line 7</field>
                                 <field name="code">R7</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_cz_vat_declaration_line_12_tax_base" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_12_tax_base"
+                                            model="account.report.expression">
                                         <field name="label">tax_base</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">VAT 7 Base</field>
                                     </record>
-                                    <record id="l10n_cz_vat_declaration_line_12_output_tax" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_12_output_tax"
+                                            model="account.report.expression">
                                         <field name="label">output_tax</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">VAT 7 Tax</field>
@@ -182,12 +201,14 @@
                                 <field name="name">Reduced - line 8</field>
                                 <field name="code">R8</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_cz_vat_declaration_line_13_tax_base" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_13_tax_base"
+                                            model="account.report.expression">
                                         <field name="label">tax_base</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">VAT 8 Base</field>
                                     </record>
-                                    <record id="l10n_cz_vat_declaration_line_13_output_tax" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_13_output_tax"
+                                            model="account.report.expression">
                                         <field name="label">output_tax</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">VAT 8 Tax</field>
@@ -213,18 +234,21 @@
                         </field>
                     </record>
                     <record id="l10n_cz_vat_declaration_line_15" model="account.report.line">
-                        <field name="name">Tax reverse charge scheme (92a) - buyer of goods or recipient of services</field>
+                        <field name="name">Tax reverse charge scheme (92a) - buyer of goods or recipient of services
+                        </field>
                         <field name="children_ids">
                             <record id="l10n_cz_vat_declaration_line_16" model="account.report.line">
                                 <field name="name">Basic - line 10</field>
                                 <field name="code">R10</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_cz_vat_declaration_line_16_tax_base" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_16_tax_base"
+                                            model="account.report.expression">
                                         <field name="label">tax_base</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">VAT 10 Base</field>
                                     </record>
-                                    <record id="l10n_cz_vat_declaration_line_16_output_tax" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_16_output_tax"
+                                            model="account.report.expression">
                                         <field name="label">output_tax</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">VAT 10 Tax</field>
@@ -235,12 +259,14 @@
                                 <field name="name">Reduced - line 11</field>
                                 <field name="code">R11</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_cz_vat_declaration_line_17_tax_base" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_17_tax_base"
+                                            model="account.report.expression">
                                         <field name="label">tax_base</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">VAT 11 Base</field>
                                     </record>
-                                    <record id="l10n_cz_vat_declaration_line_17_output_tax" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_17_output_tax"
+                                            model="account.report.expression">
                                         <field name="label">output_tax</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">VAT 11 Tax</field>
@@ -250,18 +276,22 @@
                         </field>
                     </record>
                     <record id="l10n_cz_vat_declaration_line_18" model="account.report.line">
-                        <field name="name">Other taxable supplies which are subject to the obligation to declare tax on receipt (108)</field>
+                        <field name="name">Other taxable supplies which are subject to the obligation to declare tax on
+                            receipt (108)
+                        </field>
                         <field name="children_ids">
                             <record id="l10n_cz_vat_declaration_line_19" model="account.report.line">
                                 <field name="name">Basic - line 12</field>
                                 <field name="code">R12</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_cz_vat_declaration_line_19_tax_base" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_19_tax_base"
+                                            model="account.report.expression">
                                         <field name="label">tax_base</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">VAT 12 Base</field>
                                     </record>
-                                    <record id="l10n_cz_vat_declaration_line_19_output_tax" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_19_output_tax"
+                                            model="account.report.expression">
                                         <field name="label">output_tax</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">VAT 12 Tax</field>
@@ -272,12 +302,14 @@
                                 <field name="name">Reduced - line 13</field>
                                 <field name="code">R13</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_cz_vat_declaration_line_20_tax_base" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_20_tax_base"
+                                            model="account.report.expression">
                                         <field name="label">tax_base</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">VAT 13 Base</field>
                                     </record>
-                                    <record id="l10n_cz_vat_declaration_line_20_output_tax" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_20_output_tax"
+                                            model="account.report.expression">
                                         <field name="label">output_tax</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">VAT 13 Tax</field>
@@ -289,7 +321,9 @@
                 </field>
             </record>
             <record id="l10n_cz_vat_declaration_line_21" model="account.report.line">
-                <field name="name">II. Other supplies and supplies with a place of supply outside the domestic territory with a right to tax deduction</field>
+                <field name="name">II. Other supplies and supplies with a place of supply outside the domestic territory
+                    with a right to tax deduction
+                </field>
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
                     <record id="l10n_cz_vat_declaration_line_22" model="account.report.line">
@@ -304,7 +338,9 @@
                         </field>
                     </record>
                     <record id="l10n_cz_vat_declaration_line_23" model="account.report.line">
-                        <field name="name">Supply of services with a place of supply in another Member State as defined in Article 102(1)(d) and (2) - line 21</field>
+                        <field name="name">Supply of services with a place of supply in another Member State as defined
+                            in Article 102(1)(d) and (2) - line 21
+                        </field>
                         <field name="code">R21</field>
                         <field name="expression_ids">
                             <record id="l10n_cz_vat_declaration_line_23_value" model="account.report.expression">
@@ -326,7 +362,9 @@
                         </field>
                     </record>
                     <record id="l10n_cz_vat_declaration_line_25" model="account.report.line">
-                        <field name="name">Supply of a new means of transport to a person not registered for tax in another Member State (Article 19(4)) - line 23</field>
+                        <field name="name">Supply of a new means of transport to a person not registered for tax in
+                            another Member State (Article 19(4)) - line 23
+                        </field>
                         <field name="code">R23</field>
                         <field name="expression_ids">
                             <record id="l10n_cz_vat_declaration_line_25_value" model="account.report.expression">
@@ -348,7 +386,8 @@
                         </field>
                     </record>
                     <record id="l10n_cz_vat_declaration_line_27" model="account.report.line">
-                        <field name="name">Tax reverse charge scheme (92a) - supplier of goods or services - line 25</field>
+                        <field name="name">Tax reverse charge scheme (92a) - supplier of goods or services - line 25
+                        </field>
                         <field name="code">R25</field>
                         <field name="expression_ids">
                             <record id="l10n_cz_vat_declaration_line_27_value" model="account.report.expression">
@@ -359,7 +398,9 @@
                         </field>
                     </record>
                     <record id="l10n_cz_vat_declaration_line_28" model="account.report.line">
-                        <field name="name">Other transactions with the right to tax deduction (e.g., 24a, 67, 68, 69, 70, 71h, 89, 90, 92) - line 26</field>
+                        <field name="name">Other transactions with the right to tax deduction (e.g., 24a, 67, 68, 69,
+                            70, 71h, 89, 90, 92) - line 26
+                        </field>
                         <field name="code">R26</field>
                         <field name="expression_ids">
                             <record id="l10n_cz_vat_declaration_line_28_value" model="account.report.expression">
@@ -376,13 +417,16 @@
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
                     <record id="l10n_cz_vat_declaration_line_30" model="account.report.line">
-                        <field name="name">Simplified procedure for the supply of goods in the form of a triangular transaction (17) by a middle person</field>
+                        <field name="name">Simplified procedure for the supply of goods in the form of a triangular
+                            transaction (17) by a middle person
+                        </field>
                         <field name="children_ids">
                             <record id="l10n_cz_vat_declaration_line_31" model="account.report.line">
                                 <field name="name">Acquisition of goods - line 30</field>
                                 <field name="code">R30</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_cz_vat_declaration_line_31_value" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_31_value"
+                                            model="account.report.expression">
                                         <field name="label">value</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">VAT 30</field>
@@ -393,7 +437,8 @@
                                 <field name="name">Delivery of goods - line 31</field>
                                 <field name="code">R31</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_cz_vat_declaration_line_32_tax_base" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_32_tax_base"
+                                            model="account.report.expression">
                                         <field name="label">tax_base</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">VAT 31</field>
@@ -420,7 +465,8 @@
                                 <field name="name">Creditor - line 33</field>
                                 <field name="code">R33</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_cz_vat_declaration_line_35_value" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_35_value"
+                                            model="account.report.expression">
                                         <field name="label">value</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">VAT 33</field>
@@ -431,7 +477,8 @@
                                 <field name="name">Debtor - line 34</field>
                                 <field name="code">R34</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_cz_vat_declaration_line_36_tax_base" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_36_tax_base"
+                                            model="account.report.expression">
                                         <field name="label">tax_base</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">VAT 34</field>
@@ -453,17 +500,20 @@
                                 <field name="name">Basic - line 40</field>
                                 <field name="code">R40</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_cz_vat_declaration_line_39_tax_base" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_39_tax_base"
+                                            model="account.report.expression">
                                         <field name="label">tax_base</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">VAT 40 Base</field>
                                     </record>
-                                    <record id="l10n_cz_vat_declaration_line_39_in_full_amount" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_39_in_full_amount"
+                                            model="account.report.expression">
                                         <field name="label">in_full_amount</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">VAT 40 Total</field>
                                     </record>
-                                    <record id="l10n_cz_vat_declaration_line_39_reduced_claim" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_39_reduced_claim"
+                                            model="account.report.expression">
                                         <field name="label">reduced_claim</field>
                                         <field name="engine">external</field>
                                         <field name="formula">sum</field>
@@ -475,17 +525,20 @@
                                 <field name="name">Reduced - line 41</field>
                                 <field name="code">R41</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_cz_vat_declaration_line_40_tax_base" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_40_tax_base"
+                                            model="account.report.expression">
                                         <field name="label">tax_base</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">VAT 41 Base</field>
                                     </record>
-                                    <record id="l10n_cz_vat_declaration_line_40_in_full_amount" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_40_in_full_amount"
+                                            model="account.report.expression">
                                         <field name="label">in_full_amount</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">VAT 41 Total</field>
                                     </record>
-                                    <record id="l10n_cz_vat_declaration_line_40_reduced_claim" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_40_reduced_claim"
+                                            model="account.report.expression">
                                         <field name="label">reduced_claim</field>
                                         <field name="engine">external</field>
                                         <field name="formula">sum</field>
@@ -496,7 +549,9 @@
                         </field>
                     </record>
                     <record id="l10n_cz_vat_declaration_line_41" model="account.report.line">
-                        <field name="name">When importing goods where the customs office is the tax administrator - line 42</field>
+                        <field name="name">When importing goods where the customs office is the tax administrator - line
+                            42
+                        </field>
                         <field name="code">R42</field>
                         <field name="expression_ids">
                             <record id="l10n_cz_vat_declaration_line_41_tax_base" model="account.report.expression">
@@ -504,12 +559,14 @@
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">VAT 42 Base</field>
                             </record>
-                            <record id="l10n_cz_vat_declaration_line_41_in_full_amount" model="account.report.expression">
+                            <record id="l10n_cz_vat_declaration_line_41_in_full_amount"
+                                    model="account.report.expression">
                                 <field name="label">in_full_amount</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">VAT 42 Total</field>
                             </record>
-                            <record id="l10n_cz_vat_declaration_line_41_reduced_claim" model="account.report.expression">
+                            <record id="l10n_cz_vat_declaration_line_41_reduced_claim"
+                                    model="account.report.expression">
                                 <field name="label">reduced_claim</field>
                                 <field name="engine">external</field>
                                 <field name="formula">sum</field>
@@ -524,17 +581,24 @@
                                 <field name="name">Basic - line 43</field>
                                 <field name="code">R43</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_cz_vat_declaration_line_43_tax_base" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_43_tax_base"
+                                            model="account.report.expression">
                                         <field name="label">tax_base</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">R3.tax_base + R5.tax_base + R7.tax_base + R9.tax_base + R10.tax_base + R12.tax_base</field>
+                                        <field name="formula">R3.tax_base + R5.tax_base + R7.tax_base + R9.tax_base +
+                                            R10.tax_base + R12.tax_base
+                                        </field>
                                     </record>
-                                    <record id="l10n_cz_vat_declaration_line_43_in_full_amount" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_43_in_full_amount"
+                                            model="account.report.expression">
                                         <field name="label">in_full_amount</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">R3.output_tax + R5.output_tax + R7.output_tax + R9.output_tax + R10.output_tax + R12.output_tax</field>
+                                        <field name="formula">R3.output_tax + R5.output_tax + R7.output_tax +
+                                            R9.output_tax + R10.output_tax + R12.output_tax
+                                        </field>
                                     </record>
-                                    <record id="l10n_cz_vat_declaration_line_43_reduced_claim" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_43_reduced_claim"
+                                            model="account.report.expression">
                                         <field name="label">reduced_claim</field>
                                         <field name="engine">external</field>
                                         <field name="formula">sum</field>
@@ -546,17 +610,24 @@
                                 <field name="name">Reduced - line 44</field>
                                 <field name="code">R44</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_cz_vat_declaration_line_44_tax_base" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_44_tax_base"
+                                            model="account.report.expression">
                                         <field name="label">tax_base</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">R4.tax_base + R6.tax_base + R8.tax_base + R11.tax_base + R13.tax_base</field>
+                                        <field name="formula">R4.tax_base + R6.tax_base + R8.tax_base + R11.tax_base +
+                                            R13.tax_base
+                                        </field>
                                     </record>
-                                    <record id="l10n_cz_vat_declaration_line_44_in_full_amount" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_44_in_full_amount"
+                                            model="account.report.expression">
                                         <field name="label">in_full_amount</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">R4.output_tax + R6.output_tax + R8.output_tax + R11.output_tax + R13.output_tax</field>
+                                        <field name="formula">R4.output_tax + R6.output_tax + R8.output_tax +
+                                            R11.output_tax + R13.output_tax
+                                        </field>
                                     </record>
-                                    <record id="l10n_cz_vat_declaration_line_44_reduced_claim" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_44_reduced_claim"
+                                            model="account.report.expression">
                                         <field name="label">reduced_claim</field>
                                         <field name="engine">external</field>
                                         <field name="formula">sum</field>
@@ -570,13 +641,15 @@
                         <field name="name">Adjustment of tax deductions according to 75, 77, 79 to 79e - line 45</field>
                         <field name="code">R45</field>
                         <field name="expression_ids">
-                            <record id="l10n_cz_vat_declaration_line_45_in_full_amount" model="account.report.expression">
+                            <record id="l10n_cz_vat_declaration_line_45_in_full_amount"
+                                    model="account.report.expression">
                                 <field name="label">in_full_amount</field>
                                 <field name="engine">external</field>
                                 <field name="formula">sum</field>
                                 <field name="subformula">editable;rounding=2</field>
                             </record>
-                            <record id="l10n_cz_vat_declaration_line_45_reduced_claim" model="account.report.expression">
+                            <record id="l10n_cz_vat_declaration_line_45_reduced_claim"
+                                    model="account.report.expression">
                                 <field name="label">reduced_claim</field>
                                 <field name="engine">external</field>
                                 <field name="formula">sum</field>
@@ -588,20 +661,27 @@
                         <field name="name">Total tax deduction (40 + 41 + 42 + 43 + 44 + 45) - line 46</field>
                         <field name="code">R46</field>
                         <field name="expression_ids">
-                            <record id="l10n_cz_vat_declaration_line_46_in_full_amount" model="account.report.expression">
+                            <record id="l10n_cz_vat_declaration_line_46_in_full_amount"
+                                    model="account.report.expression">
                                 <field name="label">in_full_amount</field>
                                 <field name="engine">aggregation</field>
-                                <field name="formula">R40.in_full_amount + R41.in_full_amount + R42.in_full_amount + R43.in_full_amount + R44.in_full_amount + R45.in_full_amount</field>
+                                <field name="formula">R40.in_full_amount + R41.in_full_amount + R42.in_full_amount +
+                                    R43.in_full_amount + R44.in_full_amount + R45.in_full_amount
+                                </field>
                             </record>
-                            <record id="l10n_cz_vat_declaration_line_46_reduced_claim" model="account.report.expression">
+                            <record id="l10n_cz_vat_declaration_line_46_reduced_claim"
+                                    model="account.report.expression">
                                 <field name="label">reduced_claim</field>
                                 <field name="engine">aggregation</field>
-                                <field name="formula">R40.reduced_claim + R41.reduced_claim + R42.reduced_claim + R43.reduced_claim + R44.reduced_claim + R45.reduced_claim</field>
+                                <field name="formula">R40.reduced_claim + R41.reduced_claim + R42.reduced_claim +
+                                    R43.reduced_claim + R44.reduced_claim + R45.reduced_claim
+                                </field>
                             </record>
                         </field>
                     </record>
                     <record id="l10n_cz_vat_declaration_line_47" model="account.report.line">
-                        <field name="name">Value of acquired assets as defined in Section 4(4)(d) and (e) - line 47</field>
+                        <field name="name">Value of acquired assets as defined in Section 4(4)(d) and (e) - line 47
+                        </field>
                         <field name="code">R47</field>
                         <field name="expression_ids">
                             <record id="l10n_cz_vat_declaration_line_47_tax_base" model="account.report.expression">
@@ -609,12 +689,14 @@
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">VAT 47 Base</field>
                             </record>
-                            <record id="l10n_cz_vat_declaration_line_47_in_full_amount" model="account.report.expression">
+                            <record id="l10n_cz_vat_declaration_line_47_in_full_amount"
+                                    model="account.report.expression">
                                 <field name="label">in_full_amount</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">VAT 47 Total</field>
                             </record>
-                            <record id="l10n_cz_vat_declaration_line_47_reduced_claim" model="account.report.expression">
+                            <record id="l10n_cz_vat_declaration_line_47_reduced_claim"
+                                    model="account.report.expression">
                                 <field name="label">reduced_claim</field>
                                 <field name="engine">external</field>
                                 <field name="formula">sum</field>
@@ -629,7 +711,8 @@
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
                     <record id="l10n_cz_vat_declaration_line_49" model="account.report.line">
-                        <field name="name">Transactions exempt from tax without the right to tax deduction - line 50</field>
+                        <field name="name">Transactions exempt from tax without the right to tax deduction - line 50
+                        </field>
                         <field name="code">R50</field>
                         <field name="expression_ids">
                             <record id="l10n_cz_vat_declaration_line_49_value" model="account.report.expression">
@@ -640,13 +723,16 @@
                         </field>
                     </record>
                     <record id="l10n_cz_vat_declaration_line_50" model="account.report.line">
-                        <field name="name">Value of transactions not included in the calculation of the coefficient (76(4))</field>
+                        <field name="name">Value of transactions not included in the calculation of the coefficient
+                            (76(4))
+                        </field>
                         <field name="children_ids">
                             <record id="l10n_cz_vat_declaration_line_51" model="account.report.line">
                                 <field name="name">Eligible for deduction - line 51a</field>
                                 <field name="code">R51A</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_cz_vat_declaration_line_51_value" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_51_value"
+                                            model="account.report.expression">
                                         <field name="label">value</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">VAT 51 with deduction</field>
@@ -657,7 +743,8 @@
                                 <field name="name">No deduction - line 51b</field>
                                 <field name="code">R51B</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_cz_vat_declaration_line_52_value" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_52_value"
+                                            model="account.report.expression">
                                         <field name="label">value</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">VAT 51 without deduction</field>
@@ -673,7 +760,8 @@
                                 <field name="name">Coefficient (%) - line 52a</field>
                                 <field name="code">R52A</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_cz_vat_declaration_line_54_coefficient" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_54_coefficient"
+                                            model="account.report.expression">
                                         <field name="label">coefficient</field>
                                         <field name="engine">external</field>
                                         <field name="formula">sum</field>
@@ -685,7 +773,8 @@
                                 <field name="name">Deduction - line 52b</field>
                                 <field name="code">R52B</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_cz_vat_declaration_line_55_value" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_55_value"
+                                            model="account.report.expression">
                                         <field name="label">value</field>
                                         <field name="engine">external</field>
                                         <field name="formula">sum</field>
@@ -702,7 +791,8 @@
                                 <field name="name">Settlement coefficient (%) - line 53a</field>
                                 <field name="code">R53A</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_cz_vat_declaration_line_57_coefficient" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_57_coefficient"
+                                            model="account.report.expression">
                                         <field name="label">coefficient</field>
                                         <field name="engine">external</field>
                                         <field name="formula">sum</field>
@@ -714,7 +804,8 @@
                                 <field name="name">Change of deduction - line 53b</field>
                                 <field name="code">R53B</field>
                                 <field name="expression_ids">
-                                    <record id="l10n_cz_vat_declaration_line_58_value" model="account.report.expression">
+                                    <record id="l10n_cz_vat_declaration_line_58_value"
+                                            model="account.report.expression">
                                         <field name="label">value</field>
                                         <field name="engine">external</field>
                                         <field name="formula">sum</field>
@@ -754,19 +845,25 @@
                         </field>
                     </record>
                     <record id="l10n_cz_vat_declaration_line_62" model="account.report.line">
-                        <field name="name">Output tax (sum of 1 to 13 - 61 + tax according to 108 not mentioned elsewhere) - line 62</field>
+                        <field name="name">Output tax (sum of 1 to 13 - 61 + tax according to 108 not mentioned
+                            elsewhere) - line 62
+                        </field>
                         <field name="code">R62</field>
                         <field name="expression_ids">
                             <record id="l10n_cz_vat_declaration_line_62_value" model="account.report.expression">
                                 <field name="label">value</field>
                                 <field name="engine">aggregation</field>
-                                <field name="formula">R1.output_tax + R2.output_tax + R3.output_tax + R4.output_tax + R5.output_tax + R6.output_tax + R7.output_tax + R8.output_tax + R9.output_tax +
-                                    R10.output_tax + R11.output_tax + R12.output_tax + R13.output_tax - R61.value</field>
+                                <field name="formula">R1.output_tax + R2.output_tax + R3.output_tax + R4.output_tax +
+                                    R5.output_tax + R6.output_tax + R7.output_tax + R8.output_tax + R9.output_tax +
+                                    R10.output_tax + R11.output_tax + R12.output_tax + R13.output_tax - R61.value
+                                </field>
                             </record>
                         </field>
                     </record>
                     <record id="l10n_cz_vat_declaration_line_63" model="account.report.line">
-                        <field name="name">Tax deduction (46 In full + 52 Deduction + 53 Change in deduction + 60) - line 63</field>
+                        <field name="name">Tax deduction (46 In full + 52 Deduction + 53 Change in deduction + 60) -
+                            line 63
+                        </field>
                         <field name="code">R63</field>
                         <field name="expression_ids">
                             <record id="l10n_cz_vat_declaration_line_63_value" model="account.report.expression">
@@ -801,7 +898,9 @@
                         </field>
                     </record>
                     <record id="l10n_cz_vat_declaration_line_66" model="account.report.line">
-                        <field name="name">Difference from the last known tax when filing the additional tax return (62 - 63) - line 66</field>
+                        <field name="name">Difference from the last known tax when filing the additional tax return (62
+                            - 63) - line 66
+                        </field>
                         <field name="code">R66</field>
                         <field name="expression_ids">
                             <record id="l10n_cz_vat_declaration_line_66_value" model="account.report.expression">

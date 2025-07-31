@@ -7,9 +7,9 @@
                   state="this.props.dropdownState"
                   t-if="this.env.searchModel.searchMenuTypes.size">
             <button
-                class="o_searchview_dropdown_toggler d-print-none btn btn-outline-secondary o-dropdown-caret rounded-start-0"
-                data-hotkey="shift+q"
-                title="Toggle Search Panel"
+                    class="o_searchview_dropdown_toggler d-print-none btn btn-outline-secondary o-dropdown-caret rounded-start-0"
+                    data-hotkey="shift+q"
+                    title="Toggle Search Panel"
             >
             </button>
             <t t-set-slot="content">
@@ -26,17 +26,18 @@
                                 <div class="dropdown-divider" role="separator"/>
                             </t>
                             <t t-if="item.options">
-                                <AccordionItem class="'text-truncate'" description="item.description" selected="item.isActive">
+                                <AccordionItem class="'text-truncate'" description="item.description"
+                                               selected="item.isActive">
                                     <t t-set="subGroup" t-value="null"/>
                                     <t t-foreach="item.options" t-as="option" t-key="option.id">
                                         <t t-if="subGroup !== null and subGroup !== option.groupNumber">
                                             <div class="dropdown-divider" role="separator"/>
                                         </t>
                                         <CheckboxItem class="{ o_item_option: true, selected: option.isActive }"
-                                                            t-esc="option.description"
-                                                            checked="option.isActive"
-                                                            closingMode="'none'"
-                                                            onSelected="() => this.onFilterSelected({ itemId: item.id, optionId: option.id })"
+                                                      t-esc="option.description"
+                                                      checked="option.isActive"
+                                                      closingMode="'none'"
+                                                      onSelected="() => this.onFilterSelected({ itemId: item.id, optionId: option.id })"
                                         />
                                         <t t-set="subGroup" t-value="option.groupNumber"/>
                                     </t>
@@ -44,11 +45,11 @@
                             </t>
                             <t t-else="">
                                 <CheckboxItem class="{ 'o_menu_item text-truncate': true, selected: item.isActive }"
-                                                    checked="item.isActive"
-                                                    closingMode="'none'"
-                                                    t-esc="item.description"
-                                                    attrs="{ title: item.description.length > 15 ? item.description : ''}"
-                                                    onSelected="() => this.onFilterSelected({ itemId: item.id })"
+                                              checked="item.isActive"
+                                              closingMode="'none'"
+                                              t-esc="item.description"
+                                              attrs="{ title: item.description.length > 15 ? item.description : ''}"
+                                              onSelected="() => this.onFilterSelected({ itemId: item.id })"
                                 />
                             </t>
                             <t t-set="currentGroup" t-value="item.groupNumber"/>
@@ -56,7 +57,8 @@
                         <t t-if="filterItems.length">
                             <div role="separator" class="dropdown-divider"/>
                         </t>
-                        <DropdownItem class="'o_menu_item o_add_custom_filter'" onSelected.bind="onAddCustomFilterClick">Add Custom Filter</DropdownItem>
+                        <DropdownItem class="'o_menu_item o_add_custom_filter'"
+                                      onSelected.bind="onAddCustomFilterClick">Add Custom Filter</DropdownItem>
                     </div>
                 </t>
                 <!-- GroupBy -->
@@ -75,18 +77,19 @@
                                 <PropertiesGroupByItem item="item" onGroup.bind="onGroupBySelected"/>
                             </t>
                             <t t-elif="item.options">
-                                <AccordionItem class="'text-truncate'" description="item.description" selected="item.isActive">
+                                <AccordionItem class="'text-truncate'" description="item.description"
+                                               selected="item.isActive">
                                     <t t-set="subGroup" t-value="null"/>
                                     <t t-foreach="item.options" t-as="option" t-key="option.id">
                                         <t t-if="subGroup !== null and subGroup !== option.groupNumber">
                                             <div class="dropdown-divider" role="separator"/>
                                         </t>
                                         <CheckboxItem class="{ o_item_option: true, selected: option.isActive }"
-                                                            checked="option.isActive ? true : false"
-                                                            closingMode="'none'"
-                                                            t-esc="option.description"
-                                                            attrs="{ title: option.description.length > 15 ? option.description : ''}"
-                                                            onSelected="() => this.onGroupBySelected({ itemId: item.id, optionId: option.id})"
+                                                      checked="option.isActive ? true : false"
+                                                      closingMode="'none'"
+                                                      t-esc="option.description"
+                                                      attrs="{ title: option.description.length > 15 ? option.description : ''}"
+                                                      onSelected="() => this.onGroupBySelected({ itemId: item.id, optionId: option.id})"
                                         />
                                         <t t-set="subGroup" t-value="option.groupNumber"/>
                                     </t>
@@ -94,11 +97,11 @@
                             </t>
                             <t t-else="">
                                 <CheckboxItem class="{ 'o_menu_item text-truncate': true, selected: item.isActive }"
-                                                    checked="item.isActive"
-                                                    closingMode="'none'"
-                                                    t-esc="item.description"
-                                                    attrs="{ title: item.description.length > 15 ? item.description : ''}"
-                                                    onSelected="() => this.onGroupBySelected({ itemId: item.id })"
+                                              checked="item.isActive"
+                                              closingMode="'none'"
+                                              t-esc="item.description"
+                                              attrs="{ title: item.description.length > 15 ? item.description : ''}"
+                                              onSelected="() => this.onGroupBySelected({ itemId: item.id })"
                                 />
                             </t>
                             <t t-set="currentGroup" t-value="item.groupNumber"/>
@@ -118,11 +121,11 @@
                         </div>
                         <t t-foreach="comparisonItems" t-as="item" t-key="item.id">
                             <CheckboxItem class="{ 'o_menu_item text-truncate': true, selected: item.isActive }"
-                                                checked="item.isActive"
-                                                closingMode="'none'"
-                                                t-esc="item.description"
-                                                attrs="{ title: item.description.length > 15 ? item.description : ''}"
-                                                onSelected="() => this.onComparisonSelected(item.id)"
+                                          checked="item.isActive"
+                                          closingMode="'none'"
+                                          t-esc="item.description"
+                                          attrs="{ title: item.description.length > 15 ? item.description : ''}"
+                                          onSelected="() => this.onComparisonSelected(item.id)"
                             />
                         </t>
                     </div>
@@ -130,28 +133,29 @@
                 <!-- Favorite -->
                 <t t-if="this.env.searchModel.searchMenuTypes.has('favorite')">
                     <div class="o_dropdown_container o_favorite_menu w-100 w-lg-auto h-100 px-3">
-                        <t t-set="sharedFavoritesItems" t-value="sharedFavorites" />
-                        <t t-set="favoriteItems" t-value="favorites" />
+                        <t t-set="sharedFavoritesItems" t-value="sharedFavorites"/>
+                        <t t-set="favoriteItems" t-value="favorites"/>
                         <div class="px-3 fs-5 mb-2">
                             <i class="me-2 text-favourite" t-att-class="facet_icons.favorite"/>
                             <h5 class="o_dropdown_title d-inline">Favorites</h5>
                         </div>
                         <t t-foreach="favoriteItems" t-as="item" t-key="item.id">
-                            <t t-call="web.SearchBarMenu.FavoriteItem" />
+                            <t t-call="web.SearchBarMenu.FavoriteItem"/>
                         </t>
                         <t t-if="favoriteItems.length">
                             <div role="separator" class="dropdown-divider"/>
                         </t>
                         <t t-if="sharedFavoritesItems.length > 10">
-                            <AccordionItem class="'o_shared_favorites text-truncate'" description.translate="Shared filters">
+                            <AccordionItem class="'o_shared_favorites text-truncate'"
+                                           description.translate="Shared filters">
                                 <t t-foreach="sharedFavoritesItems" t-as="item" t-key="item.id">
-                                    <t t-call="web.SearchBarMenu.FavoriteItem" />
+                                    <t t-call="web.SearchBarMenu.FavoriteItem"/>
                                 </t>
                             </AccordionItem>
                         </t>
                         <t t-else="">
                             <t t-foreach="sharedFavoritesItems" t-as="item" t-key="item.id">
-                                <t t-call="web.SearchBarMenu.FavoriteItem" />
+                                <t t-call="web.SearchBarMenu.FavoriteItem"/>
                             </t>
                         </t>
                         <div t-if="sharedFavoritesItems.length" role="separator" class="dropdown-divider"/>
@@ -171,17 +175,18 @@
     </t>
 
     <t t-name="web.SearchBarMenu.FavoriteItem">
-        <t t-set="item" t-value="item" />
+        <t t-set="item" t-value="item"/>
         <CheckboxItem class="{ 'o_menu_item text-truncate': true, selected: item.isActive }"
-                            checked="item.isActive"
-                            closingMode="'none'"
-                            onSelected="() => this.onFavoriteSelected(item.id)"
+                      checked="item.isActive"
+                      closingMode="'none'"
+                      onSelected="() => this.onFavoriteSelected(item.id)"
         >
             <span class="d-flex p-0 align-items-center justify-content-between">
-                <span t-esc="item.description" t-att-title="item.description.length > 15 ? item.description : ''" class="text-truncate flex-grow-1"/>
+                <span t-esc="item.description" t-att-title="item.description.length > 15 ? item.description : ''"
+                      class="text-truncate flex-grow-1"/>
                 <i class="ms-1 fa fa-trash-o"
-                    title="Delete item"
-                    t-on-click.stop="() => this.openConfirmationDialog(item.id, item.userId)"
+                   title="Delete item"
+                   t-on-click.stop="() => this.openConfirmationDialog(item.id, item.userId)"
                 />
             </span>
         </CheckboxItem>

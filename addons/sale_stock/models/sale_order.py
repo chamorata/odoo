@@ -23,7 +23,7 @@ class SaleOrder(models.Model):
         ('one', 'When all products are ready')],
         string='Shipping Policy', required=True, default='direct',
         help="If you deliver all products at once, the delivery order will be scheduled based on the greatest "
-        "product lead time. Otherwise, it will be based on the shortest.")
+             "product lead time. Otherwise, it will be based on the shortest.")
     warehouse_id = fields.Many2one(
         'stock.warehouse', string='Warehouse',
         compute='_compute_warehouse_id', store=True, readonly=False, precompute=True,
@@ -36,15 +36,17 @@ class SaleOrder(models.Model):
         ('partial', 'Partially Delivered'),
         ('full', 'Fully Delivered'),
     ], string='Delivery Status', compute='_compute_delivery_status', store=True,
-       help="Blue: Not Delivered/Started\n\
+        help="Blue: Not Delivered/Started\n\
             Orange: Partially Delivered\n\
             Green: Fully Delivered")
     procurement_group_id = fields.Many2one('procurement.group', 'Procurement Group', copy=False)
-    effective_date = fields.Datetime("Effective Date", compute='_compute_effective_date', store=True, help="Completion date of the first delivery order.")
-    expected_date = fields.Datetime( help="Delivery date you can promise to the customer, computed from the minimum lead time of "
-                                          "the order lines in case of Service products. In case of shipping, the shipping policy of "
-                                          "the order will be taken into account to either use the minimum or maximum lead time of "
-                                          "the order lines.")
+    effective_date = fields.Datetime("Effective Date", compute='_compute_effective_date', store=True,
+                                     help="Completion date of the first delivery order.")
+    expected_date = fields.Datetime(
+        help="Delivery date you can promise to the customer, computed from the minimum lead time of "
+             "the order lines in case of Service products. In case of shipping, the shipping policy of "
+             "the order will be taken into account to either use the minimum or maximum lead time of "
+             "the order lines.")
     json_popover = fields.Char('JSON data for the popover widget', compute='_compute_json_popover')
     show_json_popover = fields.Boolean('Has late picking', compute='_compute_json_popover')
 
@@ -75,7 +77,8 @@ class SaleOrder(models.Model):
     @api.depends('picking_ids.date_done')
     def _compute_effective_date(self):
         for order in self:
-            pickings = order.picking_ids.filtered(lambda x: x.state == 'done' and x.location_dest_id.usage == 'customer')
+            pickings = order.picking_ids.filtered(
+                lambda x: x.state == 'done' and x.location_dest_id.usage == 'customer')
             dates_list = [date for date in pickings.mapped('date_done') if date]
             order.effective_date = min(dates_list, default=False)
 
@@ -106,8 +109,11 @@ class SaleOrder(models.Model):
     @api.constrains('warehouse_id', 'state', 'order_line')
     def _check_warehouse(self):
         """ Ensure that the warehouse is set in case of storable products """
-        orders_without_wh = self.filtered(lambda order: order.state not in ('draft', 'cancel') and not order.warehouse_id)
-        company_ids_with_wh = {group['company_id'][0] for group in self.env['stock.warehouse'].read_group(domain=[('company_id', 'in', orders_without_wh.mapped('company_id').ids)], fields=['id:recordset'], groupby=['company_id'])} if orders_without_wh else {}
+        orders_without_wh = self.filtered(
+            lambda order: order.state not in ('draft', 'cancel') and not order.warehouse_id)
+        company_ids_with_wh = {group['company_id'][0] for group in self.env['stock.warehouse'].read_group(
+            domain=[('company_id', 'in', orders_without_wh.mapped('company_id').ids)], fields=['id:recordset'],
+            groupby=['company_id'])} if orders_without_wh else {}
         other_company = set()
         for order_line in orders_without_wh.order_line:
             if order_line.product_id.type != 'consu':
@@ -125,7 +131,8 @@ class SaleOrder(models.Model):
     def write(self, values):
         if values.get('order_line') and self.state == 'sale':
             for order in self:
-                pre_order_line_qty = {order_line: order_line.product_uom_qty for order_line in order.mapped('order_line') if not order_line.is_expense}
+                pre_order_line_qty = {order_line: order_line.product_uom_qty for order_line in
+                                      order.mapped('order_line') if not order_line.is_expense}
 
         if values.get('partner_shipping_id') and self._context.get('update_delivery_shipping_partner'):
             for order in self:
@@ -155,7 +162,8 @@ class SaleOrder(models.Model):
                 for order_line in order.order_line:
                     if order_line.display_type or order_line.is_downpayment:
                         continue
-                    if float_compare(order_line.product_uom_qty, pre_order_line_qty.get(order_line, 0.0), precision_rounding=order_line.product_uom.rounding) < 0:
+                    if float_compare(order_line.product_uom_qty, pre_order_line_qty.get(order_line, 0.0),
+                                     precision_rounding=order_line.product_uom.rounding) < 0:
                         to_log[order_line] = (order_line.product_uom_qty, pre_order_line_qty.get(order_line, 0.0))
                 if to_log:
                     documents = self.env['stock.picking'].sudo()._log_activity_get_documents(to_log, 'move_ids', 'UP')
@@ -169,10 +177,10 @@ class SaleOrder(models.Model):
             order.json_popover = json.dumps({
                 'popoverTemplate': 'sale_stock.DelayAlertWidget',
                 'late_elements': [{
-                        'id': late_move.id,
-                        'name': late_move.display_name,
-                        'model': 'stock.picking',
-                    } for late_move in late_stock_picking
+                    'id': late_move.id,
+                    'name': late_move.display_name,
+                    'model': 'stock.picking',
+                } for late_move in late_stock_picking
                 ]
             })
             order.show_json_popover = bool(late_stock_picking)
@@ -220,8 +228,11 @@ class SaleOrder(models.Model):
         documents = None
         for sale_order in self:
             if sale_order.state == 'sale' and sale_order.order_line:
-                sale_order_lines_quantities = {order_line: (order_line.product_uom_qty, 0) for order_line in sale_order.order_line}
-                documents = self.env['stock.picking'].with_context(include_draft_documents=True)._log_activity_get_documents(sale_order_lines_quantities, 'move_ids', 'UP')
+                sale_order_lines_quantities = {order_line: (order_line.product_uom_qty, 0) for order_line in
+                                               sale_order.order_line}
+                documents = self.env['stock.picking'].with_context(
+                    include_draft_documents=True)._log_activity_get_documents(sale_order_lines_quantities, 'move_ids',
+                                                                              'UP')
         self.picking_ids.filtered(lambda p: p.state != 'done').action_cancel()
         if documents:
             filtered_documents = {}
@@ -246,7 +257,7 @@ class SaleOrder(models.Model):
         elif pickings:
             form_view = [(self.env.ref('stock.view_picking_form').id, 'form')]
             if 'views' in action:
-                action['views'] = form_view + [(state,view) for state,view in action['views'] if view != 'form']
+                action['views'] = form_view + [(state, view) for state, view in action['views'] if view != 'form']
             else:
                 action['views'] = form_view
             action['res_id'] = pickings.id
@@ -256,7 +267,9 @@ class SaleOrder(models.Model):
             picking_id = picking_id[0]
         else:
             picking_id = pickings[0]
-        action['context'] = dict(default_partner_id=self.partner_id.id, default_picking_type_id=picking_id.picking_type_id.id, default_origin=self.name, default_group_id=picking_id.group_id.id)
+        action['context'] = dict(default_partner_id=self.partner_id.id,
+                                 default_picking_type_id=picking_id.picking_type_id.id, default_origin=self.name,
+                                 default_group_id=picking_id.group_id.id)
         return action
 
     def _prepare_invoice(self):
@@ -271,7 +284,8 @@ class SaleOrder(models.Model):
             order_exceptions, visited_moves = rendering_context
             visited_moves = list(visited_moves)
             visited_moves = self.env[visited_moves[0]._name].concat(*visited_moves)
-            order_line_ids = self.env['sale.order.line'].browse([order_line.id for order in order_exceptions.values() for order_line in order[0]])
+            order_line_ids = self.env['sale.order.line'].browse(
+                [order_line.id for order in order_exceptions.values() for order_line in order[0]])
             sale_order_ids = order_line_ids.mapped('order_id')
             impacted_pickings = visited_moves.filtered(lambda m: m.state not in ('done', 'cancel')).mapped('picking_id')
             values = {

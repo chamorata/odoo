@@ -1,5 +1,6 @@
 <odoo>
-    <template id="portal_my_home_overdue_invoice" name="Portal layout: overdue invoices" inherit_id="portal.portal_breadcrumbs" priority="30">
+    <template id="portal_my_home_overdue_invoice" name="Portal layout: overdue invoices"
+              inherit_id="portal.portal_breadcrumbs" priority="30">
         <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
             <t t-if="page_name == 'overdue_invoices'">
                 <li t-attf-class="breadcrumb-item active">
@@ -13,8 +14,8 @@
 
         <xpath expr="//ol[hasclass('o_portal_submenu')]" position="after">
             <a t-if="page_name == 'invoice' and not invoice and filterby != 'bills' and overdue_invoice_count > 0"
-                class='btn btn-primary'
-                href='/my/invoices/overdue'>
+               class='btn btn-primary'
+               href='/my/invoices/overdue'>
                 Pay overdue
             </a>
         </xpath>
@@ -23,15 +24,16 @@
     <template id="account_payment.portal_docs_entry" inherit_id="portal.portal_docs_entry">
         <xpath expr="//a" position="inside">
             <button
-                t-if="show_pay_overdue_invoices_button"
-                onclick="event.preventDefault(); window.location.href='/my/invoices/overdue'"
-                class="btn btn-secondary ms-auto">
+                    t-if="show_pay_overdue_invoices_button"
+                    onclick="event.preventDefault(); window.location.href='/my/invoices/overdue'"
+                    class="btn btn-secondary ms-auto">
                 Pay Now
             </button>
         </xpath>
     </template>
 
-    <template id="portal_my_home_account_payment" name="Overdue invoices" customize_show="True" inherit_id="portal.portal_my_home" priority="20">
+    <template id="portal_my_home_account_payment" name="Overdue invoices" customize_show="True"
+              inherit_id="portal.portal_my_home" priority="20">
         <xpath expr="//div[hasclass('o_portal_docs')]" position="before">
             <t t-set="portal_alert_category_enable" t-value="True"/>
         </xpath>
@@ -57,7 +59,7 @@
                             <t t-set="label">Amount</t>
                             <t t-set="value" t-value="abs(payment['amount'])"/>
                             <t t-set="options"
-                                t-value="{'widget': 'monetary', 'display_currency': currency}"/>
+                               t-value="{'widget': 'monetary', 'display_currency': currency}"/>
                         </t>
                         <t t-call="payment.summary_item">
                             <t t-set="name" t-value="'reference'"/>
@@ -83,14 +85,14 @@
             <td class="d-none d-lg-table-cell text-center">
                 <t t-if="invoice_data.get('installment_state', False) in ('next', 'overdue')">
                     <span
-                        t-attf-class="{{'text-danger' if invoice_data['installment_state'] == 'overdue' else ''}}"
-                        t-out="invoice_data['next_amount_to_pay']"
-                        t-options="{'widget': 'monetary', 'display_currency': invoice.currency_id}"
+                            t-attf-class="{{'text-danger' if invoice_data['installment_state'] == 'overdue' else ''}}"
+                            t-out="invoice_data['next_amount_to_pay']"
+                            t-options="{'widget': 'monetary', 'display_currency': invoice.currency_id}"
                     />
                     <small
-                        t-if="invoice_data['installment_state'] == 'next'"
-                        class="o_portal_invoice_due_date"
-                        t-att-datetime="invoice_data['next_due_date']"
+                            t-if="invoice_data['installment_state'] == 'next'"
+                            class="o_portal_invoice_due_date"
+                            t-att-datetime="invoice_data['next_due_date']"
                     />
                     <small t-if="invoice_data['installment_state'] == 'overdue'" class="text-danger">
                         overdue
@@ -99,13 +101,14 @@
             </td>
             <td class="text-center">
                 <a t-if="invoice._has_to_be_paid()"
-                    t-att-href="invoice.get_portal_url(anchor='portal_pay', query_string='&amp;payment=True')"
-                    title="Pay Now"
-                    aria-label="Pay now"
-                    class="btn btn-sm btn-primary"
-                    role="button"
+                   t-att-href="invoice.get_portal_url(anchor='portal_pay', query_string='&amp;payment=True')"
+                   title="Pay Now"
+                   aria-label="Pay now"
+                   class="btn btn-sm btn-primary"
+                   role="button"
                 >
-                    <i class="fa fa-arrow-circle-right"/><span class='d-none d-md-inline'> Pay Now</span>
+                    <i class="fa fa-arrow-circle-right"/>
+                    <span class='d-none d-md-inline'>Pay Now</span>
                 </a>
             </td>
         </xpath>
@@ -114,17 +117,18 @@
         </xpath>
         <xpath expr="//span[@name='invoice_status_waiting_for_payment']" position="before">
             <span t-elif="invoice.payment_state in ('not_paid', 'partial') and tx_sudo.state == 'authorized'"
-                    class="badge rounded-pill text-bg-primary">
+                  class="badge rounded-pill text-bg-primary">
                 <i class="fa fa-fw fa-check"/>
-                <span class="d-none d-md-inline"> Authorized</span>
+                <span class="d-none d-md-inline">Authorized</span>
             </span>
             <span t-elif="invoice.payment_state in ('not_paid', 'partial') and tx_sudo.state == 'pending' and tx_sudo.provider_code not in ('none', 'custom')"
-                    class="badge rounded-pill text-bg-warning">
-                <span class="d-none d-md-inline"> Pending</span>
+                  class="badge rounded-pill text-bg-warning">
+                <span class="d-none d-md-inline">Pending</span>
             </span>
-            <span t-elif="invoice.payment_state in ('paid', 'in_payment') and tx_sudo.state == 'done'" class="badge rounded-pill text-bg-success">
+            <span t-elif="invoice.payment_state in ('paid', 'in_payment') and tx_sudo.state == 'done'"
+                  class="badge rounded-pill text-bg-success">
                 <i class="fa fa-fw fa-check"></i>
-                <span class="d-none d-md-inline"> Paid</span>
+                <span class="d-none d-md-inline">Paid</span>
             </span>
         </xpath>
     </template>
@@ -142,47 +146,51 @@
                             <div t-if="company_mismatch">
                                 <t t-call="payment.company_mismatch_warning"/>
                             </div>
-                            <div t-elif="installment_state in ('next', 'overdue') and amount_due != next_amount_to_pay" id="o_payment_installments_modal">
+                            <div t-elif="installment_state in ('next', 'overdue') and amount_due != next_amount_to_pay"
+                                 id="o_payment_installments_modal">
                                 <div class="btn-group w-100" id="o_payment_tabs" role="tablist">
                                     <button class="btn btn-outline-primary o_btn_payment_tab active"
-                                        id="o_payment_installments_tab"
-                                        data-bs-toggle="pill"
-                                        data-bs-target="#o_payment_installments"
-                                        type="button"
-                                        role="tab"
-                                        aria-controls="o_payment_installments"
-                                        aria-selected="true"
+                                            id="o_payment_installments_tab"
+                                            data-bs-toggle="pill"
+                                            data-bs-target="#o_payment_installments"
+                                            type="button"
+                                            role="tab"
+                                            aria-controls="o_payment_installments"
+                                            aria-selected="true"
                                     >
                                         <strong>Installment</strong>
                                         <br/>
                                         <t
-                                            t-out="next_amount_to_pay"
-                                            t-options="{'widget': 'monetary', 'display_currency': currency}"
+                                                t-out="next_amount_to_pay"
+                                                t-options="{'widget': 'monetary', 'display_currency': currency}"
                                         />
                                     </button>
                                     <button class="btn btn-outline-primary o_btn_payment_tab"
-                                        id="o_payment_full_tab"
-                                        data-bs-toggle="pill"
-                                        data-bs-target="#o_payment_full"
-                                        type="button"
-                                        role="tab"
-                                        aria-controls="o_payment_full"
-                                        aria-selected="false"
+                                            id="o_payment_full_tab"
+                                            data-bs-toggle="pill"
+                                            data-bs-target="#o_payment_full"
+                                            type="button"
+                                            role="tab"
+                                            aria-controls="o_payment_full"
+                                            aria-selected="false"
                                     >
-                                        <strong>Full Amount</strong><br/>
-                                        <t t-out="amount_due" t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                                        <strong>Full Amount</strong>
+                                        <br/>
+                                        <t t-out="amount_due"
+                                           t-options="{'widget': 'monetary', 'display_currency': currency}"/>
                                     </button>
                                 </div>
                                 <div class="tab-content" id="o_payment_tabcontent">
                                     <div t-if="payment_state == 'in_payment'" class="alert alert-danger mt-2">
-                                        A payment has already been made on this invoice, please make sure to not pay twice.
+                                        A payment has already been made on this invoice, please make sure to not pay
+                                        twice.
                                     </div>
                                     <div
-                                        class="tab-pane my-3 show active"
-                                        id="o_payment_installments"
-                                        role="tabpanel"
-                                        aria-labelledby="o_payment_installments_tab"
-                                        tabindex="0"
+                                            class="tab-pane my-3 show active"
+                                            id="o_payment_installments"
+                                            role="tabpanel"
+                                            aria-labelledby="o_payment_installments_tab"
+                                            tabindex="0"
                                     >
                                         <div class="text-bg-light row row-cols-1 row-cols-md-2 mx-0 py-2 rounded">
                                             <t t-call="payment.summary_item">
@@ -190,7 +198,7 @@
                                                 <t t-set="label">Amount</t>
                                                 <t t-set="value" t-value="next_amount_to_pay"/>
                                                 <t t-set="options"
-                                                    t-value="{'widget': 'monetary', 'display_currency': currency}"
+                                                   t-value="{'widget': 'monetary', 'display_currency': currency}"
                                                 />
                                             </t>
                                             <t t-call="payment.summary_item">
@@ -202,13 +210,16 @@
                                         </div>
                                     </div>
                                     <div class="tab-pane my-3"
-                                        id="o_payment_full"
-                                        role="tabpanel"
-                                        aria-labelledby="o_payment_full_tab"
-                                        tabindex="0"
+                                         id="o_payment_full"
+                                         role="tabpanel"
+                                         aria-labelledby="o_payment_full_tab"
+                                         tabindex="0"
                                     >
                                         <div t-if="show_epd" class="alert alert-success">
-                                            Early Payment Discount of <span t-out="epd_discount_amount_currency" t-options="{'widget': 'monetary', 'display_currency': currency}"/> has been applied.
+                                            Early Payment Discount of
+                                            <span t-out="epd_discount_amount_currency"
+                                                  t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                                            has been applied.
                                         </div>
                                         <div class="text-bg-light row row-cols-1 row-cols-md-2 mx-0 py-2 rounded">
                                             <t t-call="payment.summary_item">
@@ -216,7 +227,7 @@
                                                 <t t-set="label">Amount</t>
                                                 <t t-set="value" t-value="amount_due"/>
                                                 <t t-set="options"
-                                                    t-value="{'widget': 'monetary', 'display_currency': currency}"
+                                                   t-value="{'widget': 'monetary', 'display_currency': currency}"
                                                 />
                                             </t>
                                             <t t-call="payment.summary_item">
@@ -236,7 +247,10 @@
                             </div>
                             <t t-else="">
                                 <div t-if="show_epd" class="alert alert-success">
-                                    Early Payment Discount of <span t-out="epd_discount_amount_currency" t-options="{'widget': 'monetary', 'display_currency': currency}"/> has been applied.
+                                    Early Payment Discount of
+                                    <span t-out="epd_discount_amount_currency"
+                                          t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                                    has been applied.
                                 </div>
                                 <div t-if="payment_state == 'in_payment'" class="alert alert-danger">
                                     A payment has already been made on this invoice, please make sure to not pay twice.
@@ -247,7 +261,7 @@
                                         <t t-set="label">Amount</t>
                                         <t t-set="value" t-value="amount_due"/>
                                         <t t-set="options"
-                                            t-value="{'widget': 'monetary', 'display_currency': currency}"
+                                           t-value="{'widget': 'monetary', 'display_currency': currency}"
                                         />
                                     </t>
                                     <t t-call="payment.summary_item">
@@ -277,33 +291,42 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <div class="alert alert-warning text-center" role="alert" t-out="invoice._get_online_payment_error()"/>
+                        <div class="alert alert-warning text-center" role="alert"
+                             t-out="invoice._get_online_payment_error()"/>
                     </div>
                 </div>
             </div>
         </div>
     </template>
 
-    <template id="portal_invoice_page_inherit_payment" name="Payment on My Invoices" inherit_id="account.portal_invoice_page">
+    <template id="portal_invoice_page_inherit_payment" name="Payment on My Invoices"
+              inherit_id="account.portal_invoice_page">
         <xpath expr="//t[@t-call='portal.portal_record_sidebar']//h2[1]" position="after">
-            <t t-set="pending_txs" t-value="invoice.transaction_ids.filtered(lambda tx: tx.state in ('pending', 'authorized') and tx.provider_code not in ('none', 'custom'))"/>
-            <div t-if="invoice.currency_id.is_zero(invoice.amount_residual)" class="rounded text-bg-success fw-normal badge">
-                <i class="fa fa-fw fa-check-circle"/> Paid
+            <t t-set="pending_txs"
+               t-value="invoice.transaction_ids.filtered(lambda tx: tx.state in ('pending', 'authorized') and tx.provider_code not in ('none', 'custom'))"/>
+            <div t-if="invoice.currency_id.is_zero(invoice.amount_residual)"
+                 class="rounded text-bg-success fw-normal badge">
+                <i class="fa fa-fw fa-check-circle"/>
+                Paid
             </div>
-            <div t-if="invoice.payment_state == 'in_payment' and not invoice.currency_id.is_zero(invoice.amount_residual)" class="rounded text-bg-info fw-normal badge">
-                <i class="fa fa-fw fa-check-circle"/> Processing Payment
+            <div t-if="invoice.payment_state == 'in_payment' and not invoice.currency_id.is_zero(invoice.amount_residual)"
+                 class="rounded text-bg-info fw-normal badge">
+                <i class="fa fa-fw fa-check-circle"/>
+                Processing Payment
             </div>
             <div t-elif="pending_txs" class="rounded text-bg-info fw-normal badge">
-                <i class="fa fa-fw fa-check-circle"/> Pending
+                <i class="fa fa-fw fa-check-circle"/>
+                Pending
             </div>
         </xpath>
         <xpath expr="//t[@t-call='portal.portal_record_sidebar']//div[hasclass('o_download_pdf')]" position="before">
             <a t-if="invoice._has_to_be_paid()"
-                href="#"
-                class="btn btn-primary"
-                data-bs-toggle="modal"
-                data-bs-target="#pay_with">
-                <i class="fa fa-fw fa-arrow-circle-right"/> Pay Now
+               href="#"
+               class="btn btn-primary"
+               data-bs-toggle="modal"
+               data-bs-target="#pay_with">
+                <i class="fa fa-fw fa-arrow-circle-right"/>
+                Pay Now
             </a>
         </xpath>
         <xpath expr="//div[@id='invoice_content']//div[hasclass('o_portal_html_view')]" position="before">
@@ -323,7 +346,7 @@
     </template>
 
     <template id="portal_invoice_error" name="Invoice error display: payment errors"
-            inherit_id="account.portal_invoice_error">
+              inherit_id="account.portal_invoice_error">
         <xpath expr="//t[@name='generic']" position="after">
             <t t-if="error == 'pay_invoice_invalid_doc'">
                 There was an error processing your payment: invalid invoice.
@@ -332,7 +355,8 @@
                 There was en error processing your payment: invalid credit card ID.
             </t>
             <t t-elif="error == 'pay_invoice_tx_fail'">
-                There was an error processing your payment: transaction failed.<br />
+                There was an error processing your payment: transaction failed.
+                <br/>
                 <t t-set="tx_sudo" t-value="invoice.get_portal_last_transaction()"/>
                 <t t-if="tx_sudo and tx_sudo.state_message">
                     <t t-out="tx_sudo.state_message"/>
@@ -345,13 +369,14 @@
     </template>
 
     <template id="portal_invoice_success" name="Invoice success display: payment success"
-            inherit_id="account.portal_invoice_success">
+              inherit_id="account.portal_invoice_success">
         <xpath expr="//a[hasclass('close')]" position="after">
             <t t-if="success == 'pay_invoice'">
                 <t t-set="tx_sudo" t-value="invoice.get_portal_last_transaction()"/>
                 <span t-if="tx_sudo.provider_id.sudo().done_msg" t-out="tx_sudo.provider_id.sudo().done_msg"/>
                 <div t-if="tx_sudo.provider_id.sudo().pending_msg and tx_sudo.provider_code == 'custom' and invoice.ref">
-                    <b>Communication: </b><span t-out='invoice.ref'/>
+                    <b>Communication:</b>
+                    <span t-out='invoice.ref'/>
                 </div>
             </t>
             <t t-if="success == 'pay_invoice' and invoice.payment_state in ('paid', 'in_payment')">

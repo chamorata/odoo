@@ -5,8 +5,8 @@ import base64
 import re
 
 from odoo import api, models
-from odoo.tools import misc
 from odoo.addons.base.models.assetsbundle import EXTENSIONS
+from odoo.tools import misc
 
 _match_asset_file_url_regex = re.compile(r"^(/_custom/([^/]+))?/(\w+)/([/\w]+\.\w+)$")
 
@@ -93,7 +93,6 @@ class Assets(models.AbstractModel):
                 new_asset['name'] = '%s: replace %s' % (bundle, custom_url.split('/')[-1])
                 new_asset['bundle'] = IrAsset._get_related_bundle(url, bundle)
             IrAsset.create(new_asset)
-
 
     @api.model
     def _get_content_from_url(self, url, url_info=None, custom_attachments=None):

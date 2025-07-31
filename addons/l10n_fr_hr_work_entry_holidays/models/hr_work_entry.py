@@ -3,13 +3,14 @@
 
 from odoo import models
 
+
 class HrWorkEntry(models.Model):
     _inherit = 'hr.work.entry'
 
     def _filter_french_part_time_entries(self):
         french_part_time_work_entries = self.filtered(lambda w:
-            w.company_id.country_id.code == 'FR'
-            and w.employee_id.resource_calendar_id != w.company_id.resource_calendar_id)
+                                                      w.company_id.country_id.code == 'FR'
+                                                      and w.employee_id.resource_calendar_id != w.company_id.resource_calendar_id)
         return french_part_time_work_entries
 
     def _mark_leaves_outside_schedule(self):
@@ -28,5 +29,5 @@ class HrWorkEntry(models.Model):
             return res
         for entry in french_part_time_work_entries:
             if entry.id in res and res[entry.id] == 0:
-                res[entry.id] = (entry.date_stop - entry.date_start).seconds/3600
+                res[entry.id] = (entry.date_stop - entry.date_start).seconds / 3600
         return res

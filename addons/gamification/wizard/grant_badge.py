@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, fields, models, _, exceptions
+from odoo import fields, models, _, exceptions
 
 
 class grant_badge_wizard(models.TransientModel):
@@ -23,7 +23,7 @@ class grant_badge_wizard(models.TransientModel):
             if uid == wiz.user_id.id:
                 raise exceptions.UserError(_('You can not grant a badge to yourself.'))
 
-            #create the badge
+            # create the badge
             BadgeUser.create({
                 'user_id': wiz.user_id.id,
                 'sender_id': uid,

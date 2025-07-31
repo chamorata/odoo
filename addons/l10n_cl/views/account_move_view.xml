@@ -17,7 +17,9 @@
         <field name="inherit_id" ref="l10n_latam_invoice_document.view_move_form"/>
         <field name="arch" type="xml">
             <field name="l10n_latam_document_number" position="attributes">
-                <attribute name="invisible" add="(not l10n_latam_use_documents or not posted_before or state != 'draft' or country_code != 'CL')" separator=" and "/>
+                <attribute name="invisible"
+                           add="(not l10n_latam_use_documents or not posted_before or state != 'draft' or country_code != 'CL')"
+                           separator=" and "/>
                 <attribute name="readonly">posted_before and state != 'draft'</attribute>
                 <attribute name="required">l10n_latam_manual_document_number</attribute>
             </field>
@@ -28,7 +30,8 @@
         <field name="name">account.move.list2</field>
         <field name="model">account.move</field>
         <field name="arch" type="xml">
-            <list decoration-info="state == 'draft'" default_order="create_date" string="Invoices and Refunds" decoration-muted="state == 'cancel'" js_class="account_tree">
+            <list decoration-info="state == 'draft'" default_order="create_date" string="Invoices and Refunds"
+                  decoration-muted="state == 'cancel'" js_class="account_tree">
                 <field name="l10n_latam_document_type_id_code"/>
                 <field name="l10n_latam_document_number" string="Folio" readonly="state != 'draft'"/>
                 <field name="partner_id_vat"/>
@@ -37,8 +40,11 @@
                 <field name="invoice_date_due" optional="show"/>
                 <field name="date" string="Accounting Date" optional="show" readonly="state in ['cancel', 'posted']"/>
                 <field name="payment_reference" optional="hide"/>
-                <field name="invoice_user_id" optional="show" column_invisible="context.get('default_move_type') not in ('out_invoice', 'out_refund', 'out_receipt')" string="Sales Person"/>
-                <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}" optional="show"/>
+                <field name="invoice_user_id" optional="show"
+                       column_invisible="context.get('default_move_type') not in ('out_invoice', 'out_refund', 'out_receipt')"
+                       string="Sales Person"/>
+                <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"
+                       optional="show"/>
                 <field name="invoice_origin" optional="show" string="Source Document"/>
                 <field name="amount_untaxed_signed" string="Amount Untaxed" sum="Total" optional="show"/>
                 <field name="amount_tax_signed" string="Tax" sum="Total" optional="show"/>
@@ -73,7 +79,9 @@
         <field name="view_mode">list,form</field>
     </record>
 
-    <menuitem id="menu_sale_invoices_credit_notes" parent="account.menu_finance_receivables" sequence="3" action="sale_invoices_credit_notes" name="Sale Invoices and Credit Notes (CL)"/>
-    <menuitem id="menu_vendor_bills_and_refunds" parent="account.menu_finance_payables" sequence="3" action="vendor_bills_and_refunds" name="Vendor Bills and Refunds (CL)"/>
+    <menuitem id="menu_sale_invoices_credit_notes" parent="account.menu_finance_receivables" sequence="3"
+              action="sale_invoices_credit_notes" name="Sale Invoices and Credit Notes (CL)"/>
+    <menuitem id="menu_vendor_bills_and_refunds" parent="account.menu_finance_payables" sequence="3"
+              action="vendor_bills_and_refunds" name="Vendor Bills and Refunds (CL)"/>
 
 </odoo>

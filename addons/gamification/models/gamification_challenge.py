@@ -16,6 +16,7 @@ _logger = logging.getLogger(__name__)
 # display top 3 in ranking, could be db variable
 MAX_VISIBILITY_RANKING = 3
 
+
 def start_end_date_for_period(period, default_start_date=False, default_end_date=False):
     """Return the start and end date for a goal period based on today
 
@@ -45,6 +46,7 @@ def start_end_date_for_period(period, default_start_date=False, default_end_date
 
     return fields.Datetime.to_string(start_date), fields.Datetime.to_string(end_date)
 
+
 class Challenge(models.Model):
     """Gamification challenge
 
@@ -73,64 +75,70 @@ class Challenge(models.Model):
     name = fields.Char("Challenge Name", required=True, translate=True)
     description = fields.Text("Description", translate=True)
     state = fields.Selection([
-            ('draft', "Draft"),
-            ('inprogress', "In Progress"),
-            ('done', "Done"),
-        ], default='draft', copy=False,
+        ('draft', "Draft"),
+        ('inprogress', "In Progress"),
+        ('done', "Done"),
+    ], default='draft', copy=False,
         string="State", required=True, tracking=True)
     manager_id = fields.Many2one(
         'res.users', default=lambda self: self.env.uid,
         string="Responsible")
     # members
     user_ids = fields.Many2many('res.users', 'gamification_challenge_users_rel', string="Participants")
-    user_domain = fields.Char("User domain")        # Alternative to a list of users
+    user_domain = fields.Char("User domain")  # Alternative to a list of users
     user_count = fields.Integer('# Users', compute='_compute_user_count')
     # periodicity
     period = fields.Selection([
-            ('once', "Non recurring"),
-            ('daily', "Daily"),
-            ('weekly', "Weekly"),
-            ('monthly', "Monthly"),
-            ('yearly', "Yearly")
-        ], default='once',
+        ('once', "Non recurring"),
+        ('daily', "Daily"),
+        ('weekly', "Weekly"),
+        ('monthly', "Monthly"),
+        ('yearly', "Yearly")
+    ], default='once',
         string="Periodicity",
         help="Period of automatic goal assignment. If none is selected, should be launched manually.",
         required=True)
-    start_date = fields.Date("Start Date", help="The day a new challenge will be automatically started. If no periodicity is set, will use this date as the goal start date.")
-    end_date = fields.Date("End Date", help="The day a new challenge will be automatically closed. If no periodicity is set, will use this date as the goal end date.")
+    start_date = fields.Date("Start Date",
+                             help="The day a new challenge will be automatically started. If no periodicity is set, will use this date as the goal start date.")
+    end_date = fields.Date("End Date",
+                           help="The day a new challenge will be automatically closed. If no periodicity is set, will use this date as the goal end date.")
 
     invited_user_ids = fields.Many2many('res.users', 'gamification_invited_user_ids_rel', string="Suggest to users")
 
     line_ids = fields.One2many('gamification.challenge.line', 'challenge_id',
-                                  string="Lines",
-                                  help="List of goals that will be set",
-                                  required=True, copy=True)
+                               string="Lines",
+                               help="List of goals that will be set",
+                               required=True, copy=True)
 
     reward_id = fields.Many2one('gamification.badge', string="For Every Succeeding User")
     reward_first_id = fields.Many2one('gamification.badge', string="For 1st user")
     reward_second_id = fields.Many2one('gamification.badge', string="For 2nd user")
     reward_third_id = fields.Many2one('gamification.badge', string="For 3rd user")
     reward_failure = fields.Boolean("Reward Bests if not Succeeded?")
-    reward_realtime = fields.Boolean("Reward as soon as every goal is reached", default=True, help="With this option enabled, a user can receive a badge only once. The top 3 badges are still rewarded only at the end of the challenge.")
+    reward_realtime = fields.Boolean("Reward as soon as every goal is reached", default=True,
+                                     help="With this option enabled, a user can receive a badge only once. The top 3 badges are still rewarded only at the end of the challenge.")
 
     visibility_mode = fields.Selection([
-            ('personal', "Individual Goals"),
-            ('ranking', "Leader Board (Group Ranking)"),
-        ], default='personal',
+        ('personal', "Individual Goals"),
+        ('ranking', "Leader Board (Group Ranking)"),
+    ], default='personal',
         string="Display Mode", required=True)
 
     report_message_frequency = fields.Selection([
-            ('never', "Never"),
-            ('onchange', "On change"),
-            ('daily', "Daily"),
-            ('weekly', "Weekly"),
-            ('monthly', "Monthly"),
-            ('yearly', "Yearly")
-        ], default='never',
+        ('never', "Never"),
+        ('onchange', "On change"),
+        ('daily', "Daily"),
+        ('weekly', "Weekly"),
+        ('monthly', "Monthly"),
+        ('yearly', "Yearly")
+    ], default='never',
         string="Report Frequency", required=True)
-    report_message_group_id = fields.Many2one('discuss.channel', string="Send a copy to", help="Group that will receive a copy of the report in addition to the user")
-    report_template_id = fields.Many2one('mail.template', default=lambda self: self._get_report_template(), string="Report Template", required=True)
-    remind_update_delay = fields.Integer("Non-updated manual goals will be reminded after", help="Never reminded if no value or zero is specified.")
+    report_message_group_id = fields.Many2one('discuss.channel', string="Send a copy to",
+                                              help="Group that will receive a copy of the report in addition to the user")
+    report_template_id = fields.Many2one('mail.template', default=lambda self: self._get_report_template(),
+                                         string="Report Template", required=True)
+    remind_update_delay = fields.Integer("Non-updated manual goals will be reminded after",
+                                         help="Never reminded if no value or zero is specified.")
     last_report_date = fields.Date("Last Report Date", default=fields.Date.today)
     next_report_date = fields.Date("Next Report Date", compute='_get_next_report_date', store=True)
 
@@ -138,7 +146,7 @@ class Challenge(models.Model):
         ('hr', 'Human Resources / Engagement'),
         ('other', 'Settings / Gamification Tools'),
     ], string="Appears in", required=True, default='hr',
-       help="Define the visibility of the challenge through menus")
+        help="Define the visibility of the challenge through menus")
 
     @api.depends('user_ids')
     def _compute_user_count(self):
@@ -166,6 +174,7 @@ class Challenge(models.Model):
         'monthly': relativedelta(months=1),
         'yearly': relativedelta(years=1),
     }
+
     @api.depends('last_report_date', 'report_message_frequency')
     def _get_next_report_date(self):
         """ Return the next report date based on the last report date and
@@ -222,15 +231,15 @@ class Challenge(models.Model):
 
         elif vals.get('state') == 'draft':
             # resetting progress
-            if self.env['gamification.goal'].search_count([('challenge_id', 'in', self.ids), ('state', '=', 'inprogress')], limit=1):
+            if self.env['gamification.goal'].search_count(
+                    [('challenge_id', 'in', self.ids), ('state', '=', 'inprogress')], limit=1):
                 raise exceptions.UserError(_("You can not reset a challenge with unfinished goals."))
 
         return write_res
 
-
     ##### Update #####
 
-    @api.model # FIXME: check how cron functions are called to see if decorator necessary
+    @api.model  # FIXME: check how cron functions are called to see if decorator necessary
     def _cron_update(self, ids=False, commit=True):
         """Daily cron check.
 
@@ -367,7 +376,8 @@ class Challenge(models.Model):
 
         Goals = self.env['gamification.goal']
         for challenge in self:
-            (start_date, end_date) = start_end_date_for_period(challenge.period, challenge.start_date, challenge.end_date)
+            (start_date, end_date) = start_end_date_for_period(challenge.period, challenge.start_date,
+                                                               challenge.end_date)
             to_update = Goals.browse(())
 
             for line in challenge.line_ids:
@@ -597,7 +607,10 @@ class Challenge(models.Model):
         if challenge.visibility_mode == 'ranking':
             lines_boards = challenge._get_serialized_challenge_lines(restrict_goals=subset_goals)
 
-            body_html = challenge.report_template_id.with_context(challenge_lines=lines_boards)._render_field('body_html', challenge.ids)[challenge.id]
+            body_html = \
+            challenge.report_template_id.with_context(challenge_lines=lines_boards)._render_field('body_html',
+                                                                                                  challenge.ids)[
+                challenge.id]
 
             # send to every follower and participant of the challenge
             challenge.message_post(
@@ -605,7 +618,7 @@ class Challenge(models.Model):
                 partner_ids=challenge.mapped('user_ids.partner_id.id'),
                 subtype_xmlid='mail.mt_comment',
                 email_layout_xmlid='mail.mail_notification_light',
-                )
+            )
             if challenge.report_message_group_id:
                 challenge.report_message_group_id.message_post(
                     body=body_html,
@@ -618,7 +631,9 @@ class Challenge(models.Model):
                 if not lines:
                     continue
 
-                body_html = challenge.report_template_id.with_user(user).with_context(challenge_lines=lines)._render_field('body_html', challenge.ids)[challenge.id]
+                body_html = \
+                challenge.report_template_id.with_user(user).with_context(challenge_lines=lines)._render_field(
+                    'body_html', challenge.ids)[challenge.id]
 
                 # notify message only to users, do not post on the challenge
                 challenge.message_notify(
@@ -663,7 +678,8 @@ class Challenge(models.Model):
         commit = self.env.context.get('commit_gamification') and self.env.cr.commit
 
         for challenge in self:
-            (start_date, end_date) = start_end_date_for_period(challenge.period, challenge.start_date, challenge.end_date)
+            (start_date, end_date) = start_end_date_for_period(challenge.period, challenge.start_date,
+                                                               challenge.end_date)
             yesterday = date.today() - timedelta(days=1)
 
             rewarded_users = self.env['res.users']
@@ -703,7 +719,8 @@ class Challenge(models.Model):
                         users=", ".join(rewarded_users.mapped('display_name'))
                     )
                 else:
-                    message_body += Markup("<br/>") + _("Nobody has succeeded to reach every goal, no badge is rewarded for this challenge.")
+                    message_body += Markup("<br/>") + _(
+                        "Nobody has succeeded to reach every goal, no badge is rewarded for this challenge.")
 
                 # reward bests
                 reward_message = Markup("<br/> %(rank)d. %(user_name)s - %(reward_name)s")
@@ -711,7 +728,8 @@ class Challenge(models.Model):
                     (first_user, second_user, third_user) = challenge._get_topN_users(MAX_VISIBILITY_RANKING)
                     if first_user:
                         challenge._reward_user(first_user, challenge.reward_first_id)
-                        message_body += Markup("<br/>") + _("Special rewards were sent to the top competing users. The ranking for this challenge is:")
+                        message_body += Markup("<br/>") + _(
+                            "Special rewards were sent to the top competing users. The ranking for this challenge is:")
                         message_body += reward_message % {
                             'rank': 1,
                             'user_name': first_user.name,

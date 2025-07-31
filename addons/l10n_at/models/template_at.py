@@ -1,6 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo import models
 from odoo.addons.account.models.chart_template import template
+
+from odoo import models
 
 
 class AccountChartTemplate(models.AbstractModel):
@@ -43,6 +44,8 @@ class AccountChartTemplate(models.AbstractModel):
     def _setup_utility_bank_accounts(self, template_code, company, template_data):
         super()._setup_utility_bank_accounts(template_code, company, template_data)
         if template_code == "at":
-            bank_tags = self.env.ref('l10n_at.account_tag_external_code_2300') | self.env.ref('l10n_at.account_tag_l10n_at_ABIV')
+            bank_tags = self.env.ref('l10n_at.account_tag_external_code_2300') | self.env.ref(
+                'l10n_at.account_tag_l10n_at_ABIV')
             company.account_journal_suspense_account_id.tag_ids = bank_tags
-            company.transfer_account_id.tag_ids = self.env.ref('l10n_at.account_tag_external_code_2885') | self.env.ref('l10n_at.account_tag_l10n_at_ABIV')
+            company.transfer_account_id.tag_ids = self.env.ref('l10n_at.account_tag_external_code_2885') | self.env.ref(
+                'l10n_at.account_tag_l10n_at_ABIV')

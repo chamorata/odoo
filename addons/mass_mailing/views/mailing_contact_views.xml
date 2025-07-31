@@ -1,36 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-     <record id="mailing_contact_view_search" model="ir.ui.view">
+    <record id="mailing_contact_view_search" model="ir.ui.view">
         <field name="name">mailing.contact.view.search</field>
         <field name="model">mailing.contact</field>
         <field name="arch" type="xml">
-           <search string="Mailing List Contacts">
+            <search string="Mailing List Contacts">
                 <field name="name"
-                    filter_domain="['|', '|', ('name','ilike',self), ('company_name','ilike',self), ('email_normalized','ilike',self)]"
-                    string="Name / Email"/>
+                       filter_domain="['|', '|', ('name','ilike',self), ('company_name','ilike',self), ('email_normalized','ilike',self)]"
+                       string="Name / Email"/>
                 <field name="tag_ids"/>
                 <field name="list_ids"/>
                 <separator/>
                 <filter string="Valid Email Recipients"
-                    name="filter_valid_email_recipient"
-                    domain="[('opt_out', '=', False), ('is_blacklisted', '=', False), ('email_normalized', '!=', False)]"
-                    invisible="not context.get('default_list_ids')"/>
+                        name="filter_valid_email_recipient"
+                        domain="[('opt_out', '=', False), ('is_blacklisted', '=', False), ('email_normalized', '!=', False)]"
+                        invisible="not context.get('default_list_ids')"/>
                 <separator/>
                 <filter name="filter_bounce" string="Bounced" domain="[('message_bounce', '>', 0)]"/>
-                <filter name="filter_blacklisted" string="Blacklisted" domain="[('is_blacklisted','=',True)]" invisible="1"/>
+                <filter name="filter_blacklisted" string="Blacklisted" domain="[('is_blacklisted','=',True)]"
+                        invisible="1"/>
                 <filter name="filter_opt_out" string="Opted-out" domain="[('opt_out', '=', True)]" invisible="1"/>
                 <separator/>
                 <filter string="Exclude Blacklisted Emails"
-                    name="filter_not_email_bl"
-                    domain="[('is_blacklisted', '=', False)]"/>
+                        name="filter_not_email_bl"
+                        domain="[('is_blacklisted', '=', False)]"/>
                 <separator/>
                 <filter string="Exclude Opt Out"
-                    name="filter_not_optout"
-                    domain="[('opt_out', '=', False)]"
-                    invisible="not context.get('default_list_ids')"/>
+                        name="filter_not_optout"
+                        domain="[('opt_out', '=', False)]"
+                        invisible="not context.get('default_list_ids')"/>
                 <group expand="0" string="Group By">
                     <filter string="Creation Date" name="group_create_date"
-                        context="{'group_by': 'create_date'}"/>
+                            context="{'group_by': 'create_date'}"/>
                 </group>
             </search>
         </field>
@@ -44,7 +45,7 @@
             <list string="Mailing List Contacts" sample="1" multi_edit="1">
                 <header>
                     <button name="action_import" string="Import" type="object" display="always"
-                        context="{'from_mailing_list_ids': context.get('active_ids') if context.get('active_model') == 'mailing.list' else False}"/>
+                            context="{'from_mailing_list_ids': context.get('active_ids') if context.get('active_model') == 'mailing.list' else False}"/>
                     <button name="action_add_to_mailing_list" string="Add to List" type="object"/>
                 </header>
                 <field name="create_date" optional="show"/>
@@ -68,14 +69,15 @@
             <kanban sample="1">
                 <header>
                     <button name="action_import" string="Import" type="object" display="always"
-                        context="{'from_mailing_list_ids': context.get('active_ids') if context.get('active_model') == 'mailing.list' else False}"/>
+                            context="{'from_mailing_list_ids': context.get('active_ids') if context.get('active_model') == 'mailing.list' else False}"/>
                 </header>
                 <templates>
                     <t t-name="card">
                         <div class="d-flex">
                             <field name="name" class="fw-bolder fs-5"/>
                             <div class="badge rounded-pill ms-auto" title="Number of bounced email.">
-                                <i class="fa fa-exclamation-triangle" role="img" aria-label="Warning" title="Warning"/> <field name="message_bounce"/>
+                                <i class="fa fa-exclamation-triangle" role="img" aria-label="Warning" title="Warning"/>
+                                <field name="message_bounce"/>
                             </div>
                         </div>
                         <field name="tag_ids"/>
@@ -107,10 +109,10 @@
                         <group>
                             <label for="email" class="oe_inline"/>
                             <div class="o_row o_row_readonly" name="email_details">
-                                 <button name="mail_action_blacklist_remove" class="fa fa-ban text-danger"
-                                    title="This email is blacklisted for mass mailings. Click to unblacklist."
-                                    type="object" context="{'default_email': email}" groups="base.group_user"
-                                    invisible="not is_blacklisted"/>
+                                <button name="mail_action_blacklist_remove" class="fa fa-ban text-danger"
+                                        title="This email is blacklisted for mass mailings. Click to unblacklist."
+                                        type="object" context="{'default_email': email}" groups="base.group_user"
+                                        invisible="not is_blacklisted"/>
                                 <field name="email" widget="email"/>
                                 <field name="is_blacklisted" invisible="1"/>
                             </div>
@@ -127,11 +129,11 @@
                     </group>
                     <field name="subscription_ids">
                         <list editable="bottom">
-                           <field name="list_id"/>
-                           <field name="opt_out_datetime" readonly="1"/>
-                           <field name="opt_out"/>
-                           <field name="opt_out_reason_id"/>
-                           <field name="create_date" string="Subscription Date"/>
+                            <field name="list_id"/>
+                            <field name="opt_out_datetime" readonly="1"/>
+                            <field name="opt_out"/>
+                            <field name="opt_out_reason_id"/>
+                            <field name="create_date" string="Subscription Date"/>
                         </list>
                     </field>
                 </sheet>
@@ -170,49 +172,50 @@
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create a mailing contact
-            </p><p>
+            </p>
+            <p>
                 Mailing contacts allow you to separate your marketing audience from your business contact directory.
             </p>
         </field>
     </record>
 
-<data noupdate="1">
-    <!-- Activated dynamically when the option that splits name into first and last name is enabled. -->
-    <!-- We set them into a noupdate block to avoid the configuration to be reset after an update. -->
-    <record id="mailing_contact_view_tree_split_name" model="ir.ui.view">
-        <field name="name">mailing.contact.view.list.split.name</field>
-        <field name="model">mailing.contact</field>
-        <field name="inherit_id" ref="mass_mailing.mailing_contact_view_tree"/>
-        <field name="active">False</field>
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='name']" position="after">
-                <field name="first_name" optional="hide" readonly="1"/>
-                <field name="last_name" optional="hide" readonly="1"/>
-            </xpath>
-        </field>
-    </record>
+    <data noupdate="1">
+        <!-- Activated dynamically when the option that splits name into first and last name is enabled. -->
+        <!-- We set them into a noupdate block to avoid the configuration to be reset after an update. -->
+        <record id="mailing_contact_view_tree_split_name" model="ir.ui.view">
+            <field name="name">mailing.contact.view.list.split.name</field>
+            <field name="model">mailing.contact</field>
+            <field name="inherit_id" ref="mass_mailing.mailing_contact_view_tree"/>
+            <field name="active">False</field>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="first_name" optional="hide" readonly="1"/>
+                    <field name="last_name" optional="hide" readonly="1"/>
+                </xpath>
+            </field>
+        </record>
 
-    <record id="mailing_contact_view_form_split_name" model="ir.ui.view">
-        <field name="name">mailing.contact.view.form.split.name</field>
-        <field name="model">mailing.contact</field>
-        <field name="inherit_id" ref="mass_mailing.mailing_contact_view_form"/>
-        <field name="active">False</field>
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='name']" position="attributes">
-                <attribute name="readonly">1</attribute>
-                <attribute name="invisible">not name</attribute>
-            </xpath>
-            <xpath expr="//field[@name='name']" position="after">
-                <!-- simulate the placeholder on the readonly field -->
-                <span class="oe_grey" invisible="name">e.g. "John Smith"</span>
-            </xpath>
-            <xpath expr="//group/label[@for='email']" position="before">
-                <field name="first_name" placeholder="e.g. &quot;John&quot;"/>
-            </xpath>
-            <xpath expr="//group/field[@name='create_date']" position="before">
-                <field name="last_name" placeholder="e.g. &quot;Smith&quot;"/>
-            </xpath>
-        </field>
-    </record>
-</data>
+        <record id="mailing_contact_view_form_split_name" model="ir.ui.view">
+            <field name="name">mailing.contact.view.form.split.name</field>
+            <field name="model">mailing.contact</field>
+            <field name="inherit_id" ref="mass_mailing.mailing_contact_view_form"/>
+            <field name="active">False</field>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                    <attribute name="invisible">not name</attribute>
+                </xpath>
+                <xpath expr="//field[@name='name']" position="after">
+                    <!-- simulate the placeholder on the readonly field -->
+                    <span class="oe_grey" invisible="name">e.g. "John Smith"</span>
+                </xpath>
+                <xpath expr="//group/label[@for='email']" position="before">
+                    <field name="first_name" placeholder="e.g. &quot;John&quot;"/>
+                </xpath>
+                <xpath expr="//group/field[@name='create_date']" position="before">
+                    <field name="last_name" placeholder="e.g. &quot;Smith&quot;"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
 </odoo>

@@ -4,6 +4,7 @@
 import base64
 
 from odoo.addons.website_event.controllers.main import WebsiteEventController
+
 from odoo.tools import plaintext2html
 
 
@@ -37,7 +38,9 @@ class WebsiteEventBoothController(WebsiteEventController):
             'sponsor_mobile': kwargs.get('sponsor_mobile') or booth_values.get('contact_phone'),
             'sponsor_phone': kwargs.get('sponsor_phone') or booth_values.get('contact_phone'),
             'sponsor_subtitle': kwargs.get('sponsor_slogan'),
-            'sponsor_website_description': plaintext2html(kwargs.get('sponsor_description')) if kwargs.get('sponsor_description') else '',
-            'sponsor_image_512': base64.b64encode(kwargs['sponsor_image'].read()) if kwargs.get('sponsor_image') else False,
+            'sponsor_website_description': plaintext2html(kwargs.get('sponsor_description')) if kwargs.get(
+                'sponsor_description') else '',
+            'sponsor_image_512': base64.b64encode(kwargs['sponsor_image'].read()) if kwargs.get(
+                'sponsor_image') else False,
         }
         return sponsor_values

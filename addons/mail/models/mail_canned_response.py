@@ -1,7 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import fields, models, api
 from odoo.addons.mail.tools.discuss import Store
+
+from odoo import fields, models, api
 
 
 class MailCannedResponse(models.Model):
@@ -17,7 +18,7 @@ class MailCannedResponse(models.Model):
     source = fields.Char(
         "Shortcut", required=True, index="trigram",
         help="Canned response that will automatically be substituted with longer content in your messages."
-        " Type ':' followed by the name of your shortcut (e.g. :hello) to use in your messages.",
+             " Type ':' followed by the name of your shortcut (e.g. :hello) to use in your messages.",
     )
     substitution = fields.Text(
         "Substitution",

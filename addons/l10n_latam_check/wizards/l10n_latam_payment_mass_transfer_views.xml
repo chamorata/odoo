@@ -10,7 +10,8 @@
                 <field name="company_id" invisible="1"/>
                 <group>
                     <group name="destination_journal_group">
-                        <field name="destination_journal_id" options="{'no_open': True, 'no_create': True}" required="1"/>
+                        <field name="destination_journal_id" options="{'no_open': True, 'no_create': True}"
+                               required="1"/>
                     </group>
                     <group name="other_check_info">
                         <field name="payment_date"/>
@@ -19,14 +20,14 @@
                 </group>
                 <footer>
                     <button string="Create Transfers"
-                        name="action_create_payments"
-                        type="object"
-                        class="oe_highlight"
-                        data-hotkey="q"/>
+                            name="action_create_payments"
+                            type="object"
+                            class="oe_highlight"
+                            data-hotkey="q"/>
                     <button string="Cancel"
-                        class="btn btn-secondary"
-                        special="cancel"
-                        data-hotkey="x"/>
+                            class="btn btn-secondary"
+                            special="cancel"
+                            data-hotkey="x"/>
                 </footer>
             </form>
         </field>

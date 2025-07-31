@@ -10,18 +10,17 @@ from dateutil.relativedelta import relativedelta
 from odoo import api, fields, models, tools
 from odoo.tools import exception_to_unicode
 from odoo.tools.translate import _
-from odoo.exceptions import MissingError
-
 
 _logger = logging.getLogger(__name__)
 
 _INTERVALS = {
     'hours': lambda interval: relativedelta(hours=interval),
     'days': lambda interval: relativedelta(days=interval),
-    'weeks': lambda interval: relativedelta(days=7*interval),
+    'weeks': lambda interval: relativedelta(days=7 * interval),
     'months': lambda interval: relativedelta(months=interval),
     'now': lambda interval: relativedelta(hours=0),
 }
+
 
 class EventTypeMail(models.Model):
     """ Template of event.mail to attach to event.type. Those will be copied
@@ -44,7 +43,8 @@ class EventTypeMail(models.Model):
         ('after_event', 'After the event')],
         string='Trigger', default="before_event", required=True)
     notification_type = fields.Selection([('mail', 'Mail')], string='Send', compute='_compute_notification_type')
-    template_ref = fields.Reference(string='Template', ondelete={'mail.template': 'cascade'}, required=True, selection=[('mail.template', 'Mail')])
+    template_ref = fields.Reference(string='Template', ondelete={'mail.template': 'cascade'}, required=True,
+                                    selection=[('mail.template', 'Mail')])
 
     @api.depends('template_ref')
     def _compute_notification_type(self):
@@ -59,6 +59,7 @@ class EventTypeMail(models.Model):
             'interval_type': self.interval_type,
             'template_ref': '%s,%i' % (self.template_ref._name, self.template_ref.id),
         }
+
 
 class EventMailScheduler(models.Model):
     """ Event automated mailing. This model replaces all existing fields and
@@ -93,7 +94,8 @@ class EventMailScheduler(models.Model):
         string='Global communication Status', compute='_compute_mail_state')
     mail_count_done = fields.Integer('# Sent', copy=False, readonly=True)
     notification_type = fields.Selection([('mail', 'Mail')], string='Send', compute='_compute_notification_type')
-    template_ref = fields.Reference(string='Template', ondelete={'mail.template': 'cascade'}, required=True, selection=[('mail.template', 'Mail')])
+    template_ref = fields.Reference(string='Template', ondelete={'mail.template': 'cascade'}, required=True,
+                                    selection=[('mail.template', 'Mail')])
 
     @api.depends('event_id.date_begin', 'event_id.date_end', 'interval_type', 'interval_unit', 'interval_nbr')
     def _compute_scheduled_date(self):
@@ -105,7 +107,8 @@ class EventMailScheduler(models.Model):
             else:
                 date, sign = scheduler.event_id.date_end, 1
 
-            scheduler.scheduled_date = date.replace(microsecond=0) + _INTERVALS[scheduler.interval_unit](sign * scheduler.interval_nbr) if date else False
+            scheduler.scheduled_date = date.replace(microsecond=0) + _INTERVALS[scheduler.interval_unit](
+                sign * scheduler.interval_nbr) if date else False
 
     @api.depends('interval_type', 'mail_done')
     def _compute_mail_state(self):
@@ -134,7 +137,8 @@ class EventMailScheduler(models.Model):
                 if scheduler.mail_done:
                     continue
                 # do not send emails if the mailing was scheduled before the event but the event is over
-                if scheduler.scheduled_date <= now and (scheduler.interval_type != 'before_event' or scheduler.event_id.date_end > now):
+                if scheduler.scheduled_date <= now and (
+                        scheduler.interval_type != 'before_event' or scheduler.event_id.date_end > now):
                     scheduler._execute_event_based()
         return True
 
@@ -157,7 +161,8 @@ class EventMailScheduler(models.Model):
         ]
         if self.last_registration_id:
             registration_domain += [('id', '>', self.last_registration_id.id)]
-        registrations = self.env["event.registration"].search(registration_domain, limit=(cron_limit + 1), order="id ASC")
+        registrations = self.env["event.registration"].search(registration_domain, limit=(cron_limit + 1),
+                                                              order="id ASC")
 
         # no registrations -> done
         if not registrations:
@@ -169,7 +174,8 @@ class EventMailScheduler(models.Model):
             registrations = registrations[:cron_limit]
             self.env.ref('event.event_mail_scheduler')._trigger()
 
-        for registrations_chunk in tools.split_every(batch_size, registrations.ids, self.env["event.registration"].browse):
+        for registrations_chunk in tools.split_every(batch_size, registrations.ids,
+                                                     self.env["event.registration"].browse):
             self._execute_event_based_for_registrations(registrations_chunk)
             self.last_registration_id = registrations_chunk[-1]
 

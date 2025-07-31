@@ -1,6 +1,6 @@
-from enum import Enum
 from dataclasses import dataclass, field
-from typing import List, Literal, Optional, Union
+from enum import Enum
+from typing import List, Literal, Optional
 
 from .cose import COSEAlgorithmIdentifier
 

@@ -17,7 +17,8 @@
         <field name="view_mode">calendar,list,form,pivot</field>
         <field name="context">{
             'search_default_work_entries_error': True
-        }</field>
+            }
+        </field>
         <field name="help" type="html">
             <p class="o_view_nocontent_empty_folder">
                 No data to display
@@ -33,14 +34,15 @@
         <field name="model">hr.work.entry</field>
         <field name="arch" type="xml">
             <calendar string="Work Entry"
-                date_start="date_start"
-                date_stop="date_stop"
-                mode="month"
-                quick_create="0"
-                color="color"
-                event_limit="5">
+                      date_start="date_start"
+                      date_stop="date_stop"
+                      mode="month"
+                      quick_create="0"
+                      color="color"
+                      event_limit="5">
                 <!-- Sidebar favorites filters -->
-                <field name="employee_id" write_model="hr.user.work.entry.employee" write_field="employee_id" avatar_field="avatar_128" widget="many2one_avatar_user"/>
+                <field name="employee_id" write_model="hr.user.work.entry.employee" write_field="employee_id"
+                       avatar_field="avatar_128" widget="many2one_avatar_user"/>
                 <field name="state"/>
             </calendar>
         </field>
@@ -50,7 +52,7 @@
         <field name="name">hr.work.entry.form</field>
         <field name="model">hr.work.entry</field>
         <field name="arch" type="xml">
-            <form string="Work Entry" >
+            <form string="Work Entry">
                 <header>
                     <field name="state" widget="statusbar" readonly="1" statusbar_visible="draft,validated,conflict"/>
                 </header>
@@ -60,20 +62,22 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="name" string="Description" placeholder="Work Entry Name" readonly="state == 'validated'"/>
+                            <field name="name" string="Description" placeholder="Work Entry Name"
+                                   readonly="state == 'validated'"/>
                             <field name="employee_id" readonly="state != 'draft'" widget="many2one_avatar_user"/>
-                            <field name="work_entry_type_id" readonly="state == 'validated'" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="work_entry_type_id" readonly="state == 'validated'"
+                                   options="{'no_create': True, 'no_open': True}"/>
                         </group>
                         <group>
-                            <field name="date_start" readonly="state != 'draft'" />
+                            <field name="date_start" readonly="state != 'draft'"/>
                             <field name="date_stop" required="1" readonly="state != 'draft'"/>
                             <label for="duration"/>
                             <div class="o_row mw-50 mw-sm-25">
                                 <field name="duration"
-                                    nolabel="1"
-                                    widget="float_time"
-                                    class="o_hr_narrow_field"
-                                    readonly="state != 'draft'" />
+                                       nolabel="1"
+                                       widget="float_time"
+                                       class="o_hr_narrow_field"
+                                       readonly="state != 'draft'"/>
                                 <span>Hours</span>
                             </div>
                             <field name="company_id" invisible="1"/>
@@ -183,7 +187,7 @@
         <field name="name">hr.work.entry.type.form</field>
         <field name="model">hr.work.entry.type</field>
         <field name="arch" type="xml">
-            <form string="Work Entry Type" >
+            <form string="Work Entry Type">
                 <sheet>
                     <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
                     <div class="oe_title">

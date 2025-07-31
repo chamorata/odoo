@@ -5,6 +5,7 @@ from ast import literal_eval
 
 from odoo.addons.phone_validation.tools import phone_validation
 from odoo.addons.test_mass_mailing.tests.common import TestMassSMSCommon
+
 from odoo import exceptions
 from odoo.tests import tagged
 from odoo.tests.common import users
@@ -59,7 +60,7 @@ class TestMassSMSInternals(TestMassSMSCommon):
             [{'partner': record.customer_id,
               'number': self.records_numbers[i],
               'content': 'Dear %s this is a mass SMS.' % record.display_name
-             } for i, record in enumerate(self.records)],
+              } for i, record in enumerate(self.records)],
             mailing, self.records,
         )
 
@@ -127,7 +128,8 @@ class TestMassSMSInternals(TestMassSMSCommon):
         )
         # blacklist
         self.assertSMSTraces(
-            [{'partner': self.env['res.partner'], 'number': phone_validation.phone_format(bl_record_1.phone_nbr, 'BE', '32', force_format='E164'),
+            [{'partner': self.env['res.partner'],
+              'number': phone_validation.phone_format(bl_record_1.phone_nbr, 'BE', '32', force_format='E164'),
               'content': 'Dear %s this is a mass SMS' % bl_record_1.display_name, 'trace_status': 'cancel',
               'failure_type': 'sms_blacklist'}],
             mailing, bl_record_1,
@@ -183,7 +185,7 @@ class TestMassSMSInternals(TestMassSMSCommon):
         )
         # new traces generated
         self.assertSMSTraces(
-            [{'partner': record.customer_id, 'number': self.records_numbers[i+5],
+            [{'partner': record.customer_id, 'number': self.records_numbers[i + 5],
               'content': 'Dear %s this is a mass SMS' % record.display_name}
              for i, record in enumerate(self.records[5:])],
             mailing, self.records[5:],
@@ -305,7 +307,7 @@ class TestMassSMS(TestMassSMSCommon):
               'number': self.records_numbers[i],
               'trace_status': 'pending',
               'content': 'Dear %s this is a mass SMS with two links' % record.display_name
-             } for i, record in enumerate(self.records)],
+              } for i, record in enumerate(self.records)],
             mailing, self.records,
             sms_links_info=[[
                 ('http://www.odoo.com/smstest', True, {}),
@@ -328,7 +330,7 @@ class TestMassSMS(TestMassSMSCommon):
         records = self.env['mail.test.sms.partner'].create([
             {'name': 'MassSMSTest on %s' % partner.name,
              'customer_id': partner.id,
-            } for partner in self.partners
+             } for partner in self.partners
         ])
 
         with self.mockSMSGateway():
@@ -340,7 +342,7 @@ class TestMassSMS(TestMassSMSCommon):
               'number': record.customer_id.phone_sanitized,
               'trace_status': 'pending',
               'content': 'Dear %s this is a mass SMS with two links' % record.display_name
-             } for record in records],
+              } for record in records],
             mailing, records,
             sms_links_info=[[
                 ('http://www.odoo.com/smstest', True, {}),
@@ -354,7 +356,7 @@ class TestMassSMS(TestMassSMSCommon):
         new_record = self.env['mail.test.sms.partner'].create([
             {'name': 'Duplicate SMS on %s' % self.partners[0].name,
              'customer_id': self.partners[0].id,
-            }
+             }
         ])
         with self.mockSMSGateway():
             mailing.action_send_sms()
@@ -365,7 +367,7 @@ class TestMassSMS(TestMassSMSCommon):
               'number': new_record.customer_id.phone_sanitized,
               'trace_status': 'pending',
               'content': 'Dear %s this is a mass SMS with two links' % new_record.display_name
-             }],
+              }],
             mailing, new_record,
             sms_links_info=[[
                 ('http://www.odoo.com/smstest', True, {}),
@@ -388,12 +390,11 @@ class TestMassSMS(TestMassSMSCommon):
         self.env['mail.test.sms.partner.2many'].create([
             {'name': 'MassSMSTest on %s' % partner.name,
              'customer_ids': [(4, partner.id)],
-            } for partner in self.partners
+             } for partner in self.partners
         ])
 
         with self.assertRaises(exceptions.UserError), self.mockSMSGateway():
             mailing.action_send_sms()
-
 
     @users('user_marketing')
     @mute_logger('odoo.addons.mail.models.mail_mail')

@@ -2,6 +2,7 @@
 
 import json
 import logging
+
 import psycopg2
 
 import odoo.exceptions
@@ -17,9 +18,7 @@ from .utils import (
     is_user_internal,
 )
 
-
 _logger = logging.getLogger(__name__)
-
 
 # Shared parameters for all login/signup flows
 SIGN_UP_REQUEST_PARAMS = {'db', 'login', 'debug', 'token', 'message', 'error', 'scope', 'mode',
@@ -41,7 +40,8 @@ class Home(http.Controller):
         return False
 
     # ideally, this route should be `auth="user"` but that don't work in non-monodb mode.
-    @http.route(['/web', '/odoo', '/odoo/<path:subpath>', '/scoped_app/<path:subpath>'], type='http', auth="none", readonly=_web_client_readonly)
+    @http.route(['/web', '/odoo', '/odoo/<path:subpath>', '/scoped_app/<path:subpath>'], type='http', auth="none",
+                readonly=_web_client_readonly)
     def web_client(self, s_action=None, **kw):
 
         # Ensure we have both a database and a user

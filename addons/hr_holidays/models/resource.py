@@ -1,10 +1,13 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from datetime import datetime
+
+import pytz
+
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
-import pytz
-from datetime import datetime
+
 
 class CalendarLeaves(models.Model):
     _inherit = "resource.calendar.leaves"
@@ -22,14 +25,16 @@ class CalendarLeaves(models.Model):
         for record in self:
             if not record.resource_id:
                 existing_leaves = all_existing_leaves.filtered(lambda leave:
-                        record.id != leave.id
-                        and record['company_id'] == leave['company_id']
-                        and record['date_from'] <= leave['date_to']
-                        and record['date_to'] >= leave['date_from'])
+                                                               record.id != leave.id
+                                                               and record['company_id'] == leave['company_id']
+                                                               and record['date_from'] <= leave['date_to']
+                                                               and record['date_to'] >= leave['date_from'])
                 if record.calendar_id:
-                    existing_leaves = existing_leaves.filtered(lambda l: not l.calendar_id or l.calendar_id == record.calendar_id)
+                    existing_leaves = existing_leaves.filtered(
+                        lambda l: not l.calendar_id or l.calendar_id == record.calendar_id)
                 if existing_leaves:
-                    raise ValidationError(_('Two public holidays cannot overlap each other for the same working hours.'))
+                    raise ValidationError(
+                        _('Two public holidays cannot overlap each other for the same working hours.'))
 
     def _get_domain(self, time_domain_dict):
         domain = expression.OR([
@@ -44,9 +49,9 @@ class CalendarLeaves(models.Model):
 
     def _get_time_domain_dict(self):
         return [{
-            'company_id' : record.company_id.id,
-            'date_from' : record.date_from,
-            'date_to' : record.date_to
+            'company_id': record.company_id.id,
+            'date_from': record.date_from,
+            'date_to': record.date_to
         } for record in self if not record.resource_id]
 
     def _reevaluate_leaves(self, time_domain_dict):
@@ -71,10 +76,13 @@ class CalendarLeaves(models.Model):
             duration_difference = previous_duration - leave.number_of_days
             message = False
             if duration_difference > 0 and leave.holiday_status_id.requires_allocation == 'yes':
-                message = _("Due to a change in global time offs, you have been granted %s day(s) back.", duration_difference)
-            if leave.number_of_days > previous_duration\
+                message = _("Due to a change in global time offs, you have been granted %s day(s) back.",
+                            duration_difference)
+            if leave.number_of_days > previous_duration \
                     and (not sick_time_status or leave.holiday_status_id not in sick_time_status):
-                message = _("Due to a change in global time offs, %s extra day(s) have been taken from your allocation. Please review this leave if you need it to be changed.", -1 * duration_difference)
+                message = _(
+                    "Due to a change in global time offs, %s extra day(s) have been taken from your allocation. Please review this leave if you need it to be changed.",
+                    -1 * duration_difference)
             try:
                 leave.write({'state': state})
                 leave._check_validity()
@@ -83,7 +91,8 @@ class CalendarLeaves(models.Model):
                     leaves_to_recreate |= leave
             except ValidationError:
                 leave.action_refuse()
-                message = _("Due to a change in global time offs, this leave no longer has the required amount of available allocation and has been set to refused. Please review this leave.")
+                message = _(
+                    "Due to a change in global time offs, this leave no longer has the required amount of available allocation and has been set to refused. Please review this leave.")
             if message:
                 leave._notify_change(message)
         leaves_to_recreate.sudo()._create_resource_leave()
@@ -122,8 +131,8 @@ class CalendarLeaves(models.Model):
             # Manage the case of create a Public Time Off in another timezone
             # The datetime created has to be in UTC for the calendar's timezone
             if not vals.get('calendar_id') or vals.get('resource_id') or \
-                not isinstance(vals.get('date_from'), (datetime, str)) or \
-                not isinstance(vals.get('date_to'), (datetime, str)):
+                    not isinstance(vals.get('date_from'), (datetime, str)) or \
+                    not isinstance(vals.get('date_to'), (datetime, str)):
                 continue
             user_tz = pytz.timezone(self.env.user.tz) if self.env.user.tz else pytz.utc
             calendar_tz = pytz.timezone(self.env['resource.calendar'].browse(vals['calendar_id']).tz)
@@ -157,6 +166,7 @@ class CalendarLeaves(models.Model):
         self._reevaluate_leaves(time_domain_dict)
 
         return res
+
 
 class ResourceCalendar(models.Model):
     _inherit = "resource.calendar"

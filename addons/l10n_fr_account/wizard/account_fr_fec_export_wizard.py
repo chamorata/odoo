@@ -2,18 +2,21 @@
 # Copyright (C) 2013-2015 Akretion (http://www.akretion.com)
 import csv
 import io
-from odoo.tools import float_is_zero, SQL
-from odoo import fields, models, api
-from odoo.tools.misc import get_lang
+
 from stdnum.fr import siren
+
+from odoo import fields, models, api
+from odoo.tools import float_is_zero, SQL
 
 
 class FecExportWizard(models.TransientModel):
     _name = 'l10n_fr.fec.export.wizard'
     _description = 'Fichier Echange Informatise'
 
-    date_from = fields.Date(string='Start Date', required=True, default=lambda self: self._context.get('report_dates', {}).get('date_from'))
-    date_to = fields.Date(string='End Date', required=True, default=lambda self: self._context.get('report_dates', {}).get('date_to'))
+    date_from = fields.Date(string='Start Date', required=True,
+                            default=lambda self: self._context.get('report_dates', {}).get('date_from'))
+    date_to = fields.Date(string='End Date', required=True,
+                          default=lambda self: self._context.get('report_dates', {}).get('date_to'))
     filename = fields.Char(string='Filename', size=256, readonly=True)
     test_file = fields.Boolean()
     exclude_zero = fields.Boolean(string="Exclude lines at 0")
@@ -106,25 +109,25 @@ class FecExportWizard(models.TransientModel):
         company_legal_data = self._get_company_legal_data(company)
 
         header = [
-            u'JournalCode',    # 0
-            u'JournalLib',     # 1
-            u'EcritureNum',    # 2
-            u'EcritureDate',   # 3
-            u'CompteNum',      # 4
-            u'CompteLib',      # 5
-            u'CompAuxNum',     # 6  We use partner.id
-            u'CompAuxLib',     # 7
-            u'PieceRef',       # 8
-            u'PieceDate',      # 9
-            u'EcritureLib',    # 10
-            u'Debit',          # 11
-            u'Credit',         # 12
-            u'EcritureLet',    # 13
-            u'DateLet',        # 14
-            u'ValidDate',      # 15
+            u'JournalCode',  # 0
+            u'JournalLib',  # 1
+            u'EcritureNum',  # 2
+            u'EcritureDate',  # 3
+            u'CompteNum',  # 4
+            u'CompteLib',  # 5
+            u'CompAuxNum',  # 6  We use partner.id
+            u'CompAuxLib',  # 7
+            u'PieceRef',  # 8
+            u'PieceDate',  # 9
+            u'EcritureLib',  # 10
+            u'Debit',  # 11
+            u'Credit',  # 12
+            u'EcritureLet',  # 13
+            u'DateLet',  # 14
+            u'ValidDate',  # 15
             u'Montantdevise',  # 16
-            u'Idevise',        # 17
-            ]
+            u'Idevise',  # 17
+        ]
 
         rows_to_write = [header]
         # INITIAL BALANCE
@@ -134,7 +137,7 @@ class FecExportWizard(models.TransientModel):
         ], limit=1)
         unaffected_earnings_line = True  # used to make sure that we add the unaffected earning initial balance only once
         if unaffected_earnings_account:
-            #compute the benefit/loss of last year to add in the initial balance of the current year earnings account
+            # compute the benefit/loss of last year to add in the initial balance of the current year earnings account
             unaffected_earnings_results = self._do_query_unaffected_earnings()
             unaffected_earnings_line = False
 
@@ -182,10 +185,11 @@ class FecExportWizard(models.TransientModel):
             if not unaffected_earnings_line:
                 account = self.env['account.account'].browse(account_id)
                 if account.account_type == 'equity_unaffected':
-                    #add the benefit/loss of previous fiscal year to the first unaffected earnings account found.
+                    # add the benefit/loss of previous fiscal year to the first unaffected earnings account found.
                     unaffected_earnings_line = True
                     current_amount = float(listrow[11].replace(',', '.')) - float(listrow[12].replace(',', '.'))
-                    unaffected_earnings_amount = float(unaffected_earnings_results[11].replace(',', '.')) - float(unaffected_earnings_results[12].replace(',', '.'))
+                    unaffected_earnings_amount = float(unaffected_earnings_results[11].replace(',', '.')) - float(
+                        unaffected_earnings_results[12].replace(',', '.'))
                     listrow_amount = current_amount + unaffected_earnings_amount
                     if float_is_zero(listrow_amount, precision_digits=currency_digits):
                         continue
@@ -197,12 +201,12 @@ class FecExportWizard(models.TransientModel):
                         listrow[12] = str(-listrow_amount).replace('.', ',')
             rows_to_write.append(listrow)
 
-        #if the unaffected earnings account wasn't in the selection yet: add it manually
+        # if the unaffected earnings account wasn't in the selection yet: add it manually
         if (not unaffected_earnings_line
-            and unaffected_earnings_results
-            and (unaffected_earnings_results[11] != '0,00'
-                 or unaffected_earnings_results[12] != '0,00')):
-            #search an unaffected earnings account
+                and unaffected_earnings_results
+                and (unaffected_earnings_results[11] != '0,00'
+                     or unaffected_earnings_results[12] != '0,00')):
+            # search an unaffected earnings account
             unaffected_earnings_account = self.env['account.account'].search([
                 ('account_type', '=', 'equity_unaffected')
             ], limit=1)
@@ -246,7 +250,8 @@ class FecExportWizard(models.TransientModel):
             aa_code=aa_code,
             aa_name=aa_name,
         ))
-        self._cr.execute(SQL('%s GROUP BY account_move_line__partner_id.id, account_move_line__account_id.id', sql_query))
+        self._cr.execute(
+            SQL('%s GROUP BY account_move_line__partner_id.id, account_move_line__account_id.id', sql_query))
 
         for row in self._cr.fetchall():
             listrow = list(row)
@@ -254,7 +259,8 @@ class FecExportWizard(models.TransientModel):
             rows_to_write.append(listrow)
 
         # LINES
-        query_limit = int(self.env['ir.config_parameter'].sudo().get_param('l10n_fr_fec.batch_size', 500000)) # To prevent memory errors when fetching the results
+        query_limit = int(self.env['ir.config_parameter'].sudo().get_param('l10n_fr_fec.batch_size',
+                                                                           500000))  # To prevent memory errors when fetching the results
         query = self.env['account.move.line']._search(
             domain=self._get_base_domain() + [
                 ('date', '>=', self.date_from),
@@ -307,11 +313,16 @@ class FecExportWizard(models.TransientModel):
                 END AS Montantdevise,
                 CASE WHEN account_move_line.currency_id IS NULL THEN '' ELSE %(currency_alias)s.name END AS Idevise
             """,
-            currency_alias=SQL.identifier(query.left_join('account_move_line', 'currency_id', 'res_currency', 'id', 'currency_id')),
-            full_alias=SQL.identifier(query.left_join('account_move_line', 'full_reconcile_id', 'account_full_reconcile', 'id', 'full_reconcile_id')),
-            journal_alias=SQL.identifier(query.left_join('account_move_line', 'journal_id', 'account_journal', 'id', 'journal_id')),
+            currency_alias=SQL.identifier(
+                query.left_join('account_move_line', 'currency_id', 'res_currency', 'id', 'currency_id')),
+            full_alias=SQL.identifier(
+                query.left_join('account_move_line', 'full_reconcile_id', 'account_full_reconcile', 'id',
+                                'full_reconcile_id')),
+            journal_alias=SQL.identifier(
+                query.left_join('account_move_line', 'journal_id', 'account_journal', 'id', 'journal_id')),
             move_alias=SQL.identifier(query.left_join('account_move_line', 'move_id', 'account_move', 'id', 'move_id')),
-            partner_alias=SQL.identifier(query.left_join('account_move_line', 'partner_id', 'res_partner', 'id', 'partner_id')),
+            partner_alias=SQL.identifier(
+                query.left_join('account_move_line', 'partner_id', 'res_partner', 'id', 'partner_id')),
             account_alias=SQL.identifier(account_alias),
             aj_name=aj_name,
             aa_code=aa_code,
@@ -328,7 +339,7 @@ class FecExportWizard(models.TransientModel):
             while has_more_results:
                 self._cr.execute(query.select(columns))
                 query.offset += query_limit
-                has_more_results = self._cr.rowcount > query_limit # we load one more result than the limit to check if there is more
+                has_more_results = self._cr.rowcount > query_limit  # we load one more result than the limit to check if there is more
                 query_results = self._cr.fetchall()
                 csv_writer.writerows(query_results[:query_limit])
             content = fecfile.getvalue()[:-2].encode()

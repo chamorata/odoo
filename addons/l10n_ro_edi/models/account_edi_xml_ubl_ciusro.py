@@ -55,8 +55,8 @@ class AccountEdiXmlUBLRO(models.AbstractModel):
 
         if not _has_vat(partner.vat):
             if (
-                role == 'supplier'
-                and partner.company_registry
+                    role == 'supplier'
+                    and partner.company_registry
             ):
                 # Use company_registry (Company ID) as the VAT replacement
                 for vals in vals_list:
@@ -79,7 +79,8 @@ class AccountEdiXmlUBLRO(models.AbstractModel):
 
         # Deal with legal_entity_vals here, as there is no way to distinguish between customer and supplier in _get_partner_party_legal_entity_vals_list
         for role in ['supplier', 'customer']:
-            for legal_entity_vals in vals['vals'][f'accounting_{role}_party_vals']['party_vals']['party_legal_entity_vals']:
+            for legal_entity_vals in vals['vals'][f'accounting_{role}_party_vals']['party_vals'][
+                'party_legal_entity_vals']:
                 partner = legal_entity_vals['commercial_partner']
                 if not _has_vat(partner.vat):
                     legal_entity_vals['company_id'] = partner.company_registry if role == 'supplier' else DEFAULT_VAT
@@ -100,8 +101,8 @@ class AccountEdiXmlUBLRO(models.AbstractModel):
         # Default VAT is only allowed for the receiver (customer), not the provider (supplier)
         supplier = vals['supplier'].commercial_partner_id
         if (
-            not _has_vat(supplier.vat)
-            and not vals['supplier'].commercial_partner_id.company_registry
+                not _has_vat(supplier.vat)
+                and not vals['supplier'].commercial_partner_id.company_registry
         ):
             constraints["ciusro_supplier_tax_identifier_required"] = _(
                 "The following partner doesn't have a VAT nor Company ID: %s. "

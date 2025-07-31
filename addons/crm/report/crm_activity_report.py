@@ -85,4 +85,4 @@ class ActivityReport(models.Model):
                 %s
             )
         """ % (self._table, self._select(), self._from(), self._join(), self._where())
-        )
+                         )

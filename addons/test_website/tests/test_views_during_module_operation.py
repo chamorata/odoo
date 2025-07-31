@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.website.tools import MockRequest
+
 from odoo.tests import standalone
 
 
@@ -63,15 +64,15 @@ def test_01_cow_views_unlink_on_module_update(env):
         ('type', '=', 'qweb'),
         ('key', '=', update_module_child_view.key)
     ]) == 2, msg % update_module_child_view.key
-    assert bool(env.ref(update_module_view_to_be_t_called.key)),\
+    assert bool(env.ref(update_module_view_to_be_t_called.key)), \
         msg % update_module_view_to_be_t_called.key
     assert bool(env.ref(update_module_base_view.key)), msg % update_module_base_view.key
 
     # Upgrade the module
     test_website_module = env['ir.module.module'].search([('name', '=', 'test_website')])
     test_website_module.button_immediate_upgrade()
-    env.reset()     # clear the set of environments
-    env = env()     # get an environment that refers to the new registry
+    env.reset()  # clear the set of environments
+    env = env()  # get an environment that refers to the new registry
 
     # Ensure generic views got removed
     view = env.ref('test_website.update_module_view_to_be_t_called', raise_if_not_found=False)
@@ -165,9 +166,9 @@ def test_02_copy_ids_views_unlink_on_module_update(env):
             ('website_id', 'in', (website_1 + website_2).ids),
         ])
         assert (
-            set((view_website_1 + view_website_2)).issubset(theme_child_view.copy_ids)
-            and view_website_1.website_id == website_1
-            and view_website_2.website_id == website_2
+                set((view_website_1 + view_website_2)).issubset(theme_child_view.copy_ids)
+                and view_website_1.website_id == website_1
+                and view_website_2.website_id == website_2
         ), "Theme View should have been copied to the website."
 
         return view_website_1, view_website_2, theme_child_view
@@ -187,12 +188,12 @@ def test_02_copy_ids_views_unlink_on_module_update(env):
     # present in XML files)
     view = env.ref('theme_default.theme_child_view', False)
     assert not view, "Theme view should have been removed during module update."
-    assert not theme_child_view.exists(),\
+    assert not theme_child_view.exists(), \
         "Theme view should have been removed during module update. (2)"
 
     # Ensure copy_ids view got removed (and is not a leftover orphan)
     assert not View.search(domain), "copy_ids views did not get removed!"
-    assert not (view_website_1.exists() or view_website_2.exists()),\
+    assert not (view_website_1.exists() or view_website_2.exists()), \
         "copy_ids views did not get removed! (2)"
 
     #####################################################
@@ -211,9 +212,9 @@ def test_02_copy_ids_views_unlink_on_module_update(env):
     # present in XML files)
     view = env.ref('theme_default.theme_child_view', False)
     assert not view, "Theme view should have been removed during module update."
-    assert not theme_child_view.exists(),\
+    assert not theme_child_view.exists(), \
         "Theme view should have been removed during module update. (2)"
 
     # Ensure only website_1 copy_ids got removed, website_2 should be untouched
-    assert not view_website_1.exists() and view_website_2.exists(),\
+    assert not view_website_1.exists() and view_website_2.exists(), \
         "Only website_1 copy should be removed (2)"

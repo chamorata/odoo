@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from odoo.addons.sale.tests.common import TestSaleCommon
+
 from odoo.tests import Form, tagged
 
 
@@ -12,13 +13,13 @@ class TestDDT(TestSaleCommon):
     def setUpClass(cls):
         super().setUpClass()
         cls.company_data['company'].write({
-                        'vat':"IT12345670017",
-                        'l10n_it_codice_fiscale': '01234560157',
-                        'l10n_it_tax_system': 'RF01',
-                        'street': 'Via Giovanni Maria Platina 66',
-                        'zip': '26100',
-                        'city': 'Cremona',
-                        })
+            'vat': "IT12345670017",
+            'l10n_it_codice_fiscale': '01234560157',
+            'l10n_it_tax_system': 'RF01',
+            'street': 'Via Giovanni Maria Platina 66',
+            'zip': '26100',
+            'city': 'Cremona',
+        })
         cls.env['res.partner.bank'].create({
             'acc_number': 'IT60X0542811101000000123456',
             'partner_id': cls.company_data['company'].partner_id.id,
@@ -53,11 +54,11 @@ class TestDDT(TestSaleCommon):
                                    'price_unit': p.list_price,
                                    'tax_id': self.company_data['default_tax_sale']})
                            for p in (
-                    self.company_data['product_order_no'],
-                    self.company_data['product_service_delivery'],
-                    self.company_data['product_service_order'],
-                    self.company_data['product_delivery_no'],
-                )],
+                               self.company_data['product_order_no'],
+                               self.company_data['product_service_delivery'],
+                               self.company_data['product_service_order'],
+                               self.company_data['product_delivery_no'],
+                           )],
             'pricelist_id': self.company_data['default_pricelist'].id,
             'picking_policy': 'direct',
         })
@@ -102,12 +103,12 @@ class TestDDT(TestSaleCommon):
         so = self.env['sale.order'].create({
             'partner_id': self.partner_a.id,
             'order_line': [(0, 0, {
-                                   'product_id': self.product_a.id,
-                                   'product_uom_qty': 3,
-                                   'product_uom': self.product_a.uom_id.id,
-                                   'price_unit': self.product_a.list_price,
-                                   'tax_id': self.company_data['default_tax_sale']
-                                   }
+                'product_id': self.product_a.id,
+                'product_uom_qty': 3,
+                'product_uom': self.product_a.uom_id.id,
+                'price_unit': self.product_a.list_price,
+                'tax_id': self.company_data['default_tax_sale']
+            }
                             )],
             'pricelist_id': self.company_data['default_pricelist'].id,
             'picking_policy': 'direct',
@@ -132,5 +133,7 @@ class TestDDT(TestSaleCommon):
 
         # Invalidate the cache to ensure the lines will be fetched in the right order.
         picking_2.invalidate_model()
-        self.assertEqual(invoice_1.l10n_it_ddt_ids.ids, picking_1.ids, 'DDT picking_1 should be linked to the invoice_1')
-        self.assertEqual(invoice_2.l10n_it_ddt_ids.ids, picking_2.ids, 'DDT picking_2 should be linked to the invoice_2')
+        self.assertEqual(invoice_1.l10n_it_ddt_ids.ids, picking_1.ids,
+                         'DDT picking_1 should be linked to the invoice_1')
+        self.assertEqual(invoice_2.l10n_it_ddt_ids.ids, picking_2.ids,
+                         'DDT picking_2 should be linked to the invoice_2')

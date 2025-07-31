@@ -1,9 +1,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import Command
 from odoo.addons.digest.tests.common import TestDigestCommon
-from odoo.tools import mute_logger
+
+from odoo import Command
 from odoo.tests import tagged
+from odoo.tools import mute_logger
 
 
 @tagged('post_install', '-at_install')
@@ -13,8 +14,10 @@ class TestAccountDigest(TestDigestCommon):
     @mute_logger('odoo.models.unlink')
     def setUpClass(cls):
         super().setUpClass()
-        account1 = cls.env['account.account'].search([('internal_group', '=', 'income'), ('company_ids', '=', cls.company_1.id)], limit=1)
-        account2 = cls.env['account.account'].search([('internal_group', '=', 'expense'), ('company_ids', '=', cls.company_1.id)], limit=1)
+        account1 = cls.env['account.account'].search(
+            [('internal_group', '=', 'income'), ('company_ids', '=', cls.company_1.id)], limit=1)
+        account2 = cls.env['account.account'].search(
+            [('internal_group', '=', 'expense'), ('company_ids', '=', cls.company_1.id)], limit=1)
         cls.env['account.journal'].with_company(cls.company_2).create({
             'name': 'Test Journal',
             'code': 'code',

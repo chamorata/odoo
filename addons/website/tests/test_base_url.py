@@ -107,16 +107,19 @@ class TestGetBaseUrl(odoo.tests.TransactionCase):
             'domain': website_1_domain,
             'company_id': company_1.id,
         })
-        self.assertEqual(website_1, company_1.website_id, "Company cache for `website_id` should have been invalidated and recomputed.")
+        self.assertEqual(website_1, company_1.website_id,
+                         "Company cache for `website_id` should have been invalidated and recomputed.")
 
         # Check `get_base_url()` through `website_id` & `company_id` properties
         attach = self.env['ir.attachment'].create({'name': 'test base url', 'website_id': website_1.id})
-        self.assertEqual(attach.get_base_url(), website_1_domain, "Domain should be the one from the record.website_id.")
+        self.assertEqual(attach.get_base_url(), website_1_domain,
+                         "Domain should be the one from the record.website_id.")
         attach.write({'company_id': company_2.id, 'website_id': False})
         self.assertEqual(attach.get_base_url(), web_base_url,
                          "Domain should be the one from the ICP as the record as no website_id, and it's company_id has no website_id.")
         attach.write({'company_id': company_1.id})
-        self.assertEqual(attach.get_base_url(), website_1_domain, "Domain should be the one from the record.company_id.website_id.")
+        self.assertEqual(attach.get_base_url(), website_1_domain,
+                         "Domain should be the one from the record.company_id.website_id.")
 
         # Check advanced cache behavior..
         website_2_domain = 'https://my-website-2.net'
@@ -135,10 +138,12 @@ class TestGetBaseUrl(odoo.tests.TransactionCase):
                          "Lowest sequence is now website_2, so record.company_id.website_id should be website_1 as cache should be invalidated.")
         website_1.company_id = company_2.id
         # .. on `company_id` write..
-        self.assertEqual(attach.get_base_url(), website_2_domain, "Cache should be recomputed, only website_1 remains for company_2.")
+        self.assertEqual(attach.get_base_url(), website_2_domain,
+                         "Cache should be recomputed, only website_1 remains for company_2.")
         website_2.unlink()
         # .. on unlink ..
-        self.assertEqual(attach.get_base_url(), web_base_url, "Cache should be recomputed, no more website for company_1.")
+        self.assertEqual(attach.get_base_url(), web_base_url,
+                         "Cache should be recomputed, no more website for company_1.")
 
     def test_02_get_base_url_recordsets(self):
         Attachment = self.env['ir.attachment']

@@ -11,7 +11,8 @@ class AccountMoveSend(models.AbstractModel):
         # EXTENDS 'account'
         alerts = super()._get_alerts(moves, moves_data)
         if snailmail_moves_without_valid_address := moves.filtered(
-            lambda m: 'snailmail' in moves_data[m]['sending_methods'] and not self.env['snailmail.letter']._is_valid_address(m.partner_id)
+                lambda m: 'snailmail' in moves_data[m]['sending_methods'] and not self.env[
+                    'snailmail.letter']._is_valid_address(m.partner_id)
         ):
             alerts['snailmail_account_partner_invalid_address'] = {
                 'level': 'danger' if len(snailmail_moves_without_valid_address) == 1 else 'warning',
@@ -55,7 +56,8 @@ class AccountMoveSend(models.AbstractModel):
         to_send = {
             move: move_data
             for move, move_data in moves_data.items()
-            if 'snailmail' in move_data['sending_methods'] and self._is_applicable_to_move('snailmail', move, **move_data)
+            if
+            'snailmail' in move_data['sending_methods'] and self._is_applicable_to_move('snailmail', move, **move_data)
         }
         if to_send:
             self.env['snailmail.letter'].create([
@@ -64,5 +66,5 @@ class AccountMoveSend(models.AbstractModel):
                     **self._prepare_snailmail_letter_values(move),
                 }
                 for move, move_data in to_send.items()
-            ])\
-            ._snailmail_print(immediate=False)
+            ]) \
+                ._snailmail_print(immediate=False)

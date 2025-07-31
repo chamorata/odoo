@@ -1,11 +1,13 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from datetime import datetime
+
+from odoo.addons.hr.tests.common import TestHrCommon
 from psycopg2.errors import UniqueViolation
 
-from odoo.tests import Form, users, HttpCase, tagged
-from odoo.addons.hr.tests.common import TestHrCommon
-from odoo.tools import mute_logger
 from odoo.exceptions import ValidationError
+from odoo.tests import Form, users, HttpCase, tagged
+from odoo.tools import mute_logger
+
 
 class TestHrEmployee(TestHrCommon):
 
@@ -124,7 +126,8 @@ class TestHrEmployee(TestHrCommon):
         dept_sub.parent_id = dept
         dept_sub_sub.parent_id = dept_sub
         dept.parent_id = dept_parent
-        emp, emp_sub, emp_sub_sub, emp_other, emp_parent = self.env['hr.employee'].with_user(self.res_users_hr_officer).create([
+        emp, emp_sub, emp_sub_sub, emp_other, emp_parent = self.env['hr.employee'].with_user(
+            self.res_users_hr_officer).create([
             {
                 'name': 'employee',
                 'department_id': dept.id,
@@ -271,10 +274,12 @@ class TestHrEmployee(TestHrCommon):
         self.res_users_hr_officer.write({'company_ids': test_company.ids, 'company_id': test_company.id})
 
         # Try to set the user with existing employee in the company, on a new employee form
-        employee_form = Form(self.env['hr.employee'].with_user(self.res_users_hr_officer).with_company(company=test_company.id))
+        employee_form = Form(
+            self.env['hr.employee'].with_user(self.res_users_hr_officer).with_company(company=test_company.id))
         employee_form.name = "Second employee"
         employee_form.user_id = self.res_users_hr_officer
-        with mute_logger('odoo.sql_db'), self.assertRaises(UniqueViolation), self.assertRaises(ValidationError), self.cr.savepoint():
+        with mute_logger('odoo.sql_db'), self.assertRaises(UniqueViolation), self.assertRaises(
+                ValidationError), self.cr.savepoint():
             employee_form.save()
 
         employee_2 = self.env['hr.employee'].create({
@@ -285,9 +290,9 @@ class TestHrEmployee(TestHrCommon):
         # Try to set the user with existing employee in the company, on another existing employee
         employee_2_form = Form(employee_2.with_user(self.res_users_hr_officer).with_company(company=test_company.id))
         employee_2_form.user_id = self.res_users_hr_officer
-        with mute_logger('odoo.sql_db'), self.assertRaises(UniqueViolation), self.assertRaises(ValidationError), self.cr.savepoint():
+        with mute_logger('odoo.sql_db'), self.assertRaises(UniqueViolation), self.assertRaises(
+                ValidationError), self.cr.savepoint():
             employee_2_form.save()
-
 
     @users('admin')
     def test_change_user_on_employee(self):
@@ -297,7 +302,7 @@ class TestHrEmployee(TestHrCommon):
         })
         test_other_user.partner_id.company_id = self.env.company
         test_company = self.env['res.company'].create({
-            'name' : 'Test User Company',
+            'name': 'Test User Company',
         })
         self.env.user.write({'company_ids': test_company.ids, 'company_id': test_company.id})
         test_user = self.env['res.users'].create({
@@ -306,8 +311,8 @@ class TestHrEmployee(TestHrCommon):
         })
         test_user.partner_id.company_id = test_company
         bank_account = self.env['res.partner.bank'].create({
-            'acc_number' : '1234567',
-            'partner_id' : test_user.partner_id.id,
+            'acc_number': '1234567',
+            'partner_id': test_user.partner_id.id,
         })
         test_employee = self.env['hr.employee'].create({
             'name': 'Test User - employee',
@@ -394,7 +399,8 @@ class TestHrEmployee(TestHrCommon):
             'company_id': company_A.id,
         })
         # User cannot be assigned to more than one employee in the same company. work_contact_id should not be removed.
-        with mute_logger('odoo.sql_db'), self.assertRaises(UniqueViolation), self.assertRaises(ValidationError), self.cr.savepoint():
+        with mute_logger('odoo.sql_db'), self.assertRaises(UniqueViolation), self.assertRaises(
+                ValidationError), self.cr.savepoint():
             self.env['hr.employee'].create({
                 'name': 'new_employee_B',
                 'user_id': user.id,
@@ -493,7 +499,7 @@ class TestHrEmployee(TestHrCommon):
 class TestHrEmployeeWebJson(HttpCase):
 
     def test_webjson_employees(self):
-        #check that json employees can be accessed
+        # check that json employees can be accessed
         url = "/json/1/employees"
         self.authenticate('admin', 'admin')
         CSRF_USER_HEADERS = {

@@ -14,5 +14,5 @@ class SaleOrderCouponPoints(models.Model):
 
     _sql_constraints = [
         ('order_coupon_unique', 'UNIQUE (order_id, coupon_id)',
-        'The coupon points entry already exists.')
+         'The coupon points entry already exists.')
     ]

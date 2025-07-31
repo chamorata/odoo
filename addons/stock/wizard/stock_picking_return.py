@@ -58,8 +58,8 @@ class ReturnPickingLine(models.TransientModel):
                 # link to original move
                 move_orig_to_link |= self.move_id
                 # link to siblings of original move, if any
-                move_orig_to_link |= self.move_id\
-                    .move_dest_ids.filtered(lambda m: m.state not in ('cancel'))\
+                move_orig_to_link |= self.move_id \
+                    .move_dest_ids.filtered(lambda m: m.state not in ('cancel')) \
                     .move_orig_ids.filtered(lambda m: m.state not in ('cancel'))
                 move_dest_to_link = self.move_id.move_orig_ids.returned_move_ids
                 # link to children of originally returned moves, if any. Note that the use of
@@ -67,8 +67,8 @@ class ReturnPickingLine(models.TransientModel):
                 # instead of 'return_line.move_id.move_orig_ids.move_dest_ids' prevents linking a
                 # return directly to the destination moves of its parents. However, the return of
                 # the return will be linked to the destination moves.
-                move_dest_to_link |= self.move_id.move_orig_ids.returned_move_ids\
-                    .move_orig_ids.filtered(lambda m: m.state not in ('cancel'))\
+                move_dest_to_link |= self.move_id.move_orig_ids.returned_move_ids \
+                    .move_orig_ids.filtered(lambda m: m.state not in ('cancel')) \
                     .move_dest_ids.filtered(lambda m: m.state not in ('cancel'))
                 vals['move_orig_ids'] = [Command.link(m.id) for m in move_orig_to_link]
                 vals['move_dest_ids'] = [Command.link(m.id) for m in move_dest_to_link]
@@ -94,7 +94,9 @@ class ReturnPicking(models.TransientModel):
         return res
 
     picking_id = fields.Many2one('stock.picking')
-    product_return_moves = fields.One2many('stock.return.picking.line', 'wizard_id', 'Moves', compute='_compute_moves_locations', precompute=True, readonly=False, store=True)
+    product_return_moves = fields.One2many('stock.return.picking.line', 'wizard_id', 'Moves',
+                                           compute='_compute_moves_locations', precompute=True, readonly=False,
+                                           store=True)
     company_id = fields.Many2one(related='picking_id.company_id')
 
     @api.depends('picking_id')
@@ -116,7 +118,8 @@ class ReturnPicking(models.TransientModel):
                 product_return_moves_data.update(wizard._prepare_stock_return_picking_line_vals_from_move(move))
                 product_return_moves.append(Command.create(product_return_moves_data))
             if wizard.picking_id and not product_return_moves:
-                raise UserError(_("No products to return (only lines in Done state and not fully returned yet can be returned)."))
+                raise UserError(
+                    _("No products to return (only lines in Done state and not fully returned yet can be returned)."))
             if wizard.picking_id:
                 wizard.product_return_moves = product_return_moves
 

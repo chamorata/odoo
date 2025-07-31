@@ -3,10 +3,11 @@
 
 from collections import defaultdict
 
+import markupsafe
+
 from odoo import _, models
 from odoo.exceptions import UserError
 
-import markupsafe
 
 class ReportProductLabel(models.AbstractModel):
     _name = 'report.stock.label_product_product_view'

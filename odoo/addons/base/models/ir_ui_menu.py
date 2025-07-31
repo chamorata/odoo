@@ -2,10 +2,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import base64
+import re
 from collections import defaultdict
 from os.path import join as opj
-import operator
-import re
 
 from odoo import api, fields, models, tools, _
 from odoo.exceptions import ValidationError
@@ -31,7 +30,7 @@ class IrUiMenu(models.Model):
     parent_path = fields.Char(index=True)
     groups_id = fields.Many2many('res.groups', 'ir_ui_menu_group_rel',
                                  'menu_id', 'gid', string='Groups',
-                                 help="If you have groups, the visibility of this menu will be based on these groups. "\
+                                 help="If you have groups, the visibility of this menu will be based on these groups. " \
                                       "If this field is empty, Odoo will compute visibility based on the related object's read access.")
     complete_name = fields.Char(string='Full Path', compute='_compute_complete_name', recursive=True)
     web_icon = fields.Char(string='Web Icon File')
@@ -63,7 +62,8 @@ class IrUiMenu(models.Model):
         path_info = path.split(',')
         icon_path = opj(path_info[0], path_info[1])
         try:
-            with tools.file_open(icon_path, 'rb', filter_ext=('.png', '.gif', '.ico', '.jfif', '.jpeg', '.jpg', '.svg', '.webp')) as icon_file:
+            with tools.file_open(icon_path, 'rb', filter_ext=('.png', '.gif', '.ico', '.jfif', '.jpeg', '.jpg', '.svg',
+                                                              '.webp')) as icon_file:
                 return base64.encodebytes(icon_file.read())
         except FileNotFoundError:
             return False
@@ -84,7 +84,8 @@ class IrUiMenu(models.Model):
         # first discard all menus with groups the user does not have
         group_ids = set(self.env.user._get_group_ids())
         if not debug:
-            group_ids = group_ids - {self.env['ir.model.data']._xmlid_to_res_id('base.group_no_one', raise_if_not_found=False)}
+            group_ids = group_ids - {
+                self.env['ir.model.data']._xmlid_to_res_id('base.group_no_one', raise_if_not_found=False)}
         menus = menus.filtered(
             lambda menu: not (menu.groups_id and group_ids.isdisjoint(menu.groups_id._ids)))
 
@@ -329,9 +330,9 @@ class IrUiMenu(models.Model):
 
     def _get_menuitems_xmlids(self):
         menuitems = self.env['ir.model.data'].sudo().search([
-                ('res_id', 'in', self.ids),
-                ('model', '=', 'ir.ui.menu')
-            ])
+            ('res_id', 'in', self.ids),
+            ('model', '=', 'ir.ui.menu')
+        ])
 
         return {
             menu.res_id: menu.complete_name

@@ -23,7 +23,8 @@ class HolidaysAllocation(models.Model):
         return res
 
     overtime_deductible = fields.Boolean(compute='_compute_overtime_deductible')
-    overtime_id = fields.Many2one('hr.attendance.overtime', string='Extra Hours', groups='hr_holidays.group_hr_holidays_user')
+    overtime_id = fields.Many2one('hr.attendance.overtime', string='Extra Hours',
+                                  groups='hr_holidays.group_hr_holidays_user')
     employee_overtime = fields.Float(related='employee_id.total_overtime', groups='base.group_user')
 
     @api.depends('holiday_status_id')
@@ -52,8 +53,10 @@ class HolidaysAllocation(models.Model):
         res = super().write(vals)
         if 'number_of_days' not in vals:
             return res
-        if not self.env.user.has_group("hr_holidays.group_hr_holidays_user") and any(allocation.state not in ('draft', 'confirm') for allocation in self):
-            raise ValidationError(_('Only an Officer or Administrator is allowed to edit the allocation duration in this status.'))
+        if not self.env.user.has_group("hr_holidays.group_hr_holidays_user") and any(
+                allocation.state not in ('draft', 'confirm') for allocation in self):
+            raise ValidationError(
+                _('Only an Officer or Administrator is allowed to edit the allocation duration in this status.'))
         for allocation in self.sudo().filtered('overtime_id'):
             employee = allocation.employee_id
             duration = allocation.number_of_hours_display
@@ -72,7 +75,8 @@ class HolidaysAllocation(models.Model):
     def _get_accrual_plan_level_work_entry_prorata(self, level, start_period, start_date, end_period, end_date):
         self.ensure_one()
         if level.frequency != 'hourly' or level.frequency_hourly_source != 'attendance':
-            return super()._get_accrual_plan_level_work_entry_prorata(level, start_period, start_date, end_period, end_date)
+            return super()._get_accrual_plan_level_work_entry_prorata(level, start_period, start_date, end_period,
+                                                                      end_date)
         datetime_min_time = datetime.min.time()
         start_dt = datetime.combine(start_date, datetime_min_time)
         end_dt = datetime.combine(end_date, datetime_min_time)

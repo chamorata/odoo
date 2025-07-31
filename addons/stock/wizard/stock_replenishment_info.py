@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import babel.dates
-from json import dumps
 from datetime import datetime, time
-from dateutil.relativedelta import relativedelta
+from json import dumps
 
+import babel.dates
+from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models, SUPERUSER_ID, _
 from odoo.osv.expression import AND
@@ -26,13 +26,15 @@ class StockReplenishmentInfo(models.TransientModel):
     json_replenishment_history = fields.Char(compute='_compute_json_replenishment_history')
 
     warehouseinfo_ids = fields.One2many(related='orderpoint_id.warehouse_id.resupply_route_ids')
-    wh_replenishment_option_ids = fields.One2many('stock.replenishment.option', 'replenishment_info_id', compute='_compute_wh_replenishment_options')
+    wh_replenishment_option_ids = fields.One2many('stock.replenishment.option', 'replenishment_info_id',
+                                                  compute='_compute_wh_replenishment_options')
 
     @api.depends('orderpoint_id')
     def _compute_wh_replenishment_options(self):
         for replenishment_info in self:
             replenishment_info.wh_replenishment_option_ids = self.env['stock.replenishment.option'].create([
-                {'product_id': replenishment_info.product_id.id, 'route_id': route_id.id, 'replenishment_info_id': replenishment_info.id}
+                {'product_id': replenishment_info.product_id.id, 'route_id': route_id.id,
+                 'replenishment_info_id': replenishment_info.id}
                 for route_id in replenishment_info.warehouseinfo_ids
             ]).sorted(lambda o: o.free_qty, reverse=True)
 
@@ -51,14 +53,22 @@ class StockReplenishmentInfo(models.TransientModel):
                 'lead_days_description': lead_days_description,
                 'today': format_date(self.env, fields.Date.today()),
                 'trigger': orderpoint.trigger,
-                'qty_forecast': self.env['ir.qweb.field.float'].value_to_html(orderpoint.qty_forecast, {'decimal_precision': 'Product Unit of Measure'}),
-                'qty_to_order': self.env['ir.qweb.field.float'].value_to_html(orderpoint.qty_to_order, {'decimal_precision': 'Product Unit of Measure'}),
-                'product_min_qty': self.env['ir.qweb.field.float'].value_to_html(orderpoint.product_min_qty, {'decimal_precision': 'Product Unit of Measure'}),
-                'product_max_qty': self.env['ir.qweb.field.float'].value_to_html(orderpoint.product_max_qty, {'decimal_precision': 'Product Unit of Measure'}),
+                'qty_forecast': self.env['ir.qweb.field.float'].value_to_html(orderpoint.qty_forecast, {
+                    'decimal_precision': 'Product Unit of Measure'}),
+                'qty_to_order': self.env['ir.qweb.field.float'].value_to_html(orderpoint.qty_to_order, {
+                    'decimal_precision': 'Product Unit of Measure'}),
+                'product_min_qty': self.env['ir.qweb.field.float'].value_to_html(orderpoint.product_min_qty, {
+                    'decimal_precision': 'Product Unit of Measure'}),
+                'product_max_qty': self.env['ir.qweb.field.float'].value_to_html(orderpoint.product_max_qty, {
+                    'decimal_precision': 'Product Unit of Measure'}),
                 'product_uom_name': orderpoint.product_uom_name,
                 'virtual': orderpoint.trigger == 'manual' and orderpoint.create_uid.id == SUPERUSER_ID,
-                'visibility_days': orderpoint.visibility_days if float_compare(orderpoint.qty_forecast, orderpoint.product_min_qty, precision_rounding=orderpoint.product_uom.rounding) < 0 else 0,
-                'visibility_days_date': format_date(self.env, replenishment_report.orderpoint_id.lead_days_date + relativedelta(days=orderpoint.visibility_days))
+                'visibility_days': orderpoint.visibility_days if float_compare(orderpoint.qty_forecast,
+                                                                               orderpoint.product_min_qty,
+                                                                               precision_rounding=orderpoint.product_uom.rounding) < 0 else 0,
+                'visibility_days_date': format_date(self.env,
+                                                    replenishment_report.orderpoint_id.lead_days_date + relativedelta(
+                                                        days=orderpoint.visibility_days))
             })
 
     @api.depends('orderpoint_id')

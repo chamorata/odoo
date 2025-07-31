@@ -5,11 +5,11 @@
         <field name="model">mailing.trace</field>
         <field name="inherit_id" ref="mass_mailing.mailing_trace_view_search"/>
         <field name="arch" type="xml">
-           <xpath expr="//field[@name='email']" position="after">
+            <xpath expr="//field[@name='email']" position="after">
                 <field name="sms_id_int"/>
                 <field name="sms_id"/>
                 <field name="sms_number"/>
-           </xpath>
+            </xpath>
         </field>
     </record>
 
@@ -69,10 +69,10 @@
             </xpath>
             <xpath expr="//field[@name='message_id']" position="after">
                 <field name="sms_id_int" string="SMS ID"
-                    invisible="trace_type != 'sms'"
-                    groups="base.group_no_one"/>
+                       invisible="trace_type != 'sms'"
+                       groups="base.group_no_one"/>
                 <field name="sms_code" invisible="trace_type != 'sms'"
-                    groups="base.group_no_one"/>
+                       groups="base.group_no_one"/>
             </xpath>
         </field>
     </record>
@@ -91,15 +91,15 @@
                         </button>
                     </div>
                     <div class="alert alert-info text-center"
-                        invisible="trace_status != 'error' or
+                         invisible="trace_status != 'error' or
                                    failure_type in ('sms_not_delivered', 'sms_not_allowed', 'sms_invalid_destination', 'sms_rejected', 'sms_rejected')"
-                        role="alert">
+                         role="alert">
                         <strong>This SMS could not be sent.</strong>
                     </div>
                     <div class="alert alert-info text-center"
-                        invisible="trace_status != 'error' or
+                         invisible="trace_status != 'error' or
                                    failure_type not in ('sms_not_delivered', 'sms_not_allowed', 'sms_invalid_destination', 'sms_rejected', 'sms_rejected')"
-                        role="alert">
+                         role="alert">
                         <strong>This SMS could not be delivered.</strong>
                     </div>
                     <div class="alert alert-info text-center" invisible="trace_status != 'bounce'" role="alert">

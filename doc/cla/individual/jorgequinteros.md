@@ -1,4 +1,3 @@
-
 Spain, 2020-09-17
 
 I hereby agree to the terms of the Odoo Individual Contributor License

@@ -6,32 +6,32 @@
             <t t-if="props.record.data[props.name]">
                 <div class="w-100 d-inline-flex gap-1">
                     <FileUploader
-                        acceptedFileExtensions="props.acceptedFileExtensions"
-                        onUploaded.bind="update"
+                            acceptedFileExtensions="props.acceptedFileExtensions"
+                            onUploaded.bind="update"
                     >
                         <t name="download" t-if="props.record.resId and !props.record.dirty">
                             <button
-                                class="btn btn-link btn-sm lh-1 fa fa-download o_download_file_button"
-                                data-tooltip="Download"
-                                aria-label="Download"
-                                t-on-click="onFileDownload"
+                                    class="btn btn-link btn-sm lh-1 fa fa-download o_download_file_button"
+                                    data-tooltip="Download"
+                                    aria-label="Download"
+                                    t-on-click="onFileDownload"
                             >
                             </button>
                         </t>
                         <t t-set-slot="toggler">
-                            <input type="text" class="o_input" t-att-value="fileName" readonly="readonly" />
+                            <input type="text" class="o_input" t-att-value="fileName" readonly="readonly"/>
                             <button
-                                class="btn btn-link btn-sm lh-1 fa fa-pencil o_select_file_button"
-                                data-tooltip="Edit"
-                                aria-label="Edit"
+                                    class="btn btn-link btn-sm lh-1 fa fa-pencil o_select_file_button"
+                                    data-tooltip="Edit"
+                                    aria-label="Edit"
                             >
                             </button>
                         </t>
                         <button
-                            class="btn btn-link btn-sm lh-1 fa fa-trash o_clear_file_button"
-                            data-tooltip="Clear"
-                            aria-label="Clear"
-                            t-on-click="() => this.update({})"
+                                class="btn btn-link btn-sm lh-1 fa fa-trash o_clear_file_button"
+                                data-tooltip="Clear"
+                                aria-label="Clear"
+                                t-on-click="() => this.update({})"
                         >
                         </button>
                     </FileUploader>
@@ -40,8 +40,8 @@
             <t t-else="">
                 <label class="o_select_file_button btn btn-primary">
                     <FileUploader
-                        acceptedFileExtensions="props.acceptedFileExtensions"
-                        onUploaded.bind="update"
+                            acceptedFileExtensions="props.acceptedFileExtensions"
+                            onUploaded.bind="update"
                     >
                         <t t-set-slot="toggler">
                             Upload your file
@@ -52,8 +52,8 @@
         </t>
         <t t-elif="props.record.resId and props.record.data[props.name]">
             <a class="o_form_uri" href="#" t-on-click.prevent="onFileDownload">
-                <span class="fa fa-download me-2" />
-                <t t-if="fileName" t-esc="fileName" />
+                <span class="fa fa-download me-2"/>
+                <t t-if="fileName" t-esc="fileName"/>
             </a>
         </t>
     </t>
@@ -62,11 +62,12 @@
         <xpath expr="//label[hasclass('o_select_file_button')]" position="replace">
             <label class="o_select_file_button btn btn-sm btn-link p-0">
                 <FileUploader
-                    acceptedFileExtensions="props.acceptedFileExtensions"
-                    onUploaded.bind="update"
+                        acceptedFileExtensions="props.acceptedFileExtensions"
+                        onUploaded.bind="update"
                 >
                     <t t-set-slot="toggler">
-                        <i class="fa fa-upload fa-fw"/> Upload your file
+                        <i class="fa fa-upload fa-fw"/>
+                        Upload your file
                     </t>
                 </FileUploader>
             </label>

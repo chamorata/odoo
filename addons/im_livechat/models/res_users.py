@@ -10,9 +10,12 @@ class Users(models.Model):
     """
     _inherit = 'res.users'
 
-    livechat_username = fields.Char(string='Livechat Username', compute='_compute_livechat_username', inverse='_inverse_livechat_username', store=False)
-    livechat_lang_ids = fields.Many2many('res.lang', string='Livechat Languages', compute='_compute_livechat_lang_ids', inverse='_inverse_livechat_lang_ids', store=False)
-    has_access_livechat = fields.Boolean(compute='_compute_has_access_livechat', string='Has access to Livechat', store=False, readonly=True)
+    livechat_username = fields.Char(string='Livechat Username', compute='_compute_livechat_username',
+                                    inverse='_inverse_livechat_username', store=False)
+    livechat_lang_ids = fields.Many2many('res.lang', string='Livechat Languages', compute='_compute_livechat_lang_ids',
+                                         inverse='_inverse_livechat_lang_ids', store=False)
+    has_access_livechat = fields.Boolean(compute='_compute_has_access_livechat', string='Has access to Livechat',
+                                         store=False, readonly=True)
 
     @property
     def SELF_READABLE_FIELDS(self):

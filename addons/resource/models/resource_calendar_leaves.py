@@ -1,6 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import datetime, time
+
 from dateutil.relativedelta import relativedelta
 from pytz import timezone, utc
 
@@ -15,15 +16,19 @@ class ResourceCalendarLeaves(models.Model):
 
     def default_get(self, fields_list):
         res = super().default_get(fields_list)
-        if 'date_from' in fields_list and 'date_to' in fields_list and not res.get('date_from') and not res.get('date_to'):
+        if 'date_from' in fields_list and 'date_to' in fields_list and not res.get('date_from') and not res.get(
+                'date_to'):
             # Then we give the current day and we search the begin and end hours for this day in resource.calendar of the current company
             today = fields.Datetime.now()
-            user_tz = timezone(self.env.user.tz or self._context.get('tz') or self.company_id.resource_calendar_id.tz or 'UTC')
+            user_tz = timezone(
+                self.env.user.tz or self._context.get('tz') or self.company_id.resource_calendar_id.tz or 'UTC')
             date_from = user_tz.localize(datetime.combine(today, time.min))
             date_to = user_tz.localize(datetime.combine(today, time.max))
-            intervals = self.env.company.resource_calendar_id._work_intervals_batch(date_from.replace(tzinfo=utc), date_to.replace(tzinfo=utc))[False]
+            intervals = self.env.company.resource_calendar_id._work_intervals_batch(date_from.replace(tzinfo=utc),
+                                                                                    date_to.replace(tzinfo=utc))[False]
             if intervals:  # Then we stop and return the dates given in parameter
-                list_intervals = [(start, stop) for start, stop, records in intervals]  # Convert intervals in interval list
+                list_intervals = [(start, stop) for start, stop, records in
+                                  intervals]  # Convert intervals in interval list
                 date_from = list_intervals[0][0]  # We take the first date in the interval list
                 date_to = list_intervals[-1][1]  # We take the last date in the interval list
             res.update(
@@ -62,7 +67,8 @@ class ResourceCalendarLeaves(models.Model):
 
     @api.depends('date_from')
     def _compute_date_to(self):
-        user_tz = timezone(self.env.user.tz or self._context.get('tz') or self.company_id.resource_calendar_id.tz or 'UTC')
+        user_tz = timezone(
+            self.env.user.tz or self._context.get('tz') or self.company_id.resource_calendar_id.tz or 'UTC')
         for leave in self:
             if not leave.date_from or (leave.date_to and leave.date_to > leave.date_from):
                 continue

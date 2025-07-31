@@ -9,5 +9,5 @@
                 <field name="source_pos_order_id" readonly="1" invisible="not source_pos_order_id"/>
             </xpath>
         </field>
-    </record>    
+    </record>
 </odoo>

@@ -3,6 +3,7 @@
 
 from odoo import api, fields, models
 
+
 class MailActivityMixin(models.AbstractModel):
     _inherit = 'mail.activity.mixin'
 

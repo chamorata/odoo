@@ -1,12 +1,12 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.payment import utils as payment_utils
+from odoo.addons.payment.controllers import portal as payment_portal
+
 from odoo import _
 from odoo.exceptions import AccessError, MissingError, ValidationError
 from odoo.fields import Command
 from odoo.http import request, route
-
-from odoo.addons.payment import utils as payment_utils
-from odoo.addons.payment.controllers import portal as payment_portal
 
 
 class PaymentPortal(payment_portal.PaymentPortal):
@@ -52,9 +52,11 @@ class PaymentPortal(payment_portal.PaymentPortal):
         overdue_invoices = request.env['account.move'].search(self._get_overdue_invoices_domain())
         currencies = overdue_invoices.mapped('currency_id')
         if not all(currency == currencies[0] for currency in currencies):
-            raise ValidationError(_("Impossible to pay all the overdue invoices if they don't share the same currency."))
+            raise ValidationError(
+                _("Impossible to pay all the overdue invoices if they don't share the same currency."))
         self._validate_transaction_kwargs(kwargs)
-        return self._process_transaction(partner.id, currencies[0].id, overdue_invoices.ids, payment_reference, **kwargs)
+        return self._process_transaction(partner.id, currencies[0].id, overdue_invoices.ids, payment_reference,
+                                         **kwargs)
 
     def _process_transaction(self, partner_id, currency_id, invoice_ids, payment_reference, **kwargs):
         kwargs.update({
@@ -95,7 +97,7 @@ class PaymentPortal(payment_portal.PaymentPortal):
             # Check the access token against the invoice values. Done after fetching the invoice
             # as we need the invoice fields to check the access token.
             if not payment_utils.check_access_token(
-                access_token, invoice_sudo.partner_id.id, amount, invoice_sudo.currency_id.id
+                    access_token, invoice_sudo.partner_id.id, amount, invoice_sudo.currency_id.id
             ):
                 raise ValidationError(_("The provided parameters are invalid."))
 
@@ -130,10 +132,10 @@ class PaymentPortal(payment_portal.PaymentPortal):
                 invoice_sudo = self._document_check_access('account.move', invoice_id, access_token)
             except AccessError:  # It is a payment access token computed on the payment context.
                 if not payment_utils.check_access_token(
-                    access_token,
-                    kwargs.get('partner_id'),
-                    kwargs.get('amount'),
-                    kwargs.get('currency_id'),
+                        access_token,
+                        kwargs.get('partner_id'),
+                        kwargs.get('amount'),
+                        kwargs.get('currency_id'),
                 ):
                     raise
                 invoice_sudo = request.env['account.move'].sudo().browse(invoice_id)

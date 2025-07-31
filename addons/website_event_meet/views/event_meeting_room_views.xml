@@ -73,7 +73,7 @@
                 <field name="is_published"/>
                 <field name="is_pinned"/>
                 <field name="room_is_full" readonly="1"/>
-                <field name="room_participant_count" readonly="1" sum="Total Participant Count" />
+                <field name="room_participant_count" readonly="1" sum="Total Participant Count"/>
                 <field name="room_max_capacity"/>
                 <field name="room_lang_id"/>
             </list>

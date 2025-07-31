@@ -2,8 +2,10 @@
 
 from datetime import timedelta
 
-from odoo.tests import Form
 from odoo.addons.stock.tests.common import TestStockCommon
+
+from odoo.tests import Form
+
 
 class TestOldRules(TestStockCommon):
 
@@ -32,7 +34,6 @@ class TestOldRules(TestStockCommon):
         })
         reception_route_3.rule_ids[1].write({'action': 'pull_push'})
         reception_route_3.rule_ids[2].write({'action': 'pull_push'})
-
 
         # Create a warehouse with 2 steps using old rules setup.
         cls.warehouse_2_steps = cls.env['stock.warehouse'].create({
@@ -132,16 +133,18 @@ class TestOldRules(TestStockCommon):
         partner_demo_customer = self.partner
         final_location = partner_demo_customer.property_stock_customer
 
-        self.env['stock.quant']._update_available_quantity(self.productA, self.warehouse_3_steps.wh_output_stock_loc_id, 4.0)
+        self.env['stock.quant']._update_available_quantity(self.productA, self.warehouse_3_steps.wh_output_stock_loc_id,
+                                                           4.0)
 
         # We set quantities in the stock location to avoid warnings
         # triggered by '_onchange_product_id_check_availability'
         self.env['stock.quant']._update_available_quantity(self.productA, self.warehouse_3_steps.lot_stock_id, 4.0)
 
         # We alter one rule and we set it to 'mts_else_mto'
-        self.warehouse_3_steps.delivery_route_id.rule_ids.filtered(lambda r: r.procure_method == "make_to_order").write({
-            'procure_method': 'mts_else_mto',
-        })
+        self.warehouse_3_steps.delivery_route_id.rule_ids.filtered(lambda r: r.procure_method == "make_to_order").write(
+            {
+                'procure_method': 'mts_else_mto',
+            })
 
         pg = self.env['procurement.group'].create({'name': 'Test-pg-mtso-mto'})
 
@@ -161,7 +164,8 @@ class TestOldRules(TestStockCommon):
             )
         ])
 
-        qty_available = self.env['stock.quant']._get_available_quantity(self.productA, self.warehouse_3_steps.wh_output_stock_loc_id)
+        qty_available = self.env['stock.quant']._get_available_quantity(self.productA,
+                                                                        self.warehouse_3_steps.wh_output_stock_loc_id)
 
         # 3 pickings should be created.
         picking_ids = self.env['stock.picking'].search([('group_id', '=', pg.id)])
@@ -267,6 +271,7 @@ class TestOldRules(TestStockCommon):
     def test_2_steps_and_backorder(self):
         """ When creating a backorder with a package, the latter should be reserved in the new picking. Moreover,
          the initial picking shouldn't have any line about this package """
+
         def create_picking(pick_type, from_loc, to_loc):
             picking = self.env['stock.picking'].create({
                 'picking_type_id': pick_type.id,
@@ -302,7 +307,8 @@ class TestOldRules(TestStockCommon):
         self.env['stock.quant']._update_available_quantity(self.productA, self.warehouse_2_steps.lot_stock_id, 1)
         self.env['stock.quant']._update_available_quantity(self.productB, self.warehouse_2_steps.lot_stock_id, 1)
 
-        picking, moveA, moveB = create_picking(pick_type, pick_type.default_location_src_id, pick_type.default_location_dest_id)
+        picking, moveA, moveB = create_picking(pick_type, pick_type.default_location_src_id,
+                                               pick_type.default_location_dest_id)
         moveA.picked = True
         picking.action_put_in_pack()
         moveB.picked = True
@@ -336,8 +342,8 @@ class TestOldRules(TestStockCommon):
             'product_uom': prod.uom_id.id,
             'location_id': self.warehouse_3_steps.wh_output_stock_loc_id.id,
             'location_dest_id': self.env.ref('stock.stock_location_customers').id,
-            'warehouse_id':  self.warehouse_3_steps.id,
-            'picking_type_id':  self.warehouse_3_steps.out_type_id.id,
+            'warehouse_id': self.warehouse_3_steps.id,
+            'picking_type_id': self.warehouse_3_steps.out_type_id.id,
             'procure_method': 'make_to_order',
             'state': 'draft',
         })
@@ -617,8 +623,10 @@ class TestOldRules(TestStockCommon):
             'is_storable': True,
         })
         pick_pack_ship_route = self.warehouse_3_steps.delivery_route_id
-        pick_rule = pick_pack_ship_route.rule_ids.filtered(lambda rule: rule.picking_type_id == self.warehouse_3_steps.pick_type_id)
-        pack_rule = pick_pack_ship_route.rule_ids.filtered(lambda rule:  rule.picking_type_id == self.warehouse_3_steps.pack_type_id)
+        pick_rule = pick_pack_ship_route.rule_ids.filtered(
+            lambda rule: rule.picking_type_id == self.warehouse_3_steps.pick_type_id)
+        pack_rule = pick_pack_ship_route.rule_ids.filtered(
+            lambda rule: rule.picking_type_id == self.warehouse_3_steps.pack_type_id)
         (pick_rule | pack_rule).propagate_cancel = True
         ship_rule = pick_pack_ship_route.rule_ids - (pick_rule | pack_rule)
         self.env['procurement.group'].run([

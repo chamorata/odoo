@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from collections import deque
 import io
 import json
+from collections import deque
 
 from werkzeug.datastructures import FileStorage
 
@@ -42,7 +42,7 @@ class TableExporter(http.Controller):
                 while (carry and carry[0]['x'] == x):
                     cell = carry.popleft()
                     for j in range(measure_count * (2 * origin_count - 1)):
-                        worksheet.write(y, x+j, '', header_plain)
+                        worksheet.write(y, x + j, '', header_plain)
                     if cell['height'] > 1:
                         carry.append({'x': x, 'height': cell['height'] - 1})
                     x = x + measure_count * (2 * origin_count - 1)
@@ -54,7 +54,7 @@ class TableExporter(http.Controller):
             while (carry and carry[0]['x'] == x):
                 cell = carry.popleft()
                 for j in range(measure_count * (2 * origin_count - 1)):
-                    worksheet.write(y, x+j, '', header_plain)
+                    worksheet.write(y, x + j, '', header_plain)
                 if cell['height'] > 1:
                     carry.append({'x': x, 'height': cell['height'] - 1})
                 x = x + measure_count * (2 * origin_count - 1)
@@ -69,7 +69,7 @@ class TableExporter(http.Controller):
                 style = header_bold if measure['is_bold'] else header_plain
                 worksheet.write(y, x, measure['title'], style)
                 for i in range(1, 2 * origin_count - 1):
-                    worksheet.write(y, x+i, '', header_plain)
+                    worksheet.write(y, x + i, '', header_plain)
                 x = x + (2 * origin_count - 1)
             x, y = 1, y + 1
             # set minimum width of cells to 16 which is around 88px
@@ -100,10 +100,12 @@ class TableExporter(http.Controller):
 
         workbook.close()
         xlsx_data = output.getvalue()
-        filename = osutil.clean_filename(_("Pivot %(title)s (%(model_name)s)", title=jdata['title'], model_name=jdata['model']))
+        filename = osutil.clean_filename(
+            _("Pivot %(title)s (%(model_name)s)", title=jdata['title'], model_name=jdata['model']))
         response = request.make_response(xlsx_data,
-            headers=[('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'),
-                    ('Content-Disposition', content_disposition(filename + '.xlsx'))],
-        )
+                                         headers=[('Content-Type',
+                                                   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'),
+                                                  ('Content-Disposition', content_disposition(filename + '.xlsx'))],
+                                         )
 
         return response

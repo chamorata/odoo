@@ -21,7 +21,9 @@
         <field name="inherit_id" ref="account.view_invoice_tree"/>
         <field name="arch" type="xml">
             <field name="invoice_user_id" position="after">
-                <field name="team_id" column_invisible="context.get('default_move_type') not in ('out_invoice', 'out_refund', 'out_receipt')" optional="hide"/>
+                <field name="team_id"
+                       column_invisible="context.get('default_move_type') not in ('out_invoice', 'out_refund', 'out_receipt')"
+                       optional="hide"/>
             </field>
         </field>
     </record>
@@ -36,9 +38,9 @@
             </xpath>
             <xpath expr="//group[@id='other_tab_group']" position="inside">
                 <group string="Marketing"
-                        name="utm_link"
-                        groups="base.group_no_one"
-                        invisible="move_type not in ('out_invoice', 'out_refund')">
+                       name="utm_link"
+                       groups="base.group_no_one"
+                       invisible="move_type not in ('out_invoice', 'out_refund')">
                     <field name="campaign_id" options="{'create_name_field': 'title'}"/>
                     <field name="medium_id"/>
                     <field name="source_id"/>
@@ -69,20 +71,22 @@
         <field name="view_id" ref="account.view_move_tree"/>
         <field name="domain">[
             ('state', '=', 'posted'),
-            ('move_type', 'in', ['out_invoice', 'out_refund'])]</field>
+            ('move_type', 'in', ['out_invoice', 'out_refund'])]
+        </field>
         <field name="context">{
-                'search_default_team_id': [active_id],
-                'default_team_id': active_id,
-                'default_move_type':'out_invoice',
-                'move_type':'out_invoice',
-                'journal_type': 'sale',
+            'search_default_team_id': [active_id],
+            'default_team_id': active_id,
+            'default_move_type':'out_invoice',
+            'move_type':'out_invoice',
+            'journal_type': 'sale',
             }
         </field>
         <field name="search_view_id" ref="account.view_account_invoice_filter"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create a customer invoice
-            </p><p>
+            </p>
+            <p>
                 Create invoices, register payments and keep track of the discussions with your customers.
             </p>
         </field>

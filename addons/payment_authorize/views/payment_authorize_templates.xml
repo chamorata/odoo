@@ -15,8 +15,10 @@
                     <div class="col-sm-8 mb-3">
                         <label for="o_authorize_month">Expiration</label>
                         <div class="input-group">
-                            <input type="number" id="o_authorize_month" placeholder="MM" min="1" max="12" required="" class="form-control"/>
-                            <input type="number" id="o_authorize_year" placeholder="YY" min="00" max="99" required="" class="form-control"/>
+                            <input type="number" id="o_authorize_month" placeholder="MM" min="1" max="12" required=""
+                                   class="form-control"/>
+                            <input type="number" id="o_authorize_year" placeholder="YY" min="00" max="99" required=""
+                                   class="form-control"/>
                         </div>
                     </div>
                     <div class="col-sm-4 mb-3">
@@ -25,7 +27,7 @@
                     </div>
                 </div>
             </t>
-            <t t-else="" >
+            <t t-else="">
                 <div class="mb-3">
                     <label for="o_authorize_bank_name" class="col-form-label">Bank Name</label>
                     <input type="text" id="o_authorize_bank_name" required="" class="form-control"/>

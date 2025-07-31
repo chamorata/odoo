@@ -1,6 +1,5 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models, Command
@@ -230,14 +229,14 @@ class AccountChartTemplate(models.AbstractModel):
         company = company or self.env.company
         if company.account_fiscal_country_id.code == "PK":
             invoices = (
-                self.ref('l10n_pk_demo_invoice_1')
-                + self.ref('l10n_pk_demo_invoice_2')
-                + self.ref('l10n_pk_demo_invoice_3')
-                + self.ref('l10n_pk_demo_reconcile_1')
-                + self.ref('l10n_pk_demo_reconcile_2')
-                + self.ref('l10n_pk_demo_vendor_bill_1')
-                + self.ref('l10n_pk_demo_vendor_bill_2')
-                + self.ref('l10n_pk_demo_vendor_bill_3')
+                    self.ref('l10n_pk_demo_invoice_1')
+                    + self.ref('l10n_pk_demo_invoice_2')
+                    + self.ref('l10n_pk_demo_invoice_3')
+                    + self.ref('l10n_pk_demo_reconcile_1')
+                    + self.ref('l10n_pk_demo_reconcile_2')
+                    + self.ref('l10n_pk_demo_vendor_bill_1')
+                    + self.ref('l10n_pk_demo_vendor_bill_2')
+                    + self.ref('l10n_pk_demo_vendor_bill_3')
             )
             for move in invoices:
                 move.action_post()

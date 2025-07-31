@@ -4,14 +4,14 @@
 import datetime
 import random
 import re
-import werkzeug
-
 from unittest.mock import patch
 
-from odoo.tools import email_normalize, mail
+import werkzeug
 from odoo.addons.link_tracker.tests.common import MockLinkTracker
 from odoo.addons.mail.tests.common import MailCase, MailCommon, mail_new_test_user
+
 from odoo.sql_db import Cursor
+from odoo.tools import email_normalize, mail
 
 
 class MassMailCase(MailCase, MockLinkTracker):
@@ -343,7 +343,7 @@ class MassMailCase(MailCase, MockLinkTracker):
                       # TDE FIXME: improve this with a mail-enabled heuristics
                       'email': record[fname],
                       'message_id': '<%5f@gilbert.boitempomils>' % randomized,
-                     }, **values)
+                      }, **values)
                 for record in records
             ])
         return traces
@@ -352,7 +352,8 @@ class MassMailCase(MailCase, MockLinkTracker):
     def _create_mailing_list(cls):
         """ Shortcut to create mailing lists. Currently hardcoded, maybe evolve
         in a near future. """
-        cls.mailing_list_1, cls.mailing_list_2, cls.mailing_list_3, cls.mailing_list_4 = cls.env['mailing.list'].with_context(cls._test_context).create([
+        cls.mailing_list_1, cls.mailing_list_2, cls.mailing_list_3, cls.mailing_list_4 = cls.env[
+            'mailing.list'].with_context(cls._test_context).create([
             {
                 'contact_ids': [
                     (0, 0, {'name': 'Déboulonneur', 'email': 'fleurus@example.com'}),

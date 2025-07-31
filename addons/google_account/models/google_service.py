@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from datetime import datetime
-import logging
-
 import json
+import logging
+from datetime import datetime
+
 import requests
 from werkzeug import urls
 
@@ -32,6 +32,7 @@ def _get_client_secret(ICP_sudo, service):
     :rtype: str
     """
     return ICP_sudo.get_param('google_%s_client_secret' % service)
+
 
 class GoogleService(models.AbstractModel):
     _name = 'google.service'
@@ -63,7 +64,6 @@ class GoogleService(models.AbstractModel):
         if access_type:
             params['access_type'] = access_type
 
-
         encoded_params = urls.url_encode(params)
         return "%s?%s" % (GOOGLE_AUTH_ENDPOINT, encoded_params)
 
@@ -83,11 +83,13 @@ class GoogleService(models.AbstractModel):
             'redirect_uri': redirect_uri
         }
         try:
-            dummy, response, dummy = self._do_request(GOOGLE_TOKEN_ENDPOINT, params=data, headers=headers, method='POST', preuri='')
+            dummy, response, dummy = self._do_request(GOOGLE_TOKEN_ENDPOINT, params=data, headers=headers,
+                                                      method='POST', preuri='')
             return response.get('access_token'), response.get('refresh_token'), response.get('expires_in')
         except requests.HTTPError as e:
             _logger.error(e)
-            error_msg = _("Something went wrong during your token generation. Maybe your Authorization Code is invalid or already expired")
+            error_msg = _(
+                "Something went wrong during your token generation. Maybe your Authorization Code is invalid or already expired")
             raise self.env['res.config.settings'].get_config_warning(error_msg)
 
     def _refresh_google_token(self, service, rtoken):
@@ -100,7 +102,8 @@ class GoogleService(models.AbstractModel):
             'client_secret': _get_client_secret(ICP, service),
             'grant_type': 'refresh_token',
         }
-        dummy, response, dummy = self._do_request(GOOGLE_TOKEN_ENDPOINT, params=data, headers=headers, method='POST', preuri='')
+        dummy, response, dummy = self._do_request(GOOGLE_TOKEN_ENDPOINT, params=data, headers=headers, method='POST',
+                                                  preuri='')
         return response.get('access_token'), response.get('expires_in')
 
     @api.model

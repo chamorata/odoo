@@ -3,16 +3,16 @@
 
 import json
 import logging
-import lxml
-
 from ast import literal_eval
 from datetime import datetime
+
+import lxml
 from dateutil import relativedelta
 from markupsafe import Markup
+from odoo.addons.mail.tools.alias_error import AliasError
 from werkzeug import urls
 
 from odoo import _, api, fields, models, tools
-from odoo.addons.mail.tools.alias_error import AliasError
 from odoo.exceptions import ValidationError, UserError
 from odoo.osv import expression
 from odoo.tools import hmac
@@ -50,16 +50,21 @@ class MailGroup(models.Model):
     image_128 = fields.Image('Image', max_width=128, max_height=128)
     # Messages
     mail_group_message_ids = fields.One2many('mail.group.message', 'mail_group_id', string='Pending Messages')
-    mail_group_message_last_month_count = fields.Integer('Messages Per Month', compute='_compute_mail_group_message_last_month_count')
-    mail_group_message_count = fields.Integer('Messages Count', help='Number of message in this group', compute='_compute_mail_group_message_count')
-    mail_group_message_moderation_count = fields.Integer('Pending Messages Count', help='Messages that need an action', compute='_compute_mail_group_message_moderation_count')
+    mail_group_message_last_month_count = fields.Integer('Messages Per Month',
+                                                         compute='_compute_mail_group_message_last_month_count')
+    mail_group_message_count = fields.Integer('Messages Count', help='Number of message in this group',
+                                              compute='_compute_mail_group_message_count')
+    mail_group_message_moderation_count = fields.Integer('Pending Messages Count', help='Messages that need an action',
+                                                         compute='_compute_mail_group_message_moderation_count')
     # Members
     is_member = fields.Boolean('Is Member', compute='_compute_is_member')
     member_ids = fields.One2many('mail.group.member', 'mail_group_id', string='Members')
-    member_partner_ids = fields.Many2many('res.partner', string='Partners Member', compute='_compute_member_partner_ids', search='_search_member_partner_ids')
+    member_partner_ids = fields.Many2many('res.partner', string='Partners Member',
+                                          compute='_compute_member_partner_ids', search='_search_member_partner_ids')
     member_count = fields.Integer('Members Count', compute='_compute_member_count')
     # Moderation
-    is_moderator = fields.Boolean(string='Moderator', help='Current user is a moderator of the group', compute='_compute_is_moderator')
+    is_moderator = fields.Boolean(string='Moderator', help='Current user is a moderator of the group',
+                                  compute='_compute_is_moderator')
     moderation = fields.Boolean(string='Moderate this group')
     moderation_rule_count = fields.Integer(string='Moderated emails count', compute='_compute_moderation_rule_count')
     moderation_rule_ids = fields.One2many('mail.group.moderation', 'mail_group_id', string='Moderated Emails')
@@ -78,7 +83,7 @@ class MailGroup(models.Model):
         ('public', 'Everyone'),
         ('members', 'Members only'),
         ('groups', 'Selected group of users'),
-        ], string='Privacy', required=True, default='public')
+    ], string='Privacy', required=True, default='public')
     access_group_id = fields.Many2one('res.groups', string='Authorized Group',
                                       default=lambda self: self.env.ref('base.group_user'))
     # UI
@@ -246,15 +251,16 @@ class MailGroup(models.Model):
 
         # Error Case: Selected group of users, but no user found for that email
         email = email_normalize(message_dict.get('email_from', ''))
-        email_has_access = self.search_count([('id', '=', self.id), ('access_group_id.users.email_normalized', '=', email)])
+        email_has_access = self.search_count(
+            [('id', '=', self.id), ('access_group_id.users.email_normalized', '=', email)])
         if self.access_mode == 'groups' and not email_has_access:
             return AliasError('error_mail_group_members_restricted',
-                                  _('Only selected groups of users can send email to the mailing list.'))
+                              _('Only selected groups of users can send email to the mailing list.'))
 
         # Error Case: Access for members, but no member found for that email
         elif self.access_mode == 'members' and not self._find_member(message_dict.get('email_from')):
             return AliasError('error_mail_group_members_restricted',
-                                  _('Only members can send email to the mailing list.'))
+                              _('Only members can send email to the mailing list.'))
 
         return None
 
@@ -372,7 +378,8 @@ class MailGroup(models.Model):
 
         template = self.env.ref('mail_group.mail_template_guidelines', raise_if_not_found=False)
         if not template:
-            raise UserError(_('Template "mail_group.mail_template_guidelines" was not found. No email has been sent. Please contact an administrator to fix this issue.'))
+            raise UserError(
+                _('Template "mail_group.mail_template_guidelines" was not found. No email has been sent. Please contact an administrator to fix this issue.'))
 
         banned_emails = self.env['mail.group.moderation'].sudo().search([
             ('status', '=', 'ban'),
@@ -415,7 +422,8 @@ class MailGroup(models.Model):
             for member in self.member_ids
         }
 
-        batch_size = int(self.env['ir.config_parameter'].sudo().get_param('mail.session.batch.size', GROUP_SEND_BATCH_SIZE))
+        batch_size = int(
+            self.env['ir.config_parameter'].sudo().get_param('mail.session.batch.size', GROUP_SEND_BATCH_SIZE))
         for batch_email_member in tools.split_every(batch_size, member_emails.items()):
             mail_values = []
             for email_member_normalized, email_member in batch_email_member:
@@ -428,7 +436,7 @@ class MailGroup(models.Model):
                 unsubscribe_url = self._get_email_unsubscribe_url(email_member_normalized)
 
                 headers = {
-                    ** self._notify_by_email_get_headers(),
+                    **self._notify_by_email_get_headers(),
                     'List-Archive': f'<{base_url}/groups/{self.env["ir.http"]._slug(self)}>',
                     'List-Subscribe': f'<{base_url}/groups?email={email_url_encoded}>',
                     'List-Unsubscribe': f'<{unsubscribe_url}>',
@@ -451,9 +459,10 @@ class MailGroup(models.Model):
                     'mailto': f'{self.alias_email}',
                     'group_url': f'{base_url}/groups/{self.env["ir.http"]._slug(self)}',
                     'unsub_label': f'{base_url}/groups?unsubscribe',
-                    'unsub_url':  unsubscribe_url,
+                    'unsub_url': unsubscribe_url,
                 }
-                footer = self.env['ir.qweb']._render('mail_group.mail_group_footer', template_values, minimal_qcontext=True)
+                footer = self.env['ir.qweb']._render('mail_group.mail_group_footer', template_values,
+                                                     minimal_qcontext=True)
                 member_body = append_content_to_html(body, footer, plaintext=False)
 
                 mail_values.append({
@@ -483,7 +492,8 @@ class MailGroup(models.Model):
         """Push a notification (Inbox / Email) to the moderators whose an action is waiting."""
         template = self.env.ref('mail_group.mail_group_notify_moderation', raise_if_not_found=False)
         if not template:
-            _logger.warning('Template "mail_group.mail_group_notify_moderation" was not found. Cannot send reminder notifications.')
+            _logger.warning(
+                'Template "mail_group.mail_group_notify_moderation" was not found. Cannot send reminder notifications.')
             return
 
         results = self.env['mail.group.message']._read_group(
@@ -499,7 +509,7 @@ class MailGroup(models.Model):
                 body = self.env['ir.qweb']._render('mail_group.mail_group_notify_moderation', {
                     'moderator': moderator,
                     'group': group,
-                    }, minimal_qcontext=True)
+                }, minimal_qcontext=True)
                 email_from = moderator.company_id.catchall_formatted or moderator.company_id.email_formatted
                 MailThread.message_notify(
                     partner_ids=moderator.partner_id.ids,

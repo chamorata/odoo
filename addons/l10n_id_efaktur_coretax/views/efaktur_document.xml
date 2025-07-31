@@ -7,7 +7,7 @@
             <field name="arch" type="xml">
                 <form string="E-faktur Document" create="false">
                     <header>
-                        <field name="attachment_id" invisible="1" />
+                        <field name="attachment_id" invisible="1"/>
                         <button name="action_download" string="Download" class="btn-primary"
                                 type="object" groups="account.group_account_invoice" data-hotkey="q"
                                 invisible="not invoice_ids"/>
@@ -32,9 +32,11 @@
                                     <list create="False" edit="False">
                                         <field name="name"/>
                                         <field name="invoice_date" optional="show" string="Accounting Date"/>
-                                        <field name="amount_untaxed_in_currency_signed" string="Tax Excluded" sum="Total" optional="show"/>
+                                        <field name="amount_untaxed_in_currency_signed" string="Tax Excluded"
+                                               sum="Total" optional="show"/>
                                         <field name="amount_tax_signed" string="Tax" sum="Total" optional="hide"/>
-                                        <field name="amount_total_in_currency_signed" string="Total" sum="Total" optional="show"/>
+                                        <field name="amount_total_in_currency_signed" string="Total" sum="Total"
+                                               optional="show"/>
                                         <field name="currency_id" optional="hide"/>
                                         <field name="status_in_payment"
                                                string="Status"

@@ -25,7 +25,8 @@ class HrExpenseSheet(models.Model):
                 - name
         """
         # Get the product account move lines created by an expense
-        expensed_amls = self.account_move_ids.line_ids.filtered(lambda aml: aml.expense_id.sale_order_id and aml.balance >= 0 and not aml.tax_line_id)
+        expensed_amls = self.account_move_ids.line_ids.filtered(
+            lambda aml: aml.expense_id.sale_order_id and aml.balance >= 0 and not aml.tax_line_id)
         if not expensed_amls:
             return self.env['sale.order.line']
 
@@ -96,7 +97,8 @@ class HrExpenseSheet(models.Model):
         return {
             'type': 'ir.actions.act_window',
             'res_model': 'sale.order',
-            'views': [(self.env.ref('sale.view_order_tree').id, 'list'), (self.env.ref("sale.view_order_form").id, 'form')],
+            'views': [(self.env.ref('sale.view_order_tree').id, 'list'),
+                      (self.env.ref("sale.view_order_form").id, 'form')],
             'view_mode': 'list,form',
             'target': 'current',
             'name': _('Reinvoiced Sales Orders'),
@@ -109,6 +111,7 @@ class HrExpenseSheet(models.Model):
         """
         for expense in self.expense_line_ids:
             if expense.sale_order_id and not expense.analytic_distribution:
-                analytic_account = self.env['account.analytic.account'].create(expense.sale_order_id._prepare_analytic_account_data())
+                analytic_account = self.env['account.analytic.account'].create(
+                    expense.sale_order_id._prepare_analytic_account_data())
                 expense.analytic_distribution = {analytic_account.id: 100}
         return super()._do_create_moves()

@@ -2,11 +2,12 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
 
-from odoo import fields
+from dateutil.relativedelta import relativedelta
 from odoo.addons.mail.tests.common import mail_new_test_user
 from odoo.addons.stock.tests.common import TestStockCommon
+
+from odoo import fields
 from odoo.tests import Form
 
 
@@ -34,7 +35,7 @@ class TestStockLot(TestStockCommon):
         self.productAAA = self.ProductObj.create({
             'name': 'Product AAA',
             'is_storable': True,
-            'tracking':'lot',
+            'tracking': 'lot',
             'company_id': self.env.company.id,
         })
 
@@ -112,7 +113,7 @@ class TestStockLot(TestStockCommon):
             ('res_model_id', '=', self.env.ref('stock.model_stock_lot').id),
             ('res_id', '=', self.lot1_productAAA.id)
         ])
-        self.assertEqual(activity_count, 0,"As activity is done, there shouldn't be any related activity")
+        self.assertEqual(activity_count, 0, "As activity is done, there shouldn't be any related activity")
 
         # run the scheduler a third time
         self.env['stock.lot']._alert_date_exceeded()
@@ -121,9 +122,10 @@ class TestStockLot(TestStockCommon):
         activity_count = self.env['mail.activity'].search_count([
             ('activity_type_id', '=', activity_id),
             ('res_model_id', '=', self.env.ref('stock.model_stock_lot').id),
-            ('res_id', '=',self.lot1_productAAA.id)
+            ('res_id', '=', self.lot1_productAAA.id)
         ])
-        self.assertEqual(activity_count, 0, "As there is already an activity marked as done, there shouldn't be any related activity created for this lot")
+        self.assertEqual(activity_count, 0,
+                         "As there is already an activity marked as done, there shouldn't be any related activity created for this lot")
 
     def test_01_stock_production_lot(self):
         """ Test Scheduled Task on lot with an alert_date in future does not create an activity """
@@ -132,7 +134,7 @@ class TestStockLot(TestStockCommon):
         self.productBBB = self.ProductObj.create({
             'name': 'Product BBB',
             'is_storable': True,
-            'tracking':'lot'
+            'tracking': 'lot'
         })
 
         # create a new lot with with alert date in the past
@@ -232,6 +234,7 @@ class TestStockLot(TestStockCommon):
     def test_03_onchange_expiration_date(self):
         """ Updates the `expiration_date` of the lot production and checks other date
         fields are updated as well. """
+
         def check_expiration_dates(product, lot, start_date, delta):
             self.assertAlmostEqual(
                 start_date + timedelta(days=product.expiration_time),
@@ -748,5 +751,6 @@ class TestStockLot(TestStockCommon):
             ('res_model_id', '=', self.env.ref('stock.model_stock_lot').id),
             ('res_id', '=', lot.id)
         ])
-        self.assertEqual(len(mail_activity), 1, 'No activity created or more than one activity created when there should be one')
+        self.assertEqual(len(mail_activity), 1,
+                         'No activity created or more than one activity created when there should be one')
         self.assertEqual(mail_activity.user_id, default_user, "Activity was not assigned to the Default User.")

@@ -2,10 +2,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from babel.dates import format_datetime
+from odoo.addons.website_event.controllers import main
 
 from odoo import _
 from odoo.http import request
-from odoo.addons.website_event.controllers import main
 
 
 class WebsiteEventController(main.WebsiteEventController):
@@ -19,7 +19,7 @@ class WebsiteEventController(main.WebsiteEventController):
 
                 values["toast_message"] = (
                     _('The event %(name)s starts on %(date_begin)s (%(timezone)s).\nJoin us there to chat about "%(subject)s"!',
-                    name=event.name, date_begin=date_begin, timezone=event.date_tz, subject=meeting_room.name)
+                      name=event.name, date_begin=date_begin, timezone=event.date_tz, subject=meeting_room.name)
                 )
 
         return values

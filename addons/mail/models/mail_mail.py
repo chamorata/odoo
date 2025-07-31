@@ -5,13 +5,13 @@ import ast
 import datetime
 import json
 import logging
-import psycopg2
-import pytz
 import re
 import smtplib
 import threading
 from collections import defaultdict
 
+import psycopg2
+import pytz
 from dateutil.parser import parse
 
 from odoo import _, api, fields, models, modules, SUPERUSER_ID, tools
@@ -42,25 +42,30 @@ class MailMail(models.Model):
         return super(MailMail, self).default_get(fields)
 
     # content
-    mail_message_id = fields.Many2one('mail.message', 'Message', required=True, ondelete='cascade', index=True, auto_join=True)
+    mail_message_id = fields.Many2one('mail.message', 'Message', required=True, ondelete='cascade', index=True,
+                                      auto_join=True)
     mail_message_id_int = fields.Integer(compute='_compute_mail_message_id_int', compute_sudo=True)
     message_type = fields.Selection(related='mail_message_id.message_type', inherited=True, default='email_outgoing')
     body_html = fields.Text('Text Contents', help="Rich-text/HTML message")
-    body_content = fields.Html('Rich-text Contents', sanitize=True, compute='_compute_body_content', search="_search_body_content")
-    references = fields.Text('References', help='Message references, such as identifiers of previous messages', readonly=True)
+    body_content = fields.Html('Rich-text Contents', sanitize=True, compute='_compute_body_content',
+                               search="_search_body_content")
+    references = fields.Text('References', help='Message references, such as identifiers of previous messages',
+                             readonly=True)
     headers = fields.Text('Headers', copy=False)
     restricted_attachment_count = fields.Integer('Restricted attachments', compute='_compute_restricted_attachments')
     unrestricted_attachment_ids = fields.Many2many('ir.attachment', string='Unrestricted Attachments',
-        compute='_compute_restricted_attachments', inverse='_inverse_unrestricted_attachment_ids')
+                                                   compute='_compute_restricted_attachments',
+                                                   inverse='_inverse_unrestricted_attachment_ids')
     # Auto-detected based on create() - if 'mail_message_id' was passed then this mail is a notification
     # and during unlink() we will not cascade delete the parent and its attachments
-    is_notification = fields.Boolean('Notification Email', help='Mail has been created to notify people of an existing mail.message')
+    is_notification = fields.Boolean('Notification Email',
+                                     help='Mail has been created to notify people of an existing mail.message')
     # recipients: include inactive partners (they may have been archived after
     # the message was sent, but they should remain visible in the relation)
     email_to = fields.Text('To', help='Message recipients (emails)')
     email_cc = fields.Char('Cc', help='Carbon copy message recipients')
     recipient_ids = fields.Many2many('res.partner', string='To (Partners)',
-        context={'active_test': False})
+                                     context={'active_test': False})
     # process
     state = fields.Selection([
         ('outgoing', 'Outgoing'),
@@ -82,7 +87,7 @@ class MailMail(models.Model):
         ("mail_bl", "Blacklisted Address"),
         ("mail_optout", "Opted Out"),
         ("mail_dup", "Duplicated Email"),
-        ], string='Failure type')
+    ], string='Failure type')
     failure_reason = fields.Text(
         'Failure Reason', readonly=True, copy=False,
         help="Failure reason. This is usually the exception thrown by the email server, stored to ease the debugging of mailing issues.")
@@ -90,7 +95,7 @@ class MailMail(models.Model):
         'Auto Delete',
         help="This option permanently removes any track of email after it's been sent, including from the Technical menu in the Settings, in order to preserve storage space of your Odoo database.")
     scheduled_date = fields.Datetime('Scheduled Send Date',
-        help="If set, the queue manager will send the email after the date. If not set, the email will be send as soon as possible. Unless a timezone is specified, it is considered as being in UTC timezone.")
+                                     help="If set, the queue manager will send the email after the date. If not set, the email will be send as soon as possible. Unless a timezone is specified, it is considered as being in UTC timezone.")
     fetchmail_server_id = fields.Many2one('fetchmail.server', "Inbound Mail Server", readonly=True)
 
     def _compute_body_content(self):
@@ -116,7 +121,8 @@ class MailMail(models.Model):
         """We can only remove the attachments we have access to."""
         IrAttachment = self.env['ir.attachment']
         for mail_sudo, mail in zip(self.sudo(), self):
-            restricted_attaments = mail_sudo.attachment_ids - IrAttachment._filter_attachment_access(mail_sudo.attachment_ids.ids)
+            restricted_attaments = mail_sudo.attachment_ids - IrAttachment._filter_attachment_access(
+                mail_sudo.attachment_ids.ids)
             mail_sudo.attachment_ids = restricted_attaments | mail.unrestricted_attachment_ids
 
     def _search_body_content(self, operator, value):
@@ -234,10 +240,10 @@ class MailMail(models.Model):
         """
         domain = [
             '&',
-                ('state', '=', 'outgoing'),
-                '|',
-                   ('scheduled_date', '=', False),
-                   ('scheduled_date', '<=', datetime.datetime.utcnow()),
+            ('state', '=', 'outgoing'),
+            '|',
+            ('scheduled_date', '=', False),
+            ('scheduled_date', '<=', datetime.datetime.utcnow()),
         ]
         if 'filters' in self._context:
             domain.extend(self._context['filters'])
@@ -301,7 +307,8 @@ class MailMail(models.Model):
                     messages = notifications.mapped('mail_message_id').filtered(lambda m: m.is_thread_message())
                     # TDE TODO: could be great to notify message-based, not notifications-based, to lessen number of notifs
                     messages._notify_message_notification_update()  # notify user that we have a failure
-        if not failure_type or failure_type in ['mail_email_invalid', 'mail_email_missing']:  # if we have another error, we want to keep the mail.
+        if not failure_type or failure_type in ['mail_email_invalid',
+                                                'mail_email_missing']:  # if we have another error, we want to keep the mail.
             self.sudo().filtered(lambda mail: mail.auto_delete).unlink()
 
         return True
@@ -450,7 +457,7 @@ class MailMail(models.Model):
                 email_list[0]['email_to_normalized'] += tools.mail.email_normalize_all(self.email_cc)
             else:
                 email_list.append({
-                    'email_cc':  tools.mail.email_split_and_format_normalize(self.email_cc),
+                    'email_cc': tools.mail.email_split_and_format_normalize(self.email_cc),
                     'email_to': [],
                     'email_to_normalized': tools.mail.email_normalize_all(self.email_cc),
                     'email_to_raw': False,
@@ -684,7 +691,8 @@ class MailMail(models.Model):
                 # To avoid sending twice the same email, provoke the failure earlier
                 mail.write({
                     'state': 'exception',
-                    'failure_reason': _('Error without exception. Probably due to sending an email without computed recipients.'),
+                    'failure_reason': _(
+                        'Error without exception. Probably due to sending an email without computed recipients.'),
                 })
                 # Update notification in a transient exception state to avoid concurrent
                 # update in case an email bounces while sending all emails related to current
@@ -695,7 +703,8 @@ class MailMail(models.Model):
                     ('notification_status', 'not in', ('sent', 'canceled'))
                 ])
                 if notifs:
-                    notif_msg = _('Error without exception. Probably due to concurrent access update of notification records. Please see with an administrator.')
+                    notif_msg = _(
+                        'Error without exception. Probably due to concurrent access update of notification records. Please see with an administrator.')
                     notifs.sudo().write({
                         'notification_status': 'exception',
                         'failure_type': 'unknown',

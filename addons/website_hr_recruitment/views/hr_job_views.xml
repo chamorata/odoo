@@ -10,7 +10,8 @@
             </xpath>
             <xpath expr="//t[@t-name='card']/div" position="before">
                 <field name="website_published" invisible="1"/>
-                <widget name="web_ribbon" title="Published" bg_color="text-bg-success" invisible="not website_published"/>
+                <widget name="web_ribbon" title="Published" bg_color="text-bg-success"
+                        invisible="not website_published"/>
             </xpath>
             <xpath expr="//div[@name='kanban_boxes']" position="attributes">
                 <attribute name="class" add="border-top pt-2 mx-n2 px-3" separator=" "/>
@@ -18,7 +19,8 @@
             <xpath expr="//div[@name='kanban_boxes']" position="inside">
                 <field name="website_url" invisible="1"/>
                 <div class="col-6">
-                    <field name="is_published" widget="boolean_toggle_labeled" options="{'false_label': 'Not Published', 'true_label': 'Published'}"/>
+                    <field name="is_published" widget="boolean_toggle_labeled"
+                           options="{'false_label': 'Not Published', 'true_label': 'Published'}"/>
                 </div>
                 <div class="col-6" name="bottom_right"></div>
             </xpath>

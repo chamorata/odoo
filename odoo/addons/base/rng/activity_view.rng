@@ -1,17 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <grammar xmlns="http://relaxng.org/ns/structure/1.0"
-             xmlns:a="http://relaxng.org/ns/annotation/1.0"
-             datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+         datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
 
     <include href="common.rng"/>
 
     <define name="activity">
         <element name="activity">
             <attribute name="string"/>
-            <optional><attribute name="create"/></optional>
-            <optional><attribute name="js_class"/></optional>
+            <optional>
+                <attribute name="create"/>
+            </optional>
+            <optional>
+                <attribute name="js_class"/>
+            </optional>
             <interleave>
-                <zeroOrMore><ref name="field"/></zeroOrMore>
+                <zeroOrMore>
+                    <ref name="field"/>
+                </zeroOrMore>
                 <optional>
                     <element name="templates">
                         <oneOrMore>

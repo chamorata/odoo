@@ -1,6 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.point_of_sale.tests.test_frontend import TestPointOfSaleHttpCommon
+
 from odoo.tests import tagged
 
 
@@ -81,4 +82,5 @@ class TestPoSSaleLoyalty(TestPointOfSaleHttpCommon):
         sale_order.action_open_reward_wizard()
         self.assertEqual(sale_order.amount_total, 90.0)
         self.main_pos_config.open_ui()
-        self.start_tour("/pos/web?config_id=%d" % self.main_pos_config.id, "test_pos_sale_loyalty_ignored_in_pos", login="accountman")
+        self.start_tour("/pos/web?config_id=%d" % self.main_pos_config.id, "test_pos_sale_loyalty_ignored_in_pos",
+                        login="accountman")

@@ -7,7 +7,8 @@ from odoo import api, fields, models
 class FleetVehicleAssignationLog(models.Model):
     _inherit = 'fleet.vehicle.assignation.log'
 
-    driver_employee_id = fields.Many2one('hr.employee', string='Driver (Employee)', compute='_compute_driver_employee_id', store=True, readonly=False)
+    driver_employee_id = fields.Many2one('hr.employee', string='Driver (Employee)',
+                                         compute='_compute_driver_employee_id', store=True, readonly=False)
     attachment_number = fields.Integer('Number of Attachments', compute='_compute_attachment_number')
 
     @api.depends('driver_id')

@@ -3,11 +3,10 @@
 import logging
 import pprint
 
-from odoo import _, models
-from odoo.exceptions import UserError, ValidationError
-
 from odoo.addons.sale_gelato import utils
 
+from odoo import _, models
+from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -43,8 +42,8 @@ class SaleOrder(models.Model):
         res = super().action_open_delivery_wizard()
 
         if (
-            not self.env.context.get('carrier_recompute')
-            and any(line.product_id.gelato_product_uid for line in self.order_line)
+                not self.env.context.get('carrier_recompute')
+                and any(line.product_id.gelato_product_uid for line in self.order_line)
         ):
             gelato_delivery_method = self.env['delivery.carrier'].search(
                 [('delivery_type', '=', 'gelato')], limit=1
@@ -56,7 +55,7 @@ class SaleOrder(models.Model):
         """ Override of `sale` to send the order to Gelato on confirmation. """
         res = super().action_confirm()
         for order in self.filtered(
-            lambda o: any(o.order_line.product_id.mapped('gelato_product_uid'))
+                lambda o: any(o.order_line.product_id.mapped('gelato_product_uid'))
         ):
             order._create_order_on_gelato()
         return res

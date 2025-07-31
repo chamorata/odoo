@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, models
+from odoo import models
 
 
 class ChooseDestinationLocation(models.TransientModel):
@@ -13,7 +13,8 @@ class ChooseDestinationLocation(models.TransientModel):
             if not destination.picking_id.batch_id:
                 destination_without_batch |= destination
                 continue
-            destination.move_line_ids = destination.picking_id.batch_id.move_line_ids.filtered(lambda l: l.quantity > 0 and not l.result_package_id)
+            destination.move_line_ids = destination.picking_id.batch_id.move_line_ids.filtered(
+                lambda l: l.quantity > 0 and not l.result_package_id)
         super(ChooseDestinationLocation, destination_without_batch)._compute_move_line_ids()
 
     def action_done(self):

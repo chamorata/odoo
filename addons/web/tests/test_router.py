@@ -1,5 +1,6 @@
-from odoo.tests.common import TransactionCase
 from odoo.addons.web.controllers.utils import get_action_triples, get_action
+
+from odoo.tests.common import TransactionCase
 
 
 class TestWebRouter(TransactionCase):
@@ -7,10 +8,10 @@ class TestWebRouter(TransactionCase):
         ir_cron_act = self.env.ref('base.ir_cron_act')
         valid_actions = [
             f'action-{ir_cron_act.id}',  # record id
-            'action-base.ir_cron_act',   # xml id
-            'm-ir.cron',                 # m- model name (for website)
-            'ir.cron',                   # dotted model name
-            'crons',                     # action path
+            'action-base.ir_cron_act',  # xml id
+            'm-ir.cron',  # m- model name (for website)
+            'ir.cron',  # dotted model name
+            'crons',  # action path
         ]
         for action in valid_actions:
             with self.subTest(action=action):
@@ -81,4 +82,4 @@ class TestWebRouter(TransactionCase):
                 with self.assertRaises(ValueError) as capture:
                     all(get_action_triples(self.env, action))
                 self.assertEqual(capture.exception.args[0],
-                    f"expected action at word 0 but found “{action}”")
+                                 f"expected action at word 0 but found “{action}”")

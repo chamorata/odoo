@@ -9,9 +9,10 @@ class AccountMove(models.Model):
 
     pos_order_ids = fields.One2many('pos.order', 'account_move')
     pos_payment_ids = fields.One2many('pos.payment', 'account_move_id')
-    pos_refunded_invoice_ids = fields.Many2many('account.move', 'refunded_invoices', 'refund_account_move', 'original_account_move')
+    pos_refunded_invoice_ids = fields.Many2many('account.move', 'refunded_invoices', 'refund_account_move',
+                                                'original_account_move')
     reversed_pos_order_id = fields.Many2one('pos.order', string="Reversed POS Order",
-        help="The pos order that was reverted after closing the session to create an invoice for it.")
+                                            help="The pos order that was reverted after closing the session to create an invoice for it.")
     pos_session_ids = fields.One2many("pos.session", "move_id", "POS Sessions")
 
     @api.depends('tax_cash_basis_created_move_ids', 'pos_session_ids')
@@ -28,11 +29,12 @@ class AccountMove(models.Model):
     def _stock_account_get_last_step_stock_moves(self):
         stock_moves = super(AccountMove, self)._stock_account_get_last_step_stock_moves()
         for invoice in self.filtered(lambda x: x.move_type == 'out_invoice'):
-            stock_moves += invoice.sudo().mapped('pos_order_ids.picking_ids.move_ids').filtered(lambda x: x.state == 'done' and x.location_dest_id.usage == 'customer')
+            stock_moves += invoice.sudo().mapped('pos_order_ids.picking_ids.move_ids').filtered(
+                lambda x: x.state == 'done' and x.location_dest_id.usage == 'customer')
         for invoice in self.filtered(lambda x: x.move_type == 'out_refund'):
-            stock_moves += invoice.sudo().mapped('pos_order_ids.picking_ids.move_ids').filtered(lambda x: x.state == 'done' and x.location_id.usage == 'customer')
+            stock_moves += invoice.sudo().mapped('pos_order_ids.picking_ids.move_ids').filtered(
+                lambda x: x.state == 'done' and x.location_id.usage == 'customer')
         return stock_moves
-
 
     def _get_invoiced_lot_values(self):
         self.ensure_one()
@@ -80,8 +82,8 @@ class AccountMove(models.Model):
                 move.amount_total_signed = move.amount_total_signed * -1
 
     def _compute_tax_totals(self):
-        return super(AccountMove, self.with_context(linked_to_pos=bool(self.sudo().pos_order_ids)))._compute_tax_totals()
-
+        return super(AccountMove,
+                     self.with_context(linked_to_pos=bool(self.sudo().pos_order_ids)))._compute_tax_totals()
 
 
 class AccountMoveLine(models.Model):
@@ -94,7 +96,8 @@ class AccountMoveLine(models.Model):
         price_unit = super(AccountMoveLine, self)._stock_account_get_anglo_saxon_price_unit()
         sudo_order = self.move_id.sudo().pos_order_ids
         if sudo_order:
-            price_unit = sudo_order._get_pos_anglo_saxon_price_unit(self.product_id, self.move_id.partner_id.id, self.quantity)
+            price_unit = sudo_order._get_pos_anglo_saxon_price_unit(self.product_id, self.move_id.partner_id.id,
+                                                                    self.quantity)
         return price_unit
 
     def _compute_name(self):

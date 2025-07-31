@@ -4,8 +4,8 @@
 import ast
 import logging
 import uuid
-
 from collections import defaultdict
+
 from dateutil.relativedelta import relativedelta
 from markupsafe import Markup
 
@@ -51,11 +51,11 @@ class ChannelUsersRelation(models.Model):
         ('channel_partner_uniq',
          'unique(channel_id, partner_id)',
          'A partner membership to a channel must be unique!'
-        ),
+         ),
         ('check_completion',
          'check(completion >= 0 and completion <= 100)',
          'The completion of a channel is a percentage and should be between 0% and 100.'
-        )
+         )
     ]
 
     @api.depends('channel_id', 'partner_id')
@@ -222,7 +222,7 @@ class ChannelUsersRelation(models.Model):
                  'res_id',
                  'scheduled_date',
                  'subject',
-                ]
+                 ]
             )
             for res_id, values in record_values.items():
                 # attachments specific not supported currently, only attachment_ids
@@ -245,7 +245,8 @@ class ChannelUsersRelation(models.Model):
             email_values['body_html'] = template._render_encapsulate(
                 'mail.mail_notification_light', email_values['body_html'],
                 add_context={
-                    'message': self.env['mail.message'].sudo().new(dict(body=email_values['body_html'], record_name=record.channel_id.name)),
+                    'message': self.env['mail.message'].sudo().new(
+                        dict(body=email_values['body_html'], record_name=record.channel_id.name)),
                     'model_description': _('Completed Course')  # tde fixme: translate into partner lang
                 }
             )
@@ -313,9 +314,12 @@ class Channel(models.Model):
     # description
     name = fields.Char('Name', translate=True, required=True)
     active = fields.Boolean(default=True, tracking=100)
-    description = fields.Html('Description', translate=True, sanitize_attributes=False, sanitize_form=False, help="The description that is displayed on top of the course page, just below the title")
-    description_short = fields.Html('Short Description', translate=True, sanitize_attributes=False, sanitize_form=False, help="The description that is displayed on the course card")
-    description_html = fields.Html('Detailed Description', translate=tools.html_translate, sanitize_attributes=False, sanitize_form=False)
+    description = fields.Html('Description', translate=True, sanitize_attributes=False, sanitize_form=False,
+                              help="The description that is displayed on top of the course page, just below the title")
+    description_short = fields.Html('Short Description', translate=True, sanitize_attributes=False, sanitize_form=False,
+                                    help="The description that is displayed on the course card")
+    description_html = fields.Html('Detailed Description', translate=tools.html_translate, sanitize_attributes=False,
+                                   sanitize_form=False)
     channel_type = fields.Selection([
         ('training', 'Training'), ('documentation', 'Documentation')],
         string="Course type", default="training", required=True)
@@ -354,7 +358,8 @@ class Channel(models.Model):
     total_views = fields.Integer('Visits', compute='_compute_slides_statistics', store=True)
     total_votes = fields.Integer('Votes', compute='_compute_slides_statistics', store=True)
     total_time = fields.Float('Duration', compute='_compute_slides_statistics', digits=(10, 2), store=True)
-    rating_avg_stars = fields.Float("Rating Average (Stars)", compute='_compute_rating_stats', digits=(16, 1), compute_sudo=True)
+    rating_avg_stars = fields.Float("Rating Average (Stars)", compute='_compute_rating_stats', digits=(16, 1),
+                                    compute_sudo=True)
     # configuration
     allow_comment = fields.Boolean(
         "Allow rating on Course", default=True,
@@ -373,8 +378,10 @@ class Channel(models.Model):
         help="Email template used when sharing a slide",
         default=lambda self: self.env['ir.model.data']._xmlid_to_res_id('website_slides.slide_template_shared'))
     completed_template_id = fields.Many2one(
-        'mail.template', string='Completion Notification', help="Defines the email your Attendees will receive once they reach the end of your course.",
-        default=lambda self: self.env['ir.model.data']._xmlid_to_res_id('website_slides.mail_template_channel_completed'),
+        'mail.template', string='Completion Notification',
+        help="Defines the email your Attendees will receive once they reach the end of your course.",
+        default=lambda self: self.env['ir.model.data']._xmlid_to_res_id(
+            'website_slides.mail_template_channel_completed'),
         domain=[('model', '=', 'slide.channel.partner')])
     enroll = fields.Selection([
         ('public', 'Open'), ('invite', 'On Invitation')],
@@ -384,7 +391,8 @@ class Channel(models.Model):
     enroll_msg = fields.Html(
         'Enroll Message', help="Message explaining the enroll process",
         default=_get_default_enroll_msg, translate=tools.html_translate, sanitize_attributes=False)
-    enroll_group_ids = fields.Many2many('res.groups', string='Auto Enroll Groups', help="Members of those groups are automatically added as members of the channel.")
+    enroll_group_ids = fields.Many2many('res.groups', string='Auto Enroll Groups',
+                                        help="Members of those groups are automatically added as members of the channel.")
     visibility = fields.Selection([
         ('public', 'Everyone'),
         ('connected', 'Signed In'),
@@ -394,7 +402,8 @@ class Channel(models.Model):
     upload_group_ids = fields.Many2many(
         'res.groups', 'rel_upload_groups', 'channel_id', 'group_id', string='Upload Groups',
         help="Group of users allowed to publish contents on a documentation course.")
-    website_default_background_image_url = fields.Char('Background image URL', compute='_compute_website_default_background_image_url')
+    website_default_background_image_url = fields.Char('Background image URL',
+                                                       compute='_compute_website_default_background_image_url')
     # membership
     channel_partner_ids = fields.One2many(
         'slide.channel.partner', 'channel_id', string='Enrolled Attendees Information',
@@ -418,7 +427,8 @@ class Channel(models.Model):
     completed = fields.Boolean('Done', compute='_compute_user_statistics', compute_sudo=False)
     completion = fields.Integer('Completion', compute='_compute_user_statistics', compute_sudo=False)
     can_upload = fields.Boolean('Can Upload', compute='_compute_can_upload', compute_sudo=False)
-    has_requested_access = fields.Boolean(string='Access Requested', compute='_compute_has_requested_access', compute_sudo=False)
+    has_requested_access = fields.Boolean(string='Access Requested', compute='_compute_has_requested_access',
+                                          compute_sudo=False)
     is_member = fields.Boolean(
         string='Is Enrolled Attendee', help='Is the attendee actively enrolled.',
         compute='_compute_membership_values', search="_search_is_member")
@@ -431,7 +441,8 @@ class Channel(models.Model):
     karma_gen_channel_finish = fields.Integer(string='Course finished', default=10)
     # Karma based actions
     karma_review = fields.Integer('Add Review', default=10, help="Karma needed to add a review on the course")
-    karma_slide_comment = fields.Integer('Add Comment', default=3, help="Karma needed to add a comment on a slide of this course")
+    karma_slide_comment = fields.Integer('Add Comment', default=3,
+                                         help="Karma needed to add a comment on a slide of this course")
     karma_slide_vote = fields.Integer('Vote', default=3, help="Karma needed to like/dislike a slide of this course.")
     can_review = fields.Boolean('Can Review', compute='_compute_action_rights', compute_sudo=False)
     can_comment = fields.Boolean('Can Comment', compute='_compute_action_rights', compute_sudo=False)
@@ -477,10 +488,10 @@ class Channel(models.Model):
             value = [value]
         return [(
             'channel_partner_ids', '=', self.env['slide.channel.partner'].sudo()._search(
-                [('partner_id', operator, value),
-                 ('active', '=', True),
-                 ('member_status', '!=', 'invited')],
-            )
+            [('partner_id', operator, value),
+             ('active', '=', True),
+             ('member_status', '!=', 'invited')],
+        )
         )]
 
     @api.depends('slide_ids.is_published')
@@ -514,7 +525,8 @@ class Channel(models.Model):
         for channel in self:
             channel.has_requested_access = channel.id in requested_cids
 
-    @api.depends('channel_partner_all_ids.partner_id', 'channel_partner_all_ids.member_status', 'channel_partner_all_ids.active')
+    @api.depends('channel_partner_all_ids.partner_id', 'channel_partner_all_ids.member_status',
+                 'channel_partner_all_ids.active')
     @api.depends_context('uid')
     def _compute_membership_values(self):
         if self.env.user._is_public():
@@ -524,7 +536,8 @@ class Channel(models.Model):
         data = {
             member_status: channel_ids
             for member_status, channel_ids in self.env['slide.channel.partner'].sudo()._read_group(
-                [('partner_id', '=', self.env.user.partner_id.id), ('channel_id', 'in', self.ids), ('active', '=', True)],
+                [('partner_id', '=', self.env.user.partner_id.id), ('channel_id', 'in', self.ids),
+                 ('active', '=', True)],
                 ['member_status'], ['channel_id:array_agg']
             )
         }
@@ -548,7 +561,8 @@ class Channel(models.Model):
 
     def _search_is_member_channel_ids(self, invited=False):
         return self.env['slide.channel.partner'].sudo()._read_group(
-            [('partner_id', '=', self.env.user.partner_id.id), ('member_status', '=' if invited else '!=', 'invited'), ('active', '=', True)],
+            [('partner_id', '=', self.env.user.partner_id.id), ('member_status', '=' if invited else '!=', 'invited'),
+             ('active', '=', True)],
             aggregates=['channel_id:array_agg']
         )[0][0]
 
@@ -559,15 +573,18 @@ class Channel(models.Model):
             channel.slide_content_ids = channel.slide_ids - channel.slide_category_ids
 
     @api.depends('slide_ids.slide_category', 'slide_ids.is_published', 'slide_ids.completion_time',
-                 'slide_ids.likes', 'slide_ids.dislikes', 'slide_ids.total_views', 'slide_ids.is_category', 'slide_ids.active')
+                 'slide_ids.likes', 'slide_ids.dislikes', 'slide_ids.total_views', 'slide_ids.is_category',
+                 'slide_ids.active')
     def _compute_slides_statistics(self):
         default_vals = dict(total_views=0, total_votes=0, total_time=0, total_slides=0)
-        keys = ['nbr_%s' % slide_category for slide_category in self.env['slide.slide']._fields['slide_category'].get_values(self.env)]
+        keys = ['nbr_%s' % slide_category for slide_category in
+                self.env['slide.slide']._fields['slide_category'].get_values(self.env)]
         default_vals.update(dict((key, 0) for key in keys))
 
         result = dict((cid, dict(default_vals)) for cid in self.ids)
         read_group_res = self.env['slide.slide']._read_group(
-            [('active', '=', True), ('is_published', '=', True), ('channel_id', 'in', self.ids), ('is_category', '=', False)],
+            [('active', '=', True), ('is_published', '=', True), ('channel_id', 'in', self.ids),
+             ('is_category', '=', False)],
             ['channel_id', 'slide_category'],
             aggregates=['__count', 'likes:sum', 'dislikes:sum', 'total_views:sum', 'completion_time:sum'])
         for channel, slide_category, count, likes_sum, dislikes_sum, total_views_sum, completion_time_sum in read_group_res:
@@ -594,11 +611,14 @@ class Channel(models.Model):
         current_user_info = self.env['slide.channel.partner'].sudo().search(
             [('channel_id', 'in', self.ids), ('partner_id', '=', self.env.user.partner_id.id)]
         )
-        mapped_data = dict((info.channel_id.id, (info.member_status == 'completed', info.completed_slides_count)) for info in current_user_info)
+        mapped_data = dict(
+            (info.channel_id.id, (info.member_status == 'completed', info.completed_slides_count)) for info in
+            current_user_info)
         for record in self:
             completed, completed_slides_count = mapped_data.get(record.id, (False, 0))
             record.completed = completed
-            record.completion = 100.0 if completed else round(100.0 * completed_slides_count / (record.total_slides or 1))
+            record.completion = 100.0 if completed else round(
+                100.0 * completed_slides_count / (record.total_slides or 1))
 
     @api.depends('upload_group_ids', 'user_id')
     @api.depends_context('uid')
@@ -628,7 +648,8 @@ class Channel(models.Model):
 
     @api.model
     def _get_can_publish_error_message(self):
-        return _("Publishing is restricted to the responsible of training courses or members of the publisher group for documentation courses")
+        return _(
+            "Publishing is restricted to the responsible of training courses or members of the publisher group for documentation courses")
 
     @api.depends('slide_partner_ids')
     @api.depends_context('uid')
@@ -745,14 +766,16 @@ class Channel(models.Model):
 
     def write(self, vals):
         # If description_short wasn't manually modified, there is an implicit link between this field and description.
-        if not is_html_empty(vals.get('description')) and is_html_empty(vals.get('description_short')) and self.description == self.description_short:
+        if not is_html_empty(vals.get('description')) and is_html_empty(
+                vals.get('description_short')) and self.description == self.description_short:
             vals['description_short'] = vals.get('description')
 
         res = super(Channel, self).write(vals)
 
         if vals.get('user_id'):
             self._action_add_members(self.env['res.users'].sudo().browse(vals['user_id']).partner_id)
-            self.activity_reschedule(['website_slides.mail_activity_data_access_request'], new_user_id=vals.get('user_id'))
+            self.activity_reschedule(['website_slides.mail_activity_data_access_request'],
+                                     new_user_id=vals.get('user_id'))
         if 'enroll_group_ids' in vals:
             self._add_groups_members()
 
@@ -807,7 +830,8 @@ class Channel(models.Model):
             raise AccessError(_('Not enough karma to review'))
         if parent_id:
             parent_message = self.env['mail.message'].sudo().browse(parent_id)
-            if parent_message.subtype_id and parent_message.subtype_id == self.env.ref('website_slides.mt_channel_slide_published'):
+            if parent_message.subtype_id and parent_message.subtype_id == self.env.ref(
+                    'website_slides.mt_channel_slide_published'):
                 subtype_id = self.env.ref('mail.mt_note').id
         message = super().message_post(parent_id=parent_id, subtype_id=subtype_id, **kwargs)
         if self.env.user._is_internal() and not message.rating_value:
@@ -851,7 +875,8 @@ class Channel(models.Model):
                 'header_message': _("No Attendees Yet!"),
                 'body_message': _("From here you'll be able to monitor attendees and to track their progress.")
             }
-        action['help'] = Markup("""<p class="o_view_nocontent_smiling_face">%(header_message)s</p><p>%(body_message)s</p>""") % help_message
+        action['help'] = Markup(
+            """<p class="o_view_nocontent_smiling_face">%(header_message)s</p><p>%(body_message)s</p>""") % help_message
         if len(self) == 1:
             action['display_name'] = _('Attendees of %s', self.name)
             action_ctx['default_channel_id'] = self.id
@@ -926,7 +951,8 @@ class Channel(models.Model):
         ])
 
         # Unarchive existing channel partners, recomputing their completion and updating member_status
-        archived_channel_partners = existing_channel_partners.filtered(lambda channel_partner: not channel_partner.active)
+        archived_channel_partners = existing_channel_partners.filtered(
+            lambda channel_partner: not channel_partner.active)
         to_unarchived = SlideChannelPartnerSudo
         if archived_channel_partners:
             archived_channel_partners.action_unarchive()
@@ -949,7 +975,8 @@ class Channel(models.Model):
             if member_status == 'joined':
                 to_update_as_joined += channel_partners.filtered(lambda cp: cp.member_status == 'invited')
             for partner in target_partners - channel_partners.partner_id:
-                to_create_channel_partners_values.append(dict(channel_id=channel.id, partner_id=partner.id, member_status=member_status))
+                to_create_channel_partners_values.append(
+                    dict(channel_id=channel.id, partner_id=partner.id, member_status=member_status))
 
         new_slide_channel_partners = SlideChannelPartnerSudo.create(to_create_channel_partners_values)
         to_update_as_joined.member_status = 'joined'
@@ -977,7 +1004,8 @@ class Channel(models.Model):
             if on_invite.has_access('write'):
                 allowed |= on_invite
             elif raise_on_access:
-                raise AccessError(_('You are not allowed to add members to this course. Please contact the course responsible or an administrator.'))
+                raise AccessError(
+                    _('You are not allowed to add members to this course. Please contact the course responsible or an administrator.'))
         return allowed
 
     def _add_groups_members(self):
@@ -1050,8 +1078,9 @@ class Channel(models.Model):
         """ Share channel through emails."""
         courses_without_templates = self.filtered(lambda channel: not channel.share_channel_template_id)
         if courses_without_templates:
-            raise UserError(_('Impossible to send emails. Select a "Channel Share Template" for courses %(course_names)s first',
-                                 course_names=', '.join(courses_without_templates.mapped('name'))))
+            raise UserError(
+                _('Impossible to send emails. Select a "Channel Share Template" for courses %(course_names)s first',
+                  course_names=', '.join(courses_without_templates.mapped('name'))))
         mail_ids = []
         for record in self:
             template = record.share_channel_template_id.with_context(
@@ -1064,7 +1093,8 @@ class Channel(models.Model):
                 template = template.sudo()
                 email_values['email_from'] = self.env.company.catchall_formatted or self.env.company.email_formatted
 
-            mail_ids.append(template.send_mail(record.id, email_layout_xmlid='mail.mail_notification_light', email_values=email_values))
+            mail_ids.append(template.send_mail(record.id, email_layout_xmlid='mail.mail_notification_light',
+                                               email_values=email_values))
         return mail_ids
 
     def action_view_slides(self):
@@ -1161,7 +1191,8 @@ class Channel(models.Model):
         eases resequencing based on DOM / displayed order, notably when
         drag n drop is involved. """
         self.ensure_one()
-        all_categories = self.env['slide.slide'].sudo().search([('channel_id', '=', self.id), ('is_category', '=', True)])
+        all_categories = self.env['slide.slide'].sudo().search(
+            [('channel_id', '=', self.id), ('is_category', '=', True)])
         all_slides = self.env['slide.slide'].sudo().search(base_domain, order=order)
         category_data = []
 
@@ -1195,7 +1226,8 @@ class Channel(models.Model):
         truncated_slide_ids = [slide_id for slide_id in self.slide_ids.ids if slide_id not in category.slide_ids.ids]
         if new_category:
             place_idx = truncated_slide_ids.index(new_category.id)
-            ordered_slide_ids = truncated_slide_ids[:place_idx] + category.slide_ids.ids + truncated_slide_ids[place_idx]
+            ordered_slide_ids = truncated_slide_ids[:place_idx] + category.slide_ids.ids + truncated_slide_ids[
+                place_idx]
         else:
             ordered_slide_ids = category.slide_ids.ids + truncated_slide_ids
         for index, slide_id in enumerate(ordered_slide_ids):

@@ -1,9 +1,9 @@
 import base64
 
 from cryptography import x509
+from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.x509 import ObjectIdentifier
 from cryptography.x509.oid import NameOID
-from cryptography.hazmat.primitives import hashes, serialization
 
 from odoo import api, models, service
 
@@ -84,7 +84,8 @@ class Certificate(models.Model):
         for ext in x509_extensions:
             builder = builder.add_extension(ext[0], critical=ext[1])
 
-        private_key = serialization.load_pem_private_key(base64.b64decode(company_id.l10n_sa_private_key_id.pem_key), password=None)
+        private_key = serialization.load_pem_private_key(base64.b64decode(company_id.l10n_sa_private_key_id.pem_key),
+                                                         password=None)
         request = builder.sign(private_key, hashes.SHA256())
 
         return base64.b64encode(request.public_bytes(serialization.Encoding.PEM)).decode()

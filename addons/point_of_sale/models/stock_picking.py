@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from collections import defaultdict
+from itertools import groupby
+
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
-from odoo.tools import float_is_zero, float_compare
+from odoo.tools import float_is_zero
 
-from itertools import groupby
-from collections import defaultdict
 
 class StockPicking(models.Model):
-    _inherit='stock.picking'
+    _inherit = 'stock.picking'
 
     pos_session_id = fields.Many2one('pos.session', index=True)
     pos_order_id = fields.Many2one('pos.order', index=True)
@@ -25,13 +26,13 @@ class StockPicking(models.Model):
             'state': 'draft',
         }
 
-
     @api.model
     def _create_picking_from_pos_order_lines(self, location_dest_id, lines, picking_type, partner=False):
         """We'll create some picking based on order_lines"""
 
         pickings = self.env['stock.picking']
-        stockable_lines = lines.filtered(lambda l: l.product_id.type == 'consu' and not float_is_zero(l.qty, precision_rounding=l.product_id.uom_id.rounding))
+        stockable_lines = lines.filtered(lambda l: l.product_id.type == 'consu' and not float_is_zero(l.qty,
+                                                                                                      precision_rounding=l.product_id.uom_id.rounding))
         if not stockable_lines:
             return pickings
         positive_lines = stockable_lines.filtered(lambda l: l.qty > 0)
@@ -84,7 +85,8 @@ class StockPicking(models.Model):
             'location_id': self.location_id.id,
             'location_dest_id': self.location_dest_id.id,
             'company_id': self.company_id.id,
-            'never_product_template_attribute_value_ids': first_line.attribute_value_ids.filtered(lambda a: a.attribute_id.create_variant == 'no_variant'),
+            'never_product_template_attribute_value_ids': first_line.attribute_value_ids.filtered(
+                lambda a: a.attribute_id.create_variant == 'no_variant'),
         }
 
     def _create_move_from_pos_order_lines(self, lines):
@@ -113,7 +115,6 @@ class StockPicking(models.Model):
                         move.write({'owner_id': keys[1]})
                         returnable_qty_by_product[keys] -= move.quantity
 
-
     def _send_confirmation_email(self):
         # Avoid sending Mail/SMS for POS deliveries
         pickings = self.filtered(lambda p: p.picking_type_id != p.picking_type_id.warehouse_id.pos_type_id)
@@ -139,7 +140,7 @@ class StockPicking(models.Model):
                     move_vals.append({
                         'journal_id': rec.pos_order_id.sale_journal.id,
                         'date': rec.pos_order_id.date_order,
-                        'ref': 'pos_order_'+str(rec.pos_order_id.id),
+                        'ref': 'pos_order_' + str(rec.pos_order_id.id),
                         'partner_id': rec.pos_order_id.partner_id.id,
                         'line_ids': [
                             (0, 0, {
@@ -160,6 +161,7 @@ class StockPicking(models.Model):
                 move.action_post()
         return res
 
+
 class StockPickingType(models.Model):
     _name = 'stock.picking.type'
     _inherit = ['stock.picking.type', 'pos.load.mixin']
@@ -178,7 +180,9 @@ class StockPickingType(models.Model):
                 continue
             pos_config = self.env['pos.config'].sudo().search([('picking_type_id', '=', picking_type.id)], limit=1)
             if pos_config:
-                raise ValidationError(_("You cannot archive '%(picking_type)s' as it is used by POS configuration '%(config)s'.", picking_type=picking_type.name, config=pos_config.name))
+                raise ValidationError(
+                    _("You cannot archive '%(picking_type)s' as it is used by POS configuration '%(config)s'.",
+                      picking_type=picking_type.name, config=pos_config.name))
 
     @api.model
     def _load_pos_data_domain(self, data):
@@ -188,10 +192,12 @@ class StockPickingType(models.Model):
     def _load_pos_data_fields(self, config_id):
         return ['id', 'use_create_lots', 'use_existing_lots']
 
+
 class ProcurementGroup(models.Model):
     _inherit = 'procurement.group'
 
     pos_order_id = fields.Many2one('pos.order', 'POS Order')
+
 
 class StockMove(models.Model):
     _inherit = 'stock.move'
@@ -209,7 +215,8 @@ class StockMove(models.Model):
     @api.model
     def _prepare_lines_data_dict(self, order_lines):
         lines_data = defaultdict(dict)
-        for product_id, olines in groupby(sorted(order_lines, key=lambda l: l.product_id.id), key=lambda l: l.product_id.id):
+        for product_id, olines in groupby(sorted(order_lines, key=lambda l: l.product_id.id),
+                                          key=lambda l: l.product_id.id):
             lines_data[product_id].update({'order_lines': self.env['pos.order.line'].concat(*olines)})
         return lines_data
 
@@ -234,7 +241,7 @@ class StockMove(models.Model):
                 ('product_id', 'in', lines.product_id.ids),
                 ('name', 'in', lots.mapped('lot_name')),
             ])
-            #The previous search may return (product_id.id, lot_name) combinations that have no matching in lines.pack_lot_ids.
+            # The previous search may return (product_id.id, lot_name) combinations that have no matching in lines.pack_lot_ids.
             for lot in existing_lots:
                 if (lot.product_id.id, lot.name) in lots_data:
                     valid_lots |= lot
@@ -244,7 +251,8 @@ class StockMove(models.Model):
                 moves_product_ids = set(moves.mapped('product_id').ids)
                 missing_lot_values = []
                 for lot_product_id, lot_name in filter(lambda l: l[0] in moves_product_ids, lots_data):
-                    missing_lot_values.append({'company_id': self.company_id.id, 'product_id': lot_product_id, 'name': lot_name})
+                    missing_lot_values.append(
+                        {'company_id': self.company_id.id, 'product_id': lot_product_id, 'name': lot_name})
                 valid_lots |= self.env['stock.lot'].create(missing_lot_values)
         return valid_lots
 
@@ -252,7 +260,8 @@ class StockMove(models.Model):
         lines_data = self._prepare_lines_data_dict(related_order_lines)
         # Moves with product_id not in related_order_lines. This can happend e.g. when product_id has a phantom-type bom.
         moves_to_assign = self.filtered(lambda m: m.product_id.id not in lines_data or m.product_id.tracking == 'none'
-                                                  or (not m.picking_type_id.use_existing_lots and not m.picking_type_id.use_create_lots))
+                                                  or (
+                                                              not m.picking_type_id.use_existing_lots and not m.picking_type_id.use_create_lots))
 
         # Check for any conversion issues in the moves before setting quantities
         uoms_with_issues = set()
@@ -272,12 +281,13 @@ class StockMove(models.Model):
                 _("Conversion Error: The following unit of measure conversions result in a zero quantity due to rounding:")
             ]
             for uom_from, uom_to in uoms_with_issues:
-                error_message_lines.append(_(' - From "%(uom_from)s" to "%(uom_to)s"', uom_from=uom_from, uom_to=uom_to))
+                error_message_lines.append(
+                    _(' - From "%(uom_from)s" to "%(uom_to)s"', uom_from=uom_from, uom_to=uom_to))
 
             error_message_lines.append(
                 _("\nThis issue occurs because the quantity becomes zero after rounding during the conversion. "
-                "To fix this, adjust the conversion factors or rounding method to ensure that even the smallest quantity in the original unit "
-                "does not round down to zero in the target unit.")
+                  "To fix this, adjust the conversion factors or rounding method to ensure that even the smallest quantity in the original unit "
+                  "does not round down to zero in the target unit.")
             )
 
             raise UserError('\n'.join(error_message_lines))
@@ -297,11 +307,13 @@ class StockMove(models.Model):
                         qty = 1 if line.product_id.tracking == 'serial' else abs(line.qty)
                         ml_vals = dict(move._prepare_move_line_vals(qty))
                         if existing_lots:
-                            existing_lot = existing_lots.filtered_domain([('product_id', '=', line.product_id.id), ('name', '=', lot.lot_name)])
+                            existing_lot = existing_lots.filtered_domain(
+                                [('product_id', '=', line.product_id.id), ('name', '=', lot.lot_name)])
                             quant = self.env['stock.quant']
                             if existing_lot:
                                 quant = self.env['stock.quant'].search(
-                                    [('lot_id', '=', existing_lot.id), ('quantity', '>', '0.0'), ('location_id', 'child_of', move.location_id.id)],
+                                    [('lot_id', '=', existing_lot.id), ('quantity', '>', '0.0'),
+                                     ('location_id', 'child_of', move.location_id.id)],
                                     order='id desc',
                                     limit=1
                                 )
@@ -329,7 +341,8 @@ class StockMove(models.Model):
                         else:
                             qty = abs(line.qty)
                         if existing_lots:
-                            existing_lot = existing_lots.filtered_domain([('product_id', '=', line.product_id.id), ('name', '=', lot.lot_name)])
+                            existing_lot = existing_lots.filtered_domain(
+                                [('product_id', '=', line.product_id.id), ('name', '=', lot.lot_name)])
                             if existing_lot:
                                 move._update_reserved_quantity(qty, move.location_id, lot_id=existing_lot)
                                 continue

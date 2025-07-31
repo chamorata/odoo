@@ -1,6 +1,7 @@
+from odoo.addons.website_event_sale.tests.common import TestWebsiteEventSaleCommon
+
 from odoo import http
 from odoo.addons.base.tests.common import HttpCaseWithUserPortal
-from odoo.addons.website_event_sale.tests.common import TestWebsiteEventSaleCommon
 
 
 class TestWebsiteEventSale(HttpCaseWithUserPortal, TestWebsiteEventSaleCommon):
@@ -27,7 +28,8 @@ class TestWebsiteEventSale(HttpCaseWithUserPortal, TestWebsiteEventSaleCommon):
             '1-event_ticket_id': free_ticket.id,
             'csrf_token': http.Request.csrf_token(self),
         })
-        self.assertEqual(self.env['sale.order'].search([]), existing_so, "Sale order should not be created for the free tickets")
+        self.assertEqual(self.env['sale.order'].search([]), existing_so,
+                         "Sale order should not be created for the free tickets")
         self.assertEqual(len(self.event.registration_ids), event_registration_count + 1)
 
     def test_website_event_sale_free_paid_mix(self):

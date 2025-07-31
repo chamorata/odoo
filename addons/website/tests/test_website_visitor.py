@@ -1,13 +1,13 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import random
-
 from contextlib import contextmanager
 from datetime import datetime, timedelta
 from unittest.mock import patch
 
-from odoo.addons.base.tests.common import HttpCaseWithUserDemo
 from odoo.addons.website.models.website_visitor import WebsiteVisitor
+
+from odoo.addons.base.tests.common import HttpCaseWithUserDemo
 from odoo.tests import common, tagged, HttpCase
 
 
@@ -15,7 +15,6 @@ class MockVisitor(common.BaseCase):
 
     @contextmanager
     def mock_visitor_from_request(self, force_visitor=False):
-
         def _get_visitor_from_request(model, *args, **kwargs):
             return force_visitor
 
@@ -175,7 +174,7 @@ class WebsiteVisitorTestsCommon(MockVisitor, HttpCaseWithUserDemo):
             'lang_id': self.env.ref('base.lang_en').id,
             'country_id': self.env.ref('base.be').id,
             'website_id': 1,
-            'access_token': '%032x' % random.randrange(16**32),
+            'access_token': '%032x' % random.randrange(16 ** 32),
             'website_track_ids': [(0, 0, {
                 'page_id': self.tracked_page_2.id,
                 'url': self.tracked_page_2.url
@@ -184,7 +183,6 @@ class WebsiteVisitorTestsCommon(MockVisitor, HttpCaseWithUserDemo):
 
 
 class WebsiteVisitorTests(WebsiteVisitorTestsCommon):
-
     readonly_enabled = False
 
     def test_visitor_creation_on_tracked_page(self):

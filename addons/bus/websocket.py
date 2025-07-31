@@ -5,36 +5,35 @@ import hashlib
 import json
 import logging
 import os
-import psycopg2
 import random
+import selectors
 import socket
 import struct
-import selectors
 import threading
 import time
 from collections import defaultdict, deque
 from contextlib import closing, suppress
 from enum import IntEnum
-from psycopg2.pool import PoolError
 from urllib.parse import urlparse
 from weakref import WeakSet
 
-from werkzeug.local import LocalStack
+import psycopg2
+from psycopg2.pool import PoolError
 from werkzeug.datastructures import ImmutableMultiDict, MultiDict
 from werkzeug.exceptions import BadRequest, HTTPException, ServiceUnavailable
+from werkzeug.local import LocalStack
 
 import odoo
 from odoo import api, modules
-from .models.bus import dispatch
 from odoo.http import root, Request, Response, SessionExpiredException, get_default_session
 from odoo.modules.registry import Registry
 from odoo.service import model as service_model
-from odoo.service.server import CommonServer
 from odoo.service.security import check_session
+from odoo.service.server import CommonServer
 from odoo.tools import config, lazy_property
+from .models.bus import dispatch
 
 _logger = logging.getLogger(__name__)
-
 
 MAX_TRY_ON_POOL_ERROR = 10
 DELAY_ON_POOL_ERROR = 0.03
@@ -184,13 +183,13 @@ _XOR_TABLE = [bytes(a ^ b for a in range(256)) for b in range(256)]
 
 class Frame:
     def __init__(
-        self,
-        opcode,
-        payload=b'',
-        fin=True,
-        rsv1=False,
-        rsv2=False,
-        rsv3=False
+            self,
+            opcode,
+            payload=b'',
+            fin=True,
+            rsv1=False,
+            rsv2=False,
+            rsv3=False
     ):
         self.opcode = opcode
         self.payload = payload
@@ -519,11 +518,11 @@ class Websocket:
 
         output = bytearray()
         first_byte = (
-              (0b10000000 if frame.fin else 0)
-            | (0b01000000 if frame.rsv1 else 0)
-            | (0b00100000 if frame.rsv2 else 0)
-            | (0b00010000 if frame.rsv3 else 0)
-            | frame.opcode
+                (0b10000000 if frame.fin else 0)
+                | (0b01000000 if frame.rsv1 else 0)
+                | (0b00100000 if frame.rsv2 else 0)
+                | (0b00010000 if frame.rsv3 else 0)
+                | frame.opcode
         )
         payload_length = len(frame.payload)
         if payload_length < 126:
@@ -709,7 +708,7 @@ class Websocket:
                 break
         if last_index != -1:
             self._last_notif_sent_id = self._notif_history[last_index][0]
-            self._notif_history = self._notif_history[last_index + 1 :]
+            self._notif_history = self._notif_history[last_index + 1:]
         self._send(notifications)
 
 
@@ -739,7 +738,7 @@ class TimeoutManager:
         # Custom keep alive timeout for each TimeoutManager to avoid multiple
         # connections timing out at the same time.
         self._keep_alive_timeout = (
-            self.KEEP_ALIVE_TIMEOUT + random.uniform(0, self.KEEP_ALIVE_TIMEOUT / 2)
+                self.KEEP_ALIVE_TIMEOUT + random.uniform(0, self.KEEP_ALIVE_TIMEOUT / 2)
         )
         self.timeout_reason = None
         # Start time recorded when we started awaiting an answer to a
@@ -790,6 +789,7 @@ class TimeoutManager:
 _wsrequest_stack = LocalStack()
 wsrequest = _wsrequest_stack()
 
+
 class WebsocketRequest:
     def __init__(self, db, httprequest, websocket):
         self.db = db
@@ -824,7 +824,7 @@ class WebsocketRequest:
             threading.current_thread().dbname = self.registry.db_name
             self.registry.check_signaling()
         except (
-            AttributeError, psycopg2.OperationalError, psycopg2.ProgrammingError
+                AttributeError, psycopg2.OperationalError, psycopg2.ProgrammingError
         ) as exc:
             raise InvalidDatabaseException() from exc
 
@@ -932,8 +932,6 @@ class WebsocketConnectionHandler:
             # HTTPException class since they are valid responses.
             _logger.error(exc)
             raise
-
-
 
     @classmethod
     def _get_handshake_response(cls, headers):

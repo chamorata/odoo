@@ -3,7 +3,7 @@
 
 from collections import defaultdict
 
-from odoo import api, fields, models, _
+from odoo import api, fields, models
 from odoo.tools.sql import column_exists, create_column
 
 
@@ -29,7 +29,7 @@ class StockMove(models.Model):
         rslt = super(StockMove, self)._get_related_invoices()
         invoices = self.mapped('picking_id.sale_id.invoice_ids').filtered(lambda x: x.state == 'posted')
         rslt += invoices
-        #rslt += invoices.mapped('reverse_entry_ids')
+        # rslt += invoices.mapped('reverse_entry_ids')
         return rslt
 
     def _get_source_document(self):
@@ -82,7 +82,8 @@ class StockRule(models.Model):
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
-    sale_id = fields.Many2one('sale.order', compute="_compute_sale_id", inverse="_set_sale_id", string="Sales Order", store=True, index='btree_not_null')
+    sale_id = fields.Many2one('sale.order', compute="_compute_sale_id", inverse="_set_sale_id", string="Sales Order",
+                              store=True, index='btree_not_null')
 
     @api.depends('group_id')
     def _compute_sale_id(self):
@@ -124,8 +125,8 @@ class StockPicking(models.Model):
             # Creates new SO line only when pickings linked to a sale order and
             # for moves with qty. done and not already linked to a SO line.
             if not sale_order or move.sale_line_id or not move.picked or not (
-                (move.location_dest_id.usage in ['customer', 'transit'] and not move.move_dest_ids)
-                or (move.location_id.usage == 'customer' and move.to_refund)
+                    (move.location_dest_id.usage in ['customer', 'transit'] and not move.move_dest_ids)
+                    or (move.location_id.usage == 'customer' and move.to_refund)
             ):
                 continue
             product = move.product_id
@@ -153,7 +154,8 @@ class StockPicking(models.Model):
                 so_line_vals['price_unit'] = 0
             # New lines should be added at the bottom of the SO (higher sequence number)
             if not so_line:
-                so_line_vals['sequence'] = max(sale_order.order_line.mapped('sequence')) + len(sale_order_lines_vals) + 1
+                so_line_vals['sequence'] = max(sale_order.order_line.mapped('sequence')) + len(
+                    sale_order_lines_vals) + 1
             sale_order_lines_vals.append(so_line_vals)
 
         if sale_order_lines_vals:
@@ -184,7 +186,8 @@ class StockPicking(models.Model):
             :return: an html string with all the information encoded.
             :rtype: str
             """
-            origin_moves = self.env['stock.move'].browse([move.id for move_orig in moves_information.values() for move in move_orig[0]])
+            origin_moves = self.env['stock.move'].browse(
+                [move.id for move_orig in moves_information.values() for move in move_orig[0]])
             origin_picking = origin_moves.mapped('picking_id')
             values = {
                 'origin_moves': origin_moves,

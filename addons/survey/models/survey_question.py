@@ -63,13 +63,15 @@ class SurveyQuestion(models.Model):
     description = fields.Html(
         'Description', translate=True, sanitize=True, sanitize_overridable=True,
         help="Use this field to add additional explanations about your question or to illustrate it with pictures or a video")
-    question_placeholder = fields.Char("Placeholder", translate=True, compute="_compute_question_placeholder", store=True, readonly=False)
+    question_placeholder = fields.Char("Placeholder", translate=True, compute="_compute_question_placeholder",
+                                       store=True, readonly=False)
     background_image = fields.Image("Background Image", compute="_compute_background_image", store=True, readonly=False)
     background_image_url = fields.Char("Background Url", compute="_compute_background_image_url")
     survey_id = fields.Many2one('survey.survey', string='Survey', ondelete='cascade')
     scoring_type = fields.Selection(related='survey_id.scoring_type', string='Scoring Type', readonly=True)
     sequence = fields.Integer('Sequence', default=10)
-    session_available = fields.Boolean(related='survey_id.session_available', string='Live Session available', readonly=True)
+    session_available = fields.Boolean(related='survey_id.session_available', string='Live Session available',
+                                       readonly=True)
     # page specific
     is_page = fields.Boolean('Is a page?')
     question_ids = fields.One2many('survey.question', string='Questions', compute="_compute_question_ids")
@@ -129,7 +131,7 @@ class SurveyQuestion(models.Model):
     scale_max_label = fields.Char("Scale Maximum Label", translate=True)
     # -- display & timing options
     is_time_limited = fields.Boolean("The question is limited in time",
-        help="Currently only supported for live sessions.")
+                                     help="Currently only supported for live sessions.")
     is_time_customized = fields.Boolean("Customized speed rewards")
     time_limit = fields.Integer("Time limit (seconds)")
     # -- comments (simple choice, multiple choice, matrix (without count as an answer))
@@ -137,7 +139,8 @@ class SurveyQuestion(models.Model):
     comments_message = fields.Char('Comment Message', translate=True)
     comment_count_as_answer = fields.Boolean('Comment is an answer')
     # question validation
-    validation_required = fields.Boolean('Validate entry', compute='_compute_validation_required', readonly=False, store=True)
+    validation_required = fields.Boolean('Validate entry', compute='_compute_validation_required', readonly=False,
+                                         store=True)
     validation_email = fields.Boolean('Input must be an email')
     validation_length_min = fields.Integer('Minimum Text Length', default=0)
     validation_length_max = fields.Integer('Maximum Text Length', default=0)
@@ -161,7 +164,8 @@ class SurveyQuestion(models.Model):
         store=False, help="Questions containing the triggering answer(s) to display the current question.")
 
     allowed_triggering_question_ids = fields.Many2many(
-        'survey.question', string="Allowed Triggering Questions", copy=False, compute="_compute_allowed_triggering_question_ids")
+        'survey.question', string="Allowed Triggering Questions", copy=False,
+        compute="_compute_allowed_triggering_question_ids")
     is_placed_before_trigger = fields.Boolean(
         string='Is misplaced?', help="Is this question placed before any of its trigger questions?",
         compute="_compute_allowed_triggering_question_ids")
@@ -181,19 +185,27 @@ class SurveyQuestion(models.Model):
     _sql_constraints = [
         ('positive_len_min', 'CHECK (validation_length_min >= 0)', 'A length must be positive!'),
         ('positive_len_max', 'CHECK (validation_length_max >= 0)', 'A length must be positive!'),
-        ('validation_length', 'CHECK (validation_length_min <= validation_length_max)', 'Max length cannot be smaller than min length!'),
-        ('validation_float', 'CHECK (validation_min_float_value <= validation_max_float_value)', 'Max value cannot be smaller than min value!'),
-        ('validation_date', 'CHECK (validation_min_date <= validation_max_date)', 'Max date cannot be smaller than min date!'),
-        ('validation_datetime', 'CHECK (validation_min_datetime <= validation_max_datetime)', 'Max datetime cannot be smaller than min datetime!'),
-        ('positive_answer_score', 'CHECK (answer_score >= 0)', 'An answer score for a non-multiple choice question cannot be negative!'),
-        ('scored_datetime_have_answers', "CHECK (is_scored_question != True OR question_type != 'datetime' OR answer_datetime is not null)",
-            'All "Is a scored question = True" and "Question Type: Datetime" questions need an answer'),
-        ('scored_date_have_answers', "CHECK (is_scored_question != True OR question_type != 'date' OR answer_date is not null)",
-            'All "Is a scored question = True" and "Question Type: Date" questions need an answer'),
+        ('validation_length', 'CHECK (validation_length_min <= validation_length_max)',
+         'Max length cannot be smaller than min length!'),
+        ('validation_float', 'CHECK (validation_min_float_value <= validation_max_float_value)',
+         'Max value cannot be smaller than min value!'),
+        ('validation_date', 'CHECK (validation_min_date <= validation_max_date)',
+         'Max date cannot be smaller than min date!'),
+        ('validation_datetime', 'CHECK (validation_min_datetime <= validation_max_datetime)',
+         'Max datetime cannot be smaller than min datetime!'),
+        ('positive_answer_score', 'CHECK (answer_score >= 0)',
+         'An answer score for a non-multiple choice question cannot be negative!'),
+        ('scored_datetime_have_answers',
+         "CHECK (is_scored_question != True OR question_type != 'datetime' OR answer_datetime is not null)",
+         'All "Is a scored question = True" and "Question Type: Datetime" questions need an answer'),
+        ('scored_date_have_answers',
+         "CHECK (is_scored_question != True OR question_type != 'date' OR answer_date is not null)",
+         'All "Is a scored question = True" and "Question Type: Date" questions need an answer'),
         ('scale', "CHECK (question_type != 'scale' OR (scale_min >= 0 AND scale_max <= 10 AND scale_min < scale_max))",
-            'The scale must be a growing non-empty range between 0 and 10 (inclusive)'),
-        ('is_time_limited_have_time_limit', "CHECK (is_time_limited != TRUE OR time_limit IS NOT NULL AND time_limit > 0)",
-            'All time-limited questions need a positive time limit'),
+         'The scale must be a growing non-empty range between 0 and 10 (inclusive)'),
+        ('is_time_limited_have_time_limit',
+         "CHECK (is_time_limited != TRUE OR time_limit IS NOT NULL AND time_limit > 0)",
+         'All time-limited questions need a positive time limit'),
     ]
 
     # -------------------------------------------------------------------------
@@ -204,7 +216,8 @@ class SurveyQuestion(models.Model):
     def _check_question_type_for_pages(self):
         invalid_pages = self.filtered(lambda question: question.is_page and question.question_type)
         if invalid_pages:
-            raise ValidationError(_("Question type should be empty for these pages: %s", ', '.join(invalid_pages.mapped('title'))))
+            raise ValidationError(
+                _("Question type should be empty for these pages: %s", ', '.join(invalid_pages.mapped('title'))))
 
     # -------------------------------------------------------------------------
     # COMPUTE METHODS
@@ -262,7 +275,7 @@ class SurveyQuestion(models.Model):
     def _compute_question_ids(self):
         for question in self:
             if question.is_page:
-                question.question_ids = question.survey_id.question_ids\
+                question.question_ids = question.survey_id.question_ids \
                     .filtered(lambda q: q.page_id == question).sorted(lambda q: q._index())
             else:
                 question.question_ids = self.env['survey.question']
@@ -297,7 +310,8 @@ class SurveyQuestion(models.Model):
     @api.depends('question_type')
     def _compute_validation_required(self):
         for question in self:
-            if not question.validation_required or question.question_type not in ['char_box', 'numerical_box', 'date', 'datetime']:
+            if not question.validation_required or question.question_type not in ['char_box', 'numerical_box', 'date',
+                                                                                  'datetime']:
                 question.validation_required = False
 
     @api.depends('survey_id', 'survey_id.question_ids', 'triggering_answer_ids')
@@ -333,7 +347,7 @@ class SurveyQuestion(models.Model):
 
             question.allowed_triggering_question_ids = possible_trigger_questions.filtered(
                 lambda q: q.survey_id.id == question.survey_id._origin.id
-                and (q.sequence < question_sequence or q.sequence == question_sequence and q.id < question_id)
+                          and (q.sequence < question_sequence or q.sequence == question_sequence and q.id < question_id)
             )
             question.is_placed_before_trigger = bool(
                 set(question.triggering_answer_ids.question_id.ids)
@@ -345,7 +359,8 @@ class SurveyQuestion(models.Model):
         for question in self:
             question.triggering_question_ids = question.triggering_answer_ids.question_id
 
-    @api.depends('question_type', 'scoring_type', 'answer_date', 'answer_datetime', 'answer_numerical_box', 'suggested_answer_ids.is_correct')
+    @api.depends('question_type', 'scoring_type', 'answer_date', 'answer_datetime', 'answer_numerical_box',
+                 'suggested_answer_ids.is_correct')
     def _compute_is_scored_question(self):
         """ Computes whether a question "is scored" or not. Handles following cases:
           - inconsistent Boolean=None edge case that breaks tests => False
@@ -398,8 +413,8 @@ class SurveyQuestion(models.Model):
         questions = super().create(vals_list)
         questions.filtered(
             lambda q: q.survey_id
-            and (q.survey_id.session_speed_rating != q.is_time_limited
-                 or q.is_time_limited and q.survey_id.session_speed_rating_time_limit != q.time_limit)
+                      and (q.survey_id.session_speed_rating != q.is_time_limited
+                           or q.is_time_limited and q.survey_id.session_speed_rating_time_limit != q.time_limit)
         ).is_time_customized = True
         return questions
 
@@ -474,7 +489,7 @@ class SurveyQuestion(models.Model):
             # Answer is not in the right range
             with contextlib.suppress(Exception):
                 if not (self.validation_min_float_value <= floatanswer <= self.validation_max_float_value):
-                    return {self.id: self.validation_error_msg  or _('The answer you entered is not valid.')}
+                    return {self.id: self.validation_error_msg or _('The answer you entered is not valid.')}
         return {}
 
     def _validate_date(self, answer):
@@ -495,8 +510,8 @@ class SurveyQuestion(models.Model):
                 max_date = fields.Date.from_string(self.validation_max_date)
                 dateanswer = fields.Date.from_string(answer)
 
-            if (min_date and max_date and not (min_date <= dateanswer <= max_date))\
-                    or (min_date and not min_date <= dateanswer)\
+            if (min_date and max_date and not (min_date <= dateanswer <= max_date)) \
+                    or (min_date and not min_date <= dateanswer) \
                     or (max_date and not dateanswer <= max_date):
                 return {self.id: self.validation_error_msg or _('The answer you entered is not valid.')}
         return {}
@@ -558,7 +573,7 @@ class SurveyQuestion(models.Model):
         customized_questions = self - non_time_customized_questions
         back_to_default_questions = customized_questions.filtered(
             lambda q: q.is_time_limited == q.survey_id.session_speed_rating
-            and (q.is_time_limited is False or q.time_limit == q.survey_id.session_speed_rating_time_limit))
+                      and (q.is_time_limited is False or q.time_limit == q.survey_id.session_speed_rating_time_limit))
         back_to_default_questions.is_time_customized = False
 
     # ------------------------------------------------------------
@@ -580,9 +595,9 @@ class SurveyQuestion(models.Model):
             if question.question_type in ['simple_choice', 'multiple_choice', 'matrix']:
                 answer_lines = all_lines.filtered(
                     lambda line: line.answer_type == 'suggestion' or (
-                        line.skipped and not line.answer_type) or (
-                        line.answer_type == 'char_box' and question.comment_count_as_answer)
-                    )
+                            line.skipped and not line.answer_type) or (
+                                         line.answer_type == 'char_box' and question.comment_count_as_answer)
+                )
                 comment_line_ids = all_lines.filtered(lambda line: line.answer_type == 'char_box')
             else:
                 answer_lines = all_lines
@@ -629,8 +644,8 @@ class SurveyQuestion(models.Model):
 
         count_data = dict.fromkeys(suggested_answers, 0)
         for line in user_input_lines:
-            if line.suggested_answer_id in count_data\
-               or (line.value_char_box and self.comment_count_as_answer):
+            if line.suggested_answer_id in count_data \
+                    or (line.value_char_box and self.comment_count_as_answer):
                 count_data[line.suggested_answer_id] += 1
 
         table_data = [{
@@ -638,12 +653,12 @@ class SurveyQuestion(models.Model):
             'suggested_answer': suggested_answer,
             'count': count_data[suggested_answer],
             'count_text': self.env._("%s Votes", count_data[suggested_answer]),
-            }
+        }
             for suggested_answer in suggested_answers]
         graph_data = [{
             'text': self.env._('Other (see comments)') if not suggested_answer else suggested_answer.value_label,
             'count': count_data[suggested_answer]
-            }
+        }
             for suggested_answer in suggested_answers]
 
         return table_data, graph_data
@@ -669,7 +684,7 @@ class SurveyQuestion(models.Model):
             'values': [{
                 'text': row.value,
                 'count': count_data[(row, suggested_answer)]
-                }
+            }
                 for row in matrix_rows
             ]
         } for suggested_answer in suggested_answers]
@@ -717,7 +732,8 @@ class SurveyQuestion(models.Model):
         right_answers = self.suggested_answer_ids.filtered(lambda label: label.is_correct)
         if self.question_type == 'multiple_choice':
             for user_input, lines in tools.groupby(user_input_lines, operator.itemgetter('user_input_id')):
-                user_input_answers = self.env['survey.user_input.line'].concat(*lines).filtered(lambda l: l.answer_is_correct).mapped('suggested_answer_id')
+                user_input_answers = self.env['survey.user_input.line'].concat(*lines).filtered(
+                    lambda l: l.answer_is_correct).mapped('suggested_answer_id')
                 if user_input_answers and user_input_answers < right_answers:
                     partial_inputs += user_input
                 elif user_input_answers:
@@ -744,7 +760,8 @@ class SurveyQuestion(models.Model):
             'common_lines': collections.Counter(
                 user_input_lines.filtered(lambda line: not line.skipped).mapped('value_%s' % self.question_type)
             ).most_common(5),
-            'right_inputs_count': len(user_input_lines.filtered(lambda line: line.answer_is_correct).mapped('user_input_id'))
+            'right_inputs_count': len(
+                user_input_lines.filtered(lambda line: line.answer_is_correct).mapped('user_input_id'))
         }
 
     # ------------------------------------------------------------
@@ -763,7 +780,7 @@ class SurveyQuestion(models.Model):
             suggested_answers_data = self.env['survey.question.answer'].search_read(
                 [('question_id', 'in', choices_questions.ids), ('is_correct', '=', True)],
                 ['question_id', 'id'],
-                load='', # prevent computing display_names
+                load='',  # prevent computing display_names
             )
             for data in suggested_answers_data:
                 if not data.get('id'):
@@ -782,6 +799,7 @@ class SurveyQuestion(models.Model):
             correct_answers[question.id] = answer
 
         return correct_answers
+
 
 class SurveyQuestionAnswer(models.Model):
     """ A preconfigured answer for a question. This model stores values used
@@ -802,7 +820,8 @@ class SurveyQuestionAnswer(models.Model):
 
     # question and question related fields
     question_id = fields.Many2one('survey.question', string='Question', ondelete='cascade', index='btree_not_null')
-    matrix_question_id = fields.Many2one('survey.question', string='Question (as matrix row)', ondelete='cascade', index='btree_not_null')
+    matrix_question_id = fields.Many2one('survey.question', string='Question (as matrix row)', ondelete='cascade',
+                                         index='btree_not_null')
     question_type = fields.Selection(related='question_id.question_type')
     sequence = fields.Integer('Label Sequence order', default=10)
     scoring_type = fields.Selection(related='question_id.scoring_type')
@@ -814,7 +833,8 @@ class SurveyQuestionAnswer(models.Model):
                               help="Answer label as either the value itself if not empty "
                                    "or a letter representing the index of the answer otherwise.")
     is_correct = fields.Boolean('Correct')
-    answer_score = fields.Float('Score', help="A positive score indicates a correct choice; a negative or null score indicates a wrong answer")
+    answer_score = fields.Float('Score',
+                                help="A positive score indicates a correct choice; a negative or null score indicates a wrong answer")
 
     _sql_constraints = [
         ('value_not_empty', "CHECK (value IS NOT NULL OR value_image_filename IS NOT NULL)",
@@ -866,7 +886,8 @@ class SurveyQuestionAnswer(models.Model):
     def _get_answer_matching_domain(self, row_id=False):
         self.ensure_one()
         if self.question_type == "matrix":
-            return ['&', '&', ('question_id', '=', self.question_id.id), ('matrix_row_id', '=', row_id), ('suggested_answer_id', '=', self.id)]
+            return ['&', '&', ('question_id', '=', self.question_id.id), ('matrix_row_id', '=', row_id),
+                    ('suggested_answer_id', '=', self.id)]
         elif self.question_type in ('multiple_choice', 'simple_choice'):
             return ['&', ('question_id', '=', self.question_id.id), ('suggested_answer_id', '=', self.id)]
         return []

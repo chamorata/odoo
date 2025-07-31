@@ -2,8 +2,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import odoo.tests
-from odoo.tools import mute_logger
 from odoo.addons.base.tests.common import HttpCaseWithUserDemo
+from odoo.tools import mute_logger
 
 
 @odoo.tests.common.tagged('post_install', '-at_install')
@@ -18,7 +18,7 @@ class TestUi(HttpCaseWithUserDemo):
         # "fall off" into the "o_extra_menu_items" section if the window is
         # too small or there are too many items preceding it in the tests menu
         self.start_tour("/odoo/action-test_new_api.action_discussions",
-            'widget_x2many', login="admin", timeout=120)
+                        'widget_x2many', login="admin", timeout=120)
 
 
 @odoo.tests.tagged('-at_install', 'post_install')
@@ -38,4 +38,4 @@ class TestUiTranslation(odoo.tests.HttpCase):
         # the message is translated (_load_module_terms is also) rollbacked.
         # Test individually the external id and loading of translation.
         self.start_tour("/odoo/action-test_new_api.action_categories",
-            'sql_constaint', login="admin")
+                        'sql_constaint', login="admin")

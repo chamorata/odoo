@@ -4,6 +4,7 @@
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 
+
 class AccountJournal(models.Model):
     _inherit = 'account.journal'
 
@@ -17,15 +18,16 @@ class AccountJournal(models.Model):
 
     def _check_no_active_payments(self):
         hanging_journal_entries = self.env['pos.payment'].search(
-        [
-            ('payment_method_id', 'in', self.pos_payment_method_ids.ids),
-            ('session_id.state', '=', 'opened')
-        ], limit=1)
-        if(hanging_journal_entries):
-            raise ValidationError(_("This journal is associated with payment method %(payment_method)s that is being used by order %(pos_order)s in the active pos session %(pos_session)s",
-                payment_method=hanging_journal_entries.payment_method_id.name,
-                pos_order=hanging_journal_entries.pos_order_id.name,
-                pos_session=hanging_journal_entries.session_id.name))
+            [
+                ('payment_method_id', 'in', self.pos_payment_method_ids.ids),
+                ('session_id.state', '=', 'opened')
+            ], limit=1)
+        if (hanging_journal_entries):
+            raise ValidationError(
+                _("This journal is associated with payment method %(payment_method)s that is being used by order %(pos_order)s in the active pos session %(pos_session)s",
+                  payment_method=hanging_journal_entries.payment_method_id.name,
+                  pos_order=hanging_journal_entries.pos_order_id.name,
+                  pos_session=hanging_journal_entries.session_id.name))
 
     @api.ondelete(at_uninstall=False)
     def _unlink_journal_except_with_active_payments(self):

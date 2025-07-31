@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <templates>
     <t
-        t-name="sale.ListRenderer.RecordRow"
-        t-inherit="web.ListRenderer.RecordRow"
-        t-inherit-mode="primary"
+            t-name="sale.ListRenderer.RecordRow"
+            t-inherit="web.ListRenderer.RecordRow"
+            t-inherit-mode="primary"
     >
         <!-- Remove the drag-and-drop handle for combo lines and combo item lines. -->
         <Field position="attributes">
@@ -11,7 +11,7 @@
                 !((isCombo(record) || isComboItem(record)) &amp;&amp; column.widget === 'handle')
             </attribute>
         </Field>
-         <!-- Remove the "delete" button for combo item lines. -->
+        <!-- Remove the "delete" button for combo item lines. -->
         <xpath expr="//td[hasclass('o_list_record_remove')]" position="attributes">
             <attribute name="t-att-class">{'d-none': isComboItem(record)}</attribute>
         </xpath>

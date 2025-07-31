@@ -16,7 +16,9 @@ from odoo.exceptions import AccessDenied, UserError
 from odoo.addons.auth_signup.models.res_users import SignupError
 
 from odoo.addons import base
+
 base.models.res_users.USER_PRIVATE_FIELDS.append('oauth_access_token')
+
 
 class ResUsers(models.Model):
     _inherit = 'res.users'
@@ -26,7 +28,8 @@ class ResUsers(models.Model):
     oauth_access_token = fields.Char(string='OAuth Access Token', readonly=True, copy=False, prefetch=False)
 
     _sql_constraints = [
-        ('uniq_users_oauth_provider_oauth_uid', 'unique(oauth_provider_id, oauth_uid)', 'OAuth UID must be unique per provider'),
+        ('uniq_users_oauth_provider_oauth_uid', 'unique(oauth_provider_id, oauth_uid)',
+         'OAuth UID must be unique per provider'),
     ]
 
     def _auth_oauth_rpc(self, endpoint, access_token):
@@ -35,7 +38,7 @@ class ResUsers(models.Model):
         else:
             response = requests.get(endpoint, params={'access_token': access_token}, timeout=10)
 
-        if response.ok: # nb: could be a successful failure
+        if response.ok:  # nb: could be a successful failure
             return response.json()
 
         auth_challenge = parse_auth(response.headers.get("WWW-Authenticate"))
@@ -60,9 +63,9 @@ class ResUsers(models.Model):
         subject = next(filter(None, [
             validation.pop(key, None)
             for key in [
-                'sub', # standard
-                'id', # google v1 userinfo, facebook opengraph
-                'user_id', # google tokeninfo, odoo (tokeninfo)
+                'sub',  # standard
+                'id',  # google v1 userinfo, facebook opengraph
+                'user_id',  # google tokeninfo, odoo (tokeninfo)
             ]
         ]), None)
         if not subject:

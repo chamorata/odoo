@@ -11,9 +11,13 @@
                 <div class="row o_website_sale_image_modal">
                     <div class="col-md-6 col-xl-5">
                         <label for="name" string="Image Name"/>
-                        <h2><field name="name" placeholder="Image Name"/></h2>
-                        <label for="video_url" string="Video URL"/><br/>
-                        <field name="video_url"/><br/>
+                        <h2>
+                            <field name="name" placeholder="Image Name"/>
+                        </h2>
+                        <label for="video_url" string="Video URL"/>
+                        <br/>
+                        <field name="video_url"/>
+                        <br/>
                     </div>
                     <div class="col-md-6 col-xl-7 text-center o_website_sale_image_modal_container">
                         <div class="row">
@@ -59,13 +63,15 @@
                             </t>
                             <!-- below 1000 Kb: decent -->
                             <t t-elif="record.image_1920.raw_value.length &lt; 1000*1000">
-                                <t t-set="size_status" t-value="'text-bg-warning'" />
+                                <t t-set="size_status" t-value="'text-bg-warning'"/>
                                 <t t-set="message">Huge file size. The image should be optimized/reduced.</t>
                             </t>
                             <!-- above 1000 Kb: bad -->
                             <t t-else="1">
                                 <t t-set="size_status" t-value="'text-bg-danger'"/>
-                                <t t-set="message">Optimization required! Reduce the image size or increase your compression settings.</t>
+                                <t t-set="message">Optimization required! Reduce the image size or increase your
+                                    compression settings.
+                                </t>
                             </t>
                             <span t-attf-class="badge #{size_status} o_product_image_size" t-att-title="message"></span>
                         </div>

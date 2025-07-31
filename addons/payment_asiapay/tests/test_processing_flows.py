@@ -2,14 +2,13 @@
 
 from unittest.mock import patch
 
+from odoo.addons.payment.tests.http_common import PaymentHttpCommon
+from odoo.addons.payment_asiapay.controllers.main import AsiaPayController
+from odoo.addons.payment_asiapay.tests.common import AsiaPayCommon
 from werkzeug.exceptions import Forbidden
 
 from odoo.tests import tagged
 from odoo.tools import mute_logger
-
-from odoo.addons.payment.tests.http_common import PaymentHttpCommon
-from odoo.addons.payment_asiapay.controllers.main import AsiaPayController
-from odoo.addons.payment_asiapay.tests.common import AsiaPayCommon
 
 
 @tagged('post_install', '-at_install')
@@ -22,8 +21,8 @@ class TestProcessingFlows(AsiaPayCommon, PaymentHttpCommon):
         self._create_transaction('redirect')
         url = self._build_url(AsiaPayController._webhook_url)
         with patch(
-            'odoo.addons.payment_asiapay.controllers.main.AsiaPayController.'
-            '_verify_notification_signature'
+                'odoo.addons.payment_asiapay.controllers.main.AsiaPayController.'
+                '_verify_notification_signature'
         ), patch(
             'odoo.addons.payment.models.payment_transaction.PaymentTransaction'
             '._handle_notification_data'
@@ -37,8 +36,8 @@ class TestProcessingFlows(AsiaPayCommon, PaymentHttpCommon):
         self._create_transaction('redirect')
         url = self._build_url(AsiaPayController._webhook_url)
         with patch(
-            'odoo.addons.payment_asiapay.controllers.main.AsiaPayController'
-            '._verify_notification_signature'
+                'odoo.addons.payment_asiapay.controllers.main.AsiaPayController'
+                '._verify_notification_signature'
         ) as signature_check_mock, patch(
             'odoo.addons.payment.models.payment_transaction.PaymentTransaction'
             '._handle_notification_data'

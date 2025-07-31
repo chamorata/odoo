@@ -24,7 +24,9 @@
                     <record id="account_tax_report_line_sn_operations_base" model="account.report.expression">
                         <field name="label">base</field>
                         <field name="engine">aggregation</field>
-                        <field name="formula">SN_Export.base + SN_NON_TAXED.base + SN_SUSPENSION.base + SN_EXEMPT.base + SN_SELF.base + SN_TAXABLE.base</field>
+                        <field name="formula">SN_Export.base + SN_NON_TAXED.base + SN_SUSPENSION.base + SN_EXEMPT.base +
+                            SN_SELF.base + SN_TAXABLE.base
+                        </field>
                     </record>
                     <record id="account_tax_report_line_sn_operations_tax" model="account.report.expression">
                         <field name="label">tax</field>
@@ -81,7 +83,8 @@
                         <field name="name">Self delivery or service</field>
                         <field name="code">SN_SELF</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_sn_self_delivery_base" model="account.report.expression">
+                            <record id="account_tax_report_line_sn_self_delivery_base"
+                                    model="account.report.expression">
                                 <field name="label">base</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">sale_self</field>
@@ -108,12 +111,14 @@
                                 <field name="name">Taxable - normal rate</field>
                                 <field name="code">SN_TAXABLE_18</field>
                                 <field name="expression_ids">
-                                    <record id="account_tax_report_line_sn_taxable_18_base" model="account.report.expression">
+                                    <record id="account_tax_report_line_sn_taxable_18_base"
+                                            model="account.report.expression">
                                         <field name="label">base</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">base_sale_18</field>
                                     </record>
-                                    <record id="account_tax_report_line_sn_taxable_18_tax" model="account.report.expression">
+                                    <record id="account_tax_report_line_sn_taxable_18_tax"
+                                            model="account.report.expression">
                                         <field name="label">tax</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">tax_sale_18</field>
@@ -124,12 +129,14 @@
                                 <field name="name">Taxable - reduced rate</field>
                                 <field name="code">SN_TAXABLE_10</field>
                                 <field name="expression_ids">
-                                    <record id="account_tax_report_line_sn_taxable_10_base" model="account.report.expression">
+                                    <record id="account_tax_report_line_sn_taxable_10_base"
+                                            model="account.report.expression">
                                         <field name="label">base</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">base_sale_10</field>
                                     </record>
-                                    <record id="account_tax_report_line_sn_taxable_10_tax" model="account.report.expression">
+                                    <record id="account_tax_report_line_sn_taxable_10_tax"
+                                            model="account.report.expression">
                                         <field name="label">tax</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">tax_sale_10</field>
@@ -152,7 +159,9 @@
                     <record id="account_tax_report_line_sn_deductible_tax" model="account.report.expression">
                         <field name="label">tax</field>
                         <field name="engine">aggregation</field>
-                        <field name="formula">SN_PREPAY.tax + SN_IMPORT.tax + SN_DOMESTIC.tax + SN_REIMBURSEMENT_ACCEPTED.tax + SN_CREDIT.tax</field>
+                        <field name="formula">SN_PREPAY.tax + SN_IMPORT.tax + SN_DOMESTIC.tax +
+                            SN_REIMBURSEMENT_ACCEPTED.tax + SN_CREDIT.tax
+                        </field>
                     </record>
                 </field>
                 <field name="children_ids">
@@ -176,12 +185,14 @@
                                 <field name="name">Withholding</field>
                                 <field name="code">SN_WITHHOLDING</field>
                                 <field name="expression_ids">
-                                    <record id="account_tax_report_line_sn_withholding_base" model="account.report.expression">
+                                    <record id="account_tax_report_line_sn_withholding_base"
+                                            model="account.report.expression">
                                         <field name="label">base</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">base_withholding</field>
                                     </record>
-                                    <record id="account_tax_report_line_sn_withholding_tax" model="account.report.expression">
+                                    <record id="account_tax_report_line_sn_withholding_tax"
+                                            model="account.report.expression">
                                         <field name="label">tax</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">tax_withholding</field>
@@ -205,12 +216,14 @@
                         <field name="name">Importations</field>
                         <field name="code">SN_IMPORT</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_sn_deductible_import_base" model="account.report.expression">
+                            <record id="account_tax_report_line_sn_deductible_import_base"
+                                    model="account.report.expression">
                                 <field name="label">base</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">base_import</field>
                             </record>
-                            <record id="account_tax_report_line_sn_deductible_import_tax" model="account.report.expression">
+                            <record id="account_tax_report_line_sn_deductible_import_tax"
+                                    model="account.report.expression">
                                 <field name="label">tax</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">tax_import</field>
@@ -221,12 +234,14 @@
                         <field name="name">Domestic purchases</field>
                         <field name="code">SN_DOMESTIC</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_sn_deductible_taxable_base" model="account.report.expression">
+                            <record id="account_tax_report_line_sn_deductible_taxable_base"
+                                    model="account.report.expression">
                                 <field name="label">base</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">base_purchase</field>
                             </record>
-                            <record id="account_tax_report_line_sn_deductible_taxable_tax" model="account.report.expression">
+                            <record id="account_tax_report_line_sn_deductible_taxable_tax"
+                                    model="account.report.expression">
                                 <field name="label">tax</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">tax_purchase</field>
@@ -237,7 +252,8 @@
                         <field name="name">Reimbursements accepted</field>
                         <field name="code">SN_REIMBURSEMENT_ACCEPTED</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_reimbursement_accepted_tax" model="account.report.expression">
+                            <record id="account_tax_report_line_reimbursement_accepted_tax"
+                                    model="account.report.expression">
                                 <field name="label">tax</field>
                                 <field name="engine">external</field>
                                 <field name="formula">sum</field>
@@ -254,7 +270,8 @@
                                 <field name="engine">aggregation</field>
                                 <field name="formula">SN_CREDIT._applied_carryover_tax</field>
                             </record>
-                            <record id="account_tax_report_line_sn_tva_credit_tax_carryover" model="account.report.expression">
+                            <record id="account_tax_report_line_sn_tva_credit_tax_carryover"
+                                    model="account.report.expression">
                                 <field name="label">_applied_carryover_tax</field>
                                 <field name="engine">external</field>
                                 <field name="formula">most_recent</field>

@@ -139,7 +139,8 @@
     </record>
 
     <!-- Liquido Producto document type -->
-    <record id="demo_liquido_producto_1" model="account.move" context="{'allowed_company_ids': [ref('base.company_ri')]}">
+    <record id="demo_liquido_producto_1" model="account.move"
+            context="{'allowed_company_ids': [ref('base.company_ri')]}">
         <field name="l10n_latam_document_type_id" ref="l10n_ar.dc_liq_cd_sp_a"/>
         <field name="l10n_latam_document_number">00077-00000077</field>
         <field name="partner_id" ref="l10n_ar.res_partner_adhoc"/>

@@ -3,6 +3,7 @@
 
 
 from lxml import etree
+
 from odoo.tests import common
 from odoo.tools.xml_utils import cleanup_xml_node
 
@@ -32,7 +33,8 @@ class TestXMLTools(common.TransactionCase):
 
 </h1>"""
         qweb = self.env['ir.qweb']._render(self.qweb_poor.id)
-        self.check_xml_cleanup_result_is_as_expected(qweb, expected, remove_blank_text=False, remove_blank_nodes=False, indent_level=-1)
+        self.check_xml_cleanup_result_is_as_expected(qweb, expected, remove_blank_text=False, remove_blank_nodes=False,
+                                                     indent_level=-1)
 
     def test_cleanup_xml_node_indent_level(self):
         # Indentation level and spacing works as expected, nothing else affected
@@ -47,7 +49,8 @@ __<h2>            </h2>
 _</h1>
 """
         qweb = self.env['ir.qweb']._render(self.qweb_poor.id)
-        self.check_xml_cleanup_result_is_as_expected(qweb, expected, remove_blank_text=False, remove_blank_nodes=False, indent_level=1, indent_space="_")
+        self.check_xml_cleanup_result_is_as_expected(qweb, expected, remove_blank_text=False, remove_blank_nodes=False,
+                                                     indent_level=1, indent_space="_")
 
     def test_cleanup_xml_node_keep_blank_text(self):
         # Blank nodes are removed but not nodes containing blank text

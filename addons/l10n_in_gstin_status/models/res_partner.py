@@ -3,9 +3,10 @@
 import logging
 import re
 
+from odoo.addons.l10n_in.models.iap_account import IAP_SERVICE_NAME
+
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, AccessError, ValidationError
-from odoo.addons.l10n_in.models.iap_account import IAP_SERVICE_NAME
 
 _logger = logging.getLogger(__name__)
 
@@ -54,12 +55,13 @@ class ResPartner(models.Model):
             raise UserError(_("Unable to connect with GST network"))
         if response.get('error') and any(e.get('code') == 'no-credit' for e in response['error']):
             return self.env["bus.bus"]._sendone(self.env.user.partner_id, "iap_notification",
-                {
-                    "type": "no_credit",
-                    "title": _("Not enough credits to check GSTIN status"),
-                    "get_credits_url": self.env["iap.account"].get_credits_url(service_name=IAP_SERVICE_NAME),
-                },
-            )
+                                                {
+                                                    "type": "no_credit",
+                                                    "title": _("Not enough credits to check GSTIN status"),
+                                                    "get_credits_url": self.env["iap.account"].get_credits_url(
+                                                        service_name=IAP_SERVICE_NAME),
+                                                },
+                                                )
         gst_status = response.get('data', {}).get('sts', "")
         if gst_status.casefold() == 'active':
             l10n_in_gstin_verified_status = True

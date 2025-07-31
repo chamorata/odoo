@@ -144,11 +144,13 @@ class One2manyCase(TransactionExpressionCase):
         res_books_with_one_movie_edition_name = self._search(self.Book, [('editions', '=', movie_editions[:1].name)])
         self.assertFalse(t(res_books_with_one_movie_edition_name))
 
-        res_books_without_one_movie_edition_name = self._search(self.Book, [('editions', '!=', movie_editions[:1].name)])
+        res_books_without_one_movie_edition_name = self._search(self.Book,
+                                                                [('editions', '!=', movie_editions[:1].name)])
         self.assertItemsEqual(t(res_books_without_one_movie_edition_name), t(books))
 
         res_movies_not_of_edition_name = self._search(self.Movie, [('editions', '!=', one_movie_edition.name)])
-        self.assertItemsEqual(t(res_movies_not_of_edition_name), t(movies.filtered(lambda r: one_movie_edition not in r.editions)))
+        self.assertItemsEqual(t(res_movies_not_of_edition_name),
+                              t(movies.filtered(lambda r: one_movie_edition not in r.editions)))
 
     def test_merge_partner(self):
         model = self.env['test_new_api.field_with_caps']
@@ -177,7 +179,8 @@ class One2manyCase(TransactionExpressionCase):
         p3 = partner.create({'name': 'test3', 'active': False})
         partners_ids = (p1 + p2 + p3)
 
-        wizard = self.env['base.partner.merge.automatic.wizard'].with_context(active_ids=partners_ids.ids, active_model='res.partner').create({})
+        wizard = self.env['base.partner.merge.automatic.wizard'].with_context(active_ids=partners_ids.ids,
+                                                                              active_model='res.partner').create({})
 
         self.assertEqual(wizard.partner_ids, partners_ids)
         self.assertEqual(wizard.dst_partner_id, p2)
@@ -471,7 +474,7 @@ class One2manyCase(TransactionExpressionCase):
             'name': 'Parent 2',
         })
 
-        children = {parent_record1.id : [], parent_record2.id : []}
+        children = {parent_record1.id: [], parent_record2.id: []}
         # Create child records linked to parent_record1
         for i in range(5):
             child = unsearchableO2M.create({

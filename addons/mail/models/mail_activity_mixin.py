@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+import logging
 from datetime import datetime
 
-import logging
 import pytz
 
 from odoo import api, fields, models
@@ -50,7 +50,7 @@ class MailActivityMixin(models.AbstractModel):
     activity_ids = fields.One2many(
         'mail.activity', 'res_id', 'Activities',
         auto_join=True,
-        groups="base.group_user",)
+        groups="base.group_user", )
     activity_state = fields.Selection([
         ('overdue', 'Overdue'),
         ('today', 'Today'),
@@ -84,7 +84,7 @@ class MailActivityMixin(models.AbstractModel):
         'Next Activity Summary',
         related='activity_ids.summary', readonly=False,
         search='_search_activity_summary',
-        groups="base.group_user",)
+        groups="base.group_user", )
     activity_exception_decoration = fields.Selection([
         ('warning', 'Alert'),
         ('danger', 'Error')],
@@ -92,7 +92,7 @@ class MailActivityMixin(models.AbstractModel):
         search='_search_activity_exception_decoration',
         help="Type of the exception activity on record.")
     activity_exception_icon = fields.Char('Icon', help="Icon to indicate an exception activity.",
-        compute='_compute_activity_exception_type')
+                                          compute='_compute_activity_exception_type')
 
     @api.depends('activity_ids.activity_type_id.decoration_type', 'activity_ids.activity_type_id.icon')
     def _compute_activity_exception_type(self):
@@ -322,7 +322,9 @@ class MailActivityMixin(models.AbstractModel):
             return self.env['mail.activity']
 
         Data = self.env['ir.model.data'].sudo()
-        activity_types_ids = [type_id for type_id in (Data._xmlid_to_res_id(xmlid, raise_if_not_found=False) for xmlid in act_type_xmlids) if type_id]
+        activity_types_ids = [type_id for type_id in
+                              (Data._xmlid_to_res_id(xmlid, raise_if_not_found=False) for xmlid in act_type_xmlids) if
+                              type_id]
         if not any(activity_types_ids):
             return self.env['mail.activity']
 
@@ -395,7 +397,8 @@ class MailActivityMixin(models.AbstractModel):
             create_vals_list.append(create_vals)
         return self.env['mail.activity'].create(create_vals_list)
 
-    def _activity_schedule_with_view(self, act_type_xmlid='', date_deadline=None, summary='', views_or_xmlid='', render_context=None, **act_values):
+    def _activity_schedule_with_view(self, act_type_xmlid='', date_deadline=None, summary='', views_or_xmlid='',
+                                     render_context=None, **act_values):
         """ Helper method: Schedule an activity on each record of the current record set.
         This method allow to the same mecanism as `activity_schedule`, but provide
         2 additionnal parameters:
@@ -413,8 +416,10 @@ class MailActivityMixin(models.AbstractModel):
         activities = self.env['mail.activity']
         for record in self:
             render_context['object'] = record
-            note = self.env['ir.qweb']._render(view_ref, render_context, minimal_qcontext=True, raise_if_not_found=False)
-            activities += record.activity_schedule(act_type_xmlid=act_type_xmlid, date_deadline=date_deadline, summary=summary, note=note, **act_values)
+            note = self.env['ir.qweb']._render(view_ref, render_context, minimal_qcontext=True,
+                                               raise_if_not_found=False)
+            activities += record.activity_schedule(act_type_xmlid=act_type_xmlid, date_deadline=date_deadline,
+                                                   summary=summary, note=note, **act_values)
         return activities
 
     def activity_reschedule(self, act_type_xmlids, user_id=None, date_deadline=None, new_user_id=None):

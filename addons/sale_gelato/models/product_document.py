@@ -5,7 +5,6 @@ from odoo.exceptions import UserError
 
 
 class ProductDocument(models.Model):
-
     _inherit = 'product.document'
 
     # Technical field to tell apart Gelato print images from other product documents.

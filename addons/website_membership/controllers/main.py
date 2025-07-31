@@ -4,7 +4,6 @@
 import werkzeug.urls
 
 from odoo import fields
-
 from odoo import http
 from odoo.http import request
 from odoo.tools.translate import _
@@ -49,7 +48,8 @@ class WebsiteMembership(http.Controller):
             base_line_domain.append(('membership_id', '=', membership_id))
 
         if post_name:
-            base_line_domain += ['|', ('partner.name', 'ilike', post_name), ('partner.website_description', 'ilike', post_name)]
+            base_line_domain += ['|', ('partner.name', 'ilike', post_name),
+                                 ('partner.website_description', 'ilike', post_name)]
 
         # group by country, based on all customers (base domain)
         if membership_id != 'free':
@@ -62,7 +62,8 @@ class WebsiteMembership(http.Controller):
         if post_name:
             country_domain += ['|', ('name', 'ilike', post_name), ('website_description', 'ilike', post_name)]
 
-        countries = Partner.sudo().read_group(country_domain + [("website_published", "=", True)], ["__count"], groupby="country_id")
+        countries = Partner.sudo().read_group(country_domain + [("website_published", "=", True)], ["__count"],
+                                              groupby="country_id")
         countries_total = sum(country_dict['country_id_count'] for country_dict in countries)
 
         line_domain = list(base_line_domain)
@@ -128,7 +129,7 @@ class WebsiteMembership(http.Controller):
                     free_end = max(offset + limit - count_members, 0)
                     memberships_partner_ids['free'] = free_partners.ids[free_start:free_end]
                     page_partner_ids |= set(memberships_partner_ids['free'])
-                google_map_partner_ids += free_partners.ids[:2000-len(google_map_partner_ids)]
+                google_map_partner_ids += free_partners.ids[:2000 - len(google_map_partner_ids)]
                 count_members += len(free_partners)
 
         google_map_partner_ids = ",".join(str(it) for it in google_map_partner_ids)

@@ -4,7 +4,7 @@
         <xpath expr="//div[hasclass('o-mail-Chatter-topbar')]//FileUploader" position="attributes">
             <attribute name="checkSize">!cloudStorageUsable</attribute>
         </xpath>
-        
+
         <xpath expr="//div[hasclass('o-mail-AttachmentBox')]//FileUploader" position="attributes">
             <attribute name="checkSize">!cloudStorageUsable</attribute>
         </xpath>

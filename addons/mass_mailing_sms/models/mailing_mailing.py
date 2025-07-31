@@ -2,11 +2,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import logging
-
 from urllib.parse import urljoin
 
-from odoo import api, fields, models, _
 from odoo.addons.link_tracker.models.link_tracker import LINK_TRACKER_MIN_CODE_LENGTH
+
+from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 from odoo.osv import expression
 
@@ -44,9 +44,10 @@ class Mailing(models.Model):
         store=True, readonly=False)
     sms_template_id = fields.Many2one('sms.template', string='SMS Template', ondelete='set null')
     sms_has_insufficient_credit = fields.Boolean(
-        'Insufficient IAP credits', compute='_compute_sms_has_iap_failure') # used to propose buying IAP credits
+        'Insufficient IAP credits', compute='_compute_sms_has_iap_failure')  # used to propose buying IAP credits
     sms_has_unregistered_account = fields.Boolean(
-        'Unregistered IAP account', compute='_compute_sms_has_iap_failure') # used to propose to Register the SMS IAP account
+        'Unregistered IAP account',
+        compute='_compute_sms_has_iap_failure')  # used to propose to Register the SMS IAP account
     sms_force_send = fields.Boolean(
         'Send Directly', help='Immediately send the SMS Mailing instead of queuing up. Use at your own risk.')
     # opt_out_link
@@ -61,9 +62,14 @@ class Mailing(models.Model):
     def _compute_medium_id(self):
         super(Mailing, self)._compute_medium_id()
         for mailing in self:
-            if mailing.mailing_type == 'sms' and (not mailing.medium_id or mailing.medium_id == self.env['utm.medium']._fetch_or_create_utm_medium('email')):
-                mailing.medium_id = self.env['utm.medium']._fetch_or_create_utm_medium("sms", module="mass_mailing_sms").id
-            elif mailing.mailing_type == 'mail' and (not mailing.medium_id or mailing.medium_id == self.env['utm.medium']._fetch_or_create_utm_medium("sms", module="mass_mailing_sms")):
+            if mailing.mailing_type == 'sms' and (
+                    not mailing.medium_id or mailing.medium_id == self.env['utm.medium']._fetch_or_create_utm_medium(
+                    'email')):
+                mailing.medium_id = self.env['utm.medium']._fetch_or_create_utm_medium("sms",
+                                                                                       module="mass_mailing_sms").id
+            elif mailing.mailing_type == 'mail' and (
+                    not mailing.medium_id or mailing.medium_id == self.env['utm.medium']._fetch_or_create_utm_medium(
+                    "sms", module="mass_mailing_sms")):
                 mailing.medium_id = self.env['utm.medium']._fetch_or_create_utm_medium('email').id
 
     @api.depends('sms_template_id', 'mailing_type')
@@ -76,9 +82,9 @@ class Mailing(models.Model):
     def _compute_sms_has_iap_failure(self):
         self.sms_has_insufficient_credit = self.sms_has_unregistered_account = False
         traces = self.env['mailing.trace'].sudo()._read_group([
-                    ('mass_mailing_id', 'in', self.ids),
-                    ('trace_type', '=', 'sms'),
-                    ('failure_type', 'in', ['sms_acc', 'sms_credit'])
+            ('mass_mailing_id', 'in', self.ids),
+            ('trace_type', '=', 'sms'),
+            ('failure_type', 'in', ['sms_acc', 'sms_credit'])
         ], ['mass_mailing_id', 'failure_type'])
 
         for mass_mailing, failure_type in traces:
@@ -181,7 +187,8 @@ class Mailing(models.Model):
             ]
             partner_fields = target._mail_get_partner_fields()
         partner_field = next(
-            (fname for fname in partner_fields if target._fields[fname].store and target._fields[fname].type == 'many2one'),
+            (fname for fname in partner_fields if
+             target._fields[fname].store and target._fields[fname].type == 'many2one'),
             False
         )
         if not phone_fields and not partner_field:
@@ -248,7 +255,8 @@ class Mailing(models.Model):
             if not res_ids:
                 res_ids = mailing._get_remaining_recipients()
             if res_ids:
-                composer = self.env['sms.composer'].with_context(active_id=False).create(mailing._send_sms_get_composer_values(res_ids))
+                composer = self.env['sms.composer'].with_context(active_id=False).create(
+                    mailing._send_sms_get_composer_values(res_ids))
                 composer._action_send_sms()
         return True
 
@@ -268,12 +276,12 @@ class Mailing(models.Model):
             values['title'] = _('24H Stats of %(mailing_type)s "%(mailing_name)s"',
                                 mailing_type=mailing_type,
                                 mailing_name=self.subject
-                               )
+                                )
             values['kpi_data'][0] = {
                 'kpi_fullname': _('Report for %(expected)i %(mailing_type)s Sent',
                                   expected=self.expected,
                                   mailing_type=mailing_type
-                                 ),
+                                  ),
                 'kpi_col1': {
                     'value': f'{self.received_ratio}%',
                     'col_subtitle': _('RECEIVED (%i)', self.delivered),
@@ -332,7 +340,8 @@ class Mailing(models.Model):
         self.check_access('write')
 
         max_sms = self.env['sms.sms'].sudo().search_read([], ['id'], order='id desc', limit=1)
-        sms_id_length = max(len(str(max_sms[0]['id'])), 5) if max_sms else 5  # Assumes a mailing won't be more than 10⁵ sms at once
+        sms_id_length = max(len(str(max_sms[0]['id'])),
+                            5) if max_sms else 5  # Assumes a mailing won't be more than 10⁵ sms at once
         max_code = self.env['link.tracker.code'].sudo().search_read([], ['code'], order='id DESC', limit=1)
         code_length = len(max_code[0]['code']) + 1 if max_code else LINK_TRACKER_MIN_CODE_LENGTH
 

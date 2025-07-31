@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import exceptions
 from odoo.addons.crm.tests.common import TestCrmCommon
 from odoo.addons.website_crm_iap_reveal.tests.common import MockIAPReveal
+
+from odoo import exceptions
 from odoo.tests.common import users
 
 
@@ -14,8 +15,10 @@ class TestLeadMine(TestCrmCommon, MockIAPReveal):
         super(TestLeadMine, cls).setUpClass()
         cls.registry.enter_test_mode(cls.cr)
 
-        cls.test_industry_tags = cls.env.ref('crm_iap_mine.crm_iap_mine_industry_33') + cls.env.ref('crm_iap_mine.crm_iap_mine_industry_148')
-        cls.test_roles = cls.env.ref('crm_iap_mine.crm_iap_mine_role_11') + cls.env.ref('crm_iap_mine.crm_iap_mine_role_19')
+        cls.test_industry_tags = cls.env.ref('crm_iap_mine.crm_iap_mine_industry_33') + cls.env.ref(
+            'crm_iap_mine.crm_iap_mine_industry_148')
+        cls.test_roles = cls.env.ref('crm_iap_mine.crm_iap_mine_role_11') + cls.env.ref(
+            'crm_iap_mine.crm_iap_mine_role_19')
         cls.test_seniority = cls.env.ref('crm_iap_mine.crm_iap_mine_seniority_2')
 
         cls.test_crm_tags = cls.env['crm.tag'].create([
@@ -35,7 +38,7 @@ class TestLeadMine(TestCrmCommon, MockIAPReveal):
             'seniority_id': cls.test_seniority.id,
             'suffix': '-ts1',
             'tag_ids': [(6, 0, cls.test_crm_tags.ids)],
-            'team_id':  cls.sales_team_1.id,
+            'team_id': cls.sales_team_1.id,
             'user_id': cls.user_sales_leads.id,
         })
         cls.test_request_2 = cls.env['crm.reveal.rule'].create({
@@ -47,7 +50,7 @@ class TestLeadMine(TestCrmCommon, MockIAPReveal):
             'priority': '2',
             'suffix': '-ts2',
             'tag_ids': [(6, 0, cls.test_crm_tags.ids)],
-            'team_id':  cls.sales_team_1.id,
+            'team_id': cls.sales_team_1.id,
             'user_id': cls.user_admin.id,
         })
         cls.env['crm.reveal.view'].search([]).unlink()
@@ -55,15 +58,15 @@ class TestLeadMine(TestCrmCommon, MockIAPReveal):
             {'reveal_ip': '90.80.70.60',
              'reveal_rule_id': cls.test_request_1.id,
              'reveal_state': 'to_process',
-            },
+             },
             {'reveal_ip': '90.80.70.61',
              'reveal_rule_id': cls.test_request_1.id,
              'reveal_state': 'to_process',
-            },
+             },
             {'reveal_ip': '90.80.70.70',
              'reveal_rule_id': cls.test_request_2.id,
              'reveal_state': 'to_process',
-            }
+             }
         ])
 
         cls.ip_to_rules = [

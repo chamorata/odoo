@@ -1,7 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.tests import TransactionCase, tagged
 from unittest.mock import patch
+
+from odoo.tests import TransactionCase, tagged
+
 
 @tagged('post_install', '-at_install')
 class TestDisableSnippetsAssets(TransactionCase):
@@ -49,7 +51,8 @@ class TestDisableSnippetsAssets(TransactionCase):
         self.assertEqual(s_image_gallery_000.active, False)
         self.assertEqual(s_image_gallery_002.active, True)
 
-        unwanted_snippets_assets_changes = set(self.initial_active_snippets_assets) - set(self._get_active_snippets_assets()) - set([s_image_gallery_000.path])
+        unwanted_snippets_assets_changes = set(self.initial_active_snippets_assets) - set(
+            self._get_active_snippets_assets()) - set([s_image_gallery_000.path])
 
         # The vaccuum should not have activated/deactivated any other snippet asset than the original ones
         self.assertEqual(
@@ -70,6 +73,7 @@ class TestDisableSnippetsAssets(TransactionCase):
         cache_clears = []
 
         init_clear_cache = self.env.registry.clear_cache
+
         def patched_clear_cache(*cache_names):
             for cache_name in cache_names:
                 cache_clears.append(cache_name)
@@ -80,7 +84,8 @@ class TestDisableSnippetsAssets(TransactionCase):
             self.assertIn('assets', cache_clears, 'Assets cache should have been invalidated when updating ir_assets')
             cache_clears.clear()
             self.Website._disable_unused_snippets_assets()
-            self.assertNotIn('assets', cache_clears, 'No update on ir_assets expected, no invalidation should be triggered')
+            self.assertNotIn('assets', cache_clears,
+                             'No update on ir_assets expected, no invalidation should be triggered')
 
         s_website_form_000_scss = self._get_snippet_asset('s_website_form', '000', 'scss')
         s_website_form_001_scss = self._get_snippet_asset('s_website_form', '001', 'scss')
@@ -102,10 +107,13 @@ class TestDisableSnippetsAssets(TransactionCase):
         self.assertEqual(s_image_gallery_002.active, True)
 
     def _get_snippet_asset(self, snippet_id, asset_version, asset_type):
-        return self.IrAsset.search([('path', '=', 'website/static/src/snippets/' + snippet_id + '/' + asset_version + '.' + asset_type)], limit=1)
+        return self.IrAsset.search(
+            [('path', '=', 'website/static/src/snippets/' + snippet_id + '/' + asset_version + '.' + asset_type)],
+            limit=1)
 
     def _get_active_snippets_assets(self):
         return self.IrAsset.search([('path', 'like', 'snippets'), ('active', '=', True)]).mapped('path')
+
 
 HOMEPAGE_UP_TO_DATE = """
 <t name="Homepage" t-name="website.homepage1">

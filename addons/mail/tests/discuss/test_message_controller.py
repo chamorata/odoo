@@ -2,13 +2,14 @@
 
 import json
 
+from odoo.addons.mail.tests.common import MailCommon, mail_new_test_user
+
 import odoo
+from odoo import Command, fields, http
+from odoo.addons.base.tests.common import HttpCase, HttpCaseWithUserDemo
+from odoo.http import STATIC_CACHE_LONG
 from odoo.tests import tagged, users
 from odoo.tools import mute_logger
-from odoo.addons.base.tests.common import HttpCase, HttpCaseWithUserDemo
-from odoo.addons.mail.tests.common import MailCommon, mail_new_test_user
-from odoo.http import STATIC_CACHE_LONG
-from odoo import Command, fields, http
 
 
 @odoo.tests.tagged("-at_install", "post_install")
@@ -99,7 +100,7 @@ class TestMessageController(HttpCaseWithUserDemo):
         self.assertEqual(
             data1["ir.attachment"],
             [
-                    {
+                {
                     "checksum": False,
                     "create_date": fields.Datetime.to_string(self.attachments[0].create_date),
                     "id": self.attachments[0].id,
@@ -369,7 +370,7 @@ class TestMessageController(HttpCaseWithUserDemo):
             "'mail/partner/from_email' does not create another user if there's already a user with matching email",
         )
         self.channel.add_members(
-            self.env["res.users"].browse(demo.uid).partner_id.ids # so demo can post message
+            self.env["res.users"].browse(demo.uid).partner_id.ids  # so demo can post message
         )
         res5 = self.url_open(
             url="/mail/message/post",
@@ -503,7 +504,8 @@ class TestMessageLinks(MailCommon, HttpCase):
 
         cls.user_employee_1 = mail_new_test_user(cls.env, login='tao1', groups='base.group_user', name='Tao Lee')
         cls.public_channel = cls.env['discuss.channel'].channel_create(name='Public Channel1', group_id=None)
-        cls.private_group = cls.env['discuss.channel'].create_group(partners_to=cls.user_employee_1.partner_id.ids, name="Group")
+        cls.private_group = cls.env['discuss.channel'].create_group(partners_to=cls.user_employee_1.partner_id.ids,
+                                                                    name="Group")
 
     @users('employee')
     def test_message_link_by_employee(self):

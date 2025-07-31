@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from odoo.addons.stock.tests.common import TestStockCommon
+
 from odoo.tests import Form
+
 
 class TestReturnPicking(TestStockCommon):
 
@@ -34,19 +36,26 @@ class TestReturnPicking(TestStockCommon):
         move_2.quantity = 1
         picking_out.move_ids.picked = True
         picking_out.button_validate()
-        StockReturnObj.with_context(active_id=picking_out.id, active_ids=picking_out.ids, active_model='stock.picking').create({})
+        StockReturnObj.with_context(active_id=picking_out.id, active_ids=picking_out.ids,
+                                    active_model='stock.picking').create({})
 
         ReturnPickingLineObj = self.env['stock.return.picking.line']
         # Check return line of uom_unit move
-        return_line = ReturnPickingLineObj.search([('move_id', '=', move_1.id), ('wizard_id.picking_id', '=', picking_out.id)], limit=1)
-        self.assertEqual(return_line.product_id.id, self.UnitA.id, 'Return line should have exact same product as outgoing move')
-        self.assertEqual(return_line.uom_id.id, self.uom_unit.id, 'Return line should have exact same uom as product uom')
+        return_line = ReturnPickingLineObj.search(
+            [('move_id', '=', move_1.id), ('wizard_id.picking_id', '=', picking_out.id)], limit=1)
+        self.assertEqual(return_line.product_id.id, self.UnitA.id,
+                         'Return line should have exact same product as outgoing move')
+        self.assertEqual(return_line.uom_id.id, self.uom_unit.id,
+                         'Return line should have exact same uom as product uom')
         self.assertEqual(return_line.quantity, 0, 'Return line should have 0 quantity')
         return_line.quantity = 2
         # Check return line of uom_dozen move
-        return_line = ReturnPickingLineObj.search([('move_id', '=', move_2.id), ('wizard_id.picking_id', '=', picking_out.id)], limit=1)
-        self.assertEqual(return_line.product_id.id, self.UnitA.id, 'Return line should have exact same product as outgoing move')
-        self.assertEqual(return_line.uom_id.id, self.uom_unit.id, 'Return line should have exact same uom as product uom')
+        return_line = ReturnPickingLineObj.search(
+            [('move_id', '=', move_2.id), ('wizard_id.picking_id', '=', picking_out.id)], limit=1)
+        self.assertEqual(return_line.product_id.id, self.UnitA.id,
+                         'Return line should have exact same product as outgoing move')
+        self.assertEqual(return_line.uom_id.id, self.uom_unit.id,
+                         'Return line should have exact same uom as product uom')
         self.assertEqual(return_line.quantity, 0, 'Return line should have 0 quantity')
         return_line.quantity = 1
 
@@ -93,7 +102,8 @@ class TestReturnPicking(TestStockCommon):
         self.assertEqual(len(customer_stock), 1)
         self.assertEqual(customer_stock.quantity, 1)
 
-        return_wizard = self.env['stock.return.picking'].with_context(active_id=picking.id, active_model='stock.picking').create({})
+        return_wizard = self.env['stock.return.picking'].with_context(active_id=picking.id,
+                                                                      active_model='stock.picking').create({})
         return_wizard.product_return_moves.quantity = 1
         res = return_wizard.action_create_returns()
         picking2 = self.PickingObj.browse(res["res_id"])
@@ -122,7 +132,7 @@ class TestReturnPicking(TestStockCommon):
         })
         out_move = self.MoveObj.create({
             'name': "OUT move",
-            'product_id':self.productA.id,
+            'product_id': self.productA.id,
             'product_uom_qty': 1,
             'picking_id': delivery_picking.id,
             'location_id': self.stock_location,
@@ -132,7 +142,8 @@ class TestReturnPicking(TestStockCommon):
         delivery_picking.button_validate()
 
         # Create return
-        return_wizard = self.env['stock.return.picking'].with_context(active_id=delivery_picking.id, active_model='stock.picking').create({})
+        return_wizard = self.env['stock.return.picking'].with_context(active_id=delivery_picking.id,
+                                                                      active_model='stock.picking').create({})
         return_wizard.product_return_moves.quantity = 1
         res = return_wizard.action_create_returns()
         return_picking = self.PickingObj.browse(res["res_id"])
@@ -160,8 +171,8 @@ class TestReturnPicking(TestStockCommon):
         receipt.button_validate()
         # create a return picking
         stock_return_picking_form = Form(self.env['stock.return.picking']
-            .with_context(active_ids=receipt.ids, active_id=receipt.ids[0],
-            active_model='stock.picking'))
+                                         .with_context(active_ids=receipt.ids, active_id=receipt.ids[0],
+                                                       active_model='stock.picking'))
         stock_return_picking = stock_return_picking_form.save()
         stock_return_picking.product_return_moves.quantity = 1.0
         stock_return_picking_action = stock_return_picking.action_create_returns()
@@ -278,7 +289,8 @@ class TestReturnPicking(TestStockCommon):
         picking.move_ids.picked = True
         picking.button_validate()
 
-        return_wizard = self.env['stock.return.picking'].with_context(active_id=picking.id, active_model='stock.picking').create({})
+        return_wizard = self.env['stock.return.picking'].with_context(active_id=picking.id,
+                                                                      active_model='stock.picking').create({})
         return_wizard.product_return_moves.quantity = 1
         res = return_wizard.action_create_returns()
         return_picking = self.PickingObj.browse(res["res_id"])

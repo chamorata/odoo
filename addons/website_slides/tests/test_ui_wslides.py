@@ -4,15 +4,16 @@ import base64
 import logging
 
 from dateutil.relativedelta import relativedelta
-
-from odoo import http, tests
-from odoo.addons.base.tests.common import HttpCaseWithUserPortal
 from odoo.addons.gamification.tests.common import HttpCaseGamification
+
+from odoo import tests
+from odoo.addons.base.tests.common import HttpCaseWithUserPortal
 from odoo.fields import Command, Datetime
 from odoo.tools import mute_logger
 from odoo.tools.misc import file_open
 
 _logger = logging.getLogger(__name__)
+
 
 class TestUICommon(HttpCaseGamification, HttpCaseWithUserPortal):
 
@@ -32,7 +33,8 @@ class TestUICommon(HttpCaseGamification, HttpCaseWithUserPortal):
 
         # Load pdf and img contents
         pdf_content = base64.b64encode(file_open('website_slides/static/src/img/presentation.pdf', "rb").read())
-        img_content = base64.b64encode(file_open('website_slides/static/src/img/slide_demo_gardening_1.jpg', "rb").read())
+        img_content = base64.b64encode(
+            file_open('website_slides/static/src/img/slide_demo_gardening_1.jpg', "rb").read())
 
         self.channel = self.env['slide.channel'].create({
             'name': 'Basics of Gardening - Test',
@@ -154,7 +156,8 @@ class TestUi(TestUICommon):
         user_demo = self.user_demo
         user_demo.write({
             'karma': 1,
-            'groups_id': [(6, 0, (self.env.ref('base.group_user') | self.env.ref('website_slides.group_website_slides_officer')).ids)]
+            'groups_id': [(6, 0, (self.env.ref('base.group_user') | self.env.ref(
+                'website_slides.group_website_slides_officer')).ids)]
         })
 
         self.start_tour('/slides', 'course_member', login=user_demo.login)
@@ -169,7 +172,8 @@ class TestUi(TestUICommon):
         # group_website_designer
         user_demo = self.user_demo
         user_demo.write({
-            'groups_id': [(5, 0), (4, self.env.ref('base.group_user').id), (4, self.env.ref('website.group_website_restricted_editor').id)]
+            'groups_id': [(5, 0), (4, self.env.ref('base.group_user').id),
+                          (4, self.env.ref('website.group_website_restricted_editor').id)]
         })
         user_demo = self.user_demo
         self.env['slide.slide.partner'].create({
@@ -183,12 +187,14 @@ class TestUi(TestUICommon):
             'partner_id': self.partner_demo.id,
         })
 
-        self.start_tour(self.env['website'].get_client_action_url('/slides'), 'full_screen_web_editor', login=user_demo.login)
+        self.start_tour(self.env['website'].get_client_action_url('/slides'), 'full_screen_web_editor',
+                        login=user_demo.login)
 
     def test_course_reviews_elearning_officer(self):
         user_demo = self.user_demo
         user_demo.write({
-            'groups_id': [(6, 0, (self.env.ref('base.group_user') | self.env.ref('website_slides.group_website_slides_officer')).ids)]
+            'groups_id': [(6, 0, (self.env.ref('base.group_user') | self.env.ref(
+                'website_slides.group_website_slides_officer')).ids)]
         })
 
         # The user must be a course member before being able to post a log note.
@@ -224,6 +230,7 @@ class TestUi(TestUICommon):
             },
         )
 
+
 @tests.common.tagged('post_install', '-at_install')
 class TestUiPublisher(HttpCaseGamification):
 
@@ -250,7 +257,8 @@ class TestUiPublisher(HttpCaseGamification):
         ])
         self.env['slide.tag'].create({'name': 'Practice'})
 
-        self.start_tour(self.env['website'].get_client_action_url('/slides'), 'course_publisher_standard', login=user_demo.login)
+        self.start_tour(self.env['website'].get_client_action_url('/slides'), 'course_publisher_standard',
+                        login=user_demo.login)
 
 
 @tests.common.tagged('post_install', '-at_install')
@@ -300,14 +308,16 @@ class TestUiPublisherYoutube(HttpCaseGamification):
         user_demo.write({
             'groups_id': [(5, 0), (4, self.env.ref('base.group_user').id)]
         })
-        self.env.ref('website_slides.slide_channel_demo_3_furn0')._remove_membership(self.env.ref('base.partner_demo').ids)
+        self.env.ref('website_slides.slide_channel_demo_3_furn0')._remove_membership(
+            self.env.ref('base.partner_demo').ids)
 
         self.start_tour('/slides', 'course_member_youtube', login=user_demo.login)
 
     def test_course_publisher_elearning_manager(self):
         user_demo = self.user_demo
         user_demo.write({
-            'groups_id': [(5, 0), (4, self.env.ref('base.group_user').id), (4, self.env.ref('website_slides.group_website_slides_manager').id)]
+            'groups_id': [(5, 0), (4, self.env.ref('base.group_user').id),
+                          (4, self.env.ref('website_slides.group_website_slides_manager').id)]
         })
 
         self.start_tour(self.env['website'].get_client_action_url('/slides'), 'course_publisher', login=user_demo.login)

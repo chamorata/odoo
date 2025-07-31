@@ -1,8 +1,9 @@
 import uuid
+
 import requests
+from requests.exceptions import Timeout, ConnectionError, HTTPError
 
 from odoo import _, api, fields, models
-from requests.exceptions import Timeout, ConnectionError, HTTPError
 
 DEMO_EFAKTURA_URL = 'https://demoefaktura.mfin.gov.rs/api/publicApi/sales-invoice/ubl'
 EFAKTURA_URL = 'https://efakturadev.mfin.gov.rs/api/publicApi/sales-invoice/ubl'
@@ -35,7 +36,8 @@ class AccountMove(models.Model):
     l10n_rs_edi_attachment_id = fields.Many2one(
         comodel_name='ir.attachment',
         string="eFaktura XML Attachment",
-        compute=lambda self: self._compute_linked_attachment_id('l10n_rs_edi_attachment_id', 'l10n_rs_edi_attachment_file'),
+        compute=lambda self: self._compute_linked_attachment_id('l10n_rs_edi_attachment_id',
+                                                                'l10n_rs_edi_attachment_file'),
         depends=['l10n_rs_edi_attachment_file'],
     )
 
@@ -82,7 +84,8 @@ class AccountMove(models.Model):
     @api.depends("country_code", "move_type")
     def _compute_l10n_rs_edi_is_eligible(self):
         for move in self:
-            move.l10n_rs_edi_is_eligible = move.country_code == 'RS' and move.is_sale_document() and move.l10n_rs_edi_state in (False, 'sending_failed')
+            move.l10n_rs_edi_is_eligible = move.country_code == 'RS' and move.is_sale_document() and move.l10n_rs_edi_state in (
+                False, 'sending_failed')
 
     @api.depends('country_code')
     def _compute_l10n_rs_tax_date_obligations_code(self):

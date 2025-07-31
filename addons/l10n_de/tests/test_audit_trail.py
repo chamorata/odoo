@@ -1,7 +1,8 @@
 import logging
 
-from odoo import Command
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon, AccountTestInvoicingHttpCommon
+
+from odoo import Command
 from odoo.exceptions import UserError
 from odoo.tests.common import tagged
 

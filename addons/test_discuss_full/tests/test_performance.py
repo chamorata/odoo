@@ -1,13 +1,14 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from dateutil.relativedelta import relativedelta
 from unittest.mock import patch, PropertyMock
 
-from odoo import Command, fields
-from odoo.tools.misc import limited_field_access_token
+from dateutil.relativedelta import relativedelta
 from odoo.addons.mail.tests.common import MailCommon
 from odoo.addons.mail.tools.discuss import Store
+
+from odoo import Command, fields
 from odoo.tests.common import users, tagged, HttpCase, warmup
+from odoo.tools.misc import limited_field_access_token
 
 
 @tagged('post_install', '-at_install')
@@ -158,7 +159,8 @@ class TestDiscussFullPerformance(HttpCase, MailCommon):
                 'password': self.password,
                 'signature': '--\nErnest',
             },
-            {'name': 'test1', 'login': 'test1', 'password': self.password, 'email': 'test1@example.com', 'country_id': self.env.ref('base.in').id},
+            {'name': 'test1', 'login': 'test1', 'password': self.password, 'email': 'test1@example.com',
+             'country_id': self.env.ref('base.in').id},
             {'name': 'test2', 'login': 'test2', 'email': 'test2@example.com'},
             {'name': 'test3', 'login': 'test3'},
             {'name': 'test4', 'login': 'test4'},
@@ -190,8 +192,9 @@ class TestDiscussFullPerformance(HttpCase, MailCommon):
         } for employee in self.employees])
         self.authenticate(self.users[0].login, self.password)
         Channel = self.env["discuss.channel"].with_user(self.users[0])
-        self.channel_general = self.env.ref('mail.channel_all_employees')  # Unfortunately #general cannot be deleted. Assertions below assume data from a fresh db with demo.
-        self.channel_general.message_ids.unlink() # Remove messages to avoid depending on demo data.
+        self.channel_general = self.env.ref(
+            'mail.channel_all_employees')  # Unfortunately #general cannot be deleted. Assertions below assume data from a fresh db with demo.
+        self.channel_general.message_ids.unlink()  # Remove messages to avoid depending on demo data.
         self.channel_general.last_interest_dt = False  # Reset state
         self.channel_general.channel_member_ids.sudo().last_interest_dt = False  # Reset state
         self.env['discuss.channel'].sudo().search([('id', '!=', self.channel_general.id)]).unlink()
@@ -200,20 +203,24 @@ class TestDiscussFullPerformance(HttpCase, MailCommon):
         self.channel_channel_public_1 = Channel.channel_create(
             name="public channel 1", group_id=None
         )
-        self.channel_channel_public_1.add_members((self.users[0] + self.users[2] + self.users[3] + self.users[4] + self.users[8]).partner_id.ids)
+        self.channel_channel_public_1.add_members(
+            (self.users[0] + self.users[2] + self.users[3] + self.users[4] + self.users[8]).partner_id.ids)
         self.channel_channel_public_2 = Channel.channel_create(
             name="public channel 2", group_id=None
         )
-        self.channel_channel_public_2.add_members((self.users[0] + self.users[2] + self.users[4] + self.users[7] + self.users[9]).partner_id.ids)
+        self.channel_channel_public_2.add_members(
+            (self.users[0] + self.users[2] + self.users[4] + self.users[7] + self.users[9]).partner_id.ids)
         # create group-restricted channels
         self.channel_channel_group_1 = Channel.channel_create(
             name="group restricted channel 1", group_id=self.env.ref("base.group_user").id
         )
-        self.channel_channel_group_1.add_members((self.users[0] + self.users[2] + self.users[3] + self.users[6] + self.users[12]).partner_id.ids)
+        self.channel_channel_group_1.add_members(
+            (self.users[0] + self.users[2] + self.users[3] + self.users[6] + self.users[12]).partner_id.ids)
         self.channel_channel_group_2 = Channel.channel_create(
             name="group restricted channel 2", group_id=self.env.ref("base.group_user").id
         )
-        self.channel_channel_group_2.add_members((self.users[0] + self.users[2] + self.users[6] + self.users[7] + self.users[13]).partner_id.ids)
+        self.channel_channel_group_2.add_members(
+            (self.users[0] + self.users[2] + self.users[6] + self.users[7] + self.users[13]).partner_id.ids)
         # create chats
         self.channel_chat_1 = Channel.channel_get((self.users[0] + self.users[14]).partner_id.ids)
         self.channel_chat_2 = Channel.channel_get((self.users[0] + self.users[15]).partner_id.ids)
@@ -222,8 +229,10 @@ class TestDiscussFullPerformance(HttpCase, MailCommon):
         # create groups
         self.channel_group_1 = Channel.create_group((self.users[0] + self.users[12]).partner_id.ids)
         # create livechats
-        self.im_livechat_channel = self.env['im_livechat.channel'].sudo().create({'name': 'support', 'user_ids': [Command.link(self.users[0].id)]})
-        self.env['bus.presence'].create({'user_id': self.users[0].id, 'status': 'online'})  # make available for livechat (ignore leave)
+        self.im_livechat_channel = self.env['im_livechat.channel'].sudo().create(
+            {'name': 'support', 'user_ids': [Command.link(self.users[0].id)]})
+        self.env['bus.presence'].create(
+            {'user_id': self.users[0].id, 'status': 'online'})  # make available for livechat (ignore leave)
         self.authenticate('test1', self.password)
         self.channel_livechat_1 = Channel.browse(
             self.make_jsonrpc_request(
@@ -238,8 +247,8 @@ class TestDiscussFullPerformance(HttpCase, MailCommon):
         self.channel_livechat_1.with_user(self.users[1]).message_post(body="test")
         self.authenticate(None, None)
         with patch(
-            "odoo.http.GeoIP.country_code",
-            new_callable=PropertyMock(return_value=self.env.ref("base.be").code),
+                "odoo.http.GeoIP.country_code",
+                new_callable=PropertyMock(return_value=self.env.ref("base.be").code),
         ):
             self.channel_livechat_2 = Channel.browse(
                 self.make_jsonrpc_request(
@@ -458,12 +467,12 @@ class TestDiscussFullPerformance(HttpCase, MailCommon):
                     "model": "mail.box",
                 },
                 "starred":
-                {
-                    "counter": 1,
-                    "counter_bus_id": bus_last_id,
-                    "id": "starred",
-                    "model": "mail.box",
-                },
+                    {
+                        "counter": 1,
+                        "counter_bus_id": bus_last_id,
+                        "id": "starred",
+                        "model": "mail.box",
+                    },
                 "initChannelsUnreadCounter": 2,
             },
         }
@@ -1571,12 +1580,12 @@ class TestDiscussFullPerformance(HttpCase, MailCommon):
         return {}
 
     def _expected_result_for_persona(
-        self,
-        user=None,
-        guest=None,
-        only_inviting=False,
-        also_livechat=False,
-        also_notification=False,
+            self,
+            user=None,
+            guest=None,
+            only_inviting=False,
+            also_livechat=False,
+            also_notification=False,
     ):
         if user == self.users[0]:
             res = {

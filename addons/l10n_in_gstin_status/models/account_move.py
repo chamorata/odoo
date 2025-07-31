@@ -18,11 +18,12 @@ class AccountMove(models.Model):
         (self - indian_moves).l10n_in_show_gstin_status = False
         for move in indian_moves:
             move.l10n_in_show_gstin_status = (
-                move.partner_id
-                and move.state == 'posted'
-                and move.move_type != 'entry'
-                and move.payment_state not in ['paid', 'reversed']
-                and move.l10n_in_gst_treatment in ['regular', 'composition', 'special_economic_zone', 'deemed_export', 'uin_holders']
+                    move.partner_id
+                    and move.state == 'posted'
+                    and move.move_type != 'entry'
+                    and move.payment_state not in ['paid', 'reversed']
+                    and move.l10n_in_gst_treatment in ['regular', 'composition', 'special_economic_zone',
+                                                       'deemed_export', 'uin_holders']
             )
 
     @api.depends('partner_id')

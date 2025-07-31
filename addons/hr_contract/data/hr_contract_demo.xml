@@ -22,9 +22,9 @@
         <field name="date_end" eval="time.strftime('%Y-%m-15')"/>
         <field name="employee_id" ref="hr.employee_admin"/>
         <field name="job_id" model="hr.job"
-            eval="obj().env.ref('hr.employee_admin').job_id.id"/>
+               eval="obj().env.ref('hr.employee_admin').job_id.id"/>
         <field name="department_id" model="hr.department"
-            eval="obj().env.ref('hr.employee_admin').department_id.id"/>
+               eval="obj().env.ref('hr.employee_admin').department_id.id"/>
         <field eval="7540.0" name="wage"/>
         <field name="state">close</field>
         <field name="kanban_state">normal</field>
@@ -50,9 +50,9 @@
         <field name="date_start" eval="time.strftime('%Y')+'-1-1'"/>
         <field name="employee_id" ref="hr.employee_al"/>
         <field name="job_id" model="hr.job"
-            eval="obj().env.ref('hr.employee_al').job_id.id"/>
+               eval="obj().env.ref('hr.employee_al').job_id.id"/>
         <field name="department_id" model="hr.department"
-            eval="obj().env.ref('hr.employee_al').department_id.id"/>
+               eval="obj().env.ref('hr.employee_al').department_id.id"/>
         <field eval="4000.0" name="wage"/>
         <field name="state">open</field>
         <field name="kanban_state">normal</field>
@@ -64,9 +64,9 @@
         <field name="date_start" eval="time.strftime('%Y')+'-3-1'"/>
         <field name="employee_id" ref="hr.employee_mit"/>
         <field name="job_id" model="hr.job"
-            eval="obj().env.ref('hr.employee_mit').job_id.id"/>
+               eval="obj().env.ref('hr.employee_mit').job_id.id"/>
         <field name="department_id" model="hr.department"
-            eval="obj().env.ref('hr.employee_mit').department_id.id"/>
+               eval="obj().env.ref('hr.employee_mit').department_id.id"/>
         <field eval="4500.0" name="wage"/>
         <field name="state">open</field>
         <field name="kanban_state">normal</field>
@@ -79,9 +79,9 @@
         <field name="date_end" eval="time.strftime('%Y')+'-12-1'"/>
         <field name="employee_id" ref="hr.employee_stw"/>
         <field name="job_id" model="hr.job"
-            eval="obj().env.ref('hr.employee_stw').job_id.id"/>
+               eval="obj().env.ref('hr.employee_stw').job_id.id"/>
         <field name="department_id" model="hr.department"
-            eval="obj().env.ref('hr.employee_stw').department_id.id"/>
+               eval="obj().env.ref('hr.employee_stw').department_id.id"/>
         <field eval="4500.0" name="wage"/>
         <field name="state">open</field>
         <field name="kanban_state">normal</field>
@@ -93,9 +93,9 @@
         <field name="date_start" eval="(DateTime.today() + relativedelta(years=-1, month=9))"/>
         <field name="employee_id" ref="hr.employee_qdp"/>
         <field name="job_id" model="hr.job"
-            eval="obj().env.ref('hr.employee_qdp').job_id.id"/>
+               eval="obj().env.ref('hr.employee_qdp').job_id.id"/>
         <field name="department_id" model="hr.department"
-            eval="obj().env.ref('hr.employee_qdp').department_id.id"/>
+               eval="obj().env.ref('hr.employee_qdp').department_id.id"/>
         <field eval="3750.0" name="wage"/>
         <field name="state">draft</field>
         <field name="kanban_state">normal</field>
@@ -111,9 +111,9 @@
         <field name="date_start" eval="time.strftime('%Y')+'-3-1'"/>
         <field name="employee_id" ref="hr.employee_han"/>
         <field name="job_id" model="hr.job"
-            eval="obj().env.ref('hr.employee_han').job_id.id"/>
+               eval="obj().env.ref('hr.employee_han').job_id.id"/>
         <field name="department_id" model="hr.department"
-            eval="obj().env.ref('hr.employee_han').department_id.id"/>
+               eval="obj().env.ref('hr.employee_han').department_id.id"/>
         <field eval="4600.0" name="wage"/>
         <field name="state">open</field>
         <field name="kanban_state">normal</field>
@@ -126,9 +126,9 @@
         <field name="date_end" eval="time.strftime('%Y')+'-12-1'"/>
         <field name="employee_id" ref="hr.employee_niv"/>
         <field name="job_id" model="hr.job"
-            eval="obj().env.ref('hr.employee_niv').job_id.id"/>
+               eval="obj().env.ref('hr.employee_niv').job_id.id"/>
         <field name="department_id" model="hr.department"
-            eval="obj().env.ref('hr.employee_niv').department_id.id"/>
+               eval="obj().env.ref('hr.employee_niv').department_id.id"/>
         <field eval="4000.0" name="wage"/>
         <field name="state">draft</field>
         <field name="kanban_state">normal</field>
@@ -141,9 +141,9 @@
         <field name="date_end" eval="time.strftime('%Y')+'-12-1'"/>
         <field name="employee_id" ref="hr.employee_jth"/>
         <field name="job_id" model="hr.job"
-            eval="obj().env.ref('hr.employee_jth').job_id.id"/>
+               eval="obj().env.ref('hr.employee_jth').job_id.id"/>
         <field name="department_id" model="hr.department"
-            eval="obj().env.ref('hr.employee_jth').department_id.id"/>
+               eval="obj().env.ref('hr.employee_jth').department_id.id"/>
         <field eval="4200.0" name="wage"/>
         <field name="state">draft</field>
         <field name="kanban_state">normal</field>
@@ -155,9 +155,9 @@
         <field name="date_start" eval="(DateTime.today() - relativedelta(months=2)).strftime('%Y-%m')+'-1'"/>
         <field name="employee_id" ref="hr.employee_chs"/>
         <field name="job_id" model="hr.job"
-            eval="obj().env.ref('hr.employee_chs').job_id.id"/>
+               eval="obj().env.ref('hr.employee_chs').job_id.id"/>
         <field name="department_id" model="hr.department"
-            eval="obj().env.ref('hr.employee_chs').department_id.id"/>
+               eval="obj().env.ref('hr.employee_chs').department_id.id"/>
         <field eval="3750.0" name="wage"/>
         <field name="state">cancel</field>
         <field name="kanban_state">normal</field>
@@ -169,9 +169,9 @@
         <field name="date_start" eval="(DateTime.today() - relativedelta(months=2)).strftime('%Y-%m')+'-1'"/>
         <field name="employee_id" ref="hr.employee_jve"/>
         <field name="job_id" model="hr.job"
-            eval="obj().env.ref('hr.employee_jve').job_id.id"/>
+               eval="obj().env.ref('hr.employee_jve').job_id.id"/>
         <field name="department_id" model="hr.department"
-            eval="obj().env.ref('hr.employee_jve').department_id.id"/>
+               eval="obj().env.ref('hr.employee_jve').department_id.id"/>
         <field eval="3950.0" name="wage"/>
         <field name="state">cancel</field>
         <field name="kanban_state">normal</field>
@@ -184,9 +184,9 @@
         <field name="date_end" eval="time.strftime('%Y-%m-%d')"/>
         <field name="employee_id" ref="hr.employee_fme"/>
         <field name="job_id" model="hr.job"
-            eval="obj().env.ref('hr.employee_fme').job_id.id"/>
+               eval="obj().env.ref('hr.employee_fme').job_id.id"/>
         <field name="department_id" model="hr.department"
-            eval="obj().env.ref('hr.employee_fme').department_id.id"/>
+               eval="obj().env.ref('hr.employee_fme').department_id.id"/>
         <field eval="3650.0" name="wage"/>
         <field name="state">open</field>
         <field name="kanban_state">blocked</field>
@@ -199,9 +199,9 @@
         <field name="date_end" eval="'2014-12-31'"/>
         <field name="employee_id" ref="hr.employee_fpi"/>
         <field name="job_id" model="hr.job"
-            eval="obj().env.ref('hr.employee_fpi').job_id.id"/>
+               eval="obj().env.ref('hr.employee_fpi').job_id.id"/>
         <field name="department_id" model="hr.department"
-            eval="obj().env.ref('hr.employee_fpi').department_id.id"/>
+               eval="obj().env.ref('hr.employee_fpi').department_id.id"/>
         <field eval="3700.0" name="wage"/>
         <field name="state">close</field>
         <field name="kanban_state">normal</field>
@@ -214,9 +214,9 @@
         <field name="date_end" eval="'2017-12-1'"/>
         <field name="employee_id" ref="hr.employee_fpi"/>
         <field name="job_id" model="hr.job"
-            eval="obj().env.ref('hr.employee_fpi').job_id.id"/>
+               eval="obj().env.ref('hr.employee_fpi').job_id.id"/>
         <field name="department_id" model="hr.department"
-            eval="obj().env.ref('hr.employee_fpi').department_id.id"/>
+               eval="obj().env.ref('hr.employee_fpi').department_id.id"/>
         <field eval="3750.0" name="wage"/>
         <field name="state">close</field>
         <field name="kanban_state">normal</field>
@@ -229,9 +229,9 @@
         <field name="date_end" eval="'2018-2-1'"/>
         <field name="employee_id" ref="hr.employee_vad"/>
         <field name="job_id" model="hr.job"
-            eval="obj().env.ref('hr.employee_vad').job_id.id"/>
+               eval="obj().env.ref('hr.employee_vad').job_id.id"/>
         <field name="department_id" model="hr.department"
-            eval="obj().env.ref('hr.employee_vad').department_id.id"/>
+               eval="obj().env.ref('hr.employee_vad').department_id.id"/>
         <field eval="3750.0" name="wage"/>
         <field name="state">close</field>
         <field name="kanban_state">normal</field>

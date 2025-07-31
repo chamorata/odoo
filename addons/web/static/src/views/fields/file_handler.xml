@@ -8,12 +8,13 @@
         </span>
         <t t-slot="default"/>
         <input
-            type="file"
-            t-att-name="props.inputName"
-            t-ref="fileInput"
-            t-attf-class="o_input_file d-none {{ props.fileUploadClass or '' }}"
-            t-att-multiple="props.multiUpload ? 'multiple' : false" t-att-accept="props.acceptedFileExtensions or '*'"
-            t-on-change="onFileChange"
+                type="file"
+                t-att-name="props.inputName"
+                t-ref="fileInput"
+                t-attf-class="o_input_file d-none {{ props.fileUploadClass or '' }}"
+                t-att-multiple="props.multiUpload ? 'multiple' : false"
+                t-att-accept="props.acceptedFileExtensions or '*'"
+                t-on-change="onFileChange"
         />
     </t>
 

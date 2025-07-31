@@ -1,4 +1,3 @@
-
 from odoo import Command, http, _
 from odoo.http import request
 

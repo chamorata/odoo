@@ -29,14 +29,15 @@ class AccountMoveSend(models.AbstractModel):
         # we require these to be downloadable for a better UX. It was also said that the xml and pdf files are
         # important files that needs to be shared with the customer.
         return (
-            super()._get_invoice_extra_attachments(move)
-            + move.l10n_vn_edi_sinvoice_xml_file_id
-            + move.l10n_vn_edi_sinvoice_pdf_file_id
+                super()._get_invoice_extra_attachments(move)
+                + move.l10n_vn_edi_sinvoice_xml_file_id
+                + move.l10n_vn_edi_sinvoice_pdf_file_id
         )
 
     def _get_placeholder_mail_attachments_data(self, move, invoice_edi_format=None, extra_edis=None):
         # EXTENDS 'account'
-        results = super()._get_placeholder_mail_attachments_data(move, invoice_edi_format=invoice_edi_format, extra_edis=extra_edis)
+        results = super()._get_placeholder_mail_attachments_data(move, invoice_edi_format=invoice_edi_format,
+                                                                 extra_edis=extra_edis)
         if invoice_edi_format == 'vn_sinvoice' and move._l10n_vn_edi_get_credentials_company():
             results.extend([{
                 'id': 'placeholder_sinvoice.pdf',
@@ -60,8 +61,8 @@ class AccountMoveSend(models.AbstractModel):
     def _generate_sinvoice_file_date(self, invoice, invoice_data):
         # Ensure that we still generate the file if 'generate' is ul10n_vn_edi_invoice_transaction_id-checked but send it.
         need_file = (
-            (invoice_data['invoice_edi_format'] == 'vn_sinvoice' and invoice._l10n_vn_edi_get_credentials_company())
-            or 'vn_sinvoice_send' in invoice_data['extra_edis']
+                (invoice_data['invoice_edi_format'] == 'vn_sinvoice' and invoice._l10n_vn_edi_get_credentials_company())
+                or 'vn_sinvoice_send' in invoice_data['extra_edis']
         )
         # In case we already have a json file existing on the invoice, we skip regenerating it.
         if need_file and not invoice.l10n_vn_edi_sinvoice_file:
@@ -123,7 +124,8 @@ class AccountMoveSend(models.AbstractModel):
         super()._call_web_service_after_invoice_pdf_render(invoices_data)
         for invoice, invoice_data in invoices_data.items():
             # Handle the json file, and create it if it does not yet exist. This can be done without sending to the EDI.
-            json_file_data = [file for file in invoice_data.get('sinvoice_attachments', []) if file['mimetype'] == 'application/json']
+            json_file_data = [file for file in invoice_data.get('sinvoice_attachments', []) if
+                              file['mimetype'] == 'application/json']
 
             if not invoice.l10n_vn_edi_sinvoice_file and json_file_data:
                 self.env['ir.attachment'].with_user(SUPERUSER_ID).create(json_file_data)
@@ -142,7 +144,8 @@ class AccountMoveSend(models.AbstractModel):
             if xml_error_message or pdf_error_message:
                 invoice_data['error'] = {
                     'error_title': _('Error when receiving SInvoice files.'),
-                    'errors': [error_message for error_message in [xml_error_message, pdf_error_message] if error_message],
+                    'errors': [error_message for error_message in [xml_error_message, pdf_error_message] if
+                               error_message],
                 }
 
             # Not using _link_invoice_documents for these because it depends on _need_invoice_document and I can't get it to work

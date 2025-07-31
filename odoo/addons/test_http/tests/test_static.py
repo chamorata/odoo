@@ -5,6 +5,7 @@ from datetime import datetime, timedelta, timezone
 from http import HTTPStatus
 from os.path import basename, join as opj
 from unittest.mock import patch
+
 from freezegun import freeze_time
 from urllib3.util import parse_url
 
@@ -12,7 +13,6 @@ import odoo
 from odoo.tests import new_test_user, tagged, RecordCapturer
 from odoo.tools import config, file_open, image_process
 from odoo.tools.misc import submap
-
 from .test_common import TestHttpBase, HTTP_DATETIME_FORMAT
 
 
@@ -29,7 +29,7 @@ class TestHttpStaticCommon(TestHttpBase):
             cls.placeholder_data = file.read()
 
     def assertDownload(
-        self, url, headers, assert_status_code, assert_headers, assert_content=None
+            self, url, headers, assert_status_code, assert_headers, assert_content=None
     ):
         res = self.db_url_open(url, headers=headers)
         res.raise_for_status()
@@ -75,7 +75,7 @@ class TestHttpStatic(TestHttpStaticCommon):
             self.assertCacheControl(res, 'public, max-age=604800')
 
         with self.subTest(x_sendfile=True), \
-             patch.object(config, 'options', {**config.options, 'x_sendfile': True}):
+                patch.object(config, 'options', {**config.options, 'x_sendfile': True}):
             # The file is outside of the filestore, X-Sendfile disabled
             res = self.assertDownloadGizeh('/test_http/static/src/img/gizeh.png', x_sendfile=False)
             self.assertCacheControl(res, 'public, max-age=604800')
@@ -100,7 +100,7 @@ class TestHttpStatic(TestHttpStaticCommon):
             self.assertDownloadGizeh(attachment.url)
 
         with self.subTest(x_sendfile=True), \
-             patch.object(config, 'options', {**config.options, 'x_sendfile': True}):
+                patch.object(config, 'options', {**config.options, 'x_sendfile': True}):
             self.assertDownloadGizeh(
                 attachment.url,
                 x_sendfile=opj(config.filestore(self.env.cr.dbname), attachment.store_fname),
@@ -113,7 +113,7 @@ class TestHttpStatic(TestHttpStaticCommon):
             self.assertDownloadGizeh('/web/content/test_http.gizeh_png')
 
         with self.subTest(x_sendfile=True), \
-             patch.object(config, 'options', {**config.options, 'x_sendfile': True}):
+                patch.object(config, 'options', {**config.options, 'x_sendfile': True}):
             self.assertDownloadGizeh(
                 '/web/content/test_http.gizeh_png',
                 x_sendfile=opj(config.filestore(self.env.cr.dbname), attachment.store_fname),
@@ -126,7 +126,7 @@ class TestHttpStatic(TestHttpStaticCommon):
             self.assertDownloadGizeh('/web/image/test_http.gizeh_png')
 
         with self.subTest(x_sendfile=True), \
-             patch.object(config, 'options', {**config.options, 'x_sendfile': True}):
+                patch.object(config, 'options', {**config.options, 'x_sendfile': True}):
             self.assertDownloadGizeh(
                 '/web/image/test_http.gizeh_png',
                 x_sendfile=opj(config.filestore(self.env.cr.dbname), attachment.store_fname),
@@ -137,7 +137,7 @@ class TestHttpStatic(TestHttpStaticCommon):
             self.assertDownloadGizeh('/web/image/test_http.gizeh_url')
 
         with self.subTest(x_sendfile=True), \
-             patch.object(config, 'options', {**config.options, 'x_sendfile': True}):
+                patch.object(config, 'options', {**config.options, 'x_sendfile': True}):
             # The file is outside of the filestore, X-Sendfile disabled
             self.assertDownloadGizeh('/web/image/test_http.gizeh_url', x_sendfile=False)
 
@@ -159,10 +159,10 @@ class TestHttpStatic(TestHttpStaticCommon):
         attachment_path = opj(config.filestore(self.env.cr.dbname), attachment.store_fname)
 
         for field, is_attachment in (
-            ('glyph_attach', True),
-            ('glyph_inline', False),
-            ('glyph_related', True),
-            ('glyph_compute', False),
+                ('glyph_attach', True),
+                ('glyph_inline', False),
+                ('glyph_related', True),
+                ('glyph_compute', False),
         ):
             with self.subTest(x_sendfile=False):
                 self.assertDownloadGizeh(
@@ -172,7 +172,7 @@ class TestHttpStatic(TestHttpStaticCommon):
 
             if is_attachment:
                 with self.subTest(x_sendfile=True), \
-                     patch.object(config, 'options', {**config.options, 'x_sendfile': True}):
+                        patch.object(config, 'options', {**config.options, 'x_sendfile': True}):
                     self.assertDownloadGizeh(
                         f'/web/content/test_http.earth?field={field}',
                         x_sendfile=is_attachment and attachment_path,
@@ -235,7 +235,7 @@ class TestHttpStatic(TestHttpStaticCommon):
             self.assertDownloadPlaceholder('/web/image/idontexist')
 
         with self.subTest(x_sendfile=True), \
-             patch.object(config, 'options', {**config.options, 'x_sendfile': True}):
+                patch.object(config, 'options', {**config.options, 'x_sendfile': True}):
             # The file is outside of the filestore, X-Sendfile disabled
             self.assertDownloadPlaceholder('/web/image/idontexist')
 
@@ -251,10 +251,9 @@ class TestHttpStatic(TestHttpStaticCommon):
             self.assertDownloadPlaceholder(f'/web/image/{att.id}')
 
         with self.subTest(x_sendfile=True), \
-             patch.object(config, 'options', {**config.options, 'x_sendfile': True}):
+                patch.object(config, 'options', {**config.options, 'x_sendfile': True}):
             # The file is outside of the filestore, X-Sendfile disabled
             self.assertDownloadPlaceholder(f'/web/image/{att.id}')
-
 
     def test_static14_download_not_found(self):
         res = self.url_open('/web/image/idontexist?download=True')
@@ -359,7 +358,7 @@ class TestHttpStatic(TestHttpStaticCommon):
             )
 
         with self.subTest(x_sendfile=True), \
-             patch.object(config, 'options', {**config.options, 'x_sendfile': True}):
+                patch.object(config, 'options', {**config.options, 'x_sendfile': True}):
             self.assertDownload(
                 attachment.url,
                 headers={},
@@ -398,7 +397,7 @@ class TestHttpStatic(TestHttpStaticCommon):
             )
 
         with self.subTest(x_sendfile=True), \
-             patch.object(config, 'options', {**config.options, 'x_sendfile': True}):
+                patch.object(config, 'options', {**config.options, 'x_sendfile': True}):
             self.assertDownload(
                 attachment.url,
                 headers={},
@@ -454,7 +453,7 @@ class TestHttpStatic(TestHttpStaticCommon):
         # requests merge multiple headers with a same key together, it
         # concatenates the values, hence .count(' GMT')
         self.assertEqual(res.headers['Date'].count(' GMT'), 1,
-            "There must be only 1 Date header, not 2")
+                         "There must be only 1 Date header, not 2")
 
     def test_static25_binary_non_base64(self):
         self.authenticate('admin', 'admin')
@@ -687,7 +686,7 @@ class TestHttpStaticUpload(TestHttpStaticCommon):
         self.authenticate('jackoneill', 'jackoneill')
 
         with RecordCapturer(self.env['ir.attachment'], []) as capture, \
-             file_open('test_http/static/src/img/gizeh.png', 'rb') as file:
+                file_open('test_http/static/src/img/gizeh.png', 'rb') as file:
             file_content = file.read()
             file_size = len(file_content)
             file.seek(0)
@@ -731,7 +730,7 @@ class TestHttpStaticUpload(TestHttpStaticCommon):
         self.authenticate('jackoneill', 'jackoneill')
 
         with RecordCapturer(self.env['ir.attachment'], []) as capture, \
-             file_open('test_http/static/src/img/gizeh.png', 'rb') as file:
+                file_open('test_http/static/src/img/gizeh.png', 'rb') as file:
             file_size = file.seek(0, 2)
             file.seek(0)
             self.env['ir.config_parameter'].sudo().set_param(

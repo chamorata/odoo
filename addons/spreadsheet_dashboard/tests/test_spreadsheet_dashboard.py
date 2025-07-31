@@ -1,7 +1,6 @@
 import json
 
 from odoo.exceptions import UserError
-
 from .common import DashboardTestCommon
 
 

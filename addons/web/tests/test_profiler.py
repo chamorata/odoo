@@ -2,10 +2,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import datetime
 import json
-
 from unittest.mock import patch
 
-from odoo.tools import mute_logger
 from odoo.tests.common import HttpCase, tagged
 
 
@@ -24,9 +22,9 @@ class ProfilingHttpCase(HttpCase):
     def profile_rpc(self, params=None):
         params = params or {}
         req = self.url_open(
-            '/web/dataset/call_kw/ir.profile/set_profiling', # use model and method in route has web client does
+            '/web/dataset/call_kw/ir.profile/set_profiling',  # use model and method in route has web client does
             headers={'Content-Type': 'application/json'},
-            data=json.dumps({'params':{
+            data=json.dumps({'params': {
                 'model': 'ir.profile',
                 'method': 'set_profiling',
                 'args': [],
@@ -35,6 +33,7 @@ class ProfilingHttpCase(HttpCase):
         )
         req.raise_for_status()
         return req.json()
+
 
 @tagged('post_install', '-at_install', 'profiling')
 class TestProfilingWeb(ProfilingHttpCase):
@@ -53,7 +52,8 @@ class TestProfilingWeb(ProfilingHttpCase):
         self.env['ir.config_parameter'].set_param('base.profiling_enabled_until', expiration)
         res = self.profile_rpc({'profile': 1})
         self.assertTrue(res['result']['session'])
-        self.assertEqual(last_profile, self.env['ir.profile'].search([], limit=1, order='id desc'), "profiling route shouldn't have been profiled")
+        self.assertEqual(last_profile, self.env['ir.profile'].search([], limit=1, order='id desc'),
+                         "profiling route shouldn't have been profiled")
         # Profile a page
         res = self.url_open('/web/speedscope')  # profile a light route
         new_profile = self.env['ir.profile'].search([], limit=1, order='id desc')
@@ -84,7 +84,7 @@ class TestProfilingModes(ProfilingHttpCase):
         res = self.profile_rpc({'profile': 1, 'collectors': ['sql', 'traces_async']})
         self.assertEqual(sorted(res['result']['collectors']), ['sql', 'traces_async'])
         res = self.profile_rpc({'collectors': ['sql']})
-        self.assertEqual(res['result']['collectors'], ['sql'],)
+        self.assertEqual(res['result']['collectors'], ['sql'], )
         res = self.profile_rpc({'profile': 0})
         res = self.profile_rpc({'profile': 1})
         self.assertEqual(res['result']['collectors'], ['sql'],
@@ -110,7 +110,8 @@ class TestProfilingPublic(ProfilingHttpCase):
         res = res.json()
         self.assertTrue(res.pop('session'))
         self.assertEqual(res, {"collectors": ["sql", "traces_async"], "params": {}})
-        self.assertEqual(last_profile, self.env['ir.profile'].search([], limit=1, order='id desc'), "profiling route shouldn't have been profiled")
+        self.assertEqual(last_profile, self.env['ir.profile'].search([], limit=1, order='id desc'),
+                         "profiling route shouldn't have been profiled")
 
         res = self.url_open('/web/login')  # profile /web/login to avoid redirections of /
         new_profile = self.env['ir.profile'].search([], limit=1, order='id desc')

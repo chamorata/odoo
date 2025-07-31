@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo.addons.stock_account.tests.test_anglo_saxon_valuation_reconciliation_common import ValuationReconciliationTestCommon
-from odoo.tests import tagged
-
 import time
+
+from odoo.addons.stock_account.tests.test_anglo_saxon_valuation_reconciliation_common import \
+    ValuationReconciliationTestCommon
+
+from odoo.tests import tagged
 
 
 @tagged('-at_install', 'post_install')
@@ -55,8 +57,10 @@ class TestAveragePrice(ValuationReconciliationTestCommon):
         picking.button_validate()
 
         # Check the average_price of the product (average icecream).
-        self.assertEqual(product_cable_management_box.qty_available, 10.0, 'Wrong quantity in stock after first reception')
-        self.assertEqual(product_cable_management_box.standard_price, 60.0, 'Standard price should be the price of the first reception!')
+        self.assertEqual(product_cable_management_box.qty_available, 10.0,
+                         'Wrong quantity in stock after first reception')
+        self.assertEqual(product_cable_management_box.standard_price, 60.0,
+                         'Standard price should be the price of the first reception!')
 
         # I create a draft Purchase Order for second incoming shipment for 30 pieces at 80€
         purchase_order_2 = self.env['purchase.order'].create({
@@ -78,7 +82,8 @@ class TestAveragePrice(ValuationReconciliationTestCommon):
         picking.button_validate()
 
         # Check the standard price
-        self.assertEqual(product_cable_management_box.standard_price, 75.0, 'After second reception, we should have an average price of 75.0 on the product')
+        self.assertEqual(product_cable_management_box.standard_price, 75.0,
+                         'After second reception, we should have an average price of 75.0 on the product')
 
         # Create picking to send some goods
         outgoing_shipment = self.env['stock.picking'].create({
@@ -90,17 +95,19 @@ class TestAveragePrice(ValuationReconciliationTestCommon):
                 'product_id': product_cable_management_box.id,
                 'product_uom_qty': 20.0,
                 'product_uom': self.env.ref('uom.product_uom_kgm').id,
-                'location_id':  self.company_data['default_warehouse'].lot_stock_id.id,
+                'location_id': self.company_data['default_warehouse'].lot_stock_id.id,
                 'location_dest_id': self.env.ref('stock.stock_location_customers').id})]
-            })
+        })
 
         # Assign this outgoing shipment and process the delivery
         outgoing_shipment.action_assign()
         outgoing_shipment.button_validate()
 
         # Check the average price (60 * 10 + 30 * 80) / 40 = 75.0€ did not change
-        self.assertEqual(product_cable_management_box.standard_price, 75.0, 'Average price should not have changed with outgoing picking!')
-        self.assertEqual(product_cable_management_box.qty_available, 20.0, 'Pieces were not picked correctly as the quantity on hand is wrong')
+        self.assertEqual(product_cable_management_box.standard_price, 75.0,
+                         'Average price should not have changed with outgoing picking!')
+        self.assertEqual(product_cable_management_box.qty_available, 20.0,
+                         'Pieces were not picked correctly as the quantity on hand is wrong')
 
         # Make a new purchase order with 500 g Average Ice Cream at a price of 0.2€/g
         purchase_order_3 = self.env['purchase.order'].create({
@@ -123,9 +130,11 @@ class TestAveragePrice(ValuationReconciliationTestCommon):
         picking.button_validate()
 
         # Check price is (75.0 * 20 + 200*0.5) / 20.5 = 78.04878€
-        self.assertEqual(product_cable_management_box.qty_available, 20.5, 'Reception of purchase order in grams leads to wrong quantity in stock')
+        self.assertEqual(product_cable_management_box.qty_available, 20.5,
+                         'Reception of purchase order in grams leads to wrong quantity in stock')
         self.assertEqual(round(product_cable_management_box.standard_price, 2), 78.05,
-            'Standard price as average price of third reception with other UoM incorrect! Got %s instead of 78.05' % (round(product_cable_management_box.standard_price, 2)))
+                         'Standard price as average price of third reception with other UoM incorrect! Got %s instead of 78.05' % (
+                             round(product_cable_management_box.standard_price, 2)))
 
     def test_inventory_user_svl_access(self):
         """ Test to check if Inventory/User is able to validate a
@@ -155,7 +164,8 @@ class TestAveragePrice(ValuationReconciliationTestCommon):
         bill.invoice_line_ids[0].quantity = 1.0
         bill.action_post()
 
-        self.assertEqual(purchase_order.order_line[0].qty_invoiced, 1.0, 'QTY invoiced should have been set to 1 on the purchase order line')
+        self.assertEqual(purchase_order.order_line[0].qty_invoiced, 1.0,
+                         'QTY invoiced should have been set to 1 on the purchase order line')
 
         picking = purchase_order.picking_ids[0]
         picking.move_ids.picked = True

@@ -29,7 +29,8 @@ class ProductTemplate(models.Model):
 
     def _check_vendor_for_service_to_purchase(self, sellers):
         if not sellers:
-            raise ValidationError(_("Please define the vendor from whom you would like to purchase this service automatically."))
+            raise ValidationError(
+                _("Please define the vendor from whom you would like to purchase this service automatically."))
 
     @api.onchange('type', 'expense_policy')
     def _onchange_service_to_purchase(self):

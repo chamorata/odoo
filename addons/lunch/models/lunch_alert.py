@@ -1,15 +1,14 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-import pytz
 import logging
-
-from odoo import api, fields, models, _
-from odoo.osv import expression
-
-from .lunch_supplier import float_to_time
 from datetime import datetime, timedelta
 from textwrap import dedent
 
+import pytz
+
+from odoo import api, fields, models, _
 from odoo.addons.base.models.res_partner import _tz_get
+from odoo.osv import expression
+from .lunch_supplier import float_to_time
 
 _logger = logging.getLogger(__name__)
 WEEKDAY_TO_NAME = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
@@ -59,8 +58,8 @@ class LunchAlert(models.Model):
 
     _sql_constraints = [
         ('notification_time_range',
-            'CHECK(notification_time >= 0 and notification_time <= 12)',
-            'Notification time must be between 0 and 12')
+         'CHECK(notification_time >= 0 and notification_time <= 12)',
+         'Notification time must be between 0 and 12')
     ]
 
     @api.depends('mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun')
@@ -93,9 +92,9 @@ class LunchAlert(models.Model):
             alert = alert.with_context(tz=alert.tz)
 
             cron_required = (
-                alert.active
-                and alert.mode == 'chat'
-                and (not alert.until or fields.Date.context_today(alert) <= alert.until)
+                    alert.active
+                    and alert.mode == 'chat'
+                    and (not alert.until or fields.Date.context_today(alert) <= alert.until)
             )
 
             sendat_tz = pytz.timezone(alert.tz).localize(datetime.combine(
@@ -104,9 +103,9 @@ class LunchAlert(models.Model):
             cron = alert.cron_id.sudo()
             lc = cron.lastcall
             if ((
-                lc and sendat_tz.date() <= fields.Datetime.context_timestamp(alert, lc).date()
+                    lc and sendat_tz.date() <= fields.Datetime.context_timestamp(alert, lc).date()
             ) or (
-                not lc and sendat_tz <= fields.Datetime.context_timestamp(alert, fields.Datetime.now())
+                    not lc and sendat_tz <= fields.Datetime.context_timestamp(alert, fields.Datetime.now())
             )):
                 sendat_tz += timedelta(days=1)
             sendat_utc = sendat_tz.astimezone(pytz.UTC).replace(tzinfo=None)
@@ -180,7 +179,8 @@ class LunchAlert(models.Model):
         order_domain = [('state', '!=', 'cancelled')]
 
         if self.location_ids.ids:
-            order_domain = expression.AND([order_domain, [('user_id.last_lunch_location_id', 'in', self.location_ids.ids)]])
+            order_domain = expression.AND(
+                [order_domain, [('user_id.last_lunch_location_id', 'in', self.location_ids.ids)]])
 
         if self.recipients != 'everyone':
             weeksago = fields.Date.today() - timedelta(weeks=(

@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import re
 import logging
+import re
+
+from odoo.addons.google_calendar.utils.google_calendar import GoogleCalendarService
 
 from odoo import api, models, Command
 from odoo.tools import email_normalize
 
-from odoo.addons.google_calendar.utils.google_calendar import GoogleCalendarService
-
 _logger = logging.getLogger(__name__)
+
 
 class RecurrenceRule(models.Model):
     _name = 'calendar.recurrence'
     _inherit = ['calendar.recurrence', 'google.calendar.sync']
-
 
     def _apply_recurrence(self, specific_values_creation=None, no_send_edit=False, generic_values_creation=None):
         events = self.filtered('need_sync').calendar_event_ids
@@ -100,7 +100,8 @@ class RecurrenceRule(models.Model):
             email = attendee[0]
             if email in existing_attendees.mapped('email'):
                 # Update existing attendees
-                existing_attendees.filtered(lambda att: att.email == email).write({'state': attendee[2].get('responseStatus')})
+                existing_attendees.filtered(lambda att: att.email == email).write(
+                    {'state': attendee[2].get('responseStatus')})
             else:
                 # Create new attendees
                 if attendee[2].get('self'):
@@ -109,7 +110,8 @@ class RecurrenceRule(models.Model):
                     partner = attendee[1]
                 else:
                     continue
-                self.calendar_event_ids.write({'attendee_ids': [(0, 0, {'state': attendee[2].get('responseStatus'), 'partner_id': partner.id})]})
+                self.calendar_event_ids.write(
+                    {'attendee_ids': [(0, 0, {'state': attendee[2].get('responseStatus'), 'partner_id': partner.id})]})
                 if attendee[2].get('displayName') and not partner.name:
                     partner.name = attendee[2].get('displayName')
 
@@ -117,16 +119,20 @@ class RecurrenceRule(models.Model):
         for odoo_attendee_email in set(existing_attendees.mapped('email')):
             # Sometimes, several partners have the same email. Remove old attendees except organizer, otherwise the events will disappear.
             if email_normalize(odoo_attendee_email) not in emails:
-                attendees = existing_attendees.exists().filtered(lambda att: att.email == email_normalize(odoo_attendee_email) and att.partner_id not in organizers_partner_ids)
-                self.calendar_event_ids.write({'need_sync': False, 'partner_ids': [Command.unlink(att.partner_id.id) for att in attendees]})
+                attendees = existing_attendees.exists().filtered(lambda att: att.email == email_normalize(
+                    odoo_attendee_email) and att.partner_id not in organizers_partner_ids)
+                self.calendar_event_ids.write(
+                    {'need_sync': False, 'partner_ids': [Command.unlink(att.partner_id.id) for att in attendees]})
 
         old_event_values = self.base_event_id and self.base_event_id.read(base_event_time_fields)[0]
-        if old_event_values and any(new_event_values.get(key) and new_event_values[key] != old_event_values[key] for key in base_event_time_fields):
+        if old_event_values and any(
+                new_event_values.get(key) and new_event_values[key] != old_event_values[key] for key in
+                base_event_time_fields):
             # we need to recreate the recurrence, time_fields were modified.
             base_event_id = self.base_event_id
             non_equal_values = [
                 (key, old_event_values[key] and old_event_values[key].strftime('%m/%d/%Y, %H:%M:%S'), '-->',
-                      new_event_values[key] and new_event_values[key].strftime('%m/%d/%Y, %H:%M:%S')
+                 new_event_values[key] and new_event_values[key].strftime('%m/%d/%Y, %H:%M:%S')
                  ) for key in ['start', 'stop'] if new_event_values[key] != old_event_values[key]
             ]
             log_msg = f"Recurrence {self.id} {self.rrule} has all events ({len(self.calendar_event_ids.ids)})  deleted because of base event value change: {non_equal_values}"
@@ -150,7 +156,7 @@ class RecurrenceRule(models.Model):
                 field: value
                 for field, value in new_event_values.items()
                 if field not in time_fields
-                }, need_sync=False)
+            }, need_sync=False)
             )
 
         # We apply the rrule check after the time_field check because the google_id are generated according

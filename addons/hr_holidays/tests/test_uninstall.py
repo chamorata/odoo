@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import date
+
 from odoo.addons.base.models.ir_model import MODULE_UNINSTALL_FLAG
 from odoo.tests import tagged, TransactionCase
 

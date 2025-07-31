@@ -2,9 +2,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.sale.tests.common import TestSaleCommon
+from psycopg2.errors import NotNullViolation
+
 from odoo.exceptions import ValidationError
 from odoo.tests.common import tagged
-from psycopg2.errors import NotNullViolation
 
 
 @tagged('post_install', '-at_install')
@@ -31,7 +32,7 @@ class TestSoLineMilestones(TestSaleCommon):
         })
         cls.product_delivery_milestones2 = cls.env['product.product'].create({
             'name': "Milestones 2, create project only",
-            'standard_price':20,
+            'standard_price': 20,
             'list_price': 35,
             'type': 'service',
             'invoice_policy': 'delivery',
@@ -114,7 +115,8 @@ class TestSoLineMilestones(TestSaleCommon):
         self.assertEqual(self.sol1.qty_delivered, 10.0, "Delivered quantity should start at 10")
 
         self.milestone1.quantity_percentage = 0.75
-        self.assertEqual(self.sol1.qty_delivered, 15.0, "Delivered quantity should update after a milestone's quantity is updated")
+        self.assertEqual(self.sol1.qty_delivered, 15.0,
+                         "Delivered quantity should update after a milestone's quantity is updated")
 
     def test_remove_reached_milestone(self):
         self.milestone1.is_reached = True
@@ -133,7 +135,8 @@ class TestSoLineMilestones(TestSaleCommon):
         task.sale_line_id = False
         self.assertFalse(task.sale_line_id)
         task.write({'milestone_id': self.milestone1.id})
-        self.assertEqual(task.sale_line_id, self.milestone1.sale_line_id, 'The task should have the SOL from the milestone.')
+        self.assertEqual(task.sale_line_id, self.milestone1.sale_line_id,
+                         'The task should have the SOL from the milestone.')
         self.project.sale_line_id = self.sol2
         self.assertEqual(task.sale_line_id, self.sol1, 'The task should keep the SOL linked to the milestone.')
 
@@ -144,7 +147,7 @@ class TestSoLineMilestones(TestSaleCommon):
         """
         project = self.env['project.project'].create({
             'name': 'Test project',
-            'sale_line_id': self.sol2.id, # sol1 was created first so we use sol2 to demonstrate that sol1 is used
+            'sale_line_id': self.sol2.id,  # sol1 was created first so we use sol2 to demonstrate that sol1 is used
         })
         milestone = self.env['project.milestone'].with_context({'default_project_id': project.id}).create({
             'name': 'Test milestone',
@@ -152,16 +155,19 @@ class TestSoLineMilestones(TestSaleCommon):
             'is_reached': False,
         })
         # since SOL1 was created before SOL2, it should be selected
-        self.assertEqual(milestone.sale_line_id, self.sol1, "The milestone's sale order line should be the first one in the project's SO") #1
-        self.assertEqual(milestone.quantity_percentage, 1.0, "The milestone's quantity percentage should be 1.0") #2
+        self.assertEqual(milestone.sale_line_id, self.sol1,
+                         "The milestone's sale order line should be the first one in the project's SO")  # 1
+        self.assertEqual(milestone.quantity_percentage, 1.0, "The milestone's quantity percentage should be 1.0")  # 2
 
     def test_compute_qty_milestone(self):
         """ This test will check that the compute methods for the milestone quantity fields work properly. """
         ratio = self.milestone1.quantity_percentage / self.milestone1.product_uom_qty
         self.milestone1.quantity_percentage = 1.0
-        self.assertEqual(self.milestone1.quantity_percentage / self.milestone1.product_uom_qty, ratio, "The ratio should be the same as before")
+        self.assertEqual(self.milestone1.quantity_percentage / self.milestone1.product_uom_qty, ratio,
+                         "The ratio should be the same as before")
         self.milestone1.product_uom_qty = 25
-        self.assertEqual(self.milestone1.quantity_percentage / self.milestone1.product_uom_qty, ratio, "The ratio should be the same as before")
+        self.assertEqual(self.milestone1.quantity_percentage / self.milestone1.product_uom_qty, ratio,
+                         "The ratio should be the same as before")
 
     def test_create_milestone_on_project_set_on_sales_order(self):
         """
@@ -207,7 +213,9 @@ class TestSoLineMilestones(TestSaleCommon):
         sale_order.action_confirm()
         project = sale_order.project_ids
         self.assertEqual(len(project.milestone_ids), 3, "The project should have a milestone for each product.")
-        self.assertCountEqual({m.name for m in project.milestone_ids}, {f"[{products[0].default_code}] {p.name}" for p in products}, "The milestones should be named after the products.")
+        self.assertCountEqual({m.name for m in project.milestone_ids},
+                              {f"[{products[0].default_code}] {p.name}" for p in products},
+                              "The milestones should be named after the products.")
 
     def test_project_template_with_milestones(self):
         """
@@ -235,7 +243,8 @@ class TestSoLineMilestones(TestSaleCommon):
 
         project = sale_order.project_ids
         self.assertEqual(len(project.milestone_ids), 4, "The generated project should have 4 milestones.")
-        self.assertEqual({m.quantity_percentage for m in project.milestone_ids}, {0.25}, "All milestones of the generated project should have a quantity percentage of 25%.")
+        self.assertEqual({m.quantity_percentage for m in project.milestone_ids}, {0.25},
+                         "All milestones of the generated project should have a quantity percentage of 25%.")
 
     def test_project_template_with_milestones_multiple_products(self):
         """

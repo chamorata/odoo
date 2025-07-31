@@ -17,7 +17,9 @@ class HrDepartureWizard(models.TransientModel):
             departure_date = self._get_employee_departure_date()
         return departure_date or fields.Date.today()
 
-    departure_reason_id = fields.Many2one("hr.departure.reason", default=lambda self: self.env['hr.departure.reason'].search([], limit=1), required=True)
+    departure_reason_id = fields.Many2one("hr.departure.reason",
+                                          default=lambda self: self.env['hr.departure.reason'].search([], limit=1),
+                                          required=True)
     departure_description = fields.Html(string="Additional Information")
     departure_date = fields.Date(string="Departure Date", required=True, default=_get_default_departure_date)
     employee_id = fields.Many2one(

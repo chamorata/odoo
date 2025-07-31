@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import datetime
-from freezegun import freeze_time
 
+from freezegun import freeze_time
 from odoo.addons.gamification.tests.common import TransactionCaseGamification
+
 from odoo.exceptions import UserError
 from odoo.tools import mute_logger
 
@@ -32,7 +33,8 @@ class test_challenge(TestGamificationCommon):
         challenge = self.env.ref('gamification.challenge_base_discover')
         self.assertGreaterEqual(len(challenge.user_ids), len(self.user_ids), "Not enough users in base challenge")
         challenge._update_all()
-        self.assertGreaterEqual(len(challenge.user_ids), len(self.user_ids)+1, "These are not droids you are looking for")
+        self.assertGreaterEqual(len(challenge.user_ids), len(self.user_ids) + 1,
+                                "These are not droids you are looking for")
 
     def test_10_reach_challenge(self):
         Goals = self.env['gamification.goal']
@@ -42,12 +44,14 @@ class test_challenge(TestGamificationCommon):
         self.assertEqual(challenge.state, 'inprogress', "Challenge failed the change of state")
 
         goal_ids = Goals.search([('challenge_id', '=', challenge.id), ('state', '!=', 'draft')])
-        self.assertEqual(len(goal_ids), len(challenge.line_ids) * len(challenge.user_ids.ids), "Incorrect number of goals generated, should be 1 goal per user, per challenge line")
+        self.assertEqual(len(goal_ids), len(challenge.line_ids) * len(challenge.user_ids.ids),
+                         "Incorrect number of goals generated, should be 1 goal per user, per challenge line")
 
         demo = self.user_demo
         # demo user will set a timezone
         demo.tz = "Europe/Brussels"
-        goal_ids = Goals.search([('user_id', '=', demo.id), ('definition_id', '=', self.env.ref('gamification.definition_base_timezone').id)])
+        goal_ids = Goals.search([('user_id', '=', demo.id),
+                                 ('definition_id', '=', self.env.ref('gamification.definition_base_timezone').id)])
 
         goal_ids.update_goal()
 
@@ -155,12 +159,13 @@ class test_challenge(TestGamificationCommon):
         challenge = self.env['gamification.challenge'].create({
             'name': 'test',
             'state': 'draft',
-            'user_domain': '[("active", "=", True)]', #Include all active users to get a least one participant
+            'user_domain': '[("active", "=", True)]',  # Include all active users to get a least one participant
             'reward_id': 1,
         })
 
         model = self.env['ir.model'].search([('model', '=', 'gamification.badge')])[0]
-        field = self.env['ir.model.fields'].search([('model', '=', 'gamification.badge'), ('name', '=', 'rule_max_number')])[0]
+        field = \
+        self.env['ir.model.fields'].search([('model', '=', 'gamification.badge'), ('name', '=', 'rule_max_number')])[0]
 
         sum_goal = self.env['gamification.goal.definition'].create({
             'name': 'test',
@@ -245,7 +250,8 @@ class test_challenge(TestGamificationCommon):
 
     def test_send_report_in_ranking(self):
         gamification_model = self.env['ir.model']._get_id('gamification.badge')
-        field = self.env['ir.model.fields'].search([('model', '=', 'gamification.badge'), ('name', '=', 'rule_max_number')], limit=1)
+        field = self.env['ir.model.fields'].search(
+            [('model', '=', 'gamification.badge'), ('name', '=', 'rule_max_number')], limit=1)
 
         sum_goal = self.env['gamification.goal.definition'].create({
             'name': 'test1',

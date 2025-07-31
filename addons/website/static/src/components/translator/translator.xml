@@ -2,10 +2,10 @@
 <templates id="template" xml:space="preserve">
 <div t-name="website.TranslatorInfoDialog">
     <WebsiteDialog close="props.close"
-        title="title"
-        primaryTitle="strongOkButton"
-        secondaryTitle="okButton"
-        primaryClick="() => this.onStrongOkClick()">
+                   title="title"
+                   primaryTitle="strongOkButton"
+                   secondaryTitle="okButton"
+                   primaryClick="() => this.onStrongOkClick()">
         <p>You are about to enter the translation mode.</p>
         <p>Here are the visuals used to help you translate efficiently:</p>
         <ul class="oe_translate_examples">
@@ -19,10 +19,10 @@
     </WebsiteDialog>
 </div>
 
-<t t-name="website.AttributeTranslateDialog">
+    <t t-name="website.AttributeTranslateDialog">
     <WebsiteDialog close="props.close"
-        title="title"
-        showSecondaryButton="false">
+                   title="title"
+                   showSecondaryButton="false">
         <div t-ref="form-container"/>
     </WebsiteDialog>
 </t>

@@ -8,6 +8,6 @@ from . import ir_http
 from . import ir_model
 from . import ir_websocket
 from . import res_groups
+from . import res_partner
 from . import res_users
 from . import res_users_settings
-from . import res_partner

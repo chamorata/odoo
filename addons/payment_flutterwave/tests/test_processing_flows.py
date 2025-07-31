@@ -2,14 +2,13 @@
 
 from unittest.mock import patch
 
+from odoo.addons.payment.tests.http_common import PaymentHttpCommon
+from odoo.addons.payment_flutterwave.controllers.main import FlutterwaveController
+from odoo.addons.payment_flutterwave.tests.common import FlutterwaveCommon
 from werkzeug.exceptions import Forbidden
 
 from odoo.tests import tagged
 from odoo.tools import mute_logger
-
-from odoo.addons.payment.tests.http_common import PaymentHttpCommon
-from odoo.addons.payment_flutterwave.controllers.main import FlutterwaveController
-from odoo.addons.payment_flutterwave.tests.common import FlutterwaveCommon
 
 
 @tagged('post_install', '-at_install')
@@ -22,8 +21,8 @@ class TestProcessingFlows(FlutterwaveCommon, PaymentHttpCommon):
         self._create_transaction(flow='redirect')
         url = self._build_url(FlutterwaveController._return_url)
         with patch(
-            'odoo.addons.payment.models.payment_transaction.PaymentTransaction'
-            '._handle_notification_data'
+                'odoo.addons.payment.models.payment_transaction.PaymentTransaction'
+                '._handle_notification_data'
         ) as handle_notification_data_mock:
             self._make_http_get_request(url, params=self.redirect_notification_data)
         self.assertEqual(handle_notification_data_mock.call_count, 1)
@@ -35,8 +34,8 @@ class TestProcessingFlows(FlutterwaveCommon, PaymentHttpCommon):
         self._create_transaction('redirect')
         url = self._build_url(FlutterwaveController._webhook_url)
         with patch(
-            'odoo.addons.payment_flutterwave.controllers.main.FlutterwaveController.'
-            '_verify_notification_signature'
+                'odoo.addons.payment_flutterwave.controllers.main.FlutterwaveController.'
+                '_verify_notification_signature'
         ), patch(
             'odoo.addons.payment.models.payment_transaction.PaymentTransaction'
             '._handle_notification_data'
@@ -50,8 +49,8 @@ class TestProcessingFlows(FlutterwaveCommon, PaymentHttpCommon):
         self._create_transaction('redirect')
         url = self._build_url(FlutterwaveController._webhook_url)
         with patch(
-            'odoo.addons.payment_flutterwave.controllers.main.FlutterwaveController'
-            '._verify_notification_signature'
+                'odoo.addons.payment_flutterwave.controllers.main.FlutterwaveController'
+                '._verify_notification_signature'
         ) as signature_check_mock, patch(
             'odoo.addons.payment.models.payment_transaction.PaymentTransaction'
             '._handle_notification_data'

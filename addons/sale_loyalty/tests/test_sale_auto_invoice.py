@@ -1,9 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.sale_loyalty.tests.common import TestSaleCouponCommon
+
 from odoo.fields import Command
 from odoo.tests import tagged
-
-from odoo.addons.sale_loyalty.tests.common import TestSaleCouponCommon
 
 
 @tagged('post_install', '-at_install')

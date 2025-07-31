@@ -1,8 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import _, api, fields, models
-
 from odoo.addons.website.models import ir_http
+
+from odoo import _, api, fields, models
 
 
 class ResPartner(models.Model):
@@ -69,7 +69,7 @@ class ResPartner(models.Model):
                 orders_by_fpos = orders_sudo.grouped('fiscal_position_id')
                 self.env.add_to_compute(orders_sudo._fields['fiscal_position_id'], orders_sudo)
                 if fpos_changed := orders_sudo.filtered(
-                    lambda so: so not in orders_by_fpos.get(so.fiscal_position_id, []),
+                        lambda so: so not in orders_by_fpos.get(so.fiscal_position_id, []),
                 ):
                     fpos_changed._recompute_taxes()
                     fpos_changed._recompute_prices()

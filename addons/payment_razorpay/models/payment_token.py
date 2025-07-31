@@ -1,9 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.payment_razorpay import const
+
 from odoo import _, models
 from odoo.tools import float_round
-
-from odoo.addons.payment_razorpay import const
 
 
 class PaymentToken(models.Model):

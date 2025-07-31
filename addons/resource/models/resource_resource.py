@@ -2,12 +2,12 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from collections import defaultdict
+
 from dateutil.relativedelta import relativedelta
 from pytz import timezone
 
 from odoo import api, fields, models
 from odoo.addons.base.models.res_partner import _tz_get
-
 from .utils import timezone_datetime, make_aware, Intervals
 
 
@@ -33,7 +33,8 @@ class ResourceResource(models.Model):
         ('user', 'Human'),
         ('material', 'Material')], string='Type',
         default='user', required=True)
-    user_id = fields.Many2one('res.users', string='User', help='Related user name for the resource to manage its access.')
+    user_id = fields.Many2one('res.users', string='User',
+                              help='Related user name for the resource to manage its access.')
     avatar_128 = fields.Image(compute='_compute_avatar_128')
     share = fields.Boolean(related='user_id.share')
     email = fields.Char(related='user_id.email')
@@ -126,11 +127,11 @@ class ResourceResource(models.Model):
             ]
             calendar = resource.calendar_id or resource.company_id.resource_calendar_id or self.env.company.resource_calendar_id
             calendar_start = calendar._get_closest_work_time(start, resource=resource, search_range=search_range,
-                                                                         compute_leaves=compute_leaves)
+                                                             compute_leaves=compute_leaves)
             search_range[0] = start
             calendar_end = calendar._get_closest_work_time(max(start, end), match_end=True,
-                                                                       resource=resource, search_range=search_range,
-                                                                       compute_leaves=compute_leaves)
+                                                           resource=resource, search_range=search_range,
+                                                           compute_leaves=compute_leaves)
             result[resource] = (
                 calendar_start and revert_start_tz(calendar_start),
                 calendar_end and revert_end_tz(calendar_end),
@@ -152,7 +153,8 @@ class ResourceResource(models.Model):
         for calendar, resources in calendar_mapping.items():
             if not calendar:
                 continue
-            resources_unavailable_intervals = calendar._unavailable_intervals_batch(start_datetime, end_datetime, resources, tz=timezone(calendar.tz))
+            resources_unavailable_intervals = calendar._unavailable_intervals_batch(start_datetime, end_datetime,
+                                                                                    resources, tz=timezone(calendar.tz))
             resource_mapping.update(resources_unavailable_intervals)
         return resource_mapping
 
@@ -164,14 +166,17 @@ class ResourceResource(models.Model):
             handling resource's employee contracts.
         """
         assert start.tzinfo and end.tzinfo
-        resource_calendars_within_period = defaultdict(lambda: defaultdict(Intervals))  # keys are [resource id:integer][calendar:self.env['resource.calendar']]
+        resource_calendars_within_period = defaultdict(
+            lambda: defaultdict(Intervals))  # keys are [resource id:integer][calendar:self.env['resource.calendar']]
         default_calendar = default_company and default_company.resource_calendar_id or self.env.company.resource_calendar_id
         if not self:
             # if no resource, add the company resource calendar.
-            resource_calendars_within_period[False][default_calendar] = Intervals([(start, end, self.env['resource.calendar.attendance'])])
+            resource_calendars_within_period[False][default_calendar] = Intervals(
+                [(start, end, self.env['resource.calendar.attendance'])])
         for resource in self:
             calendar = resource.calendar_id or resource.company_id.resource_calendar_id or default_calendar
-            resource_calendars_within_period[resource.id][calendar] = Intervals([(start, end, self.env['resource.calendar.attendance'])])
+            resource_calendars_within_period[resource.id][calendar] = Intervals(
+                [(start, end, self.env['resource.calendar.attendance'])])
         return resource_calendars_within_period
 
     def _get_valid_work_intervals(self, start, end, calendars=None, compute_leaves=True):
@@ -199,13 +204,16 @@ class ResourceResource(models.Model):
             # for fully flexible resource, return the whole interval
             if not calendar:
                 for resource in resources:
-                    resource_work_intervals[resource.id] |= Intervals([(start, end, self.env['resource.calendar.attendance'])])
+                    resource_work_intervals[resource.id] |= Intervals(
+                        [(start, end, self.env['resource.calendar.attendance'])])
                 continue
             # For each calendar used by the resources, retrieve the work intervals for every resources using it
-            work_intervals_batch = calendar._work_intervals_batch(start, end, resources=resources, compute_leaves=compute_leaves)
+            work_intervals_batch = calendar._work_intervals_batch(start, end, resources=resources,
+                                                                  compute_leaves=compute_leaves)
             for resource in resources:
                 # Make the conjunction between work intervals and calendar validity
-                resource_work_intervals[resource.id] |= work_intervals_batch[resource.id] & resource_calendar_validity_intervals[resource.id][calendar]
+                resource_work_intervals[resource.id] |= work_intervals_batch[resource.id] & \
+                                                        resource_calendar_validity_intervals[resource.id][calendar]
             calendar_work_intervals[calendar.id] = work_intervals_batch[False]
 
         return resource_work_intervals, calendar_work_intervals

@@ -48,7 +48,8 @@ class QrInvoiceWizard(models.TransientModel):
             'nb_qr_inv': len(dispatched_invoices['qr']),
             'nb_classic_inv': len(dispatched_invoices['classic']),
             'qr_inv_text': determine_invoices_text(nb_inv=len(dispatched_invoices['qr']), inv_format="QR"),
-            'classic_inv_text': determine_invoices_text(nb_inv=len(dispatched_invoices['classic']), inv_format="classic"),
+            'classic_inv_text': determine_invoices_text(nb_inv=len(dispatched_invoices['classic']),
+                                                        inv_format="classic"),
         })
         return results
 

@@ -1,9 +1,9 @@
 from datetime import datetime
+
+from odoo.addons.account_edi.tests.common import AccountEdiTestCommon
 from pytz import timezone
 
 from odoo.fields import Command
-from odoo.tests import tagged
-from odoo.addons.account_edi.tests.common import AccountEdiTestCommon
 
 
 class TestEGEdiCommon(AccountEdiTestCommon):
@@ -94,7 +94,8 @@ class TestEGEdiCommon(AccountEdiTestCommon):
                 'invoice_date': '2022-03-15',
                 'date': '2022-03-15',
                 **kwargs,
-                'invoice_line_ids': [Command.create({**line_vals, }) for line_vals in kwargs.get('invoice_line_ids', [])]
+                'invoice_line_ids': [Command.create({**line_vals, }) for line_vals in
+                                     kwargs.get('invoice_line_ids', [])]
             })
         )
         # this fixes rounding issues in cache

@@ -1,5 +1,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from odoo.addons.account.controllers.portal import PortalAccount
+
 from odoo.http import request, route
 
 
@@ -19,7 +20,8 @@ class PortalAccountMy(PortalAccount):
     def _get_optional_fields(self):
         # EXTENDS 'portal'
         optional_fields = super()._get_optional_fields()
-        optional_fields.extend(('l10n_my_identification_type', 'l10n_my_identification_number', 'l10n_my_edi_industrial_classification'))
+        optional_fields.extend(
+            ('l10n_my_identification_type', 'l10n_my_identification_number', 'l10n_my_edi_industrial_classification'))
         return optional_fields
 
     def _prepare_portal_layout_values(self):
@@ -28,6 +30,7 @@ class PortalAccountMy(PortalAccount):
         partner = request.env.user.partner_id
         portal_layout_values.update({
             'l10n_my_identification_types': dict(partner._fields['l10n_my_identification_type'].selection),
-            'l10n_my_edi_industrial_classifications': request.env['l10n_my_edi.industry_classification'].sudo().search([]),
+            'l10n_my_edi_industrial_classifications': request.env['l10n_my_edi.industry_classification'].sudo().search(
+                []),
         })
         return portal_layout_values

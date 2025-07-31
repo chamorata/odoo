@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <template id="l10n_sa_additional_footer">
-        <span t-if="report_type == 'pdf' and additional_footer_text" class="text-muted text-center" t-out="additional_footer_text"/><br/>
+        <span t-if="report_type == 'pdf' and additional_footer_text" class="text-muted text-center"
+              t-out="additional_footer_text"/>
+        <br/>
     </template>
     <template id="l10n_sa_external_layout_standard" inherit_id="web.external_layout_standard">
         <xpath expr="//span[hasclass('page')]/.." position="before">

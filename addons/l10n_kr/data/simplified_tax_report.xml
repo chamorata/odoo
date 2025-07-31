@@ -292,7 +292,8 @@
                                     <record id="l10n_kr_simplified_tp_vat_stbott_tax" model="account.report.expression">
                                         <field name="label">tax</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">KR_SEGSW.tax + KR_SRTCW.tax + KR_SMGF.tax + KR_SCLO.tax + KR_SRTCWR.tax +
+                                        <field name="formula">KR_SEGSW.tax + KR_SRTCW.tax + KR_SMGF.tax + KR_SCLO.tax +
+                                            KR_SRTCWR.tax +
                                             KR_SMAFFT.tax + KR_SACC.tax + KR_SCTSIC.tax + KR_SFIPSCTB.tax + KR_STROI.tax
                                         </field>
                                     </record>
@@ -519,8 +520,10 @@
                                             model="account.report.expression">
                                         <field name="label">tax</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">KR_STICRB.tax + KR_STICRA.tax + KR_SDIT.tax + KR_STIBPB.tax +
-                                            KR_STIBPA.tax + KR_STCER.tax + KR_STCEII.tax + KR_STCCSSB.tax + KR_STCCSSA.tax +
+                                        <field name="formula">KR_STICRB.tax + KR_STICRA.tax + KR_SDIT.tax +
+                                            KR_STIBPB.tax +
+                                            KR_STIBPA.tax + KR_STCER.tax + KR_STCEII.tax + KR_STCCSSB.tax +
+                                            KR_STCCSSA.tax +
                                             KR_SITICRO.tax
                                         </field>
                                     </record>
@@ -574,7 +577,8 @@
                             <record id="l10n_kr_simplified_tp_vat_stpad_tax" model="account.report.expression">
                                 <field name="label">tax</field>
                                 <field name="engine">aggregation</field>
-                                <field name="formula">KR_STBOTT.tax - KR_SITICRT.tax - KR_SPTAPSP.tax - KR_SETA.tax + KR_SATA.tax
+                                <field name="formula">KR_STBOTT.tax - KR_SITICRT.tax - KR_SPTAPSP.tax - KR_SETA.tax +
+                                    KR_SATA.tax
                                 </field>
                             </record>
                         </field>
@@ -826,7 +830,8 @@
                                                     model="account.report.expression">
                                                 <field name="label">balance</field>
                                                 <field name="engine">aggregation</field>
-                                                <field name="formula">KR_S5TII.balance + KR_S5TIIP.balance + KR_S5TCCRI.balance +
+                                                <field name="formula">KR_S5TII.balance + KR_S5TIIP.balance +
+                                                    KR_S5TCCRI.balance +
                                                     KR_S5O.balance
                                                 </field>
                                             </record>
@@ -902,7 +907,8 @@
                                                     model="account.report.expression">
                                                 <field name="label">balance</field>
                                                 <field name="engine">aggregation</field>
-                                                <field name="formula">KR_S6TII.balance + KR_S6TIIP.balance + KR_S6TCCRI.balance +
+                                                <field name="formula">KR_S6TII.balance + KR_S6TIIP.balance +
+                                                    KR_S6TCCRI.balance +
                                                     KR_S6O.balance
                                                 </field>
                                             </record>
@@ -976,7 +982,8 @@
                                                     model="account.report.expression">
                                                 <field name="label">balance</field>
                                                 <field name="engine">aggregation</field>
-                                                <field name="formula">KR_S7TII.balance + KR_S7TIIP.balance + KR_S7TCCRI.balance +
+                                                <field name="formula">KR_S7TII.balance + KR_S7TIIP.balance +
+                                                    KR_S7TCCRI.balance +
                                                     KR_S7O.balance
                                                 </field>
                                             </record>
@@ -1052,7 +1059,8 @@
                                                     model="account.report.expression">
                                                 <field name="label">balance</field>
                                                 <field name="engine">aggregation</field>
-                                                <field name="formula">KR_S8TII.balance + KR_S8TIIP.balance + KR_S8TCCRI.balance +
+                                                <field name="formula">KR_S8TII.balance + KR_S8TIIP.balance +
+                                                    KR_S8TCCRI.balance +
                                                     KR_S8O.balance
                                                 </field>
                                             </record>
@@ -1130,7 +1138,8 @@
                                                     model="account.report.expression">
                                                 <field name="label">balance</field>
                                                 <field name="engine">aggregation</field>
-                                                <field name="formula">KR_S9TII.balance + KR_S9TIIP.balance + KR_S9TCCRI.balance +
+                                                <field name="formula">KR_S9TII.balance + KR_S9TIIP.balance +
+                                                    KR_S9TCCRI.balance +
                                                     KR_S9O.balance
                                                 </field>
                                             </record>
@@ -1488,8 +1497,10 @@
                                     <record id="l10n_kr_simplified_tp_vat_spt_tax" model="account.report.expression">
                                         <field name="label">tax</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">KR_SFITI.tax + KR_SFDOI.tax + KR_SFFOI.tax + KR_SFFOR.tax + KR_SFFS.tax +
-                                            KR_SFDS.tax + KR_SFFTSG.tax + KR_SFFTSI.tax + KR_SFURG.tax + KR_SFURI.tax + KR_SDPOT.tax +
+                                        <field name="formula">KR_SFITI.tax + KR_SFDOI.tax + KR_SFFOI.tax + KR_SFFOR.tax
+                                            + KR_SFFS.tax +
+                                            KR_SFDS.tax + KR_SFFTSG.tax + KR_SFFTSI.tax + KR_SFURG.tax + KR_SFURI.tax +
+                                            KR_SDPOT.tax +
                                             KR_SCIT.tax + KR_SFTRUR.tax + KR_SFTUTA.tax + KR_SDPTA.tax
                                         </field>
                                     </record>

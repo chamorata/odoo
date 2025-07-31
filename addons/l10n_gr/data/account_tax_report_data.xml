@@ -14,7 +14,9 @@
         </field>
         <field name="line_ids">
             <record id="l10n_gr_tr_table_B" model="account.report.line">
-                <field name="name">B. TABLE OF OUTPUTS – INPUTS after the reduction (according to the VAT rates) of refunds - deductions</field>
+                <field name="name">B. TABLE OF OUTPUTS – INPUTS after the reduction (according to the VAT rates) of
+                    refunds - deductions
+                </field>
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
                     <record id="l10n_gr_tr_section_a" model="account.report.line">
@@ -412,7 +414,8 @@
                                 </field>
                             </record>
                             <record id="l10n_gr_tr_385" model="account.report.line">
-                                <field name="name">385 - VAT Intra-Community Acquisitions of services art. 14.2.a</field>
+                                <field name="name">385 - VAT Intra-Community Acquisitions of services art. 14.2.a
+                                </field>
                                 <field name="code">l10n_gr_385</field>
                                 <field name="hierarchy_level">3</field>
                                 <field name="expression_ids">
@@ -481,7 +484,8 @@
                                 </field>
                             </record>
                             <record id="l10n_gr_tr_407" model="account.report.line">
-                                <field name="name">407 - Amounts of adjustments of previous tax year for deduction</field>
+                                <field name="name">407 - Amounts of adjustments of previous tax year for deduction
+                                </field>
                                 <field name="code">l10n_gr_407</field>
                                 <field name="hierarchy_level">3</field>
                                 <field name="expression_ids">
@@ -501,7 +505,9 @@
                                     <record id="l10n_gr_tr_410_tag" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">l10n_gr_400.balance + l10n_gr_402.balance + l10n_gr_407.balance</field>
+                                        <field name="formula">l10n_gr_400.balance + l10n_gr_402.balance +
+                                            l10n_gr_407.balance
+                                        </field>
                                     </record>
                                 </field>
                             </record>
@@ -628,7 +634,9 @@
                         </field>
                     </record>
                     <record id="l10n_gr_tr_403" model="account.report.line">
-                        <field name="name">403 - Assessed amount of previous return of this taxable period (= code 511)</field>
+                        <field name="name">403 - Assessed amount of previous return of this taxable period (= code
+                            511)
+                        </field>
                         <field name="code">l10n_gr_403</field>
                         <field name="hierarchy_level">3</field>
                         <field name="expression_ids">

@@ -21,7 +21,10 @@
                     <record id="tax_report_base_pay" model="account.report.line">
                         <field name="name">Payable</field>
                         <field name="code">BASE_PAYABLE</field>
-                        <field name="aggregation_formula">BASE_PAY_EXPORTS.balance + BASE_PAY_INTRA.balance + BASE_PAY_EXEMPT_PROPERTY.balance + BASE_PAY_EXEMPT_TAX.balance + BASE_PAY_EXEMPT.balance + BASE_PAY_27.balance + BASE_PAY_18.balance + BASE_PAY_5.balance</field>
+                        <field name="aggregation_formula">BASE_PAY_EXPORTS.balance + BASE_PAY_INTRA.balance +
+                            BASE_PAY_EXEMPT_PROPERTY.balance + BASE_PAY_EXEMPT_TAX.balance + BASE_PAY_EXEMPT.balance +
+                            BASE_PAY_27.balance + BASE_PAY_18.balance + BASE_PAY_5.balance
+                        </field>
                         <field name="children_ids">
                             <record id="tax_report_alap_fiz_export" model="account.report.line">
                                 <field name="name">Exports</field>
@@ -116,7 +119,11 @@
                     <record id="tax_report_base_rec" model="account.report.line">
                         <field name="name">Recoverable</field>
                         <field name="code">BASE_RECOVERABLE</field>
-                        <field name="aggregation_formula">BASE_REC_IMPORT.balance + BASE_REC_INTRA.balance + BASE_REC_REVERSE.balance + BASE_REC_EXEMPT_MATERIAL.balance + BASE_REC_EXEMPT_TAX.balance + BASE_REC_EXEMPT.balance + BASE_REC_27.balance + BASE_REC_18.balance + BASE_REC_5.balance + BASE_REC_COMPENSATION.balance</field>
+                        <field name="aggregation_formula">BASE_REC_IMPORT.balance + BASE_REC_INTRA.balance +
+                            BASE_REC_REVERSE.balance + BASE_REC_EXEMPT_MATERIAL.balance + BASE_REC_EXEMPT_TAX.balance +
+                            BASE_REC_EXEMPT.balance + BASE_REC_27.balance + BASE_REC_18.balance + BASE_REC_5.balance +
+                            BASE_REC_COMPENSATION.balance
+                        </field>
                         <field name="children_ids">
                             <record id="tax_report_alap_import" model="account.report.line">
                                 <field name="name">Import</field>
@@ -177,7 +184,8 @@
                                 <field name="name">Exempt</field>
                                 <field name="code">BASE_REC_EXEMPT</field>
                                 <field name="expression_ids">
-                                    <record id="tax_report_alap_viss_koron_kivuli_tag" model="account.report.expression">
+                                    <record id="tax_report_alap_viss_koron_kivuli_tag"
+                                            model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">tax_tags</field>
                                         <field name="formula">base_rec_exempt</field>
@@ -240,7 +248,8 @@
                     <record id="tax_report_vat_pay" model="account.report.line">
                         <field name="name">Payable</field>
                         <field name="code">VAT_PAYABLE</field>
-                        <field name="aggregation_formula">VAT_PAY_27.balance + VAT_PAY_18.balance + VAT_PAY_5.balance</field>
+                        <field name="aggregation_formula">VAT_PAY_27.balance + VAT_PAY_18.balance + VAT_PAY_5.balance
+                        </field>
                         <field name="children_ids">
                             <record id="tax_report_fizetndo_27" model="account.report.line">
                                 <field name="name">27% VAT</field>
@@ -280,7 +289,9 @@
                     <record id="tax_report_vat_rec" model="account.report.line">
                         <field name="name">Recoverable</field>
                         <field name="code">VAT_RECOVERABLE</field>
-                        <field name="aggregation_formula">VAT_REC_27.balance + VAT_REC_18.balance + VAT_REC_5.balance + VAT_REC_COMPENSATION.balance</field>
+                        <field name="aggregation_formula">VAT_REC_27.balance + VAT_REC_18.balance + VAT_REC_5.balance +
+                            VAT_REC_COMPENSATION.balance
+                        </field>
                         <field name="children_ids">
                             <record id="tax_report_fizetndo_viss_27" model="account.report.line">
                                 <field name="name">27% VAT</field>

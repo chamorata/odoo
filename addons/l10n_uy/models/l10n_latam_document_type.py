@@ -1,11 +1,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
+import re
+
 from odoo import _, models
 from odoo.exceptions import UserError
-import re
 
 
 class L10nAccountDocumentType(models.Model):
-
     _inherit = 'l10n_latam.document.type'
 
     def _format_document_number(self, document_number):
@@ -24,7 +24,7 @@ class L10nAccountDocumentType(models.Model):
         number_part = re.findall(r'[\d]+', document_number)
         serie_part = re.findall(r'^[A-Za-z]+', document_number)
         if not serie_part or len(serie_part) > 1 or len(serie_part[0]) > 2 \
-           or not number_part or len(number_part) > 1 or len(number_part[0]) > 7:
+                or not number_part or len(number_part) > 1 or len(number_part[0]) > 7:
             raise UserError(_(
                 "%(document_number)s is not a valid value for %(document_type)s.\n"
                 "The document number must be entered with a maximum of 2 letters for the first part "

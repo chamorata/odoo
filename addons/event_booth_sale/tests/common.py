@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import Command
 from odoo.addons.event_booth.tests.common import TestEventBoothCommon
+
+from odoo import Command
 
 
 class TestEventBoothSaleCommon(TestEventBoothCommon):

@@ -2,11 +2,13 @@
 
 from odoo.addons.hr_expense.tests.common import TestExpenseCommon
 from odoo.addons.project.tests.test_project_profitability import TestProjectProfitabilityCommon
+
 from odoo.tests.common import tagged
 
 
 class TestProjectHrExpenseProfitabilityCommon(TestExpenseCommon):
-    def check_project_profitability_before_creating_and_approving_expense_sheet(self, expense, project, project_profitability_items_empty):
+    def check_project_profitability_before_creating_and_approving_expense_sheet(self, expense, project,
+                                                                                project_profitability_items_empty):
         self.assertDictEqual(
             project._get_profitability_items(False),
             project_profitability_items_empty,
@@ -103,7 +105,8 @@ class TestProjectHrExpenseProfitability(TestProjectProfitabilityCommon, TestProj
                         'to_bill': 0.0,
                         'billed': -expense.untaxed_amount_currency - expense_foreign.untaxed_amount_currency * 0.2
                     }],
-                    'total': {'to_bill': 0.0, 'billed': -expense.untaxed_amount_currency - expense_foreign.untaxed_amount_currency * 0.2},
+                    'total': {'to_bill': 0.0,
+                              'billed': -expense.untaxed_amount_currency - expense_foreign.untaxed_amount_currency * 0.2},
                 },
                 'revenues': {'data': [], 'total': {'to_invoice': 0.0, 'invoiced': 0.0}},
             },
@@ -116,7 +119,8 @@ class TestProjectHrExpenseProfitability(TestProjectProfitabilityCommon, TestProj
             self.project._get_profitability_items(False),
             {
                 'costs': {
-                    'data': [{'id': 'expenses', 'sequence': expense_sequence, 'to_bill': 0.0, 'billed': -expense_foreign.untaxed_amount_currency * 0.2}],
+                    'data': [{'id': 'expenses', 'sequence': expense_sequence, 'to_bill': 0.0,
+                              'billed': -expense_foreign.untaxed_amount_currency * 0.2}],
                     'total': {'to_bill': 0.0, 'billed': -expense_foreign.untaxed_amount_currency * 0.2},
                 },
                 'revenues': {'data': [], 'total': {'to_invoice': 0.0, 'invoiced': 0.0}},
@@ -163,7 +167,8 @@ class TestProjectHrExpenseProfitability(TestProjectProfitabilityCommon, TestProj
             self.project._get_profitability_items(False),
             {
                 'costs': {
-                    'data': [{'id': 'expenses', 'sequence': expense_sequence, 'to_bill': 0.0, 'billed': -expense.untaxed_amount_currency}],
+                    'data': [{'id': 'expenses', 'sequence': expense_sequence, 'to_bill': 0.0,
+                              'billed': -expense.untaxed_amount_currency}],
                     'total': {'to_bill': 0.0, 'billed': -expense.untaxed_amount_currency},
                 },
                 'revenues': {'data': [], 'total': {'to_invoice': 0.0, 'invoiced': 0.0}},

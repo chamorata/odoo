@@ -3,8 +3,10 @@
 
 from datetime import datetime
 
-from odoo.tests import tagged
 from odoo.addons.hr_timesheet.tests.test_timesheet import TestCommonTimesheet
+
+from odoo.tests import tagged
+
 
 @tagged('post_install', '-at_install')
 class TestTimesheetAttendance(TestCommonTimesheet):
@@ -13,7 +15,7 @@ class TestTimesheetAttendance(TestCommonTimesheet):
         super().setUpClass()
         cls.env['hr.attendance'].create({
             'employee_id': cls.empl_employee.id,
-            'check_in': datetime(2022, 2, 9, 8, 0), # Wednesday
+            'check_in': datetime(2022, 2, 9, 8, 0),  # Wednesday
             'check_out': datetime(2022, 2, 9, 16, 0),
         })
 
@@ -26,7 +28,7 @@ class TestTimesheetAttendance(TestCommonTimesheet):
         })
         total_timesheet, total_attendance = self.env['hr.timesheet.attendance.report']._read_group(
             [('employee_id', '=', self.empl_employee.id),
-            ('date', '>=', datetime(2022, 2, 9, 8, 0)), ('date', '<=', datetime(2022, 2, 9, 16, 0))],
+             ('date', '>=', datetime(2022, 2, 9, 8, 0)), ('date', '<=', datetime(2022, 2, 9, 16, 0))],
             aggregates=['total_timesheet:sum', 'total_attendance:sum'],
         )[0]
         self.assertEqual(total_timesheet, 6.0, "Total timesheet in report should be 4.0")

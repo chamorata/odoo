@@ -2,14 +2,15 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import base64
-from pytz import timezone
 from datetime import date, datetime
-import requests
 from unittest.mock import Mock
 
-from odoo.tools import file_open
+import requests
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.addons.account.tests.test_account_move_send import TestAccountMoveSendCommon
+from pytz import timezone
+
+from odoo.tools import file_open
 
 
 class TestEsEdiTbaiCommon(TestAccountMoveSendCommon):
@@ -103,15 +104,15 @@ class TestEsEdiTbaiCommon(TestAccountMoveSendCommon):
     @classmethod
     def _create_posted_invoice(cls):
         out_invoice = cls.env['account.move'].create({
-                'move_type': 'out_invoice',
-                'invoice_date': date(2025, 1, 1),
-                'partner_id': cls.partner_a.id,
-                'invoice_line_ids': [(0, 0, {
-                    'product_id': cls.product_a.id,
-                    'price_unit': 1000.0,
-                    'quantity': 5,
-                    'discount': 20.0,
-                    'tax_ids': [(6, 0, cls._get_tax_by_xml_id('s_iva21b').ids)],
+            'move_type': 'out_invoice',
+            'invoice_date': date(2025, 1, 1),
+            'partner_id': cls.partner_a.id,
+            'invoice_line_ids': [(0, 0, {
+                'product_id': cls.product_a.id,
+                'price_unit': 1000.0,
+                'quantity': 5,
+                'discount': 20.0,
+                'tax_ids': [(6, 0, cls._get_tax_by_xml_id('s_iva21b').ids)],
             })],
         })
         out_invoice.action_post()
@@ -119,8 +120,8 @@ class TestEsEdiTbaiCommon(TestAccountMoveSendCommon):
 
     @classmethod
     def _get_invoice_send_wizard(cls, invoice):
-        out_invoice_send_wizard = cls.env['account.move.send.wizard']\
-            .with_context(active_model='account.move', active_ids=invoice.ids)\
+        out_invoice_send_wizard = cls.env['account.move.send.wizard'] \
+            .with_context(active_model='account.move', active_ids=invoice.ids) \
             .create({'sending_methods': []})
         return out_invoice_send_wizard
 
@@ -168,8 +169,10 @@ class TestEsEdiTbaiCommonGipuzkoa(TestEsEdiTbaiCommon):
     def setUpClass(cls):
         super().setUpClass()
 
-        cls.mock_response_post_invoice_success = create_mock_response(cls._get_response_xml('post_invoice_success_gi.xml'))
-        cls.mock_response_cancel_invoice_success = create_mock_response(cls._get_response_xml('cancel_invoice_success_gi.xml'))
+        cls.mock_response_post_invoice_success = create_mock_response(
+            cls._get_response_xml('post_invoice_success_gi.xml'))
+        cls.mock_response_cancel_invoice_success = create_mock_response(
+            cls._get_response_xml('cancel_invoice_success_gi.xml'))
         cls.mock_response_failure = create_mock_response(cls._get_response_xml('post_or_cancel_invoice_failure_gi.xml'))
         cls.mock_request_error = requests.exceptions.RequestException("A request exception")
 

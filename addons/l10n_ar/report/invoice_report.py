@@ -4,7 +4,6 @@ from odoo.tools import SQL
 
 
 class AccountInvoiceReport(models.Model):
-
     _inherit = 'account.invoice.report'
 
     l10n_ar_state_id = fields.Many2one('res.country.state', 'Delivery Province', readonly=True)
@@ -20,5 +19,6 @@ class AccountInvoiceReport(models.Model):
                    super()._select())
 
     def _from(self) -> SQL:
-        return SQL("%s LEFT JOIN res_partner contact_partner ON contact_partner.id = COALESCE(move.partner_shipping_id, move.partner_id)",
-                   super()._from())
+        return SQL(
+            "%s LEFT JOIN res_partner contact_partner ON contact_partner.id = COALESCE(move.partner_shipping_id, move.partner_id)",
+            super()._from())

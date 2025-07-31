@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from . import common
 from odoo import Command
 from odoo.exceptions import UserError
 from odoo.tests import Form
+from . import common
 
 
 class TestWarehouseMrp(common.TestMrpCommon):
@@ -45,7 +45,8 @@ class TestWarehouseMrp(common.TestMrpCommon):
                 'product_uom_id': unit.id
             })],
             'operation_ids': [
-                (0, 0, {'name': 'Cutting Machine', 'workcenter_id': cls.workcenter_1.id, 'time_cycle': 12, 'sequence': 1}),
+                (0, 0,
+                 {'name': 'Cutting Machine', 'workcenter_id': cls.workcenter_1.id, 'time_cycle': 12, 'sequence': 1}),
             ],
         })
 
@@ -228,7 +229,7 @@ class TestWarehouseMrp(common.TestMrpCommon):
             'lot_id': lot_product_2.id
         }).action_apply_inventory()
 
-        #Create Manufacturing order.
+        # Create Manufacturing order.
         production_form = Form(self.env['mrp.production'])
         production_form.product_id = self.product_6
         production_form.bom_id = self.bom_3
@@ -239,17 +240,25 @@ class TestWarehouseMrp(common.TestMrpCommon):
         production_3.action_assign()
 
         # Check Manufacturing order's availability.
-        self.assertEqual(production_3.reservation_state, 'assigned', "Production order's availability should be Available.")
+        self.assertEqual(production_3.reservation_state, 'assigned',
+                         "Production order's availability should be Available.")
 
-        location_id = production_3.move_raw_ids.filtered(lambda x: x.state not in ('done', 'cancel')) and production_3.location_src_id.id or production_3.location_dest_id.id,
+        location_id = production_3.move_raw_ids.filtered(lambda x: x.state not in ('done',
+                                                                                   'cancel')) and production_3.location_src_id.id or production_3.location_dest_id.id,
 
         # Scrap Product Wood without lot to check assert raise ?.
-        scrap_id = self.env['stock.scrap'].with_context(active_model='mrp.production', active_id=production_3.id).create({'product_id': self.product_2.id, 'scrap_qty': 1.0, 'product_uom_id': self.product_2.uom_id.id, 'location_id': location_id, 'production_id': production_3.id})
+        scrap_id = self.env['stock.scrap'].with_context(active_model='mrp.production',
+                                                        active_id=production_3.id).create(
+            {'product_id': self.product_2.id, 'scrap_qty': 1.0, 'product_uom_id': self.product_2.uom_id.id,
+             'location_id': location_id, 'production_id': production_3.id})
         with self.assertRaises(UserError):
             scrap_id.do_scrap()
 
         # Scrap Product Wood with lot.
-        scrap_id = self.env['stock.scrap'].with_context(active_model='mrp.production', active_id=production_3.id).create({'product_id': self.product_2.id, 'scrap_qty': 1.0, 'product_uom_id': self.product_2.uom_id.id, 'location_id': location_id, 'lot_id': lot_product_2.id, 'production_id': production_3.id})
+        scrap_id = self.env['stock.scrap'].with_context(active_model='mrp.production',
+                                                        active_id=production_3.id).create(
+            {'product_id': self.product_2.id, 'scrap_qty': 1.0, 'product_uom_id': self.product_2.uom_id.id,
+             'location_id': location_id, 'lot_id': lot_product_2.id, 'production_id': production_3.id})
         scrap_id.do_scrap()
         scrap_move = scrap_id.move_ids[0]
 
@@ -258,11 +267,11 @@ class TestWarehouseMrp(common.TestMrpCommon):
         self.assertEqual(scrap_move.location_dest_id, scrap_id.scrap_location_id)
         self.assertEqual(scrap_move.price_unit, scrap_move.product_id.standard_price)
 
-        #Check scrap move is created for this production order.
-        #TODO: should check with scrap objects link in between
+        # Check scrap move is created for this production order.
+        # TODO: should check with scrap objects link in between
 
-#        scrap_move = production_3.move_raw_ids.filtered(lambda x: x.product_id == self.product_2 and x.scrapped)
-#        self.assertTrue(scrap_move, "There are no any scrap move created for production order.")
+    #        scrap_move = production_3.move_raw_ids.filtered(lambda x: x.product_id == self.product_2 and x.scrapped)
+    #        self.assertTrue(scrap_move, "There are no any scrap move created for production order.")
 
     def test_putaway_after_manufacturing_3(self):
         """ This test checks a tracked manufactured product will go to location
@@ -492,7 +501,7 @@ class TestKitPicking(common.TestMrpCommon):
             'product_uom': self.kit_parent.uom_id.id,
             'picking_id': picking.id,
             'picking_type_id': self.env.ref('stock.picking_type_in').id,
-            'location_id':  self.test_supplier.id,
+            'location_id': self.test_supplier.id,
             'location_dest_id': self.warehouse_1.wh_input_stock_loc_id.id,
         })
         picking.button_validate()
@@ -520,7 +529,7 @@ class TestKitPicking(common.TestMrpCommon):
             'product_uom': self.kit_parent.uom_id.id,
             'picking_id': picking.id,
             'picking_type_id': self.env.ref('stock.picking_type_in').id,
-            'location_id':  self.test_supplier.id,
+            'location_id': self.test_supplier.id,
             'location_dest_id': self.warehouse_1.wh_input_stock_loc_id.id,
         })
         picking.action_confirm()
@@ -627,9 +636,11 @@ class TestKitPicking(common.TestMrpCommon):
 
         aggregate_not_kit_values = delivery.move_line_ids._get_aggregated_product_quantities()
         self.assertEqual(len(aggregate_not_kit_values.keys()), 2)
-        self.assertTrue(all('Not' in val for val in aggregate_not_kit_values), 'Only non kit products should be included')
+        self.assertTrue(all('Not' in val for val in aggregate_not_kit_values),
+                        'Only non kit products should be included')
 
-        aggregate_kit_values = delivery.move_line_ids._get_aggregated_product_quantities(kit_name=bom_kit.product_id.name)
+        aggregate_kit_values = delivery.move_line_ids._get_aggregated_product_quantities(
+            kit_name=bom_kit.product_id.name)
         self.assertEqual(len(aggregate_kit_values.keys()), 2)
         self.assertTrue(all('Component' in val for val in aggregate_kit_values), 'Only kit products should be included')
 

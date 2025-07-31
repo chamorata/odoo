@@ -59,7 +59,8 @@ class ProductTemplate(models.Model):
         if currency.compare_amounts(excluded, price):
             joined.append(self.env._('%(amount)s Excl. Taxes', amount=format_amount(self.env, excluded, currency)))
         if not currency.is_zero(withheld_amount):
-            joined.append(self.env._('%(amount)s Tax Withheld', amount=format_amount(self.env, withheld_amount, currency)))
+            joined.append(
+                self.env._('%(amount)s Tax Withheld', amount=format_amount(self.env, withheld_amount, currency)))
         if joined:
             tax_string = f"(= {', '.join(joined)})"
         else:

@@ -3,8 +3,9 @@
 
 import hashlib
 from collections import OrderedDict
-from werkzeug.urls import url_quote
+
 from markupsafe import Markup
+from werkzeug.urls import url_quote
 
 from odoo import api, models, fields
 from odoo.tools import html_escape as escape
@@ -46,11 +47,13 @@ class Image(models.AbstractModel):
             filename = record.display_name
         filename = (filename or 'name').replace('/', '-').replace('\\', '-').replace('..', '--')
 
-        src = '/web/image/%s/%s/%s%s/%s?unique=%s' % (record._name, record.id, options.get('preview_image', field_name), max_size, url_quote(filename), sha)
+        src = '/web/image/%s/%s/%s%s/%s?unique=%s' % (record._name, record.id, options.get('preview_image', field_name),
+                                                      max_size, url_quote(filename), sha)
 
         src_zoom = None
         if options.get('zoom') and getattr(record, options['zoom'], None):
-            src_zoom = '/web/image/%s/%s/%s%s/%s?unique=%s' % (record._name, record.id, options['zoom'], max_size, url_quote(filename), sha)
+            src_zoom = '/web/image/%s/%s/%s%s/%s?unique=%s' % (record._name, record.id, options['zoom'], max_size,
+                                                               url_quote(filename), sha)
         elif options.get('zoom'):
             src_zoom = options['zoom']
 
@@ -58,7 +61,7 @@ class Image(models.AbstractModel):
 
     @api.model
     def record_to_html(self, record, field_name, options):
-        assert options['tagName'] != 'img',\
+        assert options['tagName'] != 'img', \
             "Oddly enough, the root tag of an image field can not be img. " \
             "That is because the image goes into the tag, or it gets the " \
             "hose again."
@@ -112,6 +115,7 @@ class Image(models.AbstractModel):
         img.append('/>')
 
         return Markup(''.join(img))
+
 
 class ImageUrlConverter(models.AbstractModel):
     _description = 'Qweb Field Image'

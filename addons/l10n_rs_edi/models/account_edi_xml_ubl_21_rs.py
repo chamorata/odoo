@@ -9,7 +9,8 @@ class AccountEdiXmlUBL21RS(models.AbstractModel):
     @api.model
     def _get_customization_ids(self):
         vals = super()._get_customization_ids()
-        vals['efaktura_rs'] = 'urn:cen.eu:en16931:2017#compliant#urn:mfin.gov.rs:srbdt:2022#conformant#urn:mfin.gov.rs:srbdtext:2022'
+        vals[
+            'efaktura_rs'] = 'urn:cen.eu:en16931:2017#compliant#urn:mfin.gov.rs:srbdt:2022#conformant#urn:mfin.gov.rs:srbdtext:2022'
         return vals
 
     def _export_invoice_vals(self, invoice):

@@ -4,9 +4,10 @@
 from datetime import datetime, timedelta
 
 from odoo.addons.mass_mailing.tests.common import MassMailCommon
+
+from odoo import fields
 from odoo.tests import Form, users, tagged
 from odoo.tools import mute_logger
-from odoo import fields
 
 
 @tagged('post_install', '-at_install')
@@ -30,6 +31,7 @@ class TestMailingABTestingCommon(MassMailCommon):
         self.ab_testing_mailing_ids = self.ab_testing_mailing_1 + self.ab_testing_mailing_2
         self.env.flush_all()
         self.env.invalidate_all()
+
 
 class TestMailingABTesting(TestMailingABTestingCommon):
 
@@ -59,7 +61,8 @@ class TestMailingABTesting(TestMailingABTestingCommon):
         with self.mock_mail_gateway():
             self.ab_testing_mailing_2.action_send_winner_mailing()
         self.ab_testing_mailing_ids.invalidate_recordset()
-        winner_mailing = self.ab_testing_campaign.mailing_mail_ids.filtered(lambda mailing: mailing.ab_testing_pc == 100)
+        winner_mailing = self.ab_testing_campaign.mailing_mail_ids.filtered(
+            lambda mailing: mailing.ab_testing_pc == 100)
         self.assertEqual(winner_mailing.subject, 'A/B Testing V1')
 
     @mute_logger('odoo.addons.mail.models.mail_mail')
@@ -91,7 +94,8 @@ class TestMailingABTesting(TestMailingABTestingCommon):
         with self.mock_mail_gateway():
             self.env.ref('mass_mailing.ir_cron_mass_mailing_ab_testing').sudo().method_direct_trigger()
         self.ab_testing_mailing_ids.invalidate_recordset()
-        winner_mailing = self.ab_testing_campaign.mailing_mail_ids.filtered(lambda mailing: mailing.ab_testing_pc == 100)
+        winner_mailing = self.ab_testing_campaign.mailing_mail_ids.filtered(
+            lambda mailing: mailing.ab_testing_pc == 100)
         self.assertEqual(winner_mailing.subject, 'A/B Testing V1')
 
     @users('user_marketing')
@@ -108,8 +112,10 @@ class TestMailingABTesting(TestMailingABTestingCommon):
 
         # Check if the campaign is correctly created and the values set on the mailing are still the same
         self.assertTrue(ab_mailing.campaign_id, "A campaign id is present for the A/B test mailing")
-        self.assertEqual(ab_mailing.ab_testing_winner_selection, 'manual', "The selection winner has been propagated correctly")
-        self.assertEqual(ab_mailing.ab_testing_schedule_datetime, schedule_datetime, "The schedule date has been propagated correctly")
+        self.assertEqual(ab_mailing.ab_testing_winner_selection, 'manual',
+                         "The selection winner has been propagated correctly")
+        self.assertEqual(ab_mailing.ab_testing_schedule_datetime, schedule_datetime,
+                         "The schedule date has been propagated correctly")
 
         # Check that while enabling the A/B testing, if campaign is already set, new one should not be created
         created_mailing_campaign = ab_mailing.campaign_id
@@ -174,7 +180,8 @@ class TestMailingABTesting(TestMailingABTestingCommon):
         with self.mock_mail_gateway():
             self.ab_testing_mailing_2.action_send_winner_mailing()
         self.ab_testing_mailing_ids.invalidate_recordset()
-        winner_mailing = self.ab_testing_campaign.mailing_mail_ids.filtered(lambda mailing: mailing.ab_testing_pc == 100)
+        winner_mailing = self.ab_testing_campaign.mailing_mail_ids.filtered(
+            lambda mailing: mailing.ab_testing_pc == 100)
         self.assertEqual(winner_mailing.subject, 'A/B Testing V2')
 
     @mute_logger('odoo.addons.mail.models.mail_mail')
@@ -202,4 +209,5 @@ class TestMailingABTesting(TestMailingABTestingCommon):
         ab_testing_mail_1.ab_testing_schedule_datetime = datetime.now() + timedelta(days=10)
         action = ab_testing_mail_1.save().action_duplicate()
         ab_testing_mailing_2 = self.env[action['res_model']].browse(action['res_id'])
-        self.assertEqual(fields.Datetime.to_string(ab_testing_mailing_2.ab_testing_schedule_datetime), ab_testing_mail_1.ab_testing_schedule_datetime)
+        self.assertEqual(fields.Datetime.to_string(ab_testing_mailing_2.ab_testing_schedule_datetime),
+                         ab_testing_mail_1.ab_testing_schedule_datetime)

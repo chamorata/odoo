@@ -45,8 +45,10 @@ class MrpConsumptionWarning(models.TransientModel):
                 for move in production.move_raw_ids:
                     if line.product_id != move.product_id:
                         continue
-                    qty_expected = line.product_uom_id._compute_quantity(line.product_expected_qty_uom, move.product_uom)
-                    qty_compare_result = float_compare(qty_expected, move.quantity, precision_rounding=move.product_uom.rounding)
+                    qty_expected = line.product_uom_id._compute_quantity(line.product_expected_qty_uom,
+                                                                         move.product_uom)
+                    qty_compare_result = float_compare(qty_expected, move.quantity,
+                                                       precision_rounding=move.product_uom.rounding)
                     if qty_compare_result != 0:
                         move.quantity = qty_expected
                     # move should be set to picked to correctly consume the product
@@ -86,12 +88,15 @@ class MrpConsumptionWarning(models.TransientModel):
                 'target': 'main',
             }
 
+
 class MrpConsumptionWarningLine(models.TransientModel):
     _name = 'mrp.consumption.warning.line'
     _description = "Line of issue consumption"
 
-    mrp_consumption_warning_id = fields.Many2one('mrp.consumption.warning', "Parent Wizard", readonly=True, required=True, ondelete="cascade")
-    mrp_production_id = fields.Many2one('mrp.production', "Manufacturing Order", readonly=True, required=True, ondelete="cascade")
+    mrp_consumption_warning_id = fields.Many2one('mrp.consumption.warning', "Parent Wizard", readonly=True,
+                                                 required=True, ondelete="cascade")
+    mrp_production_id = fields.Many2one('mrp.production', "Manufacturing Order", readonly=True, required=True,
+                                        ondelete="cascade")
     consumption = fields.Selection(related="mrp_production_id.consumption")
 
     product_id = fields.Many2one('product.product', "Product", readonly=True, required=True)

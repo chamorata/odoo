@@ -23,16 +23,16 @@
             <field name="context">{'disable_toolbar': True}</field>
             <field name="usage">menu</field>
             <field name="view_id" ref="board_my_dash_view"/>
-        </record> 
+        </record>
     </data>
     <data>
 
         <!--My Dashboard Menu-->
         <menuitem
-            id="menu_board_my_dash"
-            name="My Dashboard"
-            parent="spreadsheet_dashboard.spreadsheet_dashboard_menu_root"
-            action="open_board_my_dash_action"
-            sequence="100"/>
+                id="menu_board_my_dash"
+                name="My Dashboard"
+                parent="spreadsheet_dashboard.spreadsheet_dashboard_menu_root"
+                action="open_board_my_dash_action"
+                sequence="100"/>
     </data>
 </odoo>

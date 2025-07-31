@@ -22,10 +22,11 @@ class ProjectTaskType(models.Model):
     active = fields.Boolean('Active', default=True, export_string_translation=False)
     name = fields.Char(string='Name', required=True, translate=True)
     sequence = fields.Integer(default=1)
-    project_ids = fields.Many2many('project.project', 'project_task_type_rel', 'type_id', 'project_id', string='Projects',
-        default=lambda self: self._get_default_project_ids(),
-        help="Projects in which this stage is present. If you follow a similar workflow in several projects,"
-            " you can share this stage among them and get consolidated information this way.")
+    project_ids = fields.Many2many('project.project', 'project_task_type_rel', 'type_id', 'project_id',
+                                   string='Projects',
+                                   default=lambda self: self._get_default_project_ids(),
+                                   help="Projects in which this stage is present. If you follow a similar workflow in several projects,"
+                                        " you can share this stage among them and get consolidated information this way.")
     mail_template_id = fields.Many2one(
         'mail.template',
         string='Email Template',
@@ -40,18 +41,20 @@ class ProjectTaskType(models.Model):
              "Alternatively, it will be sent at a regular interval as long as the task remains in this stage, depending on the configuration of your project. \n"
              "To use this feature make sure that the 'Customer Ratings' option is enabled on your project.")
     auto_validation_state = fields.Boolean('Automatic Kanban Status', default=False,
-        help="Automatically modify the state when the customer replies to the feedback for this stage.\n"
-            " * Good feedback from the customer will update the state to 'Approved' (green bullet).\n"
-            " * Neutral or bad feedback will set the kanban state to 'Changes Requested' (orange bullet).\n")
+                                           help="Automatically modify the state when the customer replies to the feedback for this stage.\n"
+                                                " * Good feedback from the customer will update the state to 'Approved' (green bullet).\n"
+                                                " * Neutral or bad feedback will set the kanban state to 'Changes Requested' (orange bullet).\n")
     disabled_rating_warning = fields.Text(compute='_compute_disabled_rating_warning', export_string_translation=False)
 
-    user_id = fields.Many2one('res.users', 'Stage Owner', default=_default_user_id, compute='_compute_user_id', store=True, index=True)
+    user_id = fields.Many2one('res.users', 'Stage Owner', default=_default_user_id, compute='_compute_user_id',
+                              store=True, index=True)
 
     def unlink_wizard(self, stage_view=False):
         self = self.with_context(active_test=False)
         # retrieves all the projects with a least 1 task in that stage
         # a task can be in a stage even if the project is not assigned to the stage
-        readgroup = self.with_context(active_test=False).env['project.task']._read_group([('stage_id', 'in', self.ids)], ['project_id'])
+        readgroup = self.with_context(active_test=False).env['project.task']._read_group([('stage_id', 'in', self.ids)],
+                                                                                         ['project_id'])
         project_ids = list(set([project.id for [project] in readgroup] + self.project_ids.ids))
 
         wizard = self.with_context(project_ids=project_ids).env['project.task.type.delete.wizard'].create({
@@ -100,14 +103,16 @@ class ProjectTaskType(models.Model):
             remaining_personal_stages_by_user[user].append({'id': stage.id, 'seq': sequence})
 
         # For performance issue, project.task.stage.personal records that need to be modified are listed before calling _prepare_personal_stages_deletion
-        personal_stages_to_update = self.env['project.task.stage.personal']._read_group([('stage_id', 'in', personal_stages.ids)], ['stage_id'], ['id:recordset'])
+        personal_stages_to_update = self.env['project.task.stage.personal']._read_group(
+            [('stage_id', 'in', personal_stages.ids)], ['stage_id'], ['id:recordset'])
         for user in personal_stages.user_id:
             if not user.active or user.share:
                 continue
             user_stages_to_unlink = personal_stages.filtered(lambda stage: stage.user_id == user)
             user_remaining_stages = remaining_personal_stages_by_user[user]
             if not user_remaining_stages:
-                raise UserError(_("Each user should have at least one personal stage. Create a new stage to which the tasks can be transferred after the selected ones are deleted."))
+                raise UserError(
+                    _("Each user should have at least one personal stage. Create a new stage to which the tasks can be transferred after the selected ones are deleted."))
             user_stages_to_unlink._prepare_personal_stages_deletion(user_remaining_stages, personal_stages_to_update)
 
     def _prepare_personal_stages_deletion(self, remaining_stages_dict, personal_stages_to_update):
@@ -181,4 +186,5 @@ class ProjectTaskType(models.Model):
     @api.constrains('user_id', 'project_ids')
     def _check_personal_stage_not_linked_to_projects(self):
         if any(stage.user_id and stage.project_ids for stage in self):
-            raise UserError(_('A personal stage cannot be linked to a project because it is only visible to its corresponding user.'))
+            raise UserError(
+                _('A personal stage cannot be linked to a project because it is only visible to its corresponding user.'))

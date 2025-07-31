@@ -1,13 +1,13 @@
 import json
-import requests
 from unittest.mock import patch, call, MagicMock
 
-from odoo import fields
+import requests
+from odoo.addons.microsoft_account.models.microsoft_service import MicrosoftService
 from odoo.addons.microsoft_calendar.utils.microsoft_calendar import MicrosoftCalendarService
 from odoo.addons.microsoft_calendar.utils.microsoft_event import MicrosoftEvent
-from odoo.addons.microsoft_account.models.microsoft_service import MicrosoftService
-from odoo.tests import TransactionCase
 
+from odoo import fields
+from odoo.tests import TransactionCase
 
 DEFAULT_TIMEOUT = 20
 
@@ -41,7 +41,8 @@ class TestMicrosoftService(TransactionCase):
         self.call_without_sync_token = call(
             "/v1.0/me/calendarView/delta",
             {
-                'startDateTime': fields.Datetime.subtract(fields.Datetime.now(), days=365).strftime("%Y-%m-%dT00:00:00Z"),
+                'startDateTime': fields.Datetime.subtract(fields.Datetime.now(), days=365).strftime(
+                    "%Y-%m-%dT00:00:00Z"),
                 'endDateTime': fields.Datetime.add(fields.Datetime.now(), days=365 * 2).strftime("%Y-%m-%dT00:00:00Z"),
             },
             {**self.header, 'Prefer': self.header_prefer},
@@ -229,7 +230,8 @@ class TestMicrosoftService(TransactionCase):
         mock_do_request.assert_called_with(
             "/v1.0/me/events/123/instances",
             {
-                'startDateTime': fields.Datetime.subtract(fields.Datetime.now(), days=365).strftime("%Y-%m-%dT00:00:00Z"),
+                'startDateTime': fields.Datetime.subtract(fields.Datetime.now(), days=365).strftime(
+                    "%Y-%m-%dT00:00:00Z"),
                 'endDateTime': fields.Datetime.add(fields.Datetime.now(), days=365 * 2).strftime("%Y-%m-%dT00:00:00Z"),
             },
             {**self.header, 'Prefer': self.header_prefer},
@@ -298,10 +300,8 @@ class TestMicrosoftService(TransactionCase):
         with self.assertRaises(AttributeError):
             self.service.insert({})
 
-
     @patch.object(MicrosoftService, "_do_request")
     def test_insert(self, mock_do_request):
-
         mock_do_request.return_value = self._do_request_result({'id': 1, 'iCalUId': 2})
 
         instance_id, event_id = self.service.insert({"subject": "ev1"}, token=self.fake_token, timeout=DEFAULT_TIMEOUT)
@@ -389,7 +389,6 @@ class TestMicrosoftService(TransactionCase):
                 f"/v1.0/me/calendar/events/{event_id}",
                 {}, headers=self.delete_header, method="DELETE", timeout=DEFAULT_TIMEOUT
             )
-
 
     @patch.object(MicrosoftService, "_do_request")
     def test_delete_an_existing_event(self, mock_do_request):

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.tests.common import TransactionCase
-from odoo.exceptions import AccessError, ValidationError
 from odoo import Command
+from odoo.exceptions import AccessError, ValidationError
+from odoo.tests.common import TransactionCase
 
 
 class TestHasGroup(TransactionCase):
@@ -117,7 +117,7 @@ class TestHasGroup(TransactionCase):
         grp_test_internal1.implied_ids = self.grp_internal
         grp_test_internal2.implied_ids = self.grp_internal
 
-        with self.assertRaises(ValidationError): # current group implications forbid to create a portal user
+        with self.assertRaises(ValidationError):  # current group implications forbid to create a portal user
             portal_user = self.env['res.users'].create({
                 'login': 'portalFail',
                 'name': 'Portal fail',
@@ -136,7 +136,7 @@ class TestHasGroup(TransactionCase):
             'login': 'portalTest2',
             'name': 'Portal test 2',
             'groups_id': [Command.set([self.grp_portal.id])],
-            })
+        })
 
         self.assertEqual(
             portal_user.groups_id, (self.grp_portal + grp_test_portal),
@@ -150,7 +150,7 @@ class TestHasGroup(TransactionCase):
             portal_user.write({'groups_id': [Command.link(grp_fail.id)]})
 
     def test_two_user_types(self):
-        #Create a user with two groups of user types kind (Internal and Portal)
+        # Create a user with two groups of user types kind (Internal and Portal)
         grp_test = self.env['res.groups']._load_records([
             dict(xml_id='test_two_user_types.implied_groups', values={'name': 'Test Group'})
         ])
@@ -164,12 +164,12 @@ class TestHasGroup(TransactionCase):
                 'groups_id': [Command.set([grp_test.id])]
             })
 
-        #Add a user with portal to the group Internal
+        # Add a user with portal to the group Internal
         test_user = self.env['res.users'].create({
-                'login': 'test_user_portal',
-                'name': "Test User with two user types",
-                'groups_id': [Command.set([self.grp_portal.id])]
-             })
+            'login': 'test_user_portal',
+            'name': "Test User with two user types",
+            'groups_id': [Command.set([self.grp_portal.id])]
+        })
         with self.assertRaises(ValidationError):
             self.grp_internal.users = [Command.link(test_user.id)]
 
@@ -188,7 +188,8 @@ class TestHasGroup(TransactionCase):
             'groups_id': [Command.set([grp_test.id])]
         })
 
-        with self.assertRaisesRegex(ValidationError, "The user cannot have more than one user types"), self.env.cr.savepoint():
+        with self.assertRaisesRegex(ValidationError,
+                                    "The user cannot have more than one user types"), self.env.cr.savepoint():
             grp_test.write({'implied_ids': [Command.link(self.grp_portal.id)]})
 
         self.env["ir.model.fields"].create(
@@ -290,7 +291,8 @@ class TestHasGroup(TransactionCase):
         group_C = G.create({"name": "C", "implied_ids": [Command.set([group_user.id])]})
 
         user_a.write({"groups_id": [Command.link(group_C.id)]})
-        self.assertEqual(user_a.groups_id, (group_AA + group_A + group_BB + group_B + group_C + group_user + group_no_one))
+        self.assertEqual(user_a.groups_id,
+                         (group_AA + group_A + group_BB + group_B + group_C + group_user + group_no_one))
 
         with self.assertRaises(ValidationError):
             user_b.write({"groups_id": [Command.link(group_C.id)]})
@@ -306,7 +308,8 @@ class TestHasGroup(TransactionCase):
         populate_cache()
 
         self.env.ref(self.group0).write({"share": True})
-        self.assertFalse(self.registry._Registry__caches['default'], "Writing on group must invalidate user._has_group cache")
+        self.assertFalse(self.registry._Registry__caches['default'],
+                         "Writing on group must invalidate user._has_group cache")
 
         populate_cache()
         # call_cache_clearing_methods is called in res.groups.write to invalidate

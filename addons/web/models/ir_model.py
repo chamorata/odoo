@@ -37,11 +37,11 @@ class IrModel(models.Model):
     def _is_valid_for_model_selector(self, model):
         model = self.env.get(model)
         return (
-            self.env.user._is_internal()
-            and model is not None
-            and model.has_access("read")
-            and not model._transient
-            and not model._abstract
+                self.env.user._is_internal()
+                and model is not None
+                and model.has_access("read")
+                and not model._transient
+                and not model._abstract
         )
 
     @api.model
@@ -68,7 +68,7 @@ class IrModel(models.Model):
                     },
                 ).items()
                 if field_data.get('selectable', True) and (
-                    not field_data.get('relation') or field_data['relation'] in model_names
+                        not field_data.get('relation') or field_data['relation'] in model_names
                 )
             }
             fields_data_by_fname = {
@@ -83,7 +83,8 @@ class IrModel(models.Model):
                         if field.model_name in model_names
                     ]
                     if inverse_fields:
-                        field_data['inverse_fname_by_model_name'] = {field.model_name: field.name for field in inverse_fields}
+                        field_data['inverse_fname_by_model_name'] = {field.model_name: field.name for field in
+                                                                     inverse_fields}
                     if field_data['type'] == 'many2one_reference':
                         field_data['model_name_ref_fname'] = model._fields[fname].model_field
             model_definitions[model_name] = {

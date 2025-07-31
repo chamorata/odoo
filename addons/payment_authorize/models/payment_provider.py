@@ -4,12 +4,12 @@ import json
 import logging
 import pprint
 
+from odoo.addons.payment_authorize import const
+from odoo.addons.payment_authorize.models.authorize_request import AuthorizeAPI
+
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.fields import Command
-
-from odoo.addons.payment_authorize import const
-from odoo.addons.payment_authorize.models.authorize_request import AuthorizeAPI
 
 _logger = logging.getLogger(__name__)
 
@@ -42,7 +42,7 @@ class PaymentProvider(models.Model):
                     _("Only one currency can be selected by Authorize.Net account.")
                 )
 
-    #=== COMPUTE METHODS ===#
+    # === COMPUTE METHODS ===#
 
     def _compute_feature_support_fields(self):
         """ Override of `payment` to enable additional features. """

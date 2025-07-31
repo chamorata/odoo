@@ -22,7 +22,7 @@ class TestResCountryState(TransactionCase):
             'Altan(AA)',
             'Altan ( AA )',
             'Altan (Arstotzka)',
-            'Altan (Arst)', # dubious
+            'Altan (Arst)',  # dubious
         ]:
             with self.subTest(name):
                 self.assertEqual(

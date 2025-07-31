@@ -1,5 +1,7 @@
 import uuid
+
 from psycopg2.extras import Json
+
 
 def migrate(cr, version):
     """
@@ -17,6 +19,7 @@ def migrate(cr, version):
     - pos_order_line
     - pos_payment
     """
+
     def deduplicate_uuids(table):
         query = f"""
         SELECT UNNEST(ARRAY_AGG(id))

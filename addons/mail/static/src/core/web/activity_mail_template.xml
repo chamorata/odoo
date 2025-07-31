@@ -10,17 +10,17 @@
                 </div>
                 <div class="d-flex align-items-baseline">
                     <button
-                        class="o-mail-ActivityMailTemplate-preview btn btn-link py-0"
-                        t-att-data-mail-template-id="mailTemplate.id"
-                        t-on-click="(ev) => this.onClickPreview(ev, mailTemplate)"
+                            class="o-mail-ActivityMailTemplate-preview btn btn-link py-0"
+                            t-att-data-mail-template-id="mailTemplate.id"
+                            t-on-click="(ev) => this.onClickPreview(ev, mailTemplate)"
                     >
                         Preview
                     </button>
                     <em class="text-500">or</em>
                     <button
-                        class="o-mail-ActivityMailTemplate-send btn btn-link py-0"
-                        t-att-data-mail-template-id="mailTemplate.id"
-                        t-on-click="(ev) => this.onClickSend(ev, mailTemplate)"
+                            class="o-mail-ActivityMailTemplate-send btn btn-link py-0"
+                            t-att-data-mail-template-id="mailTemplate.id"
+                            t-on-click="(ev) => this.onClickSend(ev, mailTemplate)"
                     >
                         Send Now
                     </button>

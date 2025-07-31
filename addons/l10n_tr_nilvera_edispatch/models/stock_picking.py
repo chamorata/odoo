@@ -1,6 +1,8 @@
 import base64
 import uuid
+
 from lxml import etree
+
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 from odoo.tools import cleanup_xml_node
@@ -97,11 +99,11 @@ class StockPicking(models.Model):
                 }
             }
         partners = (
-            self.company_id.partner_id
-            | self.l10n_tr_nilvera_carrier_id
-            | self.l10n_tr_nilvera_buyer_id
-            | self.l10n_tr_nilvera_seller_supplier_id
-            | self.l10n_tr_nilvera_buyer_originator_id
+                self.company_id.partner_id
+                | self.l10n_tr_nilvera_carrier_id
+                | self.l10n_tr_nilvera_buyer_id
+                | self.l10n_tr_nilvera_seller_supplier_id
+                | self.l10n_tr_nilvera_buyer_originator_id
         )
         # `is_delivery_partner` ensures that Delivery Partner's ZIP is present regardless of the partner country.
         error_messages = self.partner_id._l10n_tr_nilvera_validate_partner_details(is_delivery_partner=True)
@@ -114,8 +116,8 @@ class StockPicking(models.Model):
                     'message': _("Printed Delivery Note Date is required."),
                 }
             if (
-                not self.l10n_tr_nilvera_delivery_printed_number
-                or len(self.l10n_tr_nilvera_delivery_printed_number) != 16
+                    not self.l10n_tr_nilvera_delivery_printed_number
+                    or len(self.l10n_tr_nilvera_delivery_printed_number) != 16
             ):
                 error_messages['invalid_matbudan_number'] = {
                     'message': _("Printed Delivery Note Number of 16 characters is required."),
@@ -150,9 +152,9 @@ class StockPicking(models.Model):
             }
 
         if (
-            not self.l10n_tr_nilvera_carrier_id
-            and not self.l10n_tr_nilvera_driver_ids
-            and not self.l10n_tr_vehicle_plate
+                not self.l10n_tr_nilvera_carrier_id
+                and not self.l10n_tr_nilvera_driver_ids
+                and not self.l10n_tr_vehicle_plate
         ):
             error_messages['required_carrier_details'] = {
                 'message': _("Carrier is required (optional when both the Driver and Vehicle Plate are filled)."),
@@ -199,7 +201,8 @@ class StockPicking(models.Model):
             'actual_date': date_done_local.strftime('%Y-%m-%d'),
             'actual_time': date_done_local.strftime('%H:%M:%S'),
             'line_count': len(self.move_ids_without_package),
-            'printed_date': self.l10n_tr_nilvera_delivery_date and self.l10n_tr_nilvera_delivery_date.strftime('%Y-%m-%d'),
+            'printed_date': self.l10n_tr_nilvera_delivery_date and self.l10n_tr_nilvera_delivery_date.strftime(
+                '%Y-%m-%d'),
             'drivers': drivers,
             'default_tckn': '22222222222',
             'dispatch_scenario': 'TEMELIRSALIYE',

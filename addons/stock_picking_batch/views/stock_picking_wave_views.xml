@@ -6,7 +6,9 @@
         <field name="view_mode">list</field>
         <field name="view_id" ref="view_move_line_tree_detailed_wave"/>
         <field name="target">new</field>
-        <field name="domain">[('state', '!=', 'done'), ('picking_type_id', '=', active_id), ('picking_id', '!=', False)]</field>
+        <field name="domain">[('state', '!=', 'done'), ('picking_type_id', '=', active_id), ('picking_id', '!=',
+            False)]
+        </field>
         <field name="context">{'active_wave_id': False, 'search_default_by_location': True}</field>
     </record>
     <record id="action_prepare_wave" model="ir.actions.act_window">
@@ -31,7 +33,7 @@
             <xpath expr="//list" position="inside">
                 <header>
                     <button string="Prepare Wave" class="btn btn-primary" type="action" display="always"
-                     name="stock_picking_batch.action_prepare_wave"/>
+                            name="stock_picking_batch.action_prepare_wave"/>
                 </header>
             </xpath>
         </field>
@@ -49,7 +51,7 @@
             <xpath expr="//kanban" position="inside">
                 <header>
                     <button string="Prepare Wave" class="btn btn-primary" type="action" display="always"
-                     name="stock_picking_batch.action_prepare_wave"/>
+                            name="stock_picking_batch.action_prepare_wave"/>
                 </header>
             </xpath>
         </field>
@@ -68,19 +70,27 @@
             <div class="container mt-5">
                 <div class="row g-5">
                     <div class="col-lg-4">
-                        <img src="/stock_picking_batch/static/shapes/wave-picking.svg" class="shadow rounded-3 w-100 mb-4"/>
+                        <img src="/stock_picking_batch/static/shapes/wave-picking.svg"
+                             class="shadow rounded-3 w-100 mb-4"/>
                         <h5>Wave transfers</h5>
-                        <p class="small">Launch picking orders by aisle or area and regroup at packing zone. Ideal for large warehouses.</p>
+                        <p class="small">Launch picking orders by aisle or area and regroup at packing zone. Ideal for
+                            large warehouses.
+                        </p>
                     </div>
                     <div class="col-lg-4" style="opacity: 0.5;">
-                        <img src="/stock_picking_batch/static/shapes/batch-picking.svg" class="shadow rounded-3 w-100 mb-4"/>
+                        <img src="/stock_picking_batch/static/shapes/batch-picking.svg"
+                             class="shadow rounded-3 w-100 mb-4"/>
                         <h5>Batch transfers</h5>
-                        <p class="small">Regroup multiple orders into one picking and consolidate at the packing zone.</p>
+                        <p class="small">Regroup multiple orders into one picking and consolidate at the packing zone.
+                        </p>
                     </div>
                     <div class="col-lg-4">
-                        <img src="/stock_picking_batch/static/shapes/cluster-picking.svg" class="shadow rounded-3 w-100 mb-4"/>
+                        <img src="/stock_picking_batch/static/shapes/cluster-picking.svg"
+                             class="shadow rounded-3 w-100 mb-4"/>
                         <h5>Cluster transfers</h5>
-                        <p class="small">Pick multiple orders in one trip and prepare orders as you pick. This reduces packing time and is ideal for small products.</p>
+                        <p class="small">Pick multiple orders in one trip and prepare orders as you pick. This reduces
+                            packing time and is ideal for small products.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -105,22 +115,25 @@
                 </div>
             </xpath>
             <xpath expr="//button[@name='get_action_picking_tree_ready']" position="before">
-                <button t-if="record.count_picking_batch.raw_value > 0" class="btn btn-primary me-2" name="action_batch" type="object">
-                    <field name="count_picking_batch"/> Batches
+                <button t-if="record.count_picking_batch.raw_value > 0" class="btn btn-primary me-2" name="action_batch"
+                        type="object">
+                    <field name="count_picking_batch"/>
+                    Batches
                 </button>
             </xpath>
             <xpath expr="//button[@name='get_action_picking_tree_ready']" position="attributes">
                 <attribute
-                    name="t-attf-class"
-                    remove="btn-primary"
-                    add="{{ record.count_picking_batch.raw_value > 0 ? 'btn-secondary' : 'btn-primary'}}"
-                    separator=" "
+                        name="t-attf-class"
+                        remove="btn-primary"
+                        add="{{ record.count_picking_batch.raw_value > 0 ? 'btn-secondary' : 'btn-primary'}}"
+                        separator=" "
                 />
             </xpath>
             <xpath expr="//div[@name='picking_type_backorder_count']" class="row" position="after">
                 <div class="row">
-                    <a class="col-8 offset-4 text-truncate" name="%(stock_picking_batch.action_picking_tree_wave)d" type="action">
-                        <div t-if="record.count_picking_wave.raw_value > 0"  class="row">
+                    <a class="col-8 offset-4 text-truncate" name="%(stock_picking_batch.action_picking_tree_wave)d"
+                       type="action">
+                        <div t-if="record.count_picking_wave.raw_value > 0" class="row">
                             <span class="col-6">Waves</span>
                             <field name="count_picking_wave" class="col-2 text-end"/>
                         </div>
@@ -131,9 +144,9 @@
     </record>
 
     <menuitem
-        action="action_picking_tree_wave"
-        id="stock_picking_wave_menu"
-        parent="menu_stock_jobs"
-        sequence="31"/>
+            action="action_picking_tree_wave"
+            id="stock_picking_wave_menu"
+            parent="menu_stock_jobs"
+            sequence="31"/>
 
 </odoo>

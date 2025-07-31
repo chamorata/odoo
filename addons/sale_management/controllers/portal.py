@@ -1,15 +1,16 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.sale.controllers import portal
+
 from odoo.exceptions import AccessError, MissingError
 from odoo.http import request, route
-
-from odoo.addons.sale.controllers import portal
 
 
 class CustomerPortal(portal.CustomerPortal):
 
     @route(['/my/orders/<int:order_id>/update_line_dict'], type='json', auth="public", website=True)
-    def portal_quote_option_update(self, order_id, line_id, access_token=None, remove=False, unlink=False, input_quantity=False, **kwargs):
+    def portal_quote_option_update(self, order_id, line_id, access_token=None, remove=False, unlink=False,
+                                   input_quantity=False, **kwargs):
         """ Update the quantity or Remove an optional SOline from a SO.
 
         :param int order_id: `sale.order` id

@@ -9,6 +9,6 @@
                     'description': request.params.get('description', ''),
                 })"/>
             </xpath>
-		</template>
+        </template>
     </data>
 </odoo>

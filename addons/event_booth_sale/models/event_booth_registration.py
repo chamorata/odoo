@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from markupsafe import Markup
+
 from odoo import api, fields, models, _
 
 
@@ -48,7 +49,8 @@ class EventBoothRegistration(models.Model):
     def action_confirm(self):
         for registration in self:
             values = {
-                field: registration[field].id if isinstance(registration[field], models.BaseModel) else registration[field]
+                field: registration[field].id if isinstance(registration[field], models.BaseModel) else registration[
+                    field]
                 for field in self._get_fields_for_booth_confirmation()
             }
             registration.event_booth_id.action_confirm(values)

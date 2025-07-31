@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import psycopg2
-
 from ast import literal_eval
 
-from odoo import exceptions
+import psycopg2
 from odoo.addons.mail.tests.common import MailCommon
+
+from odoo import exceptions
 from odoo.tests import tagged
 from odoo.tests.common import users
 from odoo.tools import formataddr, mute_logger
@@ -162,7 +162,7 @@ class TestMailAlias(TestMailAliasCommon):
         other_alias.write({'alias_name': mail_alias_domain_c2.catchall_alias})
         # changing domain would clash with existing catchall
         with self.assertRaises(exceptions.UserError), self.cr.savepoint():
-            new_mail_alias.write({'alias_domain_id': mail_alias_domain_c2.id,})
+            new_mail_alias.write({'alias_domain_id': mail_alias_domain_c2.id, })
 
         new_mail_alias.write({'alias_name': 'unused.test.alias'})
         # test that alias {name, alias_domain_id} should be unique
@@ -357,7 +357,8 @@ class TestMailAlias(TestMailAliasCommon):
              'Exact match on domain 2: should find all aliases in that domain'),
             ('search.0@test.mycompany', aliases.filtered(lambda a: a.alias_name == 'test.search.0'),
              'Match in both domains'),
-            ('search.0@test.mycompany.com', aliases.filtered(lambda a: a.alias_name == 'test.search.0' and a.alias_domain_id == mail_alias_domain),
+            ('search.0@test.mycompany.com',
+             aliases.filtered(lambda a: a.alias_name == 'test.search.0' and a.alias_domain_id == mail_alias_domain),
              'Match only in domain 1'),
             ('search@test.mycompany.com', self.env['mail.alias'],
              'Does not match even as ilike'),
@@ -370,13 +371,14 @@ class TestMailAlias(TestMailAliasCommon):
 
         # search using IN operator
         for search_term, expected, msg in [
-            (['mycompany'], self.env['mail.alias'], 'mycompany is too vague: does not match a left- and right- part (!= ilike)'),
+            (['mycompany'], self.env['mail.alias'],
+             'mycompany is too vague: does not match a left- and right- part (!= ilike)'),
             ([mail_alias_domain.name], self.env['mail.alias'], 'Match only right-part of aliases emails'),
         ]:
             with self.subTest(search_term=search_term):
                 self.assertEqual(self.env['mail.alias'].search([('alias_full_name', 'in', search_term)]),
-                    expected, msg
-                )
+                                 expected, msg
+                                 )
 
     @users('admin')
     def test_alias_setup(self):
@@ -404,33 +406,33 @@ class TestAliasCompany(TestMailAliasCommon):
 
         # add archived company to multi company setup
         self.company_archived = self.env['res.company'].create({
-                'country_id': self.env.ref('base.be').id,
-                'currency_id': self.env.ref('base.EUR').id,
-                'email': 'company_archived@test.example.com',
-                'name': 'Company Archived Test',
-            })
+            'country_id': self.env.ref('base.be').id,
+            'currency_id': self.env.ref('base.EUR').id,
+            'email': 'company_archived@test.example.com',
+            'name': 'Company Archived Test',
+        })
         self.company_archived.action_archive()
 
         # create record inheriting from mail.thread to be used as owner/target thread
         test_record_archived_company = self.env['mail.test.simple.unfollow'].create({
-                'name': 'Test record (mail.thread) specific to archived company',
-                'company_id': self.company_archived.id,
-            })
+            'name': 'Test record (mail.thread) specific to archived company',
+            'company_id': self.company_archived.id,
+        })
 
         unfollow_model_id = self.env['ir.model']._get_id('mail.test.simple.unfollow')
         mc_archived_parent = self.env['mail.alias'].create({
-                'alias_name': 'alias_parent_specific_to_archived_company',
-                'alias_parent_model_id': unfollow_model_id,
-                'alias_model_id': unfollow_model_id,
-                'alias_parent_thread_id': test_record_archived_company.id,
-            })  # case where the parent thread is specific to archived company
+            'alias_name': 'alias_parent_specific_to_archived_company',
+            'alias_parent_model_id': unfollow_model_id,
+            'alias_model_id': unfollow_model_id,
+            'alias_parent_thread_id': test_record_archived_company.id,
+        })  # case where the parent thread is specific to archived company
 
         mc_archived_target = self.env['mail.alias'].create({
-                'alias_name': 'alias_target_specific_to_archived_company',
-                'alias_parent_model_id': unfollow_model_id,
-                'alias_model_id': unfollow_model_id,
-                'alias_force_thread_id': test_record_archived_company.id,
-            })  # case where the target thread is specific to archived company
+            'alias_name': 'alias_target_specific_to_archived_company',
+            'alias_parent_model_id': unfollow_model_id,
+            'alias_model_id': unfollow_model_id,
+            'alias_force_thread_id': test_record_archived_company.id,
+        })  # case where the target thread is specific to archived company
 
         # eject linked aliases then remove all alias domains; should
         # trigger the init condition at next create() call
@@ -445,10 +447,10 @@ class TestAliasCompany(TestMailAliasCommon):
         # will initialize it as the default for all mail.alias records.
         # Should not raise any errors (see _check_alias_domain_id_mc)
         mc_alias_domain = self.env['mail.alias.domain'].create({
-                'bounce_alias': 'bounce.mc.archived',
-                'catchall_alias': 'catchall.bounce.mc.archived',
-                'name': 'test.init.mc.archived.com',
-            })
+            'bounce_alias': 'bounce.mc.archived',
+            'catchall_alias': 'catchall.bounce.mc.archived',
+            'name': 'test.init.mc.archived.com',
+        })
 
         self.assertEqual(mc_archived_parent.alias_domain_id.id, mc_alias_domain.id,
                          'Parent thread has the wrong alias domain')
@@ -620,7 +622,7 @@ class TestMailAliasDomain(TestMailAliasCommon):
         new_alias_domain = alias_domain.copy({
             'bounce_alias': 'new.bounce',
             'catchall_alias': 'new.catchall',
-            })
+        })
         self.assertEqual(new_alias_domain.bounce_email, f'new.bounce@{alias_domain.name}')
         self.assertEqual(new_alias_domain.catchall_email, f'new.catchall@{alias_domain.name}')
         self.assertEqual(new_alias_domain.name, alias_domain.name)
@@ -673,67 +675,67 @@ class TestMailAliasDomain(TestMailAliasCommon):
 
         # sanitization of bounce / catchall
         for (
-            (bounce_alias, catchall_alias, default_from),
-            (exp_bounce, exp_catchall, exp_default_from),
-            (exp_bounce_email, exp_catchall_email, exp_default_from_email),
+                (bounce_alias, catchall_alias, default_from),
+                (exp_bounce, exp_catchall, exp_default_from),
+                (exp_bounce_email, exp_catchall_email, exp_default_from_email),
         ) in zip(
             [
                 (
-                    'bounce+b4r=*R3wl_#_-$€{}[]()~|\\/!?&%^\'"`~',
-                    'catchall+b4r=*R3wl_#_-$€{}[]()~|\\/!?&%^\'"`~',
-                    'notifications+b4r=*R3wl_#_-$€{}[]()~|\\/!?&%^\'"`~',
+                        'bounce+b4r=*R3wl_#_-$€{}[]()~|\\/!?&%^\'"`~',
+                        'catchall+b4r=*R3wl_#_-$€{}[]()~|\\/!?&%^\'"`~',
+                        'notifications+b4r=*R3wl_#_-$€{}[]()~|\\/!?&%^\'"`~',
                 ),
                 ('bounce+😊', 'catchall+😊', 'notifications+😊'),
                 ('Bouncâïde 😊', 'Catchôïee 😊', 'Notificâtïons 😊'),
                 ('ぁ', 'ぁぁ', 'ぁぁぁ'),
                 # only default_from can be a valid email and taken as such
                 (
-                    'bounce@wrong.complete.com',
-                    'catchall@wrong.complete.com',
-                    'notifications@valid.complete.com',
+                        'bounce@wrong.complete.com',
+                        'catchall@wrong.complete.com',
+                        'notifications@valid.complete.com',
                 ),
             ],
             [
                 (
-                    'bounce+b4r=*r3wl_#_-$-{}-~|-/!?&%^\'-`~',
-                    'catchall+b4r=*r3wl_#_-$-{}-~|-/!?&%^\'-`~',
-                    'notifications+b4r=*r3wl_#_-$-{}-~|-/!?&%^\'-`~',
+                        'bounce+b4r=*r3wl_#_-$-{}-~|-/!?&%^\'-`~',
+                        'catchall+b4r=*r3wl_#_-$-{}-~|-/!?&%^\'-`~',
+                        'notifications+b4r=*r3wl_#_-$-{}-~|-/!?&%^\'-`~',
                 ),
                 ('bounce+-', 'catchall+-', 'notifications+-'),
                 ('bouncaide-', 'catchoiee-', 'notifications-'),
                 ('?', '??', '???'),
                 # only default_from can be a valid email and taken as such
                 (
-                    'bounce',
-                    'catchall',
-                    'notifications@valid.complete.com',
+                        'bounce',
+                        'catchall',
+                        'notifications@valid.complete.com',
                 ),
             ],
             [
                 (
-                    f'bounce+b4r=*r3wl_#_-$-{{}}-~|-/!?&%^\'-`~@{alias_domain.name}',
-                    f'catchall+b4r=*r3wl_#_-$-{{}}-~|-/!?&%^\'-`~@{alias_domain.name}',
-                    f'notifications+b4r=*r3wl_#_-$-{{}}-~|-/!?&%^\'-`~@{alias_domain.name}',
+                        f'bounce+b4r=*r3wl_#_-$-{{}}-~|-/!?&%^\'-`~@{alias_domain.name}',
+                        f'catchall+b4r=*r3wl_#_-$-{{}}-~|-/!?&%^\'-`~@{alias_domain.name}',
+                        f'notifications+b4r=*r3wl_#_-$-{{}}-~|-/!?&%^\'-`~@{alias_domain.name}',
                 ),
                 (
-                    f'bounce+-@{alias_domain.name}',
-                    f'catchall+-@{alias_domain.name}',
-                    f'notifications+-@{alias_domain.name}'),
+                        f'bounce+-@{alias_domain.name}',
+                        f'catchall+-@{alias_domain.name}',
+                        f'notifications+-@{alias_domain.name}'),
                 (
-                    f'bouncaide-@{alias_domain.name}',
-                    f'catchoiee-@{alias_domain.name}',
-                    f'notifications-@{alias_domain.name}'
+                        f'bouncaide-@{alias_domain.name}',
+                        f'catchoiee-@{alias_domain.name}',
+                        f'notifications-@{alias_domain.name}'
                 ),
                 (
-                    f'?@{alias_domain.name}',
-                    f'??@{alias_domain.name}',
-                    f'???@{alias_domain.name}'
+                        f'?@{alias_domain.name}',
+                        f'??@{alias_domain.name}',
+                        f'???@{alias_domain.name}'
                 ),
                 # only default_from can be a valid email and taken as such
                 (
-                    f'bounce@{alias_domain.name}',
-                    f'catchall@{alias_domain.name}',
-                    'notifications@valid.complete.com',
+                        f'bounce@{alias_domain.name}',
+                        f'catchall@{alias_domain.name}',
+                        'notifications@valid.complete.com',
                 ),
             ]
         ):
@@ -821,7 +823,8 @@ class TestMailAliasMixin(TestMailAliasCommon):
             'alias_name': 'alias.test',
             'alias_domain_id': self.mail_alias_domain_c2.id,
         })
-        self.assertEqual(rec.alias_id.alias_domain_id, self.mail_alias_domain_c2, "Should use the provided alias domain in priority")
+        self.assertEqual(rec.alias_id.alias_domain_id, self.mail_alias_domain_c2,
+                         "Should use the provided alias domain in priority")
 
     @users('erp_manager')
     def test_alias_mixin_alias_email(self):

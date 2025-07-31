@@ -25,7 +25,7 @@ class ServerActions(models.Model):
                   'followers': 'cascade',
                   'remove_followers': 'cascade',
                   'next_activity': 'cascade',
-        }
+                  }
     )
     # Followers
     partner_ids = fields.Many2many('res.partner', compute='_compute_partner_ids', readonly=False, store=True)
@@ -70,7 +70,7 @@ class ServerActions(models.Model):
     activity_user_type = fields.Selection(
         [('specific', 'Specific User'),
          ('generic', 'Dynamic User (based on record)')],
-         string='User Type',
+        string='User Type',
         compute='_compute_activity_info', readonly=False, store=True,
         help="Use 'Specific User' to always assign the same user on the next activity. Use 'Dynamic User' to specify the field name of the user to choose on the record.")
     activity_user_id = fields.Many2one(
@@ -167,18 +167,19 @@ class ServerActions(models.Model):
                 raise ValidationError(
                     _('Mail template model of %(action_name)s does not match action model.',
                       action_name=action.name
-                     )
+                      )
                 )
 
     @api.constrains('state', 'model_id', 'mail_post_method')
     def _check_mail_model_coherency(self):
         for action in self:
-            if action.state in {'mail_post', 'followers', 'remove_followers', 'next_activity'} and action.model_id.transient:
+            if action.state in {'mail_post', 'followers', 'remove_followers',
+                                'next_activity'} and action.model_id.transient:
                 raise ValidationError(_("This action cannot be done on transient models."))
             if (
-                (action.state in {"followers", "remove_followers"}
-                or (action.state == "mail_post" and action.mail_post_method != "email"))
-                and not action.model_id.is_mail_thread
+                    (action.state in {"followers", "remove_followers"}
+                     or (action.state == "mail_post" and action.mail_post_method != "email"))
+                    and not action.model_id.is_mail_thread
             ):
                 raise ValidationError(_("This action can only be done on a mail thread models"))
             if action.state == 'next_activity' and not action.model_id.is_mail_activity:
@@ -214,7 +215,8 @@ class ServerActions(models.Model):
                 for leaf in domain_post:
                     if isinstance(leaf, (tuple, list)):
                         tracked_fields.append(leaf[0])
-            fields_to_check = [field for record, field_names in old_values.items() for field in field_names if field not in tracked_fields]
+            fields_to_check = [field for record, field_names in old_values.items() for field in field_names if
+                               field not in tracked_fields]
             if fields_to_check:
                 field = records._fields[fields_to_check[0]]
                 # Pick an arbitrary field; if it is marked to be recomputed,
@@ -226,7 +228,8 @@ class ServerActions(models.Model):
 
     def _run_action_mail_post_multi(self, eval_context=None):
         # TDE CLEANME: when going to new api with server action, remove action
-        if not self.template_id or (not self._context.get('active_ids') and not self._context.get('active_id')) or self._is_recompute():
+        if not self.template_id or (
+                not self._context.get('active_ids') and not self._context.get('active_id')) or self._is_recompute():
             return False
         res_ids = self._context.get('active_ids', [self._context.get('active_id')])
 

@@ -36,7 +36,7 @@ class AccountEdiProxyClientUser(models.Model):
     active = fields.Boolean(default=True)
     id_client = fields.Char(required=True)
     company_id = fields.Many2one('res.company', string='Company', required=True,
-        default=lambda self: self.env.company)
+                                 default=lambda self: self.env.company)
     edi_identification = fields.Char(required=True, help="The unique id that identifies this user, typically the vat")
     private_key_id = fields.Many2one(
         string='Private Key',
@@ -122,12 +122,16 @@ class AccountEdiProxyClientUser(models.Model):
                 timeout=TIMEOUT,
                 headers={'content-type': 'application/json'},
                 auth=OdooEdiProxyAuth(user=self)).json()
-        except (ValueError, requests.exceptions.ConnectionError, requests.exceptions.MissingSchema, requests.exceptions.Timeout, requests.exceptions.HTTPError):
+        except (ValueError, requests.exceptions.ConnectionError, requests.exceptions.MissingSchema,
+                requests.exceptions.Timeout, requests.exceptions.HTTPError):
             raise AccountEdiProxyError('connection_error',
-                _('The url that this service requested returned an error. The url it tried to contact was %s', url))
+                                       _('The url that this service requested returned an error. The url it tried to contact was %s',
+                                         url))
 
         if 'error' in response:
-            message = _('The url that this service requested returned an error. The url it tried to contact was %(url)s. %(error_message)s', url=url, error_message=response['error']['message'])
+            message = _(
+                'The url that this service requested returned an error. The url it tried to contact was %(url)s. %(error_message)s',
+                url=url, error_message=response['error']['message'])
             if response['error']['code'] == 404:
                 message = _('The url that this service tried to contact does not exist. The url was “%s”', url)
             raise AccountEdiProxyError('connection_error', message)
@@ -137,7 +141,7 @@ class AccountEdiProxyClientUser(models.Model):
             error_code = proxy_error['code']
             if error_code == 'refresh_token_expired':
                 self._renew_token()
-                self.env.cr.commit() # We do not want to lose it if in the _make_request below something goes wrong
+                self.env.cr.commit()  # We do not want to lose it if in the _make_request below something goes wrong
                 return self._make_request(url, params)
             if error_code == 'no_such_user':
                 # This error is also raised if the user didn't exchange data and someone else claimed the edi_identificaiton.
@@ -170,20 +174,22 @@ class AccountEdiProxyClientUser(models.Model):
         else:
             try:
                 # b64encode returns a bytestring, we need it as a string
-                response = self._make_request(self._get_server_url(proxy_type, edi_mode) + '/iap/account_edi/2/create_user', params={
-                    'dbuuid': company.env['ir.config_parameter'].get_param('database.uuid'),
-                    'company_id': company.id,
-                    'edi_identification': edi_identification,
-                    'public_key': private_key_sudo._get_public_key_bytes(encoding='pem').decode(),
-                    'proxy_type': proxy_type,
-                })
+                response = self._make_request(
+                    self._get_server_url(proxy_type, edi_mode) + '/iap/account_edi/2/create_user', params={
+                        'dbuuid': company.env['ir.config_parameter'].get_param('database.uuid'),
+                        'company_id': company.id,
+                        'edi_identification': edi_identification,
+                        'public_key': private_key_sudo._get_public_key_bytes(encoding='pem').decode(),
+                        'proxy_type': proxy_type,
+                    })
             except AccountEdiProxyError as e:
                 raise UserError(e.message)
             if 'error' in response:
                 if response['error'] == 'A user already exists with this identification.':
                     # Note: Peppol IAP errors weren't made properly with error code that are then translated on
                     # Odoo side. We are for now forced to check the error message.
-                    raise UserError(_('A user already exists with theses credentials on our server. Please check your information.'))
+                    raise UserError(
+                        _('A user already exists with theses credentials on our server. Please check your information.'))
                 raise UserError(response['error'])
 
         return self.create({
@@ -205,7 +211,8 @@ class AccountEdiProxyClientUser(models.Model):
         '''
         try:
             with self.env.cr.savepoint(flush=False):
-                self.env.cr.execute('SELECT * FROM account_edi_proxy_client_user WHERE id IN %s FOR UPDATE NOWAIT', [tuple(self.ids)])
+                self.env.cr.execute('SELECT * FROM account_edi_proxy_client_user WHERE id IN %s FOR UPDATE NOWAIT',
+                                    [tuple(self.ids)])
         except psycopg2.errors.LockNotAvailable:
             return
         response = self._make_request(self._get_server_url() + '/iap/account_edi/1/renew_token')

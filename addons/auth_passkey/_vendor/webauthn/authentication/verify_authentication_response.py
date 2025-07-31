@@ -1,5 +1,5 @@
-from dataclasses import dataclass
 import hashlib
+from dataclasses import dataclass
 from typing import List, Union
 
 from cryptography.exceptions import InvalidSignature
@@ -44,14 +44,14 @@ expected_token_binding_statuses = [
 
 
 def verify_authentication_response(
-    *,
-    credential: Union[str, dict, AuthenticationCredential],
-    expected_challenge: bytes,
-    expected_rp_id: str,
-    expected_origin: Union[str, List[str]],
-    credential_public_key: bytes,
-    credential_current_sign_count: int,
-    require_user_verification: bool = False,
+        *,
+        credential: Union[str, dict, AuthenticationCredential],
+        expected_challenge: bytes,
+        expected_rp_id: str,
+        expected_origin: Union[str, List[str]],
+        credential_public_key: bytes,
+        credential_current_sign_count: int,
+        require_user_verification: bool = False,
 ) -> VerifiedAuthentication:
     """Verify a response from navigator.credentials.get()
 
@@ -145,7 +145,7 @@ def verify_authentication_response(
         )
 
     if (
-        auth_data.sign_count > 0 or credential_current_sign_count > 0
+            auth_data.sign_count > 0 or credential_current_sign_count > 0
     ) and auth_data.sign_count <= credential_current_sign_count:
         # Require the sign count to have been incremented over what was reported by the
         # authenticator the last time this credential was used, otherwise this might be

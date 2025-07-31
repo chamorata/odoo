@@ -1,9 +1,11 @@
 # -*- coding:utf-8 -*-
 
-from odoo.exceptions import UserError
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
-from odoo.tests import tagged
+
 from odoo import fields
+from odoo.exceptions import UserError
+from odoo.tests import tagged
+
 
 @tagged('post_install', '-at_install')
 class TestSEPAQRCode(AccountTestInvoicingCommon):
@@ -49,13 +51,15 @@ class TestSEPAQRCode(AccountTestInvoicingCommon):
 
         # Using a non-SEPA IBAN shouldn't
         self.sepa_qr_invoice.partner_bank_id = self.acc_non_sepa_iban
-        with self.assertRaises(UserError, msg="It shouldn't be possible to generate a SEPA QR-code for IBAN of countries outside SEPA zone."):
+        with self.assertRaises(UserError,
+                               msg="It shouldn't be possible to generate a SEPA QR-code for IBAN of countries outside SEPA zone."):
             self.sepa_qr_invoice._generate_qr_code()
 
         # Changing the currency should break it as well
         self.sepa_qr_invoice.partner_bank_id = self.acc_sepa_iban
         self.sepa_qr_invoice.currency_id = self.env.ref('base.USD').id
-        with self.assertRaises(UserError, msg="It shouldn't be possible to generate a SEPA QR-code for another currency as EUR."):
+        with self.assertRaises(UserError,
+                               msg="It shouldn't be possible to generate a SEPA QR-code for another currency as EUR."):
             self.sepa_qr_invoice._generate_qr_code()
 
     def test_sepa_qr_code_detection(self):
@@ -63,12 +67,14 @@ class TestSEPAQRCode(AccountTestInvoicingCommon):
         is given to the invoice.
         """
         self.sepa_qr_invoice._generate_qr_code()
-        self.assertEqual(self.sepa_qr_invoice.qr_code_method, 'sct_qr', "SEPA QR-code generator should have been chosen for this invoice.")
+        self.assertEqual(self.sepa_qr_invoice.qr_code_method, 'sct_qr',
+                         "SEPA QR-code generator should have been chosen for this invoice.")
 
     def test_out_invoice_create_refund_qr_code(self):
         self.sepa_qr_invoice._generate_qr_code()
         self.sepa_qr_invoice.action_post()
-        move_reversal = self.env['account.move.reversal'].with_context(active_model="account.move", active_ids=self.sepa_qr_invoice.ids).create({
+        move_reversal = self.env['account.move.reversal'].with_context(active_model="account.move",
+                                                                       active_ids=self.sepa_qr_invoice.ids).create({
             'date': fields.Date.from_string('2019-02-01'),
             'reason': 'no reason',
             'journal_id': self.sepa_qr_invoice.journal_id.id,

@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from datetime import datetime, timedelta
+from datetime import timedelta
+
 from freezegun import freeze_time
+from odoo.addons.test_event_full.tests.common import TestEventFullCommon
 
 from odoo import Command, exceptions
-from odoo.addons.test_event_full.tests.common import TestEventFullCommon
 from odoo.tests.common import users
 
 
@@ -90,14 +91,14 @@ class TestEventEvent(TestEventFullCommon):
 
         # make 9 registrations (let 1 on ticket)
         with self.mock_datetime_and_now(self.reference_now), \
-             self.mock_mail_gateway():
+                self.mock_mail_gateway():
             self.env['event.registration'].create([
                 {
-                     'email': 'test.customer.%02d@test.example.com' % x,
-                     'phone': '04560011%02d' % x,
-                     'event_id': test_event.id,
-                     'event_ticket_id': ticket_1.id,
-                     'name': 'Customer %d' % x,
+                    'email': 'test.customer.%02d@test.example.com' % x,
+                    'phone': '04560011%02d' % x,
+                    'event_id': test_event.id,
+                    'event_ticket_id': ticket_1.id,
+                    'name': 'Customer %d' % x,
                 }
                 for x in range(0, 9)
             ])
@@ -111,28 +112,28 @@ class TestEventEvent(TestEventFullCommon):
 
         # prevent registration due to ticket limit
         with self.mock_datetime_and_now(self.reference_now), \
-             self.assertRaises(exceptions.ValidationError):
+                self.assertRaises(exceptions.ValidationError):
             self.env['event.registration'].create([
                 {
-                     'email': 'additional.customer.%02d@test.example.com' % x,
-                     'phone': '04560011%02d' % x,
-                     'event_id': test_event.id,
-                     'event_ticket_id': ticket_1.id,
-                     'name': 'Additional Customer %d' % x,
+                    'email': 'additional.customer.%02d@test.example.com' % x,
+                    'phone': '04560011%02d' % x,
+                    'event_id': test_event.id,
+                    'event_ticket_id': ticket_1.id,
+                    'name': 'Additional Customer %d' % x,
                 }
                 for x in range(0, 2)
             ])
 
         # make 20 registrations (on free ticket)
         with self.mock_datetime_and_now(self.reference_now), \
-             self.mock_mail_gateway():
+                self.mock_mail_gateway():
             self.env['event.registration'].create([
                 {
-                     'email': 'other.customer.%02d@test.example.com' % x,
-                     'phone': '04560011%02d' % x,
-                     'event_id': test_event.id,
-                     'event_ticket_id': ticket_2.id,
-                     'name': 'Other Customer %d' % x,
+                    'email': 'other.customer.%02d@test.example.com' % x,
+                    'phone': '04560011%02d' % x,
+                    'event_id': test_event.id,
+                    'event_ticket_id': ticket_2.id,
+                    'name': 'Other Customer %d' % x,
                 }
                 for x in range(0, 20)
             ])
@@ -144,14 +145,14 @@ class TestEventEvent(TestEventFullCommon):
 
         # prevent registration due to event limit
         with self.mock_datetime_and_now(self.reference_now), \
-             self.assertRaises(exceptions.ValidationError):
+                self.assertRaises(exceptions.ValidationError):
             self.env['event.registration'].create([
                 {
-                     'email': 'additional.customer.%02d@test.example.com' % x,
-                     'phone': '04560011%02d' % x,
-                     'event_id': test_event.id,
-                     'event_ticket_id': ticket_2.id,
-                     'name': 'Additional Customer %d' % x,
+                    'email': 'additional.customer.%02d@test.example.com' % x,
+                    'phone': '04560011%02d' % x,
+                    'event_id': test_event.id,
+                    'event_ticket_id': ticket_2.id,
+                    'name': 'Additional Customer %d' % x,
                 }
                 for x in range(0, 2)
             ])

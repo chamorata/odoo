@@ -6,9 +6,9 @@ import itertools
 import logging
 from ast import literal_eval
 
-from odoo import _, api, fields, models, tools, Command
-from odoo.osv import expression
+from odoo import _, api, fields, models, tools
 from odoo.exceptions import ValidationError, UserError
+from odoo.osv import expression
 from odoo.tools import is_html_empty
 from odoo.tools.safe_eval import safe_eval, time
 
@@ -41,14 +41,15 @@ class MailTemplate(models.Model):
         [('base_template', 'Base Template'),
          ('hidden_template', 'Hidden Template'),
          ('custom_template', 'Custom Template')],
-         compute="_compute_template_category", search="_search_template_category")
+        compute="_compute_template_category", search="_search_template_category")
     model_id = fields.Many2one('ir.model', 'Applies to', ondelete='cascade')
     model = fields.Char('Related Document Model', related='model_id.model', index=True, store=True, readonly=True)
     subject = fields.Char('Subject', translate=True, prefetch=True, help="Subject (placeholders may be used here)")
     email_from = fields.Char('From',
                              help="Sender address (placeholders may be used here). If not set, the default "
                                   "value will be the author's email alias if configured, or email address.")
-    user_id = fields.Many2one('res.users', string='User', domain="[('share', '=', False)]", help='The template belongs to this user')
+    user_id = fields.Many2one('res.users', string='User', domain="[('share', '=', False)]",
+                              help='The template belongs to this user')
     # recipients
     use_default_to = fields.Boolean(
         'Default recipients',
@@ -59,7 +60,8 @@ class MailTemplate(models.Model):
     partner_to = fields.Char('To (Partners)',
                              help="Comma-separated ids of recipient partners (placeholders may be used here)")
     email_cc = fields.Char('Cc', help="Carbon copy recipients (placeholders may be used here)")
-    reply_to = fields.Char('Reply To', help="Email address to which replies will be redirected when sending emails in mass; only used when the reply is not logged in the original discussion thread.")
+    reply_to = fields.Char('Reply To',
+                           help="Email address to which replies will be redirected when sending emails in mass; only used when the reply is not logged in the original discussion thread.")
     # content
     body_html = fields.Html(
         'Body', render_engine='qweb', render_options={'post_process': True},
@@ -80,7 +82,8 @@ class MailTemplate(models.Model):
     mail_server_id = fields.Many2one('ir.mail_server', 'Outgoing Mail Server', readonly=False,
                                      help="Optional preferred server for outgoing mails. If not set, the highest "
                                           "priority one will be used.")
-    scheduled_date = fields.Char('Scheduled Date', help="If set, the queue manager will send the email after the date. If not set, the email will be send as soon as possible. You can use dynamic expression.")
+    scheduled_date = fields.Char('Scheduled Date',
+                                 help="If set, the queue manager will send the email after the date. If not set, the email will be send as soon as possible. You can use dynamic expression.")
     auto_delete = fields.Boolean(
         'Auto Delete', default=True,
         help="This option permanently removes any track of email after it's been sent, including from the Technical menu in the Settings, in order to preserve storage space of your Odoo database.")
@@ -145,7 +148,8 @@ class MailTemplate(models.Model):
 
         domain = []
         if 'hidden_template' in value:
-            domain.append(['|', ('active', '=', False), '&', ('description', '=', False), ('id', 'in', templates_with_xmlid)])
+            domain.append(
+                ['|', ('active', '=', False), '&', ('description', '=', False), ('id', 'in', templates_with_xmlid)])
 
         if 'base_template' in value:
             domain.append(['&', ('description', '!=', False), ('id', 'in', templates_with_xmlid)])
@@ -184,7 +188,7 @@ class MailTemplate(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         self._check_abstract_models(vals_list)
-        return super().create(vals_list)\
+        return super().create(vals_list) \
             ._fix_attachment_ownership()
 
     def write(self, vals):
@@ -236,7 +240,7 @@ class MailTemplate(models.Model):
             context = {
                 'default_composition_mode': 'mass_mail',
                 'default_model': template.model,
-                'default_template_id' : template.id,
+                'default_template_id': template.id,
             }
             button_name = _('Send Mail (%s)', template.name)
             action = ActWindow.create({
@@ -326,7 +330,8 @@ class MailTemplate(models.Model):
                 if not additional_attachments:
                     continue
                 if additional_attachments.get('attachment_ids'):
-                    render_results[res_id].setdefault('attachment_ids', []).extend(additional_attachments['attachment_ids'])
+                    render_results[res_id].setdefault('attachment_ids', []).extend(
+                        additional_attachments['attachment_ids'])
                 if additional_attachments.get('attachments'):
                     render_results[res_id].setdefault('attachments', []).extend(additional_attachments['attachments'])
 
@@ -553,7 +558,7 @@ class MailTemplate(models.Model):
                 template._generate_template_scheduled_date(
                     template_res_ids,
                     render_results=render_results
-            )
+                )
 
             # add values static for all res_ids
             template._generate_template_static_values(
@@ -619,7 +624,7 @@ class MailTemplate(models.Model):
 
     @api.returns('self', lambda value: value.ids)
     def send_mail_batch(self, res_ids, force_send=False, raise_exception=False, email_values=None,
-                  email_layout_xmlid=False):
+                        email_layout_xmlid=False):
         """ Generates new mail.mails. Batch version of 'send_mail'.'
 
         :param list res_ids: IDs of modelrecords on which template will be rendered
@@ -655,7 +660,7 @@ class MailTemplate(models.Model):
                  'res_id',
                  'scheduled_date',
                  'subject',
-                )
+                 )
             )
             values_list = [res_ids_values[res_id] for res_id in res_ids_chunk]
 
@@ -694,7 +699,8 @@ class MailTemplate(models.Model):
 
                 template_ctx = {
                     # message
-                    'message': self.env['mail.message'].sudo().new(dict(body=values['body_html'], record_name=record.display_name)),
+                    'message': self.env['mail.message'].sudo().new(
+                        dict(body=values['body_html'], record_name=record.display_name)),
                     'subtype': self.env['mail.message.subtype'].sudo(),
                     # record
                     'model_description': model_lang.display_name,
@@ -709,7 +715,8 @@ class MailTemplate(models.Model):
                     # tools
                     'is_html_empty': is_html_empty,
                 }
-                body = model_lang.env['ir.qweb']._render(sending_email_layout_xmlid, template_ctx, minimal_qcontext=True, raise_if_not_found=False)
+                body = model_lang.env['ir.qweb']._render(sending_email_layout_xmlid, template_ctx,
+                                                         minimal_qcontext=True, raise_if_not_found=False)
                 if not body:
                     _logger.warning(
                         'QWeb template %s not found when sending template %s. Sending without layout.',

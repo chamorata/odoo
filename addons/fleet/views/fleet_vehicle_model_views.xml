@@ -10,10 +10,10 @@
                     <div class="oe_button_box" name="button_box">
                         <button name="action_model_vehicle" type="object" icon="fa-car" class="oe_stat_button">
                             <field
-                                name="vehicle_count"
-                                widget="statinfo"
-                                string="Vehicles"
-                                invisible="not vehicle_count"/>
+                                    name="vehicle_count"
+                                    widget="statinfo"
+                                    string="Vehicles"
+                                    invisible="not vehicle_count"/>
                             <div class="o_stat_info" invisible="vehicle_count">
                                 <span class="o_stat_value">New</span>
                                 <span class="o_stat_text">Vehicle</span>
@@ -47,25 +47,29 @@
                                     <field name="model_year"/>
                                     <field name="trailer_hook"/>
                                 </group>
-                                <group id="vehicle_information" string="Vehicle Information" invisible="vehicle_type != 'bike'">
+                                <group id="vehicle_information" string="Vehicle Information"
+                                       invisible="vehicle_type != 'bike'">
                                     <field name="electric_assistance"/>
                                 </group>
                                 <group string="Engine" invisible="vehicle_type != 'car'" name="group_engine">
                                     <field name="default_fuel_type" required="1"/>
                                     <label for="vehicle_range"/>
                                     <div class="o_row" name="vehicle_range">
-                                        <field name="vehicle_range"/><span>km</span>
+                                        <field name="vehicle_range"/>
+                                        <span>km</span>
                                     </div>
                                     <label for="default_co2"/>
                                     <div class="o_row" name="default_co2">
-                                        <field name="default_co2"/><span>g/km</span>
+                                        <field name="default_co2"/>
+                                        <span>g/km</span>
                                     </div>
                                     <field name="co2_standard"/>
                                     <field name="transmission"/>
                                     <field name="power_unit"/>
                                     <label for="power" invisible="power_unit != 'power'"/>
                                     <div class="o_row" invisible="power_unit != 'power'">
-                                        <field name="power"/><span>kW</span>
+                                        <field name="power"/>
+                                        <span>kW</span>
                                     </div>
                                     <field name="horsepower" invisible="power_unit != 'horsepower'"/>
                                     <field name="horsepower_tax" invisible="power_unit != 'horsepower'"/>
@@ -79,8 +83,13 @@
                                         <t t-name="card" class="flex-row fw-bold">
                                             <field name="name"/>
                                             <div class="text-muted ms-auto">
-                                                <t t-if="record.phone.raw_value"><field name="phone"/><br/></t>
-                                                <t t-if="record.email.raw_value"><field name="email"/></t>
+                                                <t t-if="record.phone.raw_value">
+                                                    <field name="phone"/>
+                                                    <br/>
+                                                </t>
+                                                <t t-if="record.email.raw_value">
+                                                    <field name="email"/>
+                                                </t>
                                             </div>
                                         </t>
                                     </templates>
@@ -99,8 +108,8 @@
         <field name="model">fleet.vehicle.model</field>
         <field name="arch" type="xml">
             <list string="Models" multi_edit="1">
-                <field name="brand_id" />
-                <field name="name" />
+                <field name="brand_id"/>
+                <field name="name"/>
                 <field name="vehicle_count" string="Vehicles"/>
                 <field name="category_id" optional="show"/>
                 <field name="vehicle_type" optional="show"/>
@@ -128,8 +137,8 @@
         <field name="name">fleet.vehicle.model.search</field>
         <field name="model">fleet.vehicle.model</field>
         <field name="arch" type="xml">
-            <search string="Vehicles costs" >
-                <field name="name" string="Model" />
+            <search string="Vehicles costs">
+                <field name="name" string="Model"/>
                 <field name="brand_id"/>
                 <filter string="Contains Vehicle" name="contains_vehicle" domain="[('vehicle_count', '!=', 0)]"/>
                 <group expand="1" string="Group By">
@@ -147,23 +156,26 @@
         <field name="view_mode">list,form</field>
         <field name="context">{"search_default_groupby_brand" : True,}</field>
         <field name="help" type="html">
-          <p class="o_view_nocontent_smiling_face">
-            Create a new model
-          </p><p>
-            You can define several models (e.g. A3, A4) for each make (Audi).
-          </p>
+            <p class="o_view_nocontent_smiling_face">
+                Create a new model
+            </p>
+            <p>
+                You can define several models (e.g. A3, A4) for each make (Audi).
+            </p>
         </field>
     </record>
 
-    <menuitem name="Fleet" id="menu_root" sequence="220" groups="fleet_group_user" web_icon="fleet,static/description/icon.png"/>
-    <menuitem name="Configuration" parent="menu_root" id="fleet_configuration" sequence="100" groups="fleet_group_manager"/>
+    <menuitem name="Fleet" id="menu_root" sequence="220" groups="fleet_group_user"
+              web_icon="fleet,static/description/icon.png"/>
+    <menuitem name="Configuration" parent="menu_root" id="fleet_configuration" sequence="100"
+              groups="fleet_group_manager"/>
 
     <record id='fleet_vehicle_model_brand_view_tree' model='ir.ui.view'>
         <field name="name">fleet.vehicle.model.brand.list</field>
         <field name="model">fleet.vehicle.model.brand</field>
         <field name="arch" type="xml">
             <list string="Model Make">
-                <field name="name" />
+                <field name="name"/>
                 <field name="model_count" string="Models"/>
             </list>
         </field>
@@ -177,7 +189,7 @@
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_brand_model" type="object" icon="fa-car" class="oe_stat_button"
-                            invisible="model_count == 0">
+                                invisible="model_count == 0">
                             <field name="model_count" widget="statinfo" string="Models"/>
                         </button>
                     </div>
@@ -214,7 +226,8 @@
                         <main class="ms-2 mt-1">
                             <field class="fw-bold fs-5" name="name"/>
                             <a type="object" name="action_brand_model" class="mt-2 text-black">
-                                <field name="model_count"/> MODELS
+                                <field name="model_count"/>
+                                MODELS
                             </a>
                         </main>
                     </t>
@@ -230,7 +243,7 @@
             <search>
                 <field name="name"/>
                 <filter string="With Models" name="with_models"
-                    domain="[('model_count', '>', 0)]"/>
+                        domain="[('model_count', '>', 0)]"/>
                 <separator/>
                 <filter string="Archived" name="active" domain="[('active','=',False)]"/>
             </search>
@@ -243,9 +256,9 @@
         <field name="view_mode">kanban,list,form</field>
         <field name="context">{'search_default_with_models': 1}</field>
         <field name="help" type="html">
-          <p class="o_view_nocontent_smiling_face">
-            Create a new manufacturer
-          </p>
+            <p class="o_view_nocontent_smiling_face">
+                Create a new manufacturer
+            </p>
         </field>
     </record>
 
@@ -294,8 +307,12 @@
         </field>
     </record>
 
-    <menuitem name="Models" parent="fleet_configuration" id="fleet_models_configuration" sequence="10" groups="fleet_group_manager"/>
-    <menuitem action="fleet_vehicle_model_brand_action" parent="fleet_models_configuration" id="fleet_vehicle_model_brand_menu" sequence="1"/>
-    <menuitem action="fleet_vehicle_model_action" parent="fleet_models_configuration" id="fleet_vehicle_model_menu" sequence="5"/>
-    <menuitem action="fleet_vehicle_model_category_action" parent="fleet_models_configuration" id="fleet_vehicle_model_category_menu" sequence="10"/>
+    <menuitem name="Models" parent="fleet_configuration" id="fleet_models_configuration" sequence="10"
+              groups="fleet_group_manager"/>
+    <menuitem action="fleet_vehicle_model_brand_action" parent="fleet_models_configuration"
+              id="fleet_vehicle_model_brand_menu" sequence="1"/>
+    <menuitem action="fleet_vehicle_model_action" parent="fleet_models_configuration" id="fleet_vehicle_model_menu"
+              sequence="5"/>
+    <menuitem action="fleet_vehicle_model_category_action" parent="fleet_models_configuration"
+              id="fleet_vehicle_model_category_menu" sequence="10"/>
 </odoo>

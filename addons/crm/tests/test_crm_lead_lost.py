@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.crm.tests import common as crm_common
+
 from odoo.exceptions import AccessError
 from odoo.tests.common import tagged, users
 from odoo.tools import mute_logger
@@ -64,7 +65,7 @@ class TestLeadConvert(crm_common.TestCrmCommon):
             update_message,
             [('active', 'boolean', True, False),
              ('lost_reason_id', 'many2one', False, self.lost_reason)
-            ]
+             ]
         )
 
     @users('user_sales_leads')
@@ -97,7 +98,7 @@ class TestLeadConvert(crm_common.TestCrmCommon):
                 lost_message,
                 [('active', 'boolean', True, False),
                  ('lost_reason_id', 'many2one', False, self.lost_reason)
-                ]
+                 ]
             )
             self.assertIn('<p>I cannot find it. It was in my closet and pouf, disappeared.</p>', lost_message.body,
                           'Feedback should be included directly within tracking message')

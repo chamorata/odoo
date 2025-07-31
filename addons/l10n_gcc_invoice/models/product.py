@@ -13,6 +13,7 @@ class ProductProduct(models.Model):
         substrings where (when looking right to left) the first substring ends with a numeral and
         the second begins with an Arabic character.
         """
+
         def repl(match_occurrence):
             # group(1): (\d) == numeral
             # group(3): ([\u0600-\u06FF]) == Arabic character

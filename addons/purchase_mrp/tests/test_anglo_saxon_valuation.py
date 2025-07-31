@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.fields import Date, Datetime
-from odoo.tools import float_is_zero, mute_logger
-from odoo.tests import Form, tagged
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.addons.stock_account.tests.test_stockvaluation import _create_accounting_data
+
+from odoo.fields import Date, Datetime
+from odoo.tests import Form, tagged
+from odoo.tools import float_is_zero, mute_logger
 
 
 @tagged('post_install', '-at_install')
@@ -16,7 +17,8 @@ class TestAngloSaxonValuationPurchaseMRP(AccountTestInvoicingCommon):
         super().setUpClass()
         cls.vendor01 = cls.env['res.partner'].create({'name': "Super Vendor"})
 
-        cls.stock_input_account, cls.stock_output_account, cls.stock_valuation_account, cls.expense_account, cls.stock_journal = _create_accounting_data(cls.env)
+        cls.stock_input_account, cls.stock_output_account, cls.stock_valuation_account, cls.expense_account, cls.stock_journal = _create_accounting_data(
+            cls.env)
         cls.avco_category = cls.env['product.category'].create({
             'name': 'AVCO',
             'property_cost_method': 'average',
@@ -71,7 +73,8 @@ class TestAngloSaxonValuationPurchaseMRP(AccountTestInvoicingCommon):
         invoice.action_post()
 
         svls = po.order_line.move_ids.stock_valuation_layer_ids
-        self.assertEqual(len(svls), 2, "The invoice should have created two SVL (one by kit's component) for the price diff")
+        self.assertEqual(len(svls), 2,
+                         "The invoice should have created two SVL (one by kit's component) for the price diff")
         self.assertEqual(sum(svls.mapped('value')), 100, "Should be the standard price of both components")
 
         input_amls = self.env['account.move.line'].search([('account_id', '=', self.stock_input_account.id)])
@@ -175,7 +178,8 @@ class TestAngloSaxonValuationPurchaseMRP(AccountTestInvoicingCommon):
                 with kit_form.bom_line_ids.edit(1) as line:
                     line.cost_share = 70
 
-        wizard_form = Form(self.env['stock.return.picking'].with_context(active_id=delivery.id, active_model='stock.picking'))
+        wizard_form = Form(
+            self.env['stock.return.picking'].with_context(active_id=delivery.id, active_model='stock.picking'))
         wizard = wizard_form.save()
         wizard.product_return_moves.quantity = 1
         action = wizard.action_create_returns()
@@ -281,6 +285,7 @@ class TestAngloSaxonValuationPurchaseMRP(AccountTestInvoicingCommon):
         journal in an imbalanced state if the std price of that product has changed since the MO
         was completed (i.e., since build time).
         """
+
         def make_purchase_and_production(product_ids, price_units):
             purchase_orders = self.env['purchase.order'].create([{
                 'partner_id': self.partner_a.id,

@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import pytz
-
 from collections import defaultdict
 from itertools import chain
 
+import pytz
+from odoo.addons.hr_work_entry_contract.models.hr_work_intervals import WorkIntervals
+
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
-from odoo.addons.hr_work_entry_contract.models.hr_work_intervals import WorkIntervals
 
 
 class HrWorkEntry(models.Model):
@@ -78,7 +78,8 @@ class HrWorkEntry(models.Model):
                 calendar = work_entry.contract_id.resource_calendar_id
                 if not calendar:
                     continue
-                work_entry.date_stop = calendar.plan_hours(work_entry.duration, work_entry.date_start, compute_leaves=True)
+                work_entry.date_stop = calendar.plan_hours(work_entry.duration, work_entry.date_start,
+                                                           compute_leaves=True)
                 continue
             super(HrWorkEntry, work_entry)._compute_date_stop()
 
@@ -116,7 +117,8 @@ class HrWorkEntry(models.Model):
             date_stop = work_entry.date_stop
             calendar = work_entry.contract_id.resource_calendar_id
             employee = work_entry.contract_id.employee_id
-            result[work_entry.id] = mapped_contract_data[(date_start, date_stop)][calendar][employee.id]['hours'] if calendar else 0.0
+            result[work_entry.id] = mapped_contract_data[(date_start, date_stop)][calendar][employee.id][
+                'hours'] if calendar else 0.0
         return result
 
     @api.model
@@ -134,8 +136,9 @@ class HrWorkEntry(models.Model):
                     date_end=contract_end,
                 ))
             elif len(contracts) > 1:
-                raise ValidationError(_("%(employee)s has multiple contracts from %(date_start)s to %(date_end)s. A work entry cannot overlap multiple contracts.",
-                                        employee=employee.name, date_start=contract_start, date_end=contract_end))
+                raise ValidationError(
+                    _("%(employee)s has multiple contracts from %(date_start)s to %(date_end)s. A work entry cannot overlap multiple contracts.",
+                      employee=employee.name, date_start=contract_start, date_end=contract_end))
             return dict(vals, contract_id=contracts[0].id)
         return vals
 
@@ -172,7 +175,9 @@ class HrWorkEntry(models.Model):
             datetime_start = min(entries.mapped('date_start'))
             datetime_stop = max(entries.mapped('date_stop'))
 
-            calendar_intervals = calendar._attendance_intervals_batch(pytz.utc.localize(datetime_start), pytz.utc.localize(datetime_stop))[False]
+            calendar_intervals = \
+            calendar._attendance_intervals_batch(pytz.utc.localize(datetime_start), pytz.utc.localize(datetime_stop))[
+                False]
             entries_intervals = entries._to_intervals()
             overlapping_entries = self._from_intervals(entries_intervals & calendar_intervals)
             outside_entries |= entries - overlapping_entries
@@ -180,7 +185,8 @@ class HrWorkEntry(models.Model):
         return bool(outside_entries)
 
     def _to_intervals(self):
-        return WorkIntervals((w.date_start.replace(tzinfo=pytz.utc), w.date_stop.replace(tzinfo=pytz.utc), w) for w in self)
+        return WorkIntervals(
+            (w.date_start.replace(tzinfo=pytz.utc), w.date_stop.replace(tzinfo=pytz.utc), w) for w in self)
 
     @api.model
     def _from_intervals(self, intervals):

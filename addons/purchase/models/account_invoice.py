@@ -3,6 +3,7 @@
 import difflib
 import logging
 import time
+
 from markupsafe import Markup
 
 from odoo import api, fields, models, Command, _
@@ -16,14 +17,15 @@ class AccountMove(models.Model):
     _inherit = 'account.move'
 
     purchase_vendor_bill_id = fields.Many2one('purchase.bill.union', store=False, readonly=False,
-        string='Auto-complete',
-        help="Auto-complete from a past bill / purchase order.")
+                                              string='Auto-complete',
+                                              help="Auto-complete from a past bill / purchase order.")
     purchase_id = fields.Many2one('purchase.order', store=False, readonly=False,
-        string='Purchase Order',
-        help="Auto-complete from a past purchase order.")
+                                  string='Purchase Order',
+                                  help="Auto-complete from a past purchase order.")
     purchase_order_count = fields.Integer(compute="_compute_origin_po_count", string='Purchase Order Count')
     purchase_order_name = fields.Char(compute='_compute_purchase_order_name')
-    is_purchase_matched = fields.Boolean(compute='_compute_is_purchase_matched')  # 0: PO not required or partially linked. 1: All lines linked
+    is_purchase_matched = fields.Boolean(
+        compute='_compute_is_purchase_matched')  # 0: PO not required or partially linked. 1: All lines linked
 
     def _get_invoice_reference(self):
         self.ensure_one()
@@ -54,12 +56,13 @@ class AccountMove(models.Model):
 
         # Copy data from PO
         invoice_vals = self.purchase_id.with_company(self.purchase_id.company_id)._prepare_invoice()
-        has_invoice_lines = bool(self.invoice_line_ids.filtered(lambda x: x.display_type not in ('line_note', 'line_section')))
+        has_invoice_lines = bool(
+            self.invoice_line_ids.filtered(lambda x: x.display_type not in ('line_note', 'line_section')))
         new_currency_id = self.currency_id if has_invoice_lines else invoice_vals.get('currency_id')
         del invoice_vals['ref'], invoice_vals['payment_reference']
         del invoice_vals['company_id']  # avoid recomputing the currency
         if self.move_type == invoice_vals['move_type']:
-            del invoice_vals['move_type'] # no need to be updated if it's same value, to avoid recomputes
+            del invoice_vals['move_type']  # no need to be updated if it's same value, to avoid recomputes
         self.update(invoice_vals)
         self.currency_id = new_currency_id
 
@@ -217,6 +220,7 @@ class AccountMove(models.Model):
         :param timeout: the max time the line matching algorithm can take before timing out
         :return: list of `purchase.order.line` whose remaining sum matches `goal_total`
         """
+
         def find_matching_subset_po_lines(lines, goal):
             if time.time() - start_time > timeout:
                 raise TimeoutError
@@ -241,6 +245,7 @@ class AccountMove(models.Model):
                     # return any solution.
                     return []
             return solutions
+
         start_time = time.time()
         try:
             subsets = find_matching_subset_po_lines(
@@ -485,13 +490,13 @@ class AccountMove(models.Model):
                 # We remove the original matched invoice lines and apply their quantities and taxes to the matched
                 # purchase order lines.
                 inv_and_po_lines = list(map(lambda line: (
-                        invoice.invoice_line_ids.filtered(
-                            lambda l: l.purchase_line_id and l.purchase_line_id.id == line[0]),
-                        invoice.invoice_line_ids.filtered(
-                            lambda l: l in line[1])
-                    ),
-                    matched_inv_lines
-                ))
+                    invoice.invoice_line_ids.filtered(
+                        lambda l: l.purchase_line_id and l.purchase_line_id.id == line[0]),
+                    invoice.invoice_line_ids.filtered(
+                        lambda l: l in line[1])
+                ),
+                                            matched_inv_lines
+                                            ))
                 invoice.invoice_line_ids = [
                     Command.update(po_line.id, {'quantity': inv_line.quantity, 'tax_ids': inv_line.tax_ids})
                     for po_line, inv_line in inv_and_po_lines
@@ -508,14 +513,15 @@ class AccountMove(models.Model):
                     })]
 
 
-
 class AccountMoveLine(models.Model):
     """ Override AccountInvoice_line to add the link to the purchase order line it is related to"""
     _inherit = 'account.move.line'
 
     is_downpayment = fields.Boolean()
-    purchase_line_id = fields.Many2one('purchase.order.line', 'Purchase Order Line', ondelete='set null', index='btree_not_null', copy=False)
-    purchase_order_id = fields.Many2one('purchase.order', 'Purchase Order', related='purchase_line_id.order_id', readonly=True)
+    purchase_line_id = fields.Many2one('purchase.order.line', 'Purchase Order Line', ondelete='set null',
+                                       index='btree_not_null', copy=False)
+    purchase_order_id = fields.Many2one('purchase.order', 'Purchase Order', related='purchase_line_id.order_id',
+                                        readonly=True)
 
     def _copy_data_extend_business_fields(self, values):
         # OVERRIDE to copy the 'purchase_line_id' field as well.

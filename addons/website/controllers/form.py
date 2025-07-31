@@ -2,18 +2,18 @@
 
 import base64
 import json
-import psycopg2
+import re
 
+import psycopg2
 from markupsafe import Markup
 from psycopg2 import IntegrityError
-import re
 from werkzeug.exceptions import BadRequest
 
 from odoo import http, SUPERUSER_ID
-from odoo.addons.base.models.ir_qweb_fields import nl2br, nl2br_enclose
+from odoo.addons.base.models.ir_qweb_fields import nl2br_enclose
+from odoo.exceptions import AccessDenied, ValidationError, UserError
 from odoo.http import request
 from odoo.tools import plaintext2html
-from odoo.exceptions import AccessDenied, ValidationError, UserError
 from odoo.tools.misc import hmac, consteq
 from odoo.tools.translate import _, LazyTranslate
 
@@ -28,7 +28,8 @@ class WebsiteForm(http.Controller):
         return ""
 
     # Check and insert values from the form on the model <model>
-    @http.route('/website/form/<string:model_name>', type='http', auth="public", methods=['POST'], website=True, csrf=False)
+    @http.route('/website/form/<string:model_name>', type='http', auth="public", methods=['POST'], website=True,
+                csrf=False)
     def website_form(self, model_name, **kwargs):
         # Partial CSRF check, only performed when session is authenticated, as there
         # is no real risk for unauthenticated sessions here. It's a common case for
@@ -63,7 +64,8 @@ class WebsiteForm(http.Controller):
         })
 
     def _handle_website_form(self, model_name, **kwargs):
-        model_record = request.env['ir.model'].sudo().search([('model', '=', model_name), ('website_form_access', '=', True)])
+        model_record = request.env['ir.model'].sudo().search(
+            [('model', '=', model_name), ('website_form_access', '=', True)])
         if not model_record:
             return json.dumps({
                 'error': _("The form's specified model does not exist")
@@ -85,7 +87,7 @@ class WebsiteForm(http.Controller):
 
                 if model_name == 'mail.mail':
                     form_has_email_cc = {'email_cc', 'email_bcc'} & kwargs.keys() or \
-                        'email_cc' in kwargs["website_form_signature"]
+                                        'email_cc' in kwargs["website_form_signature"]
                     # remove the email_cc information from the signature
                     kwargs["website_form_signature"] = kwargs["website_form_signature"].split(':')[0]
                     if kwargs.get("email_to"):
@@ -168,10 +170,10 @@ class WebsiteForm(http.Controller):
         dest_model = request.env[model.sudo().model]
 
         data = {
-            'record': {},        # Values to create record
+            'record': {},  # Values to create record
             'attachments': [],  # Attached files
-            'custom': '',        # Custom fields values
-            'meta': '',         # Add metadata if enabled
+            'custom': '',  # Custom fields values
+            'meta': '',  # Add metadata if enabled
         }
 
         authorized_fields = model.with_user(SUPERUSER_ID)._get_form_writable_fields(values)
@@ -255,7 +257,8 @@ class WebsiteForm(http.Controller):
         if hasattr(dest_model, "website_form_input_filter"):
             data['record'] = dest_model.website_form_input_filter(request, data['record'])
 
-        missing_required_fields = [label for label, field in authorized_fields.items() if field['required'] and label not in data['record']]
+        missing_required_fields = [label for label, field in authorized_fields.items() if
+                                   field['required'] and label not in data['record']]
         if any(error_fields):
             raise ValidationError(error_fields + missing_required_fields)
 
@@ -268,7 +271,8 @@ class WebsiteForm(http.Controller):
     def insert_record(self, request, model, values, custom, meta=None):
         model_name = model.sudo().model
         if model_name == 'mail.mail':
-            email_from = _('"%(company)s form submission" <%(email)s>', company=request.env.company.name, email=request.env.company.email)
+            email_from = _('"%(company)s form submission" <%(email)s>', company=request.env.company.name,
+                           email=request.env.company.email)
             values.update({'reply_to': values.get('email_from'), 'email_from': email_from})
         record = request.env[model_name].with_user(SUPERUSER_ID).with_context(
             mail_create_nosubscribe=True,
@@ -281,8 +285,8 @@ class WebsiteForm(http.Controller):
             default_field = model.website_form_default_field_id
             default_field_data = values.get(default_field.name, '')
             custom_content = (default_field_data + "\n\n" if default_field_data else '') \
-                + (_custom_label + custom + "\n\n" if custom else '') \
-                + (self._meta_label + "\n________\n\n" + meta if meta else '')
+                             + (_custom_label + custom + "\n\n" if custom else '') \
+                             + (self._meta_label + "\n________\n\n" + meta if meta else '')
 
             # If there is a default field configured for this model, use it.
             # If there isn't, put the custom data in a message instead

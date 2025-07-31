@@ -21,11 +21,12 @@ class Department(models.Model):
     company_id = fields.Many2one('res.company', string='Company', index=True, default=lambda self: self.env.company)
     parent_id = fields.Many2one('hr.department', string='Parent Department', index=True, check_company=True)
     child_ids = fields.One2many('hr.department', 'parent_id', string='Child Departments')
-    manager_id = fields.Many2one('hr.employee', string='Manager', tracking=True, domain="['|', ('company_id', '=', False), ('company_id', 'in', allowed_company_ids)]")
+    manager_id = fields.Many2one('hr.employee', string='Manager', tracking=True,
+                                 domain="['|', ('company_id', '=', False), ('company_id', 'in', allowed_company_ids)]")
     member_ids = fields.One2many('hr.employee', 'department_id', string='Members', readonly=True)
     has_read_access = fields.Boolean(search="_search_has_read_access", store=False, export_string_translation=False)
     total_employee = fields.Integer(compute='_compute_total_employee', string='Total Employee',
-        export_string_translation=False)
+                                    export_string_translation=False)
     jobs_ids = fields.One2many('hr.job', 'department_id', string='Jobs')
     plan_ids = fields.One2many('mail.activity.plan', 'department_id')
     plans_count = fields.Integer(compute='_compute_plan_count')
@@ -50,7 +51,8 @@ class Department(models.Model):
             return [(1, "=", 0)]
         if self.env['hr.employee'].has_access('read'):
             return [(1, "=", 1)]
-        departments_ids = self.env['hr.department'].sudo().search([('manager_id', 'in', self.env.user.employee_ids.ids)]).ids
+        departments_ids = self.env['hr.department'].sudo().search(
+            [('manager_id', 'in', self.env.user.employee_ids.ids)]).ids
         return [('id', 'child_of', departments_ids)]
 
     @api.model
@@ -72,7 +74,9 @@ class Department(models.Model):
             department.master_department_id = int(department.parent_path.split('/')[0])
 
     def _compute_total_employee(self):
-        emp_data = self.env['hr.employee'].sudo()._read_group([('department_id', 'in', self.ids), ('company_id', 'in', self.env.companies.ids)], ['department_id'], ['__count'])
+        emp_data = self.env['hr.employee'].sudo()._read_group(
+            [('department_id', 'in', self.ids), ('company_id', 'in', self.env.companies.ids)], ['department_id'],
+            ['__count'])
         result = {department.id: count for department, count in emp_data}
         for department in self:
             department.total_employee = result.get(department.id, 0)
@@ -145,7 +149,7 @@ class Department(models.Model):
     def get_formview_action(self, access_uid=None):
         res = super().get_formview_action(access_uid=access_uid)
         if (not self.env.user.has_group('hr.group_hr_user') and
-           self.env.context.get('open_employees_kanban', False)):
+                self.env.context.get('open_employees_kanban', False)):
             res.update({
                 'name': self.name,
                 'res_model': 'hr.employee.public',

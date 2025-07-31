@@ -3,11 +3,11 @@
 from unittest.mock import patch
 from urllib.parse import quote as url_quote
 
-from odoo.tests import tagged
-from odoo.tools import mute_logger
-
 from odoo.addons.payment.tests.http_common import PaymentHttpCommon
 from odoo.addons.payment_mercado_pago.tests.common import MercadoPagoCommon
+
+from odoo.tests import tagged
+from odoo.tools import mute_logger
 
 
 @tagged('post_install', '-at_install')
@@ -50,8 +50,8 @@ class TestPaymentTransaction(MercadoPagoCommon, PaymentHttpCommon):
         """ Test that the `api_url` key is not omitted from the rendering values. """
         tx = self._create_transaction(flow='redirect')
         with patch(
-            'odoo.addons.payment_mercado_pago.models.payment_transaction.PaymentTransaction'
-            '._get_specific_rendering_values', return_value={'api_url': 'https://dummy.com'}
+                'odoo.addons.payment_mercado_pago.models.payment_transaction.PaymentTransaction'
+                '._get_specific_rendering_values', return_value={'api_url': 'https://dummy.com'}
         ):
             processing_values = tx._get_processing_values()
         form_info = self._extract_values_from_html_form(processing_values['redirect_form_html'])
@@ -64,8 +64,8 @@ class TestPaymentTransaction(MercadoPagoCommon, PaymentHttpCommon):
         successful payment. """
         tx = self._create_transaction(flow='redirect')
         with patch(
-            'odoo.addons.payment_mercado_pago.models.payment_provider.PaymentProvider'
-            '._mercado_pago_make_request', return_value=self.verification_data
+                'odoo.addons.payment_mercado_pago.models.payment_provider.PaymentProvider'
+                '._mercado_pago_make_request', return_value=self.verification_data
         ):
             tx._process_notification_data(self.redirect_notification_data)
         self.assertEqual(tx.state, 'done')
@@ -76,8 +76,8 @@ class TestPaymentTransaction(MercadoPagoCommon, PaymentHttpCommon):
         404 error payment. """
         tx = self._create_transaction(flow='redirect')
         with patch(
-            'odoo.addons.payment_mercado_pago.models.payment_provider.PaymentProvider'
-            '._mercado_pago_make_request', return_value=self.verification_data_for_error_state
+                'odoo.addons.payment_mercado_pago.models.payment_provider.PaymentProvider'
+                '._mercado_pago_make_request', return_value=self.verification_data_for_error_state
         ):
             tx._process_notification_data(self.redirect_notification_data)
         self.assertEqual(tx.state, 'error')

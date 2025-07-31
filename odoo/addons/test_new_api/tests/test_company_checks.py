@@ -137,7 +137,8 @@ class TestCompanyCheck(common.TransactionCase):
 
         # When accessing company/companies, check raises error if unauthorized/unexisting company.
         with self.assertRaises(AccessError):
-            user.with_context(allowed_company_ids=[self.company_a.id, self.company_b.id, self.company_c.id]).env.companies
+            user.with_context(
+                allowed_company_ids=[self.company_a.id, self.company_b.id, self.company_c.id]).env.companies
 
         with self.assertRaises(AccessError):
             user.with_context(allowed_company_ids=[self.company_b.id]).env.company

@@ -20,5 +20,6 @@ class MandatoryDay(models.Model):
     department_ids = fields.Many2many('hr.department', string="Departments")
 
     _sql_constraints = [
-        ('date_from_after_day_to', 'CHECK(start_date <= end_date)', 'The start date must be anterior than the end date.')
+        ('date_from_after_day_to', 'CHECK(start_date <= end_date)',
+         'The start date must be anterior than the end date.')
     ]

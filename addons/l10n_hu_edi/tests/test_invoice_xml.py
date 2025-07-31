@@ -1,11 +1,12 @@
-from odoo import tools, fields, Command
-from odoo.tests.common import tagged
-from odoo.addons.l10n_hu_edi.tests.common import L10nHuEdiTestCommon
+import base64
+import io
+import zipfile
 
 from freezegun import freeze_time
-import base64
-import zipfile
-import io
+from odoo.addons.l10n_hu_edi.tests.common import L10nHuEdiTestCommon
+
+from odoo import tools, fields, Command
+from odoo.tests.common import tagged
 
 
 @tagged('post_install_l10n', '-at_install', 'post_install')
@@ -106,7 +107,8 @@ class L10nHuEdiTestInvoiceXml(L10nHuEdiTestCommon):
 
         # Pay advance invoice on 2024-01-15.
         with freeze_time('2024-01-15'):
-            self.env['account.payment.register'].with_context(active_ids=advance_invoice.ids, active_model='account.move').create({})._create_payments()
+            self.env['account.payment.register'].with_context(active_ids=advance_invoice.ids,
+                                                              active_model='account.move').create({})._create_payments()
 
         # Issue final invoice on 2024-02-01. The XML should report 2024-01-15 as the date of advance payment.
         with freeze_time('2024-02-01'):
@@ -153,11 +155,14 @@ class L10nHuEdiTestInvoiceXml(L10nHuEdiTestCommon):
         out_refund = self.create_credit_note_simple(currency=currency_eur)
         in_refund = self.create_refund_simple(currency=currency_eur)
 
-        expected_value = tools.float_round(10000 * self.tax_vat.amount / (100 * currency_eur.rate), self.currency.decimal_places)
+        expected_value = tools.float_round(10000 * self.tax_vat.amount / (100 * currency_eur.rate),
+                                           self.currency.decimal_places)
 
-        self.assertEqual(out_invoice._l10n_hu_get_invoice_totals_for_report()['total_vat_amount_in_huf'], expected_value)
+        self.assertEqual(out_invoice._l10n_hu_get_invoice_totals_for_report()['total_vat_amount_in_huf'],
+                         expected_value)
         self.assertEqual(in_invoice._l10n_hu_get_invoice_totals_for_report()['total_vat_amount_in_huf'], expected_value)
-        self.assertEqual(out_refund._l10n_hu_get_invoice_totals_for_report()['total_vat_amount_in_huf'], -expected_value)
+        self.assertEqual(out_refund._l10n_hu_get_invoice_totals_for_report()['total_vat_amount_in_huf'],
+                         -expected_value)
         self.assertEqual(in_refund._l10n_hu_get_invoice_totals_for_report()['total_vat_amount_in_huf'], -expected_value)
 
     def test_invoice_simple_deduction(self):
@@ -166,7 +171,8 @@ class L10nHuEdiTestInvoiceXml(L10nHuEdiTestCommon):
             invoice.action_post()
             invoice_xml = invoice._l10n_hu_edi_generate_xml()
 
-            with tools.file_open('l10n_hu_edi/tests/invoice_xmls/invoice_simple_discount.xml', 'rb') as expected_xml_file:
+            with tools.file_open('l10n_hu_edi/tests/invoice_xmls/invoice_simple_discount.xml',
+                                 'rb') as expected_xml_file:
                 self.assertXmlTreeEqual(
                     self.get_xml_tree_from_string(invoice_xml),
                     self.get_xml_tree_from_string(expected_xml_file.read()),
@@ -178,7 +184,8 @@ class L10nHuEdiTestInvoiceXml(L10nHuEdiTestCommon):
             invoice.action_post()
             invoice_xml = invoice._l10n_hu_edi_generate_xml()
 
-            with tools.file_open('l10n_hu_edi/tests/invoice_xmls/invoice_tax_price_include.xml', 'rb') as expected_xml_file:
+            with tools.file_open('l10n_hu_edi/tests/invoice_xmls/invoice_tax_price_include.xml',
+                                 'rb') as expected_xml_file:
                 self.assertXmlTreeEqual(
                     self.get_xml_tree_from_string(invoice_xml),
                     self.get_xml_tree_from_string(expected_xml_file.read()),

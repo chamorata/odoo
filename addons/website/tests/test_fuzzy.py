@@ -1,12 +1,13 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import logging
-from lxml import etree
 import re
-from markupsafe import Markup
 
+from lxml import etree
+from markupsafe import Markup
 from odoo.addons.website.controllers.main import Website
 from odoo.addons.website.tools import distance, MockRequest
+
 import odoo.tests
 from odoo.tests.common import TransactionCase
 
@@ -234,7 +235,7 @@ class TestAutoComplete(TransactionCase):
         suggestions = self._autocomplete("P79354")
         self.assertEqual(1, suggestions['results_count'], "Test data contains one exact match")
         self.assertFalse(suggestions['fuzzy_search'], "Expects an exact match")
-        suggestions = self._autocomplete("kangroo") # must contain a typo
+        suggestions = self._autocomplete("kangroo")  # must contain a typo
         self.assertEqual(1, suggestions['results_count'], "Test data contains one fuzzy match")
         self.assertTrue(suggestions['fuzzy_search'], "Expects a fuzzy match")
 

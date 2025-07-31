@@ -8,7 +8,8 @@
             <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
                 <button type="object" class="oe_stat_button" icon="fa-globe" name="action_go_to_website">
                     <div class="o_form_field o_stat_info">
-                        <span class="o_stat_text">Go to <br/>Website</span>
+                        <span class="o_stat_text">Go to<br/>Website
+                        </span>
                     </div>
                 </button>
             </xpath>

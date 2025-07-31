@@ -8,16 +8,19 @@
             <xpath expr="//setting[@name='electronic_waybill_in']" position="inside">
                 <div class="content-group" invisible="not module_l10n_in_edi_ewaybill or not module_l10n_in_edi">
                     <div class="mt16 row">
-                        <label for="l10n_in_edi_ewaybill_username" string="Username" class="col-3 col-lg-3 o_light_label"/>
+                        <label for="l10n_in_edi_ewaybill_username" string="Username"
+                               class="col-3 col-lg-3 o_light_label"/>
                         <field name="l10n_in_edi_ewaybill_username" nolabel="1"/>
                     </div>
                     <div class="row">
-                        <label for="l10n_in_edi_ewaybill_password" string="Password" class="col-3 col-lg-3 o_light_label"/>
+                        <label for="l10n_in_edi_ewaybill_password" string="Password"
+                               class="col-3 col-lg-3 o_light_label"/>
                         <field name="l10n_in_edi_ewaybill_password" password="True" nolabel="1"/>
                     </div>
                 </div>
                 <div class='mt8' invisible="not module_l10n_in_edi_ewaybill or not module_l10n_in_edi">
-                    <button name="l10n_in_edi_ewaybill_test" icon="oi-arrow-right" type="object" string="Verify Username and Password" class="btn-link"/>
+                    <button name="l10n_in_edi_ewaybill_test" icon="oi-arrow-right" type="object"
+                            string="Verify Username and Password" class="btn-link"/>
                 </div>
             </xpath>
         </field>

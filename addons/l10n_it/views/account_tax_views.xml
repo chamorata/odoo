@@ -7,16 +7,16 @@
         <field name="priority">20</field>
         <field name="inherit_id" ref="account.view_tax_form"/>
         <field name="arch" type="xml">
-        <data>
-            <xpath expr="//page[@name='advanced_options']" position="inside">
-                <group invisible="country_code != 'IT'">
-                    <group>
-                        <field name="l10n_it_exempt_reason"/>
-                        <field name="l10n_it_law_reference"/>
+            <data>
+                <xpath expr="//page[@name='advanced_options']" position="inside">
+                    <group invisible="country_code != 'IT'">
+                        <group>
+                            <field name="l10n_it_exempt_reason"/>
+                            <field name="l10n_it_law_reference"/>
+                        </group>
                     </group>
-                </group>
-            </xpath>
-        </data>
+                </xpath>
+            </data>
         </field>
     </record>
 

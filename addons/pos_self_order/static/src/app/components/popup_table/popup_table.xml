@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates id="template" xml:space="preserve">
     <t t-name="pos_self_order.PopupTable">
-        <div class="position-absolute bg-dark bg-opacity-25 w-100 h-100 fixed-top" />
+        <div class="position-absolute bg-dark bg-opacity-25 w-100 h-100 fixed-top"/>
         <div class="self_order_popup_table shadow-lg position-absolute fixed-bottom bg-white w-100 p-4 flex-column d-flex justify-content-between">
             <div class="mb-5 d-flex justify-content-between align-items-start">
                 <div>
@@ -16,22 +16,22 @@
                 </option>
                 <t t-foreach="selfOrder.models['restaurant.floor'].getAll()" t-as="floor" t-key="floor.id">
                     <option value="floor" disabled="true">
-                        <t t-esc="floor.name" />
+                        <t t-esc="floor.name"/>
                     </option>
                     <option t-foreach="floor.table_ids" t-as="table" t-key="table.id" t-att-value="table.id">
-                        <t t-esc="table.table_number" />
+                        <t t-esc="table.table_number"/>
                     </option>
                 </t>
             </select>
             <a
-                type="button"
-                t-on-click="() => this.setTable()"
-                t-att-class="{'disabled': !this.validSelection}"
-                class="btn btn-primary py-3 my-2">
+                    type="button"
+                    t-on-click="() => this.setTable()"
+                    t-att-class="{'disabled': !this.validSelection}"
+                    class="btn btn-primary py-3 my-2">
                     <t t-if="this.validSelection">
-                        Continue with table <t t-esc="this.selectedTable.table_number" />
+                        Continue with table <t t-esc="this.selectedTable.table_number"/>
                     </t>
-                    <t t-else="">
+                <t t-else="">
                         Select a table
                     </t>
             </a>

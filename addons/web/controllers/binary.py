@@ -1,14 +1,14 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import base64
-import functools
 import io
 import json
 import logging
 import os
+from contextlib import nullcontext
+
 import unicodedata
 
-from contextlib import nullcontext
 try:
     from werkzeug.utils import send_file
 except ImportError:
@@ -121,7 +121,9 @@ class Binary(http.Controller):
                 rw_env = api.Environment(rw_cr, env.user.id, {})
                 try:
                     if filename.endswith('.map'):
-                        _logger.error(".map should have been generated through debug assets, (version %s most likely outdated)", unique)
+                        _logger.error(
+                            ".map should have been generated through debug assets, (version %s most likely outdated)",
+                            unique)
                         raise request.not_found()
                     bundle_name, rtl, asset_type = rw_env['ir.asset']._parse_bundle_name(filename, debug_assets)
                     css = asset_type == 'css'

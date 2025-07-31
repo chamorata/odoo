@@ -42,4 +42,4 @@ class UoM(models.Model):
             ('34', 'Second'),
             ('35', 'Watt'),
             ('36', 'Kilowatt-hour')
-    ], string='Spanish EDI Units', default="05", required=True)
+        ], string='Spanish EDI Units', default="05", required=True)

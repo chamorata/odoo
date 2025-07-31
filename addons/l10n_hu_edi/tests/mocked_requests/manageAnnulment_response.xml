@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ManageAnnulmentResponse xmlns="http://schemas.nav.gov.hu/OSA/3.0/api"
-    xmlns:ns2="http://schemas.nav.gov.hu/NTCA/1.0/common"
-    xmlns:ns3="http://schemas.nav.gov.hu/OSA/3.0/base"
-    xmlns:ns4="http://schemas.nav.gov.hu/OSA/3.0/data">
+                         xmlns:ns2="http://schemas.nav.gov.hu/NTCA/1.0/common"
+>
     <ns2:header>
         <ns2:requestId>ODOO9941a922af3e429c82616a4bd8</ns2:requestId>
         <ns2:timestamp>2024-03-12T10:50:37.896Z</ns2:timestamp>

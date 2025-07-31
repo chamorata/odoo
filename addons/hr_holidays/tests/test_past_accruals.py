@@ -1,10 +1,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from datetime import date
+
 from freezegun import freeze_time
+from odoo.addons.hr_holidays.tests.common import TestHrHolidaysCommon
 
 from odoo.tests import tagged
-
-from odoo.addons.hr_holidays.tests.common import TestHrHolidaysCommon
 
 
 @tagged('post_install', '-at_install', 'accruals')

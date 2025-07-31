@@ -22,7 +22,8 @@
                         <field name="name">1. Exempted turnover</field>
                         <field name="code">BJ_EXEMPT</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_bj_sales_exempt_balance" model="account.report.expression">
+                            <record id="account_tax_report_line_bj_sales_exempt_balance"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">BJ_1</field>
@@ -33,7 +34,8 @@
                         <field name="name">2. Export of taxable products</field>
                         <field name="code">BJ_EXPORT</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_bj_sales_export_balance" model="account.report.expression">
+                            <record id="account_tax_report_line_bj_sales_export_balance"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">BJ_2</field>
@@ -44,7 +46,8 @@
                         <field name="name">3. Export of non-taxable products</field>
                         <field name="code">BJ_EXPORT_NON_TAXABLE</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_bj_sales_export_non_taxable_balance" model="account.report.expression">
+                            <record id="account_tax_report_line_bj_sales_export_non_taxable_balance"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">BJ_3</field>
@@ -55,7 +58,8 @@
                         <field name="name">4. Taxable operations</field>
                         <field name="code">BJ_TAXABLE</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_bj_sales_taxable_balance" model="account.report.expression">
+                            <record id="account_tax_report_line_bj_sales_taxable_balance"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">BJ_4</field>
@@ -66,7 +70,8 @@
                         <field name="name">5. Self Deliveries</field>
                         <field name="code">BJ_SELF</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_bj_sales_self_balance" model="account.report.expression">
+                            <record id="account_tax_report_line_bj_sales_self_balance"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">BJ_5</field>
@@ -77,10 +82,13 @@
                         <field name="name">6. Total turnover without VAT</field>
                         <field name="code">BJ_TOTAL_TURNOVER</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_bj_sales_total_turnover_balance" model="account.report.expression">
+                            <record id="account_tax_report_line_bj_sales_total_turnover_balance"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">aggregation</field>
-                                <field name="formula">BJ_EXEMPT.balance + BJ_EXPORT.balance + BJ_EXPORT_NON_TAXABLE.balance + BJ_TAXABLE.balance + BJ_SELF.balance</field>
+                                <field name="formula">BJ_EXEMPT.balance + BJ_EXPORT.balance +
+                                    BJ_EXPORT_NON_TAXABLE.balance + BJ_TAXABLE.balance + BJ_SELF.balance
+                                </field>
                             </record>
                         </field>
                     </record>
@@ -95,12 +103,14 @@
                         <field name="name">7. Credit reported from last month</field>
                         <field name="code">BJ_REPORTED</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_bj_deductible_reported_balance" model="account.report.expression">
+                            <record id="account_tax_report_line_bj_deductible_reported_balance"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">aggregation</field>
                                 <field name="formula">BJ_REPORTED._applied_carryover_balance</field>
                             </record>
-                            <record id="account_tax_report_line_bj_deductible_reported_balance_carryover" model="account.report.expression">
+                            <record id="account_tax_report_line_bj_deductible_reported_balance_carryover"
+                                    model="account.report.expression">
                                 <field name="label">_applied_carryover_balance</field>
                                 <field name="engine">external</field>
                                 <field name="formula">most_recent</field>
@@ -112,7 +122,8 @@
                         <field name="name">8. Deduction on goods and services (without assets)</field>
                         <field name="code">BJ_GOODS_SERVICES</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_bj_deductible_goods_services_balance" model="account.report.expression">
+                            <record id="account_tax_report_line_bj_deductible_goods_services_balance"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">BJ_8</field>
@@ -123,7 +134,8 @@
                         <field name="name">9. Deduction on assets</field>
                         <field name="code">BJ_ASSETS</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_bj_deductible_assets_balance" model="account.report.expression">
+                            <record id="account_tax_report_line_bj_deductible_assets_balance"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">BJ_9</field>
@@ -134,7 +146,8 @@
                         <field name="name">10. Additional deductions</field>
                         <field name="code">BJ_DEDU_ADDITIONAL</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_bj_deductible_additional_balance" model="account.report.expression">
+                            <record id="account_tax_report_line_bj_deductible_additional_balance"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">external</field>
                                 <field name="formula">sum</field>
@@ -146,7 +159,8 @@
                         <field name="name">11. Repayment to do</field>
                         <field name="code">BJ_DEDU_REPAYMENT</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_bj_deductible_repayment_balance" model="account.report.expression">
+                            <record id="account_tax_report_line_bj_deductible_repayment_balance"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">external</field>
                                 <field name="formula">sum</field>
@@ -158,10 +172,13 @@
                         <field name="name">12. Total</field>
                         <field name="code">BJ_DEDU_TOTAL</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_bj_deductible_total_balance" model="account.report.expression">
+                            <record id="account_tax_report_line_bj_deductible_total_balance"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">aggregation</field>
-                                <field name="formula">BJ_REPORTED.balance + BJ_GOODS_SERVICES.balance + BJ_ASSETS.balance + BJ_DEDU_ADDITIONAL.balance + BJ_DEDU_REPAYMENT.balance</field>
+                                <field name="formula">BJ_REPORTED.balance + BJ_GOODS_SERVICES.balance +
+                                    BJ_ASSETS.balance + BJ_DEDU_ADDITIONAL.balance + BJ_DEDU_REPAYMENT.balance
+                                </field>
                             </record>
                         </field>
                     </record>
@@ -187,7 +204,8 @@
                         <field name="name">14. VAT deductible</field>
                         <field name="code">BJ_VAT_DEDUCTIBLE</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_bj_net_deductible_balance" model="account.report.expression">
+                            <record id="account_tax_report_line_bj_net_deductible_balance"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">aggregation</field>
                                 <field name="formula">BJ_DEDU_TOTAL.balance</field>
@@ -198,7 +216,8 @@
                         <field name="name">15. Net VAT to pay</field>
                         <field name="code">BJ_NET_TO_PAY</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_bj_net_to_pay_balance" model="account.report.expression">
+                            <record id="account_tax_report_line_bj_net_to_pay_balance"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">aggregation</field>
                                 <field name="formula">BJ_GROSS.balance - BJ_VAT_DEDUCTIBLE.balance</field>
@@ -210,14 +229,16 @@
                         <field name="name">16. Credit to report</field>
                         <field name="code">BJ_TO_REPORT</field>
                         <field name="expression_ids">
-                            <record id="account_tax_report_line_bj_credit_to_report_balance" model="account.report.expression">
+                            <record id="account_tax_report_line_bj_credit_to_report_balance"
+                                    model="account.report.expression">
                                 <field name="label">balance</field>
                                 <field name="engine">aggregation</field>
                                 <field name="formula">BJ_VAT_DEDUCTIBLE.balance - BJ_GROSS.balance</field>
                                 <field name="subformula">if_above(XOF(0))</field>
                                 <field name="carryover_target" eval="False"/>
                             </record>
-                            <record id="account_tax_report_line_bj_credit_to_report_carryover" model="account.report.expression">
+                            <record id="account_tax_report_line_bj_credit_to_report_carryover"
+                                    model="account.report.expression">
                                 <field name="label">_carryover_balance</field>
                                 <field name="engine">aggregation</field>
                                 <field name="formula">BJ_TO_REPORT.balance</field>

@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.test_mass_mailing.tests.common import TestMassMailCommon
+
 from odoo.exceptions import UserError
 from odoo.tests import tagged
 from odoo.tests.common import users
@@ -101,13 +102,15 @@ class TestMassMailingServer(TestMassMailCommon):
         }])
         with self.mock_smtplib_connection():
             mailings.action_send_mail()
-        self.assertEqual(self.find_mail_server_mocked.call_count, 3, 'Must be called only once per mail from except when forced')
+        self.assertEqual(self.find_mail_server_mocked.call_count, 3,
+                         'Must be called only once per mail from except when forced')
 
         for (expected_smtp_from, expected_msg_from, expected_mail_server) in [
             ('specific_user@test.mycompany.com', 'specific_user@test.mycompany.com', self.mail_server_user),
             (f'{self.alias_bounce}@{self.alias_domain}', 'unknown_name@test.mycompany.com', self.mail_server_domain),
             # We do not have a mail server for this address email, so fall back to the "notifications@domain" email.
-            (f'{self.default_from}@{self.alias_domain}', f'"Testing" <{self.default_from}@{self.alias_domain}>', self.mail_server_notification),
+            (f'{self.default_from}@{self.alias_domain}', f'"Testing" <{self.default_from}@{self.alias_domain}>',
+             self.mail_server_notification),
             # forced sever
             ('unknow_email@unknow_domain.com', 'unknow_email@unknow_domain.com', self.mail_server_notification),
         ]:

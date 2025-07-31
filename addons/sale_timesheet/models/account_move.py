@@ -9,12 +9,15 @@ from odoo.osv import expression
 class AccountMove(models.Model):
     _inherit = "account.move"
 
-    timesheet_ids = fields.One2many('account.analytic.line', 'timesheet_invoice_id', string='Timesheets', readonly=True, copy=False, export_string_translation=False)
-    timesheet_count = fields.Integer("Number of timesheets", compute='_compute_timesheet_count', compute_sudo=True, export_string_translation=False)
-    timesheet_encode_uom_id = fields.Many2one('uom.uom', related='company_id.timesheet_encode_uom_id', export_string_translation=False)
+    timesheet_ids = fields.One2many('account.analytic.line', 'timesheet_invoice_id', string='Timesheets', readonly=True,
+                                    copy=False, export_string_translation=False)
+    timesheet_count = fields.Integer("Number of timesheets", compute='_compute_timesheet_count', compute_sudo=True,
+                                     export_string_translation=False)
+    timesheet_encode_uom_id = fields.Many2one('uom.uom', related='company_id.timesheet_encode_uom_id',
+                                              export_string_translation=False)
     timesheet_total_duration = fields.Integer("Timesheet Total Duration",
-        compute='_compute_timesheet_total_duration', compute_sudo=True,
-        help="Total recorded duration, expressed in the encoding UoM, and rounded to the unit")
+                                              compute='_compute_timesheet_total_duration', compute_sudo=True,
+                                              help="Total recorded duration, expressed in the encoding UoM, and rounded to the unit")
 
     @api.depends('timesheet_ids', 'company_id.timesheet_encode_uom_id')
     def _compute_timesheet_total_duration(self):
@@ -36,7 +39,8 @@ class AccountMove(models.Model):
 
     @api.depends('timesheet_ids')
     def _compute_timesheet_count(self):
-        timesheet_data = self.env['account.analytic.line']._read_group([('timesheet_invoice_id', 'in', self.ids)], ['timesheet_invoice_id'], ['__count'])
+        timesheet_data = self.env['account.analytic.line']._read_group([('timesheet_invoice_id', 'in', self.ids)],
+                                                                       ['timesheet_invoice_id'], ['__count'])
         mapped_data = {timesheet_invoice.id: count for timesheet_invoice, count in timesheet_data}
         for invoice in self:
             invoice.timesheet_count = mapped_data.get(invoice.id, 0)
@@ -76,7 +80,8 @@ class AccountMove(models.Model):
             :param end_date: the end date of the period
         """
         for line in self.filtered(lambda i: i.move_type == 'out_invoice' and i.state == 'draft').invoice_line_ids:
-            sale_line_delivery = line.sale_line_ids.filtered(lambda sol: sol.product_id.invoice_policy == 'delivery' and sol.product_id.service_type == 'timesheet')
+            sale_line_delivery = line.sale_line_ids.filtered(
+                lambda sol: sol.product_id.invoice_policy == 'delivery' and sol.product_id.service_type == 'timesheet')
             if not start_date and not end_date:
                 start_date, end_date = self._get_range_dates(sale_line_delivery.order_id)
             if sale_line_delivery:

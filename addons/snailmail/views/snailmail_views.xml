@@ -21,13 +21,16 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="snailmail_print" string="Send Now" type="object" invisible="state not in ('pending', 'error')" class="oe_highlight"/>
+                    <button name="snailmail_print" string="Send Now" type="object"
+                            invisible="state not in ('pending', 'error')" class="oe_highlight"/>
                     <button name="cancel" string="Cancel" type="object" invisible="state not in ('pending', 'error')"/>
                     <field name="state" widget="statusbar" statusbar_visible="pending,sent,canceled"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
-                        <h1><field name="display_name"/></h1>
+                        <h1>
+                            <field name="display_name"/>
+                        </h1>
                     </div>
                     <group>
                         <field name="reference" widget="reference"/>
@@ -53,7 +56,7 @@
         <field name="res_model">snailmail.letter</field>
         <field name="view_mode">form,list</field>
         <field name="domain">[('state', '!=', 'draft')]</field>
-        <field name="view_id" ref="snailmail_letter_list" />
+        <field name="view_id" ref="snailmail_letter_list"/>
     </record>
 
     <menuitem id="menu_snailmail_letters" parent="base.menu_email" action="action_mail_letters"

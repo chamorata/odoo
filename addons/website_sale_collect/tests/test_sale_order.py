@@ -1,10 +1,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.fields import Command
-from odoo.exceptions import ValidationError
-from odoo.tests import tagged
-
 from odoo.addons.website_sale_collect.tests.common import ClickAndCollectCommon
+
+from odoo.exceptions import ValidationError
+from odoo.fields import Command
+from odoo.tests import tagged
 
 
 @tagged('post_install', '-at_install')

@@ -1,13 +1,14 @@
+from datetime import datetime
+
 from markupsafe import Markup
 
-from odoo import _, models, Command
+from odoo import _, models
 from odoo.addons.base.models.res_bank import sanitize_account_number
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import float_is_zero, float_repr, format_list
 from odoo.tools.float_utils import float_round
 from odoo.tools.misc import clean_context, formatLang, html_escape
 from odoo.tools.xml_utils import find_xml_value
-from datetime import datetime
 
 # -------------------------------------------------------------------------
 # UNIT OF MEASURE
@@ -145,7 +146,8 @@ class AccountEdiCommon(models.AbstractModel):
             try:
                 tax._validate_repartition_lines()
             except ValidationError as e:
-                error_msg = _("Tax '%(tax_name)s' is invalid: %(error_message)s", tax_name=tax.name, error_message=e.args[0])  # args[0] gives the error message
+                error_msg = _("Tax '%(tax_name)s' is invalid: %(error_message)s", tax_name=tax.name,
+                              error_message=e.args[0])  # args[0] gives the error message
                 raise ValidationError(error_msg)
 
     def _get_tax_unece_codes(self, customer, supplier, tax):
@@ -182,7 +184,8 @@ class AccountEdiCommon(models.AbstractModel):
         if supplier.country_id == customer.country_id:
             if not tax or tax.amount == 0:
                 # in theory, you should indicate the precise law article
-                return create_dict(tax_category_code='E', tax_exemption_reason=_('Articles 226 items 11 to 15 Directive 2006/112/EN'))
+                return create_dict(tax_category_code='E',
+                                   tax_exemption_reason=_('Articles 226 items 11 to 15 Directive 2006/112/EN'))
             else:
                 return create_dict(tax_category_code='S')  # standard VAT
 
@@ -206,7 +209,8 @@ class AccountEdiCommon(models.AbstractModel):
         if tax.amount != 0:
             return create_dict(tax_category_code='S')
         else:
-            return create_dict(tax_category_code='E', tax_exemption_reason=_('Articles 226 items 11 to 15 Directive 2006/112/EN'))
+            return create_dict(tax_category_code='E',
+                               tax_exemption_reason=_('Articles 226 items 11 to 15 Directive 2006/112/EN'))
 
     def _get_tax_category_code(self, customer, supplier, tax):
         if not tax:
@@ -258,7 +262,8 @@ class AccountEdiCommon(models.AbstractModel):
         :return: an Error message or None
         """
         if not record:
-            return custom_warning_message or _("The element %(record)s is required on %(field_list)s.", record=record, field_list=format_list(self.env, field_names))
+            return custom_warning_message or _("The element %(record)s is required on %(field_list)s.", record=record,
+                                               field_list=format_list(self.env, field_names))
 
         if not isinstance(field_names, (list, tuple)):
             field_names = (field_names,)
@@ -281,8 +286,10 @@ class AccountEdiCommon(models.AbstractModel):
             display_field = f"'{display_field_names[field_names[0]]['string']}'"
             return _("The field %(field)s is required on %(record)s.", field=display_field, record=record.display_name)
         else:
-            display_fields = format_list(self.env, [f"'{display_field_names[x]['string']}'" for x in display_field_names])
-            return _("At least one of the following fields %(field_list)s is required on %(record)s.", field_list=display_fields, record=record.display_name)
+            display_fields = format_list(self.env,
+                                         [f"'{display_field_names[x]['string']}'" for x in display_field_names])
+            return _("At least one of the following fields %(field_list)s is required on %(record)s.",
+                     field_list=display_fields, record=record.display_name)
 
     # -------------------------------------------------------------------------
     # COMMON CONSTRAINTS
@@ -290,7 +297,8 @@ class AccountEdiCommon(models.AbstractModel):
 
     def _invoice_constraints_common(self, invoice):
         # check that there is a tax on each line
-        for line in invoice.invoice_line_ids.filtered(lambda x: x.display_type not in ('line_note', 'line_section') and x._check_edi_line_tax_required()):
+        for line in invoice.invoice_line_ids.filtered(
+                lambda x: x.display_type not in ('line_note', 'line_section') and x._check_edi_line_tax_required()):
             if not line.tax_ids:
                 return {'tax_on_line': _("Each invoice line should have at least one tax.")}
         return {}
@@ -332,12 +340,12 @@ class AccountEdiCommon(models.AbstractModel):
 
         if invoice:
             body = Markup("<strong>%s</strong>") % \
-                _("Format used to import the invoice: %s",
-                  self.env['ir.model']._get(self._name).name)
+                   _("Format used to import the invoice: %s",
+                     self.env['ir.model']._get(self._name).name)
 
             if logs:
                 body += Markup("<ul>%s</ul>") % \
-                    Markup().join(Markup("<li>%s</li>") % l for l in logs)
+                        Markup().join(Markup("<li>%s</li>") % l for l in logs)
 
             invoice.message_post(body=body)
 
@@ -386,7 +394,8 @@ class AccountEdiCommon(models.AbstractModel):
 
         return attachments
 
-    def _import_partner(self, company_id, name, phone, email, vat, country_code=False, peppol_eas=False, peppol_endpoint=False, street=False, street2=False, city=False, zip_code=False):
+    def _import_partner(self, company_id, name, phone, email, vat, country_code=False, peppol_eas=False,
+                        peppol_endpoint=False, street=False, street2=False, city=False, zip_code=False):
         """ Retrieve the partner, if no matching partner is found, create it (only if he has a vat and a name) """
         logs = []
         if peppol_eas and peppol_endpoint:
@@ -397,7 +406,8 @@ class AccountEdiCommon(models.AbstractModel):
             .with_company(company_id) \
             ._retrieve_partner(name=name, phone=phone, email=email, vat=vat, domain=domain)
         if not partner and name and vat:
-            partner_vals = {'name': name, 'email': email, 'phone': phone, 'street': street, 'street2': street2, 'zip': zip_code, 'city': city}
+            partner_vals = {'name': name, 'email': email, 'phone': phone, 'street': street, 'street2': street2,
+                            'zip': zip_code, 'city': city}
             if peppol_eas and peppol_endpoint:
                 partner_vals.update({'peppol_eas': peppol_eas, 'peppol_endpoint': peppol_endpoint})
             country = self.env.ref(f'base.{country_code.lower()}', raise_if_not_found=False) if country_code else False
@@ -550,7 +560,9 @@ class AccountEdiCommon(models.AbstractModel):
         logs = []
         lines_values = []
         for line_tree in tree.iterfind(xpath):
-            line_values = self.with_company(invoice.company_id)._retrieve_invoice_line_vals(line_tree, invoice.move_type, qty_factor)
+            line_values = self.with_company(invoice.company_id)._retrieve_invoice_line_vals(line_tree,
+                                                                                            invoice.move_type,
+                                                                                            qty_factor)
             line_values['tax_ids'], tax_logs = self._retrieve_taxes(
                 invoice, line_values, invoice.journal_id.type,
             )
@@ -710,7 +722,8 @@ class AccountEdiCommon(models.AbstractModel):
         discount = 0
         if delivered_qty * price_unit != 0 and price_subtotal is not None:
             currency = self.env.company.currency_id
-            inferred_discount = 100 * (1 - (price_subtotal - charge_amount) / currency.round(delivered_qty * price_unit))
+            inferred_discount = 100 * (
+                        1 - (price_subtotal - charge_amount) / currency.round(delivered_qty * price_unit))
             discount = inferred_discount if not float_is_zero(inferred_discount, currency.decimal_places) else 0.0
 
         # Sometimes, the xml received is very bad; e.g.:
@@ -719,7 +732,8 @@ class AccountEdiCommon(models.AbstractModel):
         #   * unit price = 1, qty = 0, but price_subtotal = -200
         # for instance, when filling a down payment as an document line. The equation in the docstring is not
         # respected, and the result will not be correct, so we just follow the simple rule below:
-        if net_price_unit is not None and price_subtotal != net_price_unit * (delivered_qty / basis_qty) - allow_charge_amount:
+        if net_price_unit is not None and price_subtotal != net_price_unit * (
+                delivered_qty / basis_qty) - allow_charge_amount:
             if net_price_unit == 0 and delivered_qty == 0:
                 quantity = 1
                 price_unit = price_subtotal
@@ -795,8 +809,8 @@ class AccountEdiCommon(models.AbstractModel):
             if not tax:
                 logs.append(
                     _("Could not retrieve the tax: %(amount)s %% for line '%(line)s'.",
-                    amount=amount,
-                    line=line_values['name']),
+                      amount=amount,
+                      line=line_values['name']),
                 )
             else:
                 taxes.append(tax.id)

@@ -3,10 +3,11 @@
 
 from unittest.mock import patch
 
-from odoo import fields
 from odoo.addons.mail.tests.common import MailCommon
 from odoo.addons.mail.tools.discuss import Store
 from odoo.addons.test_mail.data.test_mail_data import MAIL_TEMPLATE
+
+from odoo import fields
 from odoo.tests import Form, tagged, users
 from odoo.tools import mute_logger
 
@@ -129,7 +130,8 @@ class TestTracking(MailCommon):
                 },
             })
         mail_render = records[1]._notify_by_email_prepare_rendering_context(message_1, {})
-        self.assertEqual(mail_render['tracking_values'], [(field_dname, original_user.display_name, new_user.display_name)])
+        self.assertEqual(mail_render['tracking_values'],
+                         [(field_dname, original_user.display_name, new_user.display_name)])
 
     def test_message_track_message_type(self):
         """Check that the right message type is applied for track templates."""
@@ -146,6 +148,7 @@ class TestTracking(MailCommon):
 
         def _track_subtype(self, init_values):
             return self.env.ref('mail.mt_note')
+
         self.patch(self.registry('mail.test.ticket'), '_track_subtype', _track_subtype)
 
         def _track_template(self, changes):
@@ -154,6 +157,7 @@ class TestTracking(MailCommon):
             elif 'container_id' in changes:
                 return {'container_id': (mail_templates[1], {'message_type': 'notification'})}
             return {}
+
         self.patch(self.registry('mail.test.ticket'), '_track_template', _track_template)
 
         container = self.env['mail.test.container'].create({'name': 'Container'})
@@ -173,12 +177,14 @@ class TestTracking(MailCommon):
             self.flush_tracking()
 
         second_message = self.record.message_ids.filtered(lambda message: message.subject == 'Template 1')
-        self.assertEqual(len(self.record.message_ids), 4, 'Should have added one change message and one automated template')
+        self.assertEqual(len(self.record.message_ids), 4,
+                         'Should have added one change message and one automated template')
         self.assertEqual(second_message.message_type, 'notification')
 
     def test_message_track_multiple(self):
         """ check that multiple updates generate a single tracking message """
-        container = self.env['mail.test.container'].with_context(mail_create_nosubscribe=True).create({'name': 'Container'})
+        container = self.env['mail.test.container'].with_context(mail_create_nosubscribe=True).create(
+            {'name': 'Container'})
         self.record.name = 'Zboub'
         self.record.customer_id = self.user_admin.partner_id
         self.record.user_id = self.user_admin
@@ -244,7 +250,8 @@ class TestTracking(MailCommon):
             subtype_ids=[self.env.ref('test_mail.st_mail_test_ticket_container_upd').id]
         )
 
-        container = self.env['mail.test.container'].with_context(mail_create_nosubscribe=True).create({'name': 'Container'})
+        container = self.env['mail.test.container'].with_context(mail_create_nosubscribe=True).create(
+            {'name': 'Container'})
         self.record.write({
             'name': 'Test2',
             'email_from': 'noone@example.com',
@@ -254,7 +261,8 @@ class TestTracking(MailCommon):
         # one new message containing tracking; subtype linked to tracking
         self.assertEqual(len(self.record.message_ids), 1)
         self.assertEqual(self.record.message_ids.author_id, self.partner_employee)
-        self.assertEqual(self.record.message_ids.subtype_id, self.env.ref('test_mail.st_mail_test_ticket_container_upd'))
+        self.assertEqual(self.record.message_ids.subtype_id,
+                         self.env.ref('test_mail.st_mail_test_ticket_container_upd'))
 
         # no specific recipients except those following container
         self.assertEqual(self.record.message_ids.partner_ids, self.env['res.partner'])
@@ -279,7 +287,8 @@ class TestTracking(MailCommon):
             })
             self.flush_tracking()
 
-        self.assertEqual(len(self.record.message_ids), 2, 'should have 2 new messages: one for tracking, one for template')
+        self.assertEqual(len(self.record.message_ids), 2,
+                         'should have 2 new messages: one for tracking, one for template')
 
         # one new message containing the template linked to tracking
         self.assertEqual(self.record.message_ids[0].author_id, self.partner_employee)
@@ -332,7 +341,8 @@ class TestTracking(MailCommon):
             'alias_contact': 'everyone',
             'alias_defaults': custom_values})
         record = self.format_and_process(MAIL_TEMPLATE, '"Sylvie Lelitre" <test.sylvie.lelitre@agrolait.com>',
-                                         'groups@test.mycompany.com', target_field='customer_id', subject=custom_values['customer_id'],
+                                         'groups@test.mycompany.com', target_field='customer_id',
+                                         subject=custom_values['customer_id'],
                                          target_model='mail.test.ticket')
 
         with self.mock_mail_gateway(mail_unlink_sent=False):
@@ -381,11 +391,12 @@ class TestTracking(MailCommon):
                 args[0].message_post_with_source(template)
             return True
 
-        with patch('odoo.addons.mail.models.mail_thread.MailThread._message_track_post_template', patched_message_track_post_template):
+        with patch('odoo.addons.mail.models.mail_thread.MailThread._message_track_post_template',
+                   patched_message_track_post_template):
             self.env['mail.test.track'].create({
                 'email_from': email_new_partner,
                 'company_id': company1.id,
-                'user_id': self.env.user.id, # trigger track template
+                'user_id': self.env.user.id,  # trigger track template
             })
             self.flush_tracking()
 
@@ -420,6 +431,7 @@ class TestTracking(MailCommon):
             if 'name' in init_values and init_values['name'] == magic_code:
                 return 'mail.mt_name_changed'
             return False
+
         self.patch(self.registry('mail.test.container'), '_track_subtype', _track_subtype)
 
         def _track_template(self, changes):
@@ -427,6 +439,7 @@ class TestTracking(MailCommon):
             if 'name' in changes:
                 res['name'] = (mail_template, {'composition_mode': 'mass_mail'})
             return res
+
         self.patch(self.registry('mail.test.container'), '_track_template', _track_template)
 
         cls = type(self.env['mail.test.container'])
@@ -467,9 +480,9 @@ class TestTrackingInternals(MailCommon):
         usage is to aggregate names into value_char fields. """
         # Create a record with an initially invalid selection value
         test_tags = self.env['mail.test.track.all.m2m'].create([
-            {'name': 'Tag1',},
-            {'name': 'Tag2',},
-            {'name': 'Tag3',},
+            {'name': 'Tag1', },
+            {'name': 'Tag2', },
+            {'name': 'Tag3', },
         ])
         test_record = self.env['mail.test.track.all'].create({
             'name': 'Test 2Many fields tracking',
@@ -505,7 +518,8 @@ class TestTrackingInternals(MailCommon):
         self.assertTracking(
             last_message,
             [
-                ('many2many_field', 'many2many', ', '.join(test_tags[:2].mapped('name')), ', '.join((test_tags[1] + test_tags[2]).mapped('name'))),
+                ('many2many_field', 'many2many', ', '.join(test_tags[:2].mapped('name')),
+                 ', '.join((test_tags[1] + test_tags[2]).mapped('name'))),
                 ('one2many_field', 'one2many', '', ', '.join(('Child1', 'Child2', 'Child3'))),
             ]
         )
@@ -706,7 +720,8 @@ class TestTrackingInternals(MailCommon):
         ).get_result()
         msg_sudo = Store(self.record.sudo().message_ids, for_current_user=True).get_result()
 
-        tracking_values = self.env['mail.tracking.value'].search([('mail_message_id', '=', self.record.message_ids[0].id)])
+        tracking_values = self.env['mail.tracking.value'].search(
+            [('mail_message_id', '=', self.record.message_ids[0].id)])
         formatted_tracking_values = [{
             'changedField': 'Email From',
             'id': tracking_values[0]['id'],
@@ -740,7 +755,8 @@ class TestTrackingInternals(MailCommon):
         )
 
         values_emp = self.record._notify_by_email_prepare_rendering_context(self.record.message_ids[0], {})
-        values_admin = self.record.with_user(self.user_admin)._notify_by_email_prepare_rendering_context(self.record.message_ids[0], {})
+        values_admin = self.record.with_user(self.user_admin)._notify_by_email_prepare_rendering_context(
+            self.record.message_ids[0], {})
         values_sudo = self.record.sudo()._notify_by_email_prepare_rendering_context(self.record.message_ids[0], {})
         self.assertFalse(values_emp.get('tracking_values'), "should not have protected tracking values")
         self.assertTrue(values_admin.get('tracking_values'), "should have protected tracking values")
@@ -849,23 +865,22 @@ class TestTrackingInternals(MailCommon):
                     'newValue': {'currencyId': False, 'floatPrecision': None, 'value': 'secret'},
                     'oldValue': {'currencyId': False, 'floatPrecision': None, 'value': False}
                 }, {
-                    'changedField': 'Old integer',
-                    'id': trackings[2].id,
-                    'fieldName': 'Removed',
-                    'fieldType': 'integer',
-                    'newValue': {'currencyId': False, 'floatPrecision': None, 'value': 35},
-                    'oldValue': {'currencyId': False, 'floatPrecision': None, 'value': 30}
-                }, {
-                    'changedField': 'Unknown',
-                    'id': trackings[1].id,
-                    'fieldName': 'unknown',
-                    'fieldType': 'char',
-                    'newValue': {'currencyId': False, 'floatPrecision': None, 'value': False},
-                    'oldValue': {'currencyId': False, 'floatPrecision': None, 'value': False}
-                }
+                'changedField': 'Old integer',
+                'id': trackings[2].id,
+                'fieldName': 'Removed',
+                'fieldType': 'integer',
+                'newValue': {'currencyId': False, 'floatPrecision': None, 'value': 35},
+                'oldValue': {'currencyId': False, 'floatPrecision': None, 'value': 30}
+            }, {
+                'changedField': 'Unknown',
+                'id': trackings[1].id,
+                'fieldName': 'unknown',
+                'fieldType': 'char',
+                'newValue': {'currencyId': False, 'floatPrecision': None, 'value': False},
+                'oldValue': {'currencyId': False, 'floatPrecision': None, 'value': False}
+            }
             ]
         )
-
 
     @users('employee')
     def test_track_sequence(self):
@@ -878,7 +893,8 @@ class TestTrackingInternals(MailCommon):
 
         # Update tracked fields, should generate tracking values correctly ordered
         record.write({
-            'container_id': self.env['mail.test.container'].with_context(mail_create_nosubscribe=True).create({'name': 'Container'}).id,
+            'container_id': self.env['mail.test.container'].with_context(mail_create_nosubscribe=True).create(
+                {'name': 'Container'}).id,
             'customer_id': self.user_admin.partner_id.id,
             'email_from': 'new.from@test.example.com',
             'name': 'Zboub',

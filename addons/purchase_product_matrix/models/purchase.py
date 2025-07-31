@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import json
+
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 
@@ -8,7 +9,8 @@ from odoo.exceptions import ValidationError
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
-    report_grids = fields.Boolean(string="Print Variant Grids", default=True, help="If set, the matrix of configurable products will be shown on the report of this order.")
+    report_grids = fields.Boolean(string="Print Variant Grids", default=True,
+                                  help="If set, the matrix of configurable products will be shown on the report of this order.")
 
     """ Matrix loading and update: fields and methods :
 
@@ -20,9 +22,12 @@ class PurchaseOrder(models.Model):
         To force the loading, a 'hack' of the js framework would have been needed...
     """
 
-    grid_product_tmpl_id = fields.Many2one('product.template', store=False, help="Technical field for product_matrix functionalities.")
-    grid_update = fields.Boolean(default=False, store=False, help="Whether the grid field contains a new matrix to apply or not.")
-    grid = fields.Char(store=False, help="Technical storage of grid. \nIf grid_update, will be loaded on the PO. \nIf not, represents the matrix to open.")
+    grid_product_tmpl_id = fields.Many2one('product.template', store=False,
+                                           help="Technical field for product_matrix functionalities.")
+    grid_update = fields.Boolean(default=False, store=False,
+                                 help="Whether the grid field contains a new matrix to apply or not.")
+    grid = fields.Char(store=False,
+                       help="Technical storage of grid. \nIf grid_update, will be loaded on the PO. \nIf not, represents the matrix to open.")
 
     @api.onchange('grid_product_tmpl_id')
     def _set_grid_up(self):
@@ -51,7 +56,8 @@ class PurchaseOrder(models.Model):
                 product = product_template._create_product_variant(combination)
                 # TODO replace the check on product_id by a first check on the ptavs and pnavs?
                 # and only create/require variant after no line has been found ???
-                order_lines = self.order_line.filtered(lambda line: (line._origin or line).product_id == product and (line._origin or line).product_no_variant_attribute_value_ids == no_variant_attribute_values)
+                order_lines = self.order_line.filtered(lambda line: (line._origin or line).product_id == product and (
+                            line._origin or line).product_no_variant_attribute_value_ids == no_variant_attribute_values)
 
                 # if product variant already exist in order lines
                 old_qty = sum(order_lines.mapped('product_qty'))
@@ -84,7 +90,8 @@ class PurchaseOrder(models.Model):
                         Therefore, it only raises an Error for now.
                         """
                         if len(order_lines) > 1:
-                            raise ValidationError(_("You cannot change the quantity of a product present in multiple purchase lines."))
+                            raise ValidationError(
+                                _("You cannot change the quantity of a product present in multiple purchase lines."))
                         else:
                             order_lines[0].product_qty = qty
                             # If we want to support multiple lines edition:
@@ -105,7 +112,7 @@ class PurchaseOrder(models.Model):
                         product_id=product.id,
                         product_qty=qty,
                         product_no_variant_attribute_value_ids=no_variant_attribute_values.ids)
-                    ))
+                                      ))
             if product_ids:
                 res = False
                 if new_lines:
@@ -125,6 +132,7 @@ class PurchaseOrder(models.Model):
             pav = pnav + ptav
             pav.sort()
             return pav == sorted_attr_ids
+
         matrix = product_template._get_template_matrix(
             company_id=self.company_id,
             currency_id=self.currency_id)
@@ -163,10 +171,15 @@ class PurchaseOrder(models.Model):
 class PurchaseOrderLine(models.Model):
     _inherit = "purchase.order.line"
 
-    product_template_id = fields.Many2one('product.template', string='Product Template', related="product_id.product_tmpl_id", domain=[('purchase_ok', '=', True)])
-    is_configurable_product = fields.Boolean('Is the product configurable?', related="product_template_id.has_configurable_attributes")
-    product_template_attribute_value_ids = fields.Many2many(related='product_id.product_template_attribute_value_ids', readonly=True)
-    product_no_variant_attribute_value_ids = fields.Many2many('product.template.attribute.value', string='Product attribute values that do not create variants', ondelete='restrict')
+    product_template_id = fields.Many2one('product.template', string='Product Template',
+                                          related="product_id.product_tmpl_id", domain=[('purchase_ok', '=', True)])
+    is_configurable_product = fields.Boolean('Is the product configurable?',
+                                             related="product_template_id.has_configurable_attributes")
+    product_template_attribute_value_ids = fields.Many2many(related='product_id.product_template_attribute_value_ids',
+                                                            readonly=True)
+    product_no_variant_attribute_value_ids = fields.Many2many('product.template.attribute.value',
+                                                              string='Product attribute values that do not create variants',
+                                                              ondelete='restrict')
 
     def _get_product_purchase_description(self, product):
         name = super(PurchaseOrderLine, self)._get_product_purchase_description(product)

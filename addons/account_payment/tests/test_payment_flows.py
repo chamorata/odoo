@@ -1,17 +1,17 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from datetime import datetime, timedelta
+from datetime import timedelta
 from unittest.mock import patch
-
-from odoo import Command
-from odoo.exceptions import AccessError
-from odoo.tests import tagged, JsonRpcException
-from odoo.tools import mute_logger
 
 from odoo.addons.account_payment.controllers.payment import PaymentPortal
 from odoo.addons.account_payment.tests.common import AccountPaymentCommon
 from odoo.addons.payment.tests.http_common import PaymentHttpCommon
 from odoo.addons.portal.controllers.portal import CustomerPortal
+
+from odoo import Command
+from odoo.exceptions import AccessError
+from odoo.tests import tagged, JsonRpcException
+from odoo.tools import mute_logger
 
 
 @tagged('post_install', '-at_install')
@@ -76,7 +76,7 @@ class TestFlows(AccountPaymentCommon, PaymentHttpCommon):
             raise AccessError('')
 
         with patch.object(
-            CustomerPortal, '_document_check_access', _document_check_access_mock
+                CustomerPortal, '_document_check_access', _document_check_access_mock
         ), patch('odoo.addons.payment.utils.check_access_token') as check_payment_access_token_mock:
             try:
                 payment_portal_controller._get_extra_payment_form_values(
@@ -158,7 +158,7 @@ class TestFlows(AccountPaymentCommon, PaymentHttpCommon):
             "out_invoice", partner, amounts=[1000.0], currency=self.currency,
         )
         invoice.write({
-            'invoice_date_due':invoice.invoice_date - timedelta(days=10)
+            'invoice_date_due': invoice.invoice_date - timedelta(days=10)
         })
         invoice.action_post()
         self.assertEqual(invoice.payment_state, 'not_paid')

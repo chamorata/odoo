@@ -1,9 +1,10 @@
 from datetime import datetime
+
 from dateutil.relativedelta import relativedelta
+from odoo.addons.microsoft_calendar.tests.common import TestCommon, patch_api
+from odoo.addons.microsoft_calendar.utils.microsoft_event import MicrosoftEvent
 from pytz import UTC
 
-from odoo.addons.microsoft_calendar.utils.microsoft_event import MicrosoftEvent
-from odoo.addons.microsoft_calendar.tests.common import TestCommon, patch_api
 
 class TestMicrosoftEvent(TestCommon):
 
@@ -13,7 +14,6 @@ class TestMicrosoftEvent(TestCommon):
         self.create_events_for_tests()
 
     def test_already_mapped_events(self):
-
         # arrange
         event_id = self.simple_event.microsoft_id
         event_uid = self.simple_event.ms_universal_event_id
@@ -117,7 +117,6 @@ class TestMicrosoftEvent(TestCommon):
         self.assertEqual(self.simple_event.ms_universal_event_id, False)
 
     def test_map_a_recurrence_using_global_id(self):
-
         # arrange
         rec_id = self.recurrence.microsoft_id
         rec_uid = self.recurrence.ms_universal_event_id
@@ -136,7 +135,6 @@ class TestMicrosoftEvent(TestCommon):
         self.assertEqual(mapped._events[rec_id]["_odoo_id"], self.recurrence.id)
 
     def test_map_a_recurrence_using_instance_id(self):
-
         # arrange
         rec_id = self.recurrence.microsoft_id
         events = MicrosoftEvent([{
@@ -154,7 +152,6 @@ class TestMicrosoftEvent(TestCommon):
         self.assertEqual(mapped._events[rec_id]["_odoo_id"], self.recurrence.id)
 
     def test_try_to_map_mixed_of_single_events_and_recurrences(self):
-
         # arrange
         event_id = self.simple_event.microsoft_id
         event_uid = self.simple_event.ms_universal_event_id
@@ -181,7 +178,6 @@ class TestMicrosoftEvent(TestCommon):
             events._load_odoo_ids_from_db(self.env)
 
     def test_match_event_only(self):
-
         # arrange
         event_id = self.simple_event.microsoft_id
         event_uid = self.simple_event.ms_universal_event_id
@@ -200,7 +196,6 @@ class TestMicrosoftEvent(TestCommon):
         self.assertEqual(matched._events[event_id]["_odoo_id"], self.simple_event.id)
 
     def test_match_recurrence_only(self):
-
         # arrange
         rec_id = self.recurrence.microsoft_id
         rec_uid = self.recurrence.ms_universal_event_id
@@ -244,7 +239,6 @@ class TestMicrosoftEvent(TestCommon):
         self.assertEqual(matched._events[rec_id]["_odoo_id"], self.recurrence.id)
 
     def test_match_mix_of_events_and_recurrences(self):
-
         # arrange
         event_id = self.simple_event.microsoft_id
         event_uid = self.simple_event.ms_universal_event_id
@@ -277,7 +271,6 @@ class TestMicrosoftEvent(TestCommon):
         self.assertEqual(matched._events[rec_id]["_odoo_id"], self.recurrence.id)
 
     def test_ignore_not_found_items(self):
-
         # arrange
         events = MicrosoftEvent([{
             "type": "singleInstance",
@@ -347,7 +340,7 @@ class TestMicrosoftEvent(TestCommon):
         recurring_event_data = [{
             '@odata.type': '#microsoft.graph.event',
             '@odata.etag': f'W/"{x}IaZKQ=="',
-            'createdDateTime': (start_date + relativedelta(minutes=(2*x))).isoformat(),
+            'createdDateTime': (start_date + relativedelta(minutes=(2 * x))).isoformat(),
             'lastModifiedDateTime': (datetime.now().astimezone(UTC) + relativedelta(days=3)).isoformat(),
             'changeKey': 'ZS2uEVAVyU6BMZ3m6cHmtgAADIaZKQ==',
             'categories': [],
@@ -360,7 +353,7 @@ class TestMicrosoftEvent(TestCommon):
             'hasAttachments': False,
             'subject': f'My recurrent event {x}',
             'bodyPreview': '', 'importance':
-            'normal', 'sensitivity': 'normal',
+                'normal', 'sensitivity': 'normal',
             'isAllDay': False, 'isCancelled': False,
             'isOrganizer': True, 'IsRoomRequested': False,
             'AutoRoomBookingStatus': 'None',
@@ -390,16 +383,16 @@ class TestMicrosoftEvent(TestCommon):
                                 'dayOfMonth': 0,
                                 'firstDayOfWeek': 'sunday',
                                 'index': 'first'},
-                                'range': {'type': 'endDate',
-                                          'startDate': '2020-05-03',
-                                          'endDate': '2020-05-05',
-                                          'recurrenceTimeZone': 'Romance Standard Time',
-                                          'numberOfOccurrences': 0}
+                           'range': {'type': 'endDate',
+                                     'startDate': '2020-05-03',
+                                     'endDate': '2020-05-05',
+                                     'recurrenceTimeZone': 'Romance Standard Time',
+                                     'numberOfOccurrences': 0}
                            },
             'attendees': [],
             'organizer': {'emailAddress': {'name': f'outlook_{x}@outlook.com',
                                            'address': f'outlook_{x}@outlook.com'}}
-            } for x in range(record_count)]
+        } for x in range(record_count)]
 
         recurrences = MicrosoftEvent(recurring_event_data)
         mapped = recurrences._load_odoo_ids_from_db(self.env)

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from datetime import timedelta
 
-from odoo import fields
 from odoo.addons.stock.tests.common import TestStockCommon
-from odoo import tools
+
+from odoo import fields
 
 
 class PurchaseTestCommon(TestStockCommon):
@@ -13,7 +13,8 @@ class PurchaseTestCommon(TestStockCommon):
         order_values = {
             'warehouse_id': self.warehouse_1,
             'action': 'pull_push',
-            'date_planned': date_planned or fields.Datetime.to_string(fields.datetime.now() + timedelta(days=10)),  # 10 days added to current date of procurement to get future schedule date and order date of purchase order.
+            'date_planned': date_planned or fields.Datetime.to_string(fields.datetime.now() + timedelta(days=10)),
+            # 10 days added to current date of procurement to get future schedule date and order date of purchase order.
             'group_id': self.env['procurement.group'],
         }
         return ProcurementGroup.run([self.env['procurement.group'].Procurement(
@@ -54,4 +55,4 @@ class PurchaseTestCommon(TestStockCommon):
             'login': "pu",
             'email': "purchaseuser@yourcompany.com",
             'groups_id': [(6, 0, [cls.env.ref('purchase.group_purchase_user').id])],
-            })
+        })

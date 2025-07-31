@@ -25,17 +25,21 @@
                         <field name="label">balance</field>
                         <field name="engine">aggregation</field>
                         <field name="formula">JO_STD_PURCHASE_2A.balance + JO_STD_PURCHASE_2B.balance +
-                    JO_STD_PURCHASE_2C.balance + JO_STD_PURCHASE_2D.balance + JO_STD_PURCHASE_3A.balance +
-                    JO_STD_PURCHASE_3B.balance + JO_STD_PURCHASE_3C.balance + JO_STD_PURCHASE_3D.balance +
-                    JO_STD_PURCHASE_4.balance + JO_STD_PURCHASE_5.balance</field>
+                            JO_STD_PURCHASE_2C.balance + JO_STD_PURCHASE_2D.balance + JO_STD_PURCHASE_3A.balance +
+                            JO_STD_PURCHASE_3B.balance + JO_STD_PURCHASE_3C.balance + JO_STD_PURCHASE_3D.balance +
+                            JO_STD_PURCHASE_4.balance + JO_STD_PURCHASE_5.balance
+                        </field>
                     </record>
                     <record id="tax_report_vat_purchase_tax_aggregation" model="account.report.expression">
                         <field name="label">taxbalance</field>
                         <field name="engine">aggregation</field>
                         <field name="formula">JO_STD_PURCHASE_2A.taxbalance + JO_STD_PURCHASE_2B.taxbalance +
-                    JO_STD_PURCHASE_2C.taxbalance + JO_STD_PURCHASE_2D.taxbalance + JO_STD_PURCHASE_3A.taxbalance +
-                    JO_STD_PURCHASE_3B.taxbalance + JO_STD_PURCHASE_3C.taxbalance + JO_STD_PURCHASE_3D.taxbalance +
-                    JO_STD_PURCHASE_4.taxbalance + JO_STD_PURCHASE_5.taxbalance</field>
+                            JO_STD_PURCHASE_2C.taxbalance + JO_STD_PURCHASE_2D.taxbalance +
+                            JO_STD_PURCHASE_3A.taxbalance +
+                            JO_STD_PURCHASE_3B.taxbalance + JO_STD_PURCHASE_3C.taxbalance +
+                            JO_STD_PURCHASE_3D.taxbalance +
+                            JO_STD_PURCHASE_4.taxbalance + JO_STD_PURCHASE_5.taxbalance
+                        </field>
                     </record>
                 </field>
                 <field name="children_ids">
@@ -216,17 +220,19 @@
                         <field name="label">balance</field>
                         <field name="engine">aggregation</field>
                         <field name="formula">JO_STD_SALES_6A.balance + JO_STD_SALES_6B.balance +
-                    JO_STD_SALES_6C.balance + JO_STD_SALES_6D.balance + JO_STD_SALES_7.balance +
-                    JO_STD_SALES_8.balance + JO_STD_SALES_9.balance + JO_STD_SALES_10.balance +
-                    JO_STD_SALES_11.balance</field>
+                            JO_STD_SALES_6C.balance + JO_STD_SALES_6D.balance + JO_STD_SALES_7.balance +
+                            JO_STD_SALES_8.balance + JO_STD_SALES_9.balance + JO_STD_SALES_10.balance +
+                            JO_STD_SALES_11.balance
+                        </field>
                     </record>
                     <record id="tax_report_vat_sales_tax_aggregation" model="account.report.expression">
                         <field name="label">taxbalance</field>
                         <field name="engine">aggregation</field>
                         <field name="formula">JO_STD_SALES_6A.taxbalance + JO_STD_SALES_6B.taxbalance +
-                    JO_STD_SALES_6C.taxbalance + JO_STD_SALES_6D.taxbalance + JO_STD_SALES_7.taxbalance +
-                    JO_STD_SALES_8.taxbalance + JO_STD_SALES_9.taxbalance + JO_STD_SALES_10.taxbalance +
-                    JO_STD_SALES_11.taxbalance</field>
+                            JO_STD_SALES_6C.taxbalance + JO_STD_SALES_6D.taxbalance + JO_STD_SALES_7.taxbalance +
+                            JO_STD_SALES_8.taxbalance + JO_STD_SALES_9.taxbalance + JO_STD_SALES_10.taxbalance +
+                            JO_STD_SALES_11.taxbalance
+                        </field>
                     </record>
                 </field>
                 <field name="children_ids">
@@ -255,7 +261,7 @@
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">6b (Base)</field>
                             </record>
-                             <record id="tax_report_vat_sales_tax_ten_tag" model="account.report.expression">
+                            <record id="tax_report_vat_sales_tax_ten_tag" model="account.report.expression">
                                 <field name="label">taxbalance</field>
                                 <field name="engine">tax_tags</field>
                                 <field name="formula">6b (Tax)</field>
@@ -389,21 +395,27 @@
                     <record id="tax_report_vat_payable" model="account.report.line">
                         <field name="name">Total Tax Received - To be Forwarded To Authority</field>
                         <field name="code">JO_TOTAL_PAYABLE</field>
-                        <field name="aggregation_formula">JO_STD_SALES_6A.taxbalance + JO_STD_SALES_6B.taxbalance + JO_STD_SALES_6C.taxbalance
+                        <field name="aggregation_formula">JO_STD_SALES_6A.taxbalance + JO_STD_SALES_6B.taxbalance +
+                            JO_STD_SALES_6C.taxbalance
                         </field>
                     </record>
                     <record id="tax_report_vat_recoverable" model="account.report.line">
                         <field name="name">Total Tax Paid - Recoverable</field>
                         <field name="code">JO_TOTAL_RECOVERABLE</field>
-                        <field name="aggregation_formula">JO_STD_PURCHASE_2A.taxbalance + JO_STD_PURCHASE_2B.taxbalance + JO_STD_PURCHASE_2C.taxbalance +
-                        JO_STD_PURCHASE_3A.taxbalance + JO_STD_PURCHASE_3B.taxbalance + JO_STD_PURCHASE_3C.taxbalance
+                        <field name="aggregation_formula">JO_STD_PURCHASE_2A.taxbalance + JO_STD_PURCHASE_2B.taxbalance
+                            + JO_STD_PURCHASE_2C.taxbalance +
+                            JO_STD_PURCHASE_3A.taxbalance + JO_STD_PURCHASE_3B.taxbalance +
+                            JO_STD_PURCHASE_3C.taxbalance
                         </field>
                     </record>
                     <record id="tax_report_vat_net_due" model="account.report.line">
                         <field name="name">Net Tax Due</field>
-                        <field name="aggregation_formula">(JO_STD_SALES_6A.taxbalance + JO_STD_SALES_6B.taxbalance + JO_STD_SALES_6C.taxbalance) -
-                        (JO_STD_PURCHASE_2A.taxbalance + JO_STD_PURCHASE_2B.taxbalance + JO_STD_PURCHASE_2C.taxbalance + 
-                        JO_STD_PURCHASE_3A.taxbalance + JO_STD_PURCHASE_3B.taxbalance + JO_STD_PURCHASE_3C.taxbalance)
+                        <field name="aggregation_formula">(JO_STD_SALES_6A.taxbalance + JO_STD_SALES_6B.taxbalance +
+                            JO_STD_SALES_6C.taxbalance) -
+                            (JO_STD_PURCHASE_2A.taxbalance + JO_STD_PURCHASE_2B.taxbalance +
+                            JO_STD_PURCHASE_2C.taxbalance +
+                            JO_STD_PURCHASE_3A.taxbalance + JO_STD_PURCHASE_3B.taxbalance +
+                            JO_STD_PURCHASE_3C.taxbalance)
                         </field>
                     </record>
                 </field>

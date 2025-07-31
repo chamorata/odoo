@@ -2,13 +2,15 @@
 
 from odoo import fields, models, _
 
+
 class MailActivityTodoCreate(models.TransientModel):
     _name = 'mail.activity.todo.create'
     _description = 'Create activity and todo at the same time'
 
     summary = fields.Char()
     date_deadline = fields.Date('Due Date', index=True, required=True, default=fields.Date.context_today)
-    user_id = fields.Many2one('res.users', 'Assigned to', default=lambda self: self.env.user, required=True, readonly=True)
+    user_id = fields.Many2one('res.users', 'Assigned to', default=lambda self: self.env.user, required=True,
+                              readonly=True)
     note = fields.Html(sanitize_style=True)
 
     def create_todo_activity(self):

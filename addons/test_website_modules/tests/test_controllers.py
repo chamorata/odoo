@@ -24,7 +24,8 @@ class TestWebEditorController(HttpCaseWithUserDemo):
 
         def modify(login, name, expect_fail=False):
             self.authenticate(login, login)
-            svg = b'<svg viewBox="0 0 400 400"><!-- %s --><image url="data:image/gif;base64,%s" /></svg>' % (name.encode('ascii'), gif_base64)
+            svg = b'<svg viewBox="0 0 400 400"><!-- %s --><image url="data:image/gif;base64,%s" /></svg>' % (
+                name.encode('ascii'), gif_base64)
             params = {
                 'name': name,
                 'mimetype': 'image/svg+xml',

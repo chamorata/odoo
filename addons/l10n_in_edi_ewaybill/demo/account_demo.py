@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import logging
+
 from odoo import api, models
 
 _logger = logging.getLogger(__name__)
+
 
 class AccountChartTemplate(models.AbstractModel):
     _inherit = "account.chart.template"
@@ -26,7 +28,7 @@ class AccountChartTemplate(models.AbstractModel):
                     'demo_invoice_nill',
                 ]
                 for xml_id in invoices:
-                    self.ref("account.%s_%s"%(indian_company.id, xml_id)).write({
+                    self.ref("account.%s_%s" % (indian_company.id, xml_id)).write({
                         'l10n_in_type_id': self.env.ref("l10n_in_edi_ewaybill.type_tax_invoice_sub_type_supply"),
                         'l10n_in_distance': 20,
                         'l10n_in_mode': '1',
@@ -34,4 +36,6 @@ class AccountChartTemplate(models.AbstractModel):
                         'l10n_in_vehicle_type': 'R',
                     })
             else:
-                _logger.error('Error while loading Indian-Ewaybill demo data in the company "%s".State is not set in the company.', indian_company.name)
+                _logger.error(
+                    'Error while loading Indian-Ewaybill demo data in the company "%s".State is not set in the company.',
+                    indian_company.name)

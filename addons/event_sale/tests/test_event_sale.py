@@ -3,6 +3,7 @@
 
 from odoo.addons.event_sale.tests.common import TestEventSaleCommon
 from odoo.addons.mail.tests.common import mail_new_test_user
+
 from odoo.exceptions import ValidationError
 from odoo.tests import tagged
 from odoo.tests.common import users
@@ -21,7 +22,8 @@ class TestEventSale(TestEventSaleCommon):
             'service_tracking': 'event',
         })
 
-        cls.user_salesperson = mail_new_test_user(cls.env, login='user_salesman', groups='sales_team.group_sale_salesman')
+        cls.user_salesperson = mail_new_test_user(cls.env, login='user_salesman',
+                                                  groups='sales_team.group_sale_salesman')
 
         cls.ticket = cls.env['event.event.ticket'].create({
             'name': 'First Ticket',
@@ -168,9 +170,11 @@ class TestEventSale(TestEventSaleCommon):
             self.assertEqual(ticket1_editor_reg1[field], ticket1_reg1[field])
 
         # check new lines
-        ticket1_editor_other = editor.event_registration_ids.filtered(lambda line: not line.registration_id and line.event_ticket_id == ticket1)
+        ticket1_editor_other = editor.event_registration_ids.filtered(
+            lambda line: not line.registration_id and line.event_ticket_id == ticket1)
         self.assertEqual(len(ticket1_editor_other), 2)
-        ticket2_editor_other = editor.event_registration_ids.filtered(lambda line: not line.registration_id and line.event_ticket_id == ticket2)
+        ticket2_editor_other = editor.event_registration_ids.filtered(
+            lambda line: not line.registration_id and line.event_ticket_id == ticket2)
         self.assertEqual(len(ticket2_editor_other), 1)
 
         # update lines in editor and save them
@@ -480,7 +484,8 @@ class TestEventSale(TestEventSaleCommon):
             'event_id': event.id,
             'event_ticket_id': event_ticket.id,
         })
-        self.assertEqual(so.amount_total, 660.0, "Ticket is $1000 but the event product is on a pricelist 10 -> 6. So, $600 + a 10% tax.")
+        self.assertEqual(so.amount_total, 660.0,
+                         "Ticket is $1000 but the event product is on a pricelist 10 -> 6. So, $600 + a 10% tax.")
 
     @users('user_salesman')
     def test_unlink_so(self):

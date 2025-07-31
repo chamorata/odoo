@@ -3,9 +3,9 @@
 
 import json
 import random
+from datetime import date
 
 from babel.dates import format_date
-from datetime import date
 from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models, _
@@ -54,7 +54,7 @@ class CrmTeam(models.Model):
         team = self.env['crm.team']
         teams = self.env['crm.team'].search([
             ('company_id', 'in', valid_cids),
-             '|', ('user_id', '=', user.id), ('member_ids', 'in', [user.id])
+            '|', ('user_id', '=', user.id), ('member_ids', 'in', [user.id])
         ])
         if teams and domain:
             filtered_teams = teams.filtered_domain(domain)
@@ -91,7 +91,8 @@ class CrmTeam(models.Model):
     # description
     name = fields.Char('Sales Team', required=True, translate=True)
     sequence = fields.Integer('Sequence', default=10)
-    active = fields.Boolean(default=True, help="If the active field is set to false, it will allow you to hide the Sales Team without removing it.")
+    active = fields.Boolean(default=True,
+                            help="If the active field is set to false, it will allow you to hide the Sales Team without removing it.")
     company_id = fields.Many2one(
         'res.company', string='Company', index=True)
     currency_id = fields.Many2one(
@@ -174,9 +175,10 @@ class CrmTeam(models.Model):
                 member_warning = _("Adding %(user_names)s in this team will remove them from %(team_names)s.",
                                    user_names=", ".join(other_memberships.mapped('user_id.name')),
                                    team_names=", ".join(other_memberships.mapped('crm_team_id.name'))
-                                  )
+                                   )
             if member_warning:
-                team.member_warning = member_warning + " " + _("Working in multiple teams? Activate the option under Configuration>Settings.")
+                team.member_warning = member_warning + " " + _(
+                    "Working in multiple teams? Activate the option under Configuration>Settings.")
 
     def _search_member_ids(self, operator, value):
         return [('crm_team_member_ids.user_id', operator, value)]
@@ -206,7 +208,7 @@ class CrmTeam(models.Model):
         """ Sets the adequate dashboard button name depending on the Sales Team's options
         """
         for team in self:
-            team.dashboard_button_name = _("Big Pretty Button :)") # placeholder
+            team.dashboard_button_name = _("Big Pretty Button :)")  # placeholder
 
     def _compute_dashboard_graph(self):
         for team in self:
@@ -361,7 +363,8 @@ class CrmTeam(models.Model):
         # generate all required x_fields and update the y_values where we have data for them
         locale = self._context.get('lang') or 'en_US'
 
-        weeks_in_start_year = int(date(start_date.year, 12, 28).isocalendar()[1]) # This date is always in the last week of ISO years
+        weeks_in_start_year = int(
+            date(start_date.year, 12, 28).isocalendar()[1])  # This date is always in the last week of ISO years
         week_count = (end_date.isocalendar()[1] - start_date.isocalendar()[1]) % weeks_in_start_year + 1
         for week in range(week_count):
             short_name = get_week_name(start_date + relativedelta(days=7 * week), locale)

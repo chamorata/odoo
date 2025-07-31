@@ -1,9 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.sale_gelato import const, utils
+
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
-
-from odoo.addons.sale_gelato import const, utils
 
 
 class ProviderGelato(models.Model):

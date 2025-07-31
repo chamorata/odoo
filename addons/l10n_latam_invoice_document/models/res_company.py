@@ -1,9 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo import fields, models
+from odoo import models
 
 
 class ResCompany(models.Model):
-
     _inherit = "res.company"
 
     def _localization_use_documents(self):

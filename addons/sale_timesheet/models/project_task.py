@@ -18,12 +18,14 @@ class ProjectTask(models.Model):
                 return related_project.sale_line_employee_ids.sale_line_id.order_partner_id[:1]
         return res
 
-    sale_order_id = fields.Many2one(domain="['|', '|', ('partner_id', '=', partner_id), ('partner_id.commercial_partner_id.id', 'parent_of', partner_id), ('partner_id', 'parent_of', partner_id)]")
+    sale_order_id = fields.Many2one(
+        domain="['|', '|', ('partner_id', '=', partner_id), ('partner_id.commercial_partner_id.id', 'parent_of', partner_id), ('partner_id', 'parent_of', partner_id)]")
     pricing_type = fields.Selection(related="project_id.pricing_type")
     is_project_map_empty = fields.Boolean("Is Project map empty", compute='_compute_is_project_map_empty')
     has_multi_sol = fields.Boolean(compute='_compute_has_multi_sol', compute_sudo=True)
     timesheet_product_id = fields.Many2one(related="project_id.timesheet_product_id")
-    remaining_hours_so = fields.Float('Time Remaining on SO', compute='_compute_remaining_hours_so', search='_search_remaining_hours_so', compute_sudo=True)
+    remaining_hours_so = fields.Float('Time Remaining on SO', compute='_compute_remaining_hours_so',
+                                      search='_search_remaining_hours_so', compute_sudo=True)
     remaining_hours_available = fields.Boolean(related="sale_line_id.remaining_hours_available")
 
     @property
@@ -37,9 +39,11 @@ class ProjectTask(models.Model):
     def _compute_remaining_hours_so(self):
         # TODO This is not yet perfectly working as timesheet.so_line stick to its old value although changed
         #      in the task From View.
-        timesheets = self.timesheet_ids.filtered(lambda t: t.task_id.sale_line_id in (t.so_line, t._origin.so_line) and t.so_line.remaining_hours_available)
+        timesheets = self.timesheet_ids.filtered(
+            lambda t: t.task_id.sale_line_id in (t.so_line, t._origin.so_line) and t.so_line.remaining_hours_available)
 
-        mapped_remaining_hours = {task._origin.id: task.sale_line_id and task.sale_line_id.remaining_hours or 0.0 for task in self}
+        mapped_remaining_hours = {task._origin.id: task.sale_line_id and task.sale_line_id.remaining_hours or 0.0 for
+                                  task in self}
         uom_hour = self.env.ref('uom.product_uom_hour')
         for timesheet in timesheets:
             delta = 0
@@ -48,7 +52,8 @@ class ProjectTask(models.Model):
             if timesheet.so_line == timesheet.task_id.sale_line_id:
                 delta -= timesheet.unit_amount
             if delta:
-                mapped_remaining_hours[timesheet.task_id._origin.id] += timesheet.product_uom_id._compute_quantity(delta, uom_hour)
+                mapped_remaining_hours[timesheet.task_id._origin.id] += timesheet.product_uom_id._compute_quantity(
+                    delta, uom_hour)
 
         for task in self:
             task.remaining_hours_so = mapped_remaining_hours[task._origin.id]

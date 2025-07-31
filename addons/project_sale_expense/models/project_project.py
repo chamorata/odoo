@@ -2,9 +2,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import json
-
-from odoo import models, fields
 from collections import defaultdict
+
+from odoo import models
 
 
 class Project(models.Model):
@@ -30,7 +30,8 @@ class Project(models.Model):
 
         amount_billed = 0.0
         for currency, untaxed_amount_currency_sum in dict_amount_per_currency.items():
-            amount_billed += currency._convert(untaxed_amount_currency_sum, self.currency_id, self.company_id, round=False)
+            amount_billed += currency._convert(untaxed_amount_currency_sum, self.currency_id, self.company_id,
+                                               round=False)
 
         sol_read_group = self.env['sale.order.line'].sudo()._read_group(
             [
@@ -55,7 +56,8 @@ class Project(models.Model):
                 dict_invoices_amount_per_currency[currency]['invoiced'] += untaxed_amount_invoiced_sum
                 reinvoice_expense_ids += expense_data_per_product_id[product_id]
         for currency, revenues in dict_invoices_amount_per_currency.items():
-            total_amount_expense_to_invoice += currency._convert(revenues['to_invoice'], self.currency_id, self.company_id)
+            total_amount_expense_to_invoice += currency._convert(revenues['to_invoice'], self.currency_id,
+                                                                 self.company_id)
             total_amount_expense_invoiced += currency._convert(revenues['invoiced'], self.currency_id, self.company_id)
 
         section_id = 'expenses'

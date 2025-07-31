@@ -1,6 +1,7 @@
 from ast import literal_eval
 
 from odoo.addons.mail_group.tests.common import TestMailListCommon
+
 from odoo.tests.common import HttpCase, tagged, users
 
 

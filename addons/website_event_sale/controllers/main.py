@@ -2,9 +2,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from collections import defaultdict
-from odoo.http import request, route
 
 from odoo.addons.website_event.controllers.main import WebsiteEventController
+
+from odoo.http import request, route
 
 
 class WebsiteEventSaleController(WebsiteEventController):
@@ -21,13 +22,15 @@ class WebsiteEventSaleController(WebsiteEventController):
         if not any(info.get('event_ticket_id') for info in registration_data):
             return super()._create_attendees_from_registration_post(event, registration_data)
 
-        event_ticket_ids = [registration['event_ticket_id'] for registration in registration_data if registration.get('event_ticket_id')]
+        event_ticket_ids = [registration['event_ticket_id'] for registration in registration_data if
+                            registration.get('event_ticket_id')]
         event_ticket_by_id = {
             event_ticket.id: event_ticket
             for event_ticket in request.env['event.event.ticket'].sudo().browse(event_ticket_ids)
         }
 
-        if all(event_ticket.price == 0 for event_ticket in event_ticket_by_id.values()) and not request.website.sale_get_order().id:
+        if all(event_ticket.price == 0 for event_ticket in
+               event_ticket_by_id.values()) and not request.website.sale_get_order().id:
             # all chosen tickets are free AND no existing SO -> skip SO and payment process
             return super()._create_attendees_from_registration_post(event, registration_data)
 

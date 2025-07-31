@@ -12,31 +12,41 @@
                 <t t-if="props.activity.can_write">
                     <FileUploader t-if="hasFileUploader" onUploaded.bind="onFileUploaded">
                         <t t-set-slot="toggler">
-                            <button class="btn btn-sm btn-success btn-link" title="Upload file" aria-label="Upload File">
+                            <button class="btn btn-sm btn-success btn-link" title="Upload file"
+                                    aria-label="Upload File">
                                 <i class="fa fa-upload"/>
                             </button>
                         </t>
                     </FileUploader>
-                    <button t-if="hasMarkDoneButton" class="o-mail-ActivityListPopoverItem-markAsDone btn btn-sm btn-success btn-link" title="Mark as done" aria-label="Mark as done" t-on-click="onClickMarkAsDone">
+                    <button t-if="hasMarkDoneButton"
+                            class="o-mail-ActivityListPopoverItem-markAsDone btn btn-sm btn-success btn-link"
+                            title="Mark as done" aria-label="Mark as done" t-on-click="onClickMarkAsDone">
                         <i class="fa fa-check"/>
                     </button>
                 </t>
-                <button t-if="hasEditButton" class="o-mail-ActivityListPopoverItem-editbtn btn btn-sm btn-success btn-link" title="Edit" aria-label="Edit" t-on-click="onClickEditActivityButton">
+                <button t-if="hasEditButton"
+                        class="o-mail-ActivityListPopoverItem-editbtn btn btn-sm btn-success btn-link" title="Edit"
+                        aria-label="Edit" t-on-click="onClickEditActivityButton">
                     <i class="fa fa-pencil"/>
                 </button>
-                <button t-if="hasCancelButton" class="o-mail-ActivityListPopoverItem-cancel btn btn-sm btn-danger btn-link" title="Cancel" aria-label="Cancel" t-on-click="unlink">
+                <button t-if="hasCancelButton"
+                        class="o-mail-ActivityListPopoverItem-cancel btn btn-sm btn-danger btn-link" title="Cancel"
+                        aria-label="Cancel" t-on-click="unlink">
                     <i class="fa fa-times"/>
                 </button>
             </div>
             <div class="d-flex align-items-center flex-wrap mx-3">
-                <img t-if="props.activity.user_id[0]" class="me-2 rounded o_object_fit_cover" t-att-src="activityAssigneeAvatar" style="max-width: 1.5rem; max-height: 1.5rem;"/>
+                <img t-if="props.activity.user_id[0]" class="me-2 rounded o_object_fit_cover"
+                     t-att-src="activityAssigneeAvatar" style="max-width: 1.5rem; max-height: 1.5rem;"/>
                 <div class="mt-1">
                     <t t-if="props.activity.user_id[0]">
                         <small class="text-truncate" t-esc="props.activity.user_id[1]"/>
                         <small t-if="props.activity.state !== 'today'" class="mx-1">-</small>
                     </t>
-                    <small t-if="['overdue', 'planned'].includes(props.activity.state)" class="fw-bold" t-att-title="props.activity.dateDeadlineFormatted" t-esc="delayLabel"/>
-                    <small t-if="props.activity.state === 'done'" class="fw-bold" t-att-title="dateDoneFormatted" t-esc="props.activity.dateDoneFormatted"/>
+                    <small t-if="['overdue', 'planned'].includes(props.activity.state)" class="fw-bold"
+                           t-att-title="props.activity.dateDeadlineFormatted" t-esc="delayLabel"/>
+                    <small t-if="props.activity.state === 'done'" class="fw-bold" t-att-title="dateDoneFormatted"
+                           t-esc="props.activity.dateDoneFormatted"/>
                 </div>
             </div>
             <div t-if="props.activity.attachment_ids?.length" class="mx-5">
@@ -47,9 +57,12 @@
                     <br t-if="!attachment_last"/>
                 </t>
             </div>
-            <ActivityMarkAsDone t-if="state.hasMarkDoneView" activity="props.activity" close="closeMarkAsDone" onClickDoneAndScheduleNext="props.onClickDoneAndScheduleNext" onActivityChanged="props.onActivityChanged"/>
+            <ActivityMarkAsDone t-if="state.hasMarkDoneView" activity="props.activity" close="closeMarkAsDone"
+                                onClickDoneAndScheduleNext="props.onClickDoneAndScheduleNext"
+                                onActivityChanged="props.onActivityChanged"/>
             <div t-if="props.activity.mail_template_ids.length > 0" class="mx-3 mt-2">
-                <ActivityMailTemplate activity="props.activity" onClickButtons="props.onClickEditActivityButton" onActivityChanged="props.onActivityChanged"/>
+                <ActivityMailTemplate activity="props.activity" onClickButtons="props.onClickEditActivityButton"
+                                      onActivityChanged="props.onActivityChanged"/>
             </div>
         </div>
     </t>

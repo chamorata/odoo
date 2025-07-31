@@ -41,7 +41,8 @@ class MyInvoisConsolidateInvoiceWizard(models.TransientModel):
             ('date_order', '>=', self.date_from),
             ('date_order', '<=', self.date_to),
         ])
-        orders_to_consolidate = orders_to_consolidate.filtered(lambda o: not o.consolidated_invoice_ids or all(ci.myinvois_state == 'cancelled' for ci in o.consolidated_invoice_ids))
+        orders_to_consolidate = orders_to_consolidate.filtered(lambda o: not o.consolidated_invoice_ids or all(
+            ci.myinvois_state == 'cancelled' for ci in o.consolidated_invoice_ids))
         if not orders_to_consolidate:
             raise ValidationError(self.env._('Invalid Operation. No order to consolidate.'))
 

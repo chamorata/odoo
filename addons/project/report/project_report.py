@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.rating.models.rating_data import RATING_LIMIT_MIN, RATING_TEXT
+
 from odoo import fields, models, tools
 
-from odoo.addons.rating.models.rating_data import RATING_LIMIT_MIN, RATING_TEXT
 
 class ReportProjectTaskUser(models.Model):
     _name = "report.project.task.user"
@@ -21,19 +22,21 @@ class ReportProjectTaskUser(models.Model):
     date_last_stage_update = fields.Datetime(string='Last Stage Update', readonly=True)
     project_id = fields.Many2one('project.project', string='Project', readonly=True)
     working_days_close = fields.Float(string='Working Days to Close',
-        digits=(16, 2), readonly=True, aggregator="avg")
+                                      digits=(16, 2), readonly=True, aggregator="avg")
     working_days_open = fields.Float(string='Working Days to Assign',
-        digits=(16, 2), readonly=True, aggregator="avg")
+                                     digits=(16, 2), readonly=True, aggregator="avg")
     delay_endings_days = fields.Float(string='Days to Deadline', digits=(16, 2), aggregator="avg", readonly=True)
     nbr = fields.Integer('# of Tasks', readonly=True)  # TDE FIXME master: rename into nbr_tasks
     working_hours_open = fields.Float(string='Working Hours to Assign', digits=(16, 2), readonly=True, aggregator="avg")
     working_hours_close = fields.Float(string='Working Hours to Close', digits=(16, 2), readonly=True, aggregator="avg")
-    rating_last_value = fields.Float('Last Rating (1-5)', aggregator="avg", readonly=True, groups="project.group_project_rating")
-    rating_avg = fields.Float('Average Rating (1-5)', readonly=True, aggregator='avg', groups="project.group_project_rating")
+    rating_last_value = fields.Float('Last Rating (1-5)', aggregator="avg", readonly=True,
+                                     groups="project.group_project_rating")
+    rating_avg = fields.Float('Average Rating (1-5)', readonly=True, aggregator='avg',
+                              groups="project.group_project_rating")
     priority = fields.Selection([
         ('0', 'Low'),
         ('1', 'High')
-        ], readonly=True, string="Priority")
+    ], readonly=True, string="Priority")
 
     state = fields.Selection([
         ('01_in_progress', 'In Progress'),
@@ -50,17 +53,17 @@ class ReportProjectTaskUser(models.Model):
     task_id = fields.Many2one('project.task', string='Tasks', readonly=True)
     active = fields.Boolean(readonly=True)
     tag_ids = fields.Many2many('project.tags', relation='project_tags_project_task_rel',
-        column1='project_task_id', column2='project_tags_id',
-        string='Tags', readonly=True)
+                               column1='project_task_id', column2='project_tags_id',
+                               string='Tags', readonly=True)
     parent_id = fields.Many2one('project.task', string='Parent Task', readonly=True)
     personal_stage_type_ids = fields.Many2many('project.task.type', relation='project_task_user_rel',
-        column1='task_id', column2='stage_id',
-        string="Personal Stage", readonly=True)
+                                               column1='task_id', column2='stage_id',
+                                               string="Personal Stage", readonly=True)
     milestone_id = fields.Many2one('project.milestone', readonly=True)
     message_is_follower = fields.Boolean(related='task_id.message_is_follower')
     dependent_ids = fields.Many2many('project.task', relation='task_dependencies_rel', column1='depends_on_id',
-        column2='task_id', string='Block', readonly=True,
-        domain="[('allow_task_dependencies', '=', True), ('id', '!=', id)]")
+                                     column2='task_id', string='Block', readonly=True,
+                                     domain="[('allow_task_dependencies', '=', True), ('id', '!=', id)]")
     description = fields.Text(readonly=True)
 
     def _select(self):

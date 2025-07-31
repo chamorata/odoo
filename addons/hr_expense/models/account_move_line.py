@@ -3,17 +3,18 @@
 
 from odoo import api, fields, models
 from odoo.tools import SQL
-from odoo.tools.misc import frozendict
 
 
 class AccountMoveLine(models.Model):
     _inherit = "account.move.line"
 
-    expense_id = fields.Many2one('hr.expense', string='Expense', copy=True, index='btree_not_null')  # copy=True, else we don't know price is tax incl.
+    expense_id = fields.Many2one('hr.expense', string='Expense', copy=True,
+                                 index='btree_not_null')  # copy=True, else we don't know price is tax incl.
 
     @api.constrains('account_id', 'display_type')
     def _check_payable_receivable(self):
-        super(AccountMoveLine, self.filtered(lambda line: line.move_id.expense_sheet_id.payment_mode != 'company_account'))._check_payable_receivable()
+        super(AccountMoveLine, self.filtered(
+            lambda line: line.move_id.expense_sheet_id.payment_mode != 'company_account'))._check_payable_receivable()
 
     def _get_attachment_domains(self):
         attachment_domains = super(AccountMoveLine, self)._get_attachment_domains()

@@ -13,7 +13,8 @@ class RecruitmentSource(models.Model):
     has_domain = fields.Char(compute='_compute_has_domain')
     job_id = fields.Many2one('hr.job', "Job", ondelete='cascade')
     alias_id = fields.Many2one('mail.alias', "Alias ID", ondelete='restrict')
-    medium_id = fields.Many2one('utm.medium', default=lambda self: self.env['utm.medium']._fetch_or_create_utm_medium('website'))
+    medium_id = fields.Many2one('utm.medium',
+                                default=lambda self: self.env['utm.medium']._fetch_or_create_utm_medium('website'))
 
     def _compute_has_domain(self):
         for source in self:

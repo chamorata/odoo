@@ -1,10 +1,10 @@
 from lxml import html
+from odoo.addons.website.controllers.model_page import ModelPageController
 
-from odoo.tools import mute_logger
 from odoo.exceptions import AccessError
 from odoo.tests import HttpCase, tagged
+from odoo.tools import mute_logger
 
-from odoo.addons.website.controllers.model_page import ModelPageController
 
 @tagged('post_install', '-at_install')
 class TestWebsiteControllerPage(HttpCase):
@@ -78,7 +78,8 @@ class TestWebsiteControllerPage(HttpCase):
                 "record_domain": "[('name', '=ilike', 'test_partner_%')]",
                 "website_published": True,
             })
-        self.assertEqual(str(cm.exception).split("\n")[0], "You are not allowed to access 'Website Model Test Exposed' (test.model.exposed) records.")
+        self.assertEqual(str(cm.exception).split("\n")[0],
+                         "You are not allowed to access 'Website Model Test Exposed' (test.model.exposed) records.")
 
     def test_access_rights_and_rules(self):
         self.authenticate(None, None)
@@ -116,11 +117,13 @@ class TestWebsiteControllerPage(HttpCase):
         for n, record in zip(rec_nodes, self.exposed_records):
             self.assertEqual(n.get("href"), f"/model/{self.listing_controller_page.name_slugified}/{slug(record)}")
 
-        response = self.url_open(f"/model/{self.listing_controller_page.name_slugified}/{slug(self.exposed_records[0])}")
+        response = self.url_open(
+            f"/model/{self.listing_controller_page.name_slugified}/{slug(self.exposed_records[0])}")
         tree = html.fromstring(response.content.decode())
         self.assertEqual(len(tree.xpath("//div[@class='test_record']")), 1)
 
-        response = self.url_open(f"/model/{self.listing_controller_page.name_slugified}/fake-slug-{self.exposed_records[0].id}")
+        response = self.url_open(
+            f"/model/{self.listing_controller_page.name_slugified}/fake-slug-{self.exposed_records[0].id}")
         self.assertEqual(response.status_code, 404)
 
         non_reachable_record = self.env[self.model.model].create({"name": "non_reachable"})
@@ -142,18 +145,20 @@ class TestWebsiteControllerPage(HttpCase):
         tree = html.fromstring(response.content.decode())
         rec_nodes = tree.xpath("//a[@class='test_record_listing']")
         self.assertEqual(len(rec_nodes), 1)
-        self.assertEqual(rec_nodes[0].get("href"), f"/model/{self.listing_controller_page.name_slugified}/{slug(self.exposed_records[1])}")
+        self.assertEqual(rec_nodes[0].get("href"),
+                         f"/model/{self.listing_controller_page.name_slugified}/{slug(self.exposed_records[1])}")
 
         self.patch(ModelPageController, "pager_step", 1)
         response = self.url_open(f"/model/{self.listing_controller_page.name_slugified}/page/2")
         tree = html.fromstring(response.content.decode())
         rec_nodes = tree.xpath("//a[@class='test_record_listing']")
         self.assertEqual(len(rec_nodes), 1)
-        self.assertEqual(rec_nodes[0].get("href"), f"/model/{self.listing_controller_page.name_slugified}/{slug(self.exposed_records[1])}")
+        self.assertEqual(rec_nodes[0].get("href"),
+                         f"/model/{self.listing_controller_page.name_slugified}/{slug(self.exposed_records[1])}")
 
     def test_default_layout(self):
         self.assertEqual(self.listing_controller_page.default_layout, 'grid')
         self.start_tour('/model/exposed-model', 'website_controller_page_listing_layout', login='admin')
         self.assertEqual(self.listing_controller_page.default_layout, 'list')
-        #check that the user that has not previously interacted with the layout switcher will prompt on the default layout
+        # check that the user that has not previously interacted with the layout switcher will prompt on the default layout
         self.start_tour('/model/exposed-model', 'website_controller_page_default_page_check', login='admin')

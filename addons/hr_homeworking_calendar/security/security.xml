@@ -7,7 +7,8 @@
             <field name="groups" eval="[(4, ref('base.group_user'))]"/>
             <field name="domain_force">[
                 ('employee_id', '=', user.employee_id.id)
-            ]</field>
+                ]
+            </field>
         </record>
 
         <record id="homeworking_location_wizard_admin_rule" model="ir.rule">

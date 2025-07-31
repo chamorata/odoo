@@ -18,7 +18,8 @@
 
         <record model="res.groups" id="group_system">
             <field name="name">Settings</field>
-            <field name="implied_ids" eval="[Command.link(ref('group_erp_manager')), Command.link(ref('group_sanitize_override'))]"/>
+            <field name="implied_ids"
+                   eval="[Command.link(ref('group_erp_manager')), Command.link(ref('group_sanitize_override'))]"/>
             <field name="users" eval="[Command.link(ref('base.user_root')), Command.link(ref('base.user_admin'))]"/>
         </record>
 
@@ -58,7 +59,8 @@
         </record>
 
         <record id="default_user" model="res.users">
-            <field name="groups_id" eval="[Command.link(ref('base.group_partner_manager')), Command.link(ref('base.group_allow_export'))]"/>
+            <field name="groups_id"
+                   eval="[Command.link(ref('base.group_partner_manager')), Command.link(ref('base.group_allow_export'))]"/>
         </record>
 
         <!--
@@ -67,8 +69,10 @@
         -->
         <record id="group_portal" model="res.groups">
             <field name="name">Portal</field>
-            <field name="comment">Portal members have specific access rights (such as record rules and restricted menus).
-                They usually do not belong to the usual Odoo groups.</field>
+            <field name="comment">Portal members have specific access rights (such as record rules and restricted
+                menus).
+                They usually do not belong to the usual Odoo groups.
+            </field>
         </record>
         <!--
             A group dedicated to the public user only, making groups
@@ -77,7 +81,8 @@
         <record id="group_public" model="res.groups">
             <field name="name">Public</field>
             <field name="comment">Public users have specific access rights (such as record rules and restricted menus).
-                They usually do not belong to the usual Odoo groups.</field>
+                They usually do not belong to the usual Odoo groups.
+            </field>
         </record>
 
         <record id="public_user" model="res.users">
@@ -90,7 +95,7 @@
             <field name="login">portaltemplate</field>
             <field name="active" eval="False"/>
             <field name="groups_id" eval="[Command.set([ref('base.group_portal')])]"/>
-            <field name="signature" /> <!-- Needed for avoiding the _compute_signature triggering on each update -->
+            <field name="signature"/> <!-- Needed for avoiding the _compute_signature triggering on each update -->
         </record>
 
         <record id="default_template_user_config" model="ir.config_parameter">

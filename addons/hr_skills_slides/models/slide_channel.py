@@ -58,11 +58,12 @@ class SlideChannelPartner(models.Model):
         for scp in self:
             if self.env.user.employee_ids:
                 msg = _('The employee has completed the course %s',
-                    Markup('<a href="%(link)s">%(course)s</a>') % {
-                        'link': scp.channel_id.website_url,
-                        'course': scp.channel_id.name,
-                })
+                        Markup('<a href="%(link)s">%(course)s</a>') % {
+                            'link': scp.channel_id.website_url,
+                            'course': scp.channel_id.name,
+                        })
                 self.env.user.employee_id.message_post(body=msg)
+
 
 class Channel(models.Model):
     _inherit = 'slide.channel'
@@ -73,10 +74,10 @@ class Channel(models.Model):
             for channel in self:
                 channel._message_employee_chatter(
                     _('The employee subscribed to the course %s',
-                        Markup('<a href="%(link)s">%(course)s</a>') % {
-                            'link': channel.website_url,
-                            'course': channel.name
-                    }),
+                      Markup('<a href="%(link)s">%(course)s</a>') % {
+                          'link': channel.website_url,
+                          'course': channel.name
+                      }),
                     target_partners
                 )
         return res
@@ -89,10 +90,10 @@ class Channel(models.Model):
         for channel in self:
             channel._message_employee_chatter(
                 _('The employee left the course %s',
-                    Markup('<a href="%(link)s">%(course)s</a>') % {
-                        'link': channel.website_url,
-                        'course': channel.name,
-                }),
+                  Markup('<a href="%(link)s">%(course)s</a>') % {
+                      'link': channel.website_url,
+                      'course': channel.name,
+                  }),
                 partners)
         return res
 

@@ -9,24 +9,25 @@
                     <group>
                         <group>
                             <field name="candidate_id" invisible="1"/>
-                            <field name="skill_type_id" widget="radio" />
+                            <field name="skill_type_id" widget="radio"/>
                         </group>
                         <group>
                             <field name="skill_id" options="{'no_open': True, 'no_create_edit': True}"
-                                    context="{'default_skill_type_id': skill_type_id}"
-                                    domain="[('skill_type_id', '=', skill_type_id)]"
-                                    invisible="not skill_type_id"/>
+                                   context="{'default_skill_type_id': skill_type_id}"
+                                   domain="[('skill_type_id', '=', skill_type_id)]"
+                                   invisible="not skill_type_id"/>
                             <label for="skill_level_id"
-                                    invisible="not skill_id or not skill_type_id"/>
+                                   invisible="not skill_id or not skill_type_id"/>
                             <div class="o_row"
-                                    invisible="not skill_id or not skill_type_id">
+                                 invisible="not skill_id or not skill_type_id">
                                 <span class="ps-0" style="flex:1">
                                     <field name="skill_level_id"
-                                            readonly="not skill_id"
-                                            context="{'from_skill_level_dropdown': True}" />
+                                           readonly="not skill_id"
+                                           context="{'from_skill_level_dropdown': True}"/>
                                 </span>
                                 <span style="flex:1">
-                                    <field name="level_progress" widget="progressbar" class="o_hr_skills_progress" invisible="not skill_level_id" />
+                                    <field name="level_progress" widget="progressbar" class="o_hr_skills_progress"
+                                           invisible="not skill_level_id"/>
                                 </span>
                             </div>
                         </group>
@@ -37,10 +38,10 @@
     </record>
 
     <menuitem
-        id="hr_recruitment_skill_type_menu"
-        name="Skill Types"
-        action="hr_skills.hr_skill_type_action"
-        parent="hr_recruitment.menu_hr_recruitment_config_employees"
-        sequence="35"
+            id="hr_recruitment_skill_type_menu"
+            name="Skill Types"
+            action="hr_skills.hr_skill_type_action"
+            parent="hr_recruitment.menu_hr_recruitment_config_employees"
+            sequence="35"
     />
 </odoo>

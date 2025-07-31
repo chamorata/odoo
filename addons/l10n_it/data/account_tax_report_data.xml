@@ -230,13 +230,15 @@
                                 <field name="name">VP14a - VAT payable (debit)</field>
                                 <field name="code">VP14a</field>
                                 <field name="expression_ids">
-                                    <record id="tax_report_line_vp14a_vp4_vp5_dif_pos" model="account.report.expression">
+                                    <record id="tax_report_line_vp14a_vp4_vp5_dif_pos"
+                                            model="account.report.expression">
                                         <field name="label">vp4_vp5_dif_pos</field>
                                         <field name="engine">aggregation</field>
                                         <field name="formula">VP4.balance - VP5.balance</field>
                                         <field name="subformula">if_above(EUR(0))</field>
                                     </record>
-                                    <record id="tax_report_line_vp14a_vp4_vp5_dif_neg" model="account.report.expression">
+                                    <record id="tax_report_line_vp14a_vp4_vp5_dif_neg"
+                                            model="account.report.expression">
                                         <field name="label">vp4_vp5_dif_neg</field>
                                         <field name="engine">aggregation</field>
                                         <field name="formula">VP4.balance - VP5.balance</field>
@@ -245,7 +247,10 @@
                                     <record id="tax_report_line_vp14a_balance" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">(VP14a.vp4_vp5_dif_pos + VP7.balance + VP12.balance) - (-VP14a.vp4_vp5_dif_neg + VP8.balance + VP9.balance + VP10.balance + VP11.balance + VP13.balance)</field>
+                                        <field name="formula">(VP14a.vp4_vp5_dif_pos + VP7.balance + VP12.balance) -
+                                            (-VP14a.vp4_vp5_dif_neg + VP8.balance + VP9.balance + VP10.balance +
+                                            VP11.balance + VP13.balance)
+                                        </field>
                                         <field name="subformula">if_above(EUR(0))</field>
                                     </record>
                                     <record id="tax_report_line_vp14a_carryover" model="account.report.expression">
@@ -261,13 +266,15 @@
                                 <field name="name">VP14b - VAT payable (credit)</field>
                                 <field name="code">VP14b</field>
                                 <field name="expression_ids">
-                                    <record id="tax_report_line_vp14b_vp4_vp5_dif_pos" model="account.report.expression">
+                                    <record id="tax_report_line_vp14b_vp4_vp5_dif_pos"
+                                            model="account.report.expression">
                                         <field name="label">vp4_vp5_dif_pos</field>
                                         <field name="engine">aggregation</field>
                                         <field name="formula">VP4.balance - VP5.balance</field>
                                         <field name="subformula">if_above(EUR(0))</field>
                                     </record>
-                                    <record id="tax_report_line_vp14b_vp4_vp5_dif_neg" model="account.report.expression">
+                                    <record id="tax_report_line_vp14b_vp4_vp5_dif_neg"
+                                            model="account.report.expression">
                                         <field name="label">vp4_vp5_dif_neg</field>
                                         <field name="engine">aggregation</field>
                                         <field name="formula">VP4.balance - VP5.balance</field>
@@ -276,7 +283,10 @@
                                     <record id="tax_report_line_vp14b_balance" model="account.report.expression">
                                         <field name="label">balance</field>
                                         <field name="engine">aggregation</field>
-                                        <field name="formula">(-VP14b.vp4_vp5_dif_neg + VP8.balance + VP9.balance + VP10.balance + VP11.balance + VP13.balance) - (VP14b.vp4_vp5_dif_pos + VP7.balance + VP12.balance)</field>
+                                        <field name="formula">(-VP14b.vp4_vp5_dif_neg + VP8.balance + VP9.balance +
+                                            VP10.balance + VP11.balance + VP13.balance) - (VP14b.vp4_vp5_dif_pos +
+                                            VP7.balance + VP12.balance)
+                                        </field>
                                         <field name="subformula">if_above(EUR(0))</field>
                                     </record>
                                     <record id="tax_report_line_vp14b_carryover" model="account.report.expression">
@@ -297,11 +307,15 @@
                 <field name="code">VE</field>
                 <field name="children_ids">
                     <record id="tax_report_line_turnover_section_1" model="account.report.line">
-                        <field name="name">Contributions of agricultural products and transfers from exempt farmers (in case of exceeding 1/3</field>
+                        <field name="name">Contributions of agricultural products and transfers from exempt farmers (in
+                            case of exceeding 1/3
+                        </field>
                         <field name="code">VE_section1</field>
                         <field name="children_ids">
                             <record id="tax_report_line_ve1" model="account.report.line">
-                                <field name="name">VE1 - Transfers to cooperatives art.34 paragraph 2 with compensation percentage 2%</field>
+                                <field name="name">VE1 - Transfers to cooperatives art.34 paragraph 2 with compensation
+                                    percentage 2%
+                                </field>
                                 <field name="code">VE1</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_line_ve1_tag" model="account.report.expression">
@@ -312,7 +326,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_ve2" model="account.report.line">
-                                <field name="name">VE2 - Transfers to cooperatives art.34 paragraph 2 with compensation percentage 4%</field>
+                                <field name="name">VE2 - Transfers to cooperatives art.34 paragraph 2 with compensation
+                                    percentage 4%
+                                </field>
                                 <field name="code">VE2</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_line_ve2_tag" model="account.report.expression">
@@ -323,7 +339,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_ve3" model="account.report.line">
-                                <field name="name">VE3 - Transfers to cooperatives art.34 paragraph 2 with compensation percentage 6,4%</field>
+                                <field name="name">VE3 - Transfers to cooperatives art.34 paragraph 2 with compensation
+                                    percentage 6,4%
+                                </field>
                                 <field name="code">VE3</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_line_ve3_tag" model="account.report.expression">
@@ -334,7 +352,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_ve4" model="account.report.line">
-                                <field name="name">VE4 - Transfers to cooperatives art.34 paragraph 2 with compensation percentage 7,3%</field>
+                                <field name="name">VE4 - Transfers to cooperatives art.34 paragraph 2 with compensation
+                                    percentage 7,3%
+                                </field>
                                 <field name="code">VE4</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_line_ve4_tag" model="account.report.expression">
@@ -345,7 +365,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_ve5" model="account.report.line">
-                                <field name="name">VE5 - Transfers to cooperatives art.34 paragraph 2 with compensation percentage 7,5%</field>
+                                <field name="name">VE5 - Transfers to cooperatives art.34 paragraph 2 with compensation
+                                    percentage 7,5%
+                                </field>
                                 <field name="code">VE5</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_line_ve5_tag" model="account.report.expression">
@@ -356,7 +378,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_ve6" model="account.report.line">
-                                <field name="name">VE6 - Transfers to cooperatives art.34 paragraph 2 with compensation percentage 8,3%</field>
+                                <field name="name">VE6 - Transfers to cooperatives art.34 paragraph 2 with compensation
+                                    percentage 8,3%
+                                </field>
                                 <field name="code">VE6</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_line_ve6_tag" model="account.report.expression">
@@ -367,7 +391,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_ve7" model="account.report.line">
-                                <field name="name">VE7 - Transfers to cooperatives art.34 paragraph 2 with compensation percentage 8,5%</field>
+                                <field name="name">VE7 - Transfers to cooperatives art.34 paragraph 2 with compensation
+                                    percentage 8,5%
+                                </field>
                                 <field name="code">VE7</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_line_ve7_tag" model="account.report.expression">
@@ -378,7 +404,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_ve8" model="account.report.line">
-                                <field name="name">VE8 - Transfers to cooperatives art.34 paragraph 2 with compensation percentage 8,8%</field>
+                                <field name="name">VE8 - Transfers to cooperatives art.34 paragraph 2 with compensation
+                                    percentage 8,8%
+                                </field>
                                 <field name="code">VE8</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_line_ve8_tag" model="account.report.expression">
@@ -389,7 +417,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_ve9" model="account.report.line">
-                                <field name="name">VE9 - Transfers to cooperatives art.34 paragraph 2 with compensation percentage 9,5%</field>
+                                <field name="name">VE9 - Transfers to cooperatives art.34 paragraph 2 with compensation
+                                    percentage 9,5%
+                                </field>
                                 <field name="code">VE9</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_line_ve9_tag" model="account.report.expression">
@@ -400,7 +430,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_ve10" model="account.report.line">
-                                <field name="name">VE10 - Transfers to cooperatives art.34 paragraph 2 with compensation percentage 10%</field>
+                                <field name="name">VE10 - Transfers to cooperatives art.34 paragraph 2 with compensation
+                                    percentage 10%
+                                </field>
                                 <field name="code">VE10</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_line_ve10_tag" model="account.report.expression">
@@ -411,7 +443,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_ve11" model="account.report.line">
-                                <field name="name">VE11 - Transfers to cooperatives art.34 paragraph 2 with compensation percentage 12,3%</field>
+                                <field name="name">VE11 - Transfers to cooperatives art.34 paragraph 2 with compensation
+                                    percentage 12,3%
+                                </field>
                                 <field name="code">VE11</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_line_ve11_tag" model="account.report.expression">
@@ -424,7 +458,9 @@
                         </field>
                     </record>
                     <record id="tax_report_line_turnover_section_2" model="account.report.line">
-                        <field name="name">Agricultural taxable transactions (Article 34 paragraph 1) and commercial and professional taxable transactions</field>
+                        <field name="name">Agricultural taxable transactions (Article 34 paragraph 1) and commercial and
+                            professional taxable transactions
+                        </field>
                         <field name="code">VE_section2</field>
                         <field name="children_ids">
                             <record id="tax_report_line_ve20" model="account.report.line">
@@ -523,7 +559,8 @@
                         <field name="code">VE_section4</field>
                         <field name="children_ids">
                             <record id="tax_report_line_ve30" model="account.report.line">
-                                <field name="name">VE30 - Transactions that contribute to the formation of the ceiling</field>
+                                <field name="name">VE30 - Transactions that contribute to the formation of the ceiling
+                                </field>
                                 <field name="code">VE30</field>
                                 <field name="children_ids">
                                     <record id="tax_report_line_ve30_I" model="account.report.line">
@@ -534,7 +571,8 @@
                                                 <field name="label">balance</field>
                                                 <field name="engine">aggregation</field>
                                                 <field name="formula">
-                                                    VE30_II.balance + VE30_III.balance + VE30_IV.balance + VE30_V.balance
+                                                    VE30_II.balance + VE30_III.balance + VE30_IV.balance +
+                                                    VE30_V.balance
                                                 </field>
                                             </record>
                                         </field>
@@ -586,7 +624,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_ve31" model="account.report.line">
-                                <field name="name">VE31 - Non-taxable transactions as a result of declarations of intent</field>
+                                <field name="name">VE31 - Non-taxable transactions as a result of declarations of
+                                    intent
+                                </field>
                                 <field name="code">VE31</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_line_ve31_tag" model="account.report.expression">
@@ -619,7 +659,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_ve34" model="account.report.line">
-                                <field name="name">VE34 - Transactions not subject to the tax under Articles 7 to 7-septies</field>
+                                <field name="name">VE34 - Transactions not subject to the tax under Articles 7 to
+                                    7-septies
+                                </field>
                                 <field name="code">VE34</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_line_ve34_tag" model="account.report.expression">
@@ -631,7 +673,8 @@
                             </record>
 
                             <record id="tax_report_line_ve35" model="account.report.line">
-                                <field name="name">VE35 - Transactions with application of internal reverse charge</field>
+                                <field name="name">VE35 - Transactions with application of internal reverse charge
+                                </field>
                                 <field name="code">VE35</field>
                                 <field name="children_ids">
                                     <record id="tax_report_line_ve35_I" model="account.report.line">
@@ -650,7 +693,8 @@
                                         </field>
                                     </record>
                                     <record id="tax_report_line_ve35_ii" model="account.report.line">
-                                        <field name="name">VE35_II - Disposal of scrap and other recovered materials</field>
+                                        <field name="name">VE35_II - Disposal of scrap and other recovered materials
+                                        </field>
                                         <field name="code">VE35_II</field>
                                         <field name="expression_ids">
                                             <record id="tax_report_line_ve35_ii_tag" model="account.report.expression">
@@ -716,10 +760,12 @@
                                         </field>
                                     </record>
                                     <record id="tax_report_line_ve35_viii" model="account.report.line">
-                                        <field name="name">VE35_VIII - Benefits construction and related industries</field>
+                                        <field name="name">VE35_VIII - Benefits construction and related industries
+                                        </field>
                                         <field name="code">VE35_VIII</field>
                                         <field name="expression_ids">
-                                            <record id="tax_report_line_ve35_viii_tag" model="account.report.expression">
+                                            <record id="tax_report_line_ve35_viii_tag"
+                                                    model="account.report.expression">
                                                 <field name="label">balance</field>
                                                 <field name="engine">tax_tags</field>
                                                 <field name="formula">ve35_viii</field>
@@ -751,7 +797,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_ve37" model="account.report.line">
-                                <field name="name">VE37 - Transactions made during the year but with tax due in subsequent years</field>
+                                <field name="name">VE37 - Transactions made during the year but with tax due in
+                                    subsequent years
+                                </field>
                                 <field name="code">VE37</field>
                                 <field name="children_ids">
                                     <record id="tax_report_line_ve37_I" model="account.report.line">
@@ -779,7 +827,8 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_ve38" model="account.report.line">
-                                <field name="name">VE38 - Transactions with parties referred to in Article 17-ter.</field>
+                                <field name="name">VE38 - Transactions with parties referred to in Article 17-ter.
+                                </field>
                                 <field name="code">VE38</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_line_ve38_tag" model="account.report.expression">
@@ -790,7 +839,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_ve39" model="account.report.line">
-                                <field name="name">VE39 - (minus) Transactions made in previous years but with tax due in 2022</field>
+                                <field name="name">VE39 - (minus) Transactions made in previous years but with tax due
+                                    in 2022
+                                </field>
                                 <field name="code">VE39</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_line_ve39_tag" model="account.report.expression">
@@ -801,7 +852,9 @@
                                 </field>
                             </record>
                             <record id="tax_report_line_ve40" model="account.report.line">
-                                <field name="name">VE40 - (minus) Disposals of depreciable assets and internal transfers.</field>
+                                <field name="name">VE40 - (minus) Disposals of depreciable assets and internal
+                                    transfers.
+                                </field>
                                 <field name="code">VE40</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_line_ve40_tag" model="account.report.expression">
@@ -842,7 +895,8 @@
                         </field>
                     </record>
                     <record id="tax_report_line_vj3" model="account.report.line">
-                        <field name="name">VJ3 - Purchases of goods already in Italy or services, from non-residents</field>
+                        <field name="name">VJ3 - Purchases of goods already in Italy or services, from non-residents
+                        </field>
                         <field name="code">VJ3</field>
                         <field name="expression_ids">
                             <record id="tax_report_line_vj3_tag" model="account.report.expression">
@@ -853,7 +907,9 @@
                         </field>
                     </record>
                     <record id="tax_report_line_vj4" model="account.report.line">
-                        <field name="name">VJ4 - Fees paid to resellers of travel tickets and resellers of parking documents</field>
+                        <field name="name">VJ4 - Fees paid to resellers of travel tickets and resellers of parking
+                            documents
+                        </field>
                         <field name="code">VJ4</field>
                         <field name="expression_ids">
                             <record id="tax_report_line_vj4_tag" model="account.report.expression">
@@ -952,7 +1008,9 @@
                         </field>
                     </record>
                     <record id="tax_report_line_vj13" model="account.report.line">
-                        <field name="name">VJ13 - Purchases of buildings or portions of buildings used for capital purposes</field>
+                        <field name="name">VJ13 - Purchases of buildings or portions of buildings used for capital
+                            purposes
+                        </field>
                         <field name="code">VJ13</field>
                         <field name="expression_ids">
                             <record id="tax_report_line_vj13_tag" model="account.report.expression">
@@ -1020,7 +1078,11 @@
                     <record id="tax_report_line_vj19" model="account.report.line">
                         <field name="name">VJ19 - Total frame VJ</field>
                         <field name="code">VJ19</field>
-                        <field name="aggregation_formula">VJ1.balance + VJ2.balance + VJ3.balance + VJ4.balance + VJ5.balance + VJ6.balance + VJ7.balance + VJ8.balance + VJ9.balance + VJ10.balance + VJ11.balance + VJ12.balance + VJ13.balance + VJ14.balance + VJ15.balance + VJ16.balance + VJ17.balance + VJ18.balance</field>
+                        <field name="aggregation_formula">VJ1.balance + VJ2.balance + VJ3.balance + VJ4.balance +
+                            VJ5.balance + VJ6.balance + VJ7.balance + VJ8.balance + VJ9.balance + VJ10.balance +
+                            VJ11.balance + VJ12.balance + VJ13.balance + VJ14.balance + VJ15.balance + VJ16.balance +
+                            VJ17.balance + VJ18.balance
+                        </field>
                     </record>
                 </field>
             </record>

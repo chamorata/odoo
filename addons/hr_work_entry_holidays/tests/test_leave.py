@@ -2,13 +2,14 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import datetime, date
-from dateutil.relativedelta import relativedelta
 
+from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
+from odoo.addons.hr_work_entry_holidays.tests.common import TestWorkEntryHolidaysBase
 
 from odoo import SUPERUSER_ID
-from odoo.addons.hr_work_entry_holidays.tests.common import TestWorkEntryHolidaysBase
 from odoo.tests import tagged
+
 
 @tagged('test_leave')
 class TestWorkEntryLeave(TestWorkEntryHolidaysBase):
@@ -17,7 +18,8 @@ class TestWorkEntryLeave(TestWorkEntryHolidaysBase):
         leave = self.create_leave()
 
         resource_leave = leave._create_resource_leave()
-        self.assertEqual(resource_leave.work_entry_type_id, self.leave_type.work_entry_type_id, "it should have the corresponding work_entry type")
+        self.assertEqual(resource_leave.work_entry_type_id, self.leave_type.work_entry_type_id,
+                         "it should have the corresponding work_entry type")
 
     def test_resource_leave_in_contract_calendar(self):
         other_calendar = self.env['resource.calendar'].create({'name': 'New calendar'})
@@ -28,7 +30,8 @@ class TestWorkEntryLeave(TestWorkEntryHolidaysBase):
 
         resource_leave = leave._create_resource_leave()
         self.assertEqual(len(resource_leave), 1, "it should have created only one resource leave")
-        self.assertEqual(resource_leave.work_entry_type_id, self.leave_type.work_entry_type_id, "it should have the corresponding work_entry type")
+        self.assertEqual(resource_leave.work_entry_type_id, self.leave_type.work_entry_type_id,
+                         "it should have the corresponding work_entry type")
 
     def test_create_mark_conflicting_work_entries(self):
         work_entry = self.create_work_entry(datetime(2019, 10, 10, 9, 0), datetime(2019, 10, 10, 12, 0))
@@ -53,7 +56,8 @@ class TestWorkEntryLeave(TestWorkEntryHolidaysBase):
         leave = self.create_leave(datetime(2019, 10, 10, 9, 0), datetime(2019, 10, 12, 18, 0))
         work_entry_1 = self.create_work_entry(datetime(2019, 10, 8, 9, 0), datetime(2019, 10, 11, 9, 0))  # overlaps
         work_entry_2 = self.create_work_entry(datetime(2019, 10, 11, 9, 0), datetime(2019, 10, 11, 10, 0))  # included
-        adjacent_work_entry = self.create_work_entry(datetime(2019, 10, 12, 18, 0), datetime(2019, 10, 13, 18, 0))  # after and don't overlap
+        adjacent_work_entry = self.create_work_entry(datetime(2019, 10, 12, 18, 0),
+                                                     datetime(2019, 10, 13, 18, 0))  # after and don't overlap
         leave.action_validate()
         self.assertNotEqual(adjacent_work_entry.state, 'conflict', "It should not conflict")
         self.assertFalse(work_entry_2.active, "It should have been archived")
@@ -89,12 +93,15 @@ class TestWorkEntryLeave(TestWorkEntryHolidaysBase):
 
     def test_refuse_leave(self):
         leave = self.create_leave(date(2019, 10, 10), date(2019, 10, 10))
-        work_entries = self.richard_emp.contract_id._generate_work_entries(datetime(2019, 10, 10, 0, 0, 0), datetime(2019, 10, 10, 23, 59, 59))
+        work_entries = self.richard_emp.contract_id._generate_work_entries(datetime(2019, 10, 10, 0, 0, 0),
+                                                                           datetime(2019, 10, 10, 23, 59, 59))
         adjacent_work_entry = self.create_work_entry(leave.date_from - relativedelta(days=3), leave.date_from)
-        self.assertTrue(all(work_entries.mapped(lambda w: w.state == 'conflict')), "Attendance work entries should all conflict with the leave")
+        self.assertTrue(all(work_entries.mapped(lambda w: w.state == 'conflict')),
+                        "Attendance work entries should all conflict with the leave")
         self.assertNotEqual(adjacent_work_entry.state, 'conflict', "Non overlapping work entry should not conflict")
         leave.action_refuse()
-        self.assertTrue(all(work_entries.mapped(lambda w: w.state != 'conflict')), "Attendance work entries should no longer conflict")
+        self.assertTrue(all(work_entries.mapped(lambda w: w.state != 'conflict')),
+                        "Attendance work entries should no longer conflict")
         self.assertNotEqual(adjacent_work_entry.state, 'conflict', "Non overlapping work entry should not conflict")
 
     def test_refuse_approved_leave(self):
@@ -108,14 +115,18 @@ class TestWorkEntryLeave(TestWorkEntryHolidaysBase):
 
         leave = self.create_leave(start, end)
         leave.action_validate()
-        work_entries = self.env['hr.work.entry'].search([('employee_id', '=', self.richard_emp.id), ('date_start', '<=', end), ('date_stop', '>=', start)])
+        work_entries = self.env['hr.work.entry'].search(
+            [('employee_id', '=', self.richard_emp.id), ('date_start', '<=', end), ('date_stop', '>=', start)])
         leave_work_entry = self.richard_emp.contract_ids.generate_work_entries(start.date(), end.date())
         self.assertEqual(leave_work_entry[:1].leave_id, leave)
         leave.action_refuse()
-        work_entries = self.env['hr.work.entry'].search([('employee_id', '=', self.richard_emp.id), ('date_start', '>=', start), ('date_stop', '<=', end)])
+        work_entries = self.env['hr.work.entry'].search(
+            [('employee_id', '=', self.richard_emp.id), ('date_start', '>=', start), ('date_stop', '<=', end)])
         self.assertFalse(leave_work_entry[:1].filtered('leave_id').active)
-        self.assertEqual(len(work_entries), 2, "Attendance work entries should have been re-created (morning and afternoon)")
-        self.assertTrue(all(work_entries.mapped(lambda w: w.state != 'conflict')), "Attendance work entries should not conflict")
+        self.assertEqual(len(work_entries), 2,
+                         "Attendance work entries should have been re-created (morning and afternoon)")
+        self.assertTrue(all(work_entries.mapped(lambda w: w.state != 'conflict')),
+                        "Attendance work entries should not conflict")
 
     def test_archived_work_entry_conflict(self):
         self.create_leave(datetime(2019, 10, 10, 9, 0), datetime(2019, 10, 10, 18, 0))
@@ -212,12 +223,12 @@ class TestWorkEntryLeave(TestWorkEntryHolidaysBase):
             'request_unit': 'hour',
             'work_entry_type_id': entry_type_paid.id,
         },
-        {
-            'name': 'Unpaid leave type',
-            'requires_allocation': 'no',
-            'request_unit': 'hour',
-            'work_entry_type_id': entry_type_unpaid.id,
-        }])
+            {
+                'name': 'Unpaid leave type',
+                'requires_allocation': 'no',
+                'request_unit': 'hour',
+                'work_entry_type_id': entry_type_unpaid.id,
+            }])
 
         leave_paid, leave_unpaid = self.env['hr.leave'].create([{
             'name': 'Paid leave',
@@ -229,19 +240,20 @@ class TestWorkEntryLeave(TestWorkEntryHolidaysBase):
             'request_hour_from': '8',
             'request_hour_to': '9',
         },
-        {
-            'name': 'Unpaid leave',
-            'employee_id': self.jules_emp.id,
-            'holiday_status_id': leave_type_unpaid.id,
-            'request_date_from': datetime(2024, 9, 10),
-            'request_date_to': datetime(2024, 9, 10),
-            'request_unit_hours': True,
-            'request_hour_from': '9',
-            'request_hour_to': '10',
-        }])
+            {
+                'name': 'Unpaid leave',
+                'employee_id': self.jules_emp.id,
+                'holiday_status_id': leave_type_unpaid.id,
+                'request_date_from': datetime(2024, 9, 10),
+                'request_date_to': datetime(2024, 9, 10),
+                'request_unit_hours': True,
+                'request_hour_from': '9',
+                'request_hour_to': '10',
+            }])
 
         (leave_paid | leave_unpaid).with_user(SUPERUSER_ID).action_validate()
-        entries = self.contract_cdi._generate_work_entries(datetime(2024, 9, 10, 0, 0, 0), datetime(2024, 9, 10, 23, 59, 59))
+        entries = self.contract_cdi._generate_work_entries(datetime(2024, 9, 10, 0, 0, 0),
+                                                           datetime(2024, 9, 10, 23, 59, 59))
         paid_leave_entry = entries.filtered_domain([('work_entry_type_id', '=', entry_type_paid.id)])
         unpaid_leave_entry = entries.filtered_domain([('work_entry_type_id', '=', entry_type_unpaid.id)])
 
@@ -283,5 +295,6 @@ class TestWorkEntryLeave(TestWorkEntryHolidaysBase):
         entries = self.jules_emp.contract_id.generate_work_entries(date(2024, 9, 9), date(2024, 9, 14))
         paid_leave_entry = entries.filtered_domain([('work_entry_type_id', '=', entry_type_paid.id)])
         self.assertEqual(len(paid_leave_entry), 4, "Four work entries should be created for a flexible employee")
-        self.assertEqual(sum(paid_leave_entry.mapped('duration')), 32, "The combined duration of the work entries for flexible employee should "
-                                                                        "be number of days * hours per day")
+        self.assertEqual(sum(paid_leave_entry.mapped('duration')), 32,
+                         "The combined duration of the work entries for flexible employee should "
+                         "be number of days * hours per day")

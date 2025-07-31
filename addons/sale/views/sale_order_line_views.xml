@@ -42,21 +42,21 @@
                             <field name="qty_delivered_method" invisible="1"/>
                             <field name="state" invisible="1"/>
                             <field name="product_id"
-                                readonly="id and not product_updatable"
-                                required="not display_type"
-                                force_save="1"
-                                widget="many2one_barcode"/>
+                                   readonly="id and not product_updatable"
+                                   required="not display_type"
+                                   force_save="1"
+                                   widget="many2one_barcode"/>
                             <field name="name"/>
                             <field name="product_uom_qty"/>
                             <field name="qty_delivered"
-                                invisible="state not in ['sale', 'done']"
-                                readonly="qty_delivered_method != 'manual'"/>
+                                   invisible="state not in ['sale', 'done']"
+                                   readonly="qty_delivered_method != 'manual'"/>
                             <field name="qty_invoiced" invisible="state not in ['sale', 'done']"/>
                             <field name="product_uom"
-                                force_save="1"
-                                groups="uom.group_uom"
-                                readonly="product_uom_readonly"
-                                required="not display_type"/>
+                                   force_save="1"
+                                   groups="uom.group_uom"
+                                   readonly="product_uom_readonly"
+                                   required="not display_type"/>
                             <field name="product_uom" groups="!uom.group_uom" invisible="1"/>
                             <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>
                             <field name="order_partner_id" invisible="1"/>
@@ -73,18 +73,18 @@
                                    string="Amount"
                                    widget="monetary"
                                    invisible="company_price_include == 'tax_included'"
-                                />
+                            />
                             <field name="price_total"
                                    string="Amount"
                                    widget="monetary"
                                    invisible="company_price_include == 'tax_excluded'"
-                                />
+                            />
                             <field name="tax_id"
-                                widget="many2many_tags"
-                                options="{'no_create': True}"
-                                context="{'search_view_ref': 'account.account_tax_view_search'}"
-                                domain="[('type_tax_use', '=', 'sale'), ('company_id', '=', company_id), ('country_id', '=', tax_country_id)]"
-                                readonly="qty_invoiced &gt; 0"/>
+                                   widget="many2many_tags"
+                                   options="{'no_create': True}"
+                                   context="{'search_view_ref': 'account.account_tax_view_search'}"
+                                   domain="[('type_tax_use', '=', 'sale'), ('company_id', '=', company_id), ('country_id', '=', tax_country_id)]"
+                                   readonly="qty_invoiced &gt; 0"/>
                             <field name="price_tax" widget="monetary"/>
                             <field name="currency_id" invisible="1"/>
                         </group>
@@ -100,14 +100,14 @@
         <field name="arch" type="xml">
             <search string="Search Sales Order">
                 <filter string="To Invoice"
-                    name="to_invoice"
-                    domain="[('qty_to_invoice', '!=', 0)]"
-                    help="Sales Order Lines ready to be invoiced"/>
+                        name="to_invoice"
+                        domain="[('qty_to_invoice', '!=', 0)]"
+                        help="Sales Order Lines ready to be invoiced"/>
                 <separator/>
                 <filter string="My Sales Order Lines"
-                    name="my_sales_order_lines"
-                    domain="[('salesman_id','=',uid)]"
-                    help="Sales Order Lines related to a Sales Order of mine"/>
+                        name="my_sales_order_lines"
+                        domain="[('salesman_id','=',uid)]"
+                        help="Sales Order Lines related to a Sales Order of mine"/>
                 <field name="order_id"/>
                 <field name="order_partner_id" operator="child_of"/>
                 <field name="product_id"/>

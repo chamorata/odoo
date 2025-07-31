@@ -11,8 +11,10 @@ class AccountMoveSend(models.AbstractModel):
     def _get_all_extra_edis(self) -> dict:
         # EXTENDS 'account'
         res = super()._get_all_extra_edis()
-        res.update({'rs_edi': {'label': 'eFaktura', 'is_applicable': self._is_rs_edi_applicable, 'help': 'Send the E-Invoice to Government via eFaktura'}})
-        res.update({'rs_cir_checkbox': {'is_applicable': self._is_rs_edi_applicable, 'label': _("Send to CIR"), 'help': _("Send to Central Invoice Register(For B2G and the public sector)")}})
+        res.update({'rs_edi': {'label': 'eFaktura', 'is_applicable': self._is_rs_edi_applicable,
+                               'help': 'Send the E-Invoice to Government via eFaktura'}})
+        res.update({'rs_cir_checkbox': {'is_applicable': self._is_rs_edi_applicable, 'label': _("Send to CIR"),
+                                        'help': _("Send to Central Invoice Register(For B2G and the public sector)")}})
         return res
 
     @api.model
@@ -59,4 +61,5 @@ class AccountMoveSend(models.AbstractModel):
         if attachments_vals:
             attachments = self.env['ir.attachment'].with_user(SUPERUSER_ID).create(attachments_vals)
             res_ids = [attachment.res_id for attachment in attachments]
-            self.env['account.move'].browse(res_ids).invalidate_recordset(fnames=['l10n_rs_edi_attachment_id', 'l10n_rs_edi_attachment_file'])
+            self.env['account.move'].browse(res_ids).invalidate_recordset(
+                fnames=['l10n_rs_edi_attachment_id', 'l10n_rs_edi_attachment_file'])

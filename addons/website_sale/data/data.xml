@@ -69,7 +69,7 @@
         <record id="dynamic_snippet_newest_products_filter" model="ir.filters">
             <field name="name">Newest Products</field>
             <field name="model_id">product.product</field>
-            <field name="user_id" eval="False" />
+            <field name="user_id" eval="False"/>
             <field name="domain">[('website_published', '=', True)]</field>
             <field name="context">{'display_default_code': False, 'add2cart_rerender': False}</field>
             <field name="sort">["create_date desc"]</field>
@@ -81,8 +81,8 @@
             <field name="model_id" ref="model_product_product"/>
             <field name="state">code</field>
             <field name="code">
-DynamicFilter = model.env['website.snippet.filter']
-response = DynamicFilter._get_products('latest_sold')
+                DynamicFilter = model.env['website.snippet.filter']
+                response = DynamicFilter._get_products('latest_sold')
             </field>
         </record>
         <record id="dynamic_snippet_latest_viewed_products_action" model="ir.actions.server">
@@ -90,11 +90,11 @@ response = DynamicFilter._get_products('latest_sold')
             <field name="model_id" ref="model_product_product"/>
             <field name="state">code</field>
             <field name="code">
-DynamicFilter = model.env['website.snippet.filter']
-res_products = DynamicFilter._get_products('latest_viewed')
-for data in res_products:
-    data['_latest_viewed'] = True
-response = res_products
+                DynamicFilter = model.env['website.snippet.filter']
+                res_products = DynamicFilter._get_products('latest_viewed')
+                for data in res_products:
+                data['_latest_viewed'] = True
+                response = res_products
             </field>
         </record>
         <record id="dynamic_snippet_accessories_action" model="ir.actions.server">
@@ -102,8 +102,9 @@ response = res_products
             <field name="model_id" ref="model_product_product"/>
             <field name="state">code</field>
             <field name="code">
-DynamicFilter = model.env['website.snippet.filter']
-response = DynamicFilter._get_products('accessories', product_template_id=request.params.get('productTemplateId'))
+                DynamicFilter = model.env['website.snippet.filter']
+                response = DynamicFilter._get_products('accessories',
+                product_template_id=request.params.get('productTemplateId'))
             </field>
         </record>
         <record id="dynamic_snippet_recently_sold_with_action" model="ir.actions.server">
@@ -111,8 +112,9 @@ response = DynamicFilter._get_products('accessories', product_template_id=reques
             <field name="model_id" ref="model_product_product"/>
             <field name="state">code</field>
             <field name="code">
-DynamicFilter = model.env['website.snippet.filter']
-response = DynamicFilter._get_products('recently_sold_with', product_template_id=request.params.get('productTemplateId'))
+                DynamicFilter = model.env['website.snippet.filter']
+                response = DynamicFilter._get_products('recently_sold_with',
+                product_template_id=request.params.get('productTemplateId'))
             </field>
         </record>
         <record id="dynamic_snippet_alternative_products" model="ir.actions.server">
@@ -120,8 +122,9 @@ response = DynamicFilter._get_products('recently_sold_with', product_template_id
             <field name="model_id" ref="model_product_product"/>
             <field name="state">code</field>
             <field name="code">
-DynamicFilter = model.env['website.snippet.filter']
-response = DynamicFilter._get_products('alternative_products', product_template_id=request.params.get('productTemplateId'))
+                DynamicFilter = model.env['website.snippet.filter']
+                response = DynamicFilter._get_products('alternative_products',
+                product_template_id=request.params.get('productTemplateId'))
             </field>
         </record>
         <!-- Dynamic Filter -->

@@ -4,8 +4,8 @@
 Store database-specific configuration parameters
 """
 
-import uuid
 import logging
+import uuid
 
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError

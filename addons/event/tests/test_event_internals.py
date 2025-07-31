@@ -2,10 +2,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import datetime, timedelta
+
 from freezegun import freeze_time
+from odoo.addons.event.tests.common import EventCase
 
 from odoo import Command
-from odoo.addons.event.tests.common import EventCase
 from odoo import exceptions
 from odoo.fields import Datetime as FieldsDatetime
 from odoo.tests import Form, users, tagged
@@ -24,19 +25,21 @@ class TestEventInternalsCommon(EventCase):
             'seats_max': 30,
             'default_timezone': 'Europe/Paris',
             'event_type_ticket_ids': [
-                (0, 0, {'name': 'First Ticket',}),
-                (0, 0, {'name': 'Second Ticket',}),
+                (0, 0, {'name': 'First Ticket', }),
+                (0, 0, {'name': 'Second Ticket', }),
             ],
             'event_type_mail_ids': [
                 (0, 0, {  # right at subscription
                     'interval_unit': 'now',
                     'interval_type': 'after_sub',
-                    'template_ref': 'mail.template,%i' % cls.env['ir.model.data']._xmlid_to_res_id('event.event_subscription')}),
+                    'template_ref': 'mail.template,%i' % cls.env['ir.model.data']._xmlid_to_res_id(
+                        'event.event_subscription')}),
                 (0, 0, {  # 1 days before event
                     'interval_nbr': 1,
                     'interval_unit': 'days',
                     'interval_type': 'before_event',
-                    'template_ref': 'mail.template,%i' % cls.env['ir.model.data']._xmlid_to_res_id('event.event_reminder')}),
+                    'template_ref': 'mail.template,%i' % cls.env['ir.model.data']._xmlid_to_res_id(
+                        'event.event_reminder')}),
             ],
         })
 
@@ -83,7 +86,7 @@ class TestEventData(TestEventInternalsCommon):
                          .mapped('title'), ['Name', 'Email', 'Phone'])
         self.assertEqual(
             set(event.specific_question_ids.filtered(
-            lambda q: q.question_type in ['simple_choice', 'text_box']).mapped('answer_ids.name')),
+                lambda q: q.question_type in ['simple_choice', 'text_box']).mapped('answer_ids.name')),
             {'Q1-Answer1', 'Q1-Answer2'})
         self.assertEqual(len(event.general_question_ids), 2)
         self.assertEqual(event.general_question_ids[0].title, 'Question2')
@@ -96,9 +99,9 @@ class TestEventData(TestEventInternalsCommon):
             ('title', '=', self.event_question_1.title),
         ]).with_context(lang='nl_NL')
         self.assertNotEqual(event_question_nl.title, self.event_question_1.title,
-            "Translated title should differ from untranslated title.")
+                            "Translated title should differ from untranslated title.")
         self.assertEqual(event_question_nl.title, event_type_question_nl.title,
-            "Translated title should be copied.")
+                         "Translated title should be copied.")
         self.assertEqual(
             set(event_question_nl.answer_ids.mapped('name')),
             set(event_type_question_nl.answer_ids.mapped('name')),
@@ -212,8 +215,9 @@ class TestEventData(TestEventInternalsCommon):
         event_type.write({
             'event_type_mail_ids': [(5, 0), (0, 0, {
                 'interval_nbr': 1, 'interval_unit': 'days', 'interval_type': 'before_event',
-                'template_ref': 'mail.template,%i' % self.env['ir.model.data']._xmlid_to_res_id('event.event_reminder')})
-            ],
+                'template_ref': 'mail.template,%i' % self.env['ir.model.data']._xmlid_to_res_id(
+                    'event.event_reminder')})
+                                    ],
             'event_type_ticket_ids': [(5, 0), (0, 0, {'name': 'TestRegistration'})],
         })
         event.write({'event_type_id': event_type.id})
@@ -265,7 +269,8 @@ class TestEventData(TestEventInternalsCommon):
                     'interval_nbr': 77,
                     'interval_unit': 'days',
                     'interval_type': 'after_event',
-                    'template_ref': 'mail.template,%i' % self.env['ir.model.data']._xmlid_to_res_id('event.event_reminder'),
+                    'template_ref': 'mail.template,%i' % self.env['ir.model.data']._xmlid_to_res_id(
+                        'event.event_reminder'),
                 })
             ],
         })
@@ -281,7 +286,8 @@ class TestEventData(TestEventInternalsCommon):
                 Command.create({
                     'interval_unit': 'now',
                     'interval_type': 'after_sub',
-                    'template_ref': 'mail.template,%i' % self.env['ir.model.data']._xmlid_to_res_id('event.event_subscription'),
+                    'template_ref': 'mail.template,%i' % self.env['ir.model.data']._xmlid_to_res_id(
+                        'event.event_subscription'),
                 })
             ]
         })
@@ -417,7 +423,7 @@ class TestEventData(TestEventInternalsCommon):
         self.assertEqual(event.date_tz, self.env.user.tz)
         self.assertFalse(event.seats_limited)
 
-        #Event Communications: when no event type, default configuration
+        # Event Communications: when no event type, default configuration
         self.assertEqual(len(event.event_mail_ids), 3)
         self.assertEqual(event.event_mail_ids[0].interval_unit, 'now')
         self.assertEqual(event.event_mail_ids[0].interval_type, 'after_sub')
@@ -443,12 +449,16 @@ class TestEventData(TestEventInternalsCommon):
         field "template_ref".
         """
         self.env['mail.template'].search([('model', '=', 'event.registration')]).unlink()
-        self.env['mail.template'].create({'model_id': self.env['ir.model']._get('event.registration').id, 'name': 'test template'})
-        self.env['mail.template'].create({'model_id': self.env['ir.model']._get('res.partner').id, 'name': 'test template'})
+        self.env['mail.template'].create(
+            {'model_id': self.env['ir.model']._get('event.registration').id, 'name': 'test template'})
+        self.env['mail.template'].create(
+            {'model_id': self.env['ir.model']._get('res.partner').id, 'name': 'test template'})
         templates = self.env['mail.template'].with_context(filter_template_on_event=True).name_search('test template')
         self.assertEqual(len(templates), 1, 'Should return only mail templates related to the event registration model')
-        templates = self.env['mail.template'].with_context(filter_template_on_event=True).search([('name', '=', 'test template')])
-        self.assertEqual(len(templates), 1, 'Should also return only mail templates related to the event registration model using search')
+        templates = self.env['mail.template'].with_context(filter_template_on_event=True).search(
+            [('name', '=', 'test template')])
+        self.assertEqual(len(templates), 1,
+                         'Should also return only mail templates related to the event registration model using search')
 
     @freeze_time('2020-1-31 10:00:00')
     @users('user_eventmanager')
@@ -788,7 +798,7 @@ class TestEventRegistrationPhone(EventCase):
             'country_id': self.env.ref('base.be').id,
             'phone': False,
             'mobile': '0456987654',
-            })
+        })
         event = self.test_event.with_user(self.env.user)
 
         # customer_id, phone -> based on partner or event country
@@ -900,7 +910,7 @@ class TestEventTicketData(TestEventInternalsCommon):
         with self.assertRaises(exceptions.UserError):
             second_ticket.write({'end_sale_datetime': datetime(2020, 1, 20, 23, 59, 59)})
 
-        #test if event start/end dates are taking datetime fields (hours, minutes, seconds) into account
+        # test if event start/end dates are taking datetime fields (hours, minutes, seconds) into account
         second_ticket.write({'start_sale_datetime': datetime(2020, 1, 31, 11, 0, 0)})
         self.assertFalse(second_ticket.sale_available)
         self.assertFalse(second_ticket.is_launched)

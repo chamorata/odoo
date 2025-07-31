@@ -45,12 +45,15 @@
                         <group>
                             <field name="is_won"/>
                             <field name="fold"/>
-                            <field name="team_id" options='{"no_open": True, "no_create": True}' invisible="team_count &lt;= 1" context="{'kanban_view_ref': 'sales_team.crm_team_view_kanban'}"/>
+                            <field name="team_id" options='{"no_open": True, "no_create": True}'
+                                   invisible="team_count &lt;= 1"
+                                   context="{'kanban_view_ref': 'sales_team.crm_team_view_kanban'}"/>
                         </group>
                         <field name="team_count" invisible="1"/>
                     </group>
                     <separator string="Requirements"/>
-                    <field name="requirements" nolabel="1" placeholder="Give your team the requirements to move an opportunity to this stage."/>
+                    <field name="requirements" nolabel="1"
+                           placeholder="Give your team the requirements to move an opportunity to this stage."/>
                 </sheet>
             </form>
         </field>
@@ -61,12 +64,13 @@
         <field name="res_model">crm.stage</field>
         <field name="view_id" ref="crm.crm_stage_tree"/>
         <field name="help" type="html">
-          <p class="o_view_nocontent_smiling_face">
-            Set a new stage in your opportunity pipeline
-          </p><p>
-            Stages allow salespersons to easily track how a specific opportunity
-            is positioned in the sales cycle.
-          </p>
+            <p class="o_view_nocontent_smiling_face">
+                Set a new stage in your opportunity pipeline
+            </p>
+            <p>
+                Stages allow salespersons to easily track how a specific opportunity
+                is positioned in the sales cycle.
+            </p>
         </field>
     </record>
 

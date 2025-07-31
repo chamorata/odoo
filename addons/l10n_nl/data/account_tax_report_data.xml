@@ -16,7 +16,9 @@
         <field name="line_ids">
             <record id="tax_report_rub_1" model="account.report.line">
                 <field name="name">Section 1: Domestic performance</field>
-                <field name="aggregation_formula">1A_OMZET.balance + 1B_OMZET.balance + 1C_OMZET.balance + 1D_OMZET.balance + 1E_OMZET.balance</field>
+                <field name="aggregation_formula">1A_OMZET.balance + 1B_OMZET.balance + 1C_OMZET.balance +
+                    1D_OMZET.balance + 1E_OMZET.balance
+                </field>
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
                     <record id="tax_report_rub_1a" model="account.report.line">
@@ -82,7 +84,9 @@
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
                     <record id="tax_report_rub_2a" model="account.report.line">
-                        <field name="name">2a. Supplies/services where the collection of turnover tax has been transferred to you (turnover)</field>
+                        <field name="name">2a. Supplies/services where the collection of turnover tax has been
+                            transferred to you (turnover)
+                        </field>
                         <field name="code">2A_OMZET</field>
                         <field name="expression_ids">
                             <record id="tax_report_rub_2a_tag" model="account.report.expression">
@@ -111,12 +115,16 @@
                         </field>
                     </record>
                     <record id="tax_report_rub_3b" model="account.report.line">
-                        <field name="name">3b. Deliveries to/services in countries within the EU and A-B-C supply chain transactions (turnover)</field>
+                        <field name="name">3b. Deliveries to/services in countries within the EU and A-B-C supply chain
+                            transactions (turnover)
+                        </field>
                         <field name="code">3B_OMZET</field>
-                        <field name="aggregation_formula">3BG_OMZET.balance + 3BT_OMZET.balance + 3BS_OMZET.balance</field>
+                        <field name="aggregation_formula">3BG_OMZET.balance + 3BT_OMZET.balance + 3BS_OMZET.balance
+                        </field>
                         <field name="children_ids">
                             <record id="tax_report_rub_3bg" model="account.report.line">
-                                <field name="name">3bg. Deliveries of products to countries within the EU (turnover).</field>
+                                <field name="name">3bg. Deliveries of products to countries within the EU (turnover).
+                                </field>
                                 <field name="code">3BG_OMZET</field>
                                 <field name="expression_ids">
                                     <record id="tax_report_rub_3bg_tag" model="account.report.expression">
@@ -169,7 +177,8 @@
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
                     <record id="tax_report_rub_4a" model="account.report.line">
-                        <field name="name">4a. Supplies/services from countries outside the EU (imports) (turnover)</field>
+                        <field name="name">4a. Supplies/services from countries outside the EU (imports) (turnover)
+                        </field>
                         <field name="code">4A_OMZET</field>
                         <field name="expression_ids">
                             <record id="tax_report_rub_4a_tag" model="account.report.expression">
@@ -195,7 +204,9 @@
             <record id="tax_report_rub_btw_1" model="account.report.line">
                 <field name="name">Section 1: Domestic services (VAT)</field>
                 <field name="code">NLTAX_B1</field>
-                <field name="aggregation_formula">1A_BTW.balance + 1B_BTW.balance + 1C_BTW.balance + 1D_BTW.balance + 1E_BTW.balance</field>
+                <field name="aggregation_formula">1A_BTW.balance + 1B_BTW.balance + 1C_BTW.balance + 1D_BTW.balance +
+                    1E_BTW.balance
+                </field>
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
                     <record id="tax_report_rub_btw_1a" model="account.report.line">
@@ -261,7 +272,9 @@
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
                     <record id="tax_report_rub_btw_2a" model="account.report.line">
-                        <field name="name">2a. Supplies/services where the levy of Sales Tax has been transferred to you (VAT)</field>
+                        <field name="name">2a. Supplies/services where the levy of Sales Tax has been transferred to you
+                            (VAT)
+                        </field>
                         <field name="code">NLTAX_B2</field>
                         <field name="expression_ids">
                             <record id="tax_report_rub_btw_2a_tag" model="account.report.expression">
@@ -309,7 +322,9 @@
                 <field name="children_ids">
                     <record id="tax_report_rub_btw_5a" model="account.report.line">
                         <field name="name">5a. Sales tax payable (headings 1a to 4b) (VAT)</field>
-                        <field name="aggregation_formula">NLTAX_B1.balance + NLTAX_B2.balance + NLTAX_B4a.balance + NLTAX_B4b.balance</field>
+                        <field name="aggregation_formula">NLTAX_B1.balance + NLTAX_B2.balance + NLTAX_B4a.balance +
+                            NLTAX_B4b.balance
+                        </field>
                     </record>
                     <record id="tax_report_rub_btw_5b" model="account.report.line">
                         <field name="name">5b. Input tax (VAT)</field>
@@ -324,7 +339,9 @@
                     </record>
                     <record id="tax_report_rub_btw_5c" model="account.report.line">
                         <field name="name">5c. Subtotal (heading 5a minus 5b) (VAT)</field>
-                        <field name="aggregation_formula">NLTAX_B1.balance + NLTAX_B2.balance + NLTAX_B4a.balance + NLTAX_B4b.balance - NLTAX_B5b.balance</field>
+                        <field name="aggregation_formula">NLTAX_B1.balance + NLTAX_B2.balance + NLTAX_B4a.balance +
+                            NLTAX_B4b.balance - NLTAX_B5b.balance
+                        </field>
                     </record>
                     <record id="tax_report_rub_btw_5d" model="account.report.line">
                         <field name="name">5d. Reduction according to the small business scheme (VAT)</field>
@@ -362,7 +379,10 @@
                     <record id="tax_report_rub_btw_5g" model="account.report.line">
                         <field name="name">5g. Total payable/reclaimable (VAT)</field>
                         <field name="code">NLTAX_B5g</field>
-                        <field name="aggregation_formula">NLTAX_B1.balance + NLTAX_B2.balance + NLTAX_B4a.balance + NLTAX_B4b.balance - NLTAX_B5b.balance - NLTAX_B5d.balance - NLTAX_B5e.balance - NLTAX_B5f.balance</field>
+                        <field name="aggregation_formula">NLTAX_B1.balance + NLTAX_B2.balance + NLTAX_B4a.balance +
+                            NLTAX_B4b.balance - NLTAX_B5b.balance - NLTAX_B5d.balance - NLTAX_B5e.balance -
+                            NLTAX_B5f.balance
+                        </field>
                     </record>
                 </field>
             </record>

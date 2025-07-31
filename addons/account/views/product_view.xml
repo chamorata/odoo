@@ -25,7 +25,7 @@
             <field name="view_id" ref="product_template_view_tree"/>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
-                  Create a new sellable product
+                    Create a new sellable product
                 </p>
             </field>
         </record>
@@ -38,7 +38,7 @@
             <field name="view_id" ref="product_template_view_tree"/>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
-                  Create a new purchasable product
+                    Create a new purchasable product
                 </p>
             </field>
         </record>
@@ -63,11 +63,11 @@
                         <group name="properties" groups="account.group_account_readonly">
                             <group string="Receivables">
                                 <field name="property_account_income_id"
-                                    groups="account.group_account_readonly"/>
+                                       groups="account.group_account_readonly"/>
                             </group>
                             <group string="Payables" name="payables">
                                 <field name="property_account_expense_id"
-                                    groups="account.group_account_readonly"/>
+                                       groups="account.group_account_readonly"/>
                             </group>
                         </group>
                         <group name="accounting" groups="account.group_account_readonly,account.group_account_invoice"/>
@@ -77,10 +77,10 @@
                     <label for="taxes_id" invisible="type == 'combo'"/>
                     <div name="taxes_div" class="o_row" invisible="type == 'combo'">
                         <field
-                            name="taxes_id"
-                            widget="many2many_tags"
-                            class="oe_inline"
-                            context="{
+                                name="taxes_id"
+                                widget="many2many_tags"
+                                class="oe_inline"
+                                context="{
                                 'default_type_tax_use': 'sale',
                                 'search_default_sale': 1,
                                 'search_default_service': type == 'service',
@@ -92,9 +92,9 @@
                 </div>
                 <div name="standard_price_uom" position="after">
                     <field name="supplier_taxes_id"
-                        invisible="not purchase_ok or type == 'combo'"
-                        widget="many2many_tags"
-                        context="{
+                           invisible="not purchase_ok or type == 'combo'"
+                           widget="many2many_tags"
+                           context="{
                             'default_type_tax_use':'purchase',
                             'search_default_purchase': 1,
                             'search_default_service': type == 'service',
@@ -111,7 +111,7 @@
             <field name="inherit_id" ref="product.product_category_form_view"/>
             <field name="arch" type="xml">
                 <group name="first" position="after">
-                    <group name="account_property" >
+                    <group name="account_property">
                         <group string="Account Properties" groups="account.group_account_readonly">
                             <field name="property_account_income_categ_id"/>
                             <field name="property_account_expense_categ_id"/>

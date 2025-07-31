@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo import Command
-
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
+from odoo import Command
 from odoo.tests import tagged
 
 QR_IBAN = 'CH21 3080 8001 2345 6782 7'
@@ -38,7 +38,7 @@ class TestGenQRRReference(AccountTestInvoicingCommon):
             'partner_id': cls.partner.id,
         })
 
-        cls.invoice = cls.init_invoice("out_invoice", products=cls.product_a+cls.product_b)
+        cls.invoice = cls.init_invoice("out_invoice", products=cls.product_a + cls.product_b)
 
     def test_qrr(self):
         test_invoice = self.env['account.move'].create({

@@ -5,7 +5,7 @@
         <field name="model">privacy.log</field>
         <field name="arch" type="xml">
             <list string="Privacy Logs">
-                <field name="date" />
+                <field name="date"/>
                 <field name="anonymized_name"/>
                 <field name="anonymized_email"/>
                 <field name="user_id" widget="many2one_avatar_user"/>
@@ -59,15 +59,15 @@
     </record>
 
     <menuitem
-        id="privacy_menu"
-        name="Privacy"
-        parent="base.menu_custom"
-        sequence="26"/>
+            id="privacy_menu"
+            name="Privacy"
+            parent="base.menu_custom"
+            sequence="26"/>
 
     <menuitem
-        name="Privacy Logs"
-        action="privacy_log_action"
-        id="pricacy_log_menu"
-        parent="privacy_menu"
-        sequence="1"/>
+            name="Privacy Logs"
+            action="privacy_log_action"
+            id="pricacy_log_menu"
+            parent="privacy_menu"
+            sequence="1"/>
 </odoo>

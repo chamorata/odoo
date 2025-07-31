@@ -18,7 +18,8 @@ class Job(models.Model):
 
     @mute_logger('odoo.addons.base.models.ir_qweb')
     def _get_default_website_description(self):
-        return self.env['ir.qweb']._render("website_hr_recruitment.default_website_description", raise_if_not_found=False)
+        return self.env['ir.qweb']._render("website_hr_recruitment.default_website_description",
+                                           raise_if_not_found=False)
 
     def _get_default_job_details(self):
         return _("""
@@ -36,7 +37,8 @@ class Job(models.Model):
         prefetch=False,
         sanitize_overridable=True,
         sanitize_attributes=False, sanitize_form=False)
-    website_published = fields.Boolean(help='Set if the application is published on the website of the company.', tracking=True)
+    website_published = fields.Boolean(help='Set if the application is published on the website of the company.',
+                                       tracking=True)
     website_description = fields.Html(
         'Website description', translate=html_translate,
         default=_get_default_website_description, prefetch=False,
@@ -117,12 +119,11 @@ class Job(models.Model):
             # Rule must be reinforced because of sudo.
             domain.append([('website_published', '=', True)])
 
-
         search_fields = ['name']
         fetch_fields = ['name', 'website_url']
         mapping = {
             'name': {'name': 'name', 'type': 'text', 'match': True},
-            'website_url': {'name': 'website_url', 'type': 'text', 'truncate':  False},
+            'website_url': {'name': 'website_url', 'type': 'text', 'truncate': False},
         }
         if with_description:
             search_fields.append('description')

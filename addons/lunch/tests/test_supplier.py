@@ -1,14 +1,13 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import pytz
-
 from datetime import datetime, time, timedelta
 from unittest.mock import patch
 
+import pytz
+from odoo.addons.lunch.tests.common import TestsCommon
+
 from odoo import fields
 from odoo.tests import common
-
-from odoo.addons.lunch.tests.common import TestsCommon
 
 
 class TestSupplier(TestsCommon):
@@ -47,7 +46,7 @@ env['lunch.supplier'].browse([{self.supplier_kothai.id}])._send_auto_email()""")
 
         for value, result in tests:
             with patch.object(fields.Datetime, 'now', return_value=value) as _:
-                assert self.supplier_pizza_inn.available_today == result,\
+                assert self.supplier_pizza_inn.available_today == result, \
                     'supplier pizza inn should %s considered available on %s' % ('be' if result else 'not be', value)
 
             self.supplier_pizza_inn.invalidate_recordset(['available_today'])
@@ -72,9 +71,11 @@ env['lunch.supplier'].browse([{self.supplier_kothai.id}])._send_auto_email()""")
         for value, rvalue, dayname in tests:
             with patch.object(fields.Datetime, 'now', return_value=value) as _:
                 assert Supplier._search_available_today('=', True) == ['&', '|', ('recurrency_end_date', '=', False),
-                        ('recurrency_end_date', '>', value.replace(tzinfo=pytz.UTC).astimezone(pytz.timezone(self.env.user.tz))),
-                        (dayname, '=', True)],\
-                        'Wrong domain generated for values (%s, %s)' % (value, rvalue)
+                                                                       ('recurrency_end_date', '>',
+                                                                        value.replace(tzinfo=pytz.UTC).astimezone(
+                                                                            pytz.timezone(self.env.user.tz))),
+                                                                       (dayname, '=', True)], \
+                    'Wrong domain generated for values (%s, %s)' % (value, rvalue)
 
         with patch.object(fields.Datetime, 'now', return_value=self.monday_10am) as _:
             assert self.supplier_pizza_inn in Supplier.search([('available_today', '=', True)])
@@ -211,8 +212,8 @@ env['lunch.supplier'].browse([{self.supplier_kothai.id}])._send_auto_email()""")
 
     def test_remove_toppings(self):
         partner = self.env['res.partner'].create({
-                'name': 'Partner',
-            })
+            'name': 'Partner',
+        })
 
         supplier = self.env['lunch.supplier'].create({
             'partner_id': partner.id,

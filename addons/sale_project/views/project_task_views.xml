@@ -6,11 +6,15 @@
     </record>
 
     <record id="project.action_view_my_task" model="ir.actions.act_window">
-        <field name="context">{'search_default_open_tasks': 1, 'all_task': 0, 'default_user_ids': [(4, uid)], 'sale_show_partner_name': True}</field>
+        <field name="context">{'search_default_open_tasks': 1, 'all_task': 0, 'default_user_ids': [(4, uid)],
+            'sale_show_partner_name': True}
+        </field>
     </record>
 
     <record id="project.action_view_all_task" model="ir.actions.act_window">
-        <field name="context">{'search_default_open_tasks': 1, 'default_user_ids': [(4, uid)], 'sale_show_partner_name': True}</field>
+        <field name="context">{'search_default_open_tasks': 1, 'default_user_ids': [(4, uid)], 'sale_show_partner_name':
+            True}
+        </field>
     </record>
 
     <record id="project.action_project_task_user_tree" model="ir.actions.act_window">
@@ -51,22 +55,23 @@
         <field name="arch" type="xml">
             <div name="button_box" position="inside">
                 <field name="display_sales_stat_buttons" invisible="1"/>
-                <field name="allow_billable" invisible="1" />
-                <field name="privacy_visibility" invisible="1" />
-                <button class="oe_stat_button" type="object" name="action_customer_preview" icon="fa-globe icon" invisible="not partner_id or not allow_billable or privacy_visibility != 'portal'">
+                <field name="allow_billable" invisible="1"/>
+                <field name="privacy_visibility" invisible="1"/>
+                <button class="oe_stat_button" type="object" name="action_customer_preview" icon="fa-globe icon"
+                        invisible="not partner_id or not allow_billable or privacy_visibility != 'portal'">
                     <div class="o_field_widget o_stat_info">
                         <span class="o_stat_text">Customer</span>
                         <span class="o_stat_text">Preview</span>
                     </div>
                 </button>
                 <button
-                    class="oe_stat_button"
-                    type="object"
-                    name="action_view_sos"
-                    icon="fa-dollar"
-                    invisible="not display_sales_stat_buttons or sale_order_count == 0"
-                    groups="sales_team.group_sale_salesman_all_leads"
-                    context="{
+                        class="oe_stat_button"
+                        type="object"
+                        name="action_view_sos"
+                        icon="fa-dollar"
+                        invisible="not display_sales_stat_buttons or sale_order_count == 0"
+                        groups="sales_team.group_sale_salesman_all_leads"
+                        context="{
                         'create_for_project_id': id,
                         'default_project_id': id,
                         'default_partner_id': partner_id
@@ -81,20 +86,21 @@
                     </div>
                 </button>
                 <button
-                    class="oe_stat_button"
-                    type="object"
-                    name="action_view_sos"
-                    icon="fa-dollar"
-                    invisible="not display_sales_stat_buttons or sale_order_count != 0"
-                    groups="sales_team.group_sale_salesman_all_leads"
-                    context="{
+                        class="oe_stat_button"
+                        type="object"
+                        name="action_view_sos"
+                        icon="fa-dollar"
+                        invisible="not display_sales_stat_buttons or sale_order_count != 0"
+                        groups="sales_team.group_sale_salesman_all_leads"
+                        context="{
                         'create_for_project_id': id,
                         'default_project_id': id,
                         'default_partner_id': partner_id
                     }">
                     <div class="o_field_widget o_stat_info">
                         <span class="o_stat_text">
-                            <span class="o_stat_value">0</span> Sales Order
+                            <span class="o_stat_value">0</span>
+                            Sales Order
                         </span>
                         <span class="o_stat_text">
                             Make Billable
@@ -110,9 +116,11 @@
                 <attribute name="invisible">not allow_billable</attribute>
             </xpath>
             <xpath expr="//group[@name='group_time_managment']" position="after">
-                 <group name="group_sales_invoicing" string="Sales &amp; Invoicing" col="1" class="row mt16 o_settings_container col-lg-6">
+                <group name="group_sales_invoicing" string="Sales &amp; Invoicing" col="1"
+                       class="row mt16 o_settings_container col-lg-6">
                     <div>
-                        <setting class="col-lg-12" help="Invoice your time and material to customers" id="allow_billable_container">
+                        <setting class="col-lg-12" help="Invoice your time and material to customers"
+                                 id="allow_billable_container">
                             <field name="allow_billable"/>
                         </setting>
                     </div>
@@ -121,24 +129,24 @@
             <xpath expr="//page[@name='settings']//field[@name='privacy_visibility']" position="before">
                 <field name="reinvoiced_sale_order_id" invisible="not allow_billable or not partner_id"/>
                 <label for="sale_line_id" invisible="not allow_billable or not partner_id"/>
-                <div 
-                    class="o_row" 
-                    invisible="not allow_billable or not partner_id">
+                <div
+                        class="o_row"
+                        invisible="not allow_billable or not partner_id">
                     <field name="sale_line_id"
-                        groups="!sales_team.group_sale_salesman"
-                        options="{'no_create': True, 'no_edit': True, 'delete': False, 'no_open': True}"/>
+                           groups="!sales_team.group_sale_salesman"
+                           options="{'no_create': True, 'no_edit': True, 'delete': False, 'no_open': True}"/>
                     <field name="sale_line_id"
-                        groups="sales_team.group_sale_salesman"
-                        options="{'no_edit': True, 'delete': False}"
-                        context="{
+                           groups="sales_team.group_sale_salesman"
+                           options="{'no_edit': True, 'delete': False}"
+                           context="{
                             'form_view_ref': 'sale_project.sale_order_line_view_form_editable',
                             'default_partner_id': partner_id,
                             'default_company_id': company_id,
                         }"/>
                     <span
-                        class="fa fa-exclamation-triangle text-warning"
-                        title="The sales order associated with this project has been cancelled. We recommend either updating the sales order item or cancelling this project in alignment with the cancellation of the sales order."
-                        invisible="sale_order_state != 'cancel'"/>
+                            class="fa fa-exclamation-triangle text-warning"
+                            title="The sales order associated with this project has been cancelled. We recommend either updating the sales order item or cancelling this project in alignment with the cancellation of the sales order."
+                            invisible="sale_order_state != 'cancel'"/>
                 </div>
                 <field name="sale_order_state" invisible="1"/>
             </xpath>
@@ -151,7 +159,8 @@
         <field name="inherit_id" ref="project.quick_create_task_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='project_id']" position="attributes">
-                <attribute name="context">{'default_allow_billable': True, 'default_type_ids': [(4, context.get('default_stage_id', False))]}
+                <attribute name="context">{'default_allow_billable': True, 'default_type_ids': [(4,
+                    context.get('default_stage_id', False))]}
                 </attribute>
             </xpath>
         </field>
@@ -168,9 +177,9 @@
                         type="object" name="action_view_so" icon="fa-dollar"
                         invisible="not sale_order_id"
                         groups="sales_team.group_sale_salesman">
-                        <div class="o_stat_info">
-                            <span class="o_stat_text">Sales Order</span>
-                        </div>
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Sales Order</span>
+                    </div>
                 </button>
             </xpath>
             <xpath expr="//field[@name='partner_id']" position="attributes">
@@ -180,21 +189,21 @@
                 <field name="project_sale_order_id" invisible="1"/>
                 <field name="sale_order_id" invisible="True" groups="sales_team.group_sale_salesman"/>
                 <label for="sale_line_id" invisible="not allow_billable or not project_id or not partner_id"/>
-                <div 
-                    name="sale_line_div"
-                    class="o_row"
-                    invisible="not allow_billable or not project_id or not partner_id">
+                <div
+                        name="sale_line_div"
+                        class="o_row"
+                        invisible="not allow_billable or not project_id or not partner_id">
                     <field name="sale_line_id"
-                        groups="!sales_team.group_sale_salesman"
-                        string="Sales Order Item"
-                        options='{"no_open": True}'
-                        readonly="1"
-                        invisible="not sale_line_id"/>
+                           groups="!sales_team.group_sale_salesman"
+                           string="Sales Order Item"
+                           options='{"no_open": True}'
+                           readonly="1"
+                           invisible="not sale_line_id"/>
                     <field name="sale_line_id"
-                        groups="sales_team.group_sale_salesman"
-                        string="Sales Order Item"
-                        readonly="0"
-                        context="{
+                           groups="sales_team.group_sale_salesman"
+                           string="Sales Order Item"
+                           readonly="0"
+                           context="{
                             'create': False, 'edit': False, 'delete': False,
                             'with_price_unit': True,
                             'form_view_ref': 'sale_project.sale_order_line_view_form_editable',
@@ -202,11 +211,11 @@
                             'default_company_id': company_id,
                             'default_order_id': project_sale_order_id,
                         }"
-                        placeholder="Non-billable"/>
-                    <span 
-                        class="fa fa-exclamation-triangle text-warning"
-                        title="The sales order associated with this task has been cancelled. We recommend either updating the sales order item or cancelling this task in alignment with the cancellation of the sales order." 
-                        invisible="sale_order_state != 'cancel'"/>
+                           placeholder="Non-billable"/>
+                    <span
+                            class="fa fa-exclamation-triangle text-warning"
+                            title="The sales order associated with this task has been cancelled. We recommend either updating the sales order item or cancelling this task in alignment with the cancellation of the sales order."
+                            invisible="sale_order_state != 'cancel'"/>
                 </div>
                 <field name="allow_billable" invisible="1"/>
                 <field name="sale_order_state" invisible="1"/>
@@ -219,7 +228,8 @@
                        placeholder="Non-billable"
                        groups="sales_team.group_sale_salesman"
                        invisible="not allow_billable"/>
-                <field name="sale_line_id" optional="hide" options="{'no_open': True}" readonly="1" groups="!sales_team.group_sale_salesman"/>
+                <field name="sale_line_id" optional="hide" options="{'no_open': True}" readonly="1"
+                       groups="!sales_team.group_sale_salesman"/>
                 <field name="allow_billable" column_invisible="True"/>
             </xpath>
             <xpath expr="//field[@name='child_ids']/list/field[@name='partner_id']" position="attributes">
@@ -228,7 +238,8 @@
             </xpath>
             <xpath expr="//field[@name='depend_on_ids']/list/field[@name='partner_id']" position="after">
                 <field name="sale_line_id" optional="hide" readonly="1" groups="sales_team.group_sale_salesman"/>
-                <field name="sale_line_id" optional="hide" options="{'no_open': True}" readonly="1" groups="!sales_team.group_sale_salesman"/>
+                <field name="sale_line_id" optional="hide" options="{'no_open': True}" readonly="1"
+                       groups="!sales_team.group_sale_salesman"/>
                 <field name="allow_billable" column_invisible="True"/>
             </xpath>
             <xpath expr="//field[@name='depend_on_ids']/list/field[@name='partner_id']" position="attributes">
@@ -262,8 +273,10 @@
         <field name="inherit_id" ref="project.project_task_view_tree_base"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='partner_id']" position="after">
-                <field name="sale_line_id" optional="hide" groups="sales_team.group_sale_salesman" options="{'no_create': True}"/>
-                <field name="sale_line_id" optional="hide" options="{'no_open': True}" readonly="1" groups="!sales_team.group_sale_salesman"/>
+                <field name="sale_line_id" optional="hide" groups="sales_team.group_sale_salesman"
+                       options="{'no_create': True}"/>
+                <field name="sale_line_id" optional="hide" options="{'no_open': True}" readonly="1"
+                       groups="!sales_team.group_sale_salesman"/>
             </xpath>
         </field>
     </record>
@@ -274,7 +287,8 @@
         <field name="inherit_id" ref="project.view_task_search_form_project_base"/>
         <field name="arch" type="xml">
             <field name="partner_id" position="after">
-                <field name="sale_order_id" filter_domain="['|', ('sale_order_id', 'ilike', self), ('sale_line_id', 'ilike', self)]"/>
+                <field name="sale_order_id"
+                       filter_domain="['|', ('sale_order_id', 'ilike', self), ('sale_line_id', 'ilike', self)]"/>
             </field>
             <field name="partner_id" position="attributes">
                 <attribute name="invisible">context.get('hide_partner')</attribute>
@@ -294,23 +308,32 @@
                 <field name="allow_billable" invisible="1"/>
                 <group invisible="not allow_billable">
                     <field name="project_partner_id" invisible="1"/>
-                    <field name="sale_line_id" groups="!sales_team.group_sale_salesman" placeholder="Non-billable" options="{'no_open': True}" readonly="1"/>
-                    <field name="sale_line_id" groups="sales_team.group_sale_salesman" options="{'no_create': True}" placeholder="Non-billable" readonly="0"/>
+                    <field name="sale_line_id" groups="!sales_team.group_sale_salesman" placeholder="Non-billable"
+                           options="{'no_open': True}" readonly="1"/>
+                    <field name="sale_line_id" groups="sales_team.group_sale_salesman" options="{'no_create': True}"
+                           placeholder="Non-billable" readonly="0"/>
                     <label for="quantity_percentage" invisible="not sale_line_id"/>
                     <div class="col-6" invisible="not sale_line_id">
-                        <field name="quantity_percentage" groups="!sales_team.group_sale_salesman" widget="percentage" readonly="1" class="mw-25"/>
+                        <field name="quantity_percentage" groups="!sales_team.group_sale_salesman" widget="percentage"
+                               readonly="1" class="mw-25"/>
                         <field name="quantity_percentage" class="mw-25" groups="sales_team.group_sale_salesman"
-                            widget="percentage" decoration-danger="quantity_percentage &lt; 0 or 1 &lt; quantity_percentage" readonly="0"/>
+                               widget="percentage"
+                               decoration-danger="quantity_percentage &lt; 0 or 1 &lt; quantity_percentage"
+                               readonly="0"/>
                         <span>
-                            (<field name="product_uom_qty" class="mw-25"  decoration-danger="quantity_percentage &lt; 0 or 1 &lt; quantity_percentage"/>
-                            <field name="product_uom" class="w-auto text-end" groups="uom.group_uom" options="{'no_open': True}"/>
+                            (
+                            <field name="product_uom_qty" class="mw-25"
+                                   decoration-danger="quantity_percentage &lt; 0 or 1 &lt; quantity_percentage"/>
+                            <field name="product_uom" class="w-auto text-end" groups="uom.group_uom"
+                                   options="{'no_open': True}"/>
                             <span>)</span>
                         </span>
                     </div>
                 </group>
             </xpath>
             <xpath expr="//button[@name='%(project.action_view_task_from_milestone)d']" position="before">
-                <button name="action_view_sale_order" type="object" class="oe_stat_button" icon="fa-dollar" invisible="not sale_line_id">
+                <button name="action_view_sale_order" type="object" class="oe_stat_button" icon="fa-dollar"
+                        invisible="not sale_line_id">
                     <div class="o_stat_info">
                         <span class="o_stat_text">Sales Order</span>
                     </div>
@@ -328,16 +351,20 @@
             <xpath expr="//field[@name='name']" position="after">
                 <field name="project_partner_id" column_invisible="True"/>
                 <field name="allow_billable" column_invisible="True"/>
-                <field name="sale_line_id" optional="hide" options="{'no_open': True}" placeholder="Non-billable" readonly="1" groups="!sales_team.group_sale_salesman"/>
-                <field name="sale_line_id" optional="hide" options="{'no_create': True}" placeholder="Non-billable" groups="sales_team.group_sale_salesman"/>
-                <field name="quantity_percentage" string="Quantity (%)" optional="hide" widget="percentage" groups="!sales_team.group_sale_salesman"/>
-                <field name="quantity_percentage" string="Quantity (%)" optional="hide" widget="percentage" readonly="0" groups="sales_team.group_sale_salesman"/>
+                <field name="sale_line_id" optional="hide" options="{'no_open': True}" placeholder="Non-billable"
+                       readonly="1" groups="!sales_team.group_sale_salesman"/>
+                <field name="sale_line_id" optional="hide" options="{'no_create': True}" placeholder="Non-billable"
+                       groups="sales_team.group_sale_salesman"/>
+                <field name="quantity_percentage" string="Quantity (%)" optional="hide" widget="percentage"
+                       groups="!sales_team.group_sale_salesman"/>
+                <field name="quantity_percentage" string="Quantity (%)" optional="hide" widget="percentage" readonly="0"
+                       groups="sales_team.group_sale_salesman"/>
                 <field name="product_uom_qty" optional="hide" groups="!sales_team.group_sale_salesman" readonly="1"/>
                 <field name="product_uom_qty" optional="hide" groups="sales_team.group_sale_salesman"/>
             </xpath>
             <xpath expr="//button[@name='action_view_tasks']" position="after">
                 <button name="action_view_sale_order" type="object" string="View Sales Order"
-                    class="btn btn-link float-end" invisible="not sale_line_id"/>
+                        class="btn btn-link float-end" invisible="not sale_line_id"/>
             </xpath>
         </field>
     </record>
@@ -370,7 +397,9 @@
         <field name="inherit_id" ref="project.view_task_form_res_partner"/>
         <field name="arch" type="xml">
             <xpath expr="//group//field[@name='project_id']" position="attributes">
-                <attribute name="domain">['&amp;', ('allow_billable', '=', True), '&amp;',('active', '=', True), '|', ('company_id', '=', False), ('company_id', '=?', company_id)]</attribute>
+                <attribute name="domain">['&amp;', ('allow_billable', '=', True), '&amp;',('active', '=', True), '|',
+                    ('company_id', '=', False), ('company_id', '=?', company_id)]
+                </attribute>
             </xpath>
         </field>
     </record>
@@ -381,7 +410,9 @@
         <field name="inherit_id" ref="project.quick_create_task_form_res_partner"/>
         <field name="arch" type="xml">
             <xpath expr="//group//field[@name='project_id']" position="attributes">
-                <attribute name="domain">[('allow_billable', '=', True), ('type_ids', 'in', context['default_stage_id'])] if context.get('default_stage_id') else []</attribute>
+                <attribute name="domain">[('allow_billable', '=', True), ('type_ids', 'in',
+                    context['default_stage_id'])] if context.get('default_stage_id') else []
+                </attribute>
             </xpath>
         </field>
     </record>

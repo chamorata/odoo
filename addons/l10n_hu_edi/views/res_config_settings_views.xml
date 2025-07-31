@@ -33,11 +33,13 @@
                             <field name="l10n_hu_edi_password"/>
                         </div>
                         <div class="row">
-                            <label string="Signature Key" for="l10n_hu_edi_signature_key" class="col-lg-3 o_light_label"/>
+                            <label string="Signature Key" for="l10n_hu_edi_signature_key"
+                                   class="col-lg-3 o_light_label"/>
                             <field name="l10n_hu_edi_signature_key"/>
                         </div>
                         <div class="row">
-                            <label string="Replacement Key" for="l10n_hu_edi_replacement_key" class="col-lg-3 o_light_label"/>
+                            <label string="Replacement Key" for="l10n_hu_edi_replacement_key"
+                                   class="col-lg-3 o_light_label"/>
                             <field name="l10n_hu_edi_replacement_key"/>
                         </div>
                     </setting>

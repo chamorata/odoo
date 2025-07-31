@@ -43,7 +43,8 @@ class AccountMoveLine(models.Model):
                         move_to_reinvoice |= move_line
 
         # insert the sale line in the create values of the analytic entries
-        if move_to_reinvoice.filtered(lambda aml: not aml.move_id.reversed_entry_id and aml.product_id):  # only if the move line is not a reversal one
+        if move_to_reinvoice.filtered(
+                lambda aml: not aml.move_id.reversed_entry_id and aml.product_id):  # only if the move line is not a reversal one
             map_sale_line_per_move = move_to_reinvoice._sale_create_reinvoice_sale_line()
             for values in values_list:
                 sale_line = map_sale_line_per_move.get(values.get('move_line_id'))
@@ -60,7 +61,9 @@ class AccountMoveLine(models.Model):
         if self.sale_line_ids:
             return False
         uom_precision_digits = self.env['decimal.precision'].precision_get('Product Unit of Measure')
-        return float_compare(self.credit or 0.0, self.debit or 0.0, precision_digits=uom_precision_digits) != 1 and self.product_id.expense_policy not in [False, 'no']
+        return float_compare(self.credit or 0.0, self.debit or 0.0,
+                             precision_digits=uom_precision_digits) != 1 and self.product_id.expense_policy not in [
+            False, 'no']
 
     def _sale_create_reinvoice_sale_line(self):
 
@@ -105,12 +108,13 @@ class AccountMoveLine(models.Model):
             # find the existing sale.line or keep its creation values to process this in batch
             sale_line = None
             if (
-                move_line.product_id.expense_policy == 'sales_price'
-                and move_line.product_id.invoice_policy == 'delivery'
-                and not self.env.context.get('force_split_lines')
+                    move_line.product_id.expense_policy == 'sales_price'
+                    and move_line.product_id.invoice_policy == 'delivery'
+                    and not self.env.context.get('force_split_lines')
             ):
                 # for those case only, we can try to reuse one
-                map_entry_key = (sale_order.id, move_line.product_id.id, price)  # cache entry to limit the call to search
+                map_entry_key = (sale_order.id, move_line.product_id.id,
+                                 price)  # cache entry to limit the call to search
                 sale_line = existing_sale_line_cache.get(map_entry_key)
                 if sale_line:  # already search, so reuse it. sale_line can be sale.order.line record or index of a "to create values" in `sale_line_values_to_create`
                     map_move_sale_line[move_line.id] = sale_line
@@ -128,13 +132,16 @@ class AccountMoveLine(models.Model):
                         # save value to create it
                         sale_line_values_to_create.append(move_line._sale_prepare_sale_line_values(sale_order, price))
                         # store it in the cache of existing ones
-                        existing_sale_line_cache[map_entry_key] = len(sale_line_values_to_create) - 1  # save the index of the value to create sale line
+                        existing_sale_line_cache[map_entry_key] = len(
+                            sale_line_values_to_create) - 1  # save the index of the value to create sale line
                         # store it in the map_move_sale_line map
-                        map_move_sale_line[move_line.id] = len(sale_line_values_to_create) - 1  # save the index of the value to create sale line
+                        map_move_sale_line[move_line.id] = len(
+                            sale_line_values_to_create) - 1  # save the index of the value to create sale line
 
             else:  # save its value to create it anyway
                 sale_line_values_to_create.append(move_line._sale_prepare_sale_line_values(sale_order, price))
-                map_move_sale_line[move_line.id] = len(sale_line_values_to_create) - 1  # save the index of the value to create sale line
+                map_move_sale_line[move_line.id] = len(
+                    sale_line_values_to_create) - 1  # save the index of the value to create sale line
 
         # create the sale lines in batch
         new_sale_lines = self.env['sale.order.line'].create(sale_line_values_to_create)
@@ -207,9 +214,11 @@ class AccountMoveLine(models.Model):
         price_unit = abs(amount / unit_amount)
         currency_id = self.company_id.currency_id
         if currency_id and currency_id != order.currency_id:
-            price_unit = currency_id._convert(price_unit, order.currency_id, order.company_id, order.date_order or fields.Date.today())
+            price_unit = currency_id._convert(price_unit, order.currency_id, order.company_id,
+                                              order.date_order or fields.Date.today())
         return price_unit
 
     def _get_downpayment_lines(self):
         # OVERRIDE
-        return self.sale_line_ids.filtered('is_downpayment').invoice_lines.filtered(lambda line: line.move_id._is_downpayment())
+        return self.sale_line_ids.filtered('is_downpayment').invoice_lines.filtered(
+            lambda line: line.move_id._is_downpayment())

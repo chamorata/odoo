@@ -9,7 +9,6 @@ import re
 import sys
 import time
 import traceback
-
 from typing import NamedTuple
 
 from . import case
@@ -40,6 +39,7 @@ class Stat(NamedTuple):
             self.time + other.time,
             self.queries + other.queries,
         )
+
 
 _logger = logging.getLogger(__name__)
 _TEST_ID = re.compile(r"""
@@ -197,7 +197,6 @@ class OdooTestResult(object):
     def __str__(self):
         return f'{self.failures_count} failed, {self.errors_count} error(s) of {self.testsRun} tests'
 
-
     @contextlib.contextmanager
     def soft_fail(self):
         self.had_failure = False
@@ -250,7 +249,7 @@ class OdooTestResult(object):
         counts = collections.Counter()
         for test, stat in self.stats.items():
             r = _TEST_ID.match(test)
-            if not r: # upgrade has tests at weird paths, ignore them
+            if not r:  # upgrade has tests at weird paths, ignore them
                 continue
 
             stats_tree[r['module']] += stat
@@ -274,7 +273,8 @@ class OdooTestResult(object):
 
     def getDescription(self, test):
         if isinstance(test, case._SubTest):
-            return 'Subtest %s.%s %s' % (test.test_case.__class__.__qualname__, test.test_case._testMethodName, test._subDescription())
+            return 'Subtest %s.%s %s' % (test.test_case.__class__.__qualname__, test.test_case._testMethodName,
+                                         test._subDescription())
         if isinstance(test, case.TestCase):
             # since we have the module name in the logger, this will avoid to duplicate module info in log line
             # we only apply this for TestCase since we can receive error handler or other special case
@@ -297,7 +297,8 @@ class OdooTestResult(object):
         err = self._exc_info_to_string(error, test)
         caller_infos = self.getErrorCallerInfo(error, test)
         self.log(logging.INFO, '=' * 70, test=test, caller_infos=caller_infos)  # keep this as info !!!!!!
-        self.log(logging.ERROR, "%s: %s\n%s", flavour, self.getDescription(test), err, test=test, caller_infos=caller_infos)
+        self.log(logging.ERROR, "%s: %s\n%s", flavour, self.getDescription(test), err, test=test,
+                 caller_infos=caller_infos)
 
     def getErrorCallerInfo(self, error, test):
         """

@@ -7,10 +7,13 @@
             <field name="arch" type="xml">
                 <form>
                     <sheet>
-                        <h1><field name="employee_id" readonly="1" options="{'no_open': True}"/></h1>
+                        <h1>
+                            <field name="employee_id" readonly="1" options="{'no_open': True}"/>
+                        </h1>
                         <group>
                             <group id="info">
-                                <field name="departure_reason_id" options="{'no_edit': True, 'no_create': True, 'no_open': True}"/>
+                                <field name="departure_reason_id"
+                                       options="{'no_edit': True, 'no_create': True, 'no_open': True}"/>
                                 <field name="departure_date"/>
                             </group>
                             <group id="action">
@@ -30,12 +33,14 @@
                         <group>
                             <div id="detailed_reason" colspan="2">
                                 <span class="o_form_label o_hr_form_label cursor-default">Detailed Reason</span>
-                                <field name="departure_description" placeholder="Give more details about the reason of archiving the employee."/>
+                                <field name="departure_description"
+                                       placeholder="Give more details about the reason of archiving the employee."/>
                             </div>
                         </group>
                     </sheet>
                     <footer>
-                        <button name="action_register_departure" string="Apply" type="object" class="oe_highlight" data-hotkey="q"/>
+                        <button name="action_register_departure" string="Apply" type="object" class="oe_highlight"
+                                data-hotkey="q"/>
                         <button string="Discard" class="btn-secondary" special="cancel" data-hotkey="x"/>
                     </footer>
                 </form>

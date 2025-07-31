@@ -9,7 +9,7 @@
                 <field name="country_id" position="after">
                     <field name="country_code" column_invisible="True"/>
                     <field name="l10n_es_edi_facturae_tax_type" string="Spanish Tax Type" optional="hide"
-                        invisible="country_code != 'ES'"/>
+                           invisible="country_code != 'ES'"/>
                 </field>
             </field>
         </record>

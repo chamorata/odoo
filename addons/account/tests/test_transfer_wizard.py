@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
+import time
+
 from freezegun import freeze_time
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 
 from odoo import fields, Command
-from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.tests import tagged, Form
-import time
 
 
 @tagged('post_install', '-at_install')
@@ -17,26 +18,28 @@ class TestTransferWizard(AccountTestInvoicingCommon):
         cls.company = cls.company_data['company']
         cls.receivable_account = cls.company_data['default_account_receivable']
         cls.payable_account = cls.company_data['default_account_payable']
-        cls.accounts = cls.env['account.account'].search([('reconcile', '=', False), ('company_ids', '=', cls.company.id)], limit=5)
+        cls.accounts = cls.env['account.account'].search(
+            [('reconcile', '=', False), ('company_ids', '=', cls.company.id)], limit=5)
         cls.journal = cls.company_data['default_journal_misc']
 
         # Set rate for base currency to 1
-        cls.env['res.currency.rate'].search([('company_id', '=', cls.company.id), ('currency_id', '=', cls.company.currency_id.id)]).write({'rate': 1})
+        cls.env['res.currency.rate'].search(
+            [('company_id', '=', cls.company.id), ('currency_id', '=', cls.company.currency_id.id)]).write({'rate': 1})
 
         # Create test currencies
         cls.test_currency_1 = cls.env['res.currency'].create({
             'name': "PMK",
-            'symbol':'P',
+            'symbol': 'P',
         })
 
         cls.test_currency_2 = cls.env['res.currency'].create({
             'name': "toto",
-            'symbol':'To',
+            'symbol': 'To',
         })
 
         cls.test_currency_3 = cls.env['res.currency'].create({
             'name': "titi",
-            'symbol':'Ti',
+            'symbol': 'Ti',
         })
 
         # Create test rates
@@ -249,7 +252,8 @@ class TestTransferWizard(AccountTestInvoicingCommon):
         # Open the transfer wizard
 
         # We use a form to pass the context properly to the depends_context move_line_ids field
-        context = {'active_model': 'account.move.line', 'active_ids': move_with_tax.line_ids[0].ids, 'default_action': 'change_period'}
+        context = {'active_model': 'account.move.line', 'active_ids': move_with_tax.line_ids[0].ids,
+                   'default_action': 'change_period'}
         with Form(self.env['account.automatic.entry.wizard'].with_context(context)) as wizard_form:
             wizard_form.date = '2019-05-01'
             wizard_form.journal_id = self.company_data['default_journal_misc']
@@ -274,10 +278,12 @@ class TestTransferWizard(AccountTestInvoicingCommon):
     def test_transfer_wizard_reconcile(self):
         """ Tests reconciliation when doing a transfer with the wizard
         """
-        active_move_lines = (self.move_1 + self.move_2).mapped('line_ids').filtered(lambda x: x.account_id.account_type in ('asset_receivable', 'liability_payable'))
+        active_move_lines = (self.move_1 + self.move_2).mapped('line_ids').filtered(
+            lambda x: x.account_id.account_type in ('asset_receivable', 'liability_payable'))
 
         # We use a form to pass the context properly to the depends_context move_line_ids field
-        context = {'active_model': 'account.move.line', 'active_ids': active_move_lines.ids, 'default_action': 'change_account'}
+        context = {'active_model': 'account.move.line', 'active_ids': active_move_lines.ids,
+                   'default_action': 'change_account'}
         with Form(self.env['account.automatic.entry.wizard'].with_context(context)) as wizard_form:
             wizard_form.destination_account_id = self.receivable_account
             wizard_form.journal_id = self.journal
@@ -290,19 +296,29 @@ class TestTransferWizard(AccountTestInvoicingCommon):
         receivable_transfer = transfer_move.line_ids.filtered(lambda x: x.account_id == self.receivable_account)
 
         self.assertTrue(payable_transfer.reconciled, "Payable line of the transfer move should be fully reconciled")
-        self.assertAlmostEqual(self.move_1.line_ids.filtered(lambda x: x.account_id == self.receivable_account).amount_residual, 100, self.company.currency_id.decimal_places, "Receivable line of the original move should be partially reconciled, and still have a residual amount of 100 (500 - 400 from payable account)")
-        self.assertTrue(self.move_2.line_ids.filtered(lambda x: x.account_id == self.payable_account).reconciled, "Payable line of the original move should be fully reconciled")
-        self.assertAlmostEqual(receivable_transfer.amount_residual, 0, self.company.currency_id.decimal_places, "Receivable line from the transfer move should have nothing left to reconcile")
-        self.assertAlmostEqual(payable_transfer.debit, 400, self.company.currency_id.decimal_places, "400 should have been debited from payable account to apply the transfer")
-        self.assertAlmostEqual(receivable_transfer.credit, 400, self.company.currency_id.decimal_places, "400 should have been credited to receivable account to apply the transfer")
+        self.assertAlmostEqual(
+            self.move_1.line_ids.filtered(lambda x: x.account_id == self.receivable_account).amount_residual, 100,
+            self.company.currency_id.decimal_places,
+            "Receivable line of the original move should be partially reconciled, and still have a residual amount of 100 (500 - 400 from payable account)")
+        self.assertTrue(self.move_2.line_ids.filtered(lambda x: x.account_id == self.payable_account).reconciled,
+                        "Payable line of the original move should be fully reconciled")
+        self.assertAlmostEqual(receivable_transfer.amount_residual, 0, self.company.currency_id.decimal_places,
+                               "Receivable line from the transfer move should have nothing left to reconcile")
+        self.assertAlmostEqual(payable_transfer.debit, 400, self.company.currency_id.decimal_places,
+                               "400 should have been debited from payable account to apply the transfer")
+        self.assertAlmostEqual(receivable_transfer.credit, 400, self.company.currency_id.decimal_places,
+                               "400 should have been credited to receivable account to apply the transfer")
 
     def test_transfer_wizard_grouping(self):
         """ Tests grouping (by account and partner) when doing a transfer with the wizard
         """
-        active_move_lines = (self.move_1 + self.move_2).mapped('line_ids').filtered(lambda x: x.name in ('test1_3', 'test1_4', 'test1_5', 'test2_3', 'test2_4', 'test2_5', 'test2_6', 'test2_8'))
+        active_move_lines = (self.move_1 + self.move_2).mapped('line_ids').filtered(
+            lambda x: x.name in ('test1_3', 'test1_4', 'test1_5', 'test2_3', 'test2_4', 'test2_5', 'test2_6',
+                                 'test2_8'))
 
         # We use a form to pass the context properly to the depends_context move_line_ids field
-        context = {'active_model': 'account.move.line', 'active_ids': active_move_lines.ids, 'default_action': 'change_account'}
+        context = {'active_model': 'account.move.line', 'active_ids': active_move_lines.ids,
+                   'default_action': 'change_account'}
         with Form(self.env['account.automatic.entry.wizard'].with_context(context)) as wizard_form:
             wizard_form.destination_account_id = self.accounts[4]
             wizard_form.journal_id = self.journal
@@ -314,16 +330,22 @@ class TestTransferWizard(AccountTestInvoicingCommon):
         groups = {}
         for line in transfer_move.line_ids:
             key = (line.account_id, line.partner_id or None, line.currency_id)
-            self.assertFalse(groups.get(key), "There should be only one line per (account, partner, currency) group in the transfer move.")
+            self.assertFalse(groups.get(key),
+                             "There should be only one line per (account, partner, currency) group in the transfer move.")
             groups[key] = line
 
-        self.assertAlmostEqual(groups[(self.accounts[0], self.partner_a, self.company_data['currency'])].balance, -800, self.company.currency_id.decimal_places)
-        self.assertAlmostEqual(groups[(self.accounts[1], None, self.company_data['currency'])].balance, 500, self.company.currency_id.decimal_places)
-        self.assertAlmostEqual(groups[(self.accounts[1], self.partner_b, self.company_data['currency'])].balance, -480, self.company.currency_id.decimal_places)
-        self.assertAlmostEqual(groups[(self.accounts[2], self.partner_a, self.company_data['currency'])].balance, 1030, self.company.currency_id.decimal_places)
-        self.assertAlmostEqual(groups[(self.accounts[2], self.partner_a, self.test_currency_2)].balance, 512, self.company.currency_id.decimal_places)
-        self.assertAlmostEqual(groups[(self.accounts[3], self.partner_a, self.company_data['currency'])].balance, -250, self.company.currency_id.decimal_places)
-
+        self.assertAlmostEqual(groups[(self.accounts[0], self.partner_a, self.company_data['currency'])].balance, -800,
+                               self.company.currency_id.decimal_places)
+        self.assertAlmostEqual(groups[(self.accounts[1], None, self.company_data['currency'])].balance, 500,
+                               self.company.currency_id.decimal_places)
+        self.assertAlmostEqual(groups[(self.accounts[1], self.partner_b, self.company_data['currency'])].balance, -480,
+                               self.company.currency_id.decimal_places)
+        self.assertAlmostEqual(groups[(self.accounts[2], self.partner_a, self.company_data['currency'])].balance, 1030,
+                               self.company.currency_id.decimal_places)
+        self.assertAlmostEqual(groups[(self.accounts[2], self.partner_a, self.test_currency_2)].balance, 512,
+                               self.company.currency_id.decimal_places)
+        self.assertAlmostEqual(groups[(self.accounts[3], self.partner_a, self.company_data['currency'])].balance, -250,
+                               self.company.currency_id.decimal_places)
 
     def test_transfer_wizard_currency_conversion(self):
         """ Tests multi currency use of the transfer wizard, checking the conversion
@@ -332,7 +354,8 @@ class TestTransferWizard(AccountTestInvoicingCommon):
         active_move_lines = self.move_1.mapped('line_ids').filtered(lambda x: x.name in ('test1_6', 'test1_9'))
 
         # We use a form to pass the context properly to the depends_context move_line_ids field
-        context = {'active_model': 'account.move.line', 'active_ids': active_move_lines.ids, 'default_action': 'change_account'}
+        context = {'active_model': 'account.move.line', 'active_ids': active_move_lines.ids,
+                   'default_action': 'change_account'}
         with Form(self.env['account.automatic.entry.wizard'].with_context(context)) as wizard_form:
             wizard_form.destination_account_id = self.test_currency_account
             wizard_form.journal_id = self.journal
@@ -342,19 +365,22 @@ class TestTransferWizard(AccountTestInvoicingCommon):
         transfer_move = self.env['account.move'].browse(transfer_move_id)
 
         destination_line = transfer_move.line_ids.filtered(lambda x: x.account_id == self.test_currency_account)
-        self.assertEqual(destination_line.currency_id, self.test_currency_3, "Transferring to an account with a currency set should keep this currency on the transfer line.")
-        self.assertAlmostEqual(destination_line.amount_currency, 3000, self.company.currency_id.decimal_places, "Transferring two lines with different currencies (and the same partner) on an account with a currency set should convert the balance of these lines into this account's currency (here (270 + 30) * 10 = 3000)")
-
+        self.assertEqual(destination_line.currency_id, self.test_currency_3,
+                         "Transferring to an account with a currency set should keep this currency on the transfer line.")
+        self.assertAlmostEqual(destination_line.amount_currency, 3000, self.company.currency_id.decimal_places,
+                               "Transferring two lines with different currencies (and the same partner) on an account with a currency set should convert the balance of these lines into this account's currency (here (270 + 30) * 10 = 3000)")
 
     def test_transfer_wizard_no_currency_conversion(self):
         """ Tests multi currency use of the transfer wizard, verifying that
         currency amounts are kept on distinct lines when transferring to an
         account without any currency specified.
         """
-        active_move_lines = self.move_2.mapped('line_ids').filtered(lambda x: x.name in ('test2_9', 'test2_6', 'test2_8'))
+        active_move_lines = self.move_2.mapped('line_ids').filtered(
+            lambda x: x.name in ('test2_9', 'test2_6', 'test2_8'))
 
         # We use a form to pass the context properly to the depends_context move_line_ids field
-        context = {'active_model': 'account.move.line', 'active_ids': active_move_lines.ids, 'default_action': 'change_account'}
+        context = {'active_model': 'account.move.line', 'active_ids': active_move_lines.ids,
+                   'default_action': 'change_account'}
         with Form(self.env['account.automatic.entry.wizard'].with_context(context)) as wizard_form:
             wizard_form.destination_account_id = self.receivable_account
             wizard_form.journal_id = self.journal
@@ -364,9 +390,14 @@ class TestTransferWizard(AccountTestInvoicingCommon):
         transfer_move = self.env['account.move'].browse(transfer_move_id)
 
         destination_lines = transfer_move.line_ids.filtered(lambda x: x.account_id == self.receivable_account)
-        self.assertEqual(len(destination_lines), 2, "Two lines should have been created on destination account: one for each currency (the lines with same partner and currency should have been aggregated)")
-        self.assertAlmostEqual(destination_lines.filtered(lambda x: x.currency_id == self.test_currency_1).amount_currency, -10, self.test_currency_1.decimal_places)
-        self.assertAlmostEqual(destination_lines.filtered(lambda x: x.currency_id == self.test_currency_2).amount_currency, -756, self.test_currency_2.decimal_places)
+        self.assertEqual(len(destination_lines), 2,
+                         "Two lines should have been created on destination account: one for each currency (the lines with same partner and currency should have been aggregated)")
+        self.assertAlmostEqual(
+            destination_lines.filtered(lambda x: x.currency_id == self.test_currency_1).amount_currency, -10,
+            self.test_currency_1.decimal_places)
+        self.assertAlmostEqual(
+            destination_lines.filtered(lambda x: x.currency_id == self.test_currency_2).amount_currency, -756,
+            self.test_currency_2.decimal_places)
 
     def test_period_change_lock_date(self):
         """ Test that the period change wizard correctly handles the lock date: if the original entry is dated
@@ -417,10 +448,10 @@ class TestTransferWizard(AccountTestInvoicingCommon):
         wizard = self.env['account.automatic.entry.wizard'] \
             .with_context(active_model='account.move.line', active_ids=move.line_ids[0].ids) \
             .create({
-                'action': 'change_period',
-                'date': '2019-05-01',
-                'journal_id': self.company_data['default_journal_misc'].id,
-            })
+            'action': 'change_period',
+            'date': '2019-05-01',
+            'journal_id': self.company_data['default_journal_misc'].id,
+        })
 
         # Check that the 'The date is being set prior to ...' message appears.
         self.assertRecordValues(wizard, [{
@@ -473,11 +504,11 @@ class TestTransferWizard(AccountTestInvoicingCommon):
         # Open the transfer wizard at a date after the lock date
         wizard = self.env['account.automatic.entry.wizard'] \
             .with_context(active_model='account.move.line', active_ids=move.line_ids[0].ids) \
-                .create({
-                'action': 'change_period',
-                'date': '2019-05-01',
-                'journal_id': self.company_data['default_journal_misc'].id,
-            })
+            .create({
+            'action': 'change_period',
+            'date': '2019-05-01',
+            'journal_id': self.company_data['default_journal_misc'].id,
+        })
 
         # Check that there is no lock message
         self.assertRecordValues(wizard, [{
@@ -491,14 +522,17 @@ class TestTransferWizard(AccountTestInvoicingCommon):
             'journal_id': self.company_data['default_journal_misc'].id,
             'date': '2019-01-01',
             'line_ids': [
-                Command.create({'account_id': self.accounts[2].id, 'currency_id': self.company.currency_id.id, 'amount_currency': 1000, 'debit': 1000}),
-                Command.create({'account_id': self.receivable_account.id, 'currency_id': self.test_currency_1.id, 'amount_currency': 0, 'credit': 1000}),
+                Command.create({'account_id': self.accounts[2].id, 'currency_id': self.company.currency_id.id,
+                                'amount_currency': 1000, 'debit': 1000}),
+                Command.create({'account_id': self.receivable_account.id, 'currency_id': self.test_currency_1.id,
+                                'amount_currency': 0, 'credit': 1000}),
             ]
         })
         move.action_post()
 
         active_move_lines = move.line_ids.filtered(lambda line: line.account_id.id == self.receivable_account.id)
-        context = {'active_model': 'account.move.line', 'active_ids': active_move_lines.ids, 'default_action': 'change_account'}
+        context = {'active_model': 'account.move.line', 'active_ids': active_move_lines.ids,
+                   'default_action': 'change_account'}
         with Form(self.env['account.automatic.entry.wizard'].with_context(context)) as wizard_form:
             wizard_form.destination_account_id = self.accounts[0]
             wizard_form.journal_id = self.company_data['default_journal_misc']
@@ -511,10 +545,12 @@ class TestTransferWizard(AccountTestInvoicingCommon):
         destination_line = transfer_move.line_ids.filtered(lambda x: x.account_id == self.accounts[0])
 
         self.assertRecordValues(source_line, [
-            {'account_id': self.receivable_account.id, 'amount_currency': 0.0, 'currency_id': self.test_currency_1.id, 'balance': 1000}
+            {'account_id': self.receivable_account.id, 'amount_currency': 0.0, 'currency_id': self.test_currency_1.id,
+             'balance': 1000}
         ])
         self.assertRecordValues(destination_line, [
-              {'account_id': self.accounts[0].id, 'amount_currency': 0.0, 'currency_id': self.test_currency_1.id, 'balance': -1000}
+            {'account_id': self.accounts[0].id, 'amount_currency': 0.0, 'currency_id': self.test_currency_1.id,
+             'balance': -1000}
         ])
 
     def test_transfer_wizard_analytic(self):
@@ -561,8 +597,10 @@ class TestTransferWizard(AccountTestInvoicingCommon):
         transfer_move = self.env['account.move'].browse(wizard.do_action()['res_id'])
 
         self.assertRecordValues(transfer_move.line_ids, [
-            {'balance': -4000, 'analytic_distribution': {str(self.analytic_account_1.id): 50, str(self.analytic_account_2.id): 25}},
+            {'balance': -4000,
+             'analytic_distribution': {str(self.analytic_account_1.id): 50, str(self.analytic_account_2.id): 25}},
             {'balance': 1000, 'analytic_distribution': {str(self.analytic_account_1.id): 100}},
-            {'balance': 2000, 'analytic_distribution': {str(self.analytic_account_1.id): 50, str(self.analytic_account_2.id): 50}},
+            {'balance': 2000,
+             'analytic_distribution': {str(self.analytic_account_1.id): 50, str(self.analytic_account_2.id): 50}},
             {'balance': 1000, 'analytic_distribution': False},
         ])

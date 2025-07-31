@@ -97,9 +97,9 @@ class TestDateRange(common.TransactionCase):
 
         expected = [{
             '__domain': ['&',
-                '&', ('date', '>=', '1916-01-01'), ('date', '<', '1916-04-01'),
-                '&', ('date', '>=', '1916-02-11'), ('date', '<', '1916-02-12')
-            ],
+                         '&', ('date', '>=', '1916-01-01'), ('date', '<', '1916-04-01'),
+                         '&', ('date', '>=', '1916-02-11'), ('date', '<', '1916-02-12')
+                         ],
             '__range': {
                 'date:quarter': {'from': '1916-01-01', 'to': '1916-04-01'},
                 'date:day': {'from': '1916-02-11', 'to': '1916-02-12'}
@@ -117,7 +117,8 @@ class TestDateRange(common.TransactionCase):
         records = self.Model.create([
             {'date': '2022-01-29', 'value': 1}])
         expected = [{
-            '__domain': ['&', '&', ('id', 'in', records.ids), '&', ('date', '>=', '2022-01-01'), ('date', '<', '2022-02-01'), ('date', '=', 'January 2022')],
+            '__domain': ['&', '&', ('id', 'in', records.ids), '&', ('date', '>=', '2022-01-01'),
+                         ('date', '<', '2022-02-01'), ('date', '=', 'January 2022')],
             '__count': 1,
             '__range': {'date:month': {'from': '2022-01-01', 'to': '2022-02-01'}},
             'value': 1,
@@ -372,16 +373,16 @@ class TestRelativeDateGranularityWithTimezones(common.TransactionCase):
         # Monday, it is the 5th week in UTC and the 6th in NZ
         self.Model.create({"value": "98", "datetime": "2023-02-05 23:55:00"})
         result = (self.Model.with_context({'tz': 'Pacific/Auckland'})  # GMT+12
-                            .read_group([],
-                                        fields=['datetime', 'value'],
-                                        groupby=['datetime:iso_week_number']))
+                  .read_group([],
+                              fields=['datetime', 'value'],
+                              groupby=['datetime:iso_week_number']))
         self.assertEqual(result, [
-                    {
-                        'datetime:iso_week_number': 6,
-                        'datetime_count': 1,
-                        'value': 98,
-                        '__domain': [('datetime.iso_week_number', '=', 6)]
-                    }])
+            {
+                'datetime:iso_week_number': 6,
+                'datetime_count': 1,
+                'value': 98,
+                '__domain': [('datetime.iso_week_number', '=', 6)]
+            }])
         result = self.Model.with_context({'tz': 'Pacific/Auckland'}).search(result[0]['__domain'])
         self.assertEqual(len(result), 1)
         self.assertEqual(result.value, 98)

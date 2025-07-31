@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+import io
+
 from odoo.tests.common import TransactionCase
 from odoo.tools import pdf
 from odoo.tools.misc import file_open
 from odoo.tools.pdf import reshape_text
-import io
 
 
 class TestPdf(TransactionCase):

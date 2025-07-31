@@ -2,12 +2,10 @@
 
 import logging
 
-from odoo.tools.translate import _
-from odoo.tools import email_normalize
-from odoo.exceptions import UserError
-
 from odoo import api, fields, models, Command
-
+from odoo.exceptions import UserError
+from odoo.tools import email_normalize
+from odoo.tools.translate import _
 
 _logger = logging.getLogger(__name__)
 
@@ -30,8 +28,10 @@ class PortalWizard(models.TransientModel):
         return [Command.link(contact_id) for contact_id in contact_ids]
 
     partner_ids = fields.Many2many('res.partner', string='Partners', default=_default_partner_ids)
-    user_ids = fields.One2many('portal.wizard.user', 'wizard_id', string='Users', compute='_compute_user_ids', store=True, readonly=False)
-    welcome_message = fields.Text('Invitation Message', help="This text is included in the email sent to new users of the portal.")
+    user_ids = fields.One2many('portal.wizard.user', 'wizard_id', string='Users', compute='_compute_user_ids',
+                               store=True, readonly=False)
+    welcome_message = fields.Text('Invitation Message',
+                                  help="This text is included in the email sent to new users of the portal.")
 
     @api.depends('partner_ids')
     def _compute_user_ids(self):
@@ -229,10 +229,12 @@ class PortalWizardUser(models.TransientModel):
         lang = self.user_id.sudo().lang
         partner = self.user_id.sudo().partner_id
 
-        portal_url = partner.with_context(signup_force_type_in_url='', lang=lang)._get_signup_url_for_action()[partner.id]
+        portal_url = partner.with_context(signup_force_type_in_url='', lang=lang)._get_signup_url_for_action()[
+            partner.id]
         partner.signup_prepare()
 
-        template.with_context(dbname=self._cr.dbname, portal_url=portal_url, lang=lang).send_mail(self.id, force_send=True)
+        template.with_context(dbname=self._cr.dbname, portal_url=portal_url, lang=lang).send_mail(self.id,
+                                                                                                  force_send=True)
 
         return True
 

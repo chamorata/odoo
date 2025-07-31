@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import babel.dates
 import datetime
 import json
 import unittest
-
 from unittest.mock import patch
 
-from odoo import Command
+import babel.dates
 
+from odoo import Command
 from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.osv import expression
 from odoo.tests import Form, TransactionCase, users
@@ -92,7 +91,7 @@ class TestPropertiesMixin(TransactionCase):
             SELECT attributes
               FROM test_new_api_message
              WHERE id = %s
-            """, (message.id, ),
+            """, (message.id,),
         )
         value = self.env.cr.fetchone()
         self.assertTrue(value)
@@ -106,7 +105,7 @@ class TestPropertiesMixin(TransactionCase):
             SELECT attributes_definition
               FROM test_new_api_discussion
              WHERE id = %s
-            """, (discussion.id, ),
+            """, (discussion.id,),
         )
         value = self.env.cr.fetchone()
         self.assertTrue(value and value[0])
@@ -242,8 +241,10 @@ class PropertiesCase(TestPropertiesMixin):
         sql_values_3 = self._get_sql_properties(self.message_3)
 
         # definition of both child has been changed
-        self.assertEqual(sql_values_1, {'discussion_color_code': 'orange', 'moderator_partner_id': self.partner_2.id, 'state': 'done'})
-        self.assertEqual(sql_values_3, {'discussion_color_code': 'orange', 'moderator_partner_id': self.partner_2.id, 'state': 'done'})
+        self.assertEqual(sql_values_1, {'discussion_color_code': 'orange', 'moderator_partner_id': self.partner_2.id,
+                                        'state': 'done'})
+        self.assertEqual(sql_values_3, {'discussion_color_code': 'orange', 'moderator_partner_id': self.partner_2.id,
+                                        'state': 'done'})
 
     @mute_logger('odoo.models.unlink', 'odoo.fields')
     def test_properties_field_read_batch(self):
@@ -643,11 +644,11 @@ class PropertiesCase(TestPropertiesMixin):
         message = self.env['test_new_api.message'] \
             .with_context({'default_attributes.my_many2one': partner.id}) \
             .create({
-                'name': 'Test Message',
-                'author': self.user.id,
-                'discussion': self.discussion_1.id,
-                'attributes': property_definition,
-            })
+            'name': 'Test Message',
+            'author': self.user.id,
+            'discussion': self.discussion_1.id,
+            'attributes': property_definition,
+        })
 
         sql_values = self._get_sql_properties(message)
         self.assertEqual(sql_values, {'my_many2one': partner.id})
@@ -659,11 +660,11 @@ class PropertiesCase(TestPropertiesMixin):
         message = self.env['test_new_api.message'] \
             .with_context({'default_attributes.my_many2one': None}) \
             .create({
-                'name': 'Test Message',
-                'author': self.user.id,
-                'discussion': self.discussion_1.id,
-                'attributes': property_definition,
-            })
+            'name': 'Test Message',
+            'author': self.user.id,
+            'discussion': self.discussion_1.id,
+            'attributes': property_definition,
+        })
 
         sql_values = self._get_sql_properties(message)
         self.assertEqual(sql_values, {'my_many2one': False})
@@ -833,7 +834,7 @@ class PropertiesCase(TestPropertiesMixin):
             UPDATE test_new_api_discussion
                SET attributes_definition = '[{"name": "message", "comodel": "wrong_model", "type": "many2one"}]'
              WHERE id = %s
-            """, (self.discussion_1.id, ),
+            """, (self.discussion_1.id,),
         )
         self.env.invalidate_all()
 
@@ -897,7 +898,7 @@ class PropertiesCase(TestPropertiesMixin):
             UPDATE test_new_api_discussion
                SET attributes_definition = %s
              WHERE id = %s
-            """, (new_properties, self.discussion_1.id, ),
+            """, (new_properties, self.discussion_1.id,),
         )
         self.env.flush_all()
         self.env.invalidate_all()
@@ -969,7 +970,8 @@ class PropertiesCase(TestPropertiesMixin):
         self.assertTrue(isinstance(self.message_1.attributes['int_value'], int))
         self.assertTrue(isinstance(self.message_1.attributes['float_value'], int))
         self.assertTrue(isinstance(self.message_1.attributes['boolean_value'], bool))
-        self.assertEqual(self._get_sql_properties(self.message_1), {'int_value': 0, 'float_value': 0, 'boolean_value': False})
+        self.assertEqual(self._get_sql_properties(self.message_1),
+                         {'int_value': 0, 'float_value': 0, 'boolean_value': False})
 
     def test_properties_field_integer_float_falsy_value_edge_cases(self):
         self.discussion_1.attributes_definition = [
@@ -1206,7 +1208,7 @@ class PropertiesCase(TestPropertiesMixin):
             UPDATE test_new_api_message
                SET attributes = %s
              WHERE id = %s
-            """, (new_value, self.message_1.id, ),
+            """, (new_value, self.message_1.id,),
         )
         self.env.invalidate_all()
 
@@ -1337,7 +1339,8 @@ class PropertiesCase(TestPropertiesMixin):
 
         last_message_id = self.env['test_new_api.message'].search([], order="id DESC", limit=1).id
         # based on batch optimization, _read_format should not crash on non existing records
-        values = self.env['test_new_api.message'].browse((self.message_1.id, last_message_id + 1))._read_format(['attributes'])
+        values = self.env['test_new_api.message'].browse((self.message_1.id, last_message_id + 1))._read_format(
+            ['attributes'])
         self.assertEqual(len(values), 1)
         self.assertEqual(values[0]['id'], self.message_1.id)
 
@@ -1465,13 +1468,13 @@ class PropertiesCase(TestPropertiesMixin):
                 'type': 'char',
                 'string': 'Color Code',
                 'default': 'blue',
-                }, {
-                    'name': 'moderator_partner_id',
-                    'type': 'many2one',
-                    'string': 'Partner',
-                    'comodel': 'test_new_api.partner',
-                }],
-            )
+            }, {
+                'name': 'moderator_partner_id',
+                'type': 'many2one',
+                'string': 'Partner',
+                'comodel': 'test_new_api.partner',
+            }],
+        )
         self.assertEqual(
             message.read()[0]['attributes'],
             [{
@@ -1626,6 +1629,7 @@ class PropertiesCase(TestPropertiesMixin):
     @users('test')
     def test_properties_field_security(self):
         """Check the access right related to the Properties fields."""
+
         def _mocked_check_access(records, operation):
             if records.env.su:
                 return
@@ -1667,6 +1671,7 @@ class PropertiesCase(TestPropertiesMixin):
         should have the right schema and should be populated with the default
         values stored on the property definition.
         """
+
         def _mocked_check_access(records, operation):
             if records.env.su:
                 return
@@ -1718,8 +1723,8 @@ class PropertiesCase(TestPropertiesMixin):
             # call _stringify_path directly because it's only called for
             # server action linked to a base_automation
             self.assertEqual(action._stringify_path(),
-                'Properties > discussion_color_code'
-            )
+                             'Properties > discussion_color_code'
+                             )
 
 
 class PropertiesSearchCase(TestPropertiesMixin):
@@ -2300,9 +2305,9 @@ class PropertiesGroupByCase(TestPropertiesMixin):
         # message 6 has a False value
         # message 7 is in a different discussion
         self.message_5, self.message_6, self.message_7 = self.env['test_new_api.message'].create([
-                {'discussion': self.discussion_1.id, 'attributes': {'mydate': f'2077-05-02{hour}'}},
-                {'discussion': self.discussion_1.id, 'attributes': {'mydate': False}},
-                {'discussion': self.discussion_2.id},
+            {'discussion': self.discussion_1.id, 'attributes': {'mydate': f'2077-05-02{hour}'}},
+            {'discussion': self.discussion_1.id, 'attributes': {'mydate': False}},
+            {'discussion': self.discussion_2.id},
         ])
         self.message_1.attributes = {'mydate': f'2023-01-02{hour}'}
         self.message_2.attributes = {'mydate': f'2023-02-03{hour}'}
@@ -2442,7 +2447,8 @@ class PropertiesGroupByCase(TestPropertiesMixin):
         # https://github.com/python-babel/babel/pull/887 -- proposed a fix but finally closed
         # https://sources.debian.org/patches/python-babel/2.10.3-1/ -- Debian reverted 621
         # so this ugly fix is made to have the test working in patched and non patched versions of Babel
-        babel_year = babel.dates.format_date(datetime.datetime(2023, 1, 1), "YYYY", "en_US")  # non patched: '2022' patched: '2023'
+        babel_year = babel.dates.format_date(datetime.datetime(2023, 1, 1), "YYYY",
+                                             "en_US")  # non patched: '2022' patched: '2023'
         if babel_year == '2022':  # Broken unpatched babel
             self.assertEqual(result[4]['attributes.mydate:week'], 'W1 2022')
         else:  # Patched babel

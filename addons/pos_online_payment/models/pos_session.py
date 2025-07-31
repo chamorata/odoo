@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from collections import defaultdict
+
 from odoo import models, tools, _
 from odoo.exceptions import UserError
 
@@ -25,9 +26,10 @@ class PosSession(models.Model):
                 payment_type = payment_method.type
 
                 if payment_type == 'online':
-                    split_receivables_online[payment] = self._update_amounts(split_receivables_online[payment], {'amount': amount}, date)
+                    split_receivables_online[payment] = self._update_amounts(split_receivables_online[payment],
+                                                                             {'amount': amount}, date)
 
-        data.update({'split_receivables_online': split_receivables_online,})
+        data.update({'split_receivables_online': split_receivables_online, })
         return data
 
     def _create_bank_payment_moves(self, data):
@@ -39,9 +41,11 @@ class PosSession(models.Model):
         online_payment_to_receivable_lines = {}
 
         for payment, amounts in split_receivables_online.items():
-            split_receivable_line = MoveLine.create(self._get_split_receivable_op_vals(payment, amounts['amount'], amounts['amount_converted']))
+            split_receivable_line = MoveLine.create(
+                self._get_split_receivable_op_vals(payment, amounts['amount'], amounts['amount_converted']))
             account_payment = payment.online_account_payment_id
-            payment_receivable_line = account_payment.move_id.line_ids.filtered(lambda line: line.account_id == account_payment.destination_account_id)
+            payment_receivable_line = account_payment.move_id.line_ids.filtered(
+                lambda line: line.account_id == account_payment.destination_account_id)
             online_payment_to_receivable_lines[payment] = split_receivable_line | payment_receivable_line
 
         data['online_payment_to_receivable_lines'] = online_payment_to_receivable_lines
@@ -56,7 +60,8 @@ class PosSession(models.Model):
             'account_id': accounting_partner.property_account_receivable_id.id,
             'move_id': self.move_id.id,
             'partner_id': accounting_partner.id,
-            'name': '%s - %s (%s)' % (self.name, payment.payment_method_id.name, payment.online_account_payment_id.payment_method_line_id.payment_provider_id.name),
+            'name': '%s - %s (%s)' % (self.name, payment.payment_method_id.name,
+                                      payment.online_account_payment_id.payment_method_line_id.payment_provider_id.name),
         }
         return self._debit_amounts(partial_vals, amount, amount_converted)
 

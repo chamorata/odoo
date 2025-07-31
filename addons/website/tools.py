@@ -1,10 +1,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import contextlib
 import re
-import werkzeug.urls
-from lxml import etree
 from unittest.mock import Mock, MagicMock, patch
 
+import werkzeug.urls
+from lxml import etree
 from werkzeug.exceptions import NotFound
 from werkzeug.test import EnvironBuilder
 
@@ -117,6 +117,7 @@ def MockRequest(
 
         yield request
 
+
 # Fuzzy matching tools
 
 def distance(s1="", s2="", limit=4):
@@ -156,6 +157,7 @@ def distance(s1="", s2="", limit=4):
         p, d = d, p
     return p[l1] if p[l1] <= limit else -1
 
+
 def similarity_score(s1, s2):
     """
     Computes a score that describes how much two strings are matching.
@@ -174,6 +176,7 @@ def similarity_score(s1, s2):
     score -= dist / len(s1)
     score -= len(set1.symmetric_difference(s2)) / (len(s1) + len(s2))
     return score
+
 
 def text_from_html(html_fragment, collapse_whitespace=False):
     """
@@ -201,6 +204,7 @@ def text_from_html(html_fragment, collapse_whitespace=False):
     if collapse_whitespace:
         content = re.sub('\\s+', ' ', content).strip()
     return content
+
 
 def get_base_domain(url, strip_www=False):
     """
@@ -238,8 +242,8 @@ def add_form_signature(html_fragment, env_sudo):
 
         email_to_value = form_values['email_to'].attrib.get('value')
         if (not email_to_value
-            or (email_to_value == 'info@yourcompany.example.com'
-                and html_fragment.xpath('//span[@data-for="contactus_form"]'))):
+                or (email_to_value == 'info@yourcompany.example.com'
+                    and html_fragment.xpath('//span[@data-for="contactus_form"]'))):
             # This means that the mail will be sent to the value of the dataFor
             # which is the company email.
             email_to_value = env_sudo.company.email or ''
@@ -249,7 +253,9 @@ def add_form_signature(html_fragment, env_sudo):
         hash_value = hmac(env_sudo, 'website_form_signature', value)
         if has_cc:
             hash_value += ':email_cc'
-        hash_node = etree.Element('input', attrib={'type': "hidden", 'value': hash_value, 'class': "form-control s_website_form_input s_website_form_custom", 'name': "website_form_signature"})
+        hash_node = etree.Element('input', attrib={'type': "hidden", 'value': hash_value,
+                                                   'class': "form-control s_website_form_input s_website_form_custom",
+                                                   'name': "website_form_signature"})
         form_values['email_to'].addnext(hash_node)
 
 

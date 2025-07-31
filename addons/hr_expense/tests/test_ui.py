@@ -1,5 +1,6 @@
-from odoo import Command
 from odoo.addons.hr_expense.tests.common import TestExpenseCommon
+
+from odoo import Command
 from odoo.tests import tagged, HttpCase
 from odoo.tools import mute_logger
 
@@ -86,4 +87,5 @@ class TestUi(TestExpenseCommon, HttpCase):
         with mute_logger("odoo.http"):
             self.start_tour('/odoo', 'do_not_create_zero_amount_expense_in_sheet', login=self.env.user.login)
         self.assertEqual(len(expense_sheet.expense_line_ids), 1, "Expense sheet should have one expense")
-        self.assertEqual(expense_sheet.expense_line_ids[0].total_amount, 10.0, "Expense amount should have been set by tour")
+        self.assertEqual(expense_sheet.expense_line_ids[0].total_amount, 10.0,
+                         "Expense amount should have been set by tour")

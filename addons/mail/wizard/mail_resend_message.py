@@ -33,7 +33,9 @@ class MailResendMessage(models.TransientModel):
         message_id = self._context.get('mail_message_to_resend')
         if message_id:
             mail_message_id = self.env['mail.message'].browse(message_id)
-            notification_ids = mail_message_id.notification_ids.filtered(lambda notif: notif.notification_type == 'email' and notif.notification_status in ('exception', 'bounce'))
+            notification_ids = mail_message_id.notification_ids.filtered(
+                lambda notif: notif.notification_type == 'email' and notif.notification_status in ('exception',
+                                                                                                   'bounce'))
             partner_values = [({
                 "notification_id": notif.id,
                 "resend": True,
@@ -64,7 +66,9 @@ class MailResendMessage(models.TransientModel):
             "If a partner disappeared from partner list, we cancel the notification"
             to_cancel = wizard.partner_ids.filtered(lambda p: not p.resend).mapped("partner_id")
             to_send = wizard.partner_ids.filtered(lambda p: p.resend)
-            notif_to_cancel = wizard.notification_ids.filtered(lambda notif: notif.notification_type == 'email' and notif.res_partner_id in to_cancel and notif.notification_status in ('exception', 'bounce'))
+            notif_to_cancel = wizard.notification_ids.filtered(lambda
+                                                                   notif: notif.notification_type == 'email' and notif.res_partner_id in to_cancel and notif.notification_status in (
+                'exception', 'bounce'))
             notif_to_cancel.sudo().write({'notification_status': 'canceled'})
             if to_send:
                 # this will update the notification already
@@ -76,7 +80,10 @@ class MailResendMessage(models.TransientModel):
     def cancel_mail_action(self):
         for wizard in self:
             for notif in wizard.notification_ids:
-                notif.filtered(lambda notif: notif.notification_type == 'email' and notif.notification_status in ('exception', 'bounce')).sudo().write({'notification_status': 'canceled'})
+                notif.filtered(
+                    lambda notif: notif.notification_type == 'email' and notif.notification_status in ('exception',
+                                                                                                       'bounce')).sudo().write(
+                    {'notification_status': 'canceled'})
             wizard.mail_message_id._notify_message_notification_update()
         return {'type': 'ir.actions.act_window_close'}
 
@@ -118,14 +125,16 @@ class PartnerResend(models.TransientModel):
         if len(message) != 1:
             raise UserError(_('All partners must belong to the same message'))
 
-        recipients_data = self.env['mail.followers']._get_recipient_data(None, 'comment', False, pids=self.partner_id.ids)
+        recipients_data = self.env['mail.followers']._get_recipient_data(None, 'comment', False,
+                                                                         pids=self.partner_id.ids)
         email_partners_data = [
             pdata
             for pid, pdata in recipients_data[0].items()
             if pid and pdata.get('notif', 'email') == 'email'
         ]
 
-        record = self.env[message.model].browse(message.res_id) if message.is_thread_message() else self.env['mail.thread']
+        record = self.env[message.model].browse(message.res_id) if message.is_thread_message() else self.env[
+            'mail.thread']
         record._notify_thread_by_email(
             message, email_partners_data,
             resend_existing=True,

@@ -1,10 +1,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import odoo
 from odoo.addons.mail.tests.test_thread_controller import (
     MessagePostSubTestData,
     TestThreadControllerCommon,
 )
+
+import odoo
 
 
 @odoo.tests.tagged("-at_install", "post_install")
@@ -57,7 +58,7 @@ class TestDiscussThreadController(TestThreadControllerCommon):
         )
         channel.add_members(partner_ids=self.user_demo.partner_id.ids)
         partners = (
-            self.user_portal + self.user_employee + self.user_demo + self.user_admin
+                self.user_portal + self.user_employee + self.user_demo + self.user_admin
         ).partner_id
         members = self.user_demo.partner_id
 

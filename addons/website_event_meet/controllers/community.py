@@ -2,11 +2,12 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import logging
+
+from odoo.addons.website_event.controllers.community import EventCommunityController
 from werkzeug.exceptions import Forbidden, NotFound
 
-from odoo import exceptions, http
+from odoo import http
 from odoo.http import request
-from odoo.addons.website_event.controllers.community import EventCommunityController
 from odoo.osv import expression
 
 _logger = logging.getLogger(__name__)
@@ -73,7 +74,8 @@ class WebsiteEventMeetController(EventCommunityController):
     @http.route("/event/<model('event.event'):event>/meeting_room_create",
                 type="http", auth="public", methods=["POST"], website=True)
     def create_meeting_room(self, event, **post):
-        if not event or (not event.is_published and not request.env.user._is_internal()) or not event.meeting_room_allow_creation:
+        if not event or (
+                not event.is_published and not request.env.user._is_internal()) or not event.meeting_room_allow_creation:
             raise Forbidden()
 
         name = post.get("name")
@@ -98,9 +100,11 @@ class WebsiteEventMeetController(EventCommunityController):
             "room_max_capacity": max_capacity,
             "is_published": True,
         })
-        _logger.info("New meeting room (%s) created by %s (uid %s)" % (name, request.httprequest.remote_addr, request.env.uid))
+        _logger.info(
+            "New meeting room (%s) created by %s (uid %s)" % (name, request.httprequest.remote_addr, request.env.uid))
 
-        return request.redirect(f"/event/{request.env['ir.http']._slug(event)}/meeting_room/{request.env['ir.http']._slug(meeting_room)}")
+        return request.redirect(
+            f"/event/{request.env['ir.http']._slug(event)}/meeting_room/{request.env['ir.http']._slug(meeting_room)}")
 
     @http.route(["/event/active_langs"], type="json", auth="public")
     def active_langs(self):
@@ -110,8 +114,9 @@ class WebsiteEventMeetController(EventCommunityController):
     # ROOM PAGE VIEW
     # ------------------------------------------------------------
 
-    @http.route('''/event/<model('event.event', "[('community_menu', '=', True)]"):event>/meeting_room/<model("event.meeting.room","[('event_id','=',event.id)]"):meeting_room>''',
-                type="http", auth="public", website=True, sitemap=True)
+    @http.route(
+        '''/event/<model('event.event', "[('community_menu', '=', True)]"):event>/meeting_room/<model("event.meeting.room","[('event_id','=',event.id)]"):meeting_room>''',
+        type="http", auth="public", website=True, sitemap=True)
     def event_meeting_room_page(self, event, meeting_room, **post):
         """Display the meeting room frontend view.
 

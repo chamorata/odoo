@@ -7,9 +7,9 @@ from unittest.mock import patch
 
 import lxml
 from freezegun import freeze_time
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 
 from odoo import Command, fields
-from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.exceptions import UserError
 from odoo.tests import tagged
 from odoo.tools import file_open
@@ -102,7 +102,8 @@ class TestEdiFacturaeXmls(AccountTestInvoicingCommon):
 
         cls.certificate_module = "odoo.addons.certificate.models.certificate"
         cls.move_module = "odoo.addons.l10n_es_edi_facturae.models.account_move"
-        with freeze_time(cls.frozen_today), patch(f"{cls.certificate_module}.fields.datetime.now", lambda x=None: cls.frozen_today):
+        with freeze_time(cls.frozen_today), patch(f"{cls.certificate_module}.fields.datetime.now",
+                                                  lambda x=None: cls.frozen_today):
             cls.certificate = cls.env["certificate.certificate"].create({
                 'name': 'Test ES certificate',
                 'content': b64encode(file_open('l10n_es_edi_facturae/tests/data/certificate_test.pfx', 'rb').read()),
@@ -112,17 +113,17 @@ class TestEdiFacturaeXmls(AccountTestInvoicingCommon):
             })
 
         cls.tax, cls.tax_2 = cls.env['account.tax'].create([{
-                'name': "IVA 21% (Bienes)",
-                'company_id': cls.company_data['company'].id,
-                'amount': 21.0,
-                'price_include_override': 'tax_excluded',
-                'l10n_es_edi_facturae_tax_type': '01'
-            }, {
-                'name': "IVA 21% (Bienes) Included",
-                'company_id': cls.company_data['company'].id,
-                'amount': 21.0,
-                'price_include_override': 'tax_included',
-                'l10n_es_edi_facturae_tax_type': '01'
+            'name': "IVA 21% (Bienes)",
+            'company_id': cls.company_data['company'].id,
+            'amount': 21.0,
+            'price_include_override': 'tax_excluded',
+            'l10n_es_edi_facturae_tax_type': '01'
+        }, {
+            'name': "IVA 21% (Bienes) Included",
+            'company_id': cls.company_data['company'].id,
+            'amount': 21.0,
+            'price_include_override': 'tax_included',
+            'l10n_es_edi_facturae_tax_type': '01'
         }
         ])
 
@@ -148,8 +149,8 @@ class TestEdiFacturaeXmls(AccountTestInvoicingCommon):
 
     def create_send_and_print(self, invoices, **kwargs):
         wizard_model = 'account.move.send.wizard' if len(invoices) == 1 else 'account.move.send.batch.wizard'
-        return self.env[wizard_model]\
-            .with_context(active_model='account.move', active_ids=invoices.ids)\
+        return self.env[wizard_model] \
+            .with_context(active_model='account.move', active_ids=invoices.ids) \
             .create(kwargs)
 
     def test_generate_signed_xml(self, date=None):
@@ -181,6 +182,7 @@ class TestEdiFacturaeXmls(AccountTestInvoicingCommon):
 
     def test_cannot_generate_unsigned_xml(self):
         """ Test that no valid certificate prevents a xml generation"""
+
         def _compute_is_valid(self):
             for cert in self:
                 cert.is_valid = False
@@ -190,7 +192,8 @@ class TestEdiFacturaeXmls(AccountTestInvoicingCommon):
                 patch(f"{self.certificate_module}.fields.datetime.now", lambda x=None: self.frozen_today), \
                 patch('odoo.addons.certificate.models.certificate.Certificate._compute_is_valid', _compute_is_valid), \
                 patch(f"{self.move_module}.sha1", lambda x: sha1()):
-            invoice = self.create_invoice(partner_id=self.partner_a.id, move_type='out_invoice', invoice_line_ids=[{'price_unit': 100.0, 'tax_ids': [self.tax.id]}])
+            invoice = self.create_invoice(partner_id=self.partner_a.id, move_type='out_invoice',
+                                          invoice_line_ids=[{'price_unit': 100.0, 'tax_ids': [self.tax.id]}])
             invoice.action_post()
             wizard = self.create_send_and_print(invoice)
             with self.assertRaises(UserError):
@@ -198,7 +201,8 @@ class TestEdiFacturaeXmls(AccountTestInvoicingCommon):
 
     def test_no_certificate_facturae_not_selected(self):
         self.certificate.unlink()
-        invoice = self.create_invoice(partner_id=self.partner_a.id, move_type='out_invoice', invoice_line_ids=[{'price_unit': 100.0, 'tax_ids': [self.tax.id]}])
+        invoice = self.create_invoice(partner_id=self.partner_a.id, move_type='out_invoice',
+                                      invoice_line_ids=[{'price_unit': 100.0, 'tax_ids': [self.tax.id]}])
         invoice.action_post()
         wizard = self.create_send_and_print(invoice)
         wizard.action_send_and_print()
@@ -306,7 +310,8 @@ class TestEdiFacturaeXmls(AccountTestInvoicingCommon):
             invoice = self.create_invoice(
                 partner_id=self.partner_a.id,
                 move_type='out_invoice',
-                invoice_line_ids=[{'product_id': self.product_a.id, 'price_unit': 1000.0, 'discount': 100.0, 'quantity': 2}],
+                invoice_line_ids=[
+                    {'product_id': self.product_a.id, 'price_unit': 1000.0, 'discount': 100.0, 'quantity': 2}],
             )
             invoice.action_post()
             wizard = self.create_send_and_print(invoice)
@@ -322,7 +327,8 @@ class TestEdiFacturaeXmls(AccountTestInvoicingCommon):
         moves = self.env['account.move'].create({'move_type': 'out_invoice'})
         moves._import_invoice_facturae(moves, {'xml_tree': imported_xml})
 
-        moves += self.env['account.move'].search([('ref', '=', 'INV/2023/00006'), ('company_id', '=', self.company_data['company'].id)], limit=1)
+        moves += self.env['account.move'].search(
+            [('ref', '=', 'INV/2023/00006'), ('company_id', '=', self.company_data['company'].id)], limit=1)
 
         currency = self.env['res.currency'].search([('name', '=', 'EUR')])
 
@@ -407,7 +413,7 @@ class TestEdiFacturaeXmls(AccountTestInvoicingCommon):
         invoice = self.create_invoice(
             partner_id=self.partner_b.id,
             move_type='out_invoice',
-            invoice_line_ids=[{'price_unit': 100.0, 'tax_ids': [self.tax.id]},]
+            invoice_line_ids=[{'price_unit': 100.0, 'tax_ids': [self.tax.id]}, ]
         )
         invoice.action_post()
         generated_file, errors = invoice._l10n_es_edi_facturae_render_facturae()

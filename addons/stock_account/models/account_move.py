@@ -8,7 +8,8 @@ class AccountMove(models.Model):
     _inherit = 'account.move'
 
     stock_move_id = fields.Many2one('stock.move', string='Stock Move', index='btree_not_null')
-    stock_valuation_layer_ids = fields.One2many('stock.valuation.layer', 'account_move_id', string='Stock Valuation Layer')
+    stock_valuation_layer_ids = fields.One2many('stock.valuation.layer', 'account_move_id',
+                                                string='Stock Valuation Layer')
 
     def _compute_show_reset_to_draft_button(self):
         super()._compute_show_reset_to_draft_button()
@@ -32,7 +33,7 @@ class AccountMove(models.Model):
             for vals in vals_list:
                 if 'line_ids' in vals:
                     vals['line_ids'] = [line_vals for line_vals in vals['line_ids']
-                                             if line_vals[0] != 0 or line_vals[2].get('display_type') != 'cogs']
+                                        if line_vals[0] != 0 or line_vals[2].get('display_type') != 'cogs']
         return vals_list
 
     def _post(self, soft=True):
@@ -131,7 +132,8 @@ class AccountMove(models.Model):
                 price_unit = line.with_context(anglo_saxon_price_ctx)._stock_account_get_anglo_saxon_price_unit()
                 amount_currency = sign * line.quantity * price_unit
 
-                if move.currency_id.is_zero(amount_currency) or float_is_zero(price_unit, precision_digits=price_unit_prec):
+                if move.currency_id.is_zero(amount_currency) or float_is_zero(price_unit,
+                                                                              precision_digits=price_unit_prec):
                     continue
 
                 # Add interim account line.
@@ -214,26 +216,32 @@ class AccountMove(models.Model):
                 if product_interim_account.reconcile:
                     # Search for anglo-saxon lines linked to the product in the journal entry.
                     product_account_moves = move.line_ids.filtered(
-                        lambda line: line.product_id == prod and line.account_id == product_interim_account and not line.reconciled)
+                        lambda
+                            line: line.product_id == prod and line.account_id == product_interim_account and not line.reconciled)
 
                     # Search for anglo-saxon lines linked to the product in the stock moves.
                     product_stock_moves = stock_moves._get_all_related_sm(prod)
                     product_account_moves |= product_stock_moves._get_all_related_aml().filtered(
-                        lambda line: line.account_id == product_interim_account and not line.reconciled and line.move_id.state == "posted"
+                        lambda
+                            line: line.account_id == product_interim_account and not line.reconciled and line.move_id.state == "posted"
                     )
 
                     correction_amls = product_account_moves.filtered(
-                        lambda aml: aml.move_id.sudo().stock_valuation_layer_ids.stock_valuation_layer_id or (aml.display_type == 'cogs' and not aml.quantity)
+                        lambda aml: aml.move_id.sudo().stock_valuation_layer_ids.stock_valuation_layer_id or (
+                                    aml.display_type == 'cogs' and not aml.quantity)
                     )
-                    invoice_aml = product_account_moves.filtered(lambda aml: aml not in correction_amls and aml.move_id == move)
+                    invoice_aml = product_account_moves.filtered(
+                        lambda aml: aml not in correction_amls and aml.move_id == move)
                     stock_aml = product_account_moves - correction_amls - invoice_aml
 
                     # Reconcile:
                     # In case there is a move with correcting lines that has not been posted
                     # (e.g., it's dated for some time in the future) we should defer any
                     # reconciliation with exchange difference.
-                    if correction_amls or 'draft' in move.line_ids.sudo().stock_valuation_layer_ids.account_move_id.mapped('state'):
-                        if sum(correction_amls.mapped('balance')) > 0 or all(aml.is_same_currency for aml in correction_amls):
+                    if correction_amls or 'draft' in move.line_ids.sudo().stock_valuation_layer_ids.account_move_id.mapped(
+                            'state'):
+                        if sum(correction_amls.mapped('balance')) > 0 or all(
+                                aml.is_same_currency for aml in correction_amls):
                             no_exchange_reconcile_plan += [product_account_moves]
                         else:
                             no_exchange_reconcile_plan += [invoice_aml | correction_amls]
@@ -243,8 +251,10 @@ class AccountMove(models.Model):
                     else:
                         reconcile_plan += [product_account_moves]
         self.env['account.move.line']._reconcile_plan(reconcile_plan)
-        no_exchange_reconcile_plan = [amls.filtered(lambda aml: not aml.reconciled) for amls in no_exchange_reconcile_plan]
-        self.env['account.move.line'].with_context(no_exchange_difference=True)._reconcile_plan(no_exchange_reconcile_plan)
+        no_exchange_reconcile_plan = [amls.filtered(lambda aml: not aml.reconciled) for amls in
+                                      no_exchange_reconcile_plan]
+        self.env['account.move.line'].with_context(no_exchange_difference=True)._reconcile_plan(
+            no_exchange_reconcile_plan)
 
     def _get_invoiced_lot_values(self):
         return []
@@ -253,8 +263,10 @@ class AccountMove(models.Model):
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
 
-    stock_valuation_layer_ids = fields.One2many('stock.valuation.layer', 'account_move_line_id', string='Stock Valuation Layer')
-    cogs_origin_id = fields.Many2one(  # technical field used to keep track in the originating line of the anglo-saxon lines
+    stock_valuation_layer_ids = fields.One2many('stock.valuation.layer', 'account_move_line_id',
+                                                string='Stock Valuation Layer')
+    cogs_origin_id = fields.Many2one(
+        # technical field used to keep track in the originating line of the anglo-saxon lines
         comodel_name="account.move.line",
         copy=False,
         index="btree_not_null",
@@ -263,13 +275,14 @@ class AccountMoveLine(models.Model):
     def _compute_account_id(self):
         super()._compute_account_id()
         input_lines = self.filtered(lambda line: (
-            line._eligible_for_cogs()
-            and line.move_id.company_id.anglo_saxon_accounting
-            and line.move_id.is_purchase_document()
+                line._eligible_for_cogs()
+                and line.move_id.company_id.anglo_saxon_accounting
+                and line.move_id.is_purchase_document()
         ))
         for line in input_lines:
             fiscal_position = line.move_id.fiscal_position_id
-            accounts = line.with_company(line.company_id).product_id.product_tmpl_id.get_product_accounts(fiscal_pos=fiscal_position)
+            accounts = line.with_company(line.company_id).product_id.product_tmpl_id.get_product_accounts(
+                fiscal_pos=fiscal_position)
             if accounts['stock_input']:
                 line.account_id = accounts['stock_input']
 
@@ -308,10 +321,11 @@ class AccountMoveLine(models.Model):
             return self.price_unit
         original_line = self.move_id.reversed_entry_id.line_ids.filtered(
             lambda l: l.display_type == 'cogs' and l.product_id == self.product_id and
-            l.product_uom_id == self.product_uom_id and l.price_unit >= 0)
+                      l.product_uom_id == self.product_uom_id and l.price_unit >= 0)
         original_line = original_line and original_line[0]
         return original_line.price_unit if original_line \
-            else self.product_id.with_company(self.company_id)._stock_account_get_anglo_saxon_price_unit(uom=self.product_uom_id)
+            else self.product_id.with_company(self.company_id)._stock_account_get_anglo_saxon_price_unit(
+            uom=self.product_uom_id)
 
     @api.onchange('product_id')
     def _inverse_product_id(self):
@@ -319,16 +333,16 @@ class AccountMoveLine(models.Model):
 
     def _get_exchange_journal(self, company):
         if (
-            self and self.move_id.sudo().stock_valuation_layer_ids and
-            self.product_id.categ_id.property_valuation == 'real_time'
+                self and self.move_id.sudo().stock_valuation_layer_ids and
+                self.product_id.categ_id.property_valuation == 'real_time'
         ):
             return self.product_id.categ_id.property_stock_journal
         return super()._get_exchange_journal(company)
 
     def _get_exchange_account(self, company, amount):
         if (
-            self and self.move_id.sudo().stock_valuation_layer_ids and
-            self.product_id.categ_id.property_valuation == 'real_time'
+                self and self.move_id.sudo().stock_valuation_layer_ids and
+                self.product_id.categ_id.property_valuation == 'real_time'
         ):
             return self.product_id.categ_id.property_stock_valuation_account_id
         return super()._get_exchange_account(company, amount)

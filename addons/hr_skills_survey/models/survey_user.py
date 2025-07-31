@@ -19,7 +19,8 @@ class SurveyUserInput(models.Model):
 
         super(SurveyUserInput, self)._mark_done()
 
-        certification_user_inputs = self.filtered(lambda user_input: user_input.survey_id.certification and user_input.scoring_success)
+        certification_user_inputs = self.filtered(
+            lambda user_input: user_input.survey_id.certification and user_input.scoring_success)
         user_inputs_by_partner = certification_user_inputs.grouped('partner_id')
         employees = self.env['hr.employee'].search(
             [('user_id.partner_id', 'in', certification_user_inputs.partner_id.ids)])

@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import Command
-from odoo.tests import Form
 from odoo.addons.mrp_subcontracting.tests.common import TestMrpSubcontractingCommon
 from odoo.addons.mrp_subcontracting.tests.test_subcontracting import TestSubcontractingPortal
+
+from odoo import Command
+from odoo.tests import Form
 
 
 class TestSubcontractingDropshippingFlows(TestMrpSubcontractingCommon):
@@ -146,7 +147,8 @@ class TestSubcontractingDropshippingFlows(TestMrpSubcontractingCommon):
             'is_subcontracting_location': True,
         })
 
-        dropship_subcontractor_route = self.env['stock.route'].search([('name', '=', 'Dropship Subcontractor on Order')])
+        dropship_subcontractor_route = self.env['stock.route'].search(
+            [('name', '=', 'Dropship Subcontractor on Order')])
 
         subcontractor, vendor = self.env['res.partner'].create([
             {'name': 'SuperSubcontractor', 'property_stock_subcontractor': sub_location.id},
@@ -252,7 +254,8 @@ class TestSubcontractingDropshippingFlows(TestMrpSubcontractingCommon):
         self.assertEqual(po.order_line.qty_received, 2)
 
         # return 1 x P_finished to the stock location
-        return_form = Form(self.env['stock.return.picking'].with_context(active_ids=delivery.ids, active_id=delivery.id, active_model='stock.picking'))
+        return_form = Form(self.env['stock.return.picking'].with_context(active_ids=delivery.ids, active_id=delivery.id,
+                                                                         active_model='stock.picking'))
         with return_form.product_return_moves.edit(0) as line:
             line.quantity = 1.0
         return_wizard = return_form.save()
@@ -263,11 +266,14 @@ class TestSubcontractingDropshippingFlows(TestMrpSubcontractingCommon):
         delivery_return01.button_validate()
 
         self.assertEqual(delivery_return01.state, 'done')
-        self.assertEqual(p_finished.qty_available, 1, 'One product has been returned to the stock location, so it should be available')
-        self.assertEqual(po.order_line.qty_received, 2, 'One product has been returned to the stock location, so we should still consider it as received')
+        self.assertEqual(p_finished.qty_available, 1,
+                         'One product has been returned to the stock location, so it should be available')
+        self.assertEqual(po.order_line.qty_received, 2,
+                         'One product has been returned to the stock location, so we should still consider it as received')
 
         # return 1 x P_finished to the supplier location
-        return_form = Form(self.env['stock.return.picking'].with_context(active_ids=delivery.ids, active_id=delivery.id, active_model='stock.picking'))
+        return_form = Form(self.env['stock.return.picking'].with_context(active_ids=delivery.ids, active_id=delivery.id,
+                                                                         active_model='stock.picking'))
         with return_form.product_return_moves.edit(0) as line:
             line.quantity = 1.0
         return_wizard = return_form.save()
@@ -420,7 +426,8 @@ class TestSubcontractingDropshippingFlows(TestMrpSubcontractingCommon):
             ('Compo RR', [route_buy.id]),
         ]])
 
-        route_resupply = self.env['stock.route'].search([('name', '=like', '%Resupply Subcontractor'), ('warehouse_ids', '=', warehouse.id)])
+        route_resupply = self.env['stock.route'].search(
+            [('name', '=like', '%Resupply Subcontractor'), ('warehouse_ids', '=', warehouse.id)])
         route_resupply.product_selectable = True
         self.env['stock.warehouse.orderpoint'].create({
             'name': 'Resupply Subcontractor',
@@ -447,17 +454,21 @@ class TestSubcontractingDropshippingFlows(TestMrpSubcontractingCommon):
         # Need to add the subcontractor as Vendor to have the bom read as subcontracted.
         self.comp1.write({'seller_ids': [Command.create({'partner_id': self.subcontractor_partner1.id})]})
 
-        report = self.env['report.mrp.report_bom_structure'].with_context(warehouse_id=warehouse.id)._get_report_data(bom_subcontract.id)
+        report = self.env['report.mrp.report_bom_structure'].with_context(warehouse_id=warehouse.id)._get_report_data(
+            bom_subcontract.id)
         component_lines = report.get('lines', []).get('components', [])
         self.assertEqual(component_lines[0]['product_id'], compo_drop.id)
         self.assertEqual(component_lines[0]['route_name'], 'Dropship Subcontractor on Order')
         self.assertEqual(component_lines[1]['product_id'], compo_rr.id)
-        self.assertEqual(component_lines[1]['route_name'], 'Buy', 'Despite the RR linked to it, it should still display the Buy route')
+        self.assertEqual(component_lines[1]['route_name'], 'Buy',
+                         'Despite the RR linked to it, it should still display the Buy route')
 
-        report = self.env['report.mrp.report_bom_structure'].with_context(warehouse_id=warehouse.id)._get_report_data(bom_local.id)
+        report = self.env['report.mrp.report_bom_structure'].with_context(warehouse_id=warehouse.id)._get_report_data(
+            bom_local.id)
         component_lines = report.get('lines', []).get('components', [])
         self.assertEqual(component_lines[0]['product_id'], compo_drop.id)
-        self.assertEqual(component_lines[0]['route_name'], 'Buy', 'Outside of the subcontracted context, it should try to resupply stock.')
+        self.assertEqual(component_lines[0]['route_name'], 'Buy',
+                         'Outside of the subcontracted context, it should try to resupply stock.')
         self.assertEqual(component_lines[1]['product_id'], compo_rr.id)
         self.assertEqual(component_lines[1]['route_name'], 'Buy')
 
@@ -503,19 +514,20 @@ class TestSubcontractingDropshippingPortal(TestSubcontractingPortal):
         subcontractor, vendor = self.portal_user.partner_id | self.env['res.partner'].create([
             {'name': 'SuperVendor'},
         ])
-        routes = self.env.ref('purchase_stock.route_warehouse0_buy') | self.env.ref('mrp_subcontracting_dropshipping.route_subcontracting_dropshipping')
+        routes = self.env.ref('purchase_stock.route_warehouse0_buy') | self.env.ref(
+            'mrp_subcontracting_dropshipping.route_subcontracting_dropshipping')
         finished_product, component = self.env['product.product'].create([
             {
                 'name': 'Robot',
                 'is_storable': True,
                 'tracking': 'serial',
-                'seller_ids':[Command.create({'partner_id': subcontractor.id})],
+                'seller_ids': [Command.create({'partner_id': subcontractor.id})],
             },
             {
                 'name': 'Robot parts',
                 'is_storable': True,
                 'route_ids': [Command.set(routes.ids)],
-                'seller_ids':[Command.create({'partner_id': vendor.id})],
+                'seller_ids': [Command.create({'partner_id': vendor.id})],
             },
         ])
         bom_form = Form(self.env['mrp.bom'])
@@ -545,11 +557,13 @@ class TestSubcontractingDropshippingPortal(TestSubcontractingPortal):
         po_dropship_subcontractor = self.env['purchase.order'].search([('partner_id', '=', vendor.id)], limit=1)
         po_dropship_subcontractor.button_confirm()
         # check that the dropship is linked to the subcontracted MO
-        self.assertEqual(po_dropship_subcontractor.picking_ids.picking_type_id, self.env.company.dropship_subcontractor_pick_type_id)
+        self.assertEqual(po_dropship_subcontractor.picking_ids.picking_type_id,
+                         self.env.company.dropship_subcontractor_pick_type_id)
         self.assertEqual(po_dropship_subcontractor.picking_ids, subcontracted_mo.picking_ids)
 
         # check that your subcontractor is able to modify the lot of the finished product
-        action = subcontracted_mo.incoming_picking.with_user(self.portal_user).with_context(is_subcontracting_portal=True).move_ids.action_show_details()
+        action = subcontracted_mo.incoming_picking.with_user(self.portal_user).with_context(
+            is_subcontracting_portal=True).move_ids.action_show_details()
         mo = self.env['mrp.production'].with_user(self.portal_user).browse(action['res_id'])
         mo_form = Form(mo.with_context(action['context']), view=action['view_id'])
         # Registering components for the first manufactured product

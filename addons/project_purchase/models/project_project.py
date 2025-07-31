@@ -9,7 +9,8 @@ from odoo.osv import expression
 class Project(models.Model):
     _inherit = "project.project"
 
-    purchase_orders_count = fields.Integer('# Purchase Orders', compute='_compute_purchase_orders_count', groups='purchase.group_purchase_user', export_string_translation=False)
+    purchase_orders_count = fields.Integer('# Purchase Orders', compute='_compute_purchase_orders_count',
+                                           groups='purchase.group_purchase_user', export_string_translation=False)
 
     def _compute_purchase_orders_count(self):
         purchase_orders_per_project = dict(
@@ -25,7 +26,8 @@ class Project(models.Model):
         purchase_orders_count_per_project_from_lines = dict(
             self.env['purchase.order.line']._read_group(
                 domain=[
-                    ('order_id', 'not in', [order_id for values in purchase_orders_per_project.values() for order_id in values]),
+                    ('order_id', 'not in',
+                     [order_id for values in purchase_orders_per_project.values() for order_id in values]),
                     ('analytic_distribution', 'in', self.account_id.ids),
                 ],
                 groupby=['analytic_distribution'],
@@ -37,9 +39,12 @@ class Project(models.Model):
         for project in projects_no_account:
             project.purchase_orders_count = len(purchase_orders_per_project.get(project, []))
 
-        purchase_orders_per_project = {project.account_id.id: len(orders) for project, orders in purchase_orders_per_project.items()}
+        purchase_orders_per_project = {project.account_id.id: len(orders) for project, orders in
+                                       purchase_orders_per_project.items()}
         for project in (self - projects_no_account):
-            project.purchase_orders_count = purchase_orders_per_project.get(project.account_id.id, 0) + purchase_orders_count_per_project_from_lines.get(project.account_id.id, 0)
+            project.purchase_orders_count = purchase_orders_per_project.get(project.account_id.id,
+                                                                            0) + purchase_orders_count_per_project_from_lines.get(
+                project.account_id.id, 0)
 
     # ----------------------------
     #  Actions
@@ -48,8 +53,8 @@ class Project(models.Model):
     def action_open_project_purchase_orders(self):
         purchase_orders = self.env['purchase.order.line'].search([
             '|',
-                ('analytic_distribution', 'in', self.account_id.ids),
-                ('order_id.project_id', '=', self.id),
+            ('analytic_distribution', 'in', self.account_id.ids),
+            ('order_id.project_id', '=', self.id),
         ]).order_id
         action_window = {
             'name': self.env._('Purchase Orders'),
@@ -66,7 +71,7 @@ class Project(models.Model):
             'help': "<p class='o_view_nocontent_smiling_face'>%s</p><p>%s</p>" % (
                 _("No purchase order found. Let's create one."),
                 _("Once you ordered your products from your supplier, confirm your request for quotation and it will turn "
-                    "into a purchase order."),
+                  "into a purchase order."),
             ),
         }
         if len(purchase_orders) == 1 and not self.env.context.get('from_embedded_action'):
@@ -91,10 +96,10 @@ class Project(models.Model):
                 action['res_id'] = res_id
                 if 'views' in action:
                     action['views'] = [
-                        (view_id, view_type)
-                        for view_id, view_type in action['views']
-                        if view_type == 'form'
-                    ] or [False, 'form']
+                                          (view_id, view_type)
+                                          for view_id, view_type in action['views']
+                                          if view_type == 'form'
+                                      ] or [False, 'form']
                 action['view_mode'] = 'form'
             return action
         return super().action_profitability_items(section_name, domain, res_id)
@@ -147,9 +152,9 @@ class Project(models.Model):
             ], ['parent_state', 'currency_id', 'price_subtotal', 'analytic_distribution'])
             purchase_order_line_invoice_line_ids = self._get_already_included_profitability_invoice_line_ids()
             with_action = with_action and (
-                self.env.user.has_group('purchase.group_purchase_user')
-                or self.env.user.has_group('account.group_account_invoice')
-                or self.env.user.has_group('account.group_account_readonly')
+                    self.env.user.has_group('purchase.group_purchase_user')
+                    or self.env.user.has_group('account.group_account_invoice')
+                    or self.env.user.has_group('account.group_account_readonly')
             )
             if invoice_lines:
                 amount_invoiced = amount_to_invoice = 0.0
@@ -168,7 +173,9 @@ class Project(models.Model):
                         amount_to_invoice -= cost
                 costs = profitability_items['costs']
                 section_id = 'purchase_order'
-                purchase_order_costs = {'id': section_id, 'sequence': self._get_profitability_sequence_per_invoice_type()[section_id], 'billed': amount_invoiced, 'to_bill': amount_to_invoice}
+                purchase_order_costs = {'id': section_id,
+                                        'sequence': self._get_profitability_sequence_per_invoice_type()[section_id],
+                                        'billed': amount_invoiced, 'to_bill': amount_to_invoice}
                 if with_action:
                     args = [section_id, [('id', 'in', invoice_lines.purchase_line_id.ids)]]
                     if len(invoice_lines.purchase_line_id) == 1:

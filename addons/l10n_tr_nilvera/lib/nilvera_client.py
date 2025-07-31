@@ -1,12 +1,14 @@
 import logging
-import requests
 from datetime import datetime
 from json import JSONDecodeError
 from pprint import pformat
 
+import requests
+
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
+
 
 def _get_nilvera_client(company, timeout_limit=None):
     return NilveraClient(
@@ -73,9 +75,12 @@ class NilveraClient:
 
     def handle_response(self, response):
         if response.status_code in {401, 403}:
-            raise UserError("Oops, seems like you're unauthorised to do this. Try another API key with more rights or contact Nilvera.")
+            raise UserError(
+                "Oops, seems like you're unauthorised to do this. Try another API key with more rights or contact Nilvera.")
         elif 403 < response.status_code < 600:
-            raise UserError("Odoo could not perform this action at the moment, try again later.\n%s - %s" % (response.reason, response.code))
+            raise UserError(
+                "Odoo could not perform this action at the moment, try again later.\n%s - %s" % (response.reason,
+                                                                                                 response.code))
 
         try:
             return response.json()

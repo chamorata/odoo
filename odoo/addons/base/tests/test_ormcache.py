@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from threading import Thread, Barrier
+
 from odoo.tests.common import TransactionCase, tagged
 from odoo.tools.cache import get_cache_key_counter
-from threading import Thread, Barrier
 
 
 @tagged('-at_install', 'post_install')
@@ -79,6 +80,7 @@ class TestOrmCache(TransactionCase):
         sync_reset = Barrier(nb_treads, timeout=5)
 
         operations = []
+
         def run(cache):
             self.assertEqual(self.env.registry.cache_invalidated, set())
 
@@ -172,7 +174,8 @@ class TestOrmCache(TransactionCase):
 
         for key, value in old_sequences.items():
             if key in ('assets', 'default'):
-                self.assertEqual(value + 1, registry.cache_sequences[key], "Assets and default cache sequence should have changed")
+                self.assertEqual(value + 1, registry.cache_sequences[key],
+                                 "Assets and default cache sequence should have changed")
             else:
                 self.assertEqual(value, registry.cache_sequences[key], "other registry sequence shouldn't have changed")
 

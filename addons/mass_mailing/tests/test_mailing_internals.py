@@ -8,11 +8,10 @@ from datetime import datetime
 from unittest.mock import patch
 
 from freezegun import freeze_time
+from odoo.addons.mass_mailing.tests.common import MassMailCommon
 from psycopg2 import IntegrityError
-from unittest.mock import patch
 
 from odoo.addons.base.tests.test_ir_cron import CronMixinCase
-from odoo.addons.mass_mailing.tests.common import MassMailCommon
 from odoo.exceptions import ValidationError
 from odoo.sql_db import Cursor
 from odoo.tests import Form, HttpCase, users, tagged
@@ -39,22 +38,27 @@ class TestMassMailValues(MassMailCommon):
         the style of other email clients.
         """
         attachment = {}
+
         def patched_get_image(self, url, session):
             return base64.b64decode(BASE_64_STRING)
+
         original_images_to_urls = self.env['mailing.mailing']._create_attachments_from_inline_images
+
         def patched_images_to_urls(self, b64images):
             urls = original_images_to_urls(b64images)
             if len(urls) == 1:
-                (attachment_id, attachment_token) = re.search(r'/web/image/(?P<id>[0-9]+)\?access_token=(?P<token>.*)', urls[0]).groups()
+                (attachment_id, attachment_token) = re.search(r'/web/image/(?P<id>[0-9]+)\?access_token=(?P<token>.*)',
+                                                              urls[0]).groups()
                 attachment['id'] = attachment_id
                 attachment['token'] = attachment_token
                 return urls
             else:
                 return []
+
         with patch("odoo.addons.mass_mailing.models.mailing.MassMailing._get_image_by_url",
                    new=patched_get_image), \
-             patch("odoo.addons.mass_mailing.models.mailing.MassMailing._create_attachments_from_inline_images",
-                   new=patched_images_to_urls):
+                patch("odoo.addons.mass_mailing.models.mailing.MassMailing._create_attachments_from_inline_images",
+                      new=patched_images_to_urls):
             mailing = self.env['mailing.mailing'].create({
                 'name': 'Test',
                 'subject': 'Test',
@@ -85,23 +89,26 @@ class TestMassMailValues(MassMailCommon):
         """
         attachments = []
         original_images_to_urls = self.env['mailing.mailing']._create_attachments_from_inline_images
+
         def patched_images_to_urls(self, b64images):
             urls = original_images_to_urls(b64images)
             for url in urls:
-                (attachment_id, attachment_token) = re.search(r'/web/image/(?P<id>[0-9]+)\?access_token=(?P<token>.*)', url).groups()
+                (attachment_id, attachment_token) = re.search(r'/web/image/(?P<id>[0-9]+)\?access_token=(?P<token>.*)',
+                                                              url).groups()
                 attachments.append({
                     'id': attachment_id,
                     'token': attachment_token,
                 })
             return urls
+
         with patch("odoo.addons.mass_mailing.models.mailing.MassMailing._create_attachments_from_inline_images",
                    new=patched_images_to_urls):
             mailing = self.env['mailing.mailing'].create({
-                    'name': 'Test',
-                    'subject': 'Test',
-                    'state': 'draft',
-                    'mailing_model_id': self.env['ir.model']._get('res.partner').id,
-                    'body_html': f"""
+                'name': 'Test',
+                'subject': 'Test',
+                'state': 'draft',
+                'mailing_model_id': self.env['ir.model']._get('res.partner').id,
+                'body_html': f"""
                         <section>
                             <img src="data:image/png;base64,{BASE_64_STRING}0">
                             <img src="data:image/jpg;base64,{BASE_64_STRING}1">
@@ -126,7 +133,7 @@ class TestMassMailValues(MassMailCommon):
                             <img src="data:image/png;base64,{BASE_64_STRING}0">
                         </section>
                     """,
-                })
+            })
         self.assertEqual(len(attachments), 19)
         self.assertEqual(attachments[0]['id'], attachments[18]['id'])
         self.assertEqual(str(mailing.body_html).strip(), f"""
@@ -233,7 +240,8 @@ class TestMassMailValues(MassMailCommon):
         mailing.write({
             'contact_list_ids': [(4, self.mailing_list_1.id), (4, self.mailing_list_2.id)]
         })
-        self.assertEqual(literal_eval(mailing.mailing_domain), [('list_ids', 'in', (self.mailing_list_1 | self.mailing_list_2).ids)])
+        self.assertEqual(literal_eval(mailing.mailing_domain),
+                         [('list_ids', 'in', (self.mailing_list_1 | self.mailing_list_2).ids)])
 
         # reset mailing model -> reset domain and reply to mode
         mailing.write({
@@ -261,17 +269,17 @@ class TestMassMailValues(MassMailCommon):
         # prepare initial data
         filter_1, filter_2, filter_3 = self.env['mailing.filter'].create([
             {'name': 'General channel',
-             'mailing_domain' : [('name', '=', 'general')],
+             'mailing_domain': [('name', '=', 'general')],
              'mailing_model_id': self.env['ir.model']._get('discuss.channel').id,
-            },
+             },
             {'name': 'LLN City',
-             'mailing_domain' : [('city', 'ilike', 'LLN')],
+             'mailing_domain': [('city', 'ilike', 'LLN')],
              'mailing_model_id': self.env['ir.model']._get('res.partner').id,
-            },
+             },
             {'name': 'Email based',
-             'mailing_domain' : [('email', 'ilike', 'info@odoo.com')],
+             'mailing_domain': [('email', 'ilike', 'info@odoo.com')],
              'mailing_model_id': self.env['ir.model']._get('res.partner').id,
-            }
+             }
         ])
 
         # check that adding mailing_filter_id updates domain correctly
@@ -301,7 +309,8 @@ class TestMassMailValues(MassMailCommon):
         self.assertEqual(literal_eval(mailing.mailing_domain), literal_eval(filter_3_domain))
         filter_3.unlink()  # delete the filter record
         self.assertFalse(mailing.mailing_filter_id, "Should unset filter if it is deleted")
-        self.assertEqual(literal_eval(mailing.mailing_domain), literal_eval(filter_3_domain), "Should still have the same domain")
+        self.assertEqual(literal_eval(mailing.mailing_domain), literal_eval(filter_3_domain),
+                         "Should still have the same domain")
 
     @users('user_marketing')
     def test_mailing_computed_fields_default(self):
@@ -328,17 +337,17 @@ class TestMassMailValues(MassMailCommon):
             # for mass mailing. from_filter matches domain of company alias domain
             # before record creation
             {
-                    'name' : 'mass_mailing_test_match_from_filter',
-                    'from_filter' : self.alias_domain,
-                    'smtp_host' : 'not_real@smtp.com',
+                'name': 'mass_mailing_test_match_from_filter',
+                'from_filter': self.alias_domain,
+                'smtp_host': 'not_real@smtp.com',
             },
             # Case where alias domain is set and there is a default outgoing email server
             # for mass mailing. from_filter DOES NOT match domain of company alias domain
             # before record creation
             {
-                    'name' : 'mass_mailing_test_from_missmatch',
-                    'from_filter' : 'test.com',
-                    'smtp_host' : 'not_real@smtp.com',
+                'name': 'mass_mailing_test_from_missmatch',
+                'from_filter': 'test.com',
+                'smtp_host': 'not_real@smtp.com',
             },
         ])
 
@@ -361,8 +370,8 @@ class TestMassMailValues(MassMailCommon):
                 # settings to designate a dedicated outgoing email server
                 if mail_server:
                     self.env['res.config.settings'].sudo().create({
-                        'mass_mailing_mail_server_id' : mail_server.id,
-                        'mass_mailing_outgoing_mail_server' : mail_server,
+                        'mass_mailing_mail_server_id': mail_server.id,
+                        'mass_mailing_outgoing_mail_server': mail_server,
                     }).execute()
 
                 # Create mailing
@@ -477,20 +486,21 @@ class TestMassMailValues(MassMailCommon):
         })
 
         mail_thread_attachments = mailing._get_mail_thread_data_attachments()
-        self.assertSetEqual(set(mail_thread_attachments.ids), {png_duplicate_of_svg_attachment.id, original_png_attachment.id})
+        self.assertSetEqual(set(mail_thread_attachments.ids),
+                            {png_duplicate_of_svg_attachment.id, original_png_attachment.id})
 
     @users('user_marketing')
     @mute_logger('odoo.addons.mail.models.mail_mail')
     def test_process_mailing_queue_without_html_body(self):
         """ Test mailing with past schedule date and without any html body """
         mailing = self.env['mailing.mailing'].create({
-                'name': 'mailing',
-                'subject': 'some subject',
-                'mailing_model_id': self.env['ir.model']._get('res.partner').id,
-                'preview': "Check it out before its too late",
-                'body_html': False,
-                'schedule_date': datetime(2023, 2, 17, 11, 0),
-            })
+            'name': 'mailing',
+            'subject': 'some subject',
+            'mailing_model_id': self.env['ir.model']._get('res.partner').id,
+            'preview': "Check it out before its too late",
+            'body_html': False,
+            'schedule_date': datetime(2023, 2, 17, 11, 0),
+        })
         mailing.action_put_in_queue()
         with self.mock_mail_gateway(mail_unlink_sent=False):
             mailing._process_mass_mailing_queue()
@@ -542,17 +552,17 @@ class TestMassMailUTM(MassMailCommon):
         # should generate same name (coming from same subject)
         mailing_0.subject = 'First subject'
         self.assertEqual(mailing_0.name, 'First subject (Mass Mailing created on 2022-01-02)',
-            msg='The name should not be updated')
+                         msg='The name should not be updated')
 
         # take a (long) existing name -> should increment
         mailing_0.name = 'Second subject (Mass Mailing created on 2022-01-02)'
         self.assertEqual(mailing_0.name, 'Second subject (Mass Mailing created on 2022-01-02) [2]',
-            msg='The name must be unique, it was already taken')
+                         msg='The name must be unique, it was already taken')
 
         # back to first subject: not linked to any record so should take it back
         mailing_0.subject = 'First subject'
         self.assertEqual(mailing_0.name, 'First subject (Mass Mailing created on 2022-01-02)',
-            msg='The name should be back to first one')
+                         msg='The name should be back to first one')
 
     def test_mailing_create_with_context(self):
         """ Test that the default_name provided via context is ignored to prevent constraint violations."""
@@ -568,7 +578,8 @@ class TestMassMailUTM(MassMailCommon):
         ])
         self.assertEqual(mailing_1.name, "Mailing")
         self.assertEqual(mailing_2.name, "Mailing [2]")
-        mailing_3 = self.env["mailing.mailing"].with_context({"default_name": "Mailing"}).create({"subject": "Third subject"})
+        mailing_3 = self.env["mailing.mailing"].with_context({"default_name": "Mailing"}).create(
+            {"subject": "Third subject"})
         self.assertEqual(mailing_3.name, "Mailing [3]")
 
 
@@ -701,7 +712,7 @@ class TestMassMailFeatures(MassMailCommon, CronMixinCase):
             'name': 'test email 2',
             'email': 'test2@example.com',
         })
-        self.env['mail.blacklist'].create({'email': 'Test2@example.com',})
+        self.env['mail.blacklist'].create({'email': 'Test2@example.com', })
 
         mailing = self.env['mailing.mailing'].create({
             'name': 'One',
@@ -864,16 +875,16 @@ class TestMassMailingActions(MassMailCommon):
         ])
         # Create two traces: one linked to the created mass.mailing and one not (action should open only the first)
         self.env["mailing.trace"].create([{
-                "trace_status": "open",
-                "mass_mailing_id": mass_mailings[0].id,
-                "model": "res.partner",
-                "res_id": self.partner_admin.id,
-            }, {
-                "trace_status": "open",
-                "mass_mailing_id": mass_mailings[1].id,
-                "model": "res.partner",
-                "res_id": self.partner_employee.id,
-            }
+            "trace_status": "open",
+            "mass_mailing_id": mass_mailings[0].id,
+            "model": "res.partner",
+            "res_id": self.partner_admin.id,
+        }, {
+            "trace_status": "open",
+            "mass_mailing_id": mass_mailings[1].id,
+            "model": "res.partner",
+            "res_id": self.partner_employee.id,
+        }
         ])
         results = mass_mailings[0].action_view_opened()
         results_partner = self.env["res.partner"].search(results['domain'])

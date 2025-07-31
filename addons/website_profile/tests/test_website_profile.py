@@ -1,7 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import odoo.tests
 from odoo.addons.gamification.tests.common import HttpCaseGamification
+
+import odoo.tests
 
 
 @odoo.tests.tagged('post_install', '-at_install')

@@ -17,16 +17,16 @@
             </xpath>
             <page name="optional_products" position="after">
                 <page
-                    name="pdf_quote_builder"
-                    string="Quote Builder"
-                    invisible="not (partner_id and is_pdf_quote_builder_available)"
+                        name="pdf_quote_builder"
+                        string="Quote Builder"
+                        invisible="not (partner_id and is_pdf_quote_builder_available)"
                 >
                     <!-- Needed by customContentKanbanLikeWidget to save selected documents. -->
                     <field name="quotation_document_ids" invisible="1"/>
                     <field name="customizable_pdf_form_fields" invisible="1"/>
                     <widget
-                        name="customContentKanbanLikeWidget"
-                        class="d-inline"
+                            name="customContentKanbanLikeWidget"
+                            class="d-inline"
                     />
                 </page>
             </page>

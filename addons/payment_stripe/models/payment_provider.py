@@ -5,17 +5,15 @@ import logging
 import uuid
 
 import requests
-from werkzeug.urls import url_encode, url_join, url_parse
-
-from odoo import _, api, fields, models
-from odoo.exceptions import RedirectWarning, UserError, ValidationError
-
 from odoo.addons.payment import utils as payment_utils
 from odoo.addons.payment.controllers.portal import PaymentPortal
 from odoo.addons.payment_stripe import const, utils as stripe_utils
 from odoo.addons.payment_stripe.controllers.main import StripeController
 from odoo.addons.payment_stripe.controllers.onboarding import OnboardingController
+from werkzeug.urls import url_encode, url_join, url_parse
 
+from odoo import _, api, fields, models
+from odoo.exceptions import RedirectWarning, UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -36,7 +34,7 @@ class PaymentProvider(models.Model):
              "authenticate the messages sent from Stripe to Odoo.",
         groups='base.group_system')
 
-    #=== COMPUTE METHODS ===#
+    # === COMPUTE METHODS ===#
 
     def _compute_feature_support_fields(self):
         """ Override of `payment` to enable additional features. """
@@ -48,7 +46,7 @@ class PaymentProvider(models.Model):
             'support_tokenization': True,
         })
 
-    #=== CONSTRAINT METHODS ===#
+    # === CONSTRAINT METHODS ===#
 
     @api.constrains('state', 'stripe_publishable_key', 'stripe_secret_key')
     def _check_state_of_connected_account_is_never_test(self):
@@ -252,7 +250,7 @@ class PaymentProvider(models.Model):
     # === BUSINESS METHODS - PAYMENT FLOW === #
 
     def _stripe_make_request(
-        self, endpoint, payload=None, method='POST', offline=False, idempotency_key=None
+            self, endpoint, payload=None, method='POST', offline=False, idempotency_key=None
     ):
         """ Make a request to Stripe API at the specified endpoint.
 
@@ -439,7 +437,7 @@ class PaymentProvider(models.Model):
 
         return {}
 
-    #=== BUSINESS METHODS - GETTERS ===#
+    # === BUSINESS METHODS - GETTERS ===#
 
     def _stripe_get_publishable_key(self):
         """ Return the publishable key of the provider.
@@ -457,7 +455,7 @@ class PaymentProvider(models.Model):
         return stripe_utils.get_publishable_key(self.sudo())
 
     def _stripe_get_inline_form_values(
-        self, amount, currency, partner_id, is_validation, payment_method_sudo=None, **kwargs
+            self, amount, currency, partner_id, is_validation, payment_method_sudo=None, **kwargs
     ):
         """ Return a serialized JSON of the required values to render the inline form.
 
@@ -500,9 +498,9 @@ class PaymentProvider(models.Model):
                 },
             },
             'is_tokenization_required': (
-                self.allow_tokenization
-                and self._is_tokenization_required(**kwargs)
-                and payment_method_sudo.support_tokenization
+                    self.allow_tokenization
+                    and self._is_tokenization_required(**kwargs)
+                    and payment_method_sudo.support_tokenization
             ),
             'payment_methods_mapping': const.PAYMENT_METHODS_MAPPING,
         }

@@ -1,7 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
+from stdnum.in_ import pan, gstin
+
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
-from stdnum.in_ import pan, gstin
+
 
 class ResCompany(models.Model):
     _inherit = 'res.company'

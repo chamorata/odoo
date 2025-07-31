@@ -6,12 +6,12 @@ from datetime import timedelta as td
 from json import loads
 
 from odoo import SUPERUSER_ID, Command
+from odoo.exceptions import UserError, ValidationError
 from odoo.fields import Date
 from odoo.tests import Form, tagged, freeze_time
 from odoo.tests.common import TransactionCase
 from odoo.tools import format_date
 from odoo.tools.date_utils import add
-from odoo.exceptions import UserError, ValidationError
 
 
 @tagged('post_install', '-at_install')
@@ -48,7 +48,9 @@ class TestReorderingRule(TransactionCase):
         """
         warehouse_1 = self.env['stock.warehouse'].search([('company_id', '=', self.env.user.id)], limit=1)
         warehouse_1.write({'reception_steps': 'two_steps'})
-        warehouse_2 = self.env['stock.warehouse'].create({'name': 'WH 2', 'code': 'WH2', 'company_id': self.env.company.id, 'partner_id': self.env.company.partner_id.id, 'reception_steps': 'one_step'})
+        warehouse_2 = self.env['stock.warehouse'].create(
+            {'name': 'WH 2', 'code': 'WH2', 'company_id': self.env.company.id,
+             'partner_id': self.env.company.partner_id.id, 'reception_steps': 'one_step'})
 
         # Create and set specific buyer for partner
         buyer_id = self.env['res.users'].create({
@@ -96,7 +98,8 @@ class TestReorderingRule(TransactionCase):
         self.env['procurement.group'].run_scheduler()
 
         # Check purchase order created or not
-        purchase_order = self.env['purchase.order'].search([('partner_id', '=', self.partner.id), ('state', '!=', 'cancel')])
+        purchase_order = self.env['purchase.order'].search(
+            [('partner_id', '=', self.partner.id), ('state', '!=', 'cancel')])
         self.assertTrue(purchase_order, 'No purchase order created.')
         # Check the picking type on the purchase order
         purchase_order.picking_type_id = warehouse_2.in_type_id
@@ -105,7 +108,8 @@ class TestReorderingRule(TransactionCase):
         purchase_order.picking_type_id = warehouse_1.in_type_id
 
         # On the po generated, the source document should be the name of the reordering rule
-        self.assertEqual(order_point.name, purchase_order.origin, 'Source document on purchase order should be the name of the reordering rule.')
+        self.assertEqual(order_point.name, purchase_order.origin,
+                         'Source document on purchase order should be the name of the reordering rule.')
         self.assertEqual(purchase_order.order_line.product_qty, 10)
         self.assertEqual(purchase_order.order_line.name, 'Product A')
         self.assertEqual(purchase_order.user_id, buyer_id)
@@ -114,7 +118,8 @@ class TestReorderingRule(TransactionCase):
         purchase_order.order_line.product_qty = 12
         purchase_order.button_confirm()
 
-        self.assertEqual(purchase_order.picking_ids.move_ids.filtered(lambda m: m.product_id == self.product_01).product_qty, 12)
+        self.assertEqual(
+            purchase_order.picking_ids.move_ids.filtered(lambda m: m.product_id == self.product_01).product_qty, 12)
         purchase_order.picking_ids.button_validate()
         next_picking = purchase_order.picking_ids.move_ids.move_dest_ids.picking_id
         self.assertEqual(len(next_picking), 1)
@@ -196,7 +201,8 @@ class TestReorderingRule(TransactionCase):
         purchase_order.order_line.filtered(lambda pol: pol.orderpoint_id == order_point_2).product_qty = 15
         self.assertEqual(self.product_01.with_context(location=subloc_1.id).virtual_available, 5)
         self.assertEqual(self.product_01.with_context(location=subloc_2.id).virtual_available, 5)
-        self.assertEqual(self.product_01.with_context(location=warehouse_1.lot_stock_id.id).virtual_available, 10)  # 5 on the subloc_2, 5 on subloc_1
+        self.assertEqual(self.product_01.with_context(location=warehouse_1.lot_stock_id.id).virtual_available,
+                         10)  # 5 on the subloc_2, 5 on subloc_1
 
     def test_reordering_rule_3(self):
         """
@@ -286,7 +292,8 @@ class TestReorderingRule(TransactionCase):
          the max qty cannot be created """
         warehouse_1 = self.env['stock.warehouse'].search([('company_id', '=', self.env.user.id)], limit=1)
 
-        with self.assertRaises(ValidationError, msg="The minimum quantity must be less than or equal to the maximum quantity."):
+        with self.assertRaises(ValidationError,
+                               msg="The minimum quantity must be less than or equal to the maximum quantity."):
             self.env['stock.warehouse.orderpoint'].create({
                 'warehouse_id': warehouse_1.id,
                 'location_id': warehouse_1.lot_stock_id.id,
@@ -652,7 +659,7 @@ class TestReorderingRule(TransactionCase):
             [('warehouse_id', '=', warehouse.id),
              ('procure_method', '=', 'make_to_order'),
              ('location_dest_id', '=', customer_loc.id)
-            ]
+             ]
         )
         route_mto = self.env["stock.route"].create({
             "name": "MTO",
@@ -694,18 +701,18 @@ class TestReorderingRule(TransactionCase):
             "partner_id": customer.id
         })
         procurement = self.env["procurement.group"].Procurement(
-                product, 100, uom_unit,
-                customer.property_stock_customer,
-                "Test default vendor",
-                "/",
-                self.env.company,
-                {
-                    "warehouse_id": warehouse,
-                    "date_planned": dt.today() + td(days=15),
-                    "group_id": proc_group,
-                    "route_ids": [],
-                }
-            )
+            product, 100, uom_unit,
+            customer.property_stock_customer,
+            "Test default vendor",
+            "/",
+            self.env.company,
+            {
+                "warehouse_id": warehouse,
+                "date_planned": dt.today() + td(days=15),
+                "group_id": proc_group,
+                "route_ids": [],
+            }
+        )
         self.env.invalidate_all()
 
         self.env["procurement.group"].run([procurement])
@@ -781,9 +788,10 @@ class TestReorderingRule(TransactionCase):
             }
         )
         self.env.company.partner_id.lang = "fr_FR"
-        orderpoint.with_user(french_user).action_replenish() # impersonnate a french user.
+        orderpoint.with_user(french_user).action_replenish()  # impersonnate a french user.
 
-        po_line = self.env['purchase.order.line'].search([('partner_id', '=', default_vendor.id), ('product_id', '=', product.id)], limit=1)
+        po_line = self.env['purchase.order.line'].search(
+            [('partner_id', '=', default_vendor.id), ('product_id', '=', product.id)], limit=1)
         self.assertRecordValues(po_line, [{"name": "[A] produit en français", "product_qty": 5.0}])
         self.assertRecordValues(po_line.move_dest_ids, [{"product_uom_qty": 5.0}])
         orderpoint.qty_to_order_manual = 4.0
@@ -873,7 +881,8 @@ class TestReorderingRule(TransactionCase):
         })
         orderpoint.action_replenish()
 
-        po_line = self.env['purchase.order.line'].search([('partner_id', '=', self.partner.id), ('product_id', '=', self.product_01.id)])
+        po_line = self.env['purchase.order.line'].search(
+            [('partner_id', '=', self.partner.id), ('product_id', '=', self.product_01.id)])
         self.assertEqual(po_line.product_qty, 5)
 
     def test_change_of_scheduled_date(self):
@@ -951,12 +960,14 @@ class TestReorderingRule(TransactionCase):
             with form.order_line.edit(0) as line:
                 line.product_qty = 4
         purchase.button_confirm()
-        moves = self.env['stock.move'].search([('id', '!=', out_move.id), ('product_id', '=', self.product_01.id)], order='id desc')
+        moves = self.env['stock.move'].search([('id', '!=', out_move.id), ('product_id', '=', self.product_01.id)],
+                                              order='id desc')
         self.assertRecordValues(moves, [
             {'location_id': supplier_location_id, 'location_dest_id': input_location_id, 'product_qty': 4},
         ])
         moves.picking_id.button_validate()
-        moves = self.env['stock.move'].search([('id', '!=', out_move.id), ('product_id', '=', self.product_01.id)], order='id desc')
+        moves = self.env['stock.move'].search([('id', '!=', out_move.id), ('product_id', '=', self.product_01.id)],
+                                              order='id desc')
         self.assertRecordValues(moves, [
             {'location_id': input_location_id, 'location_dest_id': stock_location_id, 'product_qty': 4},
             {'location_id': supplier_location_id, 'location_dest_id': input_location_id, 'product_qty': 4},
@@ -1171,7 +1182,8 @@ class TestReorderingRule(TransactionCase):
         out_5_days._action_confirm()
 
         # Visibility days should be ignored if nothing is found within lead times (today + 1 day)
-        replenishment_info = loads(self.env['stock.replenishment.info'].create({'orderpoint_id': orderpoint.id}).json_lead_days)
+        replenishment_info = loads(
+            self.env['stock.replenishment.info'].create({'orderpoint_id': orderpoint.id}).json_lead_days)
         self.assertEqual(replenishment_info['lead_days_date'], format_date(orderpoint.env, today + td(days=1)))
         self.assertEqual(float(replenishment_info['qty_to_order']), 0)
         self.assertEqual(replenishment_info['visibility_days'], 0)
@@ -1194,11 +1206,13 @@ class TestReorderingRule(TransactionCase):
         out_today._action_confirm()
 
         # Visibility days should be used something is found within lead times
-        replenishment_info = loads(self.env['stock.replenishment.info'].create({'orderpoint_id': orderpoint.id}).json_lead_days)
+        replenishment_info = loads(
+            self.env['stock.replenishment.info'].create({'orderpoint_id': orderpoint.id}).json_lead_days)
         self.assertEqual(replenishment_info['lead_days_date'], format_date(orderpoint.env, today + td(days=1)))
         self.assertEqual(float(replenishment_info['qty_to_order']), 8)
         self.assertEqual(replenishment_info['visibility_days'], 5)
-        self.assertEqual(replenishment_info['visibility_days_date'], format_date(orderpoint.env, today + td(days=1) + td(days=5)))
+        self.assertEqual(replenishment_info['visibility_days_date'],
+                         format_date(orderpoint.env, today + td(days=1) + td(days=5)))
         # Extra lines for forecast are given through its context
         context = orderpoint.action_product_forecast_report()['context']
         self.assertEqual(context['qty_to_order'], 3)
@@ -1277,7 +1291,8 @@ class TestReorderingRule(TransactionCase):
         })
         product.seller_ids.with_context(orderpoint_id=orderpoint.id).action_set_supplier()
         self.assertEqual(orderpoint.supplier_id, product.seller_ids, 'The supplier should be set in the orderpoint')
-        self.assertEqual(orderpoint.product_uom, product.uom_id, 'The orderpoint uom should be the same as the product uom')
+        self.assertEqual(orderpoint.product_uom, product.uom_id,
+                         'The orderpoint uom should be the same as the product uom')
         self.assertEqual(orderpoint.qty_to_order, 6000)
 
     def test_tax_po_line_reordering_rule_with_branch_company(self):
@@ -1391,7 +1406,8 @@ class TestReorderingRule(TransactionCase):
         po2.button_confirm()
         replenishment_info = self.env['stock.replenishment.info'].create({'orderpoint_id': orderpoint.id})
         supplier_info = replenishment_info.supplierinfo_ids
-        self.assertEqual(supplier_info.last_purchase_date, dt.today().date(), "The last_purhchase_date should be set to the most recent date_order from the purchase orders")
+        self.assertEqual(supplier_info.last_purchase_date, dt.today().date(),
+                         "The last_purhchase_date should be set to the most recent date_order from the purchase orders")
 
     def test_reordering_rule_multicurrency(self):
         """
@@ -1459,7 +1475,8 @@ class TestReorderingRule(TransactionCase):
             {'name': 'Company A'},
             {'name': 'Company B'},
         ])
-        warehouse_a, warehouse_b = self.env['stock.warehouse'].search([('company_id', 'in', [company_a.id, company_b.id])], limit=2).sorted('company_id')
+        warehouse_a, warehouse_b = self.env['stock.warehouse'].search(
+            [('company_id', 'in', [company_a.id, company_b.id])], limit=2).sorted('company_id')
         route_resupply_from_intercomp = self.env['stock.route'].create([
             {
                 'name': 'ressuply from intercomp',
@@ -1514,9 +1531,11 @@ class TestReorderingRule(TransactionCase):
         })
         orderpoint.action_replenish()
         # check that the a PO was created in company B for 10 units
-        self.assertRecordValues(self.env['purchase.order'].search([('company_id', '=', company_b.id), ('partner_id', '=', self.partner.id)], limit=1).order_line, [{
-            'product_id': product.id, 'product_uom_qty': 10,
-        }])
+        self.assertRecordValues(
+            self.env['purchase.order'].search([('company_id', '=', company_b.id), ('partner_id', '=', self.partner.id)],
+                                              limit=1).order_line, [{
+                'product_id': product.id, 'product_uom_qty': 10,
+            }])
 
     def test_backorder_mto_buy(self):
         """
@@ -1549,7 +1568,8 @@ class TestReorderingRule(TransactionCase):
         # Check the bakorder values
         purchase_order_line = self.env["purchase.order.line"].search([("product_id", "=", buy_product.id)])
         self.assertRecordValues(delivery.backorder_ids.move_ids, [{
-            'product_uom_qty': 70, 'procure_method': 'make_to_order', 'state': 'waiting', 'created_purchase_line_ids': purchase_order_line.ids,
+            'product_uom_qty': 70, 'procure_method': 'make_to_order', 'state': 'waiting',
+            'created_purchase_line_ids': purchase_order_line.ids,
         }])
         # Check that the backorder belongs to the same procurement group
         self.assertEqual(delivery.backorder_ids.group_id, delivery.group_id)

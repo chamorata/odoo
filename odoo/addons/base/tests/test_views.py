@@ -1,25 +1,22 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-import ast
-import json
 import logging
 import re
 import time
-
-from functools import partial
 from collections import defaultdict
+from functools import partial
 
 from lxml import etree
 from lxml.builder import E
 from psycopg2 import IntegrityError
 from psycopg2.extras import Json
 
+from odoo.addons.base.models import ir_ui_view
+from odoo.addons.base.tests.common import TransactionCaseWithUserDemo
 from odoo.exceptions import AccessError, ValidationError
 from odoo.tests import common, tagged
-from odoo.addons.base.tests.common import TransactionCaseWithUserDemo
 from odoo.tools import mute_logger, view_validation, safe_eval
 from odoo.tools.cache import get_cache_key_counter
-from odoo.addons.base.models import ir_ui_view
 
 _logger = logging.getLogger(__name__)
 
@@ -31,6 +28,7 @@ class ViewXMLID(common.TransactionCase):
         self.assertTrue(view)
         self.assertTrue(view.model_data_id)
         self.assertEqual(view.model_data_id.complete_name, 'base.view_company_form')
+
 
 class ViewCase(TransactionCaseWithUserDemo):
     def setUp(self):
@@ -192,9 +190,9 @@ class TestViewInheritance(ViewCase):
             element = E(view_type, string=name)
         else:
             element = E(view_type,
-                E.attribute(name, name='string'),
-                position='attributes'
-            )
+                        E.attribute(name, name='string'),
+                        position='attributes'
+                        )
         return etree.tostring(element, encoding='unicode')
 
     def makeView(self, name, parent=None, arch=None):
@@ -215,7 +213,7 @@ class TestViewInheritance(ViewCase):
             'name': name,
             'arch': arch or self.arch_for(name, parent=parent),
             'inherit_id': parent,
-            'priority': 5, # higher than default views
+            'priority': 5,  # higher than default views
         })
         self.view_ids[name] = view
         return view
@@ -381,6 +379,7 @@ class TestApplyInheritanceSpecs(ViewCase):
 
     The base architecture is altered in-place.
     """
+
     def setUp(self):
         super(TestApplyInheritanceSpecs, self).setUp()
         self.base_arch = E.form(
@@ -399,8 +398,8 @@ class TestApplyInheritanceSpecs(ViewCase):
 
     def test_replace_outer(self):
         spec = E.field(
-                E.field(name="replacement"),
-                name="target", position="replace")
+            E.field(name="replacement"),
+            name="target", position="replace")
 
         self.View.apply_inheritance_specs(self.base_arch, spec)
 
@@ -419,8 +418,8 @@ class TestApplyInheritanceSpecs(ViewCase):
 
     def test_insert_after(self):
         spec = E.field(
-                E.field(name="inserted"),
-                name="target", position="after")
+            E.field(name="inserted"),
+            name="target", position="after")
 
         self.View.apply_inheritance_specs(self.base_arch, spec)
 
@@ -434,8 +433,8 @@ class TestApplyInheritanceSpecs(ViewCase):
 
     def test_insert_before(self):
         spec = E.field(
-                E.field(name="inserted"),
-                name="target", position="before")
+            E.field(name="inserted"),
+            name="target", position="before")
 
         self.View.apply_inheritance_specs(self.base_arch, spec)
 
@@ -490,11 +489,11 @@ class TestApplyInheritanceSpecs(ViewCase):
 
     def test_unpack_data(self):
         spec = E.data(
-                E.field(E.field(name="inserted 0"), name="target"),
-                E.field(E.field(name="inserted 1"), name="target"),
-                E.field(E.field(name="inserted 2"), name="target"),
-                E.field(E.field(name="inserted 3"), name="target"),
-            )
+            E.field(E.field(name="inserted 0"), name="target"),
+            E.field(E.field(name="inserted 1"), name="target"),
+            E.field(E.field(name="inserted 2"), name="target"),
+            E.field(E.field(name="inserted 3"), name="target"),
+        )
 
         self.View.apply_inheritance_specs(self.base_arch, spec)
 
@@ -512,8 +511,8 @@ class TestApplyInheritanceSpecs(ViewCase):
     @mute_logger('odoo.addons.base.models.ir_ui_view')
     def test_invalid_position(self):
         spec = E.field(
-                E.field(name="whoops"),
-                name="target", position="serious_series")
+            E.field(name="whoops"),
+            name="target", position="serious_series")
 
         with self.assertRaises(ValueError):
             self.View.apply_inheritance_specs(self.base_arch, spec)
@@ -796,7 +795,7 @@ class TestNoModel(ViewCase):
             E.hr(),
             text_para,
             id="footer"),
-        {'class': "index"},)
+        {'class': "index"}, )
 
     def test_qweb_translation(self):
         """
@@ -1169,7 +1168,7 @@ class TestTemplating(ViewCase):
             """
         })
         self.View.create({  # Inherit from the parent view but actually target
-                            # the element added by the first child view
+            # the element added by the first child view
             'name': "Extension",
             'type': 'qweb',
             'inherit_id': view1.id,
@@ -1618,7 +1617,8 @@ class TestViews(ViewCase):
                 kw['type'] = self.cr.fetchone()[0]
             else:
                 kw['type'] = etree.fromstring(arch_db).tag
-            kw['arch_db'] = Json({'en_US': arch_db}) if self.env.lang in (None, 'en_US') else Json({'en_US': arch_db, self.env.lang: arch_db})
+            kw['arch_db'] = Json({'en_US': arch_db}) if self.env.lang in (None, 'en_US') else Json(
+                {'en_US': arch_db, self.env.lang: arch_db})
 
         keys = sorted(kw)
         fields = ','.join('"%s"' % (k.replace('"', r'\"'),) for k in keys)
@@ -1669,7 +1669,7 @@ class TestViews(ViewCase):
                         </list>
                     """,
         )
-        self.assertTrue(validate())     # single view
+        self.assertTrue(validate())  # single view
 
         # validation of a inherited view
         self._insert_view(
@@ -1683,7 +1683,7 @@ class TestViews(ViewCase):
                         </xpath>
                     """,
         )
-        self.assertTrue(validate())     # inherited view
+        self.assertTrue(validate())  # inherited view
 
         # validation of a second inherited view (depending on 1st)
         self._insert_view(
@@ -1697,7 +1697,7 @@ class TestViews(ViewCase):
                         </xpath>
                     """,
         )
-        self.assertTrue(validate())     # inherited view
+        self.assertTrue(validate())  # inherited view
 
     def test_view_inheritance(self):
         view1 = self.View.create({
@@ -1866,7 +1866,7 @@ class TestViews(ViewCase):
         })
 
         view = self.View.with_context(check_view_ids=[view2.id, view3.id]) \
-                        .get_view(view2.id, view_type='form')
+            .get_view(view2.id, view_type='form')
         self.assertEqual(
             etree.fromstring(
                 view['arch'],
@@ -2034,7 +2034,8 @@ class TestViews(ViewCase):
         self.assertValid(arch % ('', '0', '1'))
         # self.assertInvalid(arch % ('', '1', '0'))
         self.assertValid(arch % ('<field name="name"/>', '1', '0 if name else 1'))
-        self.assertInvalid(arch % ('<field name="name"/><field name="type"/>', "'tata' if name else 'tutu'", 'type'), 'Wrong domain formatting')
+        self.assertInvalid(arch % ('<field name="name"/><field name="type"/>', "'tata' if name else 'tutu'", 'type'),
+                           'Wrong domain formatting')
         view = self.assertValid(arch % ('', '1', '0 if name else 1'))
         view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
         self.assertTrue(etree.fromstring(view_arch).xpath('//field[@name="name"][@invisible][@readonly]'))
@@ -2061,8 +2062,8 @@ class TestViews(ViewCase):
                     <field name="inherit_id" domain="[('invalid_field', '=', 'res.users')]"/>
                 </form>
             """,
-            '''Unknown field "ir.ui.view.invalid_field" in domain of <field name="inherit_id"> ([('invalid_field', '=', 'res.users')])''',
-        )
+                           '''Unknown field "ir.ui.view.invalid_field" in domain of <field name="inherit_id"> ([('invalid_field', '=', 'res.users')])''',
+                           )
 
     def test_domain_field_searchable(self):
         arch = """
@@ -2227,7 +2228,8 @@ class TestViews(ViewCase):
 
         view = self.assertValid(arch % ' editable="bottom"')
         view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertTrue(etree.fromstring(view_arch).xpath('//field/list/field[@name="model"][@column_invisible][@readonly]'))
+        self.assertTrue(
+            etree.fromstring(view_arch).xpath('//field/list/field[@name="model"][@column_invisible][@readonly]'))
 
     def test_domain_on_readonly_field_in_view(self):
         field = self.env['ir.ui.view']._fields['inherit_id']
@@ -2335,7 +2337,8 @@ class TestViews(ViewCase):
 
         view = self.assertValid(arch % ('<field name="inherit_id"/>', '', 'view_access', 'inherit_id'))
         view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertTrue(etree.fromstring(view_arch).xpath('//searchpanel/field[@name="inherit_id"][@invisible][@readonly]'))
+        self.assertTrue(
+            etree.fromstring(view_arch).xpath('//searchpanel/field[@name="inherit_id"][@invisible][@readonly]'))
 
         view = self.assertValid(arch % ('', '<field name="inherit_id"/>', 'view_access', 'parent.arch_updated'))
         view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
@@ -2775,7 +2778,8 @@ class TestViews(ViewCase):
             if demo:
                 self.assertTrue(len(nodes) == 1, f"Field '{field}' should be added automatically")
             else:
-                self.assertFalse(nodes, f"Field '{field}' should be added automatically but was removed by access rigth")
+                self.assertFalse(nodes,
+                                 f"Field '{field}' should be added automatically but was removed by access rigth")
 
         # add missing field
         validate("""
@@ -2783,7 +2787,6 @@ class TestViews(ViewCase):
                     <field name="company_id" invisible="name != 'toto'"/>
                 </form>
             """, field='name')
-
 
         # add missing field with groups
         validate("""
@@ -2938,7 +2941,8 @@ class TestViews(ViewCase):
             '_check_xml on ir.ui.view is private and cannot be called from a button',
             name='button name is a private method',
         )
-        self.assertWarning(arch % 'postprocess_and_fields', name='button name is a method that requires extra arguments')
+        self.assertWarning(arch % 'postprocess_and_fields',
+                           name='button name is a method that requires extra arguments')
         arch = """
             <form>
                 <button type="action" name="%s"/>
@@ -2948,7 +2952,8 @@ class TestViews(ViewCase):
         self.assertInvalid(arch % 'base.random_xmlid', 'Invalid xmlid base.random_xmlid for button of type action')
         self.assertInvalid('<form><button type="action"/></form>', 'Button must have a name')
         self.assertInvalid('<form><button special="dummy"/></form>', "Invalid special 'dummy' in button")
-        self.assertInvalid(arch % 'base.partner_root', "base.partner_root is of type res.partner, expected a subclass of ir.actions.actions")
+        self.assertInvalid(arch % 'base.partner_root',
+                           "base.partner_root is of type res.partner, expected a subclass of ir.actions.actions")
 
     def test_tree(self):
         arch = """
@@ -2959,7 +2964,8 @@ class TestViews(ViewCase):
             </list>
         """
         self.assertValid(arch % '')
-        self.assertInvalid(arch % '<group/>', "List child can only have one of field, button, control, groupby, widget, header tag (not group)")
+        self.assertInvalid(arch % '<group/>',
+                           "List child can only have one of field, button, control, groupby, widget, header tag (not group)")
 
     def test_tree_groupby(self):
         arch = """
@@ -2971,7 +2977,8 @@ class TestViews(ViewCase):
             </list>
         """
         self.assertValid(arch % ('model_data_id'))
-        self.assertInvalid(arch % ('type'), "Field 'type' found in 'groupby' node can only be of type many2one, found selection")
+        self.assertInvalid(arch % ('type'),
+                           "Field 'type' found in 'groupby' node can only be of type many2one, found selection")
         self.assertInvalid(arch % ('dummy'), "Field 'dummy' found in 'groupby' node does not exist in model ir.ui.view")
 
     def test_tree_groupby_many2one(self):
@@ -3088,7 +3095,8 @@ class TestViews(ViewCase):
         )
         self.assertValid('<form><button icon="fa-warning"/>text</form>')
         self.assertValid('<form><span class="fa fa-warning"/>text</form>')
-        self.assertValid('<form><span class="fa fa-warning"/><label for="key" string="Some Text"/><field name="key"/></form>')
+        self.assertValid(
+            '<form><span class="fa fa-warning"/><label for="key" string="Some Text"/><field name="key"/></form>')
         self.assertValid('<form><span class="fa fa-warning"/><field name="key" string="Some Text"/></form>')
         self.assertValid('<form>text<span class="fa fa-warning"/></form>')
         self.assertValid('<form><span class="fa fa-warning">text</span></form>')
@@ -3114,11 +3122,16 @@ class TestViews(ViewCase):
         self.assertWarning('<form><ul class="dropdown-menu"></ul></form>')
 
     def test_valid_simili_progressbar(self):
-        self.assertValid('<form><div class="o_progressbar" role="progressbar" aria-valuenow="14" aria-valuemin="0" aria-valuemax="100">14%</div></form>')
-        self.assertWarning('<form><div class="o_progressbar" aria-valuenow="14" aria-valuemin="0" aria-valuemax="100">14%</div></form>')
-        self.assertWarning('<form><div class="o_progressbar" role="progressbar" aria-valuemin="0" aria-valuemax="100">14%</div></form>')
-        self.assertWarning('<form><div class="o_progressbar" role="progressbar" aria-valuenow="14" aria-valuemax="100">14%</div></form>')
-        self.assertWarning('<form><div class="o_progressbar" role="progressbar" aria-valuenow="14" aria-valuemin="0" >14%</div></form>')
+        self.assertValid(
+            '<form><div class="o_progressbar" role="progressbar" aria-valuenow="14" aria-valuemin="0" aria-valuemax="100">14%</div></form>')
+        self.assertWarning(
+            '<form><div class="o_progressbar" aria-valuenow="14" aria-valuemin="0" aria-valuemax="100">14%</div></form>')
+        self.assertWarning(
+            '<form><div class="o_progressbar" role="progressbar" aria-valuemin="0" aria-valuemax="100">14%</div></form>')
+        self.assertWarning(
+            '<form><div class="o_progressbar" role="progressbar" aria-valuenow="14" aria-valuemax="100">14%</div></form>')
+        self.assertWarning(
+            '<form><div class="o_progressbar" role="progressbar" aria-valuenow="14" aria-valuemin="0" >14%</div></form>')
 
     def test_valid_simili_tabpanel(self):
         self.assertValid('<form><div class="tab-pane" role="tabpanel"/></form>')
@@ -3222,14 +3235,16 @@ class TestViews(ViewCase):
         self.assertTrue(etree.fromstring(view_arch).xpath('//field[@name="name"][@invisible][@readonly]'))
 
     def test_graph_fields(self):
-        self.assertValid('<graph string="Graph"><field name="model" type="row"/><field name="inherit_id" type="measure"/></graph>')
+        self.assertValid(
+            '<graph string="Graph"><field name="model" type="row"/><field name="inherit_id" type="measure"/></graph>')
         self.assertInvalid(
             '<graph string="Graph"><label for="model"/><field name="model" type="row"/><field name="inherit_id" type="measure"/></graph>',
             'A <graph> can only contains <field> nodes, found a <label>'
         )
 
     def test_graph_attributes(self):
-        self.assertValid('<graph string="Graph" cumulated="1" ><field name="model" type="row"/><field name="inherit_id" type="measure"/></graph>')
+        self.assertValid(
+            '<graph string="Graph" cumulated="1" ><field name="model" type="row"/><field name="inherit_id" type="measure"/></graph>')
 
     def test_view_ref(self):
         view = self.assertValid(
@@ -3527,6 +3542,7 @@ class TestViewTranslations(common.TransactionCase):
 
         with self.assertRaises(ValidationError):
             view.write({'mode': 'extension'})
+
 
 class ViewModeField(ViewCase):
     """
@@ -4265,7 +4281,8 @@ class TestQWebRender(ViewCase):
                             "VALUES ('dummy_primary_ext', 'ir.ui.view', %s, 'base')" % view3.id)
 
         content1 = self.env['ir.qweb'].with_context(check_view_ids=[view1.id, view2.id, view3.id])._render('base.dummy')
-        content3 = self.env['ir.qweb'].with_context(check_view_ids=[view1.id, view2.id, view3.id])._render('base.dummy_primary_ext')
+        content3 = self.env['ir.qweb'].with_context(check_view_ids=[view1.id, view2.id, view3.id])._render(
+            'base.dummy_primary_ext')
 
         self.assertNotEqual(content1, content3)
 
@@ -4286,13 +4303,15 @@ class TestValidationTools(common.BaseCase):
             {'field'},
         )
         self.assertEqual(
-            view_validation.get_expression_field_names("(datetime.datetime.combine(context_today(), datetime.time(x,y,z)).to_utc()).strftime('%Y-%m-%d %H:%M:%S')"),
+            view_validation.get_expression_field_names(
+                "(datetime.datetime.combine(context_today(), datetime.time(x,y,z)).to_utc()).strftime('%Y-%m-%d %H:%M:%S')"),
             {'x', 'y', 'z'},
         )
         self.assertEqual(
             view_validation.get_expression_field_names("set(field).intersection([1, 2])"),
             {'field'},
         )
+
 
 class TestAccessRights(TransactionCaseWithUserDemo):
 
@@ -4309,6 +4328,7 @@ class TestAccessRights(TransactionCaseWithUserDemo):
         with self.assertRaises(AccessError):
             self.env['ir.ui.view'].get_view(view_type='form')
 
+
 @common.tagged('post_install', '-at_install', '-standard', 'migration')
 class TestAllViews(common.TransactionCase):
     def test_views(self):
@@ -4318,6 +4338,7 @@ class TestAllViews(common.TransactionCase):
                 _logger.info('checked %s/%s views', index, len(views))
             with self.subTest(name=view.name):
                 view._check_xml()
+
 
 @common.tagged('post_install', '-at_install', '-standard', 'render_all_views')
 class TestRenderAllViews(TransactionCaseWithUserDemo):
@@ -4340,7 +4361,7 @@ class TestRenderAllViews(TransactionCaseWithUserDemo):
                     elapsed += min(times)
 
         _logger.info('Rendered %d views as %s using (best of 5) %ss',
-            count, self.env.user.name, elapsed)
+                     count, self.env.user.name, elapsed)
 
 
 @common.tagged('post_install', '-at_install')
@@ -4780,11 +4801,15 @@ class TestInvisibleField(TransactionCaseWithUserDemo):
             'worksheet',
         )
 
-        modules_without_error = set(self.env['ir.module.module'].search([('state', '=', 'intalled'), ('name', 'in', only_log_modules)]).mapped('name'))
+        modules_without_error = set(
+            self.env['ir.module.module'].search([('state', '=', 'intalled'), ('name', 'in', only_log_modules)]).mapped(
+                'name'))
         module_log_views = defaultdict(list)
-        module_error_views = defaultdict(lambda: defaultdict(list)) 
+        module_error_views = defaultdict(lambda: defaultdict(list))
         uncommented_regexp = r'''(<field [^>]*invisible=['"](True|1)['"][^>]*>)[\s\t\n ]*(.*)'''
-        views = self.env['ir.ui.view'].search([('type', 'in', ('list', 'form')), '|', ('arch_db', 'like', 'invisible=_True_'), ('arch_db', 'like', 'invisible=_1_')])
+        views = self.env['ir.ui.view'].search(
+            [('type', 'in', ('list', 'form')), '|', ('arch_db', 'like', 'invisible=_True_'),
+             ('arch_db', 'like', 'invisible=_1_')])
         for view in views.filtered('model_data_id'):
             module_name = view.model_data_id.module
             view_name = view.model_data_id.name
@@ -4813,7 +4838,9 @@ class TestInvisibleField(TransactionCaseWithUserDemo):
             _logger.error("%s\n%s", msg, "\n".join(error_lines))
 
         if modules_without_error:
-            _logger.error('Please remove this module names from the white list of this current test: %r', sorted(modules_without_error))
+            _logger.error('Please remove this module names from the white list of this current test: %r',
+                          sorted(modules_without_error))
+
 
 class CompRegexTest(common.TransactionCase):
     def test_comp_regex(self):
@@ -4864,50 +4891,50 @@ class ViewModifiers(ViewCase):
         _test_modifiers('<field name="a" required="0"/>', set())
         # TODO: Order is not guaranteed
         _test_modifiers('<field name="a" invisible="1" required="1"/>',
-            set(),
-        )
+                        set(),
+                        )
         _test_modifiers('<field name="a" invisible="1" required="0"/>',
-            set(),
-        )
+                        set(),
+                        )
         _test_modifiers('<field name="a" invisible="0" required="1"/>',
-            set(),
-        )
+                        set(),
+                        )
         _test_modifiers("""<field name="a" invisible="b == 'c'"/>""",
-            {"b"},
-        )
+                        {"b"},
+                        )
         _test_modifiers("""<field name="a" invisible="b == 'c'"/>""",
-            {"b"},
-        )
+                        {"b"},
+                        )
         _test_modifiers("""<field name="a" invisible="b == 'c'"/>""",
-            {"b"},
-        )
+                        {"b"},
+                        )
         _test_modifiers("""<field name="a" invisible="(b == 'c' or e == 'f')"/>""",
-            {"b", "e"},
-        )
+                        {"b", "e"},
+                        )
         _test_modifiers("""<field name="a" invisible="b == 'c'"/>""",
-            {"b"},
-        )
+                        {"b"},
+                        )
         _test_modifiers("""<field name="a" invisible="user_id == uid"/>""",
-            {"user_id"},
-        )
+                        {"user_id"},
+                        )
         _test_modifiers("""<field name="a" invisible="(user_id == other_field)"/>""",
-            {"user_id", "other_field"},
-        )
+                        {"user_id", "other_field"},
+                        )
         _test_modifiers("""<field name="a" invisible="a == parent.b"/>""",
-            {"a", "parent.b"},
-        )
+                        {"a", "parent.b"},
+                        )
         _test_modifiers("""<field name="a" invisible="a == context.get('b')"/>""",
-            {"a"},
-        )
+                        {"a"},
+                        )
         _test_modifiers("""<field name="a" invisible="a == context['b']"/>""",
-            {"a"},
-        )
+                        {"a"},
+                        )
         _test_modifiers("""<field name="a" invisible="company_id == allowed_company_ids[0]"/>""",
-            {"company_id"},
-        )
+                        {"company_id"},
+                        )
         _test_modifiers("""<field name="a" invisible="company_id == (field_1 or False)"/>""",
-            {"company_id", "field_1"},
-        )
+                        {"company_id", "field_1"},
+                        )
 
         # fields in a list view
         tree = etree.fromstring('''

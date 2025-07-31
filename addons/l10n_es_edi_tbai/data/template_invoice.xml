@@ -71,7 +71,8 @@
                     <Direccion t-out="recipient['partner_address']"/>
                 </IDDestinatario>
             </Destinatarios>
-            <VariosDestinatarios t-if="is_emission">N</VariosDestinatarios> <!-- Odoo does not support multi-recipient invoices (TBAI does)-->
+            <VariosDestinatarios t-if="is_emission">N
+            </VariosDestinatarios> <!-- Odoo does not support multi-recipient invoices (TBAI does)-->
             <EmitidaPorTercerosODestinatario t-if="is_emission">N</EmitidaPorTercerosODestinatario>
         </template>
 
@@ -103,7 +104,8 @@
                             <t t-set="seq_and_num" t-value="refunded_doc._get_tbai_sequence_and_number()"/>
                             <SerieFactura t-out="seq_and_num[0]"/>
                             <NumFactura t-out="seq_and_num[1]"/>
-                            <FechaExpedicionFactura t-out="format_date(refunded_doc.xml_attachment_id and refunded_doc._get_tbai_signature_and_date()[1] or refunded_doc_invoice_date)"/>
+                            <FechaExpedicionFactura
+                                    t-out="format_date(refunded_doc.xml_attachment_id and refunded_doc._get_tbai_signature_and_date()[1] or refunded_doc_invoice_date)"/>
                         </IDFacturaRectificadaSustituida>
                     </FacturasRectificadasSustituidas>
                 </t>
@@ -168,8 +170,10 @@
                                 <BaseImponible t-out="format_float(detalle['BaseImponible'])"/>
                                 <TipoImpositivo t-out="format_float(detalle['TipoImpositivo'])"/>
                                 <CuotaImpuesto t-out="format_float(detalle['CuotaRepercutida'])"/>
-                                <TipoRecargoEquivalencia t-if="detalle.get('TipoRecargoEquivalencia')" t-out="format_float(detalle['TipoRecargoEquivalencia'])"/>
-                                <CuotaRecargoEquivalencia t-if="detalle.get('CuotaRecargoEquivalencia')" t-out="format_float(detalle['CuotaRecargoEquivalencia'])"/>
+                                <TipoRecargoEquivalencia t-if="detalle.get('TipoRecargoEquivalencia')"
+                                                         t-out="format_float(detalle['TipoRecargoEquivalencia'])"/>
+                                <CuotaRecargoEquivalencia t-if="detalle.get('CuotaRecargoEquivalencia')"
+                                                          t-out="format_float(detalle['CuotaRecargoEquivalencia'])"/>
                             </DetalleIVA>
                         </DesgloseIVA>
                     </DetalleNoExenta>
@@ -202,14 +206,16 @@
                 <ds:SignedInfo>
                     <ds:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
                     <ds:SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/>
-                    <ds:Reference t-att-Id="dsig['reference_uri']" Type="http://www.w3.org/2000/09/xmldsig#Object" URI="">
+                    <ds:Reference t-att-Id="dsig['reference_uri']" Type="http://www.w3.org/2000/09/xmldsig#Object"
+                                  URI="">
                         <ds:Transforms>
                             <ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
                         </ds:Transforms>
                         <ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
                         <ds:DigestValue></ds:DigestValue>
                     </ds:Reference>
-                    <ds:Reference Type="http://uri.etsi.org/01903#SignedProperties" t-attf-URI="##{dsig['sigproperties_id']}">
+                    <ds:Reference Type="http://uri.etsi.org/01903#SignedProperties"
+                                  t-attf-URI="##{dsig['sigproperties_id']}">
                         <ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
                         <ds:DigestValue></ds:DigestValue>
                     </ds:Reference>
@@ -231,7 +237,8 @@
                     </ds:KeyValue>
                 </ds:KeyInfo>
                 <ds:Object>
-                    <xades:QualifyingProperties xmlns:xades="http://uri.etsi.org/01903/v1.3.2#" t-attf-Target="##{dsig['signature_id']}">
+                    <xades:QualifyingProperties xmlns:xades="http://uri.etsi.org/01903/v1.3.2#"
+                                                t-attf-Target="##{dsig['signature_id']}">
                         <xades:SignedProperties t-att-Id="dsig['sigproperties_id']">
                             <xades:SignedSignatureProperties>
                                 <xades:SigningTime t-out="dsig['iso_now']"/>

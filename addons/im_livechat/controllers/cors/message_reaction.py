@@ -1,8 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.http import route
-from odoo.addons.mail.controllers.message_reaction import MessageReactionController
 from odoo.addons.im_livechat.tools.misc import force_guest_env
+from odoo.addons.mail.controllers.message_reaction import MessageReactionController
+
+from odoo.http import route
 
 
 class LivechatMessageReactionController(MessageReactionController):

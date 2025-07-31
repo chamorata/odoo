@@ -35,7 +35,7 @@ In simple words does Odoo became CMS+ERP platform?</p>]]></field>
     <li>Step 3. Now go back to the Automation Rule you created and go to the Rule tab next to the conditions tab. Click Add and add the server action you created . In this case Fleet Contract Expiration Warning. Then Save.</li>
     <li>Step 4. To test, set a contract to expire tomorrow under one of your fleets vehicles. Then Save it.</li>
     <li>Step 5. Go to Scheduled Actions.. Set interval number to 1. Interval Unit to Minutes. Then Set the Next Execution date to 2 minutes from now. If your SMTP is configured correctly you will start to get a mail every minute with the reminder.</li></ul>]]></field>
-            <field name="parent_id" ref="question_0" />
+            <field name="parent_id" ref="question_0"/>
         </record>
         <record id="answer_1" model="forum.post">
             <field name="create_uid" ref="base.user_admin"/>

@@ -5,8 +5,8 @@
             <field name="model">hr.departure.reason</field>
             <field name="arch" type="xml">
                 <list editable="bottom">
-                    <field name="sequence" widget="handle" />
-                    <field name="name" />
+                    <field name="sequence" widget="handle"/>
+                    <field name="name"/>
                 </list>
             </field>
         </record>
@@ -17,8 +17,8 @@
                 <form>
                     <group>
                         <group>
-                            <field name="sequence" />
-                            <field name="name" />
+                            <field name="sequence"/>
+                            <field name="name"/>
                         </group>
                     </group>
                 </form>

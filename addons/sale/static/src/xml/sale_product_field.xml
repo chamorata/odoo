@@ -7,13 +7,13 @@
         <xpath expr="//button[@t-if='hasExternalButton']" position="before">
             <t t-if="hasConfigurationButton">
                 <button
-                    type="button"
-                    class="btn btn-secondary fa fa-pencil px-2"
-                    tabindex="-1"
-                    draggable="false"
-                    t-att-aria-label="configurationButtonHelp"
-                    t-att-data-tooltip="configurationButtonHelp"
-                    t-on-click="onEditConfiguration"/>
+                        type="button"
+                        class="btn btn-secondary fa fa-pencil px-2"
+                        tabindex="-1"
+                        draggable="false"
+                        t-att-aria-label="configurationButtonHelp"
+                        t-att-data-tooltip="configurationButtonHelp"
+                        t-on-click="onEditConfiguration"/>
             </t>
         </xpath>
         <!-- Show the product quantity next to the product name for combo lines. -->

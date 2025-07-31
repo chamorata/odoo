@@ -2,8 +2,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import _, api, Command, fields, models
-from odoo.osv import expression
 from odoo.exceptions import ValidationError
+from odoo.osv import expression
 
 
 class StockPickingType(models.Model):
@@ -14,16 +14,23 @@ class StockPickingType(models.Model):
     auto_batch = fields.Boolean('Automatic Batches',
                                 help="Automatically put pickings into batches as they are confirmed when possible.")
     batch_group_by_partner = fields.Boolean('Contact', help="Automatically group batches by contacts.")
-    batch_group_by_destination = fields.Boolean('Destination Country', help="Automatically group batches by destination country.")
+    batch_group_by_destination = fields.Boolean('Destination Country',
+                                                help="Automatically group batches by destination country.")
     batch_group_by_src_loc = fields.Boolean('Group by Source Location',
                                             help="Automatically group batches by their source location.")
     batch_group_by_dest_loc = fields.Boolean('Group by Destination Location',
                                              help="Automatically group batches by their destination location.")
-    wave_group_by_product = fields.Boolean('Product', help="Split transfers by product then group transfers that have the same product.")
-    wave_group_by_category = fields.Boolean('Product Category', help="Split transfers by product category, then group transfers that have the same product category.")
-    wave_category_ids = fields.Many2many('product.category', string='Wave Product Categories', help="Categories to consider when grouping waves.")
-    wave_group_by_location = fields.Boolean('Location', help="Split transfers by defined locations, then group transfers with the same location.")
-    wave_location_ids = fields.Many2many('stock.location', string='Wave Locations', help="Locations to consider when grouping waves.", domain="[('usage', '=', 'internal')]")
+    wave_group_by_product = fields.Boolean('Product',
+                                           help="Split transfers by product then group transfers that have the same product.")
+    wave_group_by_category = fields.Boolean('Product Category',
+                                            help="Split transfers by product category, then group transfers that have the same product category.")
+    wave_category_ids = fields.Many2many('product.category', string='Wave Product Categories',
+                                         help="Categories to consider when grouping waves.")
+    wave_group_by_location = fields.Boolean('Location',
+                                            help="Split transfers by defined locations, then group transfers with the same location.")
+    wave_location_ids = fields.Many2many('stock.location', string='Wave Locations',
+                                         help="Locations to consider when grouping waves.",
+                                         domain="[('usage', '=', 'internal')]")
     batch_max_lines = fields.Integer("Maximum lines",
                                      help="A transfer will not be automatically added to batches that will exceed this number of lines if the transfer is added to it.\n"
                                           "Leave this value as '0' if no line limit.")
@@ -63,7 +70,8 @@ class StockPickingType(models.Model):
 
     @api.model
     def _get_batch_group_by_keys(self):
-        return ['batch_group_by_partner', 'batch_group_by_destination', 'batch_group_by_src_loc', 'batch_group_by_dest_loc']
+        return ['batch_group_by_partner', 'batch_group_by_destination', 'batch_group_by_src_loc',
+                'batch_group_by_dest_loc']
 
     @api.model
     def _get_wave_group_by_keys(self):
@@ -80,7 +88,8 @@ class StockPickingType(models.Model):
             if not picking_type.auto_batch:
                 continue
             if not any(picking_type[key] for key in group_by_keys):
-                raise ValidationError(_("If the Automatic Batches feature is enabled, at least one 'Group by' option must be selected."))
+                raise ValidationError(
+                    _("If the Automatic Batches feature is enabled, at least one 'Group by' option must be selected."))
 
 
 class StockPicking(models.Model):
@@ -175,7 +184,8 @@ class StockPicking(models.Model):
         pickings_to_detach = self.env['stock.picking'].browse(self.env.context.get('pickings_to_detach'))
         for picking in self:
             # Avoid inconsistencies in states of the same batch when validating a single picking in a batch.
-            if picking.batch_id and picking.state != 'done' and any(p not in self for p in picking.batch_id.picking_ids - pickings_to_detach):
+            if picking.batch_id and picking.state != 'done' and any(
+                    p not in self for p in picking.batch_id.picking_ids - pickings_to_detach):
                 picking.batch_id = None
         return super()._create_backorder(backorder_moves)
 
@@ -187,7 +197,8 @@ class StockPicking(models.Model):
         return res
 
     def _should_show_transfers(self):
-        if len(self.batch_id) == 1 and len(self) == (len(self.batch_id.picking_ids) - len(self.env.context.get('pickings_to_detach', []))):
+        if len(self.batch_id) == 1 and len(self) == (
+                len(self.batch_id.picking_ids) - len(self.env.context.get('pickings_to_detach', []))):
             return False
         return super()._should_show_transfers()
 
@@ -273,7 +284,8 @@ class StockPicking(models.Model):
         if self.picking_type_id.batch_group_by_partner:
             domain = expression.AND([domain, [('picking_ids.partner_id', '=', self.partner_id.id)]])
         if self.picking_type_id.batch_group_by_destination:
-            domain = expression.AND([domain, [('picking_ids.partner_id.country_id', '=', self.partner_id.country_id.id)]])
+            domain = expression.AND(
+                [domain, [('picking_ids.partner_id.country_id', '=', self.partner_id.country_id.id)]])
         if self.picking_type_id.batch_group_by_src_loc:
             domain = expression.AND([domain, [('picking_ids.location_id', '=', self.location_id.id)]])
         if self.picking_type_id.batch_group_by_dest_loc:
@@ -297,7 +309,8 @@ class StockPicking(models.Model):
 
     def _package_move_lines(self, batch_pack=False, move_lines_to_pack=False):
         if batch_pack:
-            return super(StockPicking, self.batch_id.picking_ids if self.batch_id else self)._package_move_lines(batch_pack, move_lines_to_pack)
+            return super(StockPicking, self.batch_id.picking_ids if self.batch_id else self)._package_move_lines(
+                batch_pack, move_lines_to_pack)
         return super()._package_move_lines(batch_pack, move_lines_to_pack)
 
     def assign_batch_user(self, user_id):

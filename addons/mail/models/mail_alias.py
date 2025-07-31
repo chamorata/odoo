@@ -4,6 +4,7 @@
 import ast
 import re
 from collections import defaultdict
+
 from markupsafe import Markup
 
 from odoo import _, api, fields, models
@@ -51,9 +52,9 @@ class Alias(models.Model):
                                           "corresponds. Any incoming email that does not reply to an "
                                           "existing record will cause the creation of a new record "
                                           "of this model (e.g. a Project Task)",
-                                      # hack to only allow selecting mail_thread models (we might
-                                      # (have a few false positives, though)
-                                      domain="[('field_id.name', '=', 'message_ids')]")
+                                     # hack to only allow selecting mail_thread models (we might
+                                     # (have a few false positives, though)
+                                     domain="[('field_id.name', '=', 'message_ids')]")
     alias_defaults = fields.Text('Default Values', required=True, default='{}',
                                  help="A Python dictionary that will be evaluated to provide "
                                       "default values when creating new records for this alias.")
@@ -118,10 +119,13 @@ class Alias(models.Model):
         # helpers to find owner / target models
         def _owner_model(alias):
             return alias.alias_parent_model_id.model
+
         def _owner_env(alias):
             return self.env[_owner_model(alias)]
+
         def _target_model(alias):
             return alias.alias_model_id.model
+
         def _target_env(alias):
             return self.env[_target_model(alias)]
 
@@ -144,6 +148,7 @@ class Alias(models.Model):
                     recs_by_model[_owner_model(alias)]
                 ).browse(alias.alias_parent_thread_id)
             return None
+
         def _fetch_target(alias):
             if alias.alias_force_thread_id in recs_by_model[alias.alias_model_id.model]:
                 return _target_env(alias).with_prefetch(
@@ -330,7 +335,8 @@ class Alias(models.Model):
         if not existing:
             return
         if existing.alias_parent_model_id and existing.alias_parent_thread_id:
-            parent_name = self.env[existing.alias_parent_model_id.model].sudo().browse(existing.alias_parent_thread_id).display_name
+            parent_name = self.env[existing.alias_parent_model_id.model].sudo().browse(
+                existing.alias_parent_thread_id).display_name
             msg_begin = _(
                 'Alias %(matching_name)s (%(current_id)s) is already linked with %(alias_model_name)s (%(matching_id)s) and used by the %(parent_name)s %(parent_model_name)s.',
                 alias_model_name=existing.alias_model_id.name,
@@ -471,10 +477,10 @@ class Alias(models.Model):
                  Please make sure you are using the correct address or contact us at %(default_email)s instead."""
               )
         ) % {
-            'alias_display_name': self.display_name,
-            'contact_description': contact_description,
-            'default_email': default_email,
-        }
+                      'alias_display_name': self.display_name,
+                      'contact_description': contact_description,
+                      'default_email': default_email,
+                  }
         return Markup('<p>%(header)s,<br /><br />%(content)s<br /><br />%(regards)s</p>') % {
             'content': content,
             'header': _('Dear Sender'),
@@ -499,9 +505,9 @@ class Alias(models.Model):
 Please try again later or contact %(company_name)s instead."""
               )
         ) % {
-            'alias_display_name': self.display_name,
-            'company_name': self.env.company.name,
-        }
+                      'alias_display_name': self.display_name,
+                      'company_name': self.env.company.name,
+                  }
         return self.env['ir.qweb']._render('mail.mail_bounce_alias_security', {
             'body': Markup('<p>%(header)s,<br /><br />%(content)s<br /><br />%(regards)s</p>') % {
                 'content': content,

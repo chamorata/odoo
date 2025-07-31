@@ -1,4 +1,5 @@
 import math
+
 from num2words import num2words
 
 from odoo import api, models
@@ -49,9 +50,11 @@ class AccountEdiXmlUblTr(models.AbstractModel):
         if vals['vals'].get('buyer_reference'):
             del vals['vals']['buyer_reference']
 
-        vals['vals']['note_vals'].append({'note': self._l10n_tr_get_amount_integer_partn_text_note(invoice.amount_residual_signed, self.env.ref('base.TRY')), 'note_attrs': {}})
+        vals['vals']['note_vals'].append({'note': self._l10n_tr_get_amount_integer_partn_text_note(
+            invoice.amount_residual_signed, self.env.ref('base.TRY')), 'note_attrs': {}})
         if vals['invoice'].currency_id.name != 'TRY':
-            vals['vals']['note_vals'].append({'note': self._l10n_tr_get_amount_integer_partn_text_note(invoice.amount_residual, vals['invoice'].currency_id), 'note_attrs': {}})
+            vals['vals']['note_vals'].append({'note': self._l10n_tr_get_amount_integer_partn_text_note(
+                invoice.amount_residual, vals['invoice'].currency_id), 'note_attrs': {}})
         return vals
 
     @api.model
@@ -168,9 +171,11 @@ class AccountEdiXmlUblTr(models.AbstractModel):
 
         return tax_totals_vals
 
-    def _get_invoice_monetary_total_vals(self, invoice, taxes_vals, line_extension_amount, allowance_total_amount, charge_total_amount):
+    def _get_invoice_monetary_total_vals(self, invoice, taxes_vals, line_extension_amount, allowance_total_amount,
+                                         charge_total_amount):
         # EXTENDS account.edi.xml.ubl_20
-        vals = super()._get_invoice_monetary_total_vals(invoice, taxes_vals, line_extension_amount, allowance_total_amount, charge_total_amount)
+        vals = super()._get_invoice_monetary_total_vals(invoice, taxes_vals, line_extension_amount,
+                                                        allowance_total_amount, charge_total_amount)
         # allowance_total_amount needs to have a value even if 0.0 otherwise it's blank in the Nilvera PDF.
         vals['allowance_total_amount'] = allowance_total_amount
         if invoice.currency_id.is_zero(vals.get('prepaid_amount', 1)):
@@ -182,7 +187,8 @@ class AccountEdiXmlUblTr(models.AbstractModel):
         if invoice.invoice_line_ids._fields.get('deferred_start_date'):
             # Returns the start and end date of first invoice line since it is required that all lines must have
             # the same start and end date.
-            line_ids = invoice.invoice_line_ids.filtered(lambda line: line.display_type == 'product' and line.deferred_start_date)
+            line_ids = invoice.invoice_line_ids.filtered(
+                lambda line: line.display_type == 'product' and line.deferred_start_date)
             if line_ids:
                 return [
                     {
@@ -237,7 +243,9 @@ class AccountEdiXmlUblTr(models.AbstractModel):
             return [{
                 'source_currency_code': invoice.currency_id.name.upper(),
                 'target_currency_code': invoice.company_id.currency_id.name.upper(),
-                'calculation_rate': round(invoice.currency_id._get_conversion_rate(invoice.currency_id, invoice.company_id.currency_id, invoice.company_id, invoice.invoice_date), 6),
+                'calculation_rate': round(
+                    invoice.currency_id._get_conversion_rate(invoice.currency_id, invoice.company_id.currency_id,
+                                                             invoice.company_id, invoice.invoice_date), 6),
                 'date': invoice.invoice_date,
             }]
         return []
@@ -250,7 +258,9 @@ class AccountEdiXmlUblTr(models.AbstractModel):
         # EXTENDS account.edi.xml.ubl_20
         partner_vals = super()._import_retrieve_partner_vals(tree, role)
         partner_vals.update({
-            'vat': self._find_value(f'.//cac:Accounting{role}Party/cac:Party//cac:PartyIdentification//cbc:ID[string-length(text()) > 5]', tree),
+            'vat': self._find_value(
+                f'.//cac:Accounting{role}Party/cac:Party//cac:PartyIdentification//cbc:ID[string-length(text()) > 5]',
+                tree),
         })
         return partner_vals
 

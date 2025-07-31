@@ -1,6 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo import models
 from odoo.addons.account.models.chart_template import template
+
+from odoo import models
 
 
 class AccountChartTemplate(models.AbstractModel):
@@ -57,5 +58,6 @@ class AccountChartTemplate(models.AbstractModel):
     def _post_load_data(self, template_code, company, template_data):
         super()._post_load_data(template_code, company, template_data)
         # Setup default Income/Expense Accounts on Sale/Purchase journals
-        if (purchase_journal := self.ref("purchase", raise_if_not_found=False)) and (expense_account_ref := template_data.get('journal_account_expense_categ_id')):
+        if (purchase_journal := self.ref("purchase", raise_if_not_found=False)) and (
+        expense_account_ref := template_data.get('journal_account_expense_categ_id')):
             purchase_journal.default_account_id = self.ref(expense_account_ref, raise_if_not_found=False)

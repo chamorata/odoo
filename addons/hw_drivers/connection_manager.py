@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from datetime import datetime, timedelta
 import logging
-import requests
-from threading import Thread
 import time
-import urllib3
+from datetime import datetime, timedelta
+from threading import Thread
 
+import requests
+import urllib3
 from odoo.addons.hw_drivers.main import iot_devices, manager
 from odoo.addons.hw_drivers.tools import helpers
 

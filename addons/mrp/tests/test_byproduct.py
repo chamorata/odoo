@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.exceptions import ValidationError
 from odoo.fields import Command
 from odoo.tests import Form
 from odoo.tests import common
-from odoo.exceptions import ValidationError
 
 
 class TestMrpByProduct(common.TransactionCase):
@@ -17,6 +17,7 @@ class TestMrpByProduct(common.TransactionCase):
         route_manufacture = cls.warehouse.manufacture_pull_id.route_id.id
         route_mto = cls.warehouse.mto_pull_id.route_id.id
         cls.uom_unit_id = cls.env.ref('uom.product_uom_unit').id
+
         def create_product(name, route_ids=[]):
             return cls.env['product.product'].create({
                 'name': name,
@@ -33,9 +34,11 @@ class TestMrpByProduct(common.TransactionCase):
             'product_qty': 1.0,
             'type': 'normal',
             'product_uom_id': cls.uom_unit_id,
-            'bom_line_ids': [(0, 0, {'product_id': cls.product_c_id, 'product_uom_id': cls.uom_unit_id, 'product_qty': 2})],
-            'byproduct_ids': [(0, 0, {'product_id': cls.product_b.id, 'product_uom_id': cls.uom_unit_id, 'product_qty': 1})]
-            })
+            'bom_line_ids': [
+                (0, 0, {'product_id': cls.product_c_id, 'product_uom_id': cls.uom_unit_id, 'product_qty': 2})],
+            'byproduct_ids': [
+                (0, 0, {'product_id': cls.product_b.id, 'product_uom_id': cls.uom_unit_id, 'product_qty': 1})]
+        })
         cls.produced_serial = cls.env['product.product'].create({
             'name': 'Produced Serial',
             'is_storable': True,
@@ -59,8 +62,9 @@ class TestMrpByProduct(common.TransactionCase):
             'product_qty': 1.0,
             'type': 'normal',
             'product_uom_id': self.uom_unit_id,
-            'bom_line_ids': [(0, 0, {'product_id': self.product_c_id, 'product_uom_id': self.uom_unit_id, 'product_qty': 2})]
-            })
+            'bom_line_ids': [
+                (0, 0, {'product_id': self.product_c_id, 'product_uom_id': self.uom_unit_id, 'product_qty': 2})]
+        })
 
         # Create production order for product A
         # -------------------------------------
@@ -109,8 +113,9 @@ class TestMrpByProduct(common.TransactionCase):
             'product_qty': 1.0,
             'type': 'normal',
             'product_uom_id': self.uom_unit_id,
-            'bom_line_ids': [(0, 0, {'product_id': self.product_c_id, 'product_uom_id': self.uom_unit_id, 'product_qty': 2})]
-            })
+            'bom_line_ids': [
+                (0, 0, {'product_id': self.product_c_id, 'product_uom_id': self.uom_unit_id, 'product_qty': 2})]
+        })
         mnf_product_a_form = Form(self.env['mrp.production'])
         mnf_product_a_form.product_id = self.product_a
         mnf_product_a_form.bom_id = bom_product_a
@@ -136,16 +141,18 @@ class TestMrpByProduct(common.TransactionCase):
             'product_qty': 1.0,
             'type': 'normal',
             'product_uom_id': self.uom_unit_id,
-            'bom_line_ids': [(0, 0, {'product_id': self.product_b.id, 'product_uom_id': self.uom_unit_id, 'product_qty': 2})],
-            })
+            'bom_line_ids': [
+                (0, 0, {'product_id': self.product_b.id, 'product_uom_id': self.uom_unit_id, 'product_qty': 2})],
+        })
 
         bom_product_a_2 = self.MrpBom.create({
             'product_tmpl_id': self.product_b.product_tmpl_id.id,
             'product_qty': 1.0,
             'type': 'normal',
             'product_uom_id': self.uom_unit_id,
-            'bom_line_ids': [(0, 0, {'product_id': self.product_c_id, 'product_uom_id': self.uom_unit_id, 'product_qty': 2})],
-            })
+            'bom_line_ids': [
+                (0, 0, {'product_id': self.product_c_id, 'product_uom_id': self.uom_unit_id, 'product_qty': 2})],
+        })
         # Create production order for product A
         # -------------------------------------
 
@@ -358,11 +365,11 @@ class TestMrpByProduct(common.TransactionCase):
 
         # Create product
         self.product_d = self.env['product.product'].create({
-                'name': 'Product D',
-                'is_storable': True})
+            'name': 'Product D',
+            'is_storable': True})
         self.product_e = self.env['product.product'].create({
-                'name': 'Product E',
-                'is_storable': True})
+            'name': 'Product E',
+            'is_storable': True})
 
         # Create byproduct
         byproduct_1 = self.env['stock.move'].create({
@@ -372,7 +379,7 @@ class TestMrpByProduct(common.TransactionCase):
             'production_id': mo.id,
             'location_id': self.ref('stock.stock_location_stock'),
             'location_dest_id': self.ref('stock.stock_location_output'),
-            })
+        })
         byproduct_2 = self.env['stock.move'].create({
             'name': 'By Product 2',
             'product_id': self.product_e.id,
@@ -380,7 +387,7 @@ class TestMrpByProduct(common.TransactionCase):
             'production_id': mo.id,
             'location_id': self.ref('stock.stock_location_stock'),
             'location_dest_id': self.ref('stock.stock_location_output'),
-            })
+        })
 
         # Update byproduct has cost share > 100%
         with self.assertRaises(ValidationError), self.cr.savepoint():
@@ -497,7 +504,8 @@ class TestMrpByProduct(common.TransactionCase):
         self.assertEqual(mo.state, 'done')
         picking = mo.picking_ids.filtered(lambda p: p.location_dest_id == self.warehouse.lot_stock_id)
         self.assertEqual(picking.state, 'assigned')
-        byproduct_move = picking.move_ids.filtered(lambda m: m.product_id == self.bom_byproduct.byproduct_ids.product_id)
+        byproduct_move = picking.move_ids.filtered(
+            lambda m: m.product_id == self.bom_byproduct.byproduct_ids.product_id)
         self.assertEqual(byproduct_move.product_qty, 1.0)
 
     def test_byproducts_bom_document(self):

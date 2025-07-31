@@ -2,8 +2,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import logging
-from threading import Thread
 import time
+from threading import Thread
 
 from odoo.addons.hw_drivers.main import drivers, interfaces, iot_devices
 
@@ -25,7 +25,8 @@ class Interface(Thread, metaclass=InterfaceMetaClass):
 
     def __init__(self):
         super(Interface, self).__init__()
-        self.drivers = sorted([d for d in drivers if d.connection_type == self.connection_type], key=lambda d: d.priority, reverse=True)
+        self.drivers = sorted([d for d in drivers if d.connection_type == self.connection_type],
+                              key=lambda d: d.priority, reverse=True)
 
     def run(self):
         while self.connection_type and self.drivers:

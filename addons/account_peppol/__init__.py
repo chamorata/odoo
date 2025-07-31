@@ -2,8 +2,8 @@
 
 from . import controllers
 from . import models
-from . import wizard
 from . import tools
+from . import wizard
 
 
 def _account_peppol_post_init(env):

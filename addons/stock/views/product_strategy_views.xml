@@ -41,7 +41,8 @@
                        readonly="sublocation == 'no'"
                        placeholder="Any Category"
                        optional="show"/>
-                <field name="company_id" groups="stock.group_stock_multi_locations" force_save="1" readonly="context.get('fixed_location', False)" options="{'no_create': True}" optional="show"/>
+                <field name="company_id" groups="stock.group_stock_multi_locations" force_save="1"
+                       readonly="context.get('fixed_location', False)" options="{'no_create': True}" optional="show"/>
             </list>
         </field>
     </record>
@@ -55,7 +56,7 @@
                     <field name="name"/>
                     <field name="method"/>
                 </group>
-           </form>
+            </form>
         </field>
     </record>
 
@@ -67,8 +68,10 @@
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 No putaway rule found. Let's create one!
-            </p><p>
-                Create new putaway rules to dispatch automatically specific products to their appropriate destination location upon receptions.
+            </p>
+            <p>
+                Create new putaway rules to dispatch automatically specific products to their appropriate destination
+                location upon receptions.
             </p>
         </field>
     </record>
@@ -91,9 +94,10 @@
                             domain="[('category_id' ,'!=', False)]"/>
                 </group>
                 <group expand="0" string="Group By">
-                        <filter string="Location: When arrives to" name="location_in" context="{'group_by':'location_in_id'}"/>
-                        <filter string="Location: Store to" name="location_out" context="{'group_by':'location_out_id'}"/>
-                    </group>
+                    <filter string="Location: When arrives to" name="location_in"
+                            context="{'group_by':'location_in_id'}"/>
+                    <filter string="Location: Store to" name="location_out" context="{'group_by':'location_out_id'}"/>
+                </group>
             </search>
         </field>
     </record>
@@ -104,7 +108,8 @@
         <field name="context">{
             'search_default_category_id': [active_id],
             'fixed_category': True,
-        }</field>
+            }
+        </field>
     </record>
     <record model="ir.actions.act_window" id="location_open_putaway"> <!-- Putaway rules from location -->
         <field name="name">Putaway Rules</field>
@@ -114,5 +119,5 @@
     </record>
 
     <menuitem id="menu_putaway" name="Putaway Rules" parent="stock.menu_warehouse_config"
-        action="action_putaway_tree" sequence="8" groups="stock.group_stock_multi_locations"/>
+              action="action_putaway_tree" sequence="8" groups="stock.group_stock_multi_locations"/>
 </odoo>

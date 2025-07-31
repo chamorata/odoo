@@ -1,9 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.fields import Command
-
 from odoo.addons.payment_custom.tests.common import PaymentCustomCommon
 from odoo.addons.website_sale_stock.tests.common import WebsiteSaleStockCommon
+
+from odoo.fields import Command
 
 
 class ClickAndCollectCommon(PaymentCustomCommon, WebsiteSaleStockCommon):

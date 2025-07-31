@@ -9,8 +9,8 @@ import requests
 from odoo import api, fields, release, SUPERUSER_ID
 from odoo.exceptions import UserError
 from odoo.models import AbstractModel
-from odoo.tools.translate import _
 from odoo.tools import config
+from odoo.tools.translate import _
 
 _logger = logging.getLogger(__name__)
 
@@ -33,7 +33,8 @@ class PublisherWarrantyContract(AbstractModel):
         nbr_active_share_users = 0
         if "share" in Users._fields:
             nbr_share_users = Users.search_count([("share", "=", True), ('active', '=', True)])
-            nbr_active_share_users = Users.search_count([("share", "=", True), ("login_date", ">=", limit_date), ('active', '=', True)])
+            nbr_active_share_users = Users.search_count(
+                [("share", "=", True), ("login_date", ">=", limit_date), ('active', '=', True)])
         user = self.env.user
         domain = [('application', '=', True), ('state', 'in', ['installed', 'to upgrade', 'to remove'])]
         apps = self.env['ir.module.module'].sudo().search_read(domain, ['name'])
@@ -86,7 +87,7 @@ class PublisherWarrantyContract(AbstractModel):
             try:
                 result = self._get_sys_logs()
             except Exception:
-                if cron_mode:   # we don't want to see any stack trace in cron
+                if cron_mode:  # we don't want to see any stack trace in cron
                     return False
                 _logger.debug("Exception while sending a get logs messages", exc_info=1)
                 raise UserError(_("Error during communication with the publisher warranty server."))
@@ -104,13 +105,16 @@ class PublisherWarrantyContract(AbstractModel):
                 set_param('database.expiration_date', result['enterprise_info'].get('expiration_date'))
                 set_param('database.expiration_reason', result['enterprise_info'].get('expiration_reason', 'trial'))
                 set_param('database.enterprise_code', result['enterprise_info'].get('enterprise_code'))
-                set_param('database.already_linked_subscription_url', result['enterprise_info'].get('database_already_linked_subscription_url'))
-                set_param('database.already_linked_email', result['enterprise_info'].get('database_already_linked_email'))
-                set_param('database.already_linked_send_mail_url', result['enterprise_info'].get('database_already_linked_send_mail_url'))
+                set_param('database.already_linked_subscription_url',
+                          result['enterprise_info'].get('database_already_linked_subscription_url'))
+                set_param('database.already_linked_email',
+                          result['enterprise_info'].get('database_already_linked_email'))
+                set_param('database.already_linked_send_mail_url',
+                          result['enterprise_info'].get('database_already_linked_send_mail_url'))
 
         except Exception:
             if cron_mode:
-                return False    # we don't want to see any stack trace in cron
+                return False  # we don't want to see any stack trace in cron
             else:
                 raise
         return True

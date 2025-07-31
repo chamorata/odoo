@@ -3,6 +3,7 @@
 
 from odoo import models, fields, api
 
+
 # We create a new model
 class mother(models.Model):
     _name = 'test.inherit.mother'

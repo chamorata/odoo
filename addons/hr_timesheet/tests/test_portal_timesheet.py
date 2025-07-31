@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
+from odoo.addons.project.tests.test_project_sharing import TestProjectSharingCommon
+
 from odoo import Command
 from odoo.tests import tagged
 
-from odoo.addons.project.tests.test_project_sharing import TestProjectSharingCommon
 
 @tagged('post_install', '-at_install')
 class TestPortalTimesheet(TestProjectSharingCommon):
@@ -47,7 +48,8 @@ class TestPortalTimesheet(TestProjectSharingCommon):
         action = self.task_portal.with_user(self.user_portal).action_view_subtask_timesheet()
         portal_tree_view_id = self.env['ir.model.data']._xmlid_to_res_id('hr_timesheet.hr_timesheet_line_portal_tree')
         portal_form_view_id = self.env['ir.model.data']._xmlid_to_res_id('hr_timesheet.timesheet_view_form_portal_user')
-        portal_kanban_view_id = self.env['ir.model.data']._xmlid_to_res_id('hr_timesheet.view_kanban_account_analytic_line_portal_user')
+        portal_kanban_view_id = self.env['ir.model.data']._xmlid_to_res_id(
+            'hr_timesheet.view_kanban_account_analytic_line_portal_user')
         if portal_tree_view_id and portal_form_view_id and portal_kanban_view_id:
             # no need to check that if the views are not installed or already removed
             for view_id, view_type in action['views']:

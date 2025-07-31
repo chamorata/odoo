@@ -24,10 +24,11 @@ class IrAttachment(models.Model):
         '''
         attachments_to_check = self.filtered(
             lambda attachment: attachment.res_model == "account.move"
-            and attachment.res_field == "invoice_pdf_report_file"
+                               and attachment.res_field == "invoice_pdf_report_file"
         )
         res = self.env["account.edi.document"]._read_group(
-            domain=[("move_id", "in", attachments_to_check.mapped("res_id")), ("state", "=", "sent"), ("edi_format_id.code", "=", "sa_zatca")],
+            domain=[("move_id", "in", attachments_to_check.mapped("res_id")), ("state", "=", "sent"),
+                    ("edi_format_id.code", "=", "sa_zatca")],
             aggregates=["write_date:min"],
             groupby=["move_id"],
         )

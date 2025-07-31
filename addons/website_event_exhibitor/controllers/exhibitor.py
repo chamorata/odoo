@@ -4,10 +4,11 @@
 from ast import literal_eval
 from collections import OrderedDict
 from random import randint, sample
+
+from odoo.addons.website_event.controllers.main import WebsiteEventController
 from werkzeug.exceptions import Forbidden
 
 from odoo import http
-from odoo.addons.website_event.controllers.main import WebsiteEventController
 from odoo.http import request
 from odoo.osv import expression
 from odoo.tools import format_duration
@@ -93,7 +94,8 @@ class ExhibitorController(WebsiteEventController):
             if is_event_user:
                 published_sponsors = sponsors.filtered(lambda s: s.website_published)
                 unpublished_sponsors = sponsors - published_sponsors
-                random_sponsors = sample(published_sponsors, len(published_sponsors)) + sample(unpublished_sponsors, len(unpublished_sponsors))
+                random_sponsors = sample(published_sponsors, len(published_sponsors)) + sample(unpublished_sponsors,
+                                                                                               len(unpublished_sponsors))
             else:
                 random_sponsors = sample(sponsors, len(sponsors))
             sponsor_categories.append({
@@ -125,8 +127,9 @@ class ExhibitorController(WebsiteEventController):
     # FRONTEND FORM
     # ------------------------------------------------------------
 
-    @http.route(['''/event/<model("event.event", "[('exhibitor_menu', '=', True)]"):event>/exhibitor/<model("event.sponsor", "[('event_id', '=', event.id)]"):sponsor>'''],
-                type='http', auth="public", website=True, sitemap=True)
+    @http.route(
+        ['''/event/<model("event.event", "[('exhibitor_menu', '=', True)]"):event>/exhibitor/<model("event.sponsor", "[('event_id', '=', event.id)]"):sponsor>'''],
+        type='http', auth="public", website=True, sitemap=True)
     def event_exhibitor(self, event, sponsor, **options):
         if not sponsor.has_access('read'):
             raise Forbidden()

@@ -1,6 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import date, datetime
+
 from odoo.addons.hr_calendar.tests.common import TestHrCalendarCommon
 
 from odoo.tests import tagged
@@ -15,8 +16,8 @@ class TestWorkingHours(TestHrCalendarCommon):
         super().setUpClass()
         if 'hr.contract' in cls.env:
             cls.skipTest(cls,
-                "hr_contract module is installed. To test these features you need to install hr_holidays_contract"
-            )
+                         "hr_contract module is installed. To test these features you need to install hr_holidays_contract"
+                         )
 
         cls.leave_type = cls.env['hr.leave.type'].create({
             'name': 'Unpaid Time Off',

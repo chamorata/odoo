@@ -22,6 +22,7 @@ class Feedback(TransactionCase):
 
 class TestSudo(Feedback):
     """ Test the behavior of method sudo(). """
+
     def test_sudo(self):
         record = self.env['test_access_right.some_obj'].create({'val': 5})
         user1 = self.user
@@ -32,7 +33,8 @@ class TestSudo(Feedback):
             'login': 'demo2',
             'password': 'demo2',
             'partner_id': partner_demo.id,
-            'groups_id': [Command.set([self.env.ref('base.group_user').id, self.env.ref('base.group_partner_manager').id])],
+            'groups_id': [
+                Command.set([self.env.ref('base.group_user').id, self.env.ref('base.group_partner_manager').id])],
         })
 
         # with_user(user)
@@ -89,6 +91,7 @@ class TestSudo(Feedback):
 class TestACLFeedback(Feedback):
     """ Tests that proper feedback is returned on ir.model.access errors
     """
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -103,7 +106,7 @@ class TestACLFeedback(Feedback):
             'perm_read': True,
         })
         ACL.create({
-            'name':  "create-and-read",
+            'name': "create-and-read",
             'model_id': m.id,
             'group_id': cls.group0.id,
             'perm_read': True,
@@ -157,9 +160,11 @@ Contact your administrator to request access if necessary."""
             r.read(['val'])
         self.assertEqual(ctx.exception.args[0], expected)
 
+
 class TestIRRuleFeedback(Feedback):
     """ Tests that proper feedback is returned on ir.rule errors
     """
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -196,7 +201,7 @@ Sorry, %s (id=%s) doesn't have 'write' access to:
 - %s (%s)
 
 If you really, really need access, perhaps you can win over your friendly administrator with a batch of freshly baked cookies."""
-        % (self.user.name, self.user.id, self.record._description, self.record._name))
+            % (self.user.name, self.user.id, self.record._description, self.record._name))
         # debug mode
         with self.debug_mode(), self.assertRaises(AccessError) as ctx:
             self.record.write({'val': 1})
@@ -211,7 +216,8 @@ Blame the following rules:
 - rule 0
 
 If you really, really need access, perhaps you can win over your friendly administrator with a batch of freshly baked cookies."""
-        % (self.user.name, self.user.id, self.record._description, self.record.display_name, self.record._name, self.record.id))
+            % (self.user.name, self.user.id, self.record._description, self.record.display_name, self.record._name,
+               self.record.id))
 
         ChildModel = self.env['test_access_right.inherits']
         with self.debug_mode(), self.assertRaises(AccessError) as ctx:
@@ -227,7 +233,8 @@ Blame the following rules:
 - rule 0
 
 If you really, really need access, perhaps you can win over your friendly administrator with a batch of freshly baked cookies."""
-        % (self.user.name, self.user.id, self.record._description, self.record.display_name, self.record._name, self.record.id))
+            % (self.user.name, self.user.id, self.record._description, self.record.display_name, self.record._name,
+               self.record.id))
 
     def test_locals(self):
         self._make_rule('rule 0', '[("val", "=", 42)]')
@@ -246,7 +253,8 @@ Blame the following rules:
 - rule 1
 
 If you really, really need access, perhaps you can win over your friendly administrator with a batch of freshly baked cookies."""
-        % (self.user.name, self.user.id, self.record._description, self.record.display_name, self.record._name, self.record.id))
+            % (self.user.name, self.user.id, self.record._description, self.record.display_name, self.record._name,
+               self.record.id))
 
     def test_globals_all(self):
         self._make_rule('rule 0', '[("val", "=", 42)]', global_=True)
@@ -265,7 +273,8 @@ Blame the following rules:
 - rule 1
 
 If you really, really need access, perhaps you can win over your friendly administrator with a batch of freshly baked cookies."""
-        % (self.user.name, self.user.id, self.record._description, self.record.display_name, self.record._name, self.record.id))
+            % (self.user.name, self.user.id, self.record._description, self.record.display_name, self.record._name,
+               self.record.id))
 
     def test_globals_any(self):
         """ Global rules are AND-eded together, so when an access fails it
@@ -286,7 +295,8 @@ Blame the following rules:
 - rule 0
 
 If you really, really need access, perhaps you can win over your friendly administrator with a batch of freshly baked cookies."""
-        % (self.user.name, self.user.id, self.record._description, self.record.display_name, self.record._name, self.record.id))
+            % (self.user.name, self.user.id, self.record._description, self.record.display_name, self.record._name,
+               self.record.id))
 
     def test_combination(self):
         self._make_rule('rule 0', '[("val", "=", 42)]', global_=True)
@@ -308,7 +318,8 @@ Blame the following rules:
 - rule 3
 
 If you really, really need access, perhaps you can win over your friendly administrator with a batch of freshly baked cookies."""
-        % (self.user.name, self.user.id, self.record._description, self.record.display_name, self.record._name, self.record.id))
+            % (self.user.name, self.user.id, self.record._description, self.record.display_name, self.record._name,
+               self.record.id))
 
     def test_warn_company_no_access(self):
         """ If one of the failing rules mentions company_id, add a note that
@@ -330,7 +341,8 @@ Blame the following rules:
 - rule 0
 
 If you really, really need access, perhaps you can win over your friendly administrator with a batch of freshly baked cookies."""
-        % (self.user.name, self.user.id, self.record._description, self.record.display_name, self.record._name, self.record.id))
+            % (self.user.name, self.user.id, self.record._description, self.record.display_name, self.record._name,
+               self.record.id))
 
     def test_warn_company_no_company_field(self):
         """ If one of the failing rules mentions company_id, add a note that
@@ -361,7 +373,8 @@ Blame the following rules:
 - rule 0
 
 If you really, really need access, perhaps you can win over your friendly administrator with a batch of freshly baked cookies."""
-        % (self.user.name, self.user.id, child_record._description, child_record.display_name, child_record._name, child_record.id))
+            % (self.user.name, self.user.id, child_record._description, child_record.display_name, child_record._name,
+               child_record.id))
 
     def test_warn_company_access(self):
         """ because of prefetching, read() goes through a different codepath
@@ -385,13 +398,14 @@ Blame the following rules:
 If you really, really need access, perhaps you can win over your friendly administrator with a batch of freshly baked cookies.
 
 This seems to be a multi-company issue, you might be able to access the record by switching to the company: %s."""
-        % (self.user.name, self.user.id, self.record._description, self.record.display_name, self.record._name, self.record.id, self.record.sudo().company_id.display_name, self.record.sudo().company_id.display_name))
+            % (self.user.name, self.user.id, self.record._description, self.record.display_name, self.record._name,
+               self.record.id, self.record.sudo().company_id.display_name, self.record.sudo().company_id.display_name))
         p = self.env['test_access_right.inherits'].create({'some_id': self.record.id})
         self.env.flush_all()
         self.env.invalidate_all()
         with self.assertRaisesRegex(
-            AccessError,
-            r"Implicitly accessed through 'Object for testing related access rights' \(test_access_right.inherits\)\.",
+                AccessError,
+                r"Implicitly accessed through 'Object for testing related access rights' \(test_access_right.inherits\)\.",
         ):
             p.with_user(self.user).val
 
@@ -455,7 +469,7 @@ Operation: read
 User: %s
 Fields:
 - forbidden (allowed for groups 'User types / Portal', 'Test Group')"""
-    % self.user.id
+            % self.user.id
         )
 
         with self.debug_mode(), self.assertRaises(AccessError) as ctx:
@@ -488,7 +502,7 @@ User: %s
 Fields:
 - forbidden (allowed for groups 'User types / Portal', 'Test Group')
 - forbidden2 (allowed for groups 'Test Group')"""
-    % self.user.id
+            % self.user.id
         )
 
     @mute_logger('odoo.models')

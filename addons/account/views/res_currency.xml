@@ -9,8 +9,10 @@
             <field name="arch" type="xml">
                 <xpath expr="//sheet" position="before">
                     <div class="alert alert-warning" role="alert" invisible="not display_rounding_warning">
-                        <strong>This currency has already been used to generate accounting entries.</strong> <br/>
-                        Changing its rounding factor now will not change the rounding made on previous entries; possibly causing an inconsistency with the new ones.
+                        <strong>This currency has already been used to generate accounting entries.</strong>
+                        <br/>
+                        Changing its rounding factor now will not change the rounding made on previous entries; possibly
+                        causing an inconsistency with the new ones.
                     </div>
                 </xpath>
             </field>

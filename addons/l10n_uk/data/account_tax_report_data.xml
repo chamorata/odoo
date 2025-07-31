@@ -30,7 +30,9 @@
                         </field>
                     </record>
                     <record id="account_tax_report_line_vat_box2" model="account.report.line">
-                        <field name="name">[BOX 2] VAT due on acquisitions of goods made in Northern Ireland from EU member states</field>
+                        <field name="name">[BOX 2] VAT due on acquisitions of goods made in Northern Ireland from EU
+                            member states
+                        </field>
                         <field name="code">UKTAX_2</field>
                         <field name="expression_ids">
                             <record id="account_tax_report_line_vat_box2_tag" model="account.report.expression">
@@ -45,7 +47,9 @@
                         <field name="aggregation_formula">UKTAX_1.balance + UKTAX_2.balance</field>
                     </record>
                     <record id="account_tax_report_line_vat_box4" model="account.report.line">
-                        <field name="name">[BOX 4] VAT reclaimed on purchases and other inputs (including acquisitions from the EU)</field>
+                        <field name="name">[BOX 4] VAT reclaimed on purchases and other inputs (including acquisitions
+                            from the EU)
+                        </field>
                         <field name="code">UKTAX_4</field>
                         <field name="expression_ids">
                             <record id="account_tax_report_line_vat_box4_tag" model="account.report.expression">
@@ -96,7 +100,9 @@
                 <field name="hierarchy_level">0</field>
                 <field name="children_ids">
                     <record id="account_tax_report_line_exd_vat_box8" model="account.report.line">
-                        <field name="name">[BOX 8] Total value of all supplies of goods and related costs, excluding any VAT, to EU member states</field>
+                        <field name="name">[BOX 8] Total value of all supplies of goods and related costs, excluding any
+                            VAT, to EU member states
+                        </field>
                         <field name="code">UKTAX_8</field>
                         <field name="expression_ids">
                             <record id="account_tax_report_line_exd_vat_box8_tag" model="account.report.expression">
@@ -107,7 +113,9 @@
                         </field>
                     </record>
                     <record id="account_tax_report_line_exd_vat_box9" model="account.report.line">
-                        <field name="name">[BOX 9] Total value of all acquisitions of goods and related costs, excluding any VAT, from EU member states</field>
+                        <field name="name">[BOX 9] Total value of all acquisitions of goods and related costs, excluding
+                            any VAT, from EU member states
+                        </field>
                         <field name="code">UKTAX_9</field>
                         <field name="expression_ids">
                             <record id="account_tax_report_line_exd_vat_box9_tag" model="account.report.expression">

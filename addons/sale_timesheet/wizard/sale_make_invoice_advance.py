@@ -13,9 +13,10 @@ class SaleAdvancePaymentInv(models.TransientModel):
     date_end_invoice_timesheet = fields.Date(
         string="End Date",
         help="Only timesheets not yet invoiced (and validated, if applicable) from this period will be invoiced. If the period is not indicated, all timesheets not yet invoiced (and validated, if applicable) will be invoiced without distinction.")
-    invoicing_timesheet_enabled = fields.Boolean(compute='_compute_invoicing_timesheet_enabled', store=True, export_string_translation=False)
+    invoicing_timesheet_enabled = fields.Boolean(compute='_compute_invoicing_timesheet_enabled', store=True,
+                                                 export_string_translation=False)
 
-    #=== COMPUTE METHODS ===#
+    # === COMPUTE METHODS ===#
 
     @api.depends('sale_order_ids')
     def _compute_invoicing_timesheet_enabled(self):
@@ -28,7 +29,7 @@ class SaleAdvancePaymentInv(models.TransientModel):
                 )
             )
 
-    #=== BUSINESS METHODS ===#
+    # === BUSINESS METHODS ===#
 
     def _create_invoices(self, sale_orders):
         """ Override method from sale/wizard/sale_make_invoice_advance.py

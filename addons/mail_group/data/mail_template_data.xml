@@ -8,9 +8,13 @@
         <field name="description">Sent to people who subscribed to a mailing group with group guidelines</field>
         <field name="body_html" type="html">
             <div>
-                <p>Hello <t t-out="object.partner_id.name or ''"></t>,</p>
-                <p>Please find below the guidelines of the <t t-out="object.mail_group_id.name"></t> mailing list.</p>
-                <p><t t-out="object.mail_group_id.moderation_guidelines_msg or ''"></t></p>
+                <p>Hello <t t-out="object.partner_id.name or ''"></t>,
+                </p>
+                <p>Please find below the guidelines of the <t t-out="object.mail_group_id.name"></t> mailing list.
+                </p>
+                <p>
+                    <t t-out="object.mail_group_id.moderation_guidelines_msg or ''"></t>
+                </p>
             </div>
         </field>
         <field name="lang">{{ object.partner_id.lang }}</field>
@@ -25,11 +29,20 @@
         <field name="description">Subscription confirmation to a mailing group</field>
         <field name="body_html" type="html">
             <div style="margin: 0px; padding: 0px;">
-                Hello,<br/><br/>
+                Hello,
+                <br/>
+                <br/>
                 You have requested to be subscribed to the mailing list <strong t-out="object.name or ''"></strong>.
-                <br/><br/>
-                To confirm, please visit the following link: <strong t-if="ctx.get('token_url')"><a t-att-href="ctx['token_url']"><t t-out="ctx['token_url'] or ''"></t></a></strong>
-                <br/><br/>
+                <br/>
+                <br/>
+                To confirm, please visit the following link:
+                <strong t-if="ctx.get('token_url')">
+                    <a t-att-href="ctx['token_url']">
+                        <t t-out="ctx['token_url'] or ''"></t>
+                    </a>
+                </strong>
+                <br/>
+                <br/>
                 If this was a mistake or you did not requested this action, please ignore this message.
             </div>
         </field>
@@ -44,11 +57,21 @@
         <field name="description">Sent to people who unsubscribed from a mailing group</field>
         <field name="body_html" type="html">
             <div style="margin: 0px; padding: 0px;">
-                Hello,<br/><br/>
+                Hello,
+                <br/>
+                <br/>
                 You have requested to be unsubscribed to the mailing list <strong t-out="object.name or ''"></strong>.
-                <br/><br/>
-                To confirm, please visit the following link: <strong t-if="ctx.get('token_url')"><a t-att-href="ctx['token_url']"><t t-out="ctx['token_url'] or ''"></t></a></strong>.
-                <br/><br/>
+                <br/>
+                <br/>
+                To confirm, please visit the following link:
+                <strong t-if="ctx.get('token_url')">
+                    <a t-att-href="ctx['token_url']">
+                        <t t-out="ctx['token_url'] or ''"></t>
+                    </a>
+                </strong>
+                .
+                <br/>
+                <br/>
                 If this was a mistake or you did not requested this action, please ignore this message.
             </div>
         </field>

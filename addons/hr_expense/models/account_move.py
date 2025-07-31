@@ -9,7 +9,8 @@ from odoo.tools.misc import frozendict
 class AccountMove(models.Model):
     _inherit = "account.move"
 
-    expense_sheet_id = fields.Many2one(comodel_name='hr.expense.sheet', ondelete='set null', copy=False, index='btree_not_null')
+    expense_sheet_id = fields.Many2one(comodel_name='hr.expense.sheet', ondelete='set null', copy=False,
+                                       index='btree_not_null')
     show_commercial_partner_warning = fields.Boolean(compute='_compute_show_commercial_partner_warning')
 
     @api.depends('partner_id', 'expense_sheet_id', 'company_id')
@@ -65,7 +66,8 @@ class AccountMove(models.Model):
                     frozendict(
                         {
                             "move_id": move.id,
-                            "date_maturity": move.expense_sheet_id.accounting_date or fields.Date.context_today(move.expense_sheet_id),
+                            "date_maturity": move.expense_sheet_id.accounting_date or fields.Date.context_today(
+                                move.expense_sheet_id),
                         }
                     ): {
                         "balance": -sum(term_lines.mapped("balance")),
@@ -92,7 +94,8 @@ class AccountMove(models.Model):
     @ondelete(at_uninstall=True)
     def _must_delete_all_expense_entries(self):
         if self.expense_sheet_id and self.expense_sheet_id.account_move_ids - self:  # If not all the payments are to be deleted
-            raise UserError(_("You cannot delete only some entries linked to an expense report. All entries must be deleted at the same time."))
+            raise UserError(
+                _("You cannot delete only some entries linked to an expense report. All entries must be deleted at the same time."))
 
     def button_cancel(self):
         # EXTENDS account

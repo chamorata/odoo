@@ -24,11 +24,13 @@ class AccountMove(models.Model):
             if move.country_code == 'SA':
                 move.show_delivery_date = move.is_sale_document()
 
-    @api.depends('amount_total_signed', 'amount_tax_signed', 'l10n_sa_confirmation_datetime', 'company_id', 'company_id.vat')
+    @api.depends('amount_total_signed', 'amount_tax_signed', 'l10n_sa_confirmation_datetime', 'company_id',
+                 'company_id.vat')
     def _compute_qr_code_str(self):
         """ Generate the qr code for Saudi e-invoicing. Specs are available at the following link at page 23
         https://zatca.gov.sa/ar/E-Invoicing/SystemsDevelopers/Documents/20210528_ZATCA_Electronic_Invoice_Security_Features_Implementation_Standards_vShared.pdf
         """
+
         def get_qr_encoding(tag, field):
             company_name_byte_array = field.encode()
             company_name_tag_encoding = tag.to_bytes(length=1, byteorder='big')
@@ -40,7 +42,8 @@ class AccountMove(models.Model):
             if record.l10n_sa_confirmation_datetime and record.company_id.vat:
                 seller_name_enc = get_qr_encoding(1, record.company_id.display_name)
                 company_vat_enc = get_qr_encoding(2, record.company_id.vat)
-                time_sa = fields.Datetime.context_timestamp(self.with_context(tz='Asia/Riyadh'), record.l10n_sa_confirmation_datetime)
+                time_sa = fields.Datetime.context_timestamp(self.with_context(tz='Asia/Riyadh'),
+                                                            record.l10n_sa_confirmation_datetime)
                 timestamp_enc = get_qr_encoding(3, time_sa.isoformat())
                 totals = record._get_l10n_sa_totals()
                 invoice_total_enc = get_qr_encoding(4, float_repr(abs(totals['total_amount']), 2))
@@ -64,7 +67,8 @@ class AccountMove(models.Model):
 
     def get_l10n_sa_confirmation_datetime_sa_tz(self):
         self.ensure_one()
-        return format_datetime(self.env, self.l10n_sa_confirmation_datetime, tz='Asia/Riyadh', dt_format='Y-MM-dd\nHH:mm:ss')
+        return format_datetime(self.env, self.l10n_sa_confirmation_datetime, tz='Asia/Riyadh',
+                               dt_format='Y-MM-dd\nHH:mm:ss')
 
     def _l10n_sa_reset_confirmation_datetime(self):
         for move in self.filtered(lambda m: m.country_code == 'SA'):

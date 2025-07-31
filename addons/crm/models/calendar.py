@@ -19,7 +19,8 @@ class CalendarEvent(models.Model):
         # sync res_model / res_id to opportunity id (aka creating meeting from lead chatter)
         if 'opportunity_id' not in defaults:
             if self._is_crm_lead(defaults, self.env.context):
-                defaults['opportunity_id'] = defaults.get('res_id', False) or self.env.context.get('default_res_id', False)
+                defaults['opportunity_id'] = defaults.get('res_id', False) or self.env.context.get('default_res_id',
+                                                                                                   False)
 
         return defaults
 
@@ -52,4 +53,5 @@ class CalendarEvent(models.Model):
         res_model = defaults.get('res_model', False) or ctx and ctx.get('default_res_model')
         res_model_id = defaults.get('res_model_id', False) or ctx and ctx.get('default_res_model_id')
 
-        return res_model and res_model == 'crm.lead' or res_model_id and self.env['ir.model'].sudo().browse(res_model_id).model == 'crm.lead'
+        return res_model and res_model == 'crm.lead' or res_model_id and self.env['ir.model'].sudo().browse(
+            res_model_id).model == 'crm.lead'

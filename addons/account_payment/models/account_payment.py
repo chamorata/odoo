@@ -44,20 +44,20 @@ class AccountPayment(models.Model):
     )
     refunds_count = fields.Integer(string="Refunds Count", compute='_compute_refunds_count')
 
-    #=== COMPUTE METHODS ===#
+    # === COMPUTE METHODS ===#
 
     def _compute_amount_available_for_refund(self):
         for payment in self:
             tx_sudo = payment.payment_transaction_id.sudo()
             payment_method = (
-                tx_sudo.payment_method_id.primary_payment_method_id
-                or tx_sudo.payment_method_id
+                    tx_sudo.payment_method_id.primary_payment_method_id
+                    or tx_sudo.payment_method_id
             )
             if (
-                tx_sudo  # The payment was created by a transaction.
-                and tx_sudo.provider_id.support_refund != 'none'
-                and payment_method.support_refund != 'none'
-                and tx_sudo.operation != 'refund'
+                    tx_sudo  # The payment was created by a transaction.
+                    and tx_sudo.provider_id.support_refund != 'none'
+                    and payment_method.support_refund != 'none'
+                    and tx_sudo.operation != 'refund'
             ):
                 # Only consider refund transactions that are confirmed by summing the amounts of
                 # payments linked to such refund transactions. Indeed, should a refund transaction
@@ -103,7 +103,7 @@ class AccountPayment(models.Model):
         for payment in self:
             payment.refunds_count = data.get(payment.id, 0)
 
-    #=== ONCHANGE METHODS ===#
+    # === ONCHANGE METHODS ===#
 
     @api.onchange('partner_id', 'payment_method_line_id', 'journal_id')
     def _onchange_set_payment_token_id(self):
@@ -117,9 +117,9 @@ class AccountPayment(models.Model):
             ('partner_id', '=', self.partner_id.id),
             ('provider_id.capture_manually', '=', False),
             ('provider_id', '=', self.payment_method_line_id.payment_provider_id.id),
-         ], limit=1)  # In sudo mode to read the provider fields.
+        ], limit=1)  # In sudo mode to read the provider fields.
 
-    #=== ACTION METHODS ===#
+    # === ACTION METHODS ===#
 
     def action_post(self):
         # Post the payments "normally" if no transactions are needed.
@@ -178,7 +178,7 @@ class AccountPayment(models.Model):
             action['domain'] = [('source_payment_id', '=', self.id)]
         return action
 
-    #=== BUSINESS METHODS - PAYMENT FLOW ===#
+    # === BUSINESS METHODS - PAYMENT FLOW ===#
 
     def _create_payment_transaction(self, **extra_create_values):
         for payment in self:

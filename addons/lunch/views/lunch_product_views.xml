@@ -10,7 +10,8 @@
                 <field name="supplier_id"/>
                 <field name="description"/>
                 <separator/>
-                <filter name="available_today" string="Available Today" domain="[('supplier_id.available_today', '=', True)]"/>
+                <filter name="available_today" string="Available Today"
+                        domain="[('supplier_id.available_today', '=', True)]"/>
                 <separator/>
                 <filter name="available_on_mon" string="Monday" domain="[('supplier_id.mon', '=', True)]"/>
                 <filter name="available_on_tue" string="Tuesday" domain="[('supplier_id.tue', '=', True)]"/>
@@ -26,7 +27,8 @@
                     <filter name="group_by_category" string="Category" context="{'group_by': 'category_id'}"/>
                 </group>
                 <searchpanel>
-                    <field name="category_id" select="multi" string="Categories" icon="fa-cutlery" color="#875A7B" enable_counters="1"/>
+                    <field name="category_id" select="multi" string="Categories" icon="fa-cutlery" color="#875A7B"
+                           enable_counters="1"/>
                     <field name="supplier_id" select="multi" string="Vendors" icon="fa-truck" enable_counters="1"/>
                 </searchpanel>
             </search>
@@ -108,22 +110,25 @@
                 <templates>
                     <t t-name="card" class="row g-0">
                         <aside class="col-4">
-                            <field name="image_128" options="{'placeholder': '/lunch/static/img/lunch.png', 'size': [94, 94], 'img_class': 'w-100 h-100'}" widget="image"/>
+                            <field name="image_128"
+                                   options="{'placeholder': '/lunch/static/img/lunch.png', 'size': [94, 94], 'img_class': 'w-100 h-100'}"
+                                   widget="image"/>
                         </aside>
                         <main class="col">
                             <div class="d-flex">
                                 <div class="d-flex">
                                     <field class="pe-1 pt-1" name="is_favorite" widget="lunch_is_favorite" nolabel="1"/>
-                                    <field name="name" class="fw-bolder fs-5" />
+                                    <field name="name" class="fw-bolder fs-5"/>
                                 </div>
                                 <div class="text-primary ms-auto">
-                                    <div t-if="record.is_new.raw_value" class="o_lunch_new_product me-1 py-1 fs-6 badge rounded-pill text-bg-success">
+                                    <div t-if="record.is_new.raw_value"
+                                         class="o_lunch_new_product me-1 py-1 fs-6 badge rounded-pill text-bg-success">
                                         New
                                     </div>
                                     <field name="price" widget="monetary" class="fw-bold "/>
                                 </div>
                             </div>
-                            <field name="supplier_id" />
+                            <field name="supplier_id"/>
                             <footer class="pt-0 mt-0">
                                 <field name="description" class="text-muted"/>
                             </footer>
@@ -156,7 +161,7 @@
                                 <field name="name" class="fw-bold fs-5"/>
                                 <field name="price" widget="monetary" class="fw-bold ms-auto"/>
                             </div>
-                            <field name="supplier_id" />
+                            <field name="supplier_id"/>
                             <footer class="pt-0 mt-0">
                                 <field name="description" class="text-muted"/>
                             </footer>
@@ -174,9 +179,10 @@
         <field name="context">{'search_default_group_by_supplier': 1}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-            Create a new product for lunch
-            </p><p>
-            A product is defined by its name, category, price and vendor.
+                Create a new product for lunch
+            </p>
+            <p>
+                A product is defined by its name, category, price and vendor.
             </p>
         </field>
     </record>
@@ -200,9 +206,9 @@
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button class="oe_stat_button" type="action" name="%(lunch.lunch_product_action_statbutton)d"
-                            context="{'search_default_category_id': id,'default_category_id': id}"
-                            invisible="product_count == 0"
-                            icon="fa-cutlery">
+                                context="{'search_default_category_id': id,'default_category_id': id}"
+                                invisible="product_count == 0"
+                                icon="fa-cutlery">
                             <field string="Products" name="product_count" widget="statinfo"/>
                         </button>
                     </div>
@@ -220,7 +226,7 @@
         </field>
     </record>
 
-     <record id="lunch_product_category_view_kanban" model="ir.ui.view">
+    <record id="lunch_product_category_view_kanban" model="ir.ui.view">
         <field name="name">Product category Kanban</field>
         <field name="model">lunch.product.category</field>
         <field name="arch" type="xml">
@@ -232,9 +238,9 @@
                         </aside>
                         <main>
                             <button class="badge text-bg-primary ms-auto" type="action"
-                                name="%(lunch.lunch_product_action_statbutton)d"
-                                context="{'search_default_category_id': id,'default_category_id': id}"
-                                invisible="product_count == 0">
+                                    name="%(lunch.lunch_product_action_statbutton)d"
+                                    context="{'search_default_category_id': id,'default_category_id': id}"
+                                    invisible="product_count == 0">
                                 <field string="Products" name="product_count" widget="statinfo"/>
                             </button>
                             <field name="name" class="fw-bold"/>
@@ -263,9 +269,10 @@
         <field name="view_mode">list,kanban,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-            Create a new product for lunch
-            </p><p>
-            A product is defined by its name, category, price and vendor.
+                Create a new product for lunch
+            </p>
+            <p>
+                A product is defined by its name, category, price and vendor.
             </p>
         </field>
     </record>
@@ -284,9 +291,11 @@
         <field name="domain">[]</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-            There is no product available today
-            </p><p>
-            To see some products, check if your vendors are available today and that you have configured some products
+                There is no product available today
+            </p>
+            <p>
+                To see some products, check if your vendors are available today and that you have configured some
+                products
             </p>
         </field>
     </record>
@@ -298,9 +307,10 @@
         <field name="search_view_id" ref="lunch_product_category_view_search"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-            Create a new product category
-            </p><p>
-            Here you can access all categories for the lunch products.
+                Create a new product category
+            </p>
+            <p>
+                Here you can access all categories for the lunch products.
             </p>
         </field>
     </record>
